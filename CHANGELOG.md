@@ -2,17 +2,17 @@
 
 All notable changes to this project are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project
-tracks the benchmark task series specified under `.internal/tasks/`.
+tracks the benchmark task series specified under the private task-spec tree (lab-only).
 
 ## [Unreleased]
 
 ### Added — Task 034 follow-up: public-safe provenance manifest for SANITIZED_PUBLIC artifacts (2026-06-03)
 
-Closes the final-code-reviewer REQUEST-CHANGES on public release readiness
+Closes the final review gate REQUEST-CHANGES on public release readiness
 (policy ↔ implementation drift on SANITIZED_PUBLIC provenance). `docs/16-release-tiers-and-redaction-policy.md`
 previously said each SANITIZED_PUBLIC artifact carries provenance as a
 sidecar manifest or first JSONL row, but the only manifest the sanitizer
-actually wrote was the private `.internal/release/raw_archive_manifest.json`
+actually wrote was the private release manifest (lab-only)
 (not publishable). This change introduces a single tracked, public,
 deterministic provenance record covering every SANITIZED_PUBLIC artifact.
 
@@ -26,7 +26,7 @@ deterministic provenance record covering every SANITIZED_PUBLIC artifact.
   (`wrpo-public-sanitized-manifest`), `schema_version` (`1.0.0`),
   `tier`, `sweep_id`, `redaction_rules_sha256`, `redactor_commit_sha`,
   `redactor_script_sha256`, `redacted_at_iso`, `entries` (sorted by
-  `artifact_path`). No `.internal/...` path is recorded; no
+  `artifact_path`). No path beneath the lab-only workspace is recorded; no
   `archive_relative_path`; no concrete endpoint URL, deployment name,
   region tag, request id, or secret pattern; only opaque ids and
   SHA-256 digests. Initial entries: 1534.
@@ -120,7 +120,7 @@ deterministic provenance record covering every SANITIZED_PUBLIC artifact.
   and
   `verify (public manifest): clean — release/public_sanitized_manifest.json is well-formed and integrity-checked.`)
   and fails the workflow if either is violated, closing the
-  first-reviewer advisory that flagged the prior CI as relying on
+  first review gate advisory that flagged the prior CI as relying on
   `scripts/check_public_surface.sh` alone. Security posture
   preserved: `pull_request` / `push` triggers only (no
   `pull_request_target`), `permissions: contents: read`,
@@ -157,7 +157,7 @@ source-parsing cases and doc audits that every Tier 1 footer bullet
 in the new docs carries a URL and ISO date, every Tier 2 footer
 bullet carries a rationale or in-repo path, voice-grep is clean, and
 the frozen Task 001 methodology doc is untouched.
-`docs/05-methodology.md`, `.internal/REPO_SCAFFOLD_SPEC.md`, and all
+`docs/05-methodology.md`, the private scaffold spec (lab-only), and all
 benchmark `analysis.md` files are unmodified. No `pyproject.toml`
 edit, no dependency added.
 
@@ -260,15 +260,14 @@ and the Guide §3 Input TPM / PTU capacity table.
 
 Process and result:
 
-- Implementation worker (analyzer agent, Mac Mini local
-  `claude-opus-4.7`) wrote the pure model, source-aware legacy adapters
+- Implementation worker (analyzer role, local implementation worker on Mac Mini local) wrote the pure model, source-aware legacy adapters
   for `task013_dual_spillover` and `task019_max_output_tokens_proxy`,
   the deterministic 1-D leak-constant calibration (grid + golden-section
   refine, recorded in `calibration.json`), the source-run holdout
   protocol, and the validation report writer. No Azure / OpenAI / HTTP
   client is imported anywhere in the new modules or CLI — a static
   no-network guard enforces this in `test_replay_simulator.py`.
-- Methodology v2 audit (gpt-5.5) approved the spec ahead of
+- Methodology v2 audit (local CLI reviewer worker) approved the spec ahead of
   implementation; this entry preserves its handoff notes: one-unit
   token bucket only; capacity is the Guide §3 table value, never fit;
   source labels preserved in every aggregate; Task 019 always carried
@@ -757,7 +756,7 @@ change")._
 - Pinned §10 RFC assumptions: unchanged from the v2.5 RFC table above.
   The temporary dispatch YAML for this run had
   `runtime.adaptive_calibration.enabled: true` installed under an
-  in-file methodology-auditor APPROVE phrase, so the v2.5/v2.6
+  in-file methodology audit gate APPROVE phrase, so the v2.5/v2.6
   adaptive Stage 0.5.C path was *armed* at dispatch. The §3.2
   adaptive Stage 0.5.C runtime trigger predicate did not match the
   v2.4 `bracket_search` selected outcome (operator log:
@@ -781,7 +780,7 @@ change")._
 - Fixes attempted: none — calibration completed cleanly; the smoke
   block is a methodology-correct denial. Mini-probe revalidation was
   considered as the narrowest forward step and rejected at audit:
-  methodology-auditor returned `REQUEST-CHANGES` because v2.4 §7 /
+  methodology audit gate returned `REQUEST-CHANGES` because v2.4 §7 /
   §3.1 restrict `mini_probe_revalidated` to attempts where
   invariant 12 (freshness) is the **sole** denial; the active
   denial here is invariant 5 (cache-hit floor).
@@ -794,7 +793,7 @@ change")._
      exceeds the lower TPM corridor by construction at the selected
      TPS;
   3. mini-probe revalidation is **not** authorized for this denial
-     class — methodology-auditor `REQUEST-CHANGES` on file.
+     class — methodology audit gate `REQUEST-CHANGES` on file.
 - What the next attempt will change: **not** a mini-probe retry
   against this calibration. The next attempt is either (a) a fresh
   Stage 0.5 calibration with a longer steady-state window (or
@@ -812,9 +811,9 @@ change")._
   relevant to Task 019 hypothesis I (PTU admission-time reservation
   under `max_output_tokens`); they are not direct PTU measurements.
 
-#### 2026-06-01 — final-reviewer fix-loop #2: test selector, schema validators, production preflight (no live dispatch)
+#### 2026-06-01 — final review gate fix-loop #2: test selector, schema validators, production preflight (no live dispatch)
 
-Final-code-reviewer (2026-06-01) returned `REQUEST-CHANGES` on
+Final review gate (2026-06-01) returned `REQUEST-CHANGES` on
 three concrete blockers; all three are resolved in this commit set
 on the code surface (no live Azure dispatch).
 
@@ -906,7 +905,7 @@ gated on `runtime.adaptive_calibration.enabled`, with §4.4 cap
 enforcement and emission of the validator-conforming
 `*.adaptive.summary.json` schema this fix-loop hardened.
 
-#### 2026-05-31 — first-reviewer fix-loop #1: dispatcher wiring deferred; preflight wiring hardened
+#### 2026-05-31 — first review gate fix-loop #1: dispatcher wiring deferred; preflight wiring hardened
 
 - Run prefix: _none — no live calibration dispatched; this entry
   records an implementation-side blocker per §0.5 ("preflight-blocked
@@ -968,7 +967,7 @@ enforcement and emission of the validator-conforming
   against real wall-time). Landing untested dispatcher code would
   violate Engineering Principle #2 (Silent Failure Is the Enemy).
 - What the next attempt will change: a follow-up commit guarded by
-  a fresh `methodology-auditor` approval will wire the dispatcher
+  a fresh `methodology audit gate` approval will wire the dispatcher
   inside `_run_calibration_async`, gated by the runtime equivalent of
   the §3.2 trigger predicate (the YAML preflight already enforces the
   pre-dispatch half), preserving v2.4 default behaviour when
@@ -1015,15 +1014,15 @@ sha IS enumerated by the committed terminal report.
   budgets changed. `mini_probe_enabled` remains the YAML-pinned
   default `false`.
 
-### Added — Task 019 v2.4 empirical-calibration-aware promotion (2026-05-31, methodology-auditor APPROVE after microfix #6)
+### Added — Task 019 v2.4 empirical-calibration-aware promotion (2026-05-31, methodology audit gate APPROVE after microfix #6)
 
 End-to-end implementation of Task 019 v2.4, an additive layer on top
 of v2.3 that rescues smoke / evidence runs whose cold-cache TPM
 projection would otherwise abort even though the paid live
 calibration already proved the deployment passes the contrast
 contract at the selected TPS. Spec:
-`.internal/tasks/019-v2.4-empirical-calibration-aware-promotion.md`
-(approved 2026-05-31 by methodology-auditor on Codex CLI / GPT-5.5 /
+the private Task 019 v2.4 spec (lab-only workspace)
+(approved 2026-05-31 by methodology audit gate on local CLI reviewer worker /
 Mac Mini local, verdict APPROVE after microfix #6).
 
 - **v2.3 PRESERVED.** Every v2.3 pin survives v2.4: the 0.85 / 1.25
@@ -1127,7 +1126,7 @@ Mac Mini local, verdict APPROVE after microfix #6).
     link)
   - `CHANGELOG.md` (this entry)
 - **Critical-TODO closure (post-microfix #6, 2026-06-01):** the
-  measurement-engineer pass that initially landed the v2.4 surface
+  measurement-implementation worker pass that initially landed the v2.4 surface
   reported two open seams; both are now closed end-to-end and
   exercised by the runner-integration tests:
   - **Admitted-summary writer wired into the actual runner.** On the
@@ -1304,9 +1303,9 @@ consumable input is a smoke/evidence summary which was not produced.
   null at the proxy level — option (d) is what this entry records
   today).
 
-### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #10 (final-code-reviewer REQUEST-CHANGES, Phase A pinned-grid tightening + stale dry-run quarantine)
+### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #10 (final review gate REQUEST-CHANGES, Phase A pinned-grid tightening + stale dry-run quarantine)
 
-Final-code-reviewer (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Final review gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` after fix-loop #9 with two remaining blockers — one
 on `validate_calibration_result`'s Phase A else-branch, and one on
 stale pre-v2.3 dry-run / figures artifacts that would otherwise land in
@@ -1405,9 +1404,9 @@ unmodified. Full Task 019 pytest suite now passes:
 `tests/test_analyze_max_output_tokens_sweep.py`). No live Azure calls
 were made during this fix loop.
 
-### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #9 (methodology-auditor REQUEST-CHANGES, cross-field `selected_via`/`selected_at_phase` tightening)
+### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #9 (methodology audit gate REQUEST-CHANGES, cross-field `selected_via`/`selected_at_phase` tightening)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` after fix-loop #8 with one remaining narrow blocker
 on `validate_calibration_result`: the validator still accepted a forged
 Phase B tuple of the shape `(selected_via=None, selected_at_phase='B',
@@ -1491,9 +1490,9 @@ TPS=5.0. Full Task 019 pytest suite now passes:
 `tests/test_analyze_max_output_tokens_sweep.py`). No live Azure calls
 were made during this fix loop.
 
-### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #8 (methodology-auditor REQUEST-CHANGES, cross-field bracket-marker schema tightening)
+### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #8 (methodology audit gate REQUEST-CHANGES, cross-field bracket-marker schema tightening)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` after fix-loop #7 with one remaining narrow blocker
 on `validate_calibration_result`: the validator permitted
 `selected_at_phase='bracket'` globally and only enforced the full
@@ -1572,7 +1571,7 @@ this commit; no live Azure call was made.
 Test deltas: `tests/test_measure_max_output_tokens_sweep.py` gains
 6 new tests under the new class
 `TestValidateCalibrationResultCrossFieldInvariants_FixLoop8` covering
-the four forged cases named by methodology-auditor plus two happy-path
+the four forged cases named by methodology audit gate plus two happy-path
 regression locks (valid Phase A legacy via `_write_calibration_pair`,
 valid Phase B grid via `_write_calibration_pair_v23`). Full Task 019
 pytest suite now passes: **284 passed, 3 skipped** (baseline before
@@ -1584,9 +1583,9 @@ deterministic tests). `ruff check` passes on all four touched files
 `tests/test_analyze_max_output_tokens_sweep.py`). No live Azure calls
 were made during this fix loop.
 
-### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #7 (final-code-reviewer REQUEST-CHANGES, bracket-schema tightening)
+### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #7 (final review gate REQUEST-CHANGES, bracket-schema tightening)
 
-Final-code-reviewer (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Final review gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` after fix-loop #6 with one remaining schema-tightening
 blocker on `validate_calibration_result`: the validator accepted
 `selected_via == "bracket_search"` without requiring the bracket-phase
@@ -1652,7 +1651,7 @@ The narrow fix is in this commit; no live Azure call was made.
 Test deltas: `tests/test_measure_max_output_tokens_sweep.py` gains
 5 new tests under the new class
 `TestValidateCalibrationResultBracketRootPhase_FixLoop7` covering the
-four invalid examples named by final-code-reviewer plus one valid
+four invalid examples named by final review gate plus one valid
 Phase-B-rooted bracket case (`bracket_search` +
 `selected_at_phase='bracket'` + `selected_bracket_root_phase='B'` +
 depth 2 + positive TPS). The test module also gains a small
@@ -1670,7 +1669,7 @@ were made during this fix loop.
 
 ### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #6 (auditor REQUEST-CHANGES, 3 schema/propagation blockers)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` after fix-loop #5 with three remaining schema /
 propagation blockers covering bracket-selection serialization, the
 `phase_b_concurrency_used` JSON type, and v2.3 enforcement of per-cell
@@ -1805,7 +1804,7 @@ were made during this fix loop.
 
 ### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #5 (auditor REQUEST-CHANGES, 3 PR-scope blockers)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` with three new PR-scope blockers covering the
 deterministic conservative estimator gating, bracket-probe bounded
 retries, and v2.3 calibration field propagation in smoke/evidence
@@ -1926,7 +1925,7 @@ Azure calls were made during this fix loop.
 
 ### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #4 (auditor REQUEST-CHANGES, 3 PR-scope blockers)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) RETURNED
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) RETURNED
 `REQUEST-CHANGES` with three new PR-scope blockers covering preflight
 gate semantics, stale active YAML text, and a missing spec-pinned
 early-stop behaviour. All three are addressed in this commit set
@@ -2011,7 +2010,7 @@ preserved. No live Azure call.
 
 ### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #3 (auditor REQUEST-CHANGES, 2 PR-scope blockers)
 
-Methodology-auditor (Codex GPT-5.5, Mac Mini local re-check) PASSED the
+Methodology audit gate (local CLI reviewer worker, Mac Mini local re-check) PASSED the
 four prior fix-loop-#2 blockers but RETURNED `REQUEST-CHANGES` on two
 remaining PR-scope blockers. Both are addressed in this commit set
 without touching code, YAML, or test logic and without any live Azure
@@ -2025,7 +2024,7 @@ call.
    set, the retired terminal outcome
    `no_largest_cell_429_at_any_candidate_tps`, and the v2.2.1
    description of Phase A as the only phase. They are now fully
-   self-consistent with `.internal/tasks/019-max-output-tokens-reservation.md`
+   self-consistent with the private Task 019 spec (lab-only workspace)
    v2.3 (with the spec's three microfixes A/B/C), the active
    `experiments/exp007_max_output_tokens_sweep.yaml`, and the runtime
    constants in `scripts/measure_max_output_tokens_sweep.py`.
@@ -2113,7 +2112,7 @@ clean on the touched files.
 
 ### Fixed — Task 019 v2.3 microfix 2026-05-30 fix loop #2 (auditor REQUEST-CHANGES, 4 blockers)
 
-Methodology-auditor (Codex GPT-5.5) RETURNED `REQUEST-CHANGES` on the
+Methodology audit gate (local CLI reviewer worker) RETURNED `REQUEST-CHANGES` on the
 v2.3 implementation. All four blockers are addressed in this commit set
 without altering the v2.3 calibration semantics or pinned values.
 
@@ -2617,7 +2616,7 @@ higher, or that the admission layer is charging realized output
 rather than the cap — distinguishing those alternatives is itself
 the v2.x experimental design question).
 
-### Fixed — Task 018 v2.4 final-code-reviewer follow-up: admitted-timestamp authoritative rule now honored for post-admission failures (2026-05-29)
+### Fixed — Task 018 v2.4 final review gate follow-up: admitted-timestamp authoritative rule now honored for post-admission failures (2026-05-29)
 
 **Blocker.** `scripts/measure_cache_key_bucketing.py` was excluding every
 `failed=True` record before computing `p95_dispatch_backlog_ms`,
@@ -2632,7 +2631,7 @@ the retry budget was exhausted) DID pass `sem.acquire` and DID consume
 dispatcher capacity, so excluding them from admission-level aggregates
 silently under-reports the realized cadence and contradicts the v2.4
 admitted-timestamp authoritative rule documented in
-`.internal/tasks/018-cache-key-bucketing-benchmark.md` v2.3 telemetry
+the private Task 018 spec (lab-only workspace) v2.3 telemetry
 semantics section ("All per-bucket and common-prefix RPM bookkeeping in
 v2.3 uses `admitted_dispatch_cell_elapsed_ms` timestamps").
 
@@ -3126,8 +3125,8 @@ exports, auth-header values) return zero matches against the Task
 
 **No commit / push / PR.** Per the orchestration contract, this
 implementation lands the working-tree changes only; the
-git-committer agent owns the commit, push, and PR steps and runs
-after methodology-auditor and final-code-reviewer have re-audited.
+commit worker owns the commit, push, and PR steps and runs
+after methodology audit gate and final review gate have re-audited.
 
 **Citations.** Microsoft Learn — Prompt caching for Azure OpenAI
 in Azure AI Foundry —
@@ -3204,7 +3203,7 @@ fabricating measured results.
 - `CHANGELOG.md` — this entry.
 
 **Anonymization invariant.** The task anonymization grep (defined in
-the Task 016 spec under `.internal/`; covers customer organization
+the Task 016 spec under the lab-only workspace; covers customer organization
 names, PTU sizing literals, deployment-specific TPS literals, the
 literal throttled-deployment name, and the byte-exact system-prompt
 size literal) returns zero matches against the new docs at land time.
@@ -3237,7 +3236,7 @@ spec's "if the file is not yet written, skip" instruction).
 **Out of scope (intentionally not touched).**
 `docs/05-methodology.md` (frozen), benchmark `analysis.md` files
 (immutable post-APPROVE), `scripts/*.py`, `pricing/*.yaml`,
-`experiments/*.yaml`, `.internal/` task specs. `results/summary.md`
+`experiments/*.yaml`, the lab-only workspace task specs. `results/summary.md`
 "Customer-scenario card" is the deferred follow-up the spec puts
 out-of-scope for Task 016.
 
@@ -3445,7 +3444,7 @@ artifacts, `docs/*.md`, non-exp005 `experiments/*.yaml`, other
 unchanged by this commit; they were updated by the prior Task 015
 Phase 2 pre-run hotfix entry below.
 
-**Reviews.** First-reviewer APPROVE, final-code-reviewer APPROVE.
+**Reviews.** First review gate APPROVE, final review gate APPROVE.
 
 ### Changed — Task 015: Phase 2 dual-spillover exp005 pre-run hotfix
 
@@ -3498,8 +3497,8 @@ change. The next commit on this branch is expected to land the clean
 Phase 2 live-run artifacts after dispatch with `dry_run=false` and a
 clean working tree relative to the recorded `git_commit`.
 
-**Reviews.** First-reviewer APPROVE, methodology-auditor APPROVE,
-final-code-reviewer APPROVE.
+**Reviews.** First review gate APPROVE, methodology audit gate APPROVE,
+final review gate APPROVE.
 
 ### Added — Task 014: Phase 1 spillover-simulation live analysis
 
@@ -3621,8 +3620,8 @@ v3.1 OWNER SIGNOFF subsection below); `MAX_COST_PER_BENCHMARK_USD`
 remains at `100` in the runner's process environment. The override
 is auditable in the YAMLs themselves and in this CHANGELOG.
 
-**Review gates.** methodology-auditor — APPROVE; first-reviewer —
-APPROVE; final-code-reviewer — APPROVE.
+**Review gates.** methodology audit gate — APPROVE; first review gate —
+APPROVE; final review gate — APPROVE.
 
 **Frozen files untouched.** All `pricing/*.yaml`, all benchmark
 datasets / corpora, all prior `runs/` artifacts, all `docs/*.md`,
@@ -3766,7 +3765,7 @@ change is exercised end-to-end via the scripted-fake unit tests; the
 existing benchmark-03 `--skip-existing` resume path remains the
 recovery mechanism if and when a live run is launched.
 
-**Reviews.** Copilot first-reviewer **APPROVE**; Codex gpt-5.5 final
+**Reviews.** first review gate **APPROVE**; local CLI reviewer worker final
 **APPROVE** after a REQUEST-CHANGES fix round (the cap-recovery
 trajectory row + `tools=` defensive pop landed in that fix round).
 
@@ -3866,7 +3865,7 @@ mechanism, not in the policy logic.
   HTTPS, zero Azure credential resolution): YAML validation, dual-client
   construction, `preflight_reachability` happy-path + abort, atomic
   preflight-log append, raw-response header parsing (notably the async
-  raw-response parse fix flagged in Codex final review),
+  raw-response parse fix flagged in final review gate),
   `simulated_primary_throttle_state` schema absence,
   smoke success-criteria gate (both halves), policy primitive import
   equivalence to Task 012, and the `--dry-run` socket-mock zero-HTTPS
@@ -3892,7 +3891,7 @@ endpoint, no judge call, no smoke run. All evidence of correctness comes
 from `tests/test_measure_dual_spillover.py` (13 tests, all passing) and
 the socket-mock dry-run assertion.
 
-**Reviews.** Copilot first-reviewer **APPROVE**; Codex gpt-5.5 final
+**Reviews.** first review gate **APPROVE**; local CLI reviewer worker final
 **APPROVE** after async raw-response parse fix (the success-path
 `with_raw_response` await + header-extraction path was tightened so
 headers are captured uniformly across success and error paths).
@@ -3993,7 +3992,7 @@ endpoint, no judge call, no smoke run. All evidence of correctness comes
 from the pure-function unit tests under `tests/test_simulate_spillover.py`
 and the socket-mock dry-run assertion.
 
-**Reviews.** copilot first-reviewer **APPROVE**; codex gpt-5.5 final
+**Reviews.** first review gate **APPROVE**; local CLI reviewer worker final
 **APPROVE**.
 
 **Budget envelope note.** The current `pricing/azure-openai-payg-2026-05.yaml`
@@ -4020,7 +4019,7 @@ PR: (to be filled on open) — branch `feature/spillover-simulator-phase1` → `
 
 **Goal.** Surface `architecture_context` (multi-node orchestration vs single-call
 ReAct) as a first-class framing dimension in the experiment template and the
-measurement-engineer persona, and align the `README.md` PTU pointer with the v2
+measurement-implementation worker prompt, and align the `README.md` PTU pointer with the v2
 HOTFIX hypothesis priority **A / E / C / I / D / G_weak / H′ / B / F** from
 `docs/07-cache-hit-degradation.md`. Prepares Tasks 012–016 (customer-scenario
 simulation series) without touching any benchmark, script, or pricing snapshot.
@@ -4032,7 +4031,7 @@ simulation series) without touching any benchmark, script, or pricing snapshot.
   `call_params.prompt_cache_key` and `call_params.prompt_cache_retention`
   scaffolding (request-scoped key + `in_memory | 24h` retention) for future
   per-run YAMLs to opt into cache hypotheses.
-- `.github/agents/measurement-engineer.md` — Principle 6 extended with a
+- the measurement-implementation worker prompt file (lab-only) — Principle 6 extended with a
   PAYG-measurement / PTU-hypothesis split paragraph and an architecture-context
   paragraph; Pitfalls list appended with #10 ("Claiming PTU-specific causes
   from PAYG measurements"), #11 ("Generalizing multi-node cache patterns to
@@ -4048,24 +4047,24 @@ simulation series) without touching any benchmark, script, or pricing snapshot.
   shift during single-call ReAct migration).
 - `CHANGELOG.md` — this entry.
 
-**Intentional skip.** `.github/agents/analyzer.md` Principle 6 was NOT added:
+**Intentional skip.** the analyzer-role worker prompt file (lab-only) Principle 6 was NOT added:
 an overlapping Principle 6 ("Two Consumption Models, One Set of Measurements")
 already exists at lines 57–65, and the Task 011 success criterion explicitly
 requires skipping and reporting when an equivalent principle is already
 present.
 
 **Not staged here (out of scope for this commit).**
-- `.internal/REPO_SCAFFOLD_SPEC.md` (private meta repo; gitignored — separate
+- the private scaffold spec (lab-only meta repo; gitignored; separate
   meta repo commit, not part of the working repo PR).
 
 **Zero API spend.** Framing-only edits. No measurement script invoked, no
 benchmark re-run, no judge call, no Foundry traffic.
 
-**Reviews.** copilot first-reviewer **APPROVE**; codex gpt-5.5 final **APPROVE**.
+**Reviews.** first review gate **APPROVE**; local CLI reviewer worker final **APPROVE**.
 
 **Anonymization audit.** Added-lines grep for the Task 011 prohibited
 customer-identifying patterns (see Task 011 success criteria for the regex)
-returns zero matches. Full-repo baseline (excluding `.internal/`) carries ~500
+returns zero matches. Full-repo baseline (excluding the lab-only workspace) carries ~500
 pre-existing generic "PTU" term mentions on `main`; this diff adds none of the
 prohibited customer-identifying patterns.
 
