@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>추론이 비용을 정당화할 때 — 같은 토큰 단가, 다른 청구서</title>
+  <meta name="description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="canonical" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="./">when reasoning pays off</a>
+      <nav class="lang" aria-label="언어">
+        <a href="../en/" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+    <div class="hero">
+      <img src="../assets/hero.svg" alt="두 워크로드가 같은 토큰 단가를 지불하지만, 추론 워크로드는 보이지 않는 '사고' 토큰을 추가로 청구받아 총 청구액이 더 높습니다.">
+    </div>
+  </header>
+
+  <main>
+    <h1>같은 토큰 단가, 다른 청구서</h1>
+    <p class="lede">
+      워크로드를 비추론 모델에서 추론 모델로 옮기면, 토큰 단가는 비슷해
+      보여도 청구서는 종종 늘어납니다. 이유는 추론 모델이 응답에는 나타나지
+      않지만 과금되는 내부 "사고" 토큰에 대해 비용을 청구하기 때문입니다. 이
+      프로젝트는 대표적인 소규모 작업 집합에서 그 추가 토큰이 비용만큼의
+      값을 하는 경우와 그렇지 않은 경우를 측정합니다.
+    </p>
+
+    <h2>핵심 요약</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>추론 토큰은 반드시 측정하세요</h3>
+        <p>과금되지만 응답으로 반환되지 않습니다. 모든 호출에서 입력, 캐시,
+           추론, 출력 토큰을 분리해 전체 사용량을 기록하세요.</p>
+      </div>
+      <div class="card">
+        <h3>모든 작업에 추론이 필요한 것은 아닙니다</h3>
+        <p>짧은 사실 응답, 구조화 데이터의 자연어 변환, 단순 분류는 추론의
+           이점을 거의 받지 못하는 경우가 많습니다.</p>
+      </div>
+      <div class="card">
+        <h3>추론 강도가 주요 비용 레버입니다</h3>
+        <p>추론 강도 노브를 가장 낮은 수준으로 기본 설정하고, 품질 평가가
+           정당화할 때만 올리세요.</p>
+      </div>
+      <div class="card">
+        <h3>과금 모델에 따라 효과가 달라집니다</h3>
+        <p>종량제(PAYG)에서는 추론 토큰을 줄이면 청구액이 줄어듭니다.
+           프로비저닝 처리량(PTU)에서는 같은 절감이 고정 비용에서 처리량
+           향상으로 나타납니다.</p>
+      </div>
+    </div>
+
+    <h2>대상 독자</h2>
+    <p>
+      추론을 켤지(그리고 얼마나) 결정하거나, 용량을 산정하거나, 모델 마이그레이션
+      이후 비용·지연·스로틀링 변화를 디버깅하려는, Azure OpenAI 배포를 운영하는
+      엔지니어와 아키텍트를 위한 자료입니다.
+    </p>
+
+    <div class="banner">
+      <strong>제품이 아닌 연구 산출물입니다.</strong> 호스팅 서비스나 SLA는
+      없습니다. 이 저장소는 재현 가능한 벤치마크, 방법론, 의사결정 도구, 그리고
+      정제된 결과 일부만을 공개합니다.
+    </div>
+
+    <h2>더 읽어보기</h2>
+    <p>
+      전체 방법론, 의사결정 프레임워크, 운영 가이드는 GitHub 저장소 문서에
+      있습니다:
+      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
+    </p>
+  </main>
+
+  <footer class="site">
+    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만
+       포함합니다.</p>
+  </footer>
+
+  <script src="../assets/i18n.js" defer></script>
+</body>
+</html>

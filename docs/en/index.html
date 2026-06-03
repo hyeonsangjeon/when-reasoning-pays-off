@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>when reasoning pays off — Same token price, different bill</title>
+  <meta name="description" content="A practical guide to deciding when reasoning models earn their cost on Azure OpenAI deployments.">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="canonical" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="./">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../en/" data-locale="en" aria-current="true">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+    <div class="hero">
+      <img src="../assets/hero.svg" alt="Two workloads pay the same per-token price, but the reasoning workload bills extra hidden thinking tokens, so its total bill is taller.">
+    </div>
+  </header>
+
+  <main>
+    <h1>Same token price, different bill</h1>
+    <p class="lede">
+      When teams move a workload from a non-reasoning model to a reasoning
+      model, the bill often goes up even though the per-token prices look
+      similar. The reason: reasoning models charge for internal "thinking"
+      tokens that are billed but never appear in the response. This project
+      measures, on a small set of representative tasks, when those extra
+      tokens are worth the cost — and when they are not.
+    </p>
+
+    <h2>The short answer</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Always measure reasoning tokens</h3>
+        <p>They are billed but never returned. Capture the full usage
+           breakdown — input, cached, reasoning, and output — on every call.</p>
+      </div>
+      <div class="card">
+        <h3>Not every task needs reasoning</h3>
+        <p>Short factual answers, structured-to-natural-language synthesis, and
+           simple classification often do not benefit.</p>
+      </div>
+      <div class="card">
+        <h3>Effort is the primary cost lever</h3>
+        <p>Default the reasoning-effort knob to its lowest level and raise it
+           only when a quality evaluation justifies the spend.</p>
+      </div>
+      <div class="card">
+        <h3>Billing model changes the payoff</h3>
+        <p>On pay-as-you-go, cutting reasoning tokens lowers the bill. On
+           provisioned throughput, the same cut is a throughput gain at a
+           fixed bill.</p>
+      </div>
+    </div>
+
+    <h2>Who this is for</h2>
+    <p>
+      Engineers and architects running an Azure OpenAI deployment who are
+      deciding whether (and how much) reasoning to enable, sizing capacity, or
+      debugging a cost, latency, or throttling change after a model migration.
+    </p>
+
+    <div class="banner">
+      <strong>Research artifact, not a product.</strong> There is no hosted
+      service and no SLA. The repository publishes reproducible benchmarks,
+      methodology, decision tools, and sanitized result slices only.
+    </div>
+
+    <h2>Read more</h2>
+    <p>
+      The full methodology, decision framework, and operator guidance live in
+      the repository documentation on GitHub:
+      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
+    </p>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or
+       aggregate only.</p>
+  </footer>
+
+  <script src="../assets/i18n.js" defer></script>
+</body>
+</html>

@@ -144,3 +144,6 @@ jobs:
 
       - name: Defensive public-surface grep
         run: bash scripts/check_public_surface.sh
+
+      - name: Static Pages site validation
+        run: bash docs/validate.sh

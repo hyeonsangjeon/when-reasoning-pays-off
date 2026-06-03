@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>when reasoning pays off</title>
+  <meta name="description" content="Same token price, different bill. A practical guide to deciding when reasoning models earn their cost.">
+  <link rel="canonical" href="./en/">
+  <!-- Static, no-JS fallback: send crawlers and no-script users to English. -->
+  <noscript><meta http-equiv="refresh" content="0; url=./en/"></noscript>
+  <script>
+    // Client-side language detection. Degrades to English for anything
+    // unrecognised. Uses relative paths so it works under a project-pages
+    // subpath (…/when-reasoning-pays-off/).
+    (function () {
+      var SUPPORTED = ["en", "ko", "ja", "zh-CN", "hi"];
+      function normalize(tag) {
+        if (!tag) return null;
+        tag = String(tag).toLowerCase();
+        if (tag.indexOf("ko") === 0) return "ko";
+        if (tag.indexOf("ja") === 0) return "ja";
+        if (tag.indexOf("hi") === 0) return "hi";
+        if (tag.indexOf("zh") === 0) return "zh-CN"; // map all Chinese to Simplified
+        if (tag.indexOf("en") === 0) return "en";
+        return null;
+      }
+      var langs = (navigator.languages && navigator.languages.length)
+        ? navigator.languages
+        : [navigator.language || navigator.userLanguage];
+      var picked = "en";
+      for (var i = 0; i < langs.length; i++) {
+        var n = normalize(langs[i]);
+        if (n && SUPPORTED.indexOf(n) !== -1) { picked = n; break; }
+      }
+      window.location.replace("./" + picked + "/");
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting to your language… If nothing happens,
+     <a href="./en/">continue in English</a>.</p>
+</body>
+</html>
