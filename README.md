@@ -3,6 +3,10 @@
 *Same token price, different bill. A practical guide to deciding when
 reasoning models earn their cost.*
 
+![Same token price, different bill: a reasoning workload pays the same per-token price but bills extra hidden reasoning tokens, so its total bill is taller.](docs/assets/hero.svg)
+
+📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English and Korean; Japanese, Simplified Chinese, and Hindi in progress).
+
 ## What this repo is
 
 When teams move a workload from a non-reasoning model (e.g. GPT-4o) to a

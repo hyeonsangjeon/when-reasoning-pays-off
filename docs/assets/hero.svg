@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" role="img"
+     aria-labelledby="heroTitle heroDesc" width="1200" height="480">
+  <title id="heroTitle">Same token price, different bill</title>
+  <desc id="heroDesc">A conceptual illustration: two workloads pay the same per-token
+  price, but the reasoning workload bills extra invisible "thinking" tokens, so its
+  total bill is taller. No measured numbers are shown.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/>
+      <stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <linearGradient id="visible" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4cc9f0"/>
+      <stop offset="1" stop-color="#3a86ff"/>
+    </linearGradient>
+    <linearGradient id="hidden" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb703"/>
+      <stop offset="1" stop-color="#fb8500"/>
+    </linearGradient>
+    <pattern id="hatch" width="10" height="10" patternTransform="rotate(45)"
+             patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#fb8500"/>
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#ffb703" stroke-width="4"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="480" fill="url(#bg)"/>
+
+  <!-- Title block -->
+  <text x="80" y="92" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="46" font-weight="700">when reasoning pays off</text>
+  <text x="80" y="138" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24">Same token price, different bill.</text>
+  <text x="80" y="170" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="20">Deciding when reasoning models earn their cost.</text>
+
+  <!-- Baseline -->
+  <line x1="700" y1="410" x2="1140" y2="410" stroke="#334e68" stroke-width="2"/>
+
+  <!-- Non-reasoning workload: visible tokens only -->
+  <g>
+    <rect x="740" y="250" width="120" height="160" rx="8" fill="url(#visible)"/>
+    <text x="800" y="440" fill="#9fb3c8" text-anchor="middle"
+          font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18">non-reasoning</text>
+    <text x="800" y="232" fill="#bcd2e8" text-anchor="middle"
+          font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16">visible tokens</text>
+  </g>
+
+  <!-- Reasoning workload: same visible base + hidden reasoning tokens on top -->
+  <g>
+    <rect x="980" y="250" width="120" height="160" rx="8" fill="url(#visible)"/>
+    <rect x="980" y="150" width="120" height="100" rx="8" fill="url(#hatch)"/>
+    <rect x="980" y="150" width="120" height="100" rx="8" fill="none"
+          stroke="#ffb703" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="1040" y="440" fill="#9fb3c8" text-anchor="middle"
+          font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18">reasoning</text>
+    <text x="1040" y="132" fill="#ffd166" text-anchor="middle"
+          font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16">+ hidden reasoning tokens</text>
+  </g>
+
+  <!-- Legend -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16">
+    <rect x="80" y="300" width="20" height="20" rx="3" fill="url(#visible)"/>
+    <text x="110" y="316" fill="#bcd2e8">Billed and returned to the caller</text>
+    <rect x="80" y="334" width="20" height="20" rx="3" fill="url(#hatch)"/>
+    <text x="110" y="350" fill="#bcd2e8">Billed but never shown — measure it</text>
+  </g>
+</svg>

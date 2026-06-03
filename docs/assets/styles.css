@@ -1,0 +1,127 @@
+:root {
+  --bg: #0d1b2a;
+  --panel: #102a43;
+  --ink: #e0fbfc;
+  --muted: #9fb3c8;
+  --accent: #3a86ff;
+  --accent-2: #ffb703;
+  --border: #1f3a56;
+  --maxw: 880px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #14202c;
+  background: #f6f9fc;
+}
+
+a { color: var(--accent); }
+
+header.site {
+  background: linear-gradient(180deg, var(--bg), var(--panel));
+  color: var(--ink);
+  padding: 1.25rem 1rem 0.5rem;
+}
+
+.bar {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 1.05rem;
+}
+
+nav.lang {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+nav.lang a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+nav.lang a[aria-current="true"] {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
+.hero {
+  max-width: var(--maxw);
+  margin: 1rem auto 0;
+}
+
+.hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+}
+
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+main h1 { font-size: 1.7rem; margin-top: 1.5rem; }
+main h2 { font-size: 1.25rem; margin-top: 2rem; }
+
+.lede { font-size: 1.1rem; color: #33485c; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dce6f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.card h3 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+.card p { margin: 0; color: #4a5d70; font-size: 0.95rem; }
+
+.banner {
+  background: #fff4d6;
+  border: 1px solid #ffd166;
+  color: #5a4a17;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+}
+
+footer.site {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  color: #6b7c8e;
+  font-size: 0.9rem;
+  border-top: 1px solid #dce6f0;
+}

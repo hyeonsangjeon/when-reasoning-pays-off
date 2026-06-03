@@ -6,6 +6,36 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Task 031: GitHub Pages public surface + README hero visual (2026-06-03)
+
+Stands up a static, dependency-light GitHub Pages site for the public mirror
+and adds a single evergreen hero visual to the README. Rich narratives and any
+data visuals live on the site, not in the README; the README carries one hero
+and one link only.
+
+- Adds `docs/` static site served verbatim via a `.nojekyll` marker (no
+  server runtime, no build framework, no runtime data fetches). Root
+  `docs/index.html` detects the browser language and redirects to a locale,
+  degrading to English with `<noscript>` and a visible fallback link.
+- Explicit per-locale i18n tree at `docs/<locale>/index.html` for `en`, `ko`,
+  `ja`, `zh-CN`, and `hi`. English and Korean are authored; Japanese,
+  Simplified Chinese, and Hindi are structurally complete placeholders with a
+  language switcher, hero, "translation in progress" banner, and a link to the
+  authored English page. The switcher is plain `<a>` links (works without
+  JavaScript) and marks the active language with `aria-current`; `assets/i18n.js`
+  is progressive enhancement only. The pattern and publish flow are documented
+  in `docs/i18n.md`.
+- Adds exactly one evergreen static hero, `docs/assets/hero.svg` (conceptual,
+  no drift-prone numbers), embedded in `README.md` alongside a single project
+  site link. No data charts are added to the README.
+- Introduces `docs/validate.sh` as the minimal static check (locale coverage,
+  language-switcher integrity, hero presence/reference, and a public-surface
+  leakage grep); it also defers to the repository's existing public-surface
+  checker when present. Wired into CI.
+- Public-mirror separation preserved: only sanitized/aggregate-tier content
+  appears; no private-tree references, internal identifiers, endpoint
+  hostnames, or secrets are introduced. Repository visibility is unchanged.
+
 ### Added — Task 034 follow-up: public-safe provenance manifest for SANITIZED_PUBLIC artifacts (2026-06-03)
 
 Closes the final review gate REQUEST-CHANGES on public release readiness
