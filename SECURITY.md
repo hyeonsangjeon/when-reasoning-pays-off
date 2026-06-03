@@ -65,7 +65,7 @@ reporter permission) in the `CHANGELOG.md` entry that lands the fix.
 - Vulnerabilities in dependencies whose CVE is already tracked by GitHub
   Dependabot for this repository. Those are handled by the Dependabot
   update flow defined in `.github/dependabot.yml`.
-- Issues in any downstream Track B Azure AI Foundry sample repository
-  derived from this repository (see
+- Issues in a separate downstream Track B Azure AI Foundry sample
+  repository, if one is derived from this repository (see
   [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md)).
   Those follow Microsoft's MSRC disclosure flow, not this policy.

@@ -13,10 +13,11 @@ authority on:
 - Methodology — `docs/05-methodology.md` (frozen; see Escalation below).
 - Release policy — `docs/16-release-tiers-and-redaction-policy.md`.
 - Foundry packaging relationship — `docs/17-foundry-packaging-relationship.md`.
-- Repository licensing and any future Track B / Foundry-sample
-  derivative.
-- Public-flip decisions (visibility, mirrors, Pages / Medium / arXiv
-  channel launches).
+- Repository licensing and any Track B / Foundry-sample derivative,
+  if one is created.
+- Public-flip decisions (visibility, mirrors, and the conditional
+  policy for external publication channels such as GitHub Pages,
+  Medium, and arXiv).
 
 ## Decision model
 

@@ -21,9 +21,9 @@ below are best-effort.
 - Not a managed library with SemVer release commitments. Public Python
   modules under `batch-runner/batch_runner/` are stable in intent but may
   evolve as new measurements land.
-- Not an official Microsoft / Azure / OpenAI product. A separate Azure AI
-  Foundry sample repository may eventually package decision artifacts from
-  this work; see
+- Not an official Microsoft / Azure / OpenAI product. If a separate Azure
+  AI Foundry sample repository is created, it packages decision artifacts
+  from this work under separate downstream governance; see
   [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md).
 
 ## Response expectations

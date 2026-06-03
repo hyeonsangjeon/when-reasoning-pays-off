@@ -43,9 +43,9 @@ when an individual is officially representing the community in public spaces.
 
 Because this repository is a research artifact and not a production service,
 "community spaces" here means: the GitHub issue tracker, pull requests, and
-discussions of this repository, plus any future GitHub Pages dashboard or
-syndicated channel (Medium, arXiv) that explicitly cross-links from this
-repository.
+discussions of this repository, plus any external publication channel
+(such as a GitHub Pages dashboard, Medium, or arXiv) that explicitly
+cross-links from this repository.
 
 ## Enforcement
 

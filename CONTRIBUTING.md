@@ -27,8 +27,9 @@ Please also read:
   `AGGREGATE_AZURE_SAMPLE`). Every artifact you propose to add to the
   public tree must carry a tier label.
 - [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) —
-  how this repo relates to the downstream Azure AI Foundry sample repo
-  and to the future Pages / Medium / arXiv channels.
+  the conditional channel policy that governs the relationship between
+  this repo, a separate downstream Azure AI Foundry sample (if created),
+  and the external publication channels (GitHub Pages, Medium, arXiv).
 
 ## What kind of contribution
 
@@ -86,6 +87,6 @@ README "Reproducing These Measurements" section.
 
 - Issues that ask for paid support or commercial integration are out of
   scope. See [`SUPPORT.md`](SUPPORT.md).
-- A separate downstream Azure AI Foundry sample repository may exist
-  later (see `docs/17`). Contributions targeted at Foundry sample
-  conformance belong in that downstream repo, not here.
+- A separate downstream Azure AI Foundry sample repository, if created,
+  is governed separately (see `docs/17`). Contributions targeted at
+  Foundry sample conformance belong in that downstream repo, not here.
