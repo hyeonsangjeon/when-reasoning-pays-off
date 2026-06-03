@@ -6,6 +6,34 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Completed `ja` / `zh-CN` / `hi` GitHub Pages translations (2026-06-04)
+
+The Japanese, Simplified Chinese, and Hindi landing pages previously shipped
+as English-fallback placeholders with a visible "translation in progress"
+banner, so they looked unfinished on GitHub Pages. They are now fully and
+naturally translated.
+
+- Replaced the placeholder content in `docs/{ja,zh-CN,hi}/index.html` with
+  reader-ready translations of the full English landing page: the lede, the
+  four "short answer" cards, the audience note, the research-artifact banner,
+  and the "read more" link. Removed the translation-in-progress / fallback
+  banner from all three locales.
+- Updated each page's per-surface i18n metadata: `i18n:translation-status`
+  is now `translated` for `ja`, `zh-CN`, and `hi`, and
+  `i18n:last-translated-at` is `2026-06-04`. The
+  `i18n:source-content-sha256` is unchanged — it still pins to the English
+  canonical `<main>` content that `docs/validate.sh` recomputes.
+- Updated `docs/i18n.md` status tables and the locale-completeness policy
+  note to reflect that all five published locales are now authored
+  translations.
+- Technical claims, measured numbers, URLs, artifact paths, and methodology
+  meaning are preserved; only prose was translated.
+
+No data, no per-request rows, and no private-tree references are introduced;
+the privacy gates (`docs/validate.sh`, `check_public_surface.sh`,
+`sanitize_public_artifacts.py --verify --require-public-manifest`) remain
+green.
+
 ### Added — Pages per-surface release metadata: hreflang, translation status, source-content hash, glossary (docs/16 §8.4) (2026-06-03)
 
 Closes the final public-release REQUEST-CHANGES Pages-policy mismatch:
