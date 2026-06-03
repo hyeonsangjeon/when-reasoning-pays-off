@@ -79,26 +79,29 @@ dollar delta per request at each effort level.
 not change your bill — it lets the same PTU capacity serve more requests, and
 it cushions latency spikes during peak load. PTU users investigating cache hit
 drops or earlier 429 onset after migrating to a reasoning model should read
-[`docs/07-cache-hit-degradation.md`](docs/07-cache-hit-degradation.md). That
-doc ranks nine candidate causes (labelled **A / E / C / I / D / G_weak / H′ /
-B / F**) in diagnostic priority. Three to look at first for a PTU + reasoning
-migration are:
+[`docs/07-cache-hit-degradation.md`](docs/07-cache-hit-degradation.md).
+`docs/07` ranks nine candidate causes from most to least useful for diagnosis.
+Three to look at first for a PTU + reasoning migration are:
 
-- **I** — `max_output_tokens` acts as an admission-time PTU reservation, not a
-  soft cap. Inflating it to give reasoning headroom silently lowers how many
-  concurrent requests the deployment can admit, so 429s appear at a lower
-  request rate while the bill per completed request is unchanged.
-- **G_weak** — a transient dip in cache hit ratio while a PTU deployment is
-  running near saturation, which recovers as load drops. (The "weak" suffix
-  signals it is a load-correlated effect, not a permanent change.)
-- **H′** — the input side of the prompt changes shape during a single-call
-  ReAct migration (tool definitions, structured-output schemas, retrieval
-  context placement) and that changes the cacheable prefix even if the
-  user-visible system prompt did not.
+- **Capacity reservation from `max_output_tokens`** — `max_output_tokens` acts
+  as an admission-time PTU reservation, not a soft cap. Inflating it to give
+  reasoning headroom silently lowers how many concurrent requests the
+  deployment can admit, so 429s appear at a lower request rate while the bill
+  per completed request is unchanged.
+- **Load-correlated prompt-cache dip** — a transient dip in cache hit ratio
+  while a PTU deployment is running near saturation, which recovers as load
+  drops. It is a load-correlated effect, not a permanent change.
+- **Cacheable-prefix shape change during single-call ReAct migration** — the
+  input side of the prompt changes shape during a single-call ReAct migration
+  (tool definitions, structured-output schemas, retrieval context placement)
+  and that changes the cacheable prefix even if the user-visible system prompt
+  did not.
 
-Of these, only **G_weak** has direct in-repo measurement so far; **I** and
-**H′** are mechanism-backed hypotheses with diagnostic recipes in `docs/07`
-rather than measured magnitudes.
+Of these, only the **load-correlated prompt-cache dip** has direct in-repo
+measurement so far; the **capacity reservation from `max_output_tokens`** and
+the **cacheable-prefix shape change during single-call ReAct migration** are
+mechanism-backed diagnostic hypotheses with recipes in `docs/07` rather than
+measured magnitudes.
 
 ## What's here
 
