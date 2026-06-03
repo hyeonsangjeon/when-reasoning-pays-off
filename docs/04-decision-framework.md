@@ -1,5 +1,7 @@
 # Decision Framework — Pick a Model × Effort for Your Task
 
+![Decision grid: pick a model and reasoning effort, then validate on your own data.](assets/decision-framework-routing-grid.svg)
+
 ## 1. Who this is for
 
 A customer engineer or applied scientist evaluating an Azure OpenAI

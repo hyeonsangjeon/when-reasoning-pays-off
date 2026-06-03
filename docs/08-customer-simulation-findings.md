@@ -1,5 +1,7 @@
 # Customer-Scenario Findings: PTU + Single-Call ReAct Cache & Spend
 
+![Single-call ReAct on PTU with spillover, where saturation reduces cache reuse and raises spend.](assets/single-call-react-spillover.svg)
+
 > **Forwardable to your dev team without translation.** End-to-end
 > story — symptom, mechanisms the in-repo measurements speak to, what
 > you can change today — for the single-call-ReAct-on-PTU-with-

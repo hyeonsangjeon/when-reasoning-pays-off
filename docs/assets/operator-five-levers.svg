@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" role="img"
+     aria-labelledby="flTitle flDesc" width="900" height="330">
+  <title id="flTitle">Five operator levers for PTU and reasoning workloads</title>
+  <desc id="flDesc">Five labelled control levers — first-token timeout, admission control,
+  cooldown coordination, cache-key policy, and PTU sizing — shown as a row of sliders an
+  operator can tune. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="flBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="330" fill="url(#flBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Five levers you can act on</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Ordered for diagnostic application &#8212; re-measure after each change.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle">
+    <!-- five lever tracks -->
+    <g>
+      <rect x="70" y="130" width="120" height="8" rx="4" fill="#16324f"/>
+      <circle cx="120" cy="134" r="11" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+      <text x="130" y="190" fill="#bcd2e8">L1 first-token</text>
+      <text x="130" y="208" fill="#9fb3c8">timeout</text>
+    </g>
+    <g transform="translate(160,0)">
+      <rect x="70" y="130" width="120" height="8" rx="4" fill="#16324f"/>
+      <circle cx="150" cy="134" r="11" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+      <text x="130" y="190" fill="#bcd2e8">L2 admission</text>
+      <text x="130" y="208" fill="#9fb3c8">control</text>
+    </g>
+    <g transform="translate(320,0)">
+      <rect x="70" y="130" width="120" height="8" rx="4" fill="#16324f"/>
+      <circle cx="110" cy="134" r="11" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+      <text x="130" y="190" fill="#bcd2e8">L3 cooldown</text>
+      <text x="130" y="208" fill="#9fb3c8">coordination</text>
+    </g>
+    <g transform="translate(480,0)">
+      <rect x="70" y="130" width="120" height="8" rx="4" fill="#16324f"/>
+      <circle cx="160" cy="134" r="11" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+      <text x="130" y="190" fill="#bcd2e8">L4 cache-key</text>
+      <text x="130" y="208" fill="#9fb3c8">policy</text>
+    </g>
+    <g transform="translate(640,0)">
+      <rect x="70" y="130" width="120" height="8" rx="4" fill="#16324f"/>
+      <circle cx="135" cy="134" r="11" fill="#06d6a0" stroke="#4cc9f0" stroke-width="2"/>
+      <text x="130" y="190" fill="#bcd2e8">L5 PTU</text>
+      <text x="130" y="208" fill="#9fb3c8">sizing</text>
+    </g>
+  </g>
+  <text x="40" y="280" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13">Each lever names a mechanism, one action, and in-repo evidence.</text>
+</svg>

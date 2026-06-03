@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img"
+     aria-labelledby="dfTitle dfDesc" width="900" height="360">
+  <title id="dfTitle">Decision framework: model by effort routing grid</title>
+  <desc id="dfDesc">A conceptual grid with two model rows and five reasoning-effort
+  columns. One cell is highlighted as a defensible starting point that the reader
+  then validates on their own data. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="dfBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="360" fill="url(#dfBg)"/>
+  <text x="40" y="56" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="700">Pick a model &#215; effort</text>
+  <text x="40" y="84" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">A starting point to validate on your own data.</text>
+
+  <!-- column headers -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8" text-anchor="middle">
+    <text x="320" y="128">none</text><text x="430" y="128">low</text>
+    <text x="540" y="128">medium</text><text x="650" y="128">high</text>
+    <text x="760" y="128">xhigh</text>
+  </g>
+  <!-- row labels -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#bcd2e8">
+    <text x="40" y="178">gpt-4o</text>
+    <text x="40" y="248">gpt-5.2</text>
+  </g>
+
+  <!-- grid cells -->
+  <g>
+    <!-- row 1 -->
+    <rect x="270" y="150" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="380" y="150" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="490" y="150" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="600" y="150" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="710" y="150" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <!-- row 2 -->
+    <rect x="270" y="220" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="380" y="220" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <!-- highlighted start cell -->
+    <rect x="490" y="220" width="100" height="44" rx="6" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+    <rect x="600" y="220" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <rect x="710" y="220" width="100" height="44" rx="6" fill="#16324f" stroke="#334e68"/>
+    <text x="540" y="247" fill="#0d1b2a" text-anchor="middle"
+          font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700">start</text>
+  </g>
+
+  <!-- annotation -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#ffd166">
+    <line x1="540" y1="300" x2="540" y2="268" stroke="#ffb703" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="540" y="320" text-anchor="middle">defensible starting point &#8594; re-measure</text>
+  </g>
+</svg>

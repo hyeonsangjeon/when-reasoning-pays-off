@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img"
+     aria-labelledby="cxTitle cxDesc" width="900" height="340">
+  <title id="cxTitle">PTU versus PAYG cost crossover</title>
+  <desc id="cxDesc">A conceptual cost-versus-request-rate chart: PAYG cost rises with request
+  rate while PTU is a flat reserved cost; the two lines cross at a crossover request rate
+  that decides which is cheaper. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="cxBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="340" fill="url(#cxBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">PTU vs PAYG crossover</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">For this workload shape, which is cheaper at your request rate?</text>
+
+  <!-- axes -->
+  <line x1="90" y1="290" x2="780" y2="290" stroke="#334e68" stroke-width="2"/>
+  <line x1="90" y1="120" x2="90" y2="290" stroke="#334e68" stroke-width="2"/>
+  <text x="430" y="320" fill="#9fb3c8" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">request rate (RPM) &#8594;</text>
+  <text x="60" y="205" fill="#9fb3c8" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" transform="rotate(-90 60 205)">cost &#8594;</text>
+
+  <!-- PAYG rising line -->
+  <line x1="90" y1="285" x2="780" y2="140" stroke="#4cc9f0" stroke-width="3"/>
+  <!-- PTU flat line -->
+  <line x1="90" y1="210" x2="780" y2="210" stroke="#ffb703" stroke-width="3"/>
+
+  <!-- crossover -->
+  <circle cx="450" cy="210" r="7" fill="#06d6a0" stroke="#e0fbfc" stroke-width="2"/>
+  <line x1="450" y1="210" x2="450" y2="290" stroke="#06d6a0" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="450" y="115" fill="#06d6a0" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">crossover RPM</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14">
+    <rect x="640" y="150" width="18" height="6" fill="#4cc9f0"/>
+    <text x="666" y="158" fill="#bcd2e8">PAYG (per request)</text>
+    <rect x="640" y="178" width="18" height="6" fill="#ffb703"/>
+    <text x="666" y="186" fill="#bcd2e8">PTU (reserved)</text>
+  </g>
+</svg>

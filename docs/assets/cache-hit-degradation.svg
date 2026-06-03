@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img"
+     aria-labelledby="chTitle chDesc" width="900" height="320">
+  <title id="chTitle">Cache hit ratio drops after a reasoning-model migration</title>
+  <desc id="chDesc">A conceptual chart: a tall cache-hit bar before migration and a shorter
+  bar after migration, with several candidate mechanisms listed as testable hypotheses
+  rather than a verdict. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="chBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <linearGradient id="chBar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4cc9f0"/><stop offset="1" stop-color="#3a86ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#chBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Cache hit ratio after migration</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">A symptom with several testable hypotheses &#8212; not a single root cause.</text>
+
+  <line x1="60" y1="270" x2="430" y2="270" stroke="#334e68" stroke-width="2"/>
+  <rect x="110" y="120" width="90" height="150" rx="6" fill="url(#chBar)"/>
+  <rect x="290" y="195" width="90" height="75" rx="6" fill="url(#chBar)" opacity="0.7"/>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8" text-anchor="middle">
+    <text x="155" y="292">before</text>
+    <text x="335" y="292">after</text>
+  </g>
+  <path d="M205,150 C250,150 250,205 285,205" fill="none" stroke="#ffb703"
+        stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="248" y="140" fill="#ffd166" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">drop?</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
+    <text x="500" y="130" fill="#e0fbfc" font-weight="700">Candidate mechanisms</text>
+    <text x="500" y="160">&#8226; prefix / cache-key churn</text>
+    <text x="500" y="186">&#8226; routing &amp; machine fan-out</text>
+    <text x="500" y="212">&#8226; retention window changes</text>
+    <text x="500" y="238">&#8226; request-rate per bucket</text>
+    <text x="500" y="270" fill="#9fb3c8" font-size="12">Diagnose with per-deployment telemetry.</text>
+  </g>
+</svg>

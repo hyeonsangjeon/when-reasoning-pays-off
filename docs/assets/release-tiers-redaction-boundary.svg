@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" role="img"
+     aria-labelledby="rtTitle rtDesc" width="900" height="330">
+  <title id="rtTitle">Release tiers and the redaction boundary</title>
+  <desc id="rtDesc">A conceptual three-tier ladder — private raw data, sanitized public, and an
+  aggregate downstream sample — separated by redaction gates that must pass before any artifact
+  promotes to a more public tier. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="rtBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <marker id="rtArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#ffb703"/>
+    </marker>
+  </defs>
+  <rect width="900" height="330" fill="url(#rtBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Three tiers, gated by redaction</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Promotion to a more public tier must clear a redaction gate.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <rect x="60" y="160" width="220" height="120" rx="10" fill="#16324f" stroke="#fb8500" stroke-width="2"/>
+    <text x="170" y="206" fill="#ffb703" font-size="16" font-weight="700">RAW</text>
+    <text x="170" y="232" fill="#bcd2e8" font-size="13">private, full detail</text>
+
+    <rect x="340" y="130" width="220" height="120" rx="10" fill="#16324f" stroke="#4cc9f0" stroke-width="2"/>
+    <text x="450" y="176" fill="#4cc9f0" font-size="16" font-weight="700">SANITIZED</text>
+    <text x="450" y="202" fill="#bcd2e8" font-size="13">public, redacted</text>
+
+    <rect x="620" y="100" width="220" height="120" rx="10" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+    <text x="730" y="146" fill="#06d6a0" font-size="16" font-weight="700">AGGREGATE</text>
+    <text x="730" y="172" fill="#bcd2e8" font-size="13">downstream sample</text>
+  </g>
+  <g stroke="#ffb703" stroke-width="2" marker-end="url(#rtArrow)">
+    <line x1="282" y1="200" x2="336" y2="185"/>
+    <line x1="562" y1="170" x2="616" y2="155"/>
+  </g>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#ffd166" text-anchor="middle">
+    <text x="309" y="230">redact</text>
+    <text x="589" y="200">aggregate</text>
+  </g>
+  <text x="40" y="312" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13">Raw data is preserved; nothing is deleted, only gated.</text>
+</svg>

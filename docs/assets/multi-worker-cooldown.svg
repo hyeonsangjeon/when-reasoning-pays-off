@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img"
+     aria-labelledby="mwTitle mwDesc" width="900" height="340">
+  <title id="mwTitle">Multi-worker PTU cooldown coordination</title>
+  <desc id="mwDesc">A conceptual comparison: without coordination, several workers wake at the
+  same instant after an identical retry interval and collide on the PTU edge; with added
+  jitter, their resume times are spread out. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="mwBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="340" fill="url(#mwBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Cooldown coordination</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">N workers sharing one retry value resume together &#8212; unless you spread them.</text>
+
+  <!-- without coordination -->
+  <text x="40" y="125" fill="#fb8500" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="700">without coordination</text>
+  <line x1="60" y1="160" x2="430" y2="160" stroke="#334e68" stroke-width="2"/>
+  <g fill="#fb8500">
+    <circle cx="300" cy="160" r="9"/><circle cx="304" cy="160" r="9"/>
+    <circle cx="296" cy="160" r="9"/><circle cx="308" cy="160" r="9"/>
+  </g>
+  <text x="305" y="195" fill="#ffd166" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">coincident burst</text>
+
+  <!-- with jitter -->
+  <text x="40" y="245" fill="#06d6a0" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="700">with added jitter</text>
+  <line x1="60" y1="280" x2="430" y2="280" stroke="#334e68" stroke-width="2"/>
+  <g fill="#4cc9f0">
+    <circle cx="250" cy="280" r="9"/><circle cx="300" cy="280" r="9"/>
+    <circle cx="350" cy="280" r="9"/><circle cx="400" cy="280" r="9"/>
+  </g>
+  <text x="325" y="312" fill="#bcd2e8" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">spread across the window</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#bcd2e8">
+    <text x="520" y="160" fill="#e0fbfc" font-weight="700">Why it matters</text>
+    <text x="520" y="190">&#8226; aligned resume &#8594; leak-bucket edge</text>
+    <text x="520" y="216">&#8226; coincident requests &#8594; fresh 429s</text>
+    <text x="520" y="242">&#8226; jitter de-synchronises workers</text>
+    <text x="520" y="268">&#8226; fewer self-inflicted throttles</text>
+  </g>
+</svg>

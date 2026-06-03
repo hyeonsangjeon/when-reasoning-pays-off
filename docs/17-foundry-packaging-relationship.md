@@ -1,5 +1,7 @@
 # Foundry packaging relationship — public research repo, Pages, Medium, arXiv, and the downstream Azure AI Foundry sample
 
+![Track A research repo and its surfaces bridged to the downstream Track B Azure AI Foundry sample.](assets/foundry-track-a-track-b-bridge.svg)
+
 **Companion to `docs/16-release-tiers-and-redaction-policy.md`.** That
 document defines the three release tiers (`RAW_PRIVATE`,
 `SANITIZED_PUBLIC`, `AGGREGATE_AZURE_SAMPLE`), the redaction rules,

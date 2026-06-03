@@ -1,5 +1,7 @@
 # Operator Guide — Multi-Worker PTU Cooldown Coordination
 
+![Multi-worker PTU cooldown: without coordination workers resume together; jitter spreads them out.](assets/multi-worker-cooldown.svg)
+
 > Module: `batch_runner.ptu.cooldown_coordinator`. Task 025.
 > Scope: cross-worker retry-timing coordination for Azure OpenAI PTU
 > 429 responses. Pairs with the Task 023 admission controller

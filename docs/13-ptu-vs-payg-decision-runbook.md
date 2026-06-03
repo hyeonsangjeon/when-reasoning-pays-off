@@ -1,5 +1,7 @@
 # PTU vs PAYG Decision Runbook
 
+![PTU versus PAYG cost crossover: PAYG rises with request rate while PTU is flat; they cross at a crossover RPM.](assets/ptu-vs-payg-crossover.svg)
+
 > Module: `batch_runner.sizing`. Task 027.
 > Scope: single-deployment Azure OpenAI PTU sizing and PAYG crossover
 > arithmetic. This calculator is grounded in the Azure OpenAI PTU

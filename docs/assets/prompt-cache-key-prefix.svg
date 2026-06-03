@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" role="img"
+     aria-labelledby="ckTitle ckDesc" width="900" height="330">
+  <title id="ckTitle">prompt_cache_key composition and machine routing</title>
+  <desc id="ckDesc">A conceptual flow: a stable prefix hash combined with a deterministic
+  prompt cache key forms a bucket that steers same-workload callers to the same machine,
+  improving cache hit rate. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="ckBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <marker id="ckArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#4cc9f0"/>
+    </marker>
+  </defs>
+  <rect width="900" height="330" fill="url(#ckBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Prefix + cache key &#8594; bucket</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Deterministic composition steers same-workload callers to one machine.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
+    <rect x="40" y="120" width="160" height="56" rx="8" fill="#16324f" stroke="#3a86ff"/>
+    <text x="120" y="153" fill="#e0fbfc">prefix hash</text>
+    <rect x="40" y="200" width="160" height="56" rx="8" fill="#16324f" stroke="#3a86ff"/>
+    <text x="120" y="233" fill="#e0fbfc">prompt_cache_key</text>
+
+    <rect x="300" y="160" width="160" height="60" rx="8" fill="#16324f" stroke="#4cc9f0"/>
+    <text x="380" y="195" fill="#e0fbfc">bucket</text>
+
+    <rect x="560" y="120" width="150" height="48" rx="8" fill="#16324f" stroke="#06d6a0"/>
+    <text x="635" y="150" fill="#e0fbfc">machine A</text>
+    <rect x="560" y="186" width="150" height="48" rx="8" fill="#16324f" stroke="#334e68"/>
+    <text x="635" y="216" fill="#9fb3c8">overflow machine</text>
+  </g>
+  <g stroke="#4cc9f0" stroke-width="2" marker-end="url(#ckArrow)">
+    <line x1="202" y1="148" x2="296" y2="178"/>
+    <line x1="202" y1="228" x2="296" y2="200"/>
+    <line x1="462" y1="180" x2="556" y2="148"/>
+  </g>
+  <path d="M462,196 L556,206" fill="none" stroke="#fb8500" stroke-width="2"
+        stroke-dasharray="6 5" marker-end="url(#ckArrow)"/>
+  <text x="510" y="270" fill="#ffd166" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">past the per-bucket rate &#8594; overflow misses cache</text>
+</svg>

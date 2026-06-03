@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img"
+     aria-labelledby="acTitle acDesc" width="900" height="320">
+  <title id="acTitle">PTU admission controller honouring retry-after-ms</title>
+  <desc id="acDesc">A conceptual flow: a request hits a throttled PTU and receives a 429 with a
+  retry-after-ms header; the admission controller sleeps for exactly that interval, logs the
+  decision, then resumes. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="acBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <marker id="acArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#4cc9f0"/>
+    </marker>
+  </defs>
+  <rect width="900" height="320" fill="url(#acBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Header-driven admission</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Honour retry-after-ms explicitly &#8212; and log why the client slept.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
+    <rect x="40" y="150" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
+    <text x="105" y="186" fill="#e0fbfc">request</text>
+
+    <rect x="240" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#fb8500"/>
+    <text x="315" y="180" fill="#e0fbfc">PTU 429</text>
+    <text x="315" y="200" fill="#ffd166" font-size="12">retry-after-ms</text>
+
+    <rect x="460" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#4cc9f0"/>
+    <text x="535" y="180" fill="#e0fbfc">admission gate</text>
+    <text x="535" y="200" fill="#bcd2e8" font-size="12">sleep &amp; log</text>
+
+    <rect x="680" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#06d6a0"/>
+    <text x="755" y="186" fill="#e0fbfc">resume</text>
+  </g>
+  <g stroke="#4cc9f0" stroke-width="2" marker-end="url(#acArrow)">
+    <line x1="172" y1="180" x2="236" y2="180"/>
+    <line x1="392" y1="180" x2="456" y2="180"/>
+    <line x1="612" y1="180" x2="676" y2="180"/>
+  </g>
+  <text x="535" y="252" fill="#9fb3c8" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">next acceptable request time, from logs alone</text>
+</svg>

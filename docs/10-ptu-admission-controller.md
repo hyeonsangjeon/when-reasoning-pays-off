@@ -1,5 +1,7 @@
 # Operator Guide — PTU Admission Controller (Header-Driven)
 
+![PTU admission controller honouring the retry-after-ms header: sleep, log, then resume.](assets/ptu-admission-controller.svg)
+
 > Module: `batch_runner.ptu.admission_controller`. Task 023.
 > Scope: one client-side component that honours `retry-after-ms` on
 > Azure OpenAI 429 responses. Pairs with the PTU Operations Guide §0.

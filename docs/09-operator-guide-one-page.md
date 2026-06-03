@@ -1,5 +1,7 @@
 # Operator Guide — Five Levers for PTU + Reasoning Workloads
 
+![Five operator levers for PTU and reasoning workloads, ordered for diagnostic application.](assets/operator-five-levers.svg)
+
 > **Forwardable one-pager.** A single page an engineer or architect running an Azure OpenAI reasoning-model deployment can act on without consulting any other repo file. Each lever names the mechanism, one concrete action, in-repo evidence, and an Azure docs URL. Numbers cited here are the measured shape of the in-repo deployment, not a customer attribution; transfer to your deployment by re-measuring after each change.
 
 ## 1. Who this is for
