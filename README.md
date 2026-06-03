@@ -122,7 +122,7 @@ measured magnitudes.
 | [`docs/15-spec-vs-inference-taxonomy.md`](docs/15-spec-vs-inference-taxonomy.md) | Two-tier citation taxonomy (Tier 1 official spec vs Tier 2 operational inference) |
 | [`docs/15-spec-vs-inference-taxonomy.examples.md`](docs/15-spec-vs-inference-taxonomy.examples.md) | Worked examples of the citation taxonomy |
 | [`docs/16-release-tiers-and-redaction-policy.md`](docs/16-release-tiers-and-redaction-policy.md) | Three-tier release classification and redaction rules |
-| [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) | Relationship to Pages / Medium / arXiv / Azure AI Foundry sample |
+| [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) | Publication boundaries and Azure AI Foundry packaging contract |
 
 ### Code and data
 
@@ -227,22 +227,6 @@ For every sanitized file we publish, the **release manifest**
 records the SHA-256 of the published bytes and the SHA-256 of the original raw
 source it derives from. The raw source is preserved, not deleted, so any
 published result can be traced back to its untouched origin if questioned.
-
-## Future surfaces
-
-[`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md)
-reserves scope for, but does not implement, three future surfaces:
-
-- A **GitHub Pages dashboard / blog** that consumes only `SANITIZED_PUBLIC` and
-  `AGGREGATE_AZURE_SAMPLE` artifacts.
-- **Medium** syndication as a derivative reach channel, with canonical URLs
-  pointing back at the Pages article.
-- A **distinct arXiv** preprint, if and when the owner elects to publish one
-  (separate scholarly manuscript, not a paste of blog copy).
-
-A downstream **Azure AI Foundry sample repository** may package the decision
-tools and aggregate exports for operators. The relationship contract is in
-`docs/17`.
 
 ## Contributing, governance, security
 
