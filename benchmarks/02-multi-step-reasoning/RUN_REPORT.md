@@ -251,7 +251,7 @@ done
 
 ### 7.2 Orchestrator scope amendment acceptance
 
-The Phase-3 first-reviewer flagged the three frozen-tooling deviations
+The Phase-3 reviewer flagged the three frozen-tooling deviations
 catalogued in §7 above (the two analyzer / plotter edits in commit
 `3785b6e` and the `run_judge.py` Foundry v1 port in commit `5ad5844`) as a
 hard scope violation against Task 009. The orchestrator (supervisor) has

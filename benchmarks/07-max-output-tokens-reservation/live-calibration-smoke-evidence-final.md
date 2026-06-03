@@ -322,7 +322,7 @@ The cleanest follow-on actions, in order of cost and spec-impact:
 
 1. **Spec-revision RFC: reconcile smoke/evidence TPM-feasibility
    preflight with v2.3 bracket calibration outcomes.** Options the
-   methodology-auditor / strategy-consultant should weigh:
+   methodology-auditor / strategy reviewer should weigh:
 
    - (a) **Relax (i.e. raise)** the smallest-cell smoke/evidence
      TPM-feasibility ceiling from the v2.1-pinned strict

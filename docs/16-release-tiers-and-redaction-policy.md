@@ -427,8 +427,108 @@ Any of the following stops the release until remediated:
   and `source_hash` rules, arXiv distinct-manuscript rule, and the
   Track A ↔ Track B Foundry packaging relationship.
 
+---
+
+## 10. Audited public-surface boundary acceptances
+
+The narrow CI gates (`scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify`, `docs/validate.sh`)
+enforce that no *new* internal/public-boundary disclosure enters the
+tracked tree. A separate, broad scan over the entire tracked surface
+(run by a release reviewer with every narrow allowlist disabled) also
+surfaces a small, fixed set of boundary *references* that are not
+disclosures of private content and that are required for the public
+repo to function as a reproducible scientific record. Those references
+are enumerated and **explicitly accepted** below. Each is either a
+self-referential enforcement mechanism, a synthetic test/placeholder
+string, or an audited provenance citation. None reveals a real
+endpoint, deployment, credential, customer-shape prompt, or private
+file *content*. This list is exhaustive; any reference outside it is a
+finding, not an accepted item.
+
+### 10.1 `.gitignore` boundary-enforcement rules (self-reference)
+
+`.gitignore` necessarily names the private surfaces it excludes:
+
+- the private internal working tree (the `.internal` directory) is
+  ignored so a stray `git add .` cannot track it;
+- the internal worker-prompt directory (the `.github/agents` path) is
+  ignored for the same reason, with a comment enumerating the private
+  worker-prompt role names (analyzer, coder, extreme-reasoner,
+  first-reviewer, frontend-developer, git-committer, llm-systems-engineer,
+  measurement-engineer, strategy-consultant, ui-designer) so the intent
+  of the ignore rule is auditable.
+
+These strings are the *mechanism* that keeps the private surfaces out
+of the public tree; they are accepted and must not be removed.
+`.gitignore` is excluded from the narrow checkers for exactly this
+reason.
+
+### 10.2 Synthetic Azure endpoint / resource / host strings (test data)
+
+The redaction sweep, the preflight spillover guard, and their unit
+tests assert that real Azure endpoint URLs, resource short-names, and
+Foundry/Cognitive-Services hostnames are detected and scrubbed. Those
+assertions require Azure-*shaped* but non-concrete placeholder strings
+as fixtures and as the redactor's replacement outputs — for example
+`example-host.services.ai.azure.com`,
+`https://example.services.ai.azure.com`,
+`fake.services.ai.azure.com`, `my-resource.openai.azure.com`,
+`foo-bar-baz.cognitiveservices.azure.com`, the `wrpo-test-endpoint`
+fixture host, and the deliberately-obvious `supersecret-resource`
+negative-test host. These appear in the redaction tooling
+(`scripts/sanitize_public_artifacts.py`) and in test files under
+`tests/` (e.g. `tests/test_sanitize_public_artifacts.py`,
+`tests/test_preflight_native_spillover.py`,
+`tests/test_measure_dual_spillover.py`, `tests/test_run_benchmark.py`,
+`tests/test_simulate_spillover.py`). They are synthetic by
+construction — recognizable placeholder prefixes (`example-`, `fake.`,
+`my-resource.`, `wrpo-test-`, `supersecret-`) or angle-bracket
+pseudonyms (`<resource>`, `<project>`) — and are **accepted**. The
+three concrete workload tokens that the sweep actually forbids
+(`--verify`) are a disjoint, private set and never appear in the
+tracked tree.
+
+### 10.3 Redaction-tooling self-references to the private archive
+
+`scripts/sanitize_public_artifacts.py` and
+`tests/test_sanitize_public_artifacts.py` *implement and verify* the
+tier boundary defined in §2 and §6, so they necessarily reference the
+private raw-archive path under the `.internal` tree (the destination of
+the scientific-record preserve). `scripts/check_public_surface.sh`
+likewise lists the forbidden patterns it scans for. These
+self-references are audited, stable, and **accepted**; the narrow
+checker allow-lists them (`SANITIZER_INTERNAL_REF_ALLOWLIST`) for the
+same reason.
+
+### 10.4 Audited provenance citations in historic measurement code
+
+A set of long-running measurement scripts and their tests under
+`scripts/` and `tests/` carry, in source comments and docstrings,
+provenance citations to the private task-spec tree (paths of the form
+`<internal-tree>/tasks/NNN-….md`) and to legacy internal review-role
+names. These pre-date this policy, cite *which* private spec a routine
+implements (not its content), and are owned by the measurement
+redaction sweep. They are enumerated in
+`scripts/check_public_surface.sh` (`REDACTION_WORKER_SCOPE`) and are
+**accepted** until that sweep lands. Public-facing benchmark, results,
+and experiment documentation does **not** rely on this acceptance: such
+citations have been reworded to drop the private path while retaining
+the `Task NNN` provenance label.
+
+### 10.5 `docs/15` private scaffold-spec scope statement
+
+`docs/15-spec-vs-inference-taxonomy.md` carries one out-of-modify scope
+statement naming the private repository scaffold spec. It is a scope
+boundary statement, not a content disclosure, and is **accepted**;
+the narrow checker excludes that file from the internal-tree scan for
+this reason.
+
+---
+
 Material changes to this document (new tier, new redaction category,
 change to a per-surface permission, change to the raw-data
-preservation rule) are recorded in `CHANGELOG.md` under
+preservation rule, or a change to the §10 acceptance list) are recorded
+in `CHANGELOG.md` under
 Keep-a-Changelog conventions and require owner approval per
 `GOVERNANCE.md`.

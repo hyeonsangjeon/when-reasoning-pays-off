@@ -343,7 +343,8 @@ benchmark README.
 
 ## Cross-references
 
-- Parent task spec: `.internal/tasks/018-cache-key-bucketing-benchmark.md` (v2.4 hotfix banner on top of v2.3 body)
+- Parent task spec: internal Task 018 cache-key-bucketing-benchmark
+  specification (private working tree; v2.4 hotfix banner on top of v2.3 body)
 - Benchmark README: `benchmarks/06-cache-key-bucketing/README.md`
 - v2.3 diagnostic quarantine: `benchmarks/06-cache-key-bucketing/runs/_v2.3_diagnostic/`
 - v2.1 diagnostic quarantine: `benchmarks/06-cache-key-bucketing/runs/_v2.1_diagnostic/`,

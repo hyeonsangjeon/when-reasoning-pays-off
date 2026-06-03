@@ -11,8 +11,9 @@
 > semantics that could not be cleanly tested on the PAYG deployment without
 > first ruling out alternative explanations (such as PTU semantics). This is a
 > *proxy* experiment in the sense documented in
-> `docs/05-methodology.md` §6.6 and in the task spec
-> (`.internal/tasks/019-max-output-tokens-reservation.md` v2.3 §"Hypothesis"
+> `docs/05-methodology.md` §6.6 and in the internal task spec
+> (Task 019 max-output-tokens-reservation, private working tree, v2.3
+> §"Hypothesis"
 > and §"Limits & honesty"). The PAYG-not-PTU caveat is enforced at YAML load
 > via `metadata.ptu_evidence: false` and echoed verbatim into every
 > `runs/*.summary.json`.
@@ -96,8 +97,8 @@ lint (`scripts/task019_v25_adaptive.lint_payg_proxy_wording`) rejects
 the forbidden phrases outside explicitly quoted
 `> COUNTER-EXAMPLE:` blockquote lines.
 
-Full v2.5 spec:
-`.internal/tasks/019-v2.5-adaptive-contrast.md`.
+Full v2.5 spec: internal Task 019 v2.5 adaptive-contrast specification
+(private working tree).
 
 ### Three promotion paths (§3, §8)
 
@@ -194,7 +195,8 @@ The dictionary of basis booleans is echoed verbatim into the smoke
 admitted summary's `ptu_evidence_inference_basis` block for audit
 reproducibility.
 
-Spec: `.internal/tasks/019-v2.4-empirical-calibration-aware-promotion.md`.
+Spec: internal Task 019 v2.4 empirical-calibration-aware-promotion
+specification (private working tree).
 
 ---
 
@@ -701,7 +703,8 @@ round-trip).
 
 ## Related
 
-- `.internal/tasks/019-max-output-tokens-reservation.md` v2.3 — read-only
+- Internal Task 019 max-output-tokens-reservation spec (private working
+  tree) v2.3 — read-only
   spec (supersedes v2.2.1 / v2.1 in full).
 - `experiments/exp007_max_output_tokens_sweep.yaml` — pinned YAML config
   (now includes the `calibration:` block, the v2.3 Phase B grid, the

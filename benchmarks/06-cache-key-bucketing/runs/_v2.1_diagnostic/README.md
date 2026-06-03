@@ -5,8 +5,8 @@ controls (`runtime.concurrency = 1`, `runtime.sustain_tps = 1.0`, 30K-token
 Task 012 corpus, scheduled-time-only dispatch telemetry) and are kept here
 **only for traceability of the v2.1 → v2.2 → v2.3 hotfix loop**.
 
-**Superseded by Task 018 v2.3.** The v2.3 hotfix banner in
-`.internal/tasks/018-cache-key-bucketing-benchmark.md` documents the two
+**Superseded by Task 018 v2.3.** The v2.3 hotfix banner in the internal
+Task 018 specification (private working tree) documents the two
 blockers (the v2.1 concurrency=1 mode could not reach the >=15 RPM target;
 v2.2's then-proposed concurrency=12 + 30K corpus + sustain_tps=1.0 violated
 the Azure OpenAI estimated-processed-token sliding-window TPM quota with

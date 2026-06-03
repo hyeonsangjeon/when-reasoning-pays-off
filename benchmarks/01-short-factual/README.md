@@ -143,8 +143,9 @@ grep -iE 'step by step|reason carefully|reason through|let'\''s think|show your 
 python -c "import re; data = open('benchmarks/01-short-factual/dataset.json').read(); emails = re.findall(r'@([\w.-]+)', data); bad = [e for e in emails if e.lower() not in ('example.com','example.org','example.net')]; assert not bad; assert not re.search(r'\b\d{3}-\d{3}-\d{4}\b', data); assert not re.search(r'\(\d{3}\)\s?\d{3}-\d{4}', data)"
 ```
 
-The exact set of checks that gate this task is documented in
-`.internal/tasks/005-benchmark-01-dataset.md` (Test / Verification Plan).
+The exact set of checks that gate this task is documented in the
+internal Task 005 dataset specification (Test / Verification Plan; held
+in the private working tree).
 
 ## Out of scope for this directory
 

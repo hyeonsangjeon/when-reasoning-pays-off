@@ -347,7 +347,7 @@ methodology-auditor APPROVE comment installed inline. Until then,
 
 ---
 
-## Blocked entry — 2026-05-31 first-reviewer fix-loop #1 (preflight wiring hardened; live dispatcher deferred)
+## Blocked entry — 2026-05-31 reviewer fix-loop #1 (preflight wiring hardened; live dispatcher deferred)
 
 Run prefix: _none — no live calibration dispatched; entry recorded per
 §0.5 ("preflight-blocked / partial / terminal runs are analysis
