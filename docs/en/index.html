@@ -7,6 +7,15 @@
   <meta name="description" content="A practical guide to deciding when reasoning models earn their cost on Azure OpenAI deployments.">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../en/">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../en/">
+  <meta name="i18n:translation-status" content="translated">
+  <meta name="i18n:last-translated-at" content="2026-06-03">
+  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
 </head>
 <body>
   <header class="site">
@@ -80,6 +89,42 @@
       the repository documentation on GitHub:
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
     </p>
+
+    <section class="glossary" aria-labelledby="glossary-heading">
+      <h2 id="glossary-heading">Glossary</h2>
+      <dl class="glossary-list">
+        <div class="glossary-term" data-term="foundry">
+          <dt>Foundry</dt>
+          <dd>Azure AI Foundry — the managed platform used to deploy and serve
+              the models evaluated in this project.</dd>
+        </div>
+        <div class="glossary-term" data-term="ptu">
+          <dt>PTU</dt>
+          <dd>Provisioned Throughput Units — reserved, fixed-capacity billing
+              where you pay for throughput rather than per token.</dd>
+        </div>
+        <div class="glossary-term" data-term="payg">
+          <dt>PAYG</dt>
+          <dd>Pay-as-you-go — consumption billing charged per input, cached,
+              reasoning, and output token.</dd>
+        </div>
+        <div class="glossary-term" data-term="reasoning">
+          <dt>Reasoning tokens</dt>
+          <dd>Internal "thinking" tokens a reasoning model generates and bills
+              but never returns in the response.</dd>
+        </div>
+        <div class="glossary-term" data-term="cache">
+          <dt>Cache</dt>
+          <dd>Prompt cache — reuse of previously processed prompt prefixes,
+              billed at a reduced cached-input rate.</dd>
+        </div>
+        <div class="glossary-term" data-term="429">
+          <dt>429</dt>
+          <dd>HTTP 429 Too Many Requests — the throttling response returned
+              when a deployment exceeds its rate or capacity limit.</dd>
+        </div>
+      </dl>
+    </section>
   </main>
 
   <footer class="site">

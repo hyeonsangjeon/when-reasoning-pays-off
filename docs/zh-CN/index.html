@@ -7,6 +7,15 @@
   <meta name="description" content="在 Azure OpenAI 部署中判断推理模型何时物有所值的实用指南（翻译进行中）。">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../en/">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../en/">
+  <meta name="i18n:translation-status" content="untranslated_fallback_to_en">
+  <meta name="i18n:last-translated-at" content="2026-06-03">
+  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
 </head>
 <body>
   <header class="site">
@@ -44,6 +53,39 @@
       完整的方法论、决策框架和运维指南位于 GitHub 仓库文档中：
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>。
     </p>
+
+    <section class="glossary" aria-labelledby="glossary-heading">
+      <h2 id="glossary-heading">术语表</h2>
+      <dl class="glossary-list">
+        <div class="glossary-term" data-term="foundry">
+          <dt>Foundry</dt>
+          <dd>Azure AI Foundry — 用于部署和提供本项目所测模型的托管平台。</dd>
+        </div>
+        <div class="glossary-term" data-term="ptu">
+          <dt>PTU</dt>
+          <dd>预配吞吐量单位 — 按吞吐量而非按 Token 计费的预留固定容量
+              计费方式。</dd>
+        </div>
+        <div class="glossary-term" data-term="payg">
+          <dt>PAYG</dt>
+          <dd>即用即付 — 按输入、缓存、推理和输出 Token 计费的消耗型计费。</dd>
+        </div>
+        <div class="glossary-term" data-term="reasoning">
+          <dt>推理 Token</dt>
+          <dd>推理模型生成并计费、但从不在响应中返回的内部"思考"Token。</dd>
+        </div>
+        <div class="glossary-term" data-term="cache">
+          <dt>缓存</dt>
+          <dd>提示缓存 — 复用先前已处理的提示前缀，以更低的缓存输入单价
+              计费。</dd>
+        </div>
+        <div class="glossary-term" data-term="429">
+          <dt>429</dt>
+          <dd>HTTP 429 Too Many Requests — 当部署超出其速率或容量上限时
+              返回的限流响应。</dd>
+        </div>
+      </dl>
+    </section>
   </main>
 
   <footer class="site">

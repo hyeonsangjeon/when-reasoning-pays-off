@@ -7,6 +7,15 @@
   <meta name="description" content="Azure OpenAI परिनियोजन में यह तय करने की व्यावहारिक मार्गदर्शिका कि रीज़निंग मॉडल कब अपनी लागत वसूल करते हैं (अनुवाद प्रगति पर है)।">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../en/">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../en/">
+  <meta name="i18n:translation-status" content="untranslated_fallback_to_en">
+  <meta name="i18n:last-translated-at" content="2026-06-03">
+  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
 </head>
 <body>
   <header class="site">
@@ -46,6 +55,42 @@
       दस्तावेज़ में हैं:
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>।
     </p>
+
+    <section class="glossary" aria-labelledby="glossary-heading">
+      <h2 id="glossary-heading">शब्दावली</h2>
+      <dl class="glossary-list">
+        <div class="glossary-term" data-term="foundry">
+          <dt>Foundry</dt>
+          <dd>Azure AI Foundry — इस प्रोजेक्ट में मापे गए मॉडल को डिप्लॉय और
+              सर्व करने वाला प्रबंधित प्लेटफ़ॉर्म।</dd>
+        </div>
+        <div class="glossary-term" data-term="ptu">
+          <dt>PTU</dt>
+          <dd>प्रोविज़ंड थ्रूपुट यूनिट — टोकन के बजाय थ्रूपुट के लिए भुगतान वाली
+              आरक्षित, निश्चित-क्षमता बिलिंग।</dd>
+        </div>
+        <div class="glossary-term" data-term="payg">
+          <dt>PAYG</dt>
+          <dd>पे-ऐज़-यू-गो — इनपुट, कैश, रीज़निंग और आउटपुट टोकन के अनुसार लिया
+              जाने वाला उपयोग-आधारित बिलिंग।</dd>
+        </div>
+        <div class="glossary-term" data-term="reasoning">
+          <dt>रीज़निंग टोकन</dt>
+          <dd>आंतरिक "सोच" टोकन जिन्हें रीज़निंग मॉडल बनाता और बिल करता है पर
+              प्रतिक्रिया में कभी नहीं लौटाता।</dd>
+        </div>
+        <div class="glossary-term" data-term="cache">
+          <dt>कैश</dt>
+          <dd>प्रॉम्प्ट कैश — पहले संसाधित प्रॉम्प्ट उपसर्गों का पुन: उपयोग, कम
+              कैश-इनपुट दर पर बिल किया जाता है।</dd>
+        </div>
+        <div class="glossary-term" data-term="429">
+          <dt>429</dt>
+          <dd>HTTP 429 Too Many Requests — जब कोई डिप्लॉयमेंट अपनी दर या
+              क्षमता सीमा पार करता है तब लौटाई जाने वाली थ्रॉटलिंग प्रतिक्रिया।</dd>
+        </div>
+      </dl>
+    </section>
   </main>
 
   <footer class="site">
