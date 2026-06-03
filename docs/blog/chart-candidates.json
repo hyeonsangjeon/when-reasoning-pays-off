@@ -1,0 +1,342 @@
+{
+  "schema": "blog-chart-candidates",
+  "schema_version": "1.0.0",
+  "generated_for": "GitHub Pages blogging / articles prep",
+  "tier": "SANITIZED_PUBLIC",
+  "provenance_note": "Every numeric value referenced here cites its exact public source file path. Inline figures may be rounded for readability; the cited file holds the exact value. No measured number is altered or recomputed. The derived stub docs/blog/data/reasoning_effort_summary.csv is an exact (unrounded) re-projection of fields already present in benchmarks/<id>/analysis.json, with metric columns left blank for cells where n_used=0.",
+  "public_safety": {
+    "data_sources_scope": "Public-mirror tracked files only under benchmarks/, results/, docs/, scripts/, pricing/, schemas/, release/.",
+    "excluded": "No RAW_PRIVATE data, no .internal/ files, no secrets, endpoint names, or private identifiers are referenced.",
+    "consumption_model_caveats": "Benchmarks 06/07 are PAYG, not PTU evidence (metadata.ptu_evidence=false). Benchmark 08 retry-after is single-tenant, source-run-scoped, descriptive only. Benchmark 09 replay is a calibration/validation proxy, not direct PTU-pool observation."
+  },
+  "chart_families": [
+    {"id": "cost-bars", "chart_type": "grouped_bar", "axis": "USD per request (PAYG lens)", "description": "Per-request PAYG cost across reasoning_effort cells."},
+    {"id": "quality-bars", "chart_type": "bar_with_error", "axis": "mean judge score (std, not CI)", "description": "Judge quality across effort cells; std error bars only (N=20,R=3)."},
+    {"id": "latency-curve", "chart_type": "line", "axis": "mean latency ms", "description": "Latency growth with reasoning effort."},
+    {"id": "throughput-gain", "chart_type": "bar", "axis": "throughput gain factor (dimensionless, PTU lens)", "description": "baseline.tokens_per_request / target.tokens_per_request."},
+    {"id": "token-composition", "chart_type": "stacked_bar", "axis": "mean tokens per request", "description": "Cached / non-cached input / output / reasoning token split."},
+    {"id": "ptu-payg-crossover", "chart_type": "crossover_line", "axis": "USD vs throughput", "description": "PAYG per-token cost vs PTU reserved-capacity crossover."},
+    {"id": "cache-hit-degradation", "chart_type": "line", "axis": "cache hit ratio vs key cardinality", "description": "Cache hit ratio by prompt_cache_key cardinality and retention mode."},
+    {"id": "ttft-degradation", "chart_type": "line", "axis": "TTFT p95 ms vs cardinality", "description": "Steady-state first-token latency by cardinality/retention."},
+    {"id": "retry-after-cdf", "chart_type": "cdf_histogram", "axis": "retry-after ms", "description": "Distribution / percentiles of observed Retry-After-ms on 429s."},
+    {"id": "spillover-recovery-timeline", "chart_type": "timeseries", "axis": "cache hit ratio (or admitted) over seconds", "description": "Proactive vs reactive policy recovery over time."},
+    {"id": "replay-predicted-vs-observed", "chart_type": "scatter", "axis": "predicted vs observed 429 timestamps / retry-after", "description": "Admission-controller replay validation residuals."},
+    {"id": "429-timeline", "chart_type": "timeseries", "axis": "429 count / fraction over seconds", "description": "Real 429 events over time during a spillover run."},
+    {"id": "admission-boundary", "chart_type": "line", "axis": "429 onset vs max_output_tokens / TPS", "description": "Admission/429 boundary as max_output_tokens reservation rises."},
+    {"id": "evidence-gate-flow", "chart_type": "flow_diagram_svg", "axis": "n/a", "description": "Release-tier / redaction boundary flow (hand-authored SVG)."},
+    {"id": "i18n-locale-graph", "chart_type": "graph_svg", "axis": "n/a", "description": "Locale / hreflang relationship graph (hand-authored SVG)."}
+  ],
+  "topics": [
+    {
+      "topic_id": "T01-short-factual-no-payoff",
+      "article_title": "When Reasoning Does Not Pay: Short Factual Answers",
+      "public_data_sources": [
+        "benchmarks/01-short-factual/analysis.json",
+        "benchmarks/01-short-factual/analysis.md",
+        "results/cost-curves/benchmark-01-cost-per-request.csv",
+        "results/cost-curves/benchmark-01-quality.csv",
+        "results/cost-curves/benchmark-01-latency.csv",
+        "results/cost-curves/benchmark-01-throughput-gain.csv",
+        "docs/blog/data/reasoning_effort_summary.csv"
+      ],
+      "chart_candidates": [
+        {"family": "cost-bars", "chart_type": "grouped_bar", "source_files": ["results/cost-curves/benchmark-01-cost-per-request.csv"]},
+        {"family": "quality-bars", "chart_type": "bar_with_error", "source_files": ["results/cost-curves/benchmark-01-quality.csv"]},
+        {"family": "latency-curve", "chart_type": "line", "source_files": ["results/cost-curves/benchmark-01-latency.csv"]}
+      ],
+      "why_it_exists": "Quantify whether enabling reasoning_effort improves a task whose answers are short and factual, where there is little to reason about.",
+      "storyline_question": "If quality is already near-ceiling, does paying for more reasoning buy anything?",
+      "observed_patterns": [
+        "Cost climbs from 0.000663 USD/req (minimal) to 0.005043 USD/req (xhigh) per results/cost-curves/benchmark-01-cost-per-request.csv (~7.6x).",
+        "Latency climbs 1112.8 ms (minimal) to 3088.0 ms (xhigh) per results/cost-curves/benchmark-01-latency.csv.",
+        "Mean judge score stays within 1.73-1.88 across all cells per results/cost-curves/benchmark-01-quality.csv (no monotonic quality gain)."
+      ],
+      "operator_takeaway": "On short factual workloads, escalating reasoning_effort raises cost and latency without a clear quality return; default to minimal/none.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "PAYG cost lens; pricing cited from pricing/azure-openai-payg-2026-05.yaml; N=20,R=3 so use std not CI."
+    },
+    {
+      "topic_id": "T02-multi-step-payoff",
+      "article_title": "When Reasoning Pays: Multi-Step Problems",
+      "public_data_sources": [
+        "benchmarks/02-multi-step-reasoning/analysis.json",
+        "benchmarks/02-multi-step-reasoning/analysis.md",
+        "results/cost-curves/benchmark-02-cost-per-request.csv",
+        "results/cost-curves/benchmark-02-quality.csv",
+        "results/cost-curves/benchmark-02-latency.csv",
+        "results/cost-curves/benchmark-02-throughput-gain.csv",
+        "docs/blog/data/reasoning_effort_summary.csv"
+      ],
+      "chart_candidates": [
+        {"family": "quality-bars", "chart_type": "bar_with_error", "source_files": ["results/cost-curves/benchmark-02-quality.csv"]},
+        {"family": "cost-bars", "chart_type": "grouped_bar", "source_files": ["results/cost-curves/benchmark-02-cost-per-request.csv"]},
+        {"family": "latency-curve", "chart_type": "line", "source_files": ["results/cost-curves/benchmark-02-latency.csv"]}
+      ],
+      "why_it_exists": "Contrast case to T01: a task where intermediate reasoning is load-bearing for correctness.",
+      "storyline_question": "On a task that actually requires steps, how much quality does even a little reasoning add, and at what cost?",
+      "observed_patterns": [
+        "gpt-4o baseline mean judge score 1.5; gpt-5.2 reaches 2.0 at none/medium/high/xhigh per benchmarks/02-multi-step-reasoning/analysis.json cell_stats.",
+        "The 2.0-quality 'high' cell costs 0.00125 USD/req vs 0.000798 for gpt-4o baseline per results/cost-curves/benchmark-02-cost-per-request.csv."
+      ],
+      "operator_takeaway": "On multi-step tasks, a modest reasoning_effort closes a real quality gap; the marginal cost is small relative to the correctness gain.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "The gpt-5.2 'minimal' cell has n_used=0 (no usable runs) per analysis.json; exclude it from any chart rather than plotting a zero."
+    },
+    {
+      "topic_id": "T03-tool-agent",
+      "article_title": "Reasoning Inside a Tool-Using Agent",
+      "public_data_sources": [
+        "benchmarks/03-tool-using-agent/analysis.json",
+        "benchmarks/03-tool-using-agent/analysis.md",
+        "results/cost-curves/benchmark-03-cost-per-request.csv",
+        "results/cost-curves/benchmark-03-quality.csv",
+        "results/cost-curves/benchmark-03-latency.csv",
+        "results/cost-curves/benchmark-03-throughput-gain.csv"
+      ],
+      "chart_candidates": [
+        {"family": "quality-bars", "chart_type": "bar_with_error", "source_files": ["results/cost-curves/benchmark-03-quality.csv"]},
+        {"family": "cost-bars", "chart_type": "grouped_bar", "source_files": ["results/cost-curves/benchmark-03-cost-per-request.csv"]},
+        {"family": "latency-curve", "chart_type": "line", "source_files": ["results/cost-curves/benchmark-03-latency.csv"]}
+      ],
+      "why_it_exists": "Measure reasoning value when the model must select and call tools (calculator, web_search) rather than answer directly.",
+      "storyline_question": "When tools already do the heavy lifting, does extra reasoning still help or just add latency?",
+      "observed_patterns": [
+        "Quality is near-saturated (1.85-2.0) across cells per benchmarks/03-tool-using-agent/analysis.json; analysis.json also carries a tool_efficiency_breakdown block.",
+        "Latency rises from 2902 ms (none) to 3770 ms (xhigh) per results/cost-curves/benchmark-03-latency.csv while cost stays ~0.0028-0.0035 USD/req."
+      ],
+      "operator_takeaway": "For tool-using agents already near quality ceiling, prefer lower reasoning_effort to keep latency down; reserve higher effort for genuinely hard tool-planning.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "tool_efficiency_breakdown is an additional chart angle (tool-call efficiency); needs-light-aggregation to chart. The gpt-5.2 'minimal' cell has n_used=0 (no usable runs) per analysis.json; exclude it from any chart."
+    },
+    {
+      "topic_id": "T04-reasoning-token-tax",
+      "article_title": "The Invisible Reasoning-Token Tax",
+      "public_data_sources": [
+        "results/token-composition/benchmark-01-tokens.csv",
+        "results/token-composition/benchmark-02-tokens.csv",
+        "results/token-composition/benchmark-03-tokens.csv",
+        "docs/blog/data/reasoning_effort_summary.csv"
+      ],
+      "chart_candidates": [
+        {"family": "token-composition", "chart_type": "stacked_bar", "source_files": ["results/token-composition/benchmark-01-tokens.csv", "results/token-composition/benchmark-02-tokens.csv", "results/token-composition/benchmark-03-tokens.csv"]}
+      ],
+      "why_it_exists": "Show the billed-but-invisible reasoning tokens that drive the cost gap a per-token price comparison hides.",
+      "storyline_question": "Where does the extra bill come from when output text barely changes?",
+      "observed_patterns": [
+        "Benchmark 01 mean_reasoning_tokens rises 3.66 (minimal) -> 311.47 (xhigh) while mean_output_tokens only moves 12.67 -> 17.88 per results/token-composition/benchmark-01-tokens.csv.",
+        "Reasoning tokens are billed at the output rate (reasoning_per_1m_usd=14.00 == output_per_1m_usd) per pricing/azure-openai-payg-2026-05.yaml."
+      ],
+      "operator_takeaway": "Always capture response.usage reasoning tokens separately; they, not visible output, explain most of the post-migration cost rise.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "Stacked-bar maps directly to the four token columns already present in each tokens.csv."
+    },
+    {
+      "topic_id": "T05-ptu-payg-crossover",
+      "article_title": "PTU vs PAYG: Where the Lines Cross",
+      "public_data_sources": [
+        "results/cost-curves/benchmark-01-throughput-gain.csv",
+        "results/cost-curves/benchmark-02-throughput-gain.csv",
+        "results/cost-curves/benchmark-03-throughput-gain.csv",
+        "pricing/azure-openai-payg-2026-05.yaml",
+        "pricing/azure-openai-ptu-2026-05.yaml",
+        "pricing/ptu-density-2026-05.yaml",
+        "scripts/ptu_sizing.py",
+        "docs/13-ptu-vs-payg-decision-runbook.md",
+        "docs/assets/ptu-vs-payg-crossover.svg"
+      ],
+      "chart_candidates": [
+        {"family": "throughput-gain", "chart_type": "bar", "source_files": ["results/cost-curves/benchmark-01-throughput-gain.csv", "results/cost-curves/benchmark-02-throughput-gain.csv", "results/cost-curves/benchmark-03-throughput-gain.csv"]},
+        {"family": "ptu-payg-crossover", "chart_type": "crossover_line", "source_files": ["pricing/azure-openai-payg-2026-05.yaml", "pricing/ptu-density-2026-05.yaml", "scripts/ptu_sizing.py"]}
+      ],
+      "why_it_exists": "Reasoning tokens consume PTU capacity; teams need a basis to decide between consumption (PAYG) and reserved (PTU) billing.",
+      "storyline_question": "At what utilization does reserved PTU capacity beat PAYG for a reasoning workload?",
+      "observed_patterns": [
+        "Token-shape throughput-gain factor for benchmark-01 falls from 0.9846 (minimal) to 0.4518 (xhigh) per results/cost-curves/benchmark-01-throughput-gain.csv: at fixed token shape, higher effort serves fewer requests per unit baseline throughput. The factor is baseline.tokens_per_request / target.tokens_per_request (a same-model token-shape proxy), not a cross-model PTU throughput ratio.",
+        "PTU density gpt-5.2 = 3400 input TPM/PTU vs gpt-4o = 2500 per pricing/ptu-density-2026-05.yaml."
+      ],
+      "operator_takeaway": "Reasoning effort directly lowers token-shape throughput-per-request; size PTU on reasoning-inclusive token shape, and use scripts/ptu_sizing.py with a measured WorkloadShape (which applies model density).",
+      "confidence_readiness": "needs-new-chart",
+      "public_safety_notes": "Crossover curve must be computed from the public pricing snapshots + ptu_sizing.py; an explicit USD-vs-throughput crossover CSV does not yet exist (mark crossover line needs-new-chart). Throughput-gain bars are ready."
+    },
+    {
+      "topic_id": "T06-cache-key-bucketing",
+      "article_title": "Cache-Hit Degradation from prompt_cache_key Cardinality",
+      "public_data_sources": [
+        "benchmarks/06-cache-key-bucketing/analysis.md",
+        "results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv",
+        "results/cache-key-bucketing/ttft_p95_vs_cardinality.csv",
+        "scripts/plot_cache_key_bucketing.py",
+        "docs/07-cache-hit-degradation.md",
+        "docs/12-prompt-cache-key-policy.md",
+        "docs/assets/cache-hit-degradation.svg",
+        "docs/assets/prompt-cache-key-prefix.svg"
+      ],
+      "chart_candidates": [
+        {"family": "cache-hit-degradation", "chart_type": "line", "source_files": ["results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv"]},
+        {"family": "ttft-degradation", "chart_type": "line", "source_files": ["results/cache-key-bucketing/ttft_p95_vs_cardinality.csv"]}
+      ],
+      "why_it_exists": "Measure how splitting traffic across more prompt_cache_key buckets (and retention mode) affects cache hit ratio and first-token latency.",
+      "storyline_question": "Does a high-cardinality cache key quietly destroy your cache hit ratio and TTFT?",
+      "observed_patterns": [
+        "in_memory cardinality 1 -> TTFT p95 106389.96 ms vs 24h cardinality 1 -> 9899.74 ms per results/cache-key-bucketing/ttft_p95_vs_cardinality.csv (retention mode dominates TTFT here).",
+        "Cache hit ratio stays high (0.9334-0.9612) across the measured cells per results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv."
+      ],
+      "operator_takeaway": "Retention mode (24h vs in_memory) drives steady-state TTFT more than cardinality in these cells; keep the cacheable prefix stable and pick retention deliberately.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "PAYG, not PTU (metadata.ptu_evidence=false). Only 2 cardinality points (1, 8) per retention; label the line as sparse."
+    },
+    {
+      "topic_id": "T07-retry-after-characterization",
+      "article_title": "What Retry-After Actually Looks Like on 429s",
+      "public_data_sources": [
+        "benchmarks/08-retry-after-characterization/analysis.json",
+        "benchmarks/08-retry-after-characterization/analysis.md",
+        "results/retry-after-characterization/retry_after_ms_percentiles.csv",
+        "results/retry-after-characterization/retry_after_ms_events.csv",
+        "scripts/retry_after_ms_characterization.py"
+      ],
+      "chart_candidates": [
+        {"family": "retry-after-cdf", "chart_type": "cdf_histogram", "source_files": ["results/retry-after-characterization/retry_after_ms_percentiles.csv", "results/retry-after-characterization/retry_after_ms_events.csv"]}
+      ],
+      "why_it_exists": "Characterize the Retry-After-ms the service returns on 429s so backoff/admission logic can be grounded in observed values.",
+      "storyline_question": "When you get throttled, how long does the service actually tell you to wait?",
+      "observed_patterns": [
+        "Overall n=193 429s; p50=43.0 ms, p90=50.8 ms, p99=16921.12 ms, max=17258.0 ms per results/retry-after-characterization/retry_after_ms_percentiles.csv (long-tailed).",
+        "Two mechanisms differ: task013 burst-driven p50=43.0 ms vs task019 reservation-driven p50=3.0 ms per benchmarks/08-retry-after-characterization/analysis.json by_mechanism."
+      ],
+      "operator_takeaway": "Most Retry-After values are tens of ms but a heavy p99 tail exists; size backoff for the tail, not the median.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "Single-tenant, source-run-scoped, descriptive only (scope field in analysis.json); not customer-attributed and not direct PTU evidence."
+    },
+    {
+      "topic_id": "T08-spillover-recovery",
+      "article_title": "Proactive vs Reactive Spillover Recovery",
+      "public_data_sources": [
+        "benchmarks/04-spillover-simulation/analysis.json",
+        "benchmarks/04-spillover-simulation/analysis.md",
+        "benchmarks/05-dual-spillover/README.md",
+        "results/spillover-recovery-curves/policy_comparison.png.csv",
+        "results/spillover-recovery-curves/proactive_recovery.png.csv",
+        "results/spillover-recovery-curves/reactive_recovery.png.csv",
+        "results/dual-spillover-curves/policy_comparison_aggregate.png.csv",
+        "results/dual-spillover-curves/real_429_timeline.png.csv",
+        "scripts/simulate_spillover.py",
+        "scripts/measure_dual_spillover.py",
+        "docs/assets/single-call-react-spillover.svg"
+      ],
+      "chart_candidates": [
+        {"family": "spillover-recovery-timeline", "chart_type": "timeseries", "source_files": ["results/spillover-recovery-curves/policy_comparison.png.csv", "results/dual-spillover-curves/policy_comparison_aggregate.png.csv"]},
+        {"family": "429-timeline", "chart_type": "timeseries", "source_files": ["results/dual-spillover-curves/real_429_timeline.png.csv"]}
+      ],
+      "why_it_exists": "Compare a proactive admission/spillover policy against a reactive one under burst load across endpoints.",
+      "storyline_question": "Does spilling proactively recover cache hit ratio / avoid 429s better than reacting after the fact?",
+      "observed_patterns": [
+        "Proactive run observed real_429_count=0 with overall cache_hit_ratio=0.99094 per benchmarks/04-spillover-simulation/analysis.json per_policy_stats.proactive.",
+        "Aggregate proactive-minus-reactive cache hit delta is +0.046 percentage points per benchmarks/04-spillover-simulation/analysis.json comparison (near parity in this run)."
+      ],
+      "operator_takeaway": "In this simulation the proactive policy avoided 429s entirely while reaching near-identical steady-state cache hit ratio; recovery timelines are the most legible chart.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "Benchmark 04 is a simulation; benchmark 05 dual-spillover hits real infra but is workload-shaped, not customer-attributed. Time-series CSVs are large (~2-4k rows); downsample for rendering."
+    },
+    {
+      "topic_id": "T09-ptu-admission-replay",
+      "article_title": "Replaying a PTU Admission Controller",
+      "public_data_sources": [
+        "benchmarks/10-replay-validation/calibration.json",
+        "benchmarks/10-replay-validation/validation.md",
+        "results/replay-validation/predicted_vs_observed_429_timestamps.png",
+        "results/replay-validation/predicted_vs_observed_retry_after_ms.png",
+        "scripts/replay_ptu_utilization.py",
+        "docs/10-ptu-admission-controller.md",
+        "docs/assets/ptu-admission-controller.svg"
+      ],
+      "chart_candidates": [
+        {"family": "replay-predicted-vs-observed", "chart_type": "scatter", "source_files": ["benchmarks/10-replay-validation/calibration.json"]}
+      ],
+      "why_it_exists": "Validate an offline admission-controller model (reserve at admission, leak continuously) against observed 429 timing and Retry-After.",
+      "storyline_question": "Can a simple leak-rate admission model predict when 429s appear?",
+      "observed_patterns": [
+        "In-sample confusion matrix tp=60, fp=5, fn=107, tn=4267 over n_events=4439 per benchmarks/10-replay-validation/calibration.json (high precision, low recall in-sample).",
+        "Fitted k_leak_tokens_per_ptu_per_second=3.9103 per benchmarks/10-replay-validation/calibration.json."
+      ],
+      "operator_takeaway": "A continuous-leak admission model captures some 429 onsets precisely but misses many (high FN); treat it as a planning proxy, not a guarantee.",
+      "confidence_readiness": "needs-light-aggregation",
+      "public_safety_notes": "Only PNGs exist for the scatter; the numeric residuals live in calibration.json (no paired CSV). Proxy, not direct PTU-pool observation."
+    },
+    {
+      "topic_id": "T10-max-output-tokens-boundary",
+      "article_title": "max_output_tokens and the Admission Boundary",
+      "public_data_sources": [
+        "benchmarks/07-max-output-tokens-reservation/analysis.md",
+        "benchmarks/07-max-output-tokens-reservation/live-calibration-smoke-evidence-final.md",
+        "benchmarks/07-max-output-tokens-reservation/live-v2.5-adaptive-contrast.md",
+        "benchmarks/exp007_max_output_tokens_sweep/runs/20260601T233416Z_exp007_max_output_tokens_sweep_smoke.summary.json",
+        "scripts/analyze_max_output_tokens_sweep.py",
+        "scripts/measure_max_output_tokens_sweep.py"
+      ],
+      "chart_candidates": [
+        {"family": "admission-boundary", "chart_type": "line", "source_files": ["benchmarks/exp007_max_output_tokens_sweep/runs/20260601T233416Z_exp007_max_output_tokens_sweep_smoke.summary.json"]}
+      ],
+      "why_it_exists": "Probe how max_output_tokens reservation interacts with the throttled PAYG admission layer (proxy for PTU admission reservation).",
+      "storyline_question": "Does raising max_output_tokens reserve capacity and trigger 429s earlier?",
+      "observed_patterns": [
+        "task019 reservation-driven 429s have a tight Retry-After distribution (p50=3.0 ms, max=60.0 ms) per benchmarks/08-retry-after-characterization/analysis.json by_mechanism.task019_reservation_driven."
+      ],
+      "operator_takeaway": "max_output_tokens is a reservation, not just a cap; on a capacity-bound deployment it can move the 429 onset. Verify on your own deployment.",
+      "confidence_readiness": "needs-light-aggregation",
+      "public_safety_notes": "PAYG-throttled proxy, explicitly NOT PTU evidence (analysis.md banner). Smoke-tier runs; chart needs aggregation from the sweep summary JSONs."
+    },
+    {
+      "topic_id": "T11-evidence-gate-release-tiers",
+      "article_title": "How the Data Is Sanitized: Evidence Gates and Release Tiers",
+      "public_data_sources": [
+        "docs/16-release-tiers-and-redaction-policy.md",
+        "docs/14-observability-schema.md",
+        "schemas/ptu_request_record.schema.json",
+        "schemas/ptu_cell_summary.schema.json",
+        "schemas/raw_archive_manifest.schema.json",
+        "schemas/redaction_rules.schema.json",
+        "release/public_sanitized_manifest.json",
+        "scripts/sanitize_public_artifacts.py",
+        "docs/assets/release-tiers-redaction-boundary.svg",
+        "docs/assets/observability-record-schema.svg"
+      ],
+      "chart_candidates": [
+        {"family": "evidence-gate-flow", "chart_type": "flow_diagram_svg", "source_files": ["docs/assets/release-tiers-redaction-boundary.svg", "docs/assets/observability-record-schema.svg"]}
+      ],
+      "why_it_exists": "Explain the SANITIZED_PUBLIC / RAW_PRIVATE / AGGREGATE_AZURE_SAMPLE tiering and the redaction provenance recorded for every published artifact.",
+      "storyline_question": "How can readers trust that public numbers are faithful yet leak nothing private?",
+      "observed_patterns": [
+        "release/public_sanitized_manifest.json carries one provenance entry per published artifact (sha256, redaction_rules_sha256, tier=SANITIZED_PUBLIC)."
+      ],
+      "operator_takeaway": "Reproducible research needs a verifiable redaction boundary; the manifest + sanitizer --verify make the public surface auditable.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "Meta/methodology topic; uses existing hand-authored SVGs. Do not render any RAW_PRIVATE sample."
+    },
+    {
+      "topic_id": "T12-i18n-site-metadata",
+      "article_title": "Publishing a Multilingual Research Site",
+      "public_data_sources": [
+        "docs/i18n.md",
+        "docs/en/index.html",
+        "docs/ko/index.html",
+        "docs/ja/index.html",
+        "docs/zh-CN/index.html",
+        "docs/hi/index.html",
+        "docs/assets/i18n-locale-hreflang-graph.svg",
+        "docs/validate.sh"
+      ],
+      "chart_candidates": [
+        {"family": "i18n-locale-graph", "chart_type": "graph_svg", "source_files": ["docs/assets/i18n-locale-hreflang-graph.svg"]}
+      ],
+      "why_it_exists": "Document the locale set (en, ko, ja, zh-CN, hi), hreflang/canonical metadata, and the stale-translation source-hash gate.",
+      "storyline_question": "How do you keep five translated pages from silently drifting out of sync?",
+      "observed_patterns": [
+        "docs/validate.sh recomputes the EN <main> source-content sha256 and fails any locale page whose recorded i18n:source-content-sha256 differs (stale-translation gate)."
+      ],
+      "operator_takeaway": "A per-page source-content hash turns 'is this translation stale?' into a deterministic CI check.",
+      "confidence_readiness": "ready",
+      "public_safety_notes": "Optional/meta topic; existing SVG and validate.sh only. No data artifacts involved."
+    }
+  ]
+}

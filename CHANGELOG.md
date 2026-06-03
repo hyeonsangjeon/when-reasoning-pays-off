@@ -6,6 +6,33 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Blogging data inventory & chart-candidate manifest (2026-06-04)
+
+Pre-work for the upcoming GitHub Pages blogging / articles section: a
+topic-by-topic map of the public, sanitized data and the visualization
+candidates available for future articles. No articles are published yet.
+
+- Added `docs/blog/editorial-data-inventory.md` — a human-readable,
+  topic-by-topic inventory (12 topics) of public data sources, chart
+  candidates, why each experiment exists, the storyline question, observed
+  patterns (each quoted verbatim with its exact public source path), operator
+  takeaways, and a readiness flag.
+- Added `docs/blog/chart-candidates.json` — a machine-readable manifest of the
+  same 12 topics plus 13 reusable chart families (cost-bars, quality-bars,
+  latency-curve, throughput-gain, token-composition, ptu-payg-crossover,
+  cache-hit-degradation, ttft-degradation, retry-after-cdf,
+  spillover-recovery-timeline, replay-predicted-vs-observed, evidence-gate-flow,
+  i18n-locale-graph) for later article rendering.
+- Added `docs/blog/data/reasoning_effort_summary.csv` — a derived,
+  aggregate-safe stub re-projecting cost, quality, latency, reasoning-token, and
+  throughput-gain fields already present in `benchmarks/0{1,2,3}/analysis.json`.
+- Added `docs/blog/README.md` indexing the above and restating the
+  public-safety ground rules (public mirror only; no `RAW_PRIVATE`/`.internal/`
+  data; no claim drift; PAYG-vs-PTU caveats preserved).
+- No measured number or experiment claim was altered. Sources are limited to
+  tracked public-mirror files under `benchmarks/`, `results/`, `docs/`,
+  `scripts/`, `pricing/`, `schemas/`, and `release/`.
+
 ### Added — Topic SVG visuals for the top-level documentation (2026-06-04)
 
 Each top-level `docs/*.md` reference document now opens with a lightweight,
