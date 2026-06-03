@@ -317,7 +317,8 @@ both YAMLs.
 
 ### Anonymization audit (must return zero matches)
 
-Per the task spec under `.internal/tasks/`, the audit covers five
+Per the internal task specification (held in the private working tree),
+the audit covers five
 checks. The literal greps are not reproduced verbatim here because
 doing so would itself trip the host-name and auth-header greps;
 see the task-spec **Test / Verification Plan** section for the
@@ -411,7 +412,8 @@ truth are the Microsoft Learn pages named in the v2.3 spec.
 
 ## Cross-references
 
-- Parent task spec: `.internal/tasks/018-cache-key-bucketing-benchmark.md` (v2.4 hotfix banner on top of v2.3 body)
+- Parent task spec: internal Task 018 cache-key-bucketing-benchmark
+  specification (private working tree; v2.4 hotfix banner on top of v2.3 body)
 - Sibling benchmark (single-deployment baseline): `benchmarks/04-spillover-simulation/`
 - Sibling benchmark (dual-deployment spillover): `benchmarks/05-dual-spillover/`
 - Downstream consumer (PTU-comparison roll-up): Task 022 — must cite this only with the PAYG-not-PTU caveat

@@ -6,6 +6,52 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Task 034 final public-release gate: broad-scan boundary remediation (2026-06-03)
+
+Closes the remaining REQUEST-CHANGES from the final public-release review.
+A broad tracked-surface scan (run with every narrow allowlist disabled)
+surfaced internal/public-boundary references that the narrow CI gates do
+not see because they live in deliberately-excluded paths. Each is now
+either reworded out of the public-facing surface or explicitly accepted
+by the release policy.
+
+- Reworded private task-spec path citations (`<internal-tree>/tasks/NNN-….md`)
+  out of public-facing benchmark, results, and experiment documentation
+  (`benchmarks/01-short-factual/README.md`,
+  `benchmarks/06-cache-key-bucketing/README.md`,
+  `benchmarks/06-cache-key-bucketing/analysis.md`,
+  `benchmarks/06-cache-key-bucketing/runs/_v2.1_diagnostic/README.md`,
+  `benchmarks/07-max-output-tokens-reservation/README.md`,
+  `experiments/exp006_cache_key_bucketing_24h.yaml`,
+  `experiments/exp006_cache_key_bucketing_inmemory.yaml`,
+  `results/cache-key-bucketing/_v2.1_diagnostic/README.md`). The `Task NNN`
+  provenance label is retained; the private-tree path is dropped.
+- Reworded internal review-role names out of public-facing benchmark docs
+  (`first-reviewer` → "reviewer" in
+  `benchmarks/02-multi-step-reasoning/RUN_REPORT.md` and
+  `benchmarks/07-max-output-tokens-reservation/live-v2.5-adaptive-contrast.md`;
+  `strategy-consultant` → "strategy reviewer" in
+  `benchmarks/07-max-output-tokens-reservation/live-calibration-smoke-evidence-final.md`).
+- Added `docs/16` §10 "Audited public-surface boundary acceptances",
+  formally accepting the genuinely-must-stay references the broad scan
+  reports: the `.gitignore` boundary-enforcement rules (private internal
+  tree + internal worker-prompt directory + role-name comment), the
+  synthetic Azure endpoint/resource/host placeholder strings used as test
+  data and as the redactor's replacement outputs, the redaction tooling's
+  own self-references to the private raw-archive, the audited private
+  task-spec provenance citations remaining in historic measurement
+  scripts/tests (redaction-worker sweep scope), and the single `docs/15`
+  private scaffold-spec scope statement.
+- Refreshed `sanitized_sha256` for the edited in-scope artifacts in
+  `release/public_sanitized_manifest.json` (and for this `CHANGELOG.md`).
+  Per `docs/16` §2.2 this mirrors `sanitize_public_artifacts.py --apply`,
+  refreshing only the on-disk sanitized hash while leaving
+  `source_raw_sha256` and `source_archive_id` pinned to the original
+  `RAW_PRIVATE` source. `--apply` is not run directly here because the
+  private archive tree is not present in the public mirror.
+- No data deleted; no generated benchmark run JSON modified. No new
+  endpoint, deployment, credential, or customer-shape content introduced.
+
 ### Added — Task 031: GitHub Pages public surface + README hero visual (2026-06-03)
 
 Stands up a static, dependency-light GitHub Pages site for the public mirror

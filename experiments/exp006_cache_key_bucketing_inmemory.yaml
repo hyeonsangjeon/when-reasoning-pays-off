@@ -23,7 +23,7 @@
 # measured here — Task 022 must cite this benchmark only with the PAYG-
 # not-PTU caveat that analysis.md's opening paragraph carries.
 #
-# v2.4 hotfix rationale (.internal/tasks/018-cache-key-bucketing-benchmark.md):
+# v2.4 hotfix rationale (internal Task 018 specification, private working tree):
 # v2.3 Stage 1 smoke (live gpt-5.2 PAYG) saturated the dispatcher semaphore
 # at sem=8 because live P95 TTFT ≈ 128 s — far above the assumed ~9 s used to
 # size sem=8. With 0.5 TPS × ~128 s ≈ 64 in-flight at Little's-Law steady

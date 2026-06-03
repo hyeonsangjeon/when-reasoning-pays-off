@@ -61,7 +61,7 @@ request_template:
   # 24h opt-in retention — Azure keeps the prefix cache entry for up to
   # 24h after last hit. This makes inter-cell prewarm a real risk, which
   # is precisely why the cell-unique namespace (see Implementation Notes
-  # in .internal/tasks/018-cache-key-bucketing-benchmark.md) is mandatory.
+  # in the internal Task 018 specification, private working tree) is mandatory.
   prompt_cache_retention: 24h
   estimated_processed_tokens_max: 11000
 

@@ -12,8 +12,8 @@ analysis. Canonical v2.3 charts (when produced) live at
 `results/cache-key-bucketing/ttft_p95_vs_cardinality.png` (no
 `_v2.1_diagnostic/` prefix).
 
-The v2.3 hotfix banner in
-`.internal/tasks/018-cache-key-bucketing-benchmark.md` explains why the
+The v2.3 hotfix banner in the internal Task 018 specification (private
+working tree) explains why the
 v2.1 pinned controls (`runtime.concurrency = 1`, `runtime.sustain_tps = 1.0`,
 30K-token Task 012 corpus, scheduled-time-only dispatch telemetry) could
 not produce evidence of the docs-stated ~15 req/min overflow threshold.
