@@ -7,6 +7,15 @@
   <meta name="description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../en/">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../en/">
+  <meta name="i18n:translation-status" content="translated">
+  <meta name="i18n:last-translated-at" content="2026-06-03">
+  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
 </head>
 <body>
   <header class="site">
@@ -79,6 +88,42 @@
       있습니다:
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
     </p>
+
+    <section class="glossary" aria-labelledby="glossary-heading">
+      <h2 id="glossary-heading">용어집</h2>
+      <dl class="glossary-list">
+        <div class="glossary-term" data-term="foundry">
+          <dt>Foundry</dt>
+          <dd>Azure AI Foundry — 이 프로젝트에서 측정한 모델을 배포하고
+              서빙하는 관리형 플랫폼.</dd>
+        </div>
+        <div class="glossary-term" data-term="ptu">
+          <dt>PTU</dt>
+          <dd>프로비저닝 처리량 단위 — 토큰 단위가 아니라 처리량에 대해
+              비용을 지불하는 예약된 고정 용량 과금.</dd>
+        </div>
+        <div class="glossary-term" data-term="payg">
+          <dt>PAYG</dt>
+          <dd>종량제 — 입력, 캐시, 추론, 출력 토큰별로 청구되는 사용량 기반
+              과금.</dd>
+        </div>
+        <div class="glossary-term" data-term="reasoning">
+          <dt>추론 토큰</dt>
+          <dd>추론 모델이 생성하고 과금되지만 응답에는 반환되지 않는 내부
+              "사고" 토큰.</dd>
+        </div>
+        <div class="glossary-term" data-term="cache">
+          <dt>캐시</dt>
+          <dd>프롬프트 캐시 — 이전에 처리된 프롬프트 접두부를 재사용하며,
+              낮은 캐시 입력 단가로 청구됨.</dd>
+        </div>
+        <div class="glossary-term" data-term="429">
+          <dt>429</dt>
+          <dd>HTTP 429 Too Many Requests — 배포가 속도 또는 용량 한도를
+              초과할 때 반환되는 스로틀링 응답.</dd>
+        </div>
+      </dl>
+    </section>
   </main>
 
   <footer class="site">

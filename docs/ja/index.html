@@ -7,6 +7,15 @@
   <meta name="description" content="Azure OpenAI デプロイで推論モデルがコストに見合うかを判断するための実践ガイド（翻訳準備中）。">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../en/">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../en/">
+  <meta name="i18n:translation-status" content="untranslated_fallback_to_en">
+  <meta name="i18n:last-translated-at" content="2026-06-03">
+  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
 </head>
 <body>
   <header class="site">
@@ -46,6 +55,42 @@
       ドキュメントにあります:
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>。
     </p>
+
+    <section class="glossary" aria-labelledby="glossary-heading">
+      <h2 id="glossary-heading">用語集</h2>
+      <dl class="glossary-list">
+        <div class="glossary-term" data-term="foundry">
+          <dt>Foundry</dt>
+          <dd>Azure AI Foundry — 本プロジェクトで測定したモデルをデプロイ・
+              提供するマネージドプラットフォーム。</dd>
+        </div>
+        <div class="glossary-term" data-term="ptu">
+          <dt>PTU</dt>
+          <dd>プロビジョニングされたスループット単位 — トークン単位ではなく
+              スループットに対して支払う予約済み固定容量の課金。</dd>
+        </div>
+        <div class="glossary-term" data-term="payg">
+          <dt>PAYG</dt>
+          <dd>従量課金 — 入力・キャッシュ・推論・出力の各トークンごとに
+              課金される消費ベースの課金。</dd>
+        </div>
+        <div class="glossary-term" data-term="reasoning">
+          <dt>推論トークン</dt>
+          <dd>推論モデルが生成し課金されるが、応答には返されない内部の
+              「思考」トークン。</dd>
+        </div>
+        <div class="glossary-term" data-term="cache">
+          <dt>キャッシュ</dt>
+          <dd>プロンプトキャッシュ — 以前に処理されたプロンプトの接頭部を
+              再利用し、低いキャッシュ入力単価で課金される。</dd>
+        </div>
+        <div class="glossary-term" data-term="429">
+          <dt>429</dt>
+          <dd>HTTP 429 Too Many Requests — デプロイがレートまたは容量の
+              上限を超えたときに返されるスロットリング応答。</dd>
+        </div>
+      </dl>
+    </section>
   </main>
 
   <footer class="site">

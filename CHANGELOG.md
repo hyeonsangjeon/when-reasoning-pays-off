@@ -6,6 +6,40 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Pages per-surface release metadata: hreflang, translation status, source-content hash, glossary (docs/16 §8.4) (2026-06-03)
+
+Closes the final public-release REQUEST-CHANGES Pages-policy mismatch:
+`docs/16` §8.4 requires per-page `hreflang` alternates (incl. `x-default`),
+a machine-readable translation status, `last_translated_at`, and a
+source-content hash check, none of which the static Pages site carried
+(canonical link only).
+
+- Added to every locale page (`docs/{en,ko,ja,zh-CN,hi}/index.html`):
+  `hreflang` alternate links for `en`, `ko`, `ja`, `zh-CN`, `hi` plus
+  `hreflang="x-default"` (→ English); and three machine-readable metas —
+  `i18n:translation-status` (`translated` for `en`/`ko`,
+  `untranslated_fallback_to_en` for `ja`/`zh-CN`/`hi`),
+  `i18n:last-translated-at` (`2026-06-03`), and `i18n:source-content-sha256`
+  (the SHA-256 of the English canonical `<main>` content).
+- Added a localised `<section class="glossary">` to every locale page
+  covering the policy-mandated term set — *Foundry*, *PTU*, *PAYG*,
+  *reasoning*, *cache*, *429* — each tagged with a locale-agnostic
+  `data-term` key for validation.
+- Extended `docs/validate.sh` to enforce §8.4 / §8.5: every locale page has
+  a canonical link, all six `hreflang` alternates, a valid translation
+  status, an ISO `last_translated_at`, and a `source-content` SHA-256; the
+  recorded hash is recompared against a freshly computed hash of the English
+  canonical content (drift fails the page as stale per §8.5); and each page's
+  glossary covers all six terms. The `<main>` structural invariant the hash
+  extractor relies on is asserted so malformed pages fail loudly.
+- Documented the new metadata, source-content hash / stale-detection flow,
+  glossary requirement, and `zh-CN` route-casing note in `docs/i18n.md`.
+
+No data, no per-request rows, and no private-tree references are introduced;
+the privacy gates (`check_public_surface.sh`,
+`sanitize_public_artifacts.py --verify --require-public-manifest`) remain
+clean.
+
 ### Changed — Task 034 final public-release gate: broad-scan boundary remediation (2026-06-03)
 
 Closes the remaining REQUEST-CHANGES from the final public-release review.
