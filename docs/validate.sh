@@ -5,7 +5,9 @@
 #   1. Every declared locale has an index.html.
 #   2. Each page's language switcher links only to locales that exist, and
 #      every declared locale is reachable from each page.
-#   3. The single hero asset exists and is referenced by the repository README.
+#   3. The single hero asset exists and is referenced by the repository README,
+#      and every relative *.svg image link in a top-level docs/*.md resolves to
+#      an on-disk file under docs/assets/ (no broken doc image links).
 #   4. Per-page i18n release metadata (docs/16 §8.4 / §8.5): every locale page
 #      carries a canonical link, hreflang alternates for all published locales
 #      plus hreflang="x-default", a machine-readable translation status,
@@ -65,6 +67,37 @@ if grep -q "docs/assets/hero.svg" README.md; then
 else
   err "README.md does not reference docs/assets/hero.svg"
 fi
+
+# 3a. Top-level docs image links to docs/assets/*.svg must resolve on disk.
+#
+# Each top-level docs/*.md may embed hand-authored SVG visuals via relative
+# Markdown image links (e.g. ![alt](assets/foo.svg)). A link is resolved
+# relative to the Markdown file's own directory, so a doc at docs/NN-*.md
+# references assets/foo.svg → docs/assets/foo.svg. External URLs, data URIs,
+# and absolute paths are skipped; only local *.svg targets are checked. This
+# catches a renamed or missing asset before it 404s on the published site.
+docs_link_count=0
+docs_link_missing=0
+while IFS= read -r md; do
+  base="$(dirname "$md")"
+  while IFS= read -r link; do
+    [ -n "$link" ] || continue
+    link="${link%%#*}"            # drop any URL fragment
+    link="${link%%\?*}"           # drop any query string
+    case "$link" in
+      *://*|data:*|/*) continue ;;  # skip external, data URI, absolute
+    esac
+    case "$link" in *.svg) ;; *) continue ;; esac
+    docs_link_count=$((docs_link_count + 1))
+    if [ ! -f "$base/$link" ]; then
+      err "$md references missing image asset: $link (resolved: $base/$link)"
+      docs_link_missing=$((docs_link_missing + 1))
+    fi
+  done < <(grep -oE '\]\([^)]*\.svg[^)]*\)' "$md" 2>/dev/null \
+             | sed -E 's/^\]\(//; s/\)$//; s/ +"[^"]*"$//')
+done < <(find docs -maxdepth 1 -name '*.md' -type f | sort)
+[ "$docs_link_missing" -eq 0 ] && \
+  note "OK   top-level docs image links to docs/assets/*.svg resolve ($docs_link_count checked)"
 
 # 4. Per-page i18n release metadata (docs/16 §8.4 / §8.5).
 #

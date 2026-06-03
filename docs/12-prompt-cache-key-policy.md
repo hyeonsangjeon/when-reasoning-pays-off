@@ -1,5 +1,7 @@
 # Operator Guide — `prompt_cache_key` Policy Library
 
+![prompt_cache_key combined with the prefix hash forms a bucket that steers callers to one machine.](assets/prompt-cache-key-prefix.svg)
+
 > Module: `batch_runner.cache`. Task 026.
 > Scope: deterministic `prompt_cache_key` composition, bucket sizing,
 > and `prompt_cache_retention` defaults for Azure OpenAI PTU

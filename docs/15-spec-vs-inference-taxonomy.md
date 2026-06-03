@@ -4,6 +4,8 @@
 taxonomy that every doc, docstring, and per-field schema tag in this
 repo follows. It is the methodology capstone for Tasks 023–028.
 
+![Two-tier claim-authority taxonomy: Tier 1 vendor spec versus Tier 2 repository inference.](assets/spec-vs-inference-tiers.svg)
+
 It does NOT replace, edit, or supersede
 `docs/05-methodology.md` (Task 001 — reproducibility contract; frozen).
 It layers on top: where Task 001 says *how* a measurement is

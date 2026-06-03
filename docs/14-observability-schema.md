@@ -1,5 +1,7 @@
 # Observability schema — canonical PTU record contract
 
+![One canonical per-request and per-cell record shape consumed by aggregators, audits, and Azure Monitor correlation.](assets/observability-record-schema.svg)
+
 **Task 028 anchor.** This document defines the single canonical
 per-request and per-cell record shape that every PTU-aware script in
 this repo emits. Downstream aggregators (Task 020, future analytics)

@@ -7,6 +7,8 @@ raw-data preservation rule, the per-surface tier permission matrix for
 each public publication channel, and the governance / readiness
 checklist a maintainer follows before any public release.
 
+![Three release tiers — RAW private, SANITIZED public, AGGREGATE downstream sample — separated by redaction gates.](assets/release-tiers-redaction-boundary.svg)
+
 It is a companion to:
 
 - `docs/05-methodology.md` (reproducibility contract — frozen) — how a

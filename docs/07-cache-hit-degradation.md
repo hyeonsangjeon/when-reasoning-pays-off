@@ -1,5 +1,7 @@
 # When Cache Hit Ratio Drops After Reasoning-Model Migration
 
+![Cache hit ratio after a reasoning-model migration, shown with candidate mechanisms as testable hypotheses.](assets/cache-hit-degradation.svg)
+
 > **Read this before you change a deployment knob.** This document
 > enumerates the *testable hypotheses* for the symptom *"our cache
 > hit ratio dropped after we migrated to a reasoning model."* It does

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img"
+     aria-labelledby="i18Title i18Desc" width="900" height="340">
+  <title id="i18Title">Locale and hreflang graph for the static site</title>
+  <desc id="i18Desc">A conceptual graph: a canonical English page at the centre links to four
+  translated locale pages, each declaring reciprocal hreflang alternates plus an x-default,
+  so search engines and the language switcher resolve the right page. No measured numbers are
+  shown.</desc>
+  <defs>
+    <linearGradient id="i18Bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="340" fill="url(#i18Bg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Locales linked by hreflang</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">One canonical page; reciprocal alternates plus x-default.</text>
+
+  <!-- edges -->
+  <g stroke="#334e68" stroke-width="2">
+    <line x1="450" y1="210" x2="200" y2="150"/>
+    <line x1="450" y1="210" x2="700" y2="150"/>
+    <line x1="450" y1="210" x2="200" y2="290"/>
+    <line x1="450" y1="210" x2="700" y2="290"/>
+  </g>
+
+  <!-- center: en canonical -->
+  <circle cx="450" cy="210" r="48" fill="#3a86ff" stroke="#4cc9f0" stroke-width="2"/>
+  <text x="450" y="206" fill="#0d1b2a" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="700">en</text>
+  <text x="450" y="226" fill="#0d1b2a" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11">canonical</text>
+
+  <!-- locale nodes -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle">
+    <circle cx="200" cy="150" r="34" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+    <text x="200" y="156" fill="#e0fbfc">ko</text>
+    <circle cx="700" cy="150" r="34" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+    <text x="700" y="156" fill="#e0fbfc">ja</text>
+    <circle cx="200" cy="290" r="34" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+    <text x="200" y="296" fill="#e0fbfc">zh-CN</text>
+    <circle cx="700" cy="290" r="34" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+    <text x="700" y="296" fill="#e0fbfc">hi</text>
+  </g>
+
+  <text x="450" y="312" fill="#ffd166" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">+ hreflang="x-default" &#8594; en</text>
+</svg>

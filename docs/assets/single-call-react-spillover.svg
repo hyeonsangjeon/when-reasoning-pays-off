@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img"
+     aria-labelledby="srTitle srDesc" width="900" height="340">
+  <title id="srTitle">Single-call ReAct on PTU with spillover</title>
+  <desc id="srDesc">A conceptual flow: one large single-call ReAct request reaches a primary
+  PTU deployment; when the primary is saturated, traffic spills over to a secondary
+  deployment, which can reduce prompt-cache reuse and raise spend. No measured numbers
+  are shown.</desc>
+  <defs>
+    <linearGradient id="srBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <marker id="srArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#4cc9f0"/>
+    </marker>
+  </defs>
+  <rect width="900" height="340" fill="url(#srBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Single-call ReAct + spillover</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">One big call per turn; spillover trades availability for cache reuse.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle">
+    <rect x="40" y="150" width="150" height="64" rx="8" fill="#16324f" stroke="#3a86ff"/>
+    <text x="115" y="180" fill="#e0fbfc">single-call</text>
+    <text x="115" y="200" fill="#bcd2e8" font-size="13">ReAct request</text>
+
+    <rect x="360" y="120" width="170" height="64" rx="8" fill="#16324f" stroke="#06d6a0"/>
+    <text x="445" y="150" fill="#e0fbfc">primary PTU</text>
+    <text x="445" y="170" fill="#bcd2e8" font-size="13">warm cache</text>
+
+    <rect x="360" y="220" width="170" height="64" rx="8" fill="#16324f" stroke="#fb8500"/>
+    <text x="445" y="250" fill="#e0fbfc">spillover</text>
+    <text x="445" y="270" fill="#bcd2e8" font-size="13">cold cache</text>
+  </g>
+  <g stroke="#4cc9f0" stroke-width="2" marker-end="url(#srArrow)">
+    <line x1="192" y1="182" x2="356" y2="152"/>
+  </g>
+  <path d="M445,184 L445,216" fill="none" stroke="#ffb703" stroke-width="2"
+        stroke-dasharray="6 5" marker-end="url(#srArrow)"/>
+  <text x="560" y="205" fill="#ffd166" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13">on saturation &#8594; spill</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#9fb3c8">
+    <text x="600" y="250">cache hit ratio drops,</text>
+    <text x="600" y="270">spend rises without clean attribution</text>
+  </g>
+</svg>

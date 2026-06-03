@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img"
+     aria-labelledby="tiTitle tiDesc" width="900" height="320">
+  <title id="tiTitle">Spec versus inference: a two-tier citation taxonomy</title>
+  <desc id="tiDesc">A conceptual split: Tier 1 claims are vendor specification with an authoritative
+  source, Tier 2 claims are this repository's own inference from measurement. A boundary line
+  separates the two authorities. No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="tiBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="320" fill="url(#tiBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">Two tiers of claim authority</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Which claims are vendor spec, and which are this repo's inference.</text>
+
+  <!-- Tier 1 -->
+  <rect x="60" y="120" width="360" height="150" rx="10" fill="#16324f" stroke="#4cc9f0" stroke-width="2"/>
+  <text x="80" y="152" fill="#4cc9f0" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="700">Tier 1 &#183; spec</text>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
+    <text x="80" y="184">vendor documentation</text>
+    <text x="80" y="212">authoritative source</text>
+    <text x="80" y="240">cite the canonical URL</text>
+  </g>
+
+  <!-- boundary -->
+  <line x1="450" y1="120" x2="450" y2="270" stroke="#ffb703" stroke-width="2" stroke-dasharray="7 5"/>
+
+  <!-- Tier 2 -->
+  <rect x="480" y="120" width="360" height="150" rx="10" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
+  <text x="500" y="152" fill="#06d6a0" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="700">Tier 2 &#183; inference</text>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
+    <text x="500" y="184">this repo's measurement</text>
+    <text x="500" y="212">derived conclusion</text>
+    <text x="500" y="240">cite the benchmark</text>
+  </g>
+
+  <text x="450" y="300" fill="#9fb3c8" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Every artifact carries one label on this axis.</text>
+</svg>

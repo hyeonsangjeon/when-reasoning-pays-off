@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img"
+     aria-labelledby="obTitle obDesc" width="900" height="340">
+  <title id="obTitle">Canonical PTU observability record</title>
+  <desc id="obDesc">A conceptual record card showing one canonical per-request and per-cell
+  shape that every PTU-aware script emits, so downstream aggregators and audits read a single
+  contract. Field names are illustrative; no measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="obBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="340" fill="url(#obBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="700">One canonical record shape</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Fix the shape once; every script emits it, every aggregator reads it.</text>
+
+  <!-- record card -->
+  <rect x="60" y="110" width="360" height="200" rx="10" fill="#16324f" stroke="#3a86ff"/>
+  <text x="80" y="140" fill="#4cc9f0" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="700">record</text>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
+    <text x="80" y="172">request_id</text>
+    <text x="80" y="200">deployment</text>
+    <text x="80" y="228">tokens</text>
+    <text x="80" y="256">latency</text>
+    <text x="80" y="284">cache_status</text>
+  </g>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#9fb3c8">
+    <text x="250" y="172">&#8230;</text><text x="250" y="200">&#8230;</text>
+    <text x="250" y="228">&#8230;</text><text x="250" y="256">&#8230;</text>
+    <text x="250" y="284">&#8230;</text>
+  </g>
+
+  <!-- consumers -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
+    <rect x="560" y="120" width="260" height="50" rx="8" fill="#16324f" stroke="#06d6a0"/>
+    <text x="690" y="151" fill="#e0fbfc">aggregators</text>
+    <rect x="560" y="190" width="260" height="50" rx="8" fill="#16324f" stroke="#06d6a0"/>
+    <text x="690" y="221" fill="#e0fbfc">audits / category labels</text>
+    <rect x="560" y="260" width="260" height="50" rx="8" fill="#16324f" stroke="#4cc9f0"/>
+    <text x="690" y="291" fill="#e0fbfc">Azure Monitor correlation</text>
+  </g>
+  <g stroke="#4cc9f0" stroke-width="2">
+    <line x1="420" y1="160" x2="556" y2="145"/>
+    <line x1="420" y1="210" x2="556" y2="215"/>
+    <line x1="420" y1="260" x2="556" y2="285"/>
+  </g>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" role="img"
+     aria-labelledby="meTitle meDesc" width="900" height="300">
+  <title id="meTitle">Methodology: the measurement pipeline</title>
+  <desc id="meDesc">A left-to-right pipeline of five stages — task, run, judge, aggregate,
+  report — illustrating that every benchmark follows one shared measurement contract.
+  No measured numbers are shown.</desc>
+  <defs>
+    <linearGradient id="meBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
+    </linearGradient>
+    <marker id="meArrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#4cc9f0"/>
+    </marker>
+  </defs>
+  <rect width="900" height="300" fill="url(#meBg)"/>
+  <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="700">One measurement contract</text>
+  <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="15">Same token price, different bill &#8212; measured the same way every time.</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle">
+    <g>
+      <rect x="40" y="140" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
+      <text x="105" y="176" fill="#e0fbfc">task</text>
+    </g>
+    <g>
+      <rect x="220" y="140" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
+      <text x="285" y="176" fill="#e0fbfc">run</text>
+    </g>
+    <g>
+      <rect x="400" y="140" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
+      <text x="465" y="176" fill="#e0fbfc">judge</text>
+    </g>
+    <g>
+      <rect x="580" y="140" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
+      <text x="645" y="176" fill="#e0fbfc">aggregate</text>
+    </g>
+    <g>
+      <rect x="760" y="140" width="110" height="60" rx="8" fill="#16324f" stroke="#06d6a0"/>
+      <text x="815" y="176" fill="#e0fbfc">report</text>
+    </g>
+  </g>
+  <g stroke="#4cc9f0" stroke-width="2" marker-end="url(#meArrow)">
+    <line x1="172" y1="170" x2="216" y2="170"/>
+    <line x1="352" y1="170" x2="396" y2="170"/>
+    <line x1="532" y1="170" x2="576" y2="170"/>
+    <line x1="712" y1="170" x2="756" y2="170"/>
+  </g>
+  <text x="40" y="252" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13">If a benchmark deviates from the contract, fix one &#8212; do not silently disagree.</text>
+</svg>

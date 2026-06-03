@@ -4,6 +4,8 @@
 > benchmark in this repo. If a benchmark deviates from what is written here, either the
 > benchmark is wrong or this document is — fix one, do not silently disagree.
 
+![The measurement pipeline shared by every benchmark: task, run, judge, aggregate, report.](assets/methodology-measurement-pipeline.svg)
+
 The audience is an engineer with Azure OpenAI access who wants to reproduce, audit, or
 extend the numbers reported in `benchmarks/*/analysis.md` and `results/summary.md`. The
 voice is deliberately neutral: we are not arguing that reasoning models are good or bad,

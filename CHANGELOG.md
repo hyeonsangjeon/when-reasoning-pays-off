@@ -6,6 +6,36 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Topic SVG visuals for the top-level documentation (2026-06-04)
+
+Each top-level `docs/*.md` reference document now opens with a lightweight,
+hand-authored SVG diagram that illustrates its core concept, making the docs
+easier to scan on GitHub and on the published Pages site.
+
+- Added 14 repo-local, accessible SVG assets under `docs/assets/` (each with
+  `role="img"` plus `<title>`/`<desc>`), one per top-level doc: decision
+  framework (model × effort grid), methodology (measurement pipeline), cache
+  hit degradation, single-call ReAct spillover, the five operator levers, the
+  PTU admission controller, multi-worker cooldown, `prompt_cache_key` prefix
+  bucketing, PTU vs PAYG crossover, the observability record contract, the
+  spec-vs-inference tiers, the release tier / redaction boundary, the Foundry
+  Track A / Track B bridge, and the i18n locale / hreflang graph.
+- Inserted each diagram near the top of its Markdown file via a relative image
+  link with descriptive alt text. For the frozen/governance docs
+  (`05-methodology`, `15-spec-vs-inference-taxonomy`,
+  `16-release-tiers-and-redaction-policy`) the visual was added after the
+  opening intro only; no substantive text, claim, number, or governance
+  meaning was changed. The companion appendix
+  `15-spec-vs-inference-taxonomy.examples.md` was intentionally left without a
+  visual (its living-index table would gain no public-reader value).
+- Extended `docs/validate.sh` so CI fails on any broken `*.svg` image link from
+  a top-level `docs/*.md` to `docs/assets/` (links resolved relative to each
+  Markdown file).
+
+The diagrams carry no measured numbers and no private-tree references; the
+privacy gates (`docs/validate.sh`, `check_public_surface.sh`,
+`sanitize_public_artifacts.py --verify --require-public-manifest`) remain green.
+
 ### Changed — Completed `ja` / `zh-CN` / `hi` GitHub Pages translations (2026-06-04)
 
 The Japanese, Simplified Chinese, and Hindi landing pages previously shipped
