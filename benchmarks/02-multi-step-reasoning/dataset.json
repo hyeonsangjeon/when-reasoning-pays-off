@@ -1,0 +1,202 @@
+[
+  {
+    "id": "mr_01",
+    "input": "A farmer plants apple trees in three fields. The first field has 12 trees. Each subsequent field has twice as many trees as the previous field. Every tree yields exactly 8 apples in a season. How many apples does the farmer harvest from the three fields combined in one season?",
+    "verifiable_answer": "672",
+    "expected_output_shape": "A single integer with no units, commas, or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 672 (trees: 12 + 24 + 48 = 84; apples: 84 * 8 = 672). The response must contain the integer 672 as the final numeric token. If the response is exactly '672' it passes; if the response wraps the number in prose but the only integer present is 672, partial credit; any other integer is a fail.",
+    "tags": [
+      "arithmetic-word"
+    ]
+  },
+  {
+    "id": "mr_02",
+    "input": "Sarah saves 15 dollars every week for 12 weeks. She then spends one quarter of her total savings on a gift. After that, she earns an additional 40 dollars. How many dollars does Sarah have at the end?",
+    "verifiable_answer": "175",
+    "expected_output_shape": "A single integer with no dollar sign, commas, or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 175 (savings: 15 * 12 = 180; after spending: 180 * 0.75 = 135; final: 135 + 40 = 175). The integer 175 must appear and be the sole numeric token; any other integer is a fail.",
+    "tags": [
+      "arithmetic-word"
+    ]
+  },
+  {
+    "id": "mr_03",
+    "input": "Train A leaves a station heading east at 60 kilometers per hour. Two hours after Train A departs, Train B leaves the same station heading east on the same track at 90 kilometers per hour. How many hours after Train B departs does Train B catch up to Train A?",
+    "verifiable_answer": "4",
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 4 (Train A has a 120 km head start; closing speed is 30 km/h; time to close = 4 hours). The integer 4 must be the only number in the response.",
+    "tags": [
+      "arithmetic-word"
+    ]
+  },
+  {
+    "id": "mr_04",
+    "input": "A book is listed at 24 dollars. The shop applies a 25 percent discount, then applies an additional 10 percent discount on the already-discounted price. What is the final price in dollars, rounded to two decimal places?",
+    "verifiable_answer": "16.20",
+    "expected_output_shape": "A single number with two decimal places, no dollar sign, no commas, and no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 16.20 (24 * 0.75 = 18; 18 * 0.90 = 16.20). Accept '16.20' or '16.2'; any other value is a fail. Surrounding prose with the correct number is partial credit.",
+    "tags": [
+      "arithmetic-word"
+    ]
+  },
+  {
+    "id": "mr_05",
+    "input": "Bob, Carol, Alice, and Dan stand in a single line at a coffee shop. Alice is not first in line. Carol stands directly behind Bob (so Bob is immediately ahead of Carol). Dan stands last in line. Write the order from first in line to last in line, names separated by commas.",
+    "verifiable_answer": "Bob, Carol, Alice, Dan",
+    "expected_output_shape": "Four names separated by ', ' (comma and space) in the order from first to last in line, with no surrounding prose.",
+    "quality_rubric_notes": "The only valid order is 'Bob, Carol, Alice, Dan' (Dan is last; Bob immediately ahead of Carol means Bob-Carol is a contiguous pair; Alice is not first, so Alice cannot be position 1; the only consistent arrangement is Bob-Carol-Alice-Dan). Spacing and capitalization must match the four names; commas optional but required as separators. Reorderings or extra prose fail.",
+    "tags": [
+      "constraint-satisfaction"
+    ]
+  },
+  {
+    "id": "mr_06",
+    "input": "Three boxes are labeled red, green, and blue. Each box contains exactly one of three fruits: an apple, a banana, or a cherry. Each fruit appears in exactly one box. The red box does not contain the apple. The green box contains the cherry. Which fruit is in the blue box?",
+    "verifiable_answer": "apple",
+    "expected_output_shape": "A single lowercase word that is one of: apple, banana, cherry.",
+    "quality_rubric_notes": "Correct answer is 'apple' (green has cherry; red is not apple, so red has banana; therefore blue has apple). Any case is acceptable for the literal token 'apple'; any other fruit or extra prose fails.",
+    "tags": [
+      "constraint-satisfaction"
+    ]
+  },
+  {
+    "id": "mr_07",
+    "input": "Four people sit around a circular table with four chairs. Going clockwise around the table, the seats are numbered 1, 2, 3, 4. Alice sits in seat 1. Bob sits in the seat immediately clockwise from Alice. Carol sits directly across the table from Alice (in the seat that is two positions away). In which seat number does Dan sit?",
+    "verifiable_answer": "4",
+    "expected_output_shape": "A single integer that is 1, 2, 3, or 4, with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 4 (Alice=1, Bob=2, Carol=3, so Dan must occupy the remaining seat, 4). Any other integer is a fail.",
+    "tags": [
+      "constraint-satisfaction"
+    ]
+  },
+  {
+    "id": "mr_08",
+    "input": "If today is Wednesday, March 15, 2026, what day of the week is March 15, 2027? Note: 2026 is not a leap year and 2027 is not a leap year.",
+    "verifiable_answer": "Thursday",
+    "expected_output_shape": "A single English day-of-week word, capitalized (e.g., Monday).",
+    "quality_rubric_notes": "Correct answer is exactly 'Thursday' (365 days between the two dates; 365 mod 7 = 1; Wednesday + 1 day = Thursday). Case-insensitive match acceptable for partial; the literal token 'Thursday' (any case) must appear and be the only day word present.",
+    "tags": [
+      "date-time"
+    ]
+  },
+  {
+    "id": "mr_09",
+    "input": "A team schedules a follow-up meeting for exactly 30 days after Friday, March 6, 2026. What is the calendar date of the follow-up meeting in ISO 8601 format (YYYY-MM-DD)?",
+    "verifiable_answer": "2026-04-05",
+    "expected_output_shape": "A single ISO 8601 date string in the form YYYY-MM-DD, with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly '2026-04-05' (March has 31 days; 25 days remain in March after the 6th; 30 - 25 = 5 days into April, giving April 5). The literal token '2026-04-05' must appear; equivalent forms like 'April 5, 2026' are partial credit because they do not match the requested ISO shape.",
+    "tags": [
+      "date-time"
+    ]
+  },
+  {
+    "id": "mr_10",
+    "input": "A factory produces exactly 100 widgets per day. The defect rate is 5 percent. Each defective widget costs 20 dollars to repair. The factory operates for 4 days. What is the total cost in dollars to repair all defective widgets produced during those 4 days?",
+    "verifiable_answer": "400",
+    "expected_output_shape": "A single integer with no dollar sign or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 400 (total widgets: 400; defective: 20; repair cost: 20 * 20 = 400). Any other integer is a fail; the prose-wrapped correct integer is partial credit.",
+    "tags": [
+      "causal-chain"
+    ]
+  },
+  {
+    "id": "mr_11",
+    "input": "A balloon's volume doubles every minute. After exactly 10 minutes the balloon is completely full. After how many minutes was the balloon exactly one quarter full?",
+    "verifiable_answer": "8",
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 8 (full at 10; half at 9; quarter at 8). Any other integer is a fail.",
+    "tags": [
+      "causal-chain"
+    ]
+  },
+  {
+    "id": "mr_12",
+    "input": "Consider the following rules: 1) If it rains, the picnic is canceled. 2) If the picnic is canceled, the children stay indoors. 3) If the children stay indoors, Dad walks the dog. It rained today. Did Dad walk the dog? Answer yes or no.",
+    "verifiable_answer": "yes",
+    "expected_output_shape": "A single lowercase word that is either 'yes' or 'no'.",
+    "quality_rubric_notes": "Correct answer is 'yes' (chaining the implications: rain -> picnic canceled -> children indoors -> Dad walks dog). Case-insensitive match acceptable; any other token fails.",
+    "tags": [
+      "causal-chain"
+    ]
+  },
+  {
+    "id": "mr_13",
+    "input": "Trace this Python function and report what it prints:\n\ndef f(n):\n    total = 0\n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            total += i\n        else:\n            total -= i\n    return total\n\nprint(f(5))",
+    "verifiable_answer": "-3",
+    "expected_output_shape": "A single integer (which may be negative) with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly -3 (i=1: -1; i=2: +2 -> 1; i=3: -3 -> -2; i=4: +4 -> 2; i=5: -5 -> -3). The literal '-3' must be the only integer in the response.",
+    "tags": [
+      "code-trace"
+    ]
+  },
+  {
+    "id": "mr_14",
+    "input": "Trace this Python snippet and report the printed value:\n\nx = [1, 2, 3]\ny = x\ny.append(4)\nprint(len(x))",
+    "verifiable_answer": "4",
+    "expected_output_shape": "A single integer with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 4 (y is an alias for x; appending 4 mutates the list that x also references; len(x) is therefore 4). Any other integer fails; in particular '3' indicates the candidate missed the aliasing.",
+    "tags": [
+      "code-trace"
+    ]
+  },
+  {
+    "id": "mr_15",
+    "input": "Trace this Python function and report what it prints:\n\ndef g(s):\n    return s[::-1] + s[0]\n\nprint(g(\"abc\"))",
+    "verifiable_answer": "cbaa",
+    "expected_output_shape": "A single short string with no surrounding prose, no code fences, and no quotation marks.",
+    "quality_rubric_notes": "Correct answer is exactly 'cbaa' (reversed 'abc' is 'cba'; first char of original is 'a'; concatenation is 'cbaa'). Any other string fails. Quoted forms like '\"cbaa\"' are partial credit because they do not match the requested shape.",
+    "tags": [
+      "code-trace"
+    ]
+  },
+  {
+    "id": "mr_16",
+    "input": "Evaluate the boolean expression (A AND B) AND (NOT C) given A=true, B=false, C=true. Report 'true' or 'false'.",
+    "verifiable_answer": "false",
+    "expected_output_shape": "A single lowercase word that is either 'true' or 'false'.",
+    "quality_rubric_notes": "Correct answer is 'false' (A AND B = true AND false = false; NOT C = false; false AND false = false). Case-insensitive match acceptable; any other token fails.",
+    "tags": [
+      "boolean-logic"
+    ]
+  },
+  {
+    "id": "mr_17",
+    "input": "A bulb is on if and only if (X XOR Y) is true and Z is false. Given X=true, Y=true, Z=false, is the bulb on? Answer 'on' or 'off'.",
+    "verifiable_answer": "off",
+    "expected_output_shape": "A single lowercase word that is either 'on' or 'off'.",
+    "quality_rubric_notes": "Correct answer is 'off' (X XOR Y = true XOR true = false; false AND (NOT false) = false AND true = false; bulb off). Case-insensitive match acceptable; any other token fails.",
+    "tags": [
+      "boolean-logic"
+    ]
+  },
+  {
+    "id": "mr_18",
+    "input": "How many distinct three-letter strings can be formed using each of the letters A, B, and C exactly once?",
+    "verifiable_answer": "6",
+    "expected_output_shape": "A single integer with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 6 (3! = 6 permutations: ABC, ACB, BAC, BCA, CAB, CBA). Any other integer fails.",
+    "tags": [
+      "counting"
+    ]
+  },
+  {
+    "id": "mr_19",
+    "input": "In a class of 20 students, 12 study Spanish, 10 study French, and 4 study both Spanish and French. How many students in the class study neither Spanish nor French?",
+    "verifiable_answer": "2",
+    "expected_output_shape": "A single integer with no surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 2 (inclusion-exclusion: 12 + 10 - 4 = 18 study at least one language; 20 - 18 = 2 study neither). Any other integer fails.",
+    "tags": [
+      "counting"
+    ]
+  },
+  {
+    "id": "mr_20",
+    "input": "A rectangle has a perimeter of 30 centimeters. Its length is exactly twice its width. What is its area in square centimeters?",
+    "verifiable_answer": "50",
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "quality_rubric_notes": "Correct answer is exactly 50 (2(L+W)=30 so L+W=15; L=2W gives 3W=15 so W=5 and L=10; area = 5*10 = 50). Any other integer fails.",
+    "tags": [
+      "arithmetic-word"
+    ]
+  }
+]

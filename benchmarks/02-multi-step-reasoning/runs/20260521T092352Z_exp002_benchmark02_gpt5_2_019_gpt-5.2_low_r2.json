@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.6959410002455115,
+    "tool_config_sha256": null,
+    "user_input_sha256": "d57b4cb7f731ed03a7faf3ffd105a87882b85e0aeb0f39becfac7b8be7c505a9"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "low",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1744.351249653846,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "50",
+  "retry_count": 0,
+  "sample_id": "mr_20",
+  "sample_idx": 19,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "id": "mr_20",
+    "input": "A rectangle has a perimeter of 30 centimeters. Its length is exactly twice its width. What is its area in square centimeters?",
+    "quality_rubric_notes": "Correct answer is exactly 50 (2(L+W)=30 so L+W=15; L=2W gives 3W=15 so W=5 and L=10; area = 5*10 = 50). Any other integer fails.",
+    "tags": [
+      "arithmetic-word"
+    ],
+    "verifiable_answer": "50"
+  },
+  "timestamp_utc": "2026-05-21T09:23:52Z",
+  "usage": {
+    "input_tokens": 282,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 46,
+    "output_tokens_details": {
+      "reasoning_tokens": 39
+    },
+    "total_tokens": 328
+  }
+}

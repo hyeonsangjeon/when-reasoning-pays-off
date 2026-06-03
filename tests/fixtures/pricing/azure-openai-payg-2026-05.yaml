@@ -1,0 +1,19 @@
+# Synthetic PAYG pricing fixture for unit tests.
+# NOT production data. Rates chosen to make hand-computed cost easy:
+#   - gpt-4o:   input=10, cached=1, output=40 per 1M USD
+#   - gpt-5.2:  input=10, cached=1, reasoning=40, output=40 per 1M USD
+# Matches the worked example in .internal/tasks/003-cost-calculator.md.
+source_url: https://example.test/azure-openai-pricing
+accessed_date: 2026-05-19
+archive_url: https://web.archive.org/web/20260519000000/https://example.test/azure-openai-pricing
+currency: USD
+models:
+  gpt-4o:
+    input_per_1m_usd: 10
+    cached_input_per_1m_usd: 1
+    output_per_1m_usd: 40
+  gpt-5.2:
+    input_per_1m_usd: 10
+    cached_input_per_1m_usd: 1
+    reasoning_per_1m_usd: 40
+    output_per_1m_usd: 40

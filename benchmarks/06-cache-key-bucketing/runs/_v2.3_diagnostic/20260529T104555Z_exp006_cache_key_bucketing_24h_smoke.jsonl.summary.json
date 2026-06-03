@@ -1,0 +1,148 @@
+{
+  "api_version": "preview",
+  "backlog_excessive_any": true,
+  "backlog_excessive_card1": true,
+  "benchmark": "06-cache-key-bucketing",
+  "calls_per_cell": 60,
+  "cardinalities_planned": [
+    1,
+    8
+  ],
+  "cell_summaries": [
+    {
+      "backlog_excessive": true,
+      "cache_hit_ratio_steady_state": 0.764696206128217,
+      "calls_in_cell": 60,
+      "cardinality": 1,
+      "cell_idx": 0,
+      "cell_usd": 0.42961,
+      "common_prefix_rpm_mean_steady_state": 13.233333333333333,
+      "first_token_latency_ms_p50_steady_state": 13732.446584152058,
+      "first_token_latency_ms_p95_steady_state": 128369.65661661232,
+      "max_dispatch_backlog_ms": 119546.0,
+      "max_in_flight_observed": 8,
+      "n_failed_records": 0,
+      "n_records": 60,
+      "n_steady_state_records": 60,
+      "namespace": "benchmark06_24h_card01_b49fd8b1",
+      "p95_dispatch_backlog_ms": 111238.49999999999,
+      "per_bucket_rpm_mean_steady_state": 13.233333333333333,
+      "rate_limited_count": 0,
+      "realized_admitted_common_prefix_rpm": 13.233333333333333,
+      "realized_admitted_per_bucket_rpm": 13.233333333333333,
+      "scheduled_common_prefix_rpm_expected": 30.0,
+      "scheduled_per_bucket_rpm_expected": 30.0,
+      "warmup_exclusion_s": 0.0
+    },
+    {
+      "backlog_excessive": true,
+      "cache_hit_ratio_steady_state": 0.764696206128217,
+      "calls_in_cell": 60,
+      "cardinality": 8,
+      "cell_idx": 1,
+      "cell_usd": 0.423618,
+      "common_prefix_rpm_mean_steady_state": 22.65,
+      "first_token_latency_ms_p50_steady_state": 9765.17377072014,
+      "first_token_latency_ms_p95_steady_state": 103359.13542318152,
+      "max_dispatch_backlog_ms": 7511.0,
+      "max_in_flight_observed": 8,
+      "n_failed_records": 0,
+      "n_records": 60,
+      "n_steady_state_records": 60,
+      "namespace": "benchmark06_24h_card08_b49fd8b1",
+      "p95_dispatch_backlog_ms": 4682.649999999998,
+      "per_bucket_rpm_mean_steady_state": 3.2,
+      "rate_limited_count": 0,
+      "realized_admitted_common_prefix_rpm": 22.65,
+      "realized_admitted_per_bucket_rpm": 3.2,
+      "scheduled_common_prefix_rpm_expected": 30.0,
+      "scheduled_per_bucket_rpm_expected": 3.75,
+      "warmup_exclusion_s": 0.0
+    }
+  ],
+  "cells_completed": 2,
+  "cells_planned": 2,
+  "citations": {
+    "azure_doc": {
+      "accessed_date": "2026-05-29",
+      "claims_cited": [
+        "prompt_cache_key combined with prefix hash influences routing",
+        "~15 req/min per (prefix_hash, prompt_cache_key) overflow threshold",
+        "24h retention when prompt_cache_retention='24h'",
+        "in_memory retention is the default"
+      ],
+      "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching"
+    },
+    "azure_rate_limit_doc": {
+      "accessed_date": "2026-05-29",
+      "claims_cited": [
+        "deployment TPM quota is enforced as a sliding window over estimated processed tokens (input + max_output)",
+        "exceeding the sliding window returns HTTP 429 with retry-after",
+        "operator must keep projected TPM safely below quota to avoid throttling that would confound per-bucket RPM observation"
+      ],
+      "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota"
+    },
+    "pricing": {
+      "accessed_date": "2026-05-19",
+      "path": "pricing/azure-openai-payg-2026-05.yaml",
+      "source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/"
+    }
+  },
+  "deployment_env": "AZURE_OPENAI_DEPLOYMENT_GPT_5_2",
+  "deployment_used": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+  "experiment_id": "exp006_cache_key_bucketing_24h",
+  "git_commit": "4391d4bd2562068baae262bb57abbc8c4364eea2",
+  "halt_reason": null,
+  "hard_ceiling_usd": 8.0,
+  "jsonl_path": "benchmarks/06-cache-key-bucketing/runs/20260529T104555Z_exp006_cache_key_bucketing_24h_smoke.jsonl",
+  "max_dispatch_backlog_ms_card1": 119546.0,
+  "max_in_flight_observed_card1": 8,
+  "metadata": {
+    "architecture_context": "single_call_react",
+    "consumption_model_context": "paygo_standard",
+    "created_at": "2026-05-29",
+    "deployment_kind": "GlobalStandard_PAYG",
+    "deployment_tpm_quota": 500000,
+    "hypothesis_under_test": "prompt_cache_key_overflow_threshold",
+    "ptu_evidence": false,
+    "runtime_mode": "live_azure_single_deployment",
+    "simulation": false,
+    "tenant": "<project>"
+  },
+  "midrun_threshold_usd": 6.8,
+  "model": "gpt-5.2",
+  "p95_dispatch_backlog_ms_card1": 111238.49999999999,
+  "partial": false,
+  "pinned_confounds_echo": {
+    "api_version": "preview",
+    "concurrency": 8,
+    "deployment_tpm_quota": 500000,
+    "dispatcher": "async_scheduled",
+    "estimated_processed_tokens_max": 11000,
+    "max_output_tokens": 512,
+    "prompt_cache_retention": "24h",
+    "reasoning_effort": "low",
+    "sustain_tps": 0.5
+  },
+  "preflight_threshold_usd": 7.2,
+  "pricing_accessed_date": "2026-05-19",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "pricing_source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/",
+  "projected_usd": 1.308825,
+  "realized_admitted_common_prefix_rpm_card1": 13.233333333333333,
+  "realized_admitted_per_bucket_rpm_card1": 13.233333333333333,
+  "run_id_short": "b49fd8b1",
+  "stage": "smoke",
+  "system_prompt_sha256": "329a94c3643a553680b89da394cfae0f128744f4c0d358af0f5cf295642f2a99",
+  "total_usd": 0.853229,
+  "tpm_feasibility": {
+    "ceiling": 350000.0,
+    "deployment_tpm_quota": 500000,
+    "headroom_fraction": 0.7,
+    "passed": true,
+    "projected_tpm": 330000.0
+  }
+}

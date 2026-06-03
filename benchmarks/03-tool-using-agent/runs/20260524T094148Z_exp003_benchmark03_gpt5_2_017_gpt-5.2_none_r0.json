@@ -1,0 +1,120 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "a30c57fd7c3b66a65bad97d8052430cce1d66e7daa2788ea1193d20aa4cb28bc"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 5198.031916748732,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "0",
+  "retry_count": 0,
+  "sample_id": "tu_18",
+  "sample_idx": 17,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer (employee count, rounded down to whole employees). Both tools used.",
+    "expected_tool_calls": [
+      "web_search",
+      "calculator"
+    ],
+    "id": "tu_18",
+    "input": "Look up the number of employees at Helio Robotics, then compute how many employees would remain after a 7% reduction.",
+    "quality_rubric_notes": "Correct iff web_search retrieves 'employees at Helio Robotics' = 13000 and calculator computes 13000*(1-0.07) = 12090. The final answer must be 12090.",
+    "tags": [
+      "multi-tool",
+      "search-then-calc"
+    ],
+    "verifiable_answer": "12090"
+  },
+  "timestamp_utc": "2026-05-24T09:41:48Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1554.6539998613298,
+      "tool_args": {
+        "query": "number of employees at Helio Robotics"
+      },
+      "tool_call_id": "call_5oFQq8OVFJbem4M6LzDnXPCp",
+      "tool_name": "web_search",
+      "tool_result_summary": "no results",
+      "usage": {
+        "input_tokens": 580,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 24,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 604
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 1177.190209273249,
+      "tool_args": {
+        "query": "employees Helio Robotics"
+      },
+      "tool_call_id": "call_HL2HEaPhO0eG4s788twf5cfP",
+      "tool_name": "web_search",
+      "tool_result_summary": "no results",
+      "usage": {
+        "input_tokens": 617,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 21,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 638
+      }
+    },
+    {
+      "iteration": 3,
+      "latency_ms": 1417.4359999597073,
+      "tool_args": {
+        "expr": "0"
+      },
+      "tool_call_id": "call_KI9hBIGiP7jecRAePr4fHI9j",
+      "tool_name": "calculator",
+      "tool_result_summary": "0",
+      "usage": {
+        "input_tokens": 651,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 18,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 669
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 2529,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 68,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 2597
+  }
+}

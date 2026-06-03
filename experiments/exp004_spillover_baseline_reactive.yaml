@@ -1,0 +1,200 @@
+# exp004 — Phase 1 spillover-policy simulator, REACTIVE policy variant.
+#
+# Hypothesis: weak-form G (saturation-sensitive cache dip recovers as load
+# drops below ~80% utilization). This experiment establishes the reactive
+# spillover policy's recovery-curve shape under realistic single-call
+# ReAct workload. The proactive sibling experiment varies exactly one
+# variable: policy.type. All other knobs (corpus_seed, simulation load
+# pattern, prompt-cache settings) are held constant byte-identical.
+#
+# This is Phase 1. The "primary" and "spillover" endpoints share one real
+# Azure gpt-5.2 deployment; the primary/spillover distinction lives at the
+# policy-routing layer, not the network layer. The simulator's PTU
+# throttle state is bookkeeping; canonical cached_tokens always comes
+# from the API response.
+#
+# Position in series: precedes exp005 (Task 013, Phase 2 real
+# TPM-throttled primary) and Task 014 analysis. The script that consumes
+# this YAML is scripts/simulate_spillover.py — independent of
+# scripts/run_benchmark.py.
+
+experiment_id: exp004_spillover_baseline_reactive
+description: >-
+  Phase 1 spillover simulator — REACTIVE policy. Establishes the
+  reactive-policy recovery-curve shape (cache hit ratio over time, with
+  spillover events marked) under a 22-minute single-call ReAct load
+  profile (2-min warmup, 10-min ramp 0.5→2.5 TPS, 10-min sustain at
+  2.0 TPS). Phase 1 uses one Azure gpt-5.2 deployment with internally
+  simulated throttle state.
+parent_experiment: null
+benchmark: 04-spillover-simulation
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# Reasoning families on Foundry v1 reject temperature / top_p — both
+# keys are intentionally absent here.
+call_params:
+  max_output_tokens: 1024
+  # Optional Azure prompt-cache controls (Task 011 v2 appendix). Left
+  # null so the Azure default (in_memory) applies; downstream Tasks
+  # 018-019 will sweep these.
+  prompt_cache_key: null
+  prompt_cache_retention: null
+
+# v3 HOTFIX 2026-05-27 (live-run unblock — Task 014 / Task 012 Phase 1).
+# Azure gpt-5.2 rejected effort=minimal at dispatch; raised to `low`
+# (next-lowest value in docs/05-methodology.md §2 reasoning_effort
+# vocabulary {minimal, low, medium, high}). Original $3.0 estimate /
+# $50.0 ceiling were anchored to Task 012 §Cost & Time Budget's initial
+# projection, which under-counted reasoning-token volume at effort=low;
+# per pricing/azure-openai-payg-2026-05.yaml (accessed 2026-05-19)
+# gpt-5.2 PAYG bills $1.75 / $0.175 / $14.00 per 1M input / cached /
+# output tokens. Two distinct figures matter for the 22-minute run:
+#   * Expected (cached) per-policy spend ≈ $25 USD. Phase 1's load
+#     shape drives a high prompt-cache hit ratio against the
+#     byte-identical 30K-token system prompt once warmup completes,
+#     so most input tokens bill at the $0.175/1M cached rate. This
+#     is the ACTUAL spend we expect to incur — it is NOT the value
+#     carried in `budget.estimated_cost_usd` below.
+#   * Conservative no-cache pre-run upper bound ≈ $118.31 USD per
+#     policy. Assumes every request bills input at the full $1.75/1M
+#     rate (cache collapse). This is the value carried in
+#     `budget.estimated_cost_usd` below; it functions as the YAML
+#     approval-gate estimate, deliberately set above the local cap
+#     so the pre-run check enforces explicit owner sign-off.
+# `hard_ceiling_usd=$60` is the mid-run no-silent-overrun guard:
+# above the cached estimate, below the no-cache upper bound, so a
+# cache-collapse scenario halts well before the no-cache figure.
+# Pre-run gate (scripts/simulate_spillover.py): the script reads
+# `MAX_COST_PER_BENCHMARK_USD` from the runner's process
+# environment (`os.environ`), not from any `.env` file directly.
+# The runner aborts when `estimated_cost_usd >
+# MAX_COST_PER_BENCHMARK_USD AND budget.confirmed == false`. With
+# `MAX_COST_PER_BENCHMARK_USD=100` exported into the process
+# environment (typically sourced from a developer-local `.env`;
+# the repo's `.env.example` is documentation / a default-values
+# template only and is never read at runtime) and
+# `estimated_cost_usd=118.31` here, the gate trips and live
+# dispatch is blocked. `confirmed: false` is therefore
+# load-bearing: unblocking requires explicit owner sign-off —
+# either flip `confirmed: true` in this YAML, or export a higher
+# `MAX_COST_PER_BENCHMARK_USD` (>118.31) into the runner's
+# environment before invoking the script. No self-confirmed
+# override is applied here. The simulation schedule (warmup +
+# ramp + sustain, 22 min) and `corpus_seed` are byte-identical to
+# v2 — only `effort` and the budget envelope changed.
+effort: low
+
+# Policy contract — verbatim defaults from Task 012 (Phase 1 spec).
+policy:
+  type: reactive
+  reactive:
+    first_token_timeout_ms: 3000
+    stay_on_spillover_min_requests: 10
+    health_check_interval_ms: 30000
+  proactive:
+    latency_window_size: 50
+    p95_threshold_multiplier: 1.5
+    spillover_fraction_max: 0.8
+    measurement_window_seconds: 10
+    # Per-window additive ramp-up step. Default 0.2 → cap reached after
+    # 4 consecutive breached windows. Must be strictly less than
+    # spillover_fraction_max so the ramp is multi-window, not a single
+    # jump from 0 to cap.
+    ramp_up_step: 0.2
+    ramp_back_factor: 0.9
+
+# Load shape — verbatim from Task 012 Implementation Notes. The TPS
+# values are deliberate: warmup at 0.3 establishes baseline p95 for the
+# proactive policy; ramp 0.5 → 2.5 pushes the simulated primary into
+# near-saturation; sustain 2.0 keeps it in the saturation regime where
+# policy differences matter. The framing is mechanism-exposing and
+# never customer-attributed.
+simulation:
+  duration_seconds: 1320         # 22 min total
+  warmup:
+    duration_seconds: 120        # 2 min
+    tps: 0.3
+  load_pattern:
+    type: ramp_then_sustain
+    ramp_start_tps: 0.5
+    ramp_end_tps: 2.5
+    ramp_duration_seconds: 600   # 10 min
+    sustain_tps: 2.0
+    sustain_duration_seconds: 600  # 10 min
+  primary:
+    # Simulated PTU throttle threshold (tokens-per-minute, internal
+    # bookkeeping only — never overrides API-returned cached_tokens).
+    # Calibrated against the target ~30K-input-token shape and the
+    # ramp/sustain TPS envelope so the simulated primary saturates
+    # mid-ramp.
+    simulated_throttle_threshold_tpm: 90000
+
+# Deterministic system-prompt construction (Task 012 §System prompt
+# construction). The 30K-input-token target matches the deployment
+# shape this benchmark simulates. Same corpus_seed across reactive and
+# proactive YAMLs so the system prompt is byte-identical (single shared
+# SHA-256 across both runs).
+corpus_seed: 4242
+target_system_prompt_tokens: 30000
+system_prompt_corpus_path: benchmarks/04-spillover-simulation/system_prompt_corpus.json
+user_prompts_path: benchmarks/04-spillover-simulation/user_prompts.json
+
+# Per-policy YAML budget (v3 HOTFIX 2026-05-27, effort=low).
+# Two distinct figures — do not conflate them:
+#   * Expected cached per-policy spend ≈ $25 USD. The amount we
+#     actually expect to bill given Phase 1's high prompt-cache hit
+#     ratio. NOT the value below.
+#   * `estimated_cost_usd: 118.31` below carries the conservative
+#     no-cache pre-run upper bound — the YAML approval-gate value,
+#     NOT the expected spend. It is deliberately set above the
+#     `MAX_COST_PER_BENCHMARK_USD=100` value the operator typically
+#     exports into the runner's process environment (e.g., sourced
+#     from a developer-local `.env`; the repo's `.env.example` is
+#     only the in-repo default-values template and is not read at
+#     runtime) so the pre-run check in scripts/simulate_spillover.py
+#     (`estimated_cost_usd > MAX_COST_PER_BENCHMARK_USD AND not
+#     budget.confirmed`) trips and blocks live dispatch.
+#   * `hard_ceiling_usd: 60.0` is the mid-run no-silent-overrun
+#     guard between the two estimates.
+# `confirmed: false` is load-bearing: live dispatch unblocks only
+# when the owner explicitly flips `confirmed: true` here or exports
+# a higher `MAX_COST_PER_BENCHMARK_USD` (>118.31) into the runner's
+# process environment before invoking the script. See the v3 HOTFIX
+# comment block near `effort:` for the full pricing-snapshot
+# citation, cached-vs-no-cache derivation, and methodology rationale.
+#
+# v3.1 OWNER SIGNOFF 2026-05-27 (Asia/Seoul). Owner approved the
+# exp004 Phase 1 live-run budget for BOTH policies in chat:
+#   approval-gate estimate     : $118.31 per policy
+#                                ($236.62 across reactive + proactive)
+#   mid-run hard ceiling       : $60.00 per policy
+#                                ($120.00 across both, unchanged)
+#   scope                      : Task 012 / Task 014 Phase 1
+#                                (effort=low, byte-identical schedule,
+#                                corpus_seed, load shape preserved)
+# `confirmed: true` below is the auditable in-YAML override that
+# pairs with `MAX_COST_PER_BENCHMARK_USD=100` in the runner's
+# process environment. No `hard_ceiling_usd` change is applied —
+# the mid-run guard stays at $60.0 per policy.
+budget:
+  estimated_cost_usd: 118.31
+  hard_ceiling_usd: 60.0
+  confirmed: true
+
+metadata:
+  created_at: 2026-05-25
+  git_commit: null
+  tenant: <project>
+  # consumption_model_context is the MEASUREMENT ENVIRONMENT. The
+  # simulator models PTU saturation internally; therefore 'ptu'.
+  consumption_model_context: ptu
+  architecture_context: single_call_react
+  hypothesis_under_test: G_weak
+
+concurrency: 4

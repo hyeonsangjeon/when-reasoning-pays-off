@@ -1,0 +1,130 @@
+{
+  "capacity_inputs": {
+    "deployment_tpm_quota": 60000.0,
+    "ptu_count": null
+  },
+  "empty_files_skipped": [],
+  "empty_files_skipped_count": 0,
+  "excluded_streams": [],
+  "holdout_eligible_n_streams": 1,
+  "holdout_summaries": [],
+  "in_sample_summary": {
+    "confusion_matrix": {
+      "fn": 107,
+      "fp": 5,
+      "tn": 4267,
+      "tp": 60
+    },
+    "n_events": 4439,
+    "onset_timestamp_residuals": {
+      "n_paired": 4,
+      "p50_abs_gap_seconds": 24695.5,
+      "p95_abs_gap_seconds": 26248.75
+    },
+    "retry_after_residuals": {
+      "n_paired": 60,
+      "p50_abs_ms": 74245.34968697734,
+      "p95_abs_ms": 264626.91306269186
+    }
+  },
+  "k_leak_tokens_per_ptu_per_second": 3.910283160104311,
+  "official_spec_inputs": {
+    "admission_formula": "max(0, prompt_tokens - cached_tokens) + max_output_tokens",
+    "capacity_formula": "input_tpm_per_ptu[model] * ptu_count",
+    "input_tpm_per_ptu_table": {
+      "gpt-4.1": 3000,
+      "gpt-4o": 2500,
+      "gpt-5": 4750,
+      "gpt-5.1": 4750,
+      "gpt-5.1-codex": 4750,
+      "gpt-5.2": 3400,
+      "gpt-5.2-codex": 3400,
+      "gpt-5.3-codex": 3400
+    },
+    "source_guide_sections": [
+      "Guide \u00a70 (admission reservation, continuous leak)",
+      "Guide \u00a73 (Input TPM / PTU)"
+    ]
+  },
+  "operational_inference": {
+    "completion_reconciliation": "reserve at admission; release unused reservation at completion",
+    "demand_recovery": "neighbor (source_run_id, cell_key) accepted record",
+    "k_leak_tokens_per_ptu_per_second": "fitted; numeric constant is operational inference per Task 029",
+    "payg_quota_proxy_mapping": "effective_ptu_count = deployment_tpm_quota / input_tpm_per_ptu[model]"
+  },
+  "optimizer": {
+    "fit_status": "ok",
+    "fit_value_sum_sq_seconds": 2497803362.0,
+    "golden_section_refine_iters": 24,
+    "grid": [
+      0.125,
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      8.0,
+      16.0,
+      32.0,
+      64.0,
+      128.0,
+      256.0,
+      512.0,
+      1024.0,
+      2048.0,
+      4096.0
+    ],
+    "grid_values": [
+      120644935532.0,
+      115521906647.0,
+      97072141692.0,
+      5264373737.0,
+      5518504715.0,
+      2511115287.0,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "method": "deterministic grid + golden-section refine",
+    "pairing_rule": "per (source_run_id, cell_key), event order"
+  },
+  "schema_version": "task024_v1",
+  "source_streams": [
+    {
+      "capacity_source": "payg_quota_proxy",
+      "effective_ptu_count": 17.647058823529413,
+      "fallback_reason_counts": {
+        "max_output_tokens_from_yaml": 2136
+      },
+      "n_excluded": 0,
+      "n_observed_429": 0,
+      "n_observed_accepted": 2136,
+      "n_records": 2136,
+      "source_label": "task013_dual_spillover",
+      "source_path": "benchmarks/05-dual-spillover/runs/20260528T135034Z_exp005_dual_spillover_reactive_reactive.jsonl",
+      "source_run_id": "20260528T135034Z_exp005_dual_spillover_reactive_reactive.jsonl"
+    },
+    {
+      "capacity_source": "payg_quota_proxy",
+      "effective_ptu_count": 17.647058823529413,
+      "fallback_reason_counts": {
+        "demand_recovered_from_neighbor": 167,
+        "max_output_tokens_from_yaml": 2303
+      },
+      "n_excluded": 0,
+      "n_observed_429": 167,
+      "n_observed_accepted": 2136,
+      "n_records": 2303,
+      "source_label": "task013_dual_spillover",
+      "source_path": "benchmarks/05-dual-spillover/runs/20260528T183310Z_exp005_dual_spillover_proactive_proactive.jsonl",
+      "source_run_id": "20260528T183310Z_exp005_dual_spillover_proactive_proactive.jsonl"
+    }
+  ]
+}

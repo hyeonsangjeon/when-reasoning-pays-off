@@ -1,0 +1,77 @@
+# exp002 — baseline measurement of GPT-5.2 reasoning effort sweep on
+# benchmarks/02-multi-step-reasoning. This is the Phase-3 production
+# experiment (no parent).
+#
+# Hypothesis: on multi-step reasoning tasks the reasoning-effort axis
+# produces a detectable quality lift over the gpt-4o baseline (the ceiling
+# case for "when reasoning pays off"). Token cost grows monotonically with
+# effort; quality is the question. This run captures the cost-and-quality
+# surface; the cost-per-correct verdict lands in
+# benchmarks/02-multi-step-reasoning/analysis.md.
+#
+# Methodology invariant: Foundry v1 reasoning models (gpt-5.2 family) reject
+# `temperature` and `top_p` with HTTP 400 (see scripts/run_benchmark.py
+# build_call_kwargs guard). This YAML therefore omits both keys from
+# call_params; the runner validates that fact at config-load time.
+#
+# Effort whitelist matches the live Foundry v1 gpt-5.2 deployment as observed
+# during Task 006: {none, low, medium, high, xhigh}. The spec's original
+# `minimal` is rejected with HTTP 400 and is therefore omitted (Task 007 also
+# omitted it for the same reason).
+
+experiment_id: exp002_benchmark02_gpt5_2
+description: >-
+  Phase-3 baseline GPT-5.2 effort sweep over benchmarks/02-multi-step-reasoning.
+  Same prompts, same dataset, same R=3 across all five effort levels; the only
+  variable is reasoning.effort. Pair experiment to exp002_benchmark02_gpt4o
+  (gpt-4o sibling column).
+parent_experiment: null
+benchmark: 02-multi-step-reasoning
+
+dataset_size: 20
+repeats: 3
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# Reasoning families reject temperature / top_p — both keys intentionally
+# absent here. The runner raises ValueError if either reappears.
+call_params:
+  max_output_tokens: 4096
+
+sweep:
+  effort:
+    - none
+    - low
+    - medium
+    - high
+    - xhigh
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+# Per Task 009 spec: gpt-5.2 estimated $20, hard ceiling $25; combined with
+# the gpt-4o sibling ($5 estimated / $5 ceiling) the totals are
+# estimated $25 and ceiling $30. The operator enforces the cross-run budget
+# gate between the two YAMLs.
+budget:
+  estimated_cost_usd: 20.0
+  hard_ceiling_usd: 25.0
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-21
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  # Pinned SHA-256 hashes of the Task 009 dataset and system prompt.
+  dataset_sha256: d55b975eec249c65831f0c0d916fc752d09959fa0fee1d6f489e2a709fcf2698
+  system_prompt_sha256: 974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23
+
+concurrency: 5

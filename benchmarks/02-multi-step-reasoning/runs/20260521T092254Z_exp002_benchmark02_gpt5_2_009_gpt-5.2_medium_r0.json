@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0015600831247866154,
+    "tool_config_sha256": null,
+    "user_input_sha256": "e362cbaf8a6cc28f528b15afeef755fdd669bc49fa80ecaf03600df0117fb829"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1046.3022496551275,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "400",
+  "retry_count": 0,
+  "sample_id": "mr_10",
+  "sample_idx": 9,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no dollar sign or surrounding prose.",
+    "id": "mr_10",
+    "input": "A factory produces exactly 100 widgets per day. The defect rate is 5 percent. Each defective widget costs 20 dollars to repair. The factory operates for 4 days. What is the total cost in dollars to repair all defective widgets produced during those 4 days?",
+    "quality_rubric_notes": "Correct answer is exactly 400 (total widgets: 400; defective: 20; repair cost: 20 * 20 = 400). Any other integer is a fail; the prose-wrapped correct integer is partial credit.",
+    "tags": [
+      "causal-chain"
+    ],
+    "verifiable_answer": "400"
+  },
+  "timestamp_utc": "2026-05-21T09:22:54Z",
+  "usage": {
+    "input_tokens": 312,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 317
+  }
+}

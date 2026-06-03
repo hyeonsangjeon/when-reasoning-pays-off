@@ -1,0 +1,4440 @@
+series,t_seconds,value
+proactive (this run),0.000,0.000000
+proactive (this run),6.186,0.000000
+proactive (this run),13.371,0.330801
+proactive (this run),22.703,0.496183
+proactive (this run),38.353,0.595416
+proactive (this run),69.673,0.992283
+proactive (this run),98.563,0.992295
+proactive (this run),128.675,0.992326
+proactive (this run),156.523,0.992311
+proactive (this run),194.737,0.992295
+proactive (this run),220.712,0.992365
+proactive (this run),250.845,0.992342
+proactive (this run),277.253,0.992358
+proactive (this run),309.316,0.992358
+proactive (this run),344.711,0.992342
+proactive (this run),372.280,0.992412
+proactive (this run),401.363,0.992404
+proactive (this run),430.017,0.992420
+proactive (this run),456.621,0.992342
+proactive (this run),491.338,0.992272
+proactive (this run),515.933,0.992342
+proactive (this run),552.736,0.992436
+proactive (this run),583.328,0.992412
+proactive (this run),608.721,0.992326
+proactive (this run),643.825,0.992248
+proactive (this run),672.582,0.992295
+proactive (this run),702.202,0.992279
+proactive (this run),729.266,0.992264
+proactive (this run),763.528,0.992272
+proactive (this run),791.105,0.992295
+proactive (this run),820.298,0.661540
+proactive (this run),847.965,0.661613
+proactive (this run),881.209,0.992436
+proactive (this run),915.595,0.992272
+proactive (this run),942.284,0.992295
+proactive (this run),973.784,0.992279
+proactive (this run),998.968,0.992311
+proactive (this run),1030.817,0.992326
+proactive (this run),1056.876,0.992311
+proactive (this run),1095.010,0.992295
+proactive (this run),1120.518,0.992365
+proactive (this run),1152.349,0.992342
+proactive (this run),1177.800,0.992358
+proactive (this run),1210.731,0.992358
+proactive (this run),1246.470,0.992342
+proactive (this run),1271.762,0.992412
+proactive (this run),1308.814,0.992436
+proactive (this run),1334.095,0.992389
+proactive (this run),1360.115,0.992342
+proactive (this run),1393.542,0.992311
+proactive (this run),1418.690,0.992342
+proactive (this run),1452.175,0.992389
+proactive (this run),1489.641,0.992412
+proactive (this run),1509.678,0.992326
+proactive (this run),1546.790,0.992311
+proactive (this run),1571.491,0.992295
+proactive (this run),1601.692,0.992279
+proactive (this run),1629.398,0.992264
+proactive (this run),1662.110,0.992295
+proactive (this run),1662.110,0.992272
+proactive (this run),1706.487,0.992295
+proactive (this run),1714.400,0.992311
+proactive (this run),1717.508,0.992377
+proactive (this run),1724.267,0.992389
+proactive (this run),1733.418,0.992361
+proactive (this run),1740.875,0.992358
+proactive (this run),1747.615,0.992342
+proactive (this run),1754.586,0.992342
+proactive (this run),1782.004,0.992311
+proactive (this run),1808.031,0.992311
+proactive (this run),1842.848,0.992295
+proactive (this run),1875.485,0.992365
+proactive (this run),1905.105,0.992318
+proactive (this run),1929.469,0.992358
+proactive (this run),1962.245,0.992358
+proactive (this run),1994.724,0.992342
+proactive (this run),2023.378,0.992412
+proactive (this run),2056.545,0.992436
+proactive (this run),2081.195,0.992420
+proactive (this run),2110.027,0.992342
+proactive (this run),2143.264,0.992272
+proactive (this run),2168.785,0.992342
+proactive (this run),2203.190,0.992389
+proactive (this run),2236.574,0.992412
+proactive (this run),2259.127,0.992326
+proactive (this run),2297.853,0.992248
+proactive (this run),2322.693,0.992295
+proactive (this run),2354.533,0.992279
+proactive (this run),2383.008,0.992272
+proactive (this run),2413.516,0.992264
+proactive (this run),2448.427,0.992295
+proactive (this run),2474.246,0.992342
+proactive (this run),2498.615,0.992420
+proactive (this run),2537.426,0.992436
+proactive (this run),2566.392,0.992272
+proactive (this run),2592.727,0.992295
+proactive (this run),2623.238,0.992279
+proactive (this run),2652.135,0.992311
+proactive (this run),2683.771,0.992365
+proactive (this run),2710.148,0.992311
+proactive (this run),2744.453,0.992295
+proactive (this run),2773.582,0.992365
+proactive (this run),2806.219,0.992318
+proactive (this run),2831.728,0.992358
+proactive (this run),2866.642,0.992389
+proactive (this run),2894.978,0.992342
+proactive (this run),2894.978,0.992342
+proactive (this run),2942.054,0.992412
+proactive (this run),2952.654,0.992404
+proactive (this run),2958.802,0.992420
+proactive (this run),2962.790,0.992377
+proactive (this run),2971.752,0.992361
+proactive (this run),2975.622,0.992381
+proactive (this run),2983.130,0.992382
+proactive (this run),2995.094,0.992389
+proactive (this run),3011.791,0.992348
+proactive (this run),3046.553,0.992311
+proactive (this run),3077.688,0.992295
+proactive (this run),3104.095,0.992279
+proactive (this run),3132.835,0.992264
+proactive (this run),3166.437,0.992272
+proactive (this run),3196.799,0.992295
+proactive (this run),3225.144,0.992311
+proactive (this run),3250.014,0.992420
+proactive (this run),3283.935,0.992404
+proactive (this run),3314.721,0.992272
+proactive (this run),3342.851,0.992295
+proactive (this run),3372.472,0.992279
+proactive (this run),3419.499,0.992295
+proactive (this run),3433.424,0.992365
+proactive (this run),3460.614,0.992311
+proactive (this run),3495.480,0.992295
+proactive (this run),3526.368,0.992365
+proactive (this run),3554.770,0.992342
+proactive (this run),3582.417,0.992358
+proactive (this run),3615.494,0.992389
+proactive (this run),3648.056,0.992342
+proactive (this run),3676.308,0.992412
+proactive (this run),3711.120,0.992436
+proactive (this run),3736.253,0.992420
+proactive (this run),3761.310,0.992342
+proactive (this run),3796.844,0.992272
+proactive (this run),3820.599,0.992342
+proactive (this run),3859.206,0.992436
+proactive (this run),3892.772,0.992412
+proactive (this run),3912.353,0.992326
+proactive (this run),3949.793,0.992311
+proactive (this run),3976.249,0.992295
+proactive (this run),4006.150,0.992279
+proactive (this run),4033.284,0.992264
+proactive (this run),4066.566,0.992272
+proactive (this run),4099.846,0.992295
+proactive (this run),4127.051,0.992342
+proactive (this run),4152.706,0.992420
+proactive (this run),4187.129,0.992436
+proactive (this run),4217.184,0.992272
+proactive (this run),4245.231,0.992295
+proactive (this run),4275.348,0.992279
+proactive (this run),4308.818,0.992295
+proactive (this run),4335.483,0.992365
+proactive (this run),4362.399,0.992311
+proactive (this run),4398.026,0.992295
+proactive (this run),4426.326,0.992365
+proactive (this run),4455.788,0.992342
+proactive (this run),4482.197,0.992318
+proactive (this run),4482.197,0.992358
+proactive (this run),4541.323,0.992389
+proactive (this run),4550.302,0.992342
+proactive (this run),4562.489,0.992389
+proactive (this run),4574.047,0.992389
+proactive (this run),4581.126,0.992389
+proactive (this run),4584.196,0.992365
+proactive (this run),4592.381,0.992355
+proactive (this run),4595.478,0.992371
+proactive (this run),4607.300,0.992377
+proactive (this run),4638.350,0.992373
+proactive (this run),4664.278,0.992326
+proactive (this run),4698.067,0.992311
+proactive (this run),4727.960,0.992295
+proactive (this run),4756.331,0.992279
+proactive (this run),4785.002,0.992264
+proactive (this run),4817.977,0.992272
+proactive (this run),4846.540,0.992295
+proactive (this run),4878.631,0.992342
+proactive (this run),4904.197,0.992420
+proactive (this run),4937.632,0.992459
+proactive (this run),4937.632,0.992404
+proactive (this run),4982.022,0.992272
+proactive (this run),4988.267,0.992295
+proactive (this run),4994.310,0.992283
+proactive (this run),5001.273,0.992295
+proactive (this run),5007.625,0.992314
+proactive (this run),5011.305,0.992295
+proactive (this run),5021.445,0.992308
+proactive (this run),5026.872,0.992313
+proactive (this run),5058.514,0.992326
+proactive (this run),5084.318,0.992358
+proactive (this run),5117.395,0.992358
+proactive (this run),5148.623,0.992342
+proactive (this run),5178.118,0.992412
+proactive (this run),5212.712,0.992436
+proactive (this run),5237.333,0.992420
+proactive (this run),5264.586,0.992342
+proactive (this run),5297.925,0.992272
+proactive (this run),5324.549,0.992342
+proactive (this run),5357.734,0.992389
+proactive (this run),5389.266,0.992412
+proactive (this run),5414.659,0.992326
+proactive (this run),5450.399,0.992248
+proactive (this run),5480.301,0.992295
+proactive (this run),5507.128,0.992279
+proactive (this run),5536.727,0.992264
+proactive (this run),5569.681,0.992272
+proactive (this run),5599.391,0.992295
+proactive (this run),5628.587,0.992311
+proactive (this run),5655.481,0.992420
+proactive (this run),5685.988,0.992404
+proactive (this run),5719.231,0.992272
+proactive (this run),5746.540,0.992295
+proactive (this run),5777.180,0.992279
+proactive (this run),5807.712,0.992295
+proactive (this run),5838.063,0.992365
+proactive (this run),5863.378,0.992311
+proactive (this run),5903.725,0.992295
+proactive (this run),5927.055,0.992389
+proactive (this run),5958.643,0.992342
+proactive (this run),5984.723,0.992365
+proactive (this run),6018.414,0.992358
+proactive (this run),6050.150,0.992342
+proactive (this run),6078.985,0.992412
+proactive (this run),6112.314,0.992436
+proactive (this run),6138.425,0.992420
+proactive (this run),6163.717,0.992342
+proactive (this run),6198.414,0.992311
+proactive (this run),6224.655,0.992389
+proactive (this run),6261.427,0.992436
+proactive (this run),6290.714,0.992412
+proactive (this run),6314.756,0.992326
+proactive (this run),6354.335,0.992248
+proactive (this run),6378.614,0.992295
+proactive (this run),6408.768,0.992279
+proactive (this run),6436.204,0.992264
+proactive (this run),6470.799,0.992295
+proactive (this run),6470.799,0.992272
+proactive (this run),6513.313,0.992295
+proactive (this run),6529.028,0.992311
+proactive (this run),6535.582,0.992420
+proactive (this run),6543.727,0.992389
+proactive (this run),6553.863,0.992361
+proactive (this run),6562.054,0.992358
+proactive (this run),6571.882,0.992342
+proactive (this run),6580.541,0.992342
+proactive (this run),6585.736,0.992348
+proactive (this run),6616.122,0.992304
+proactive (this run),6649.978,0.992295
+proactive (this run),6677.152,0.992365
+proactive (this run),6711.354,0.992318
+proactive (this run),6737.155,0.992365
+proactive (this run),6772.590,0.992389
+proactive (this run),6801.671,0.992342
+proactive (this run),6833.209,0.992412
+proactive (this run),6863.091,0.992436
+proactive (this run),6890.095,0.992420
+proactive (this run),6914.926,0.992342
+proactive (this run),6950.451,0.992272
+proactive (this run),6975.649,0.992389
+proactive (this run),7012.175,0.992436
+proactive (this run),7050.092,0.992412
+proactive (this run),7066.690,0.992326
+proactive (this run),7101.061,0.992311
+proactive (this run),7130.470,0.992295
+proactive (this run),7160.890,0.992279
+proactive (this run),7187.730,0.992264
+proactive (this run),7221.306,0.992272
+proactive (this run),7251.820,0.992295
+proactive (this run),7283.361,0.992342
+proactive (this run),7307.522,0.992420
+proactive (this run),7339.475,0.992404
+proactive (this run),7369.040,0.992272
+proactive (this run),7398.070,0.992295
+proactive (this run),7430.647,0.992295
+proactive (this run),7459.384,0.992295
+proactive (this run),7488.874,0.992326
+proactive (this run),7515.766,0.992311
+proactive (this run),7550.250,0.992295
+proactive (this run),7580.497,0.992365
+proactive (this run),7609.793,0.992342
+proactive (this run),7635.819,0.992358
+proactive (this run),7672.255,0.992389
+proactive (this run),7700.948,0.992342
+proactive (this run),7733.203,0.992412
+proactive (this run),7762.589,0.992436
+proactive (this run),7791.962,0.992420
+proactive (this run),7816.765,0.992342
+proactive (this run),7851.381,0.992311
+proactive (this run),7876.954,0.992389
+proactive (this run),7909.534,0.992389
+proactive (this run),7946.681,0.992412
+proactive (this run),7967.352,0.992326
+proactive (this run),8000.153,0.992311
+proactive (this run),8030.460,0.992295
+proactive (this run),8062.009,0.992248
+proactive (this run),8089.564,0.992264
+proactive (this run),8120.890,0.992264
+proactive (this run),8152.221,0.992295
+proactive (this run),8182.535,0.992342
+proactive (this run),8207.212,0.992420
+proactive (this run),8240.902,0.992404
+proactive (this run),8273.975,0.992272
+proactive (this run),8300.090,0.992295
+proactive (this run),8329.894,0.992279
+proactive (this run),8362.267,0.992295
+proactive (this run),8391.124,0.992365
+proactive (this run),8417.499,0.992311
+proactive (this run),8451.391,0.992295
+proactive (this run),8480.807,0.992365
+proactive (this run),8511.956,0.992318
+proactive (this run),8538.608,0.992358
+proactive (this run),8573.192,0.992389
+proactive (this run),8602.887,0.992342
+proactive (this run),8632.995,0.992389
+proactive (this run),8670.267,0.992436
+proactive (this run),8691.155,0.992420
+proactive (this run),8719.516,0.992342
+proactive (this run),8753.981,0.992272
+proactive (this run),8777.928,0.992342
+proactive (this run),8812.372,0.992389
+proactive (this run),8846.585,0.992412
+proactive (this run),8870.868,0.992412
+proactive (this run),8870.868,0.992326
+proactive (this run),8928.438,0.992248
+proactive (this run),8936.299,0.992295
+proactive (this run),8944.145,0.992279
+proactive (this run),8950.607,0.992283
+proactive (this run),8959.007,0.992276
+proactive (this run),8966.771,0.992287
+proactive (this run),8976.031,0.992295
+proactive (this run),8978.557,0.992330
+proactive (this run),8995.362,0.992324
+proactive (this run),9024.468,0.992361
+proactive (this run),9051.603,0.992295
+proactive (this run),9084.166,0.992279
+proactive (this run),9112.353,0.992295
+proactive (this run),9144.583,0.992365
+proactive (this run),9168.022,0.992311
+proactive (this run),9203.201,0.992326
+proactive (this run),9231.842,0.992365
+proactive (this run),9262.341,0.992342
+proactive (this run),9288.577,0.992358
+proactive (this run),9322.514,0.992389
+proactive (this run),9358.746,0.992342
+proactive (this run),9384.636,0.992412
+proactive (this run),9414.986,0.992404
+proactive (this run),9442.363,0.992420
+proactive (this run),9469.190,0.992342
+proactive (this run),9503.290,0.992272
+proactive (this run),9530.425,0.992389
+proactive (this run),9562.991,0.992389
+proactive (this run),9599.327,0.992412
+proactive (this run),9620.231,0.992326
+proactive (this run),9654.127,0.992311
+proactive (this run),9685.564,0.992295
+proactive (this run),9715.452,0.992248
+proactive (this run),9742.750,0.992264
+proactive (this run),9773.215,0.992264
+proactive (this run),9802.504,0.992295
+proactive (this run),9832.584,0.992311
+proactive (this run),9858.944,0.992420
+proactive (this run),9894.184,0.992436
+proactive (this run),9926.007,0.992272
+proactive (this run),9957.410,0.992295
+proactive (this run),9983.162,0.992279
+proactive (this run),10012.127,0.992311
+proactive (this run),10043.744,0.992365
+proactive (this run),10069.249,0.992311
+proactive (this run),10103.560,0.992326
+proactive (this run),10134.996,0.992365
+proactive (this run),10164.293,0.992318
+proactive (this run),10191.009,0.992318
+proactive (this run),10191.009,0.992358
+proactive (this run),10250.196,0.992389
+proactive (this run),10258.595,0.992342
+proactive (this run),10270.778,0.992389
+proactive (this run),10281.012,0.992389
+proactive (this run),10289.621,0.992389
+proactive (this run),10294.332,0.992365
+proactive (this run),10303.092,0.992355
+proactive (this run),10306.310,0.992371
+proactive (this run),10314.902,0.992377
+proactive (this run),10346.099,0.992373
+proactive (this run),10371.049,0.992326
+proactive (this run),10405.539,0.992311
+proactive (this run),10436.008,0.992295
+proactive (this run),10465.739,0.992248
+proactive (this run),10493.396,0.992264
+proactive (this run),10527.040,0.992272
+proactive (this run),10557.355,0.992295
+proactive (this run),10584.825,0.992311
+proactive (this run),10611.670,0.992420
+proactive (this run),10645.666,0.992436
+proactive (this run),10676.590,0.992272
+proactive (this run),10705.241,0.992295
+proactive (this run),10734.433,0.992279
+proactive (this run),10766.365,0.992295
+proactive (this run),10794.770,0.992365
+proactive (this run),10820.359,0.992311
+proactive (this run),10854.704,0.992326
+proactive (this run),10884.051,0.992365
+proactive (this run),10914.666,0.992342
+proactive (this run),10943.580,0.992358
+proactive (this run),10977.033,0.992389
+proactive (this run),11007.240,0.992342
+proactive (this run),11037.653,0.992412
+proactive (this run),11069.976,0.992436
+proactive (this run),11093.914,0.992420
+proactive (this run),11121.632,0.992342
+proactive (this run),11158.137,0.992272
+proactive (this run),11181.525,0.992342
+proactive (this run),11216.763,0.992389
+proactive (this run),11247.828,0.992412
+proactive (this run),11273.172,0.992326
+proactive (this run),11306.556,0.992311
+proactive (this run),11336.863,0.992295
+proactive (this run),11366.444,0.992279
+proactive (this run),11393.904,0.992264
+proactive (this run),11426.850,0.992272
+proactive (this run),11458.006,0.992295
+proactive (this run),11485.559,0.992311
+proactive (this run),11511.104,0.992420
+proactive (this run),11546.455,0.992436
+proactive (this run),11575.356,0.992272
+proactive (this run),11605.770,0.992295
+proactive (this run),11635.513,0.992295
+proactive (this run),11667.462,0.992295
+proactive (this run),11693.730,0.992326
+proactive (this run),11721.379,0.992365
+proactive (this run),11721.379,0.992311
+proactive (this run),11779.132,0.992295
+proactive (this run),11785.658,0.992365
+proactive (this run),11793.064,0.992342
+proactive (this run),11796.811,0.992365
+proactive (this run),11804.322,0.992361
+proactive (this run),11812.448,0.992358
+proactive (this run),11821.509,0.992375
+proactive (this run),11833.182,0.992377
+proactive (this run),11844.463,0.992377
+proactive (this run),11874.159,0.992377
+proactive (this run),11907.542,0.992272
+proactive (this run),11933.449,0.992342
+proactive (this run),11966.115,0.992389
+proactive (this run),11998.982,0.992412
+proactive (this run),12023.357,0.992326
+proactive (this run),12057.455,0.992311
+proactive (this run),12087.661,0.992295
+proactive (this run),12116.643,0.992279
+proactive (this run),12143.778,0.992264
+proactive (this run),12179.211,0.992272
+proactive (this run),12205.835,0.992295
+proactive (this run),12236.411,0.992311
+proactive (this run),12263.074,0.992420
+proactive (this run),12298.198,0.992436
+proactive (this run),12329.739,0.992272
+proactive (this run),12355.725,0.992295
+proactive (this run),12385.004,0.992279
+proactive (this run),12416.502,0.992295
+proactive (this run),12445.279,0.992365
+proactive (this run),12472.254,0.992311
+proactive (this run),12508.778,0.992295
+proactive (this run),12536.278,0.992365
+proactive (this run),12566.384,0.661561
+proactive (this run),12596.182,0.661572
+proactive (this run),12628.511,0.992389
+proactive (this run),12656.912,0.992342
+proactive (this run),12686.853,0.992389
+proactive (this run),12722.475,0.992436
+proactive (this run),12746.403,0.992420
+proactive (this run),12774.259,0.992342
+proactive (this run),12807.431,0.992272
+proactive (this run),12834.772,0.992389
+proactive (this run),12867.848,0.992436
+proactive (this run),12899.257,0.992412
+proactive (this run),12923.247,0.992326
+proactive (this run),12960.195,0.992248
+proactive (this run),12987.760,0.992342
+proactive (this run),12987.760,0.992295
+proactive (this run),13030.769,0.992248
+proactive (this run),13036.285,0.992264
+proactive (this run),13044.973,0.992260
+proactive (this run),13052.067,0.992283
+proactive (this run),13059.133,0.992295
+proactive (this run),13062.352,0.992342
+proactive (this run),13068.799,0.992335
+proactive (this run),13080.346,0.992324
+proactive (this run),13105.928,0.992358
+proactive (this run),13137.162,0.992279
+proactive (this run),13170.442,0.992295
+proactive (this run),13196.277,0.992326
+proactive (this run),13225.273,0.992311
+proactive (this run),13257.620,0.992295
+proactive (this run),13288.639,0.992365
+proactive (this run),13316.818,0.992342
+proactive (this run),13344.805,0.992358
+proactive (this run),13378.611,0.992389
+proactive (this run),13410.846,0.992342
+proactive (this run),13439.283,0.992412
+proactive (this run),13473.323,0.992436
+proactive (this run),13498.105,0.992420
+proactive (this run),13524.876,0.992342
+proactive (this run),13556.170,0.992311
+proactive (this run),13583.998,0.992342
+proactive (this run),13620.487,0.992436
+proactive (this run),13651.343,0.992412
+proactive (this run),13675.011,0.992326
+proactive (this run),13709.681,0.992311
+proactive (this run),13740.587,0.992295
+proactive (this run),13769.212,0.992279
+proactive (this run),13798.321,0.992264
+proactive (this run),13828.966,0.992264
+proactive (this run),13857.822,0.992295
+proactive (this run),13888.878,0.992311
+proactive (this run),13915.823,0.992420
+proactive (this run),13949.366,0.992436
+proactive (this run),13978.813,0.992272
+proactive (this run),14008.278,0.992295
+proactive (this run),14037.757,0.992279
+proactive (this run),14068.583,0.992248
+proactive (this run),14068.583,0.992295
+proactive (this run),14138.122,0.992389
+proactive (this run),14141.400,0.992295
+proactive (this run),14150.102,0.992326
+proactive (this run),14156.042,0.992330
+proactive (this run),14161.879,0.992323
+proactive (this run),14164.969,0.992342
+proactive (this run),14170.892,0.992342
+proactive (this run),14176.318,0.992342
+proactive (this run),14188.401,0.992358
+proactive (this run),14220.950,0.992381
+proactive (this run),14248.522,0.992389
+proactive (this run),14275.158,0.992342
+proactive (this run),14309.882,0.992272
+proactive (this run),14336.101,0.992389
+proactive (this run),14370.470,0.992436
+proactive (this run),14401.275,0.992412
+proactive (this run),14425.997,0.992326
+proactive (this run),14461.457,0.992248
+proactive (this run),14490.473,0.992295
+proactive (this run),14520.980,0.992279
+proactive (this run),14548.057,0.992264
+proactive (this run),14578.437,0.992264
+proactive (this run),14609.901,0.992295
+proactive (this run),14640.088,0.992342
+proactive (this run),14664.768,0.992420
+proactive (this run),14700.300,0.992436
+proactive (this run),14739.111,0.992272
+proactive (this run),14760.117,0.992295
+proactive (this run),14790.717,0.992279
+proactive (this run),14818.418,0.992311
+proactive (this run),14848.987,0.992326
+proactive (this run),14875.485,0.992311
+proactive (this run),14910.666,0.992295
+proactive (this run),14938.943,0.992365
+proactive (this run),14970.328,0.992342
+proactive (this run),14995.904,0.992358
+proactive (this run),15031.785,0.992389
+proactive (this run),15061.614,0.992342
+proactive (this run),15090.735,0.992389
+proactive (this run),15125.326,0.992436
+proactive (this run),15148.505,0.992420
+proactive (this run),15177.359,0.992342
+proactive (this run),15211.993,0.992272
+proactive (this run),15236.465,0.992342
+proactive (this run),15269.147,0.992389
+proactive (this run),15303.948,0.992412
+proactive (this run),15327.091,0.992326
+proactive (this run),15363.690,0.992311
+proactive (this run),15392.011,0.992295
+proactive (this run),15421.914,0.992279
+proactive (this run),15451.570,0.992264
+proactive (this run),15481.301,0.992264
+proactive (this run),15512.812,0.992295
+proactive (this run),15540.412,0.992311
+proactive (this run),15566.575,0.992420
+proactive (this run),15599.987,0.992404
+proactive (this run),15635.342,0.992272
+proactive (this run),15661.017,0.992295
+proactive (this run),15690.332,0.992279
+proactive (this run),15719.076,0.992311
+proactive (this run),15748.467,0.992326
+proactive (this run),15776.628,0.992311
+proactive (this run),15812.787,0.992295
+proactive (this run),15839.192,0.992365
+proactive (this run),15869.821,0.992342
+proactive (this run),15897.652,0.992358
+proactive (this run),15932.377,0.992389
+proactive (this run),15964.385,0.992342
+proactive (this run),15990.322,0.992389
+proactive (this run),16023.514,0.992404
+proactive (this run),16051.265,0.992389
+proactive (this run),16078.909,0.992342
+proactive (this run),16110.453,0.992311
+proactive (this run),16137.693,0.992342
+proactive (this run),16171.121,0.992436
+proactive (this run),16207.777,0.992412
+proactive (this run),16227.353,0.992326
+proactive (this run),16264.565,0.992311
+proactive (this run),16292.579,0.992295
+proactive (this run),16323.612,0.992279
+proactive (this run),16349.320,0.992264
+proactive (this run),16382.888,0.992264
+proactive (this run),16412.226,0.992295
+proactive (this run),16441.614,0.992311
+proactive (this run),16468.547,0.992420
+proactive (this run),16500.956,0.992404
+proactive (this run),16531.821,0.992272
+proactive (this run),16561.099,0.992295
+proactive (this run),16594.685,0.992295
+proactive (this run),16622.275,0.992295
+proactive (this run),16652.252,0.992326
+proactive (this run),16679.546,0.992311
+proactive (this run),16714.716,0.992295
+proactive (this run),16742.847,0.992365
+proactive (this run),16772.646,0.992342
+proactive (this run),16798.326,0.992318
+proactive (this run),16798.326,0.992358
+proactive (this run),16855.170,0.992389
+proactive (this run),16861.418,0.992342
+proactive (this run),16867.572,0.992389
+proactive (this run),16874.161,0.992389
+proactive (this run),16880.818,0.992389
+proactive (this run),16885.162,0.992365
+proactive (this run),16893.324,0.992355
+proactive (this run),16895.859,0.992371
+proactive (this run),16921.320,0.992377
+proactive (this run),16957.596,0.992412
+proactive (this run),16980.516,0.992326
+proactive (this run),17012.478,0.992311
+proactive (this run),17044.448,0.992295
+proactive (this run),17071.478,0.992279
+proactive (this run),17101.686,0.992264
+proactive (this run),17134.761,0.992272
+proactive (this run),17163.196,0.992295
+proactive (this run),17194.052,0.992311
+proactive (this run),17220.162,0.992420
+proactive (this run),17252.642,0.992404
+proactive (this run),17286.469,0.992272
+proactive (this run),17311.401,0.992295
+proactive (this run),17342.016,0.992279
+proactive (this run),17373.165,0.992295
+proactive (this run),17402.090,0.992365
+proactive (this run),17430.210,0.992311
+proactive (this run),17464.584,0.992295
+proactive (this run),17493.555,0.992365
+proactive (this run),17525.828,0.992318
+proactive (this run),17551.365,0.992358
+proactive (this run),17585.118,0.992358
+proactive (this run),17612.375,0.992342
+proactive (this run),17644.701,0.992389
+proactive (this run),17676.357,0.992436
+proactive (this run),17705.324,0.992389
+proactive (this run),17731.653,0.992342
+proactive (this run),17763.619,0.992311
+proactive (this run),17790.737,0.992342
+proactive (this run),17825.801,0.992436
+proactive (this run),17855.687,0.992412
+proactive (this run),17880.951,0.992326
+proactive (this run),17917.201,0.992248
+proactive (this run),17944.166,0.992295
+proactive (this run),17976.594,0.992279
+proactive (this run),18002.220,0.992264
+proactive (this run),18035.954,0.992264
+proactive (this run),18066.431,0.992295
+proactive (this run),18094.968,0.992311
+proactive (this run),18121.210,0.992420
+proactive (this run),18153.565,0.992404
+proactive (this run),18184.782,0.992272
+proactive (this run),18214.265,0.992295
+proactive (this run),18243.241,0.992279
+proactive (this run),18273.657,0.992311
+proactive (this run),18303.617,0.992365
+proactive (this run),18330.157,0.992311
+proactive (this run),18365.833,0.992295
+proactive (this run),18393.010,0.992365
+proactive (this run),18424.799,0.992342
+proactive (this run),18450.705,0.992358
+proactive (this run),18485.831,0.992389
+proactive (this run),18517.677,0.992342
+proactive (this run),18547.194,0.992412
+proactive (this run),18576.625,0.992404
+proactive (this run),18603.373,0.992420
+proactive (this run),18633.184,0.992342
+proactive (this run),18665.452,0.992272
+proactive (this run),18693.046,0.992342
+proactive (this run),18723.532,0.992389
+proactive (this run),18756.892,0.992412
+proactive (this run),18782.733,0.992326
+proactive (this run),18817.812,0.992248
+proactive (this run),18843.719,0.992295
+proactive (this run),18875.182,0.992279
+proactive (this run),18904.236,0.992272
+proactive (this run),18936.377,0.992272
+proactive (this run),18966.495,0.992295
+proactive (this run),18997.258,0.992342
+proactive (this run),19022.037,0.992420
+proactive (this run),19055.288,0.992404
+proactive (this run),19085.170,0.992272
+proactive (this run),19115.592,0.992295
+proactive (this run),19145.166,0.992279
+proactive (this run),19174.967,0.992311
+proactive (this run),19205.085,0.992326
+proactive (this run),19232.333,0.992311
+proactive (this run),19268.578,0.992295
+proactive (this run),19296.021,0.992365
+proactive (this run),19326.420,0.992342
+proactive (this run),19352.245,0.992358
+proactive (this run),19387.229,0.992389
+proactive (this run),19419.502,0.992342
+proactive (this run),19447.383,0.992412
+proactive (this run),19478.220,0.992404
+proactive (this run),19505.531,0.992420
+proactive (this run),19534.120,0.992342
+proactive (this run),19566.591,0.992272
+proactive (this run),19592.533,0.661561
+proactive (this run),19628.616,0.000000
+proactive (this run),19661.596,0.496206
+proactive (this run),19683.298,0.661551
+proactive (this run),19717.055,0.992311
+proactive (this run),19746.378,0.992295
+proactive (this run),19776.688,0.992279
+proactive (this run),19806.851,0.992272
+proactive (this run),19836.694,0.992272
+proactive (this run),19867.927,0.992295
+proactive (this run),19898.555,0.992342
+proactive (this run),19926.149,0.661613
+proactive (this run),19963.604,0.496218
+proactive (this run),19991.708,0.992272
+proactive (this run),20018.364,0.992295
+proactive (this run),20045.794,0.992279
+proactive (this run),20076.406,0.992311
+proactive (this run),20107.859,0.992365
+proactive (this run),20133.454,0.992311
+proactive (this run),20170.424,0.992295
+proactive (this run),20195.298,0.992365
+proactive (this run),20229.268,0.992342
+proactive (this run),20256.575,0.992365
+proactive (this run),20291.658,0.992389
+proactive (this run),20321.481,0.992342
+proactive (this run),20349.219,0.992389
+proactive (this run),20379.315,0.992404
+proactive (this run),20406.858,0.992420
+proactive (this run),20434.607,0.992342
+proactive (this run),20467.992,0.992272
+proactive (this run),20493.863,0.992342
+proactive (this run),20527.692,0.992389
+proactive (this run),20562.129,0.992412
+proactive (this run),20584.523,0.992326
+proactive (this run),20625.815,0.992248
+proactive (this run),20648.252,0.992295
+proactive (this run),20678.217,0.992279
+proactive (this run),20705.663,0.992264
+proactive (this run),20736.298,0.992264
+proactive (this run),20768.809,0.992295
+proactive (this run),20797.463,0.992342
+proactive (this run),20824.140,0.992420
+proactive (this run),20859.263,0.992436
+proactive (this run),20890.700,0.992272
+proactive (this run),20918.660,0.992295
+proactive (this run),20947.940,0.992279
+proactive (this run),20976.718,0.992311
+proactive (this run),21006.981,0.992326
+proactive (this run),21034.060,0.992311
+proactive (this run),21071.857,0.992295
+proactive (this run),21098.163,0.992365
+proactive (this run),21128.575,0.992342
+proactive (this run),21154.931,0.992358
+proactive (this run),21188.800,0.992389
+proactive (this run),21219.504,0.992342
+proactive (this run),21249.768,0.496206
+proactive (this run),21282.511,0.496218
+proactive (this run),21307.587,0.661613
+proactive (this run),21335.035,0.992342
+proactive (this run),21369.248,0.992272
+proactive (this run),21394.861,0.992342
+proactive (this run),21429.451,0.992436
+proactive (this run),21464.363,0.992412
+proactive (this run),21486.489,0.992326
+proactive (this run),21522.919,0.992311
+proactive (this run),21551.695,0.992295
+proactive (this run),21577.815,0.992279
+proactive (this run),21607.163,0.992264
+proactive (this run),21639.041,0.992272
+proactive (this run),21670.374,0.992295
+proactive (this run),21699.662,0.992342
+proactive (this run),21725.033,0.992420
+proactive (this run),21758.920,0.992404
+proactive (this run),21790.755,0.992272
+proactive (this run),21818.467,0.992295
+proactive (this run),21848.756,0.992279
+proactive (this run),21879.682,0.992295
+proactive (this run),21908.248,0.661551
+proactive (this run),21935.489,0.661540
+proactive (this run),21969.621,0.992295
+proactive (this run),21997.928,0.992365
+proactive (this run),22028.468,0.992342
+proactive (this run),22056.516,0.992318
+proactive (this run),22056.516,0.992358
+proactive (this run),22107.315,0.992389
+proactive (this run),22118.212,0.992342
+proactive (this run),22125.851,0.992389
+proactive (this run),22134.533,0.992389
+proactive (this run),22141.792,0.992389
+proactive (this run),22145.205,0.992365
+proactive (this run),22154.830,0.992355
+proactive (this run),22158.239,0.992371
+proactive (this run),22180.245,0.992382
+proactive (this run),22213.269,0.992401
+proactive (this run),22236.943,0.992326
+proactive (this run),22272.181,0.992311
+proactive (this run),22299.984,0.992295
+proactive (this run),22332.082,0.992279
+proactive (this run),22358.505,0.992264
+proactive (this run),22392.194,0.992272
+proactive (this run),22421.377,0.992295
+proactive (this run),22450.349,0.992311
+proactive (this run),22476.368,0.992420
+proactive (this run),22511.798,0.992436
+proactive (this run),22541.699,0.992272
+proactive (this run),22570.118,0.992295
+proactive (this run),22600.305,0.992279
+proactive (this run),22633.040,0.992295
+proactive (this run),22659.060,0.992326
+proactive (this run),22686.507,0.992311
+proactive (this run),22722.871,0.992295
+proactive (this run),22751.517,0.992365
+proactive (this run),22780.282,0.992342
+proactive (this run),22807.512,0.992358
+proactive (this run),22841.125,0.992389
+proactive (this run),22872.554,0.992342
+proactive (this run),22901.200,0.992412
+proactive (this run),22934.194,0.992436
+proactive (this run),22959.795,0.992420
+proactive (this run),22986.761,0.992342
+proactive (this run),23022.225,0.992272
+proactive (this run),23046.849,0.992389
+proactive (this run),23081.492,0.992389
+proactive (this run),23111.423,0.992412
+proactive (this run),23139.545,0.992326
+proactive (this run),23173.202,0.992248
+proactive (this run),23202.676,0.992295
+proactive (this run),23231.535,0.992279
+proactive (this run),23260.261,0.992264
+proactive (this run),23293.625,0.992272
+proactive (this run),23320.862,0.992295
+proactive (this run),23353.120,0.992311
+proactive (this run),23376.876,0.992420
+proactive (this run),23411.197,0.992404
+proactive (this run),23442.340,0.992272
+proactive (this run),23472.392,0.992295
+proactive (this run),23501.898,0.992279
+proactive (this run),23536.313,0.992295
+proactive (this run),23563.745,0.992365
+proactive (this run),23587.485,0.992311
+proactive (this run),23623.382,0.992326
+proactive (this run),23649.262,0.992365
+proactive (this run),23682.153,0.992342
+proactive (this run),23708.080,0.992358
+proactive (this run),23742.854,0.992389
+proactive (this run),23773.881,0.992342
+proactive (this run),23803.063,0.992412
+proactive (this run),23833.782,0.992404
+proactive (this run),23861.737,0.992420
+proactive (this run),23888.202,0.992342
+proactive (this run),23924.170,0.992272
+proactive (this run),23948.679,0.992389
+proactive (this run),23983.593,0.992389
+proactive (this run),24013.398,0.992412
+proactive (this run),24039.586,0.992326
+proactive (this run),24074.426,0.992248
+proactive (this run),24101.990,0.992295
+proactive (this run),24132.078,0.992279
+proactive (this run),24160.157,0.992264
+proactive (this run),24192.789,0.992272
+proactive (this run),24224.547,0.992295
+proactive (this run),24252.501,0.992311
+proactive (this run),24278.009,0.992342
+proactive (this run),24278.009,0.992420
+proactive (this run),24325.906,0.992436
+proactive (this run),24335.036,0.992373
+proactive (this run),24341.814,0.992295
+proactive (this run),24347.016,0.992283
+proactive (this run),24353.467,0.992295
+proactive (this run),24359.080,0.992311
+proactive (this run),24363.056,0.992295
+proactive (this run),24371.483,0.992307
+proactive (this run),24403.576,0.992318
+proactive (this run),24432.067,0.992318
+proactive (this run),24458.958,0.992358
+proactive (this run),24494.268,0.992389
+proactive (this run),24524.065,0.992342
+proactive (this run),24554.863,0.992412
+proactive (this run),24584.994,0.992436
+proactive (this run),24614.152,0.992420
+proactive (this run),24640.462,0.992342
+proactive (this run),24672.546,0.992311
+proactive (this run),24703.531,0.992389
+proactive (this run),24732.737,0.992436
+proactive (this run),24766.068,0.992412
+proactive (this run),24790.835,0.992326
+proactive (this run),24825.635,0.661540
+proactive (this run),24854.528,0.496147
+proactive (this run),24884.824,0.661520
+proactive (this run),24911.241,0.992264
+proactive (this run),24944.990,0.992272
+proactive (this run),24974.423,0.992295
+proactive (this run),25003.385,0.992311
+proactive (this run),25030.068,0.992420
+proactive (this run),25065.866,0.992436
+proactive (this run),25097.293,0.992272
+proactive (this run),25122.904,0.992295
+proactive (this run),25154.955,0.992279
+proactive (this run),25184.220,0.992295
+proactive (this run),25212.164,0.992326
+proactive (this run),25239.844,0.992311
+proactive (this run),25276.139,0.992295
+proactive (this run),25302.611,0.992365
+proactive (this run),25334.975,0.992342
+proactive (this run),25360.572,0.992358
+proactive (this run),25396.207,0.992389
+proactive (this run),25427.135,0.992342
+proactive (this run),25456.855,0.992412
+proactive (this run),25486.576,0.992404
+proactive (this run),25517.988,0.992389
+proactive (this run),25540.537,0.992342
+proactive (this run),25576.434,0.992311
+proactive (this run),25600.733,0.992389
+proactive (this run),25635.484,0.992389
+proactive (this run),25670.438,0.992412
+proactive (this run),25692.206,0.992326
+proactive (this run),25728.497,0.992311
+proactive (this run),25755.533,0.992295
+proactive (this run),25787.956,0.992279
+proactive (this run),25815.537,0.992272
+proactive (this run),25846.903,0.992264
+proactive (this run),25877.913,0.992295
+proactive (this run),25906.213,0.992311
+proactive (this run),25930.944,0.992420
+proactive (this run),25968.729,0.992436
+proactive (this run),25996.170,0.992272
+proactive (this run),26024.948,0.992295
+proactive (this run),26056.794,0.992295
+proactive (this run),26086.044,0.992295
+proactive (this run),26114.523,0.992326
+proactive (this run),26141.065,0.992311
+proactive (this run),26178.440,0.992295
+proactive (this run),26206.435,0.992365
+proactive (this run),26236.590,0.992342
+proactive (this run),26261.480,0.992358
+proactive (this run),26295.872,0.992358
+proactive (this run),26327.785,0.992342
+proactive (this run),26357.982,0.992412
+proactive (this run),26388.863,0.992436
+proactive (this run),26414.312,0.992420
+proactive (this run),26417.753,0.992420
+proactive (this run),26417.753,0.744283
+proactive (this run),26427.828,0.744248
+proactive (this run),26430.657,0.595416
+proactive (this run),26438.132,0.661577
+proactive (this run),26449.487,0.661582
+proactive (this run),26454.083,0.708816
+proactive (this run),26461.518,0.708816
+proactive (this run),26461.518,0.744256
+proactive (this run),26473.029,0.771813
+proactive (this run),26483.325,0.868284
+proactive (this run),26487.800,0.882063
+proactive (this run),26495.783,0.992295
+proactive (this run),26506.307,0.992289
+proactive (this run),26513.828,0.992277
+proactive (this run),26517.697,0.992330
+proactive (this run),26524.888,0.992328
+proactive (this run),26524.888,0.992324
+proactive (this run),26539.509,0.992324
+proactive (this run),26548.505,0.992342
+proactive (this run),26555.477,0.992330
+proactive (this run),26561.319,0.992342
+proactive (this run),26566.918,0.992348
+proactive (this run),26569.409,0.992348
+proactive (this run),26569.409,0.992331
+proactive (this run),26582.541,0.992307
+proactive (this run),26591.016,0.992313
+proactive (this run),26599.924,0.992318
+proactive (this run),26604.122,0.992331
+proactive (this run),26611.603,0.992331
+proactive (this run),26624.189,0.992342
+proactive (this run),26633.718,0.992375
+proactive (this run),26642.641,0.992373
+proactive (this run),26642.641,0.992375
+proactive (this run),26654.505,0.992382
+proactive (this run),26657.797,0.992365
+proactive (this run),26665.230,0.992355
+proactive (this run),26668.533,0.992371
+proactive (this run),26679.483,0.992377
+proactive (this run),26689.977,0.992389
+proactive (this run),26695.483,0.992348
+proactive (this run),26704.783,0.992342
+proactive (this run),26704.783,0.992342
+proactive (this run),26716.968,0.992324
+proactive (this run),26726.646,0.992328
+proactive (this run),26731.422,0.992302
+proactive (this run),26737.853,0.992295
+proactive (this run),26746.049,0.992289
+proactive (this run),26755.333,0.992277
+proactive (this run),26760.340,0.992330
+proactive (this run),26768.872,0.992328
+proactive (this run),26768.872,0.992324
+proactive (this run),26780.662,0.992324
+proactive (this run),26788.810,0.992336
+proactive (this run),26796.435,0.992330
+proactive (this run),26802.306,0.992342
+proactive (this run),26809.734,0.992348
+proactive (this run),26812.642,0.992348
+proactive (this run),26812.642,0.992331
+proactive (this run),26824.497,0.992307
+proactive (this run),26830.974,0.992313
+proactive (this run),26838.032,0.992311
+proactive (this run),26841.732,0.992331
+proactive (this run),26849.567,0.992331
+proactive (this run),26858.692,0.992342
+proactive (this run),26869.523,0.992358
+proactive (this run),26880.788,0.992375
+proactive (this run),26880.788,0.992377
+proactive (this run),26890.623,0.992377
+proactive (this run),26894.589,0.992365
+proactive (this run),26902.504,0.992355
+proactive (this run),26905.841,0.992371
+proactive (this run),26915.468,0.992377
+proactive (this run),26927.656,0.992389
+proactive (this run),26932.563,0.992348
+proactive (this run),26944.196,0.992342
+proactive (this run),26944.196,0.992342
+proactive (this run),26955.219,0.992335
+proactive (this run),26964.062,0.992328
+proactive (this run),26970.833,0.992302
+proactive (this run),26980.190,0.992282
+proactive (this run),26989.251,0.992268
+proactive (this run),26997.442,0.992295
+proactive (this run),27002.869,0.992330
+proactive (this run),27009.772,0.992328
+proactive (this run),27009.772,0.992324
+proactive (this run),27022.612,0.992324
+proactive (this run),27030.515,0.992336
+proactive (this run),27036.586,0.992330
+proactive (this run),27044.165,0.992342
+proactive (this run),27050.865,0.992348
+proactive (this run),27054.401,0.992348
+proactive (this run),27054.401,0.992331
+proactive (this run),27064.806,0.992307
+proactive (this run),27071.052,0.992313
+proactive (this run),27078.238,0.992311
+proactive (this run),27081.410,0.992323
+proactive (this run),27087.721,0.992332
+proactive (this run),27098.308,0.992342
+proactive (this run),27106.547,0.992358
+proactive (this run),27118.092,0.992375
+proactive (this run),27118.092,0.992377
+proactive (this run),27129.230,0.992377
+proactive (this run),27134.246,0.992365
+proactive (this run),27143.564,0.992355
+proactive (this run),27146.563,0.992371
+proactive (this run),27156.651,0.992377
+proactive (this run),27168.125,0.992375
+proactive (this run),27173.162,0.992348
+proactive (this run),27182.823,0.992342
+proactive (this run),27182.823,0.992342
+proactive (this run),27194.007,0.992324
+proactive (this run),27205.923,0.992328
+proactive (this run),27212.624,0.992302
+proactive (this run),27220.263,0.992282
+proactive (this run),27229.341,0.992268
+proactive (this run),27237.469,0.992295
+proactive (this run),27242.430,0.868289
+proactive (this run),27249.143,0.850567
+proactive (this run),27249.143,0.868284
+proactive (this run),27262.250,0.868284
+proactive (this run),27272.183,0.868294
+proactive (this run),27278.737,0.868289
+proactive (this run),27285.597,0.868299
+proactive (this run),27292.123,0.868304
+proactive (this run),27295.578,0.868304
+proactive (this run),27295.578,0.882072
+proactive (this run),27307.341,0.992307
+proactive (this run),27314.832,0.992313
+proactive (this run),27322.155,0.992311
+proactive (this run),27326.043,0.992331
+proactive (this run),27333.260,0.992331
+proactive (this run),27342.224,0.992342
+proactive (this run),27353.384,0.992354
+proactive (this run),27361.673,0.992375
+proactive (this run),27361.673,0.992377
+proactive (this run),27372.434,0.992377
+proactive (this run),27376.026,0.992365
+proactive (this run),27386.655,0.992355
+proactive (this run),27391.039,0.992371
+proactive (this run),27401.822,0.992377
+proactive (this run),27413.334,0.992389
+proactive (this run),27419.738,0.992348
+proactive (this run),27435.596,0.992334
+proactive (this run),27435.596,0.992335
+proactive (this run),27446.187,0.992335
+proactive (this run),27457.212,0.992303
+proactive (this run),27462.239,0.992287
+proactive (this run),27470.689,0.992282
+proactive (this run),27479.748,0.992287
+proactive (this run),27488.406,0.992295
+proactive (this run),27492.138,0.992330
+proactive (this run),27502.476,0.992328
+proactive (this run),27502.476,0.992324
+proactive (this run),27515.625,0.992324
+proactive (this run),27524.190,0.992342
+proactive (this run),27532.578,0.992342
+proactive (this run),27544.669,0.992342
+proactive (this run),27551.530,0.992349
+proactive (this run),27554.807,0.992295
+proactive (this run),27565.148,0.992308
+proactive (this run),27571.751,0.992308
+proactive (this run),27571.751,0.992313
+proactive (this run),27582.673,0.992318
+proactive (this run),27586.934,0.992330
+proactive (this run),27596.758,0.992342
+proactive (this run),27607.885,0.992342
+proactive (this run),27619.628,0.992375
+proactive (this run),27630.989,0.992375
+proactive (this run),27640.504,0.992382
+proactive (this run),27643.589,0.992397
+proactive (this run),27643.589,0.992375
+proactive (this run),27655.948,0.992355
+proactive (this run),27659.361,0.992375
+proactive (this run),27668.370,0.992382
+proactive (this run),27684.137,0.992375
+proactive (this run),27688.133,0.992348
+proactive (this run),27697.349,0.992342
+proactive (this run),27707.745,0.992335
+proactive (this run),27717.009,0.992342
+proactive (this run),27717.009,0.992328
+proactive (this run),27726.327,0.992302
+proactive (this run),27736.876,0.992282
+proactive (this run),27746.296,0.992268
+proactive (this run),27755.308,0.992295
+proactive (this run),27758.379,0.992328
+proactive (this run),27768.311,0.992335
+proactive (this run),27778.856,0.992335
+proactive (this run),27786.130,0.992335
+proactive (this run),27786.130,0.992336
+proactive (this run),27795.858,0.992330
+proactive (this run),27804.924,0.992342
+proactive (this run),27812.038,0.992348
+proactive (this run),27815.415,0.992330
+proactive (this run),27826.066,0.992307
+proactive (this run),27831.289,0.992313
+proactive (this run),27840.095,0.992318
+proactive (this run),27844.337,0.992318
+proactive (this run),27844.337,0.992331
+proactive (this run),27857.942,0.992342
+proactive (this run),27868.517,0.992342
+proactive (this run),27880.263,0.992375
+proactive (this run),27893.536,0.992381
+proactive (this run),27904.296,0.992397
+proactive (this run),27907.927,0.992365
+proactive (this run),27918.328,0.992358
+proactive (this run),27921.503,0.992358
+proactive (this run),27921.503,0.992375
+proactive (this run),27932.971,0.992382
+proactive (this run),27950.019,0.992375
+proactive (this run),27954.581,0.992342
+proactive (this run),27961.439,0.992342
+proactive (this run),27971.314,0.992335
+proactive (this run),27979.974,0.992328
+proactive (this run),27986.629,0.992302
+proactive (this run),27999.270,0.992287
+proactive (this run),27999.270,0.992282
+proactive (this run),28007.705,0.992289
+proactive (this run),28017.144,0.992295
+proactive (this run),28020.241,0.992330
+proactive (this run),28029.445,0.992324
+proactive (this run),28039.367,0.992324
+proactive (this run),28045.509,0.992336
+proactive (this run),28055.137,0.992330
+proactive (this run),28062.480,0.992342
+proactive (this run),28062.480,0.992342
+proactive (this run),28072.442,0.992348
+proactive (this run),28076.188,0.992331
+proactive (this run),28085.743,0.992307
+proactive (this run),28093.750,0.992313
+proactive (this run),28101.625,0.992318
+proactive (this run),28105.516,0.992330
+proactive (this run),28114.630,0.882072
+proactive (this run),28124.223,0.850579
+proactive (this run),28124.223,0.868299
+proactive (this run),28137.363,0.850607
+proactive (this run),28149.261,0.850607
+proactive (this run),28156.409,0.850613
+proactive (this run),28159.585,0.868320
+proactive (this run),28166.540,0.850590
+proactive (this run),28169.776,0.744278
+proactive (this run),28181.014,0.868330
+proactive (this run),28192.531,0.850613
+proactive (this run),28192.531,0.868340
+proactive (this run),28199.828,0.868304
+proactive (this run),28210.272,0.868299
+proactive (this run),28218.827,0.868284
+proactive (this run),28227.681,0.850567
+proactive (this run),28233.665,0.992302
+proactive (this run),28240.796,0.992295
+proactive (this run),28251.133,0.992289
+proactive (this run),28260.550,0.992287
+proactive (this run),28260.550,0.992295
+proactive (this run),28266.949,0.992330
+proactive (this run),28276.322,0.992324
+proactive (this run),28289.424,0.992335
+proactive (this run),28296.186,0.992342
+proactive (this run),28303.251,0.992342
+proactive (this run),28310.830,0.992342
+proactive (this run),28320.406,0.992348
+proactive (this run),28323.834,0.992349
+proactive (this run),28323.834,0.992330
+proactive (this run),28333.951,0.992307
+proactive (this run),28340.455,0.992313
+proactive (this run),28348.930,0.992311
+proactive (this run),28353.991,0.992331
+proactive (this run),28363.771,0.992342
+proactive (this run),28373.294,0.992342
+proactive (this run),28382.945,0.992354
+proactive (this run),28396.514,0.992373
+proactive (this run),28396.514,0.992375
+proactive (this run),28407.107,0.992382
+proactive (this run),28412.131,0.992375
+proactive (this run),28419.747,0.992355
+proactive (this run),28423.572,0.992371
+proactive (this run),28431.829,0.992377
+proactive (this run),28443.418,0.992375
+proactive (this run),28449.069,0.992348
+proactive (this run),28457.466,0.992342
+proactive (this run),28457.466,0.992342
+proactive (this run),28470.368,0.992324
+proactive (this run),28480.130,0.992328
+proactive (this run),28487.635,0.992302
+proactive (this run),28497.313,0.992282
+proactive (this run),28508.370,0.992268
+proactive (this run),28516.633,0.992295
+proactive (this run),28520.750,0.992328
+proactive (this run),28529.249,0.992328
+proactive (this run),28529.249,0.992324
+proactive (this run),28561.770,0.992361
+proactive (this run),28567.342,0.992358
+proactive (this run),28573.956,0.992342
+proactive (this run),28580.756,0.992295
+proactive (this run),28587.358,0.992311
+proactive (this run),28590.960,0.826912
+proactive (this run),28600.580,0.850550
+proactive (this run),28610.387,0.850550
+proactive (this run),28610.387,0.868273
+proactive (this run),28621.035,0.882054
+proactive (this run),28624.276,0.882072
+proactive (this run),28632.591,0.882072
+proactive (this run),28642.858,0.868299
+proactive (this run),28650.458,0.868309
+proactive (this run),28661.742,0.992375
+proactive (this run),28674.488,0.992382
+proactive (this run),28678.241,0.992382
+proactive (this run),28678.241,0.992365
+proactive (this run),28688.378,0.992355
+proactive (this run),28692.778,0.992375
+proactive (this run),28702.564,0.992377
+proactive (this run),28715.427,0.992375
+proactive (this run),28719.225,0.992348
+proactive (this run),28728.725,0.992342
+proactive (this run),28737.702,0.992324
+proactive (this run),28745.802,0.992335
+proactive (this run),28745.802,0.992324
+proactive (this run),28755.326,0.992302
+proactive (this run),28767.125,0.992282
+proactive (this run),28776.778,0.992268
+proactive (this run),28786.830,0.992295
+proactive (this run),28790.260,0.992328
+proactive (this run),28797.902,0.992335
+proactive (this run),28808.598,0.992335
+proactive (this run),28816.174,0.992342
+proactive (this run),28816.174,0.992342
+proactive (this run),28825.867,0.992330
+proactive (this run),28833.088,0.992342
+proactive (this run),28839.810,0.992348
+proactive (this run),28843.222,0.992331
+proactive (this run),28853.267,0.992307
+proactive (this run),28858.467,0.992313
+proactive (this run),28868.092,0.882054
+proactive (this run),28873.592,0.868279
+proactive (this run),28873.592,0.882072
+proactive (this run),28886.321,0.868299
+proactive (this run),28896.338,0.868299
+proactive (this run),28906.286,0.850607
+proactive (this run),28922.513,0.826984
+proactive (this run),28929.230,0.992397
+proactive (this run),28932.389,0.992375
+proactive (this run),28943.734,0.992355
+proactive (this run),28948.268,0.992358
+proactive (this run),28948.268,0.992375
+proactive (this run),29052.720,0.992389
+proactive (this run),29066.629,0.992412
+proactive (this run),29071.559,0.992326
+proactive (this run),29080.802,0.992330
+proactive (this run),29093.566,0.992314
+proactive (this run),29103.582,0.826919
+proactive (this run),29112.722,0.826906
+proactive (this run),29124.402,0.826906
+proactive (this run),29124.402,0.850527
+proactive (this run),29135.971,0.826906
+proactive (this run),29143.343,0.826906
+proactive (this run),29147.267,0.850567
+proactive (this run),29154.199,0.850573
+proactive (this run),29165.725,0.992335
+proactive (this run),29173.655,0.992342
+proactive (this run),29182.236,0.992330
+proactive (this run),29189.628,0.992342
+proactive (this run),29189.628,0.992342
+proactive (this run),29199.458,0.992348
+proactive (this run),29202.744,0.992331
+proactive (this run),29212.156,0.992307
+proactive (this run),29220.758,0.992313
+proactive (this run),29228.352,0.992318
+proactive (this run),29232.210,0.992331
+proactive (this run),29244.004,0.992342
+proactive (this run),29254.534,0.992342
+proactive (this run),29254.534,0.992342
+proactive (this run),29268.681,0.992375
+proactive (this run),29280.136,0.992375
+proactive (this run),29291.233,0.992397
+proactive (this run),29295.412,0.992365
+proactive (this run),29306.086,0.992358
+proactive (this run),29309.846,0.992375
+proactive (this run),29331.658,0.992361
+proactive (this run),29331.658,0.992365
+proactive (this run),29343.313,0.992373
+proactive (this run),29349.066,0.992342
+proactive (this run),29358.967,0.992350
+proactive (this run),29370.696,0.992314
+proactive (this run),29379.889,0.992303
+proactive (this run),29385.827,0.992302
+proactive (this run),29398.628,0.992282
+proactive (this run),29409.894,0.992276
+proactive (this run),29409.894,0.992287
+proactive (this run),29420.142,0.992287
+proactive (this run),29422.392,0.992328
+proactive (this run),29432.215,0.992335
+proactive (this run),29444.093,0.992335
+proactive (this run),29450.911,0.992342
+proactive (this run),29458.327,0.992330
+proactive (this run),29469.046,0.992342
+proactive (this run),29479.933,0.992342
+proactive (this run),29479.933,0.992348
+proactive (this run),29486.513,0.992295
+proactive (this run),29497.582,0.992308
+proactive (this run),29504.424,0.992322
+proactive (this run),29511.912,0.992315
+proactive (this run),29516.389,0.992330
+proactive (this run),29524.327,0.992342
+proactive (this run),29534.058,0.992342
+proactive (this run),29549.668,0.992358
+proactive (this run),29549.668,0.992375
+proactive (this run),29563.498,0.992375
+proactive (this run),29572.295,0.992397
+proactive (this run),29576.903,0.992365
+proactive (this run),29584.074,0.992355
+proactive (this run),29589.469,0.992375
+proactive (this run),29600.285,0.992382
+proactive (this run),29619.177,0.992375
+proactive (this run),29623.601,0.992373
+proactive (this run),29623.601,0.992342
+proactive (this run),29635.926,0.992335
+proactive (this run),29647.461,0.992342
+proactive (this run),29655.734,0.992303
+proactive (this run),29663.269,0.992287
+proactive (this run),29671.746,0.992282
+proactive (this run),29681.119,0.992268
+proactive (this run),29690.571,0.992295
+proactive (this run),29693.949,0.992295
+proactive (this run),29693.949,0.992330
+proactive (this run),29703.782,0.992324
+proactive (this run),29712.738,0.992324
+proactive (this run),29722.211,0.992336
+proactive (this run),29733.189,0.992342
+proactive (this run),29740.645,0.992342
+proactive (this run),29747.506,0.992348
+proactive (this run),29752.421,0.992330
+proactive (this run),29774.742,0.992304
+proactive (this run),29774.742,0.992318
+proactive (this run),29784.091,0.992318
+proactive (this run),29794.917,0.992326
+proactive (this run),29799.013,0.992342
+proactive (this run),29806.324,0.992342
+proactive (this run),29819.719,0.992358
+proactive (this run),29826.846,0.992375
+proactive (this run),29842.722,0.992375
+proactive (this run),29849.087,0.992381
+proactive (this run),29849.087,0.992382
+proactive (this run),29855.767,0.992375
+proactive (this run),29864.377,0.992355
+proactive (this run),29867.102,0.992375
+proactive (this run),29874.351,0.992377
+proactive (this run),29882.824,0.992389
+proactive (this run),29886.532,0.992363
+proactive (this run),29898.853,0.992348
+proactive (this run),29898.853,0.992347
+proactive (this run),29910.215,0.992324
+proactive (this run),29920.387,0.992324
+proactive (this run),29926.297,0.992324
+proactive (this run),29934.181,0.992295
+proactive (this run),29943.243,0.992268
+proactive (this run),29949.258,0.992295
+proactive (this run),29953.329,0.992330
+proactive (this run),29962.341,0.992328
+proactive (this run),29962.341,0.992324
+proactive (this run),29972.684,0.992324
+proactive (this run),29979.797,0.992326
+proactive (this run),29986.713,0.992330
+proactive (this run),29993.969,0.992331
+proactive (this run),29999.519,0.992347
+proactive (this run),30001.767,0.992347
+proactive (this run),30001.767,0.992332
+proactive (this run),30017.023,0.992307
+proactive (this run),30021.457,0.992311
+proactive (this run),30030.947,0.992311
+proactive (this run),30035.557,0.992331
+proactive (this run),30042.417,0.992331
+proactive (this run),30049.998,0.992342
+proactive (this run),30060.267,0.992354
+proactive (this run),30074.299,0.992375
+proactive (this run),30074.299,0.992377
+proactive (this run),30087.371,0.992382
+proactive (this run),30091.540,0.992375
+proactive (this run),30102.322,0.992355
+proactive (this run),30106.826,0.992375
+proactive (this run),30113.894,0.992382
+proactive (this run),30137.635,0.992373
+proactive (this run),30143.176,0.992342
+proactive (this run),30164.935,0.992365
+proactive (this run),30164.935,0.992361
+proactive (this run),30176.449,0.992295
+proactive (this run),30185.604,0.992286
+proactive (this run),30190.079,0.992287
+proactive (this run),30198.067,0.992256
+proactive (this run),30207.782,0.992287
+proactive (this run),30215.680,0.992295
+proactive (this run),30219.570,0.992330
+proactive (this run),30227.455,0.992328
+proactive (this run),30227.455,0.992324
+proactive (this run),30242.704,0.992324
+proactive (this run),30250.393,0.992342
+proactive (this run),30255.615,0.992330
+proactive (this run),30262.681,0.992342
+proactive (this run),30270.975,0.992348
+proactive (this run),30274.371,0.992348
+proactive (this run),30274.371,0.992331
+proactive (this run),30288.636,0.992308
+proactive (this run),30293.721,0.992313
+proactive (this run),30304.296,0.992318
+proactive (this run),30311.061,0.992330
+proactive (this run),30321.886,0.992342
+proactive (this run),30330.813,0.992342
+proactive (this run),30343.717,0.992375
+proactive (this run),30356.836,0.992379
+proactive (this run),30356.836,0.992381
+proactive (this run),30369.393,0.992397
+proactive (this run),30373.374,0.992365
+proactive (this run),30379.676,0.992355
+proactive (this run),30384.142,0.992375
+proactive (this run),30394.415,0.992382
+proactive (this run),30410.423,0.992375
+proactive (this run),30416.287,0.992348
+proactive (this run),30425.290,0.992342
+proactive (this run),30425.290,0.992342
+proactive (this run),30440.306,0.992342
+proactive (this run),30450.689,0.992303
+proactive (this run),30455.501,0.992287
+proactive (this run),30466.400,0.992282
+proactive (this run),30475.673,0.992268
+proactive (this run),30486.650,0.992287
+proactive (this run),30492.980,0.992328
+proactive (this run),30505.233,0.992342
+proactive (this run),30505.233,0.992335
+proactive (this run),30521.242,0.992342
+proactive (this run),30530.248,0.826965
+proactive (this run),30538.752,0.826952
+proactive (this run),30546.434,0.850579
+proactive (this run),30554.836,0.826926
+proactive (this run),30558.004,0.850539
+proactive (this run),30569.653,0.850550
+proactive (this run),30576.292,0.850550
+proactive (this run),30576.292,0.868273
+proactive (this run),30587.802,0.868279
+proactive (this run),30595.935,0.992330
+proactive (this run),30606.581,0.992342
+proactive (this run),30619.522,0.992358
+proactive (this run),30629.904,0.992373
+proactive (this run),30644.278,0.992381
+proactive (this run),30654.158,0.992397
+proactive (this run),30661.221,0.992389
+proactive (this run),30661.221,0.992365
+proactive (this run),30675.560,0.992358
+proactive (this run),30679.348,0.992375
+proactive (this run),30688.156,0.992382
+proactive (this run),30702.167,0.992375
+proactive (this run),30708.051,0.992342
+proactive (this run),30718.351,0.992335
+proactive (this run),30730.489,0.992335
+proactive (this run),30742.640,0.992314
+proactive (this run),30742.640,0.992303
+proactive (this run),30750.798,0.992287
+proactive (this run),30763.118,0.992256
+proactive (this run),30779.188,0.992276
+proactive (this run),30789.428,0.992287
+proactive (this run),30792.297,0.992342
+proactive (this run),30800.077,0.992335
+proactive (this run),30811.725,0.992342
+proactive (this run),30819.721,0.992342
+proactive (this run),30819.721,0.992342
+proactive (this run),30832.676,0.992342
+proactive (this run),30843.678,0.992342
+proactive (this run),30853.735,0.992311
+proactive (this run),30856.294,0.992295
+proactive (this run),30865.984,0.992308
+proactive (this run),30874.319,0.992322
+proactive (this run),30884.353,0.992315
+proactive (this run),30889.984,0.992315
+proactive (this run),30889.984,0.992330
+proactive (this run),30902.630,0.992342
+proactive (this run),30910.637,0.992342
+proactive (this run),30918.451,0.992375
+proactive (this run),30929.604,0.992375
+proactive (this run),30938.317,0.992382
+proactive (this run),30941.429,0.992365
+proactive (this run),30948.697,0.992365
+proactive (this run),30953.506,0.992355
+proactive (this run),30953.506,0.992371
+proactive (this run),30964.753,0.992377
+proactive (this run),30973.377,0.992389
+proactive (this run),30979.072,0.992348
+proactive (this run),30986.430,0.992347
+proactive (this run),30993.614,0.992331
+proactive (this run),31002.748,0.992324
+proactive (this run),31008.361,0.992321
+proactive (this run),31019.624,0.992302
+proactive (this run),31019.624,0.992295
+proactive (this run),31032.322,0.992289
+proactive (this run),31040.850,0.992295
+proactive (this run),31044.231,0.992330
+proactive (this run),31053.303,0.992324
+proactive (this run),31061.197,0.992324
+proactive (this run),31069.575,0.992342
+proactive (this run),31077.203,0.992330
+proactive (this run),31083.723,0.992342
+proactive (this run),31083.723,0.992342
+proactive (this run),31095.296,0.992348
+proactive (this run),31098.267,0.992331
+proactive (this run),31106.684,0.992307
+proactive (this run),31115.777,0.992313
+proactive (this run),31128.921,0.992318
+proactive (this run),31133.235,0.992330
+proactive (this run),31142.229,0.992342
+proactive (this run),31155.509,0.992334
+proactive (this run),31155.509,0.992335
+proactive (this run),31178.574,0.992379
+proactive (this run),31193.374,0.992389
+proactive (this run),31200.462,0.992389
+proactive (this run),31203.739,0.992370
+proactive (this run),31213.570,0.992358
+proactive (this run),31217.907,0.992381
+proactive (this run),31229.067,0.992382
+proactive (this run),31245.167,0.992365
+proactive (this run),31245.167,0.992375
+proactive (this run),31253.165,0.992348
+proactive (this run),31266.096,0.992350
+proactive (this run),31274.703,0.992342
+proactive (this run),31282.971,0.992303
+proactive (this run),31288.425,0.992302
+proactive (this run),31299.378,0.992282
+proactive (this run),31312.911,0.992268
+proactive (this run),31323.432,0.992287
+proactive (this run),31323.432,0.992295
+proactive (this run),31330.819,0.992328
+proactive (this run),31340.967,0.992335
+proactive (this run),31352.731,0.992342
+proactive (this run),31360.820,0.992358
+proactive (this run),31370.498,0.992342
+proactive (this run),31377.125,0.992342
+proactive (this run),31385.485,0.992349
+proactive (this run),31387.956,0.992349
+proactive (this run),31387.956,0.992330
+proactive (this run),31403.839,0.992308
+proactive (this run),31408.165,0.992313
+proactive (this run),31414.479,0.992318
+proactive (this run),31418.779,0.992331
+proactive (this run),31426.239,0.992331
+proactive (this run),31438.160,0.992342
+proactive (this run),31450.523,0.992375
+proactive (this run),31460.517,0.992375
+proactive (this run),31460.517,0.992377
+proactive (this run),31472.061,0.992382
+proactive (this run),31478.377,0.992375
+proactive (this run),31490.409,0.992358
+proactive (this run),31494.145,0.992375
+proactive (this run),31506.333,0.992382
+proactive (this run),31518.399,0.992375
+proactive (this run),31525.784,0.992342
+proactive (this run),31540.116,0.992351
+proactive (this run),31540.116,0.992350
+proactive (this run),31551.490,0.992342
+proactive (this run),31564.991,0.992303
+proactive (this run),31572.208,0.992287
+proactive (this run),31583.029,0.992256
+proactive (this run),31602.718,0.992276
+proactive (this run),31615.593,0.992295
+proactive (this run),31620.395,0.992342
+proactive (this run),31629.075,0.992361
+proactive (this run),31629.075,0.992350
+proactive (this run),31649.386,0.992361
+proactive (this run),31657.441,0.992358
+proactive (this run),31665.257,0.992342
+proactive (this run),31674.882,0.992342
+proactive (this run),31681.874,0.992311
+proactive (this run),31684.923,0.992295
+proactive (this run),31694.374,0.992308
+proactive (this run),31699.780,0.992308
+proactive (this run),31699.780,0.992313
+proactive (this run),31710.039,0.992318
+proactive (this run),31713.850,0.992331
+proactive (this run),31720.852,0.992331
+proactive (this run),31728.642,0.992342
+proactive (this run),31739.099,0.992358
+proactive (this run),31750.581,0.992377
+proactive (this run),31759.774,0.992377
+proactive (this run),31765.098,0.992382
+proactive (this run),31765.098,0.992365
+proactive (this run),31776.361,0.992355
+proactive (this run),31780.332,0.992371
+proactive (this run),31787.300,0.992377
+proactive (this run),31797.415,0.992389
+proactive (this run),31801.547,0.992348
+proactive (this run),31808.450,0.992348
+proactive (this run),31808.450,0.992347
+proactive (this run),31818.344,0.992331
+proactive (this run),31830.570,0.992324
+proactive (this run),31835.651,0.992321
+proactive (this run),31845.889,0.992295
+proactive (this run),31854.492,0.992289
+proactive (this run),31866.269,0.992295
+proactive (this run),31869.855,0.992328
+proactive (this run),31879.684,0.992342
+proactive (this run),31879.684,0.992335
+proactive (this run),31896.138,0.992342
+proactive (this run),31902.416,0.992342
+proactive (this run),31909.196,0.992342
+proactive (this run),31915.608,0.992342
+proactive (this run),31922.384,0.992348
+proactive (this run),31924.327,0.992348
+proactive (this run),31924.327,0.992331
+proactive (this run),31938.257,0.992307
+proactive (this run),31943.675,0.992313
+proactive (this run),31952.973,0.992311
+proactive (this run),31956.790,0.992331
+proactive (this run),31964.880,0.992331
+proactive (this run),31973.789,0.992342
+proactive (this run),31983.514,0.992354
+proactive (this run),31993.175,0.992375
+proactive (this run),31993.175,0.992377
+proactive (this run),32001.845,0.992377
+proactive (this run),32006.281,0.992365
+proactive (this run),32015.260,0.992365
+proactive (this run),32018.846,0.992371
+proactive (this run),32026.521,0.992377
+proactive (this run),32040.837,0.992389
+proactive (this run),32045.572,0.992348
+proactive (this run),32055.402,0.992342
+proactive (this run),32055.402,0.992342
+proactive (this run),32068.562,0.992335
+proactive (this run),32077.146,0.992328
+proactive (this run),32084.138,0.992302
+proactive (this run),32092.629,0.992282
+proactive (this run),32104.145,0.992268
+proactive (this run),32113.974,0.992295
+proactive (this run),32119.289,0.992328
+proactive (this run),32125.810,0.992328
+proactive (this run),32125.810,0.992324
+proactive (this run),32137.163,0.992335
+proactive (this run),32142.955,0.992336
+proactive (this run),32150.156,0.992330
+proactive (this run),32159.645,0.992342
+proactive (this run),32169.455,0.992348
+proactive (this run),32173.059,0.992331
+proactive (this run),32187.737,0.992308
+proactive (this run),32195.076,0.992308
+proactive (this run),32195.076,0.992313
+proactive (this run),32206.588,0.992315
+proactive (this run),32211.408,0.992342
+proactive (this run),32221.187,0.992342
+proactive (this run),32232.860,0.992335
+proactive (this run),32243.101,0.992375
+proactive (this run),32255.682,0.992381
+proactive (this run),32267.604,0.992397
+proactive (this run),32273.003,0.992389
+proactive (this run),32273.003,0.992365
+proactive (this run),32285.539,0.992358
+proactive (this run),32289.443,0.992375
+proactive (this run),32299.114,0.992382
+proactive (this run),32314.783,0.992375
+proactive (this run),32320.109,0.992342
+proactive (this run),32338.231,0.992350
+proactive (this run),32349.425,0.992342
+proactive (this run),32358.302,0.992314
+proactive (this run),32358.302,0.992303
+proactive (this run),32366.426,0.992287
+proactive (this run),32374.665,0.992282
+proactive (this run),32383.401,0.992287
+proactive (this run),32393.219,0.992295
+proactive (this run),32396.371,0.992330
+proactive (this run),32402.378,0.992324
+proactive (this run),32439.812,0.992389
+proactive (this run),32439.812,0.992361
+proactive (this run),32449.993,0.992361
+proactive (this run),32457.869,0.992283
+proactive (this run),32463.874,0.992295
+proactive (this run),32470.433,0.992314
+proactive (this run),32473.501,0.992295
+proactive (this run),32481.743,0.992308
+proactive (this run),32488.203,0.992313
+proactive (this run),32498.589,0.992313
+proactive (this run),32498.589,0.992311
+proactive (this run),32505.141,0.992331
+proactive (this run),32515.206,0.992331
+proactive (this run),32524.908,0.992342
+proactive (this run),32532.954,0.992354
+proactive (this run),32543.253,0.992375
+proactive (this run),32551.736,0.992382
+proactive (this run),32558.015,0.992365
+proactive (this run),32564.809,0.992375
+proactive (this run),32564.809,0.992365
+proactive (this run),32570.989,0.992371
+proactive (this run),32581.328,0.992377
+proactive (this run),32591.441,0.992389
+proactive (this run),32597.205,0.992348
+proactive (this run),32607.696,0.992342
+proactive (this run),32615.358,0.992324
+proactive (this run),32627.487,0.992328
+proactive (this run),32632.717,0.992303
+proactive (this run),32632.717,0.992302
+proactive (this run),32643.722,0.992282
+proactive (this run),32651.330,0.992289
+proactive (this run),32659.254,0.992295
+proactive (this run),32662.738,0.992330
+proactive (this run),32669.482,0.992324
+proactive (this run),32680.337,0.992324
+proactive (this run),32688.424,0.992336
+proactive (this run),32695.751,0.992342
+proactive (this run),32695.751,0.992330
+proactive (this run),32703.900,0.992342
+proactive (this run),32710.325,0.992347
+proactive (this run),32713.319,0.992331
+proactive (this run),32719.772,0.992337
+proactive (this run),32728.120,0.992311
+proactive (this run),32735.544,0.992313
+proactive (this run),32735.544,0.992311
+proactive (this run),32742.609,0.992331
+proactive (this run),32749.318,0.992331
+proactive (this run),32760.272,0.992342
+proactive (this run),32770.052,0.992358
+proactive (this run),32781.555,0.992375
+proactive (this run),32790.263,0.992382
+proactive (this run),32794.201,0.992365
+proactive (this run),32803.264,0.992365
+proactive (this run),32803.264,0.992355
+proactive (this run),32810.602,0.992375
+proactive (this run),32835.769,0.992365
+proactive (this run),32845.404,0.992373
+proactive (this run),32849.603,0.992342
+proactive (this run),32858.993,0.992350
+proactive (this run),32869.693,0.992342
+proactive (this run),32877.898,0.992303
+proactive (this run),32884.635,0.992303
+proactive (this run),32884.635,0.992302
+proactive (this run),32896.883,0.992282
+proactive (this run),32906.647,0.992268
+proactive (this run),32918.532,0.992295
+proactive (this run),32922.224,0.992328
+proactive (this run),32932.292,0.992335
+proactive (this run),32942.699,0.992335
+proactive (this run),32950.994,0.992342
+proactive (this run),32960.560,0.992358
+proactive (this run),32960.560,0.992342
+proactive (this run),32970.340,0.992342
+proactive (this run),32976.363,0.992348
+proactive (this run),32978.949,0.992330
+proactive (this run),32986.825,0.992307
+proactive (this run),32994.345,0.992313
+proactive (this run),33003.165,0.992318
+proactive (this run),33007.807,0.992318
+proactive (this run),33007.807,0.992331
+proactive (this run),33016.530,0.992331
+proactive (this run),33027.428,0.992342
+proactive (this run),33037.252,0.992354
+proactive (this run),33046.330,0.992377
+proactive (this run),33052.713,0.992377
+proactive (this run),33057.349,0.992365
+proactive (this run),33066.085,0.992365
+proactive (this run),33070.294,0.992355
+proactive (this run),33070.294,0.992371
+proactive (this run),33095.278,0.992382
+proactive (this run),33105.446,0.992375
+proactive (this run),33109.100,0.992342
+proactive (this run),33119.242,0.992350
+proactive (this run),33126.406,0.992342
+proactive (this run),33134.189,0.992303
+proactive (this run),33139.817,0.992302
+proactive (this run),33148.588,0.992302
+proactive (this run),33148.588,0.992295
+proactive (this run),33162.800,0.992289
+proactive (this run),33170.880,0.992295
+proactive (this run),33174.122,0.992330
+proactive (this run),33180.879,0.992324
+proactive (this run),33189.588,0.992324
+proactive (this run),33197.370,0.992336
+proactive (this run),33205.712,0.992330
+proactive (this run),33214.201,0.992342
+proactive (this run),33214.201,0.992342
+proactive (this run),33227.090,0.992348
+proactive (this run),33229.524,0.992331
+proactive (this run),33239.761,0.992307
+proactive (this run),33248.261,0.992313
+proactive (this run),33257.176,0.992318
+proactive (this run),33259.936,0.992330
+proactive (this run),33270.790,0.992342
+proactive (this run),33279.495,0.992342
+proactive (this run),33279.495,0.992342
+proactive (this run),33292.025,0.992375
+proactive (this run),33302.723,0.992375
+proactive (this run),33310.517,0.992382
+proactive (this run),33313.164,0.992365
+proactive (this run),33320.678,0.992355
+proactive (this run),33324.177,0.992371
+proactive (this run),33332.596,0.992377
+proactive (this run),33341.550,0.992382
+proactive (this run),33341.550,0.992389
+proactive (this run),33347.905,0.992363
+proactive (this run),33357.013,0.992347
+proactive (this run),33366.637,0.992331
+proactive (this run),33374.327,0.992324
+proactive (this run),33380.653,0.992321
+proactive (this run),33390.280,0.992295
+proactive (this run),33398.587,0.992289
+proactive (this run),33406.333,0.992268
+proactive (this run),33406.333,0.992277
+proactive (this run),33412.139,0.992330
+proactive (this run),33418.861,0.992324
+proactive (this run),33429.922,0.992324
+proactive (this run),33435.143,0.992336
+proactive (this run),33443.027,0.992330
+proactive (this run),33449.070,0.992331
+proactive (this run),33457.579,0.992342
+proactive (this run),33457.579,0.992347
+proactive (this run),33462.074,0.992331
+proactive (this run),33471.547,0.992337
+proactive (this run),33476.937,0.992311
+proactive (this run),33487.180,0.992311
+proactive (this run),33490.850,0.992331
+proactive (this run),33498.223,0.992331
+proactive (this run),33507.336,0.992342
+proactive (this run),33507.336,0.992342
+proactive (this run),33519.011,0.992354
+proactive (this run),33527.715,0.992377
+proactive (this run),33534.766,0.992377
+proactive (this run),33537.522,0.992365
+proactive (this run),33545.124,0.992358
+proactive (this run),33549.729,0.992378
+proactive (this run),33558.229,0.992375
+proactive (this run),33558.229,0.992377
+proactive (this run),33572.873,0.992389
+proactive (this run),33577.627,0.992363
+proactive (this run),33586.509,0.992347
+proactive (this run),33596.627,0.992324
+proactive (this run),33607.854,0.992328
+proactive (this run),33615.790,0.992302
+proactive (this run),33623.154,0.992282
+proactive (this run),33629.895,0.992282
+proactive (this run),33629.895,0.992289
+proactive (this run),33643.541,0.992295
+proactive (this run),33649.174,0.992328
+proactive (this run),33660.824,0.992335
+proactive (this run),33667.795,0.992324
+proactive (this run),33676.896,0.992342
+proactive (this run),33684.182,0.992342
+proactive (this run),33693.807,0.992342
+proactive (this run),33701.426,0.992342
+proactive (this run),33701.426,0.992348
+proactive (this run),33707.426,0.992330
+proactive (this run),33713.180,0.992307
+proactive (this run),33720.432,0.992311
+proactive (this run),33726.776,0.992311
+proactive (this run),33730.465,0.992331
+proactive (this run),33737.174,0.992330
+proactive (this run),33737.174,0.992331
+proactive (this run),33751.302,0.992342
+proactive (this run),33762.373,0.992354
+proactive (this run),33771.519,0.992377
+proactive (this run),33778.902,0.992377
+proactive (this run),33783.099,0.992365
+proactive (this run),33796.208,0.992355
+proactive (this run),33800.135,0.992375
+proactive (this run),33807.497,0.992375
+proactive (this run),33807.497,0.992377
+proactive (this run),33817.730,0.992389
+proactive (this run),33821.532,0.992363
+proactive (this run),33828.361,0.992347
+proactive (this run),33835.944,0.992331
+proactive (this run),33844.233,0.992324
+proactive (this run),33848.403,0.992324
+proactive (this run),33848.403,0.992321
+proactive (this run),33864.919,0.992295
+proactive (this run),33872.609,0.992289
+proactive (this run),33879.459,0.992277
+proactive (this run),33881.936,0.992330
+proactive (this run),33891.473,0.992324
+proactive (this run),33898.135,0.992324
+proactive (this run),33905.469,0.992336
+proactive (this run),33913.422,0.992342
+proactive (this run),33913.422,0.992330
+proactive (this run),33922.722,0.992331
+proactive (this run),33927.966,0.992347
+proactive (this run),33931.825,0.992332
+proactive (this run),33939.466,0.992337
+proactive (this run),33945.643,0.992311
+proactive (this run),33953.130,0.992313
+proactive (this run),33953.130,0.992311
+proactive (this run),33958.713,0.992331
+proactive (this run),33969.016,0.992331
+proactive (this run),33976.857,0.992342
+proactive (this run),33987.122,0.992358
+proactive (this run),33996.594,0.992377
+proactive (this run),34002.011,0.992377
+proactive (this run),34007.921,0.992382
+proactive (this run),34007.921,0.992365
+proactive (this run),34058.252,0.992311
+proactive (this run),34061.762,0.992354
+proactive (this run),34068.753,0.992389
+proactive (this run),34081.070,0.992401
+proactive (this run),34086.206,0.992351
+proactive (this run),34095.119,0.992350
+proactive (this run),34104.847,0.992335
+proactive (this run),34113.853,0.992335
+proactive (this run),34113.853,0.992324
+proactive (this run),34120.712,0.992324
+proactive (this run),34126.940,0.992295
+proactive (this run),34138.227,0.992289
+proactive (this run),34145.599,0.992277
+proactive (this run),34148.425,0.992330
+proactive (this run),34154.611,0.992326
+proactive (this run),34168.696,0.992324
+proactive (this run),34176.216,0.992335
+proactive (this run),34176.216,0.992336
+proactive (this run),34186.761,0.992330
+proactive (this run),34195.567,0.992342
+proactive (this run),34200.992,0.992348
+proactive (this run),34203.773,0.992331
+proactive (this run),34210.771,0.992307
+proactive (this run),34215.615,0.992313
+proactive (this run),34226.828,0.992313
+proactive (this run),34226.828,0.992311
+proactive (this run),34233.129,0.992331
+proactive (this run),34241.950,0.882072
+proactive (this run),34259.571,0.868299
+proactive (this run),34271.270,0.826978
+proactive (this run),34286.331,0.826984
+proactive (this run),34293.875,0.793911
+proactive (this run),34299.813,0.826971
+proactive (this run),34308.467,0.992370
+proactive (this run),34308.467,0.992358
+proactive (this run),34315.327,0.992375
+proactive (this run),34324.027,0.992382
+proactive (this run),34336.851,0.992375
+proactive (this run),34340.575,0.992348
+proactive (this run),34350.570,0.992342
+proactive (this run),34359.719,0.992324
+proactive (this run),34371.290,0.992328
+proactive (this run),34377.062,0.992303
+proactive (this run),34377.062,0.992302
+proactive (this run),34390.848,0.992282
+proactive (this run),34399.711,0.992268
+proactive (this run),34409.434,0.992295
+proactive (this run),34412.967,0.992328
+proactive (this run),34420.442,0.992335
+proactive (this run),34428.172,0.992324
+proactive (this run),34435.393,0.992336
+proactive (this run),34442.561,0.992342
+proactive (this run),34442.561,0.992330
+proactive (this run),34452.290,0.992342
+proactive (this run),34459.058,0.992347
+proactive (this run),34461.907,0.992331
+proactive (this run),34471.082,0.992337
+proactive (this run),34476.901,0.992311
+proactive (this run),34484.239,0.992313
+proactive (this run),34484.239,0.992311
+proactive (this run),34491.221,0.992331
+proactive (this run),34499.626,0.992331
+proactive (this run),34507.582,0.992342
+proactive (this run),34516.929,0.992358
+proactive (this run),34527.636,0.992377
+proactive (this run),34534.311,0.992377
+proactive (this run),34539.122,0.992365
+proactive (this run),34547.054,0.992375
+proactive (this run),34547.054,0.992365
+proactive (this run),34553.544,0.992371
+proactive (this run),34561.944,0.992377
+proactive (this run),34570.973,0.992389
+proactive (this run),34574.130,0.992363
+proactive (this run),34584.591,0.992347
+proactive (this run),34595.138,0.992324
+proactive (this run),34605.812,0.992324
+proactive (this run),34610.842,0.992328
+proactive (this run),34610.842,0.992324
+proactive (this run),34624.661,0.992282
+proactive (this run),34634.474,0.992287
+proactive (this run),34643.174,0.992295
+proactive (this run),34646.363,0.992328
+proactive (this run),34657.398,0.992335
+proactive (this run),34666.425,0.992335
+proactive (this run),34673.844,0.992342
+proactive (this run),34683.804,0.992342
+proactive (this run),34683.804,0.992330
+proactive (this run),34694.872,0.992342
+proactive (this run),34703.171,0.992348
+proactive (this run),34706.651,0.992295
+proactive (this run),34715.254,0.992307
+proactive (this run),34721.496,0.992313
+proactive (this run),34729.692,0.992318
+proactive (this run),34734.827,0.992330
+proactive (this run),34743.415,0.992330
+proactive (this run),34743.415,0.992331
+proactive (this run),34754.371,0.992342
+proactive (this run),34764.396,0.992354
+proactive (this run),34774.643,0.992377
+proactive (this run),34782.528,0.992382
+proactive (this run),34787.193,0.992365
+proactive (this run),34794.323,0.992365
+proactive (this run),34799.773,0.992371
+proactive (this run),34807.511,0.992375
+proactive (this run),34807.511,0.992377
+proactive (this run),34820.929,0.992389
+proactive (this run),34825.867,0.992348
+proactive (this run),34837.296,0.992342
+proactive (this run),34851.778,0.992335
+proactive (this run),34859.881,0.992303
+proactive (this run),34866.131,0.992302
+proactive (this run),34875.407,0.992282
+proactive (this run),34883.597,0.992256
+proactive (this run),34883.597,0.992268
+proactive (this run),34894.350,0.992295
+proactive (this run),34897.425,0.992328
+proactive (this run),34907.906,0.992324
+proactive (this run),34918.546,0.992324
+proactive (this run),34926.403,0.992342
+proactive (this run),34933.572,0.992330
+proactive (this run),34942.482,0.992342
+proactive (this run),34952.203,0.992342
+proactive (this run),34952.203,0.992348
+proactive (this run),34957.805,0.992295
+proactive (this run),34968.657,0.992308
+proactive (this run),34974.875,0.992313
+proactive (this run),34983.950,0.992318
+proactive (this run),34991.941,0.992330
+proactive (this run),35000.528,0.992342
+proactive (this run),35014.651,0.992335
+proactive (this run),35025.046,0.992358
+proactive (this run),35025.046,0.992375
+proactive (this run),35037.303,0.992381
+proactive (this run),35050.310,0.992397
+proactive (this run),35054.301,0.992365
+proactive (this run),35064.747,0.992358
+proactive (this run),35068.380,0.992375
+proactive (this run),35077.917,0.992382
+proactive (this run),35094.834,0.992375
+proactive (this run),35098.743,0.992373
+proactive (this run),35098.743,0.992342
+proactive (this run),35112.957,0.992335
+proactive (this run),35120.862,0.992335
+proactive (this run),35132.092,0.992303
+proactive (this run),35137.695,0.992302
+proactive (this run),35146.453,0.992282
+proactive (this run),35153.193,0.992289
+proactive (this run),35161.411,0.992295
+proactive (this run),35164.689,0.992295
+proactive (this run),35164.689,0.992330
+proactive (this run),35174.726,0.992324
+proactive (this run),35183.353,0.992324
+proactive (this run),35190.227,0.992326
+proactive (this run),35200.114,0.992330
+proactive (this run),35210.232,0.992342
+proactive (this run),35217.120,0.992348
+proactive (this run),35222.177,0.992330
+proactive (this run),35233.343,0.992295
+proactive (this run),35233.343,0.992307
+proactive (this run),35244.152,0.992322
+proactive (this run),35251.711,0.992315
+proactive (this run),35255.080,0.992330
+proactive (this run),35265.149,0.992342
+proactive (this run),35276.953,0.992342
+proactive (this run),35286.510,0.992375
+proactive (this run),35301.482,0.992375
+proactive (this run),35308.965,0.992381
+proactive (this run),35308.965,0.992382
+proactive (this run),35314.884,0.992375
+proactive (this run),35326.995,0.992358
+proactive (this run),35331.552,0.992375
+proactive (this run),35338.566,0.992382
+proactive (this run),35352.601,0.992375
+proactive (this run),35356.998,0.992348
+proactive (this run),35369.448,0.992335
+proactive (this run),35377.851,0.992350
+proactive (this run),35377.851,0.992335
+proactive (this run),35388.622,0.992328
+proactive (this run),35396.179,0.992302
+proactive (this run),35404.569,0.992282
+proactive (this run),35416.187,0.992268
+proactive (this run),35422.943,0.992295
+proactive (this run),35426.732,0.992330
+proactive (this run),35435.303,0.992324
+proactive (this run),35447.623,0.992335
+proactive (this run),35447.623,0.992324
+proactive (this run),35460.257,0.992342
+proactive (this run),35466.872,0.992342
+proactive (this run),35473.661,0.992342
+proactive (this run),35479.881,0.868304
+proactive (this run),35483.911,0.868289
+proactive (this run),35490.591,0.744230
+proactive (this run),35498.619,0.744234
+proactive (this run),35506.500,0.744234
+proactive (this run),35506.500,0.771797
+proactive (this run),35513.050,0.771813
+proactive (this run),35520.775,0.771813
+proactive (this run),35531.059,0.771821
+proactive (this run),35542.011,0.868309
+proactive (this run),35553.480,0.992375
+proactive (this run),35561.391,0.992382
+proactive (this run),35566.305,0.992365
+proactive (this run),35640.649,0.992295
+proactive (this run),35644.505,0.992295
+proactive (this run),35644.505,0.992389
+proactive (this run),35655.982,0.992389
+proactive (this run),35670.783,0.992401
+proactive (this run),35675.298,0.992351
+proactive (this run),35684.575,0.992350
+proactive (this run),35692.939,0.992335
+proactive (this run),35701.371,0.992328
+proactive (this run),35711.820,0.992302
+proactive (this run),35720.224,0.992287
+proactive (this run),35720.224,0.992282
+proactive (this run),35731.374,0.992268
+proactive (this run),35740.242,0.992295
+proactive (this run),35744.384,0.992330
+proactive (this run),35751.261,0.992324
+proactive (this run),35760.950,0.992324
+proactive (this run),35767.817,0.992336
+proactive (this run),35775.842,0.992342
+proactive (this run),35775.842,0.992330
+proactive (this run),35801.114,0.992342
+proactive (this run),35807.765,0.992311
+proactive (this run),35810.631,0.992295
+proactive (this run),35817.842,0.992308
+proactive (this run),35827.198,0.992322
+proactive (this run),35836.438,0.992326
+proactive (this run),35841.152,0.992342
+proactive (this run),35851.467,0.992342
+proactive (this run),35851.467,0.992342
+proactive (this run),35862.856,0.992342
+proactive (this run),35871.028,0.992375
+proactive (this run),35883.607,0.992375
+proactive (this run),35895.012,0.992382
+proactive (this run),35900.028,0.992375
+proactive (this run),35908.528,0.992355
+proactive (this run),35913.488,0.992375
+proactive (this run),35926.128,0.992381
+proactive (this run),35926.128,0.992382
+proactive (this run),35940.682,0.992375
+proactive (this run),35947.953,0.992342
+proactive (this run),35957.630,0.992335
+proactive (this run),35966.280,0.992335
+proactive (this run),35976.345,0.992303
+proactive (this run),35981.211,0.992302
+proactive (this run),35991.654,0.992282
+proactive (this run),35999.282,0.992282
+proactive (this run),35999.282,0.992289
+proactive (this run),36010.700,0.992295
+proactive (this run),36016.362,0.992330
+proactive (this run),36026.526,0.992335
+proactive (this run),36035.399,0.992324
+proactive (this run),36042.702,0.992342
+proactive (this run),36050.661,0.992330
+proactive (this run),36059.176,0.992342
+proactive (this run),36065.916,0.992342
+proactive (this run),36065.916,0.992348
+proactive (this run),36074.445,0.992330
+proactive (this run),36081.893,0.992307
+proactive (this run),36090.085,0.992313
+proactive (this run),36098.343,0.992318
+proactive (this run),36102.457,0.992331
+proactive (this run),36111.180,0.992342
+proactive (this run),36121.304,0.992342
+proactive (this run),36133.646,0.992335
+proactive (this run),36133.646,0.992354
+proactive (this run),36147.821,0.992375
+proactive (this run),36156.373,0.992382
+proactive (this run),36159.553,0.992375
+proactive (this run),36170.673,0.992355
+proactive (this run),36175.652,0.992375
+proactive (this run),36187.585,0.992382
+proactive (this run),36202.196,0.992375
+proactive (this run),36206.821,0.992375
+proactive (this run),36206.821,0.992348
+proactive (this run),36219.313,0.992335
+proactive (this run),36228.424,0.992335
+proactive (this run),36237.444,0.992303
+proactive (this run),36243.072,0.992302
+proactive (this run),36251.768,0.992282
+proactive (this run),36260.116,0.992289
+proactive (this run),36269.798,0.992295
+proactive (this run),36273.075,0.992295
+proactive (this run),36273.075,0.992330
+proactive (this run),36285.227,0.992324
+proactive (this run),36294.643,0.992324
+proactive (this run),36301.035,0.992336
+proactive (this run),36309.427,0.992330
+proactive (this run),36317.109,0.992342
+proactive (this run),36324.479,0.992348
+proactive (this run),36328.692,0.992348
+proactive (this run),36328.692,0.992331
+proactive (this run),36341.992,0.992307
+proactive (this run),36348.851,0.992313
+proactive (this run),36357.249,0.992318
+proactive (this run),36362.263,0.992330
+proactive (this run),36370.900,0.992342
+proactive (this run),36380.112,0.992342
+proactive (this run),36393.710,0.992375
+proactive (this run),36404.783,0.992373
+proactive (this run),36404.783,0.992375
+proactive (this run),36419.647,0.992397
+proactive (this run),36424.525,0.992365
+proactive (this run),36433.673,0.992358
+proactive (this run),36438.860,0.992375
+proactive (this run),36448.607,0.992382
+proactive (this run),36465.396,0.992373
+proactive (this run),36472.195,0.992342
+proactive (this run),36480.733,0.992334
+proactive (this run),36480.733,0.992335
+proactive (this run),36492.390,0.992335
+proactive (this run),36499.995,0.992303
+proactive (this run),36505.421,0.992302
+proactive (this run),36514.511,0.992282
+proactive (this run),36523.751,0.992289
+proactive (this run),36530.715,0.992277
+proactive (this run),36535.005,0.992330
+proactive (this run),36543.617,0.992328
+proactive (this run),36543.617,0.992324
+proactive (this run),36560.493,0.992335
+proactive (this run),36567.169,0.992342
+proactive (this run),36574.338,0.992330
+proactive (this run),36580.214,0.992342
+proactive (this run),36586.567,0.992348
+proactive (this run),36589.618,0.992331
+proactive (this run),36601.577,0.992307
+proactive (this run),36613.186,0.992308
+proactive (this run),36613.186,0.992313
+proactive (this run),36624.405,0.992318
+proactive (this run),36628.477,0.992330
+proactive (this run),36643.972,0.992342
+proactive (this run),36653.449,0.992358
+proactive (this run),36663.506,0.992373
+proactive (this run),36676.295,0.992381
+proactive (this run),36683.840,0.992382
+proactive (this run),36687.899,0.992397
+proactive (this run),36687.899,0.992375
+proactive (this run),36698.785,0.992355
+proactive (this run),36704.488,0.992375
+proactive (this run),36713.385,0.992377
+proactive (this run),36725.342,0.992375
+proactive (this run),36728.860,0.992348
+proactive (this run),36739.462,0.992342
+proactive (this run),36751.687,0.992335
+proactive (this run),36762.960,0.992342
+proactive (this run),36762.960,0.992328
+proactive (this run),36771.301,0.992302
+proactive (this run),36779.950,0.992282
+proactive (this run),36789.174,0.992287
+proactive (this run),36796.852,0.992295
+proactive (this run),36799.721,0.992328
+proactive (this run),36809.337,0.992324
+proactive (this run),36819.312,0.992324
+proactive (this run),36829.827,0.992335
+proactive (this run),36829.827,0.992336
+proactive (this run),36840.510,0.992342
+reactive (sibling),0.000,0.000000
+reactive (sibling),3.885,0.496230
+reactive (sibling),11.927,0.661603
+reactive (sibling),21.659,0.744274
+reactive (sibling),27.241,0.595416
+reactive (sibling),37.977,0.661561
+reactive (sibling),44.435,0.708816
+reactive (sibling),53.563,0.744261
+reactive (sibling),56.858,0.771813
+reactive (sibling),68.214,0.868268
+reactive (sibling),75.783,0.868273
+reactive (sibling),82.687,0.868279
+reactive (sibling),87.049,0.882072
+reactive (sibling),94.242,0.992331
+reactive (sibling),103.156,0.992342
+reactive (sibling),111.259,0.992358
+reactive (sibling),121.189,0.992377
+reactive (sibling),129.688,0.992377
+reactive (sibling),134.085,0.992363
+reactive (sibling),140.505,0.992358
+reactive (sibling),143.037,0.992378
+reactive (sibling),150.374,0.992373
+reactive (sibling),162.004,0.992384
+reactive (sibling),165.008,0.992363
+reactive (sibling),174.826,0.992347
+reactive (sibling),182.629,0.992331
+reactive (sibling),190.822,0.992316
+reactive (sibling),195.890,0.992321
+reactive (sibling),203.950,0.992295
+reactive (sibling),211.404,0.992289
+reactive (sibling),218.120,0.992295
+reactive (sibling),221.706,0.992323
+reactive (sibling),228.506,0.992326
+reactive (sibling),236.560,0.992316
+reactive (sibling),243.154,0.992326
+reactive (sibling),249.701,0.992318
+reactive (sibling),257.399,0.992331
+reactive (sibling),264.298,0.992347
+reactive (sibling),266.701,0.992332
+reactive (sibling),277.095,0.992337
+reactive (sibling),281.997,0.992311
+reactive (sibling),287.919,0.992309
+reactive (sibling),292.183,0.992323
+reactive (sibling),300.998,0.992332
+reactive (sibling),309.451,0.992332
+reactive (sibling),317.222,0.992356
+reactive (sibling),328.004,0.992377
+reactive (sibling),334.580,0.992378
+reactive (sibling),338.587,0.992363
+reactive (sibling),348.055,0.992365
+reactive (sibling),351.486,0.992378
+reactive (sibling),357.896,0.992373
+reactive (sibling),370.287,0.992389
+reactive (sibling),374.669,0.992363
+reactive (sibling),383.639,0.992347
+reactive (sibling),390.297,0.992331
+reactive (sibling),400.804,0.992324
+reactive (sibling),407.459,0.992321
+reactive (sibling),419.000,0.992282
+reactive (sibling),428.289,0.992289
+reactive (sibling),436.378,0.992295
+reactive (sibling),438.982,0.992330
+reactive (sibling),446.735,0.992324
+reactive (sibling),455.414,0.992324
+reactive (sibling),462.798,0.992336
+reactive (sibling),470.619,0.992330
+reactive (sibling),477.804,0.992331
+reactive (sibling),486.755,0.992347
+reactive (sibling),489.007,0.992331
+reactive (sibling),496.999,0.992337
+reactive (sibling),502.067,0.992311
+reactive (sibling),509.087,0.992311
+reactive (sibling),512.868,0.992323
+reactive (sibling),522.599,0.992332
+reactive (sibling),534.647,0.992342
+reactive (sibling),543.094,0.992358
+reactive (sibling),554.237,0.992377
+reactive (sibling),564.784,0.992382
+reactive (sibling),567.166,0.992365
+reactive (sibling),576.728,0.992355
+reactive (sibling),580.049,0.992371
+reactive (sibling),586.701,0.992377
+reactive (sibling),599.797,0.992389
+reactive (sibling),604.981,0.992348
+reactive (sibling),617.826,0.992342
+reactive (sibling),625.800,0.992324
+reactive (sibling),633.145,0.992324
+reactive (sibling),640.673,0.992302
+reactive (sibling),648.447,0.850527
+reactive (sibling),658.312,0.868253
+reactive (sibling),666.177,0.850539
+reactive (sibling),668.618,0.868289
+reactive (sibling),678.233,0.868284
+reactive (sibling),688.486,0.868284
+reactive (sibling),693.058,0.882068
+reactive (sibling),701.182,0.868289
+reactive (sibling),707.737,0.882072
+reactive (sibling),716.510,0.992347
+reactive (sibling),719.686,0.992331
+reactive (sibling),730.481,0.992307
+reactive (sibling),737.849,0.992311
+reactive (sibling),746.465,0.992311
+reactive (sibling),749.680,0.992331
+reactive (sibling),758.200,0.992331
+reactive (sibling),766.003,0.992342
+reactive (sibling),774.974,0.992358
+reactive (sibling),786.968,0.992377
+reactive (sibling),793.960,0.992377
+reactive (sibling),797.030,0.992363
+reactive (sibling),807.205,0.992365
+reactive (sibling),810.236,0.992371
+reactive (sibling),817.288,0.992373
+reactive (sibling),834.465,0.992389
+reactive (sibling),838.500,0.992348
+reactive (sibling),849.522,0.992342
+reactive (sibling),857.855,0.992335
+reactive (sibling),866.285,0.992324
+reactive (sibling),870.118,0.992324
+reactive (sibling),878.746,0.992282
+reactive (sibling),888.779,0.992289
+reactive (sibling),897.888,0.992277
+reactive (sibling),900.022,0.992330
+reactive (sibling),910.678,0.992324
+reactive (sibling),919.073,0.992324
+reactive (sibling),926.880,0.992336
+reactive (sibling),934.348,0.992330
+reactive (sibling),940.900,0.992342
+reactive (sibling),947.763,0.992347
+reactive (sibling),950.598,0.992331
+reactive (sibling),962.101,0.992307
+reactive (sibling),976.036,0.992313
+reactive (sibling),983.297,0.992318
+reactive (sibling),986.543,0.992331
+reactive (sibling),994.064,0.992331
+reactive (sibling),1003.262,0.992342
+reactive (sibling),1012.275,0.992375
+reactive (sibling),1023.669,0.992375
+reactive (sibling),1033.110,0.992377
+reactive (sibling),1037.650,0.992365
+reactive (sibling),1047.601,0.992355
+reactive (sibling),1051.798,0.992371
+reactive (sibling),1058.827,0.992377
+reactive (sibling),1068.082,0.992389
+reactive (sibling),1072.329,0.992348
+reactive (sibling),1082.522,0.992347
+reactive (sibling),1095.320,0.992324
+reactive (sibling),1105.357,0.992324
+reactive (sibling),1110.110,0.992324
+reactive (sibling),1119.489,0.992282
+reactive (sibling),1129.990,0.992268
+reactive (sibling),1142.845,0.992287
+reactive (sibling),1148.259,0.992328
+reactive (sibling),1154.876,0.992324
+reactive (sibling),1162.495,0.992324
+reactive (sibling),1168.126,0.992336
+reactive (sibling),1175.122,0.868289
+reactive (sibling),1181.748,0.868299
+reactive (sibling),1189.015,0.882086
+reactive (sibling),1193.208,0.882072
+reactive (sibling),1204.028,0.882077
+reactive (sibling),1214.034,0.882054
+reactive (sibling),1221.120,0.882054
+reactive (sibling),1226.668,0.882072
+reactive (sibling),1235.063,0.882072
+reactive (sibling),1243.188,0.992342
+reactive (sibling),1254.452,0.992375
+reactive (sibling),1266.409,0.992375
+reactive (sibling),1273.280,0.992377
+reactive (sibling),1276.803,0.992365
+reactive (sibling),1288.143,0.992355
+reactive (sibling),1291.579,0.992371
+reactive (sibling),1298.772,0.992377
+reactive (sibling),1311.778,0.992389
+reactive (sibling),1316.266,0.992348
+reactive (sibling),1328.276,0.992342
+reactive (sibling),1335.447,0.992324
+reactive (sibling),1344.114,0.992324
+reactive (sibling),1351.626,0.992302
+reactive (sibling),1358.166,0.992295
+reactive (sibling),1365.757,0.992289
+reactive (sibling),1374.669,0.992277
+reactive (sibling),1377.022,0.992330
+reactive (sibling),1384.382,0.992326
+reactive (sibling),1392.621,0.992316
+reactive (sibling),1398.836,0.992326
+reactive (sibling),1405.658,0.992326
+reactive (sibling),1411.328,0.992328
+reactive (sibling),1419.503,0.992347
+reactive (sibling),1423.233,0.992332
+reactive (sibling),1432.116,0.992337
+reactive (sibling),1438.055,0.992311
+reactive (sibling),1445.837,0.992311
+reactive (sibling),1449.112,0.992323
+reactive (sibling),1458.431,0.992332
+reactive (sibling),1469.389,0.992342
+reactive (sibling),1477.054,0.992358
+reactive (sibling),1487.138,0.992377
+reactive (sibling),1496.116,0.992377
+reactive (sibling),1502.666,0.992365
+reactive (sibling),1508.711,0.992365
+reactive (sibling),1511.987,0.992371
+reactive (sibling),1522.840,0.992377
+reactive (sibling),1533.850,0.992389
+reactive (sibling),1536.614,0.992363
+reactive (sibling),1550.985,0.992342
+reactive (sibling),1562.300,0.992324
+reactive (sibling),1572.462,0.992303
+reactive (sibling),1576.292,0.992302
+reactive (sibling),1588.854,0.992282
+reactive (sibling),1602.815,0.992287
+reactive (sibling),1612.523,0.992287
+reactive (sibling),1615.586,0.992328
+reactive (sibling),1624.010,0.992335
+reactive (sibling),1634.583,0.992335
+reactive (sibling),1640.550,0.992342
+reactive (sibling),1647.430,0.992330
+reactive (sibling),1656.850,0.992342
+reactive (sibling),1663.604,0.992348
+reactive (sibling),1667.222,0.992331
+reactive (sibling),1675.752,0.992307
+reactive (sibling),1681.678,0.992311
+reactive (sibling),1688.830,0.992311
+reactive (sibling),1693.501,0.992323
+reactive (sibling),1704.497,0.992331
+reactive (sibling),1711.538,0.992342
+reactive (sibling),1727.354,0.992375
+reactive (sibling),1737.654,0.992375
+reactive (sibling),1746.852,0.992382
+reactive (sibling),1749.831,0.992375
+reactive (sibling),1758.560,0.992355
+reactive (sibling),1764.095,0.992371
+reactive (sibling),1769.589,0.992377
+reactive (sibling),1783.355,0.992389
+reactive (sibling),1788.777,0.992348
+reactive (sibling),1806.710,0.992342
+reactive (sibling),1815.908,0.992335
+reactive (sibling),1825.024,0.992303
+reactive (sibling),1830.544,0.992287
+reactive (sibling),1838.003,0.992282
+reactive (sibling),1844.478,0.992268
+reactive (sibling),1853.731,0.992295
+reactive (sibling),1857.294,0.992330
+reactive (sibling),1867.964,0.992324
+reactive (sibling),1876.830,0.992324
+reactive (sibling),1886.330,0.992336
+reactive (sibling),1895.873,0.992330
+reactive (sibling),1903.148,0.992342
+reactive (sibling),1909.194,0.992348
+reactive (sibling),1913.803,0.992330
+reactive (sibling),1922.870,0.992307
+reactive (sibling),1933.145,0.992313
+reactive (sibling),1940.537,0.992318
+reactive (sibling),1945.036,0.992331
+reactive (sibling),1952.789,0.992331
+reactive (sibling),1962.146,0.992342
+reactive (sibling),1974.732,0.992375
+reactive (sibling),1986.779,0.992375
+reactive (sibling),1994.836,0.992382
+reactive (sibling),1999.960,0.992365
+reactive (sibling),2010.262,0.992355
+reactive (sibling),2015.109,0.992375
+reactive (sibling),2023.236,0.992382
+reactive (sibling),2033.679,0.992389
+reactive (sibling),2037.893,0.992348
+reactive (sibling),2048.870,0.992342
+reactive (sibling),2059.333,0.992324
+reactive (sibling),2073.526,0.992328
+reactive (sibling),2079.386,0.992302
+reactive (sibling),2090.088,0.992282
+reactive (sibling),2100.068,0.992287
+reactive (sibling),2108.946,0.992287
+reactive (sibling),2112.254,0.992328
+reactive (sibling),2121.818,0.992335
+reactive (sibling),2130.995,0.992324
+reactive (sibling),2138.908,0.992336
+reactive (sibling),2145.328,0.992330
+reactive (sibling),2153.788,0.992342
+reactive (sibling),2159.665,0.992347
+reactive (sibling),2162.702,0.992331
+reactive (sibling),2174.003,0.992307
+reactive (sibling),2181.928,0.992313
+reactive (sibling),2188.856,0.992311
+reactive (sibling),2192.829,0.992331
+reactive (sibling),2202.304,0.992331
+reactive (sibling),2215.643,0.992342
+reactive (sibling),2223.768,0.992375
+reactive (sibling),2235.850,0.992375
+reactive (sibling),2244.483,0.992382
+reactive (sibling),2247.732,0.992365
+reactive (sibling),2254.388,0.992355
+reactive (sibling),2259.149,0.992371
+reactive (sibling),2268.621,0.992377
+reactive (sibling),2279.402,0.992389
+reactive (sibling),2285.000,0.992348
+reactive (sibling),2295.632,0.992347
+reactive (sibling),2303.148,0.992331
+reactive (sibling),2312.957,0.992324
+reactive (sibling),2318.465,0.992324
+reactive (sibling),2327.600,0.992295
+reactive (sibling),2335.538,0.992289
+reactive (sibling),2342.451,0.992277
+reactive (sibling),2346.033,0.992330
+reactive (sibling),2355.724,0.992324
+reactive (sibling),2364.980,0.992324
+reactive (sibling),2373.544,0.992336
+reactive (sibling),2380.886,0.992330
+reactive (sibling),2386.173,0.992331
+reactive (sibling),2394.222,0.992347
+reactive (sibling),2398.353,0.992331
+reactive (sibling),2407.575,0.992307
+reactive (sibling),2416.796,0.992313
+reactive (sibling),2424.568,0.992311
+reactive (sibling),2430.467,0.992331
+reactive (sibling),2436.283,0.992331
+reactive (sibling),2444.053,0.992342
+reactive (sibling),2452.754,0.992358
+reactive (sibling),2466.235,0.992377
+reactive (sibling),2478.136,0.992382
+reactive (sibling),2482.433,0.992365
+reactive (sibling),2488.762,0.992365
+reactive (sibling),2491.803,0.992371
+reactive (sibling),2502.311,0.992377
+reactive (sibling),2518.075,0.992375
+reactive (sibling),2523.493,0.992348
+reactive (sibling),2531.116,0.992342
+reactive (sibling),2542.023,0.992324
+reactive (sibling),2551.787,0.992328
+reactive (sibling),2560.650,0.992302
+reactive (sibling),2570.187,0.992282
+reactive (sibling),2579.229,0.992268
+reactive (sibling),2587.800,0.992295
+reactive (sibling),2591.992,0.992328
+reactive (sibling),2599.372,0.992324
+reactive (sibling),2609.016,0.992324
+reactive (sibling),2613.828,0.992336
+reactive (sibling),2619.313,0.992326
+reactive (sibling),2625.958,0.992331
+reactive (sibling),2632.036,0.992347
+reactive (sibling),2635.418,0.992332
+reactive (sibling),2642.278,0.992337
+reactive (sibling),2648.524,0.992337
+reactive (sibling),2658.009,0.992309
+reactive (sibling),2661.118,0.992323
+reactive (sibling),2670.042,0.992332
+reactive (sibling),2678.846,0.992332
+reactive (sibling),2690.113,0.992358
+reactive (sibling),2701.760,0.992377
+reactive (sibling),2710.373,0.992382
+reactive (sibling),2713.651,0.992365
+reactive (sibling),2721.738,0.992355
+reactive (sibling),2725.733,0.992371
+reactive (sibling),2732.184,0.992377
+reactive (sibling),2744.452,0.992389
+reactive (sibling),2749.057,0.992363
+reactive (sibling),2757.785,0.992347
+reactive (sibling),2765.875,0.992331
+reactive (sibling),2773.010,0.992316
+reactive (sibling),2777.444,0.992321
+reactive (sibling),2785.828,0.992295
+reactive (sibling),2796.280,0.992289
+reactive (sibling),2805.506,0.992277
+reactive (sibling),2808.707,0.992311
+reactive (sibling),2817.470,0.992326
+reactive (sibling),2826.758,0.992324
+reactive (sibling),2832.812,0.992326
+reactive (sibling),2838.991,0.992330
+reactive (sibling),2845.435,0.992331
+reactive (sibling),2850.865,0.992347
+reactive (sibling),2860.051,0.992331
+reactive (sibling),2870.737,0.992307
+reactive (sibling),2877.662,0.992313
+reactive (sibling),2885.937,0.992311
+reactive (sibling),2890.132,0.992331
+reactive (sibling),2898.073,0.992331
+reactive (sibling),2908.545,0.992342
+reactive (sibling),2915.891,0.992354
+reactive (sibling),2926.722,0.992377
+reactive (sibling),2932.778,0.992377
+reactive (sibling),2937.292,0.992363
+reactive (sibling),2947.345,0.992365
+reactive (sibling),2951.524,0.992371
+reactive (sibling),2958.871,0.992377
+reactive (sibling),2970.036,0.992389
+reactive (sibling),2975.095,0.992363
+reactive (sibling),2987.982,0.992342
+reactive (sibling),2995.045,0.992324
+reactive (sibling),3003.627,0.992324
+reactive (sibling),3012.631,0.992302
+reactive (sibling),3023.104,0.992282
+reactive (sibling),3031.811,0.992268
+reactive (sibling),3041.152,0.992295
+reactive (sibling),3046.796,0.992330
+reactive (sibling),3053.617,0.992324
+reactive (sibling),3063.840,0.992335
+reactive (sibling),3072.866,0.992342
+reactive (sibling),3080.774,0.992330
+reactive (sibling),3087.675,0.992342
+reactive (sibling),3093.059,0.992348
+reactive (sibling),3095.395,0.992331
+reactive (sibling),3103.190,0.992337
+reactive (sibling),3109.808,0.992311
+reactive (sibling),3120.065,0.992311
+reactive (sibling),3125.604,0.992331
+reactive (sibling),3133.062,0.992331
+reactive (sibling),3144.243,0.992342
+reactive (sibling),3152.025,0.992358
+reactive (sibling),3164.854,0.992375
+reactive (sibling),3174.352,0.992382
+reactive (sibling),3178.396,0.992365
+reactive (sibling),3187.454,0.992355
+reactive (sibling),3191.168,0.992371
+reactive (sibling),3199.839,0.992377
+reactive (sibling),3209.469,0.992389
+reactive (sibling),3214.590,0.992348
+reactive (sibling),3223.126,0.992347
+reactive (sibling),3229.870,0.992331
+reactive (sibling),3236.838,0.992316
+reactive (sibling),3242.019,0.992321
+reactive (sibling),3249.813,0.992316
+reactive (sibling),3257.700,0.992300
+reactive (sibling),3264.586,0.992295
+reactive (sibling),3266.045,0.992323
+reactive (sibling),3271.708,0.992309
+reactive (sibling),3281.396,0.992318
+reactive (sibling),3289.752,0.992318
+reactive (sibling),3296.815,0.992318
+reactive (sibling),3304.316,0.992331
+reactive (sibling),3310.434,0.992347
+reactive (sibling),3312.578,0.992332
+reactive (sibling),3321.146,0.992337
+reactive (sibling),3328.591,0.992311
+reactive (sibling),3336.844,0.992311
+reactive (sibling),3341.631,0.992331
+reactive (sibling),3351.553,0.992331
+reactive (sibling),3359.788,0.992342
+reactive (sibling),3369.726,0.992358
+reactive (sibling),3380.615,0.992377
+reactive (sibling),3385.596,0.992377
+reactive (sibling),3388.829,0.992365
+reactive (sibling),3397.613,0.992365
+reactive (sibling),3401.546,0.992378
+reactive (sibling),3409.767,0.992373
+reactive (sibling),3422.162,0.992389
+reactive (sibling),3426.225,0.992363
+reactive (sibling),3436.286,0.992347
+reactive (sibling),3442.223,0.992331
+reactive (sibling),3450.929,0.992324
+reactive (sibling),3454.760,0.992321
+reactive (sibling),3461.120,0.992316
+reactive (sibling),3468.439,0.992300
+reactive (sibling),3475.812,0.992295
+reactive (sibling),3483.488,0.992311
+reactive (sibling),3490.072,0.992326
+reactive (sibling),3498.417,0.992316
+reactive (sibling),3505.714,0.992326
+reactive (sibling),3512.266,0.992326
+reactive (sibling),3518.434,0.992331
+reactive (sibling),3525.098,0.992347
+reactive (sibling),3527.522,0.992332
+reactive (sibling),3537.977,0.992337
+reactive (sibling),3546.313,0.992311
+reactive (sibling),3552.127,0.992311
+reactive (sibling),3554.761,0.992323
+reactive (sibling),3561.216,0.992332
+reactive (sibling),3568.621,0.992332
+reactive (sibling),3578.339,0.992356
+reactive (sibling),3591.503,0.992377
+reactive (sibling),3597.771,0.992378
+reactive (sibling),3601.254,0.992363
+reactive (sibling),3607.705,0.992358
+reactive (sibling),3610.778,0.992370
+reactive (sibling),3619.846,0.992373
+reactive (sibling),3633.898,0.992389
+reactive (sibling),3637.982,0.992363
+reactive (sibling),3649.855,0.992347
+reactive (sibling),3657.162,0.992331
+reactive (sibling),3664.332,0.992324
+reactive (sibling),3669.863,0.992324
+reactive (sibling),3675.056,0.992295
+reactive (sibling),3684.185,0.992289
+reactive (sibling),3691.568,0.992295
+reactive (sibling),3694.032,0.992311
+reactive (sibling),3701.296,0.992326
+reactive (sibling),3710.826,0.992316
+reactive (sibling),3717.681,0.992326
+reactive (sibling),3725.465,0.992326
+reactive (sibling),3733.147,0.992331
+reactive (sibling),3739.229,0.992347
+reactive (sibling),3743.251,0.992332
+reactive (sibling),3752.698,0.992337
+reactive (sibling),3763.087,0.992313
+reactive (sibling),3773.110,0.992318
+reactive (sibling),3779.110,0.992330
+reactive (sibling),3785.982,0.992342
+reactive (sibling),3797.141,0.992342
+reactive (sibling),3807.692,0.992375
+reactive (sibling),3816.390,0.992375
+reactive (sibling),3822.843,0.992377
+reactive (sibling),3829.216,0.992365
+reactive (sibling),3838.371,0.992365
+reactive (sibling),3841.187,0.992371
+reactive (sibling),3850.623,0.992377
+reactive (sibling),3864.041,0.992389
+reactive (sibling),3867.427,0.992363
+reactive (sibling),3876.308,0.992347
+reactive (sibling),3882.602,0.992331
+reactive (sibling),3892.202,0.992324
+reactive (sibling),3898.928,0.992324
+reactive (sibling),3908.469,0.992295
+reactive (sibling),3914.704,0.992289
+reactive (sibling),3922.450,0.992295
+reactive (sibling),3925.655,0.992311
+reactive (sibling),3933.642,0.992326
+reactive (sibling),3941.003,0.992316
+reactive (sibling),3949.496,0.992326
+reactive (sibling),3958.115,0.992326
+reactive (sibling),3965.569,0.992331
+reactive (sibling),3973.827,0.992347
+reactive (sibling),3976.984,0.992331
+reactive (sibling),3986.455,0.992307
+reactive (sibling),3992.434,0.992311
+reactive (sibling),4001.126,0.992318
+reactive (sibling),4005.629,0.992331
+reactive (sibling),4012.680,0.992331
+reactive (sibling),4020.890,0.992342
+reactive (sibling),4029.796,0.992358
+reactive (sibling),4040.182,0.992377
+reactive (sibling),4049.017,0.992377
+reactive (sibling),4052.672,0.992365
+reactive (sibling),4059.559,0.992358
+reactive (sibling),4063.095,0.992378
+reactive (sibling),4070.346,0.992373
+reactive (sibling),4083.455,0.992389
+reactive (sibling),4087.653,0.992363
+reactive (sibling),4098.322,0.992347
+reactive (sibling),4104.898,0.992331
+reactive (sibling),4114.070,0.992324
+reactive (sibling),4120.182,0.992324
+reactive (sibling),4128.756,0.992295
+reactive (sibling),4136.356,0.992289
+reactive (sibling),4143.938,0.992277
+reactive (sibling),4148.479,0.992330
+reactive (sibling),4157.857,0.992326
+reactive (sibling),4167.422,0.992324
+reactive (sibling),4174.691,0.992336
+reactive (sibling),4183.187,0.992330
+reactive (sibling),4191.049,0.992342
+reactive (sibling),4198.997,0.992348
+reactive (sibling),4202.714,0.992331
+reactive (sibling),4209.918,0.992307
+reactive (sibling),4214.732,0.992311
+reactive (sibling),4224.510,0.992311
+reactive (sibling),4229.228,0.992331
+reactive (sibling),4237.669,0.992331
+reactive (sibling),4247.601,0.992342
+reactive (sibling),4256.511,0.992358
+reactive (sibling),4266.568,0.992377
+reactive (sibling),4275.659,0.992382
+reactive (sibling),4277.919,0.992365
+reactive (sibling),4285.051,0.992365
+reactive (sibling),4290.505,0.992371
+reactive (sibling),4300.062,0.992377
+reactive (sibling),4313.089,0.992389
+reactive (sibling),4317.623,0.992348
+reactive (sibling),4328.590,0.992342
+reactive (sibling),4340.069,0.992335
+reactive (sibling),4348.797,0.992328
+reactive (sibling),4354.608,0.992302
+reactive (sibling),4363.719,0.992282
+reactive (sibling),4372.634,0.992289
+reactive (sibling),4380.014,0.992295
+reactive (sibling),4383.889,0.992330
+reactive (sibling),4392.292,0.992324
+reactive (sibling),4400.177,0.992324
+reactive (sibling),4405.136,0.992326
+reactive (sibling),4411.278,0.992326
+reactive (sibling),4417.193,0.992331
+reactive (sibling),4426.289,0.992347
+reactive (sibling),4428.806,0.992332
+reactive (sibling),4439.397,0.992337
+reactive (sibling),4448.693,0.992311
+reactive (sibling),4455.984,0.992311
+reactive (sibling),4459.579,0.992323
+reactive (sibling),4469.184,0.992331
+reactive (sibling),4477.670,0.992342
+reactive (sibling),4487.803,0.992354
+reactive (sibling),4497.991,0.992377
+reactive (sibling),4505.650,0.992377
+reactive (sibling),4509.539,0.992365
+reactive (sibling),4519.612,0.992355
+reactive (sibling),4524.075,0.992371
+reactive (sibling),4533.479,0.992377
+reactive (sibling),4542.982,0.992389
+reactive (sibling),4550.804,0.992348
+reactive (sibling),4557.054,0.992347
+reactive (sibling),4566.412,0.992324
+reactive (sibling),4575.221,0.992324
+reactive (sibling),4582.525,0.992324
+reactive (sibling),4592.382,0.992295
+reactive (sibling),4601.497,0.992289
+reactive (sibling),4609.996,0.992277
+reactive (sibling),4612.657,0.992330
+reactive (sibling),4619.265,0.992324
+reactive (sibling),4630.543,0.992324
+reactive (sibling),4636.270,0.992336
+reactive (sibling),4646.141,0.992330
+reactive (sibling),4656.207,0.992342
+reactive (sibling),4662.936,0.992348
+reactive (sibling),4666.154,0.992331
+reactive (sibling),4673.854,0.992307
+reactive (sibling),4678.995,0.992311
+reactive (sibling),4686.855,0.992311
+reactive (sibling),4690.889,0.992331
+reactive (sibling),4700.004,0.992331
+reactive (sibling),4707.308,0.992342
+reactive (sibling),4714.341,0.992356
+reactive (sibling),4727.749,0.992377
+reactive (sibling),4734.207,0.992377
+reactive (sibling),4739.716,0.992365
+reactive (sibling),4748.464,0.992365
+reactive (sibling),4752.433,0.992371
+reactive (sibling),4759.805,0.992373
+reactive (sibling),4770.993,0.992389
+reactive (sibling),4775.662,0.992348
+reactive (sibling),4785.201,0.992347
+reactive (sibling),4793.906,0.992331
+reactive (sibling),4804.823,0.992324
+reactive (sibling),4808.486,0.992324
+reactive (sibling),4822.123,0.992282
+reactive (sibling),4833.232,0.992268
+reactive (sibling),4842.647,0.992295
+reactive (sibling),4845.275,0.992328
+reactive (sibling),4855.037,0.992335
+reactive (sibling),4864.870,0.992335
+reactive (sibling),4872.836,0.992342
+reactive (sibling),4881.369,0.992330
+reactive (sibling),4892.720,0.992342
+reactive (sibling),4900.305,0.992348
+reactive (sibling),4903.014,0.992330
+reactive (sibling),4911.871,0.992307
+reactive (sibling),4920.008,0.992313
+reactive (sibling),4927.844,0.992318
+reactive (sibling),4931.736,0.992331
+reactive (sibling),4938.390,0.992331
+reactive (sibling),4947.812,0.992342
+reactive (sibling),4955.561,0.992358
+reactive (sibling),4968.235,0.992377
+reactive (sibling),4974.434,0.992377
+reactive (sibling),4978.430,0.992363
+reactive (sibling),4985.227,0.992358
+reactive (sibling),4987.953,0.992378
+reactive (sibling),4996.241,0.992373
+reactive (sibling),5014.873,0.992389
+reactive (sibling),5022.405,0.992348
+reactive (sibling),5031.676,0.992342
+reactive (sibling),5041.681,0.992335
+reactive (sibling),5052.567,0.992303
+reactive (sibling),5059.116,0.992287
+reactive (sibling),5066.438,0.992282
+reactive (sibling),5078.310,0.992268
+reactive (sibling),5086.142,0.992295
+reactive (sibling),5091.172,0.992330
+reactive (sibling),5100.353,0.992324
+reactive (sibling),5108.224,0.992324
+reactive (sibling),5114.711,0.992336
+reactive (sibling),5122.184,0.992330
+reactive (sibling),5130.598,0.992342
+reactive (sibling),5135.750,0.992347
+reactive (sibling),5138.789,0.992331
+reactive (sibling),5149.328,0.992337
+reactive (sibling),5153.888,0.992311
+reactive (sibling),5160.900,0.992311
+reactive (sibling),5164.526,0.992323
+reactive (sibling),5172.379,0.992332
+reactive (sibling),5180.434,0.992332
+reactive (sibling),5189.155,0.992356
+reactive (sibling),5199.696,0.992377
+reactive (sibling),5204.120,0.992378
+reactive (sibling),5208.118,0.992365
+reactive (sibling),5216.921,0.992358
+reactive (sibling),5220.262,0.992370
+reactive (sibling),5226.503,0.992373
+reactive (sibling),5237.891,0.992384
+reactive (sibling),5242.213,0.992363
+reactive (sibling),5252.963,0.992347
+reactive (sibling),5261.050,0.992331
+reactive (sibling),5268.015,0.992316
+reactive (sibling),5273.957,0.992321
+reactive (sibling),5281.942,0.992295
+reactive (sibling),5290.646,0.992289
+reactive (sibling),5296.893,0.992295
+reactive (sibling),5300.066,0.992311
+reactive (sibling),5307.644,0.992326
+reactive (sibling),5316.413,0.992316
+reactive (sibling),5323.007,0.992326
+reactive (sibling),5329.968,0.992326
+reactive (sibling),5336.505,0.992331
+reactive (sibling),5342.220,0.992347
+reactive (sibling),5345.499,0.992332
+reactive (sibling),5352.534,0.992337
+reactive (sibling),5358.023,0.992337
+reactive (sibling),5365.182,0.992309
+reactive (sibling),5368.956,0.992323
+reactive (sibling),5375.616,0.992325
+reactive (sibling),5386.063,0.992332
+reactive (sibling),5394.684,0.992356
+reactive (sibling),5407.751,0.992377
+reactive (sibling),5412.375,0.992378
+reactive (sibling),5416.662,0.992363
+reactive (sibling),5424.004,0.992358
+reactive (sibling),5428.550,0.992378
+reactive (sibling),5438.014,0.992377
+reactive (sibling),5450.744,0.992389
+reactive (sibling),5453.463,0.992363
+reactive (sibling),5467.185,0.992347
+reactive (sibling),5473.981,0.992324
+reactive (sibling),5482.453,0.992324
+reactive (sibling),5489.649,0.992302
+reactive (sibling),5498.980,0.992282
+reactive (sibling),5505.921,0.992289
+reactive (sibling),5515.826,0.992295
+reactive (sibling),5519.000,0.992330
+reactive (sibling),5528.009,0.992324
+reactive (sibling),5537.840,0.992324
+reactive (sibling),5545.432,0.992336
+reactive (sibling),5551.461,0.992330
+reactive (sibling),5557.785,0.992331
+reactive (sibling),5563.771,0.992347
+reactive (sibling),5567.675,0.992331
+reactive (sibling),5576.139,0.992337
+reactive (sibling),5582.984,0.992311
+reactive (sibling),5593.223,0.992311
+reactive (sibling),5597.232,0.992323
+reactive (sibling),5603.551,0.992332
+reactive (sibling),5613.439,0.992342
+reactive (sibling),5621.381,0.992358
+reactive (sibling),5630.994,0.992377
+reactive (sibling),5638.563,0.992377
+reactive (sibling),5641.404,0.992363
+reactive (sibling),5649.971,0.992358
+reactive (sibling),5654.270,0.992378
+reactive (sibling),5661.616,0.992373
+reactive (sibling),5671.991,0.992384
+reactive (sibling),5675.212,0.992363
+reactive (sibling),5684.126,0.992347
+reactive (sibling),5692.643,0.992331
+reactive (sibling),5699.666,0.992316
+reactive (sibling),5705.058,0.992321
+reactive (sibling),5714.889,0.992295
+reactive (sibling),5723.696,0.992289
+reactive (sibling),5729.942,0.992295
+reactive (sibling),5734.653,0.992311
+reactive (sibling),5743.664,0.992326
+reactive (sibling),5753.802,0.992324
+reactive (sibling),5763.598,0.992336
+reactive (sibling),5771.515,0.992330
+reactive (sibling),5777.044,0.992342
+reactive (sibling),5784.420,0.992348
+reactive (sibling),5786.936,0.992331
+reactive (sibling),5794.195,0.992337
+reactive (sibling),5799.234,0.992311
+reactive (sibling),5806.031,0.992311
+reactive (sibling),5808.949,0.992323
+reactive (sibling),5820.362,0.992332
+reactive (sibling),5828.843,0.992332
+reactive (sibling),5837.360,0.992358
+reactive (sibling),5846.249,0.992358
+reactive (sibling),5853.231,0.992378
+reactive (sibling),5857.168,0.992363
+reactive (sibling),5866.543,0.992365
+reactive (sibling),5870.176,0.992371
+reactive (sibling),5878.774,0.992373
+reactive (sibling),5891.326,0.992389
+reactive (sibling),5896.547,0.992363
+reactive (sibling),5907.920,0.992342
+reactive (sibling),5915.695,0.992324
+reactive (sibling),5924.197,0.992324
+reactive (sibling),5927.942,0.992324
+reactive (sibling),5935.986,0.992295
+reactive (sibling),5944.368,0.992289
+reactive (sibling),5952.049,0.992277
+reactive (sibling),5954.812,0.992311
+reactive (sibling),5969.371,0.992324
+reactive (sibling),5979.483,0.992324
+reactive (sibling),5988.664,0.992342
+reactive (sibling),5996.647,0.992342
+reactive (sibling),6002.388,0.992342
+reactive (sibling),6007.958,0.992348
+reactive (sibling),6010.761,0.992331
+reactive (sibling),6018.710,0.992307
+reactive (sibling),6025.661,0.992311
+reactive (sibling),6032.265,0.992311
+reactive (sibling),6036.016,0.992323
+reactive (sibling),6044.354,0.992332
+reactive (sibling),6053.220,0.992332
+reactive (sibling),6062.430,0.992358
+reactive (sibling),6072.367,0.992377
+reactive (sibling),6080.042,0.992377
+reactive (sibling),6082.608,0.992363
+reactive (sibling),6092.823,0.992365
+reactive (sibling),6095.715,0.992378
+reactive (sibling),6103.213,0.992373
+reactive (sibling),6121.557,0.992389
+reactive (sibling),6126.542,0.992348
+reactive (sibling),6142.493,0.992335
+reactive (sibling),6154.185,0.992342
+reactive (sibling),6163.672,0.992286
+reactive (sibling),6168.757,0.992287
+reactive (sibling),6176.099,0.992282
+reactive (sibling),6183.698,0.992268
+reactive (sibling),6191.557,0.992295
+reactive (sibling),6195.345,0.992330
+reactive (sibling),6202.927,0.992324
+reactive (sibling),6212.932,0.992316
+reactive (sibling),6221.965,0.992326
+reactive (sibling),6228.460,0.992326
+reactive (sibling),6235.340,0.992331
+reactive (sibling),6242.557,0.992347
+reactive (sibling),6247.277,0.992331
+reactive (sibling),6254.758,0.992337
+reactive (sibling),6261.369,0.992311
+reactive (sibling),6268.360,0.992311
+reactive (sibling),6273.377,0.992331
+reactive (sibling),6284.233,0.992331
+reactive (sibling),6292.835,0.992342
+reactive (sibling),6303.058,0.992354
+reactive (sibling),6316.366,0.992375
+reactive (sibling),6325.425,0.992382
+reactive (sibling),6329.075,0.992375
+reactive (sibling),6338.446,0.992355
+reactive (sibling),6342.293,0.992371
+reactive (sibling),6351.203,0.992377
+reactive (sibling),6359.857,0.992389
+reactive (sibling),6365.619,0.992348
+reactive (sibling),6380.096,0.992342
+reactive (sibling),6388.169,0.992324
+reactive (sibling),6398.126,0.992324
+reactive (sibling),6402.962,0.992302
+reactive (sibling),6409.528,0.992295
+reactive (sibling),6418.376,0.992289
+reactive (sibling),6426.128,0.992295
+reactive (sibling),6429.468,0.992330
+reactive (sibling),6436.312,0.992326
+reactive (sibling),6444.306,0.992316
+reactive (sibling),6451.700,0.992326
+reactive (sibling),6457.728,0.992318
+reactive (sibling),6463.772,0.992331
+reactive (sibling),6469.959,0.992347
+reactive (sibling),6473.109,0.992332
+reactive (sibling),6483.677,0.992337
+reactive (sibling),6488.713,0.992337
+reactive (sibling),6497.227,0.992311
+reactive (sibling),6502.343,0.992323
+reactive (sibling),6510.127,0.992332
+reactive (sibling),6520.173,0.992342
+reactive (sibling),6530.987,0.992354
+reactive (sibling),6545.969,0.992375
+reactive (sibling),6554.947,0.992382
+reactive (sibling),6558.757,0.992375
+reactive (sibling),6573.970,0.992358
+reactive (sibling),6576.584,0.992375
+reactive (sibling),6581.294,0.992382
+reactive (sibling),6592.651,0.992375
+reactive (sibling),6596.653,0.992348
+reactive (sibling),6609.454,0.992342
+reactive (sibling),6618.867,0.992335
+reactive (sibling),6625.962,0.992324
+reactive (sibling),6630.801,0.992321
+reactive (sibling),6640.876,0.992295
+reactive (sibling),6650.482,0.992289
+reactive (sibling),6658.608,0.992295
+reactive (sibling),6660.616,0.992330
+reactive (sibling),6667.099,0.992326
+reactive (sibling),6677.859,0.992316
+reactive (sibling),6682.640,0.992326
+reactive (sibling),6689.328,0.992326
+reactive (sibling),6696.494,0.992331
+reactive (sibling),6705.515,0.992347
+reactive (sibling),6709.082,0.992332
+reactive (sibling),6716.667,0.992337
+reactive (sibling),6721.959,0.992311
+reactive (sibling),6729.530,0.992311
+reactive (sibling),6733.561,0.992323
+reactive (sibling),6739.961,0.992332
+reactive (sibling),6747.585,0.992332
+reactive (sibling),6755.359,0.992356
+reactive (sibling),6765.406,0.992361
+reactive (sibling),6774.057,0.992378
+reactive (sibling),6776.470,0.992365
+reactive (sibling),6783.589,0.992358
+reactive (sibling),6786.698,0.992370
+reactive (sibling),6795.003,0.992373
+reactive (sibling),6812.245,0.992389
+reactive (sibling),6814.974,0.992363
+reactive (sibling),6827.499,0.992342
+reactive (sibling),6838.794,0.992335
+reactive (sibling),6849.597,0.992303
+reactive (sibling),6856.911,0.992287
+reactive (sibling),6865.912,0.992282
+reactive (sibling),6873.850,0.992268
+reactive (sibling),6881.003,0.992295
+reactive (sibling),6883.271,0.992330
+reactive (sibling),6890.629,0.992324
+reactive (sibling),6900.927,0.992324
+reactive (sibling),6909.058,0.992326
+reactive (sibling),6915.954,0.992326
+reactive (sibling),6922.884,0.992331
+reactive (sibling),6929.025,0.992347
+reactive (sibling),6931.083,0.992332
+reactive (sibling),6939.202,0.992337
+reactive (sibling),6948.576,0.992311
+reactive (sibling),6956.489,0.992311
+reactive (sibling),6958.755,0.992323
+reactive (sibling),6966.728,0.992332
+reactive (sibling),6973.795,0.992332
+reactive (sibling),6982.704,0.992356
+reactive (sibling),6993.646,0.992377
+reactive (sibling),6999.964,0.992377
+reactive (sibling),7004.001,0.992363
+reactive (sibling),7010.135,0.992358
+reactive (sibling),7014.345,0.992370
+reactive (sibling),7024.891,0.992373
+reactive (sibling),7037.955,0.992389
+reactive (sibling),7042.708,0.992348
+reactive (sibling),7055.408,0.992342
+reactive (sibling),7064.756,0.992335
+reactive (sibling),7074.555,0.992303
+reactive (sibling),7078.751,0.992302
+reactive (sibling),7088.019,0.992282
+reactive (sibling),7096.621,0.992289
+reactive (sibling),7104.577,0.992295
+reactive (sibling),7107.786,0.992330
+reactive (sibling),7122.103,0.992324
+reactive (sibling),7130.632,0.992324
+reactive (sibling),7141.831,0.992342
+reactive (sibling),7150.520,0.992342
+reactive (sibling),7159.342,0.992342
+reactive (sibling),7165.515,0.992349
+reactive (sibling),7168.032,0.992295
+reactive (sibling),7178.877,0.992307
+reactive (sibling),7183.967,0.992313
+reactive (sibling),7191.500,0.992318
+reactive (sibling),7194.703,0.992331
+reactive (sibling),7201.326,0.992332
+reactive (sibling),7211.167,0.992342
+reactive (sibling),7218.633,0.992356
+reactive (sibling),7245.955,0.992381
+reactive (sibling),7253.448,0.992397
+reactive (sibling),7258.021,0.992365
+reactive (sibling),7265.981,0.992358
+reactive (sibling),7269.423,0.992375
+reactive (sibling),7276.386,0.992382
+reactive (sibling),7287.097,0.992375
+reactive (sibling),7291.130,0.992348
+reactive (sibling),7301.500,0.992347
+reactive (sibling),7309.740,0.992331
+reactive (sibling),7316.803,0.992316
+reactive (sibling),7320.774,0.992321
+reactive (sibling),7328.815,0.992316
+reactive (sibling),7340.502,0.992289
+reactive (sibling),7354.927,0.992295
+reactive (sibling),7357.442,0.992330
+reactive (sibling),7364.139,0.992324
+reactive (sibling),7374.281,0.992324
+reactive (sibling),7379.458,0.992336
+reactive (sibling),7385.270,0.992330
+reactive (sibling),7391.648,0.992342
+reactive (sibling),7398.911,0.992347
+reactive (sibling),7402.008,0.992331
+reactive (sibling),7409.915,0.992337
+reactive (sibling),7416.264,0.992337
+reactive (sibling),7423.510,0.992309
+reactive (sibling),7426.311,0.992323
+reactive (sibling),7434.289,0.992332
+reactive (sibling),7443.950,0.992332
+reactive (sibling),7452.420,0.992358
+reactive (sibling),7463.778,0.992377
+reactive (sibling),7469.875,0.992378
+reactive (sibling),7474.939,0.992363
+reactive (sibling),7481.984,0.992358
+reactive (sibling),7486.831,0.992371
+reactive (sibling),7494.396,0.992377
+reactive (sibling),7504.329,0.992389
+reactive (sibling),7508.832,0.992363
+reactive (sibling),7517.230,0.992347
+reactive (sibling),7526.140,0.992331
+reactive (sibling),7536.284,0.992324
+reactive (sibling),7541.090,0.992321
+reactive (sibling),7549.326,0.992295
+reactive (sibling),7559.414,0.992289
+reactive (sibling),7567.789,0.992277
+reactive (sibling),7571.504,0.992330
+reactive (sibling),7582.963,0.992324
+reactive (sibling),7593.622,0.992324
+reactive (sibling),7599.766,0.992336
+reactive (sibling),7608.675,0.992330
+reactive (sibling),7613.896,0.992342
+reactive (sibling),7620.141,0.992348
+reactive (sibling),7622.601,0.992331
+reactive (sibling),7631.787,0.992307
+reactive (sibling),7636.526,0.992311
+reactive (sibling),7642.845,0.992309
+reactive (sibling),7647.025,0.992323
+reactive (sibling),7654.241,0.992332
+reactive (sibling),7661.526,0.992332
+reactive (sibling),7672.039,0.992356
+reactive (sibling),7685.517,0.992377
+reactive (sibling),7694.560,0.992377
+reactive (sibling),7697.181,0.992365
+reactive (sibling),7702.950,0.992365
+reactive (sibling),7706.093,0.992378
+reactive (sibling),7712.239,0.992373
+reactive (sibling),7728.367,0.992389
+reactive (sibling),7731.531,0.992363
+reactive (sibling),7739.382,0.992347
+reactive (sibling),7748.669,0.992331
+reactive (sibling),7755.378,0.992316
+reactive (sibling),7760.924,0.992321
+reactive (sibling),7768.489,0.992295
+reactive (sibling),7778.132,0.992289
+reactive (sibling),7789.105,0.992277
+reactive (sibling),7794.734,0.992330
+reactive (sibling),7800.870,0.992324
+reactive (sibling),7809.212,0.992324
+reactive (sibling),7817.760,0.992336
+reactive (sibling),7825.881,0.992330
+reactive (sibling),7832.020,0.992342
+reactive (sibling),7839.782,0.992348
+reactive (sibling),7843.458,0.992331
+reactive (sibling),7852.703,0.992337
+reactive (sibling),7858.890,0.992311
+reactive (sibling),7872.548,0.992318
+reactive (sibling),7877.573,0.992331
+reactive (sibling),7885.052,0.992331
+reactive (sibling),7892.559,0.992342
+reactive (sibling),7903.073,0.992354
+reactive (sibling),7915.036,0.992375
+reactive (sibling),7919.533,0.992382
+reactive (sibling),7922.496,0.992365
+reactive (sibling),7929.440,0.992358
+reactive (sibling),7933.717,0.992378
+reactive (sibling),7940.544,0.992373
+reactive (sibling),7951.099,0.992384
+reactive (sibling),7954.220,0.992363
+reactive (sibling),7958.882,0.992361
+reactive (sibling),7966.562,0.992337
+reactive (sibling),7977.374,0.992323
+reactive (sibling),7983.842,0.992321
+reactive (sibling),7993.069,0.992316
+reactive (sibling),8001.903,0.992289
+reactive (sibling),8008.852,0.992295
+reactive (sibling),8011.056,0.992323
+reactive (sibling),8018.441,0.992326
+reactive (sibling),8029.947,0.992324
+reactive (sibling),8036.174,0.992326
+reactive (sibling),8042.747,0.992326
+reactive (sibling),8049.909,0.992331
+reactive (sibling),8055.621,0.992347
+reactive (sibling),8059.027,0.992332
+reactive (sibling),8067.937,0.992337
+reactive (sibling),8076.238,0.992311
+reactive (sibling),8085.244,0.992311
+reactive (sibling),8089.482,0.992323
+reactive (sibling),8097.110,0.992331
+reactive (sibling),8104.976,0.992342
+reactive (sibling),8112.237,0.992358
+reactive (sibling),8121.332,0.992377
+reactive (sibling),8128.437,0.992377
+reactive (sibling),8133.986,0.992363
+reactive (sibling),8140.612,0.992358
+reactive (sibling),8143.348,0.992370
+reactive (sibling),8149.193,0.992379
+reactive (sibling),8164.711,0.992384
+reactive (sibling),8168.933,0.992363
+reactive (sibling),8178.222,0.992347
+reactive (sibling),8183.751,0.992331
+reactive (sibling),8191.052,0.992316
+reactive (sibling),8195.428,0.992321
+reactive (sibling),8203.819,0.992295
+reactive (sibling),8210.699,0.992289
+reactive (sibling),8219.363,0.992295
+reactive (sibling),8221.465,0.992323
+reactive (sibling),8230.232,0.992326
+reactive (sibling),8240.337,0.992316
+reactive (sibling),8249.464,0.992326
+reactive (sibling),8255.637,0.992330
+reactive (sibling),8262.404,0.992331
+reactive (sibling),8270.081,0.992347
+reactive (sibling),8272.845,0.992331
+reactive (sibling),8280.411,0.992337
+reactive (sibling),8284.377,0.992311
+reactive (sibling),8293.430,0.992311
+reactive (sibling),8296.487,0.992323
+reactive (sibling),8304.360,0.992332
+reactive (sibling),8311.890,0.992332
+reactive (sibling),8318.138,0.992356
+reactive (sibling),8325.815,0.992361
+reactive (sibling),8333.779,0.992378
+reactive (sibling),8338.581,0.992365
+reactive (sibling),8345.433,0.992358
+reactive (sibling),8348.618,0.992370
+reactive (sibling),8356.038,0.992379
+reactive (sibling),8369.007,0.992384
+reactive (sibling),8372.114,0.992363
+reactive (sibling),8380.689,0.992347
+reactive (sibling),8390.291,0.992331
+reactive (sibling),8398.689,0.992324
+reactive (sibling),8403.393,0.992321
+reactive (sibling),8413.229,0.992295
+reactive (sibling),8420.696,0.992289
+reactive (sibling),8432.828,0.992295
+reactive (sibling),8436.472,0.992330
+reactive (sibling),8442.503,0.992324
+reactive (sibling),8450.402,0.992324
+reactive (sibling),8456.664,0.992326
+reactive (sibling),8463.682,0.992330
+reactive (sibling),8469.243,0.992331
+reactive (sibling),8475.488,0.992347
+reactive (sibling),8477.637,0.992332
+reactive (sibling),8485.011,0.992337
+reactive (sibling),8493.470,0.992337
+reactive (sibling),8500.009,0.992309
+reactive (sibling),8503.302,0.992323
+reactive (sibling),8515.734,0.992332
+reactive (sibling),8525.050,0.992342
+reactive (sibling),8532.643,0.992358
+reactive (sibling),8541.332,0.992377
+reactive (sibling),8546.953,0.992377
+reactive (sibling),8549.321,0.992363
+reactive (sibling),8556.897,0.992358
+reactive (sibling),8560.807,0.992378
+reactive (sibling),8568.274,0.992373
+reactive (sibling),8580.330,0.992384
+reactive (sibling),8583.224,0.992361
+reactive (sibling),8593.818,0.992347
+reactive (sibling),8602.782,0.992331
+reactive (sibling),8612.598,0.992324
+reactive (sibling),8617.895,0.992324
+reactive (sibling),8625.925,0.992295
+reactive (sibling),8632.367,0.992289
+reactive (sibling),8639.901,0.992295
+reactive (sibling),8642.988,0.992311
+reactive (sibling),8652.028,0.992326
+reactive (sibling),8660.528,0.992316
+reactive (sibling),8666.672,0.992326
+reactive (sibling),8675.067,0.992326
+reactive (sibling),8683.155,0.992331
+reactive (sibling),8688.999,0.992347
+reactive (sibling),8691.227,0.992332
+reactive (sibling),8703.288,0.992307
+reactive (sibling),8708.553,0.992311
+reactive (sibling),8715.105,0.992311
+reactive (sibling),8720.227,0.992323
+reactive (sibling),8727.242,0.992331
+reactive (sibling),8737.360,0.992342
+reactive (sibling),8746.804,0.992358
+reactive (sibling),8757.497,0.992377
+reactive (sibling),8763.717,0.992377
+reactive (sibling),8767.850,0.992363
+reactive (sibling),8774.177,0.992358
+reactive (sibling),8776.724,0.992378
+reactive (sibling),8783.496,0.992373
+reactive (sibling),8796.697,0.992384
+reactive (sibling),8802.143,0.992363
+reactive (sibling),8814.009,0.992347
+reactive (sibling),8823.407,0.992331
+reactive (sibling),8831.003,0.992324
+reactive (sibling),8837.883,0.992302
+reactive (sibling),8848.405,0.992282
+reactive (sibling),8859.081,0.992268
+reactive (sibling),8868.605,0.992295
+reactive (sibling),8870.754,0.992330
+reactive (sibling),8878.436,0.992324
+reactive (sibling),8886.858,0.992324
+reactive (sibling),8891.273,0.992336
+reactive (sibling),8897.275,0.992326
+reactive (sibling),8904.342,0.992331
+reactive (sibling),8911.201,0.992347
+reactive (sibling),8914.935,0.992332
+reactive (sibling),8920.864,0.992337
+reactive (sibling),8929.473,0.992337
+reactive (sibling),8938.545,0.992311
+reactive (sibling),8942.228,0.992323
+reactive (sibling),8948.352,0.992332
+reactive (sibling),8956.360,0.992332
+reactive (sibling),8964.964,0.992358
+reactive (sibling),8977.697,0.992377
+reactive (sibling),8985.249,0.992377
+reactive (sibling),8988.499,0.992363
+reactive (sibling),8995.887,0.992358
+reactive (sibling),9002.655,0.992371
+reactive (sibling),9010.047,0.992377
+reactive (sibling),9028.338,0.992375
+reactive (sibling),9033.264,0.992348
+reactive (sibling),9043.478,0.992342
+reactive (sibling),9054.493,0.992335
+reactive (sibling),9061.733,0.992328
+reactive (sibling),9067.595,0.992302
+reactive (sibling),9075.042,0.992282
+reactive (sibling),9084.256,0.992289
+reactive (sibling),9094.857,0.992295
+reactive (sibling),9096.751,0.992330
+reactive (sibling),9107.589,0.992324
+reactive (sibling),9116.616,0.992324
+reactive (sibling),9123.516,0.992336
+reactive (sibling),9133.664,0.992330
+reactive (sibling),9140.064,0.992342
+reactive (sibling),9146.120,0.992348
+reactive (sibling),9149.790,0.992331
+reactive (sibling),9156.961,0.992307
+reactive (sibling),9162.545,0.992311
+reactive (sibling),9169.833,0.992311
+reactive (sibling),9172.325,0.992323
+reactive (sibling),9178.978,0.992332
+reactive (sibling),9185.639,0.992332
+reactive (sibling),9193.074,0.992346
+reactive (sibling),9201.661,0.992361
+reactive (sibling),9208.881,0.992361
+reactive (sibling),9212.662,0.992365
+reactive (sibling),9219.734,0.992356
+reactive (sibling),9222.659,0.992370
+reactive (sibling),9231.921,0.992379
+reactive (sibling),9242.049,0.992384
+reactive (sibling),9246.078,0.992363
+reactive (sibling),9255.024,0.992347
+reactive (sibling),9262.310,0.992331
+reactive (sibling),9269.498,0.992316
+reactive (sibling),9273.812,0.992321
+reactive (sibling),9281.685,0.992316
+reactive (sibling),9288.335,0.992300
+reactive (sibling),9296.431,0.992295
+reactive (sibling),9299.914,0.992323
+reactive (sibling),9305.646,0.992309
+reactive (sibling),9312.684,0.992318
+reactive (sibling),9316.907,0.992318
+reactive (sibling),9322.780,0.992318
+reactive (sibling),9329.745,0.992328
+reactive (sibling),9334.649,0.992337
+reactive (sibling),9336.878,0.992325
+reactive (sibling),9343.761,0.992338
+reactive (sibling),9349.182,0.992338
+reactive (sibling),9355.206,0.992334
+reactive (sibling),9358.074,0.992342
+reactive (sibling),9365.552,0.992322
+reactive (sibling),9372.782,0.992333
+reactive (sibling),9379.785,0.992346
+reactive (sibling),9388.793,0.992359
+reactive (sibling),9395.656,0.992361
+reactive (sibling),9400.298,0.992365
+reactive (sibling),9411.629,0.992358
+reactive (sibling),9416.442,0.992378
+reactive (sibling),9424.531,0.992373
+reactive (sibling),9432.754,0.992384
+reactive (sibling),9435.900,0.992363
+reactive (sibling),9444.139,0.992347
+reactive (sibling),9451.399,0.992331
+reactive (sibling),9459.552,0.992316
+reactive (sibling),9462.522,0.992321
+reactive (sibling),9472.379,0.992316
+reactive (sibling),9484.642,0.992289
+reactive (sibling),9494.440,0.992277
+reactive (sibling),9498.134,0.992330
+reactive (sibling),9505.631,0.992324
+reactive (sibling),9517.770,0.992324
+reactive (sibling),9524.271,0.992342
+reactive (sibling),9531.792,0.992330
+reactive (sibling),9539.529,0.992342
+reactive (sibling),9546.693,0.992348
+reactive (sibling),9548.947,0.992331
+reactive (sibling),9557.858,0.992337
+reactive (sibling),9562.862,0.992311
+reactive (sibling),9569.941,0.992311
+reactive (sibling),9572.193,0.992323
+reactive (sibling),9579.464,0.992332
+reactive (sibling),9590.524,0.992332
+reactive (sibling),9598.884,0.992356
+reactive (sibling),9613.646,0.992377
+reactive (sibling),9622.977,0.992382
+reactive (sibling),9627.538,0.992365
+reactive (sibling),9634.350,0.992355
+reactive (sibling),9638.854,0.992371
+reactive (sibling),9646.739,0.992377
+reactive (sibling),9657.694,0.992389
+reactive (sibling),9662.306,0.992348
+reactive (sibling),9670.296,0.992347
+reactive (sibling),9675.821,0.992331
+reactive (sibling),9685.202,0.992316
+reactive (sibling),9688.743,0.992321
+reactive (sibling),9698.547,0.992316
+reactive (sibling),9706.040,0.992300
+reactive (sibling),9712.345,0.992295
+reactive (sibling),9714.819,0.992323
+reactive (sibling),9723.582,0.992326
+reactive (sibling),9731.870,0.992316
+reactive (sibling),9738.771,0.992326
+reactive (sibling),9745.026,0.992318
+reactive (sibling),9751.071,0.992331
+reactive (sibling),9758.613,0.992347
+reactive (sibling),9762.355,0.992332
+reactive (sibling),9770.751,0.992337
+reactive (sibling),9778.836,0.992311
+reactive (sibling),9785.106,0.992311
+reactive (sibling),9788.086,0.992323
+reactive (sibling),9798.020,0.992332
+reactive (sibling),9808.092,0.992342
+reactive (sibling),9814.982,0.992358
+reactive (sibling),9823.363,0.992377
+reactive (sibling),9830.675,0.992378
+reactive (sibling),9833.057,0.992363
+reactive (sibling),9839.661,0.992358
+reactive (sibling),9843.865,0.992370
+reactive (sibling),9850.029,0.992373
+reactive (sibling),9860.742,0.992384
+reactive (sibling),9865.946,0.992361
+reactive (sibling),9874.084,0.992361
+reactive (sibling),9880.490,0.992337
+reactive (sibling),9889.674,0.992323
+reactive (sibling),9895.448,0.992321
+reactive (sibling),9903.409,0.992316
+reactive (sibling),9909.498,0.992300
+reactive (sibling),9917.998,0.992295
+reactive (sibling),9920.149,0.992323
+reactive (sibling),9931.098,0.992326
+reactive (sibling),9941.241,0.992324
+reactive (sibling),9949.060,0.992326
+reactive (sibling),9957.312,0.992330
+reactive (sibling),9964.195,0.992342
+reactive (sibling),9970.041,0.992348
+reactive (sibling),9973.561,0.992331
+reactive (sibling),9981.689,0.992307
+reactive (sibling),9986.710,0.992311
+reactive (sibling),9994.751,0.992311
+reactive (sibling),9997.814,0.992323
+reactive (sibling),10003.254,0.992332
+reactive (sibling),10015.585,0.992332
+reactive (sibling),10024.640,0.992358
+reactive (sibling),10035.524,0.992377
+reactive (sibling),10042.619,0.992377
+reactive (sibling),10047.054,0.992365
+reactive (sibling),10054.497,0.992358
+reactive (sibling),10058.493,0.992371
+reactive (sibling),10067.138,0.992377
+reactive (sibling),10082.292,0.992389
+reactive (sibling),10085.321,0.992348
+reactive (sibling),10100.680,0.992342
+reactive (sibling),10110.710,0.992335
+reactive (sibling),10121.571,0.992303
+reactive (sibling),10128.008,0.992287
+reactive (sibling),10136.623,0.992282
+reactive (sibling),10146.176,0.992287
+reactive (sibling),10157.614,0.992295
+reactive (sibling),10160.788,0.992328
+reactive (sibling),10167.809,0.992324
+reactive (sibling),10178.031,0.992324
+reactive (sibling),10184.981,0.992336
+reactive (sibling),10195.194,0.992330
+reactive (sibling),10203.899,0.992342
+reactive (sibling),10209.266,0.992348
+reactive (sibling),10211.246,0.992331
+reactive (sibling),10220.078,0.992337
+reactive (sibling),10230.522,0.992313
+reactive (sibling),10241.481,0.992318
+reactive (sibling),10245.370,0.992330
+reactive (sibling),10255.306,0.992342
+reactive (sibling),10265.064,0.992342
+reactive (sibling),10271.686,0.992375
+reactive (sibling),10279.983,0.992377
+reactive (sibling),10286.460,0.992377
+reactive (sibling),10289.606,0.992363
+reactive (sibling),10295.750,0.992358
+reactive (sibling),10299.146,0.992370
+reactive (sibling),10306.490,0.992373
+reactive (sibling),10320.205,0.992384
+reactive (sibling),10323.810,0.992361
+reactive (sibling),10331.651,0.992361
+reactive (sibling),10338.348,0.992337
+reactive (sibling),10347.667,0.992316
+reactive (sibling),10354.737,0.992321
+reactive (sibling),10361.132,0.992295
+reactive (sibling),10369.692,0.992289
+reactive (sibling),10378.084,0.992295
+reactive (sibling),10381.771,0.992311
+reactive (sibling),10388.837,0.992326
+reactive (sibling),10403.018,0.992324
+reactive (sibling),10408.972,0.992336
+reactive (sibling),10416.763,0.992330
+reactive (sibling),10422.727,0.992342
+reactive (sibling),10429.362,0.992347
+reactive (sibling),10431.884,0.992331
+reactive (sibling),10439.317,0.992337
+reactive (sibling),10444.539,0.992311
+reactive (sibling),10452.565,0.992311
+reactive (sibling),10458.006,0.992323
+reactive (sibling),10463.893,0.992332
+reactive (sibling),10472.244,0.992332
+reactive (sibling),10482.525,0.992356
+reactive (sibling),10494.182,0.992377
+reactive (sibling),10501.267,0.992377
+reactive (sibling),10505.056,0.992365
+reactive (sibling),10513.452,0.992365
+reactive (sibling),10516.396,0.992378
+reactive (sibling),10524.428,0.992377
+reactive (sibling),10560.946,0.992373
+reactive (sibling),10564.960,0.992334
+reactive (sibling),10575.650,0.992361
+reactive (sibling),10581.960,0.992314
+reactive (sibling),10588.025,0.992286
+reactive (sibling),10591.419,0.992287
+reactive (sibling),10598.546,0.992282
+reactive (sibling),10606.443,0.992289
+reactive (sibling),10611.449,0.992295
+reactive (sibling),10615.288,0.992323
+reactive (sibling),10622.107,0.992309
+reactive (sibling),10633.110,0.992318
+reactive (sibling),10640.170,0.992318
+reactive (sibling),10648.212,0.992326
+reactive (sibling),10654.612,0.992331
+reactive (sibling),10660.398,0.992347
+reactive (sibling),10662.631,0.992332
+reactive (sibling),10670.125,0.992337
+reactive (sibling),10675.657,0.992311
+reactive (sibling),10685.021,0.992311
+reactive (sibling),10688.170,0.992323
+reactive (sibling),10695.348,0.992332
+reactive (sibling),10706.781,0.992332
+reactive (sibling),10715.434,0.992358
+reactive (sibling),10723.989,0.992377
+reactive (sibling),10730.748,0.992377
+reactive (sibling),10733.934,0.992363
+reactive (sibling),10740.680,0.992358
+reactive (sibling),10744.980,0.992370
+reactive (sibling),10755.468,0.992377
+reactive (sibling),10766.689,0.992384
+reactive (sibling),10770.544,0.992363
+reactive (sibling),10784.302,0.992342
+reactive (sibling),10792.698,0.992324
+reactive (sibling),10803.094,0.992328
+reactive (sibling),10807.752,0.992302
+reactive (sibling),10814.562,0.992295
+reactive (sibling),10825.161,0.992289
+reactive (sibling),10832.465,0.992295
+reactive (sibling),10835.592,0.992330
+reactive (sibling),10843.710,0.992326
+reactive (sibling),10853.615,0.992324
+reactive (sibling),10859.259,0.992326
+reactive (sibling),10866.298,0.992326
+reactive (sibling),10873.082,0.992331
+reactive (sibling),10878.914,0.992347
+reactive (sibling),10881.266,0.992332
+reactive (sibling),10889.260,0.992337
+reactive (sibling),10893.742,0.992337
+reactive (sibling),10902.165,0.992309
+reactive (sibling),10906.272,0.992323
+reactive (sibling),10914.039,0.992332
+reactive (sibling),10923.046,0.992332
+reactive (sibling),10929.360,0.992356
+reactive (sibling),10938.515,0.992361
+reactive (sibling),10946.752,0.992378
+reactive (sibling),10950.195,0.992363
+reactive (sibling),10957.555,0.992358
+reactive (sibling),10961.657,0.992370
+reactive (sibling),10967.186,0.992373
+reactive (sibling),10978.450,0.992384
+reactive (sibling),10984.085,0.992363
+reactive (sibling),10990.805,0.992347
+reactive (sibling),11000.684,0.992331
+reactive (sibling),11006.934,0.992316
+reactive (sibling),11012.064,0.992321
+reactive (sibling),11018.559,0.992316
+reactive (sibling),11024.839,0.992300
+reactive (sibling),11032.732,0.992295
+reactive (sibling),11036.100,0.992323
+reactive (sibling),11043.682,0.992309
+reactive (sibling),11053.286,0.992316
+reactive (sibling),11058.119,0.992318
+reactive (sibling),11064.161,0.992318
+reactive (sibling),11070.368,0.992328
+reactive (sibling),11076.206,0.992337
+reactive (sibling),11079.418,0.992332
+reactive (sibling),11088.215,0.992337
+reactive (sibling),11093.754,0.992337
+reactive (sibling),11100.820,0.992309
+reactive (sibling),11104.095,0.992323
+reactive (sibling),11110.567,0.992325
+reactive (sibling),11121.584,0.992332
+reactive (sibling),11130.959,0.992358
+reactive (sibling),11140.961,0.992377
+reactive (sibling),11147.485,0.992378
+reactive (sibling),11152.165,0.992363
+reactive (sibling),11161.440,0.992365
+reactive (sibling),11164.101,0.992371
+reactive (sibling),11171.170,0.992377
+reactive (sibling),11182.109,0.992389
+reactive (sibling),11185.460,0.992363
+reactive (sibling),11195.848,0.992347
+reactive (sibling),11202.197,0.992331
+reactive (sibling),11208.684,0.992316
+reactive (sibling),11215.069,0.992321
+reactive (sibling),11224.929,0.992295
+reactive (sibling),11232.897,0.992289
+reactive (sibling),11241.391,0.992295
+reactive (sibling),11243.771,0.992311
+reactive (sibling),11252.092,0.992326
+reactive (sibling),11261.075,0.992316
+reactive (sibling),11266.387,0.992326
+reactive (sibling),11272.684,0.992326
+reactive (sibling),11278.995,0.992331
+reactive (sibling),11286.983,0.992347
+reactive (sibling),11290.569,0.992332
+reactive (sibling),11298.144,0.992337
+reactive (sibling),11301.421,0.992337
+reactive (sibling),11310.955,0.992309
+reactive (sibling),11316.062,0.992323
+reactive (sibling),11324.259,0.992332
+reactive (sibling),11334.569,0.992342
+reactive (sibling),11344.650,0.992358
+reactive (sibling),11354.490,0.992377
+reactive (sibling),11360.858,0.992377
+reactive (sibling),11364.091,0.992365
+reactive (sibling),11370.721,0.992358
+reactive (sibling),11373.408,0.992378
+reactive (sibling),11380.532,0.992373
+reactive (sibling),11395.107,0.992389
+reactive (sibling),11399.726,0.992363
+reactive (sibling),11408.522,0.992347
+reactive (sibling),11414.061,0.992337
+reactive (sibling),11421.614,0.992316
+reactive (sibling),11426.674,0.992321
+reactive (sibling),11433.491,0.992295
+reactive (sibling),11441.761,0.992289
+reactive (sibling),11448.694,0.992295
+reactive (sibling),11451.847,0.992323
+reactive (sibling),11459.852,0.992326
+reactive (sibling),11469.693,0.992316
+reactive (sibling),11476.098,0.992326
+reactive (sibling),11481.579,0.992318
+reactive (sibling),11487.115,0.992331
+reactive (sibling),11495.365,0.992347
+reactive (sibling),11499.463,0.992332
+reactive (sibling),11508.168,0.992337
+reactive (sibling),11513.125,0.992311
+reactive (sibling),11523.287,0.992311
+reactive (sibling),11527.687,0.992323
+reactive (sibling),11534.664,0.992332
+reactive (sibling),11541.937,0.992342
+reactive (sibling),11553.176,0.992358
+reactive (sibling),11562.621,0.992377
+reactive (sibling),11571.043,0.992377
+reactive (sibling),11575.036,0.992365
+reactive (sibling),11582.911,0.992358
+reactive (sibling),11586.839,0.992378
+reactive (sibling),11594.590,0.992373
+reactive (sibling),11609.339,0.992389
+reactive (sibling),11612.611,0.992363
+reactive (sibling),11627.971,0.992342
+reactive (sibling),11635.573,0.992335
+reactive (sibling),11643.293,0.992328
+reactive (sibling),11649.988,0.992302
+reactive (sibling),11661.254,0.992282
+reactive (sibling),11666.963,0.992289
+reactive (sibling),11675.079,0.992295
+reactive (sibling),11678.284,0.992330
+reactive (sibling),11687.370,0.992326
+reactive (sibling),11701.498,0.992324
+reactive (sibling),11707.128,0.992336
+reactive (sibling),11715.908,0.992330
+reactive (sibling),11724.358,0.992342
+reactive (sibling),11737.352,0.992349
+reactive (sibling),11739.756,0.992295
+reactive (sibling),11748.141,0.992308
+reactive (sibling),11752.364,0.992313
+reactive (sibling),11758.460,0.992311
+reactive (sibling),11762.347,0.992331
+reactive (sibling),11768.973,0.992331
+reactive (sibling),11778.836,0.992342
+reactive (sibling),11790.328,0.992358
+reactive (sibling),11804.998,0.992377
+reactive (sibling),11810.709,0.992377
+reactive (sibling),11813.493,0.992365
+reactive (sibling),11821.920,0.992365
+reactive (sibling),11824.789,0.992371
+reactive (sibling),11831.506,0.992377
+reactive (sibling),11840.935,0.992389
+reactive (sibling),11846.181,0.992363
+reactive (sibling),11855.857,0.992347
+reactive (sibling),11861.957,0.992337
+reactive (sibling),11869.781,0.992323
+reactive (sibling),11875.019,0.992321
+reactive (sibling),11884.583,0.992316
+reactive (sibling),11894.122,0.992289
+reactive (sibling),11903.486,0.992277
+reactive (sibling),11908.060,0.992330
+reactive (sibling),11914.122,0.992326
+reactive (sibling),11924.423,0.992324
+reactive (sibling),11929.749,0.992326
+reactive (sibling),11936.197,0.992330
+reactive (sibling),11941.600,0.992331
+reactive (sibling),11950.519,0.992347
+reactive (sibling),11953.936,0.992332
+reactive (sibling),11961.320,0.992337
+reactive (sibling),11970.105,0.992311
+reactive (sibling),11975.825,0.992311
+reactive (sibling),11978.900,0.992323
+reactive (sibling),11984.891,0.992332
+reactive (sibling),11991.413,0.992332
+reactive (sibling),12003.158,0.992358
+reactive (sibling),12015.434,0.992377
+reactive (sibling),12023.023,0.992377
+reactive (sibling),12027.455,0.992363
+reactive (sibling),12034.675,0.992358
+reactive (sibling),12039.772,0.992371
+reactive (sibling),12046.050,0.992377
+reactive (sibling),12056.499,0.992389
+reactive (sibling),12059.385,0.992363
+reactive (sibling),12068.703,0.992347
+reactive (sibling),12074.803,0.992337
+reactive (sibling),12082.918,0.992323
+reactive (sibling),12089.490,0.992321
+reactive (sibling),12098.410,0.992316
+reactive (sibling),12109.543,0.992289
+reactive (sibling),12118.551,0.992277
+reactive (sibling),12121.781,0.992330
+reactive (sibling),12129.616,0.992324
+reactive (sibling),12139.564,0.992324
+reactive (sibling),12146.689,0.992336
+reactive (sibling),12152.979,0.992330
+reactive (sibling),12161.802,0.992342
+reactive (sibling),12167.697,0.992347
+reactive (sibling),12171.552,0.992331
+reactive (sibling),12181.440,0.992337
+reactive (sibling),12189.232,0.992311
+reactive (sibling),12196.483,0.992311
+reactive (sibling),12199.366,0.992323
+reactive (sibling),12205.098,0.992332
+reactive (sibling),12212.486,0.992332
+reactive (sibling),12220.118,0.992356
+reactive (sibling),12233.298,0.992377
+reactive (sibling),12239.697,0.992378
+reactive (sibling),12242.543,0.992363
+reactive (sibling),12251.671,0.992358
+reactive (sibling),12257.327,0.992378
+reactive (sibling),12266.282,0.992377
+reactive (sibling),12284.035,0.992375
+reactive (sibling),12287.122,0.992348
+reactive (sibling),12296.095,0.992342
+reactive (sibling),12304.740,0.992335
+reactive (sibling),12311.451,0.992324
+reactive (sibling),12314.616,0.992324
+reactive (sibling),12322.965,0.992295
+reactive (sibling),12330.794,0.992289
+reactive (sibling),12339.654,0.992295
+reactive (sibling),12342.727,0.992323
+reactive (sibling),12353.466,0.992326
+reactive (sibling),12362.183,0.992316
+reactive (sibling),12368.635,0.992326
+reactive (sibling),12376.925,0.992330
+reactive (sibling),12381.778,0.992331
+reactive (sibling),12387.270,0.992347
+reactive (sibling),12389.869,0.992332
+reactive (sibling),12398.436,0.992337
+reactive (sibling),12402.836,0.992311
+reactive (sibling),12412.415,0.992309
+reactive (sibling),12415.561,0.992323
+reactive (sibling),12424.696,0.992332
+reactive (sibling),12435.500,0.992332
+reactive (sibling),12445.047,0.992358
+reactive (sibling),12455.199,0.992377
+reactive (sibling),12461.800,0.992377
+reactive (sibling),12464.879,0.992365
+reactive (sibling),12471.134,0.992358
+reactive (sibling),12475.369,0.992378
+reactive (sibling),12487.213,0.992377
+reactive (sibling),12499.193,0.992389
+reactive (sibling),12504.211,0.992363
+reactive (sibling),12512.814,0.992347
+reactive (sibling),12520.046,0.992331
+reactive (sibling),12527.661,0.992324
+reactive (sibling),12533.173,0.992324
+reactive (sibling),12541.486,0.992295
+reactive (sibling),12550.539,0.992289
+reactive (sibling),12558.692,0.992295
+reactive (sibling),12564.218,0.992330
+reactive (sibling),12570.779,0.992326
+reactive (sibling),12579.303,0.992316
+reactive (sibling),12585.310,0.992326
+reactive (sibling),12590.668,0.992326
+reactive (sibling),12595.141,0.992331
+reactive (sibling),12603.336,0.992347
+reactive (sibling),12608.350,0.992332
+reactive (sibling),12618.460,0.992337
+reactive (sibling),12625.539,0.992311
+reactive (sibling),12633.659,0.992311
+reactive (sibling),12637.434,0.992323
+reactive (sibling),12645.728,0.992331
+reactive (sibling),12658.306,0.992342
+reactive (sibling),12668.871,0.992375
+reactive (sibling),12677.880,0.992377
+reactive (sibling),12683.172,0.992377
+reactive (sibling),12687.380,0.992365
+reactive (sibling),12694.144,0.992365
+reactive (sibling),12697.998,0.992371
+reactive (sibling),12706.965,0.992377
+reactive (sibling),12720.974,0.992389
+reactive (sibling),12723.332,0.992363
+reactive (sibling),12736.244,0.992347
+reactive (sibling),12743.132,0.992331
+reactive (sibling),12751.344,0.992324
+reactive (sibling),12758.439,0.992302
+reactive (sibling),12763.998,0.992295
+reactive (sibling),12772.597,0.992289
+reactive (sibling),12781.717,0.992277
+reactive (sibling),12785.708,0.992330
+reactive (sibling),12790.701,0.992326
+reactive (sibling),12805.371,0.992324
+reactive (sibling),12810.899,0.992326
+reactive (sibling),12816.719,0.992326
+reactive (sibling),12822.984,0.992331
+reactive (sibling),12829.081,0.992347
+reactive (sibling),12831.318,0.992332
+reactive (sibling),12839.180,0.992337
+reactive (sibling),12845.716,0.992311
+reactive (sibling),12854.462,0.992311
+reactive (sibling),12857.073,0.992323
+reactive (sibling),12864.147,0.992325
+reactive (sibling),12870.392,0.992333
+reactive (sibling),12877.092,0.992356
+reactive (sibling),12884.001,0.992361
+reactive (sibling),12890.444,0.992361
+reactive (sibling),12893.818,0.992365
+reactive (sibling),12901.153,0.992356
+reactive (sibling),12903.981,0.992367
+reactive (sibling),12912.787,0.992372
+reactive (sibling),12925.389,0.992384
+reactive (sibling),12930.130,0.992361
+reactive (sibling),12938.328,0.992347
+reactive (sibling),12945.659,0.992331
+reactive (sibling),12954.670,0.992324
+reactive (sibling),12959.273,0.992321
+reactive (sibling),12966.055,0.992295
+reactive (sibling),12974.567,0.992289
+reactive (sibling),12982.726,0.992295
+reactive (sibling),12986.587,0.992311
+reactive (sibling),12996.199,0.992326
+reactive (sibling),13006.255,0.992324
+reactive (sibling),13014.060,0.992326
+reactive (sibling),13020.799,0.992330
+reactive (sibling),13028.829,0.992342
+reactive (sibling),13034.351,0.992347
+reactive (sibling),13036.647,0.992331
+reactive (sibling),13043.265,0.992337
+reactive (sibling),13048.564,0.992311
+reactive (sibling),13055.864,0.992309
+reactive (sibling),13060.448,0.992323
+reactive (sibling),13067.615,0.992332
+reactive (sibling),13077.734,0.992332
+reactive (sibling),13086.123,0.992356
+reactive (sibling),13094.590,0.992358
+reactive (sibling),13100.588,0.992378
+reactive (sibling),13103.427,0.992363
+reactive (sibling),13109.917,0.992358
+reactive (sibling),13113.492,0.992370
+reactive (sibling),13121.273,0.992373
+reactive (sibling),13131.734,0.992384
+reactive (sibling),13136.199,0.992361
+reactive (sibling),13144.928,0.992361
+reactive (sibling),13151.135,0.992337
+reactive (sibling),13163.242,0.992316
+reactive (sibling),13169.506,0.992321
+reactive (sibling),13180.914,0.992295
+reactive (sibling),13190.450,0.992289
+reactive (sibling),13200.015,0.992295
+reactive (sibling),13202.681,0.992330
+reactive (sibling),13211.794,0.992335
+reactive (sibling),13222.239,0.992324
+reactive (sibling),13232.957,0.992342
+reactive (sibling),13237.704,0.992330
+reactive (sibling),13242.517,0.992342
+reactive (sibling),13248.749,0.992347
+reactive (sibling),13251.052,0.992331
+reactive (sibling),13258.899,0.992337
+reactive (sibling),13262.894,0.992311
+reactive (sibling),13269.446,0.992309
+reactive (sibling),13273.642,0.992323
+reactive (sibling),13281.157,0.992325
+reactive (sibling),13288.698,0.992333
+reactive (sibling),13296.748,0.992346
+reactive (sibling),13308.608,0.992361
+reactive (sibling),13320.544,0.992377
+reactive (sibling),13325.792,0.992365
+reactive (sibling),13332.633,0.992365
+reactive (sibling),13336.396,0.992371
+reactive (sibling),13346.336,0.992377
+reactive (sibling),13359.643,0.992375
+reactive (sibling),13364.013,0.992348
+reactive (sibling),13373.649,0.992342
+reactive (sibling),13379.570,0.992331
+reactive (sibling),13391.386,0.992324
+reactive (sibling),13395.145,0.992324
+reactive (sibling),13405.128,0.992295
+reactive (sibling),13414.446,0.992289
+reactive (sibling),13424.380,0.992295
+reactive (sibling),13426.214,0.992330
+reactive (sibling),13434.617,0.992324
+reactive (sibling),13445.266,0.992324
+reactive (sibling),13453.220,0.992336
+reactive (sibling),13460.716,0.992330
+reactive (sibling),13467.380,0.992342
+reactive (sibling),13472.608,0.992347
+reactive (sibling),13474.862,0.992331
+reactive (sibling),13482.034,0.992337
+reactive (sibling),13486.148,0.992337
+reactive (sibling),13496.671,0.992311
+reactive (sibling),13499.538,0.992323
+reactive (sibling),13507.269,0.992332
+reactive (sibling),13513.940,0.992332
+reactive (sibling),13521.554,0.992356
+reactive (sibling),13533.860,0.992358
+reactive (sibling),13538.861,0.992378
+reactive (sibling),13543.374,0.992363
+reactive (sibling),13554.323,0.992358
+reactive (sibling),13556.966,0.992378
+reactive (sibling),13567.153,0.992373
+reactive (sibling),13577.569,0.992389
+reactive (sibling),13581.666,0.992348
+reactive (sibling),13592.315,0.992347
+reactive (sibling),13599.461,0.992324
+reactive (sibling),13608.903,0.992324
+reactive (sibling),13614.766,0.992324
+reactive (sibling),13625.698,0.992295
+reactive (sibling),13636.258,0.992289
+reactive (sibling),13641.671,0.992295
+reactive (sibling),13645.125,0.992330
+reactive (sibling),13654.473,0.992324
+reactive (sibling),13663.162,0.992324
+reactive (sibling),13670.724,0.992336
+reactive (sibling),13676.896,0.992330
+reactive (sibling),13682.232,0.992331
+reactive (sibling),13686.462,0.992347
+reactive (sibling),13690.695,0.992332
+reactive (sibling),13699.219,0.992337
+reactive (sibling),13703.731,0.992337
+reactive (sibling),13711.765,0.992309
+reactive (sibling),13716.430,0.992323
+reactive (sibling),13724.593,0.992332
+reactive (sibling),13732.601,0.992332
+reactive (sibling),13739.472,0.992356
+reactive (sibling),13752.486,0.992377
+reactive (sibling),13759.574,0.992377
+reactive (sibling),13762.195,0.992363
+reactive (sibling),13772.940,0.992365
+reactive (sibling),13777.131,0.992371
+reactive (sibling),13783.801,0.992373
+reactive (sibling),13793.200,0.992389
+reactive (sibling),13797.221,0.992363
+reactive (sibling),13812.372,0.992347
+reactive (sibling),13818.822,0.992331
+reactive (sibling),13826.935,0.992324
+reactive (sibling),13831.873,0.992321
+reactive (sibling),13839.884,0.992295
+reactive (sibling),13850.052,0.992289
+reactive (sibling),13858.246,0.992295
+reactive (sibling),13859.988,0.992330
+reactive (sibling),13867.380,0.992326
+reactive (sibling),13875.851,0.992316
+reactive (sibling),13882.515,0.992326
+reactive (sibling),13888.938,0.992326
+reactive (sibling),13894.904,0.992331
+reactive (sibling),13901.708,0.992347
+reactive (sibling),13907.716,0.992332
+reactive (sibling),13915.547,0.992337
+reactive (sibling),13923.947,0.992311
+reactive (sibling),13929.864,0.992311
+reactive (sibling),13933.763,0.992323
+reactive (sibling),13942.420,0.992332
+reactive (sibling),13952.147,0.992342
+reactive (sibling),13961.347,0.992358
+reactive (sibling),13970.603,0.992377
+reactive (sibling),13980.921,0.992377
+reactive (sibling),13983.699,0.992363
+reactive (sibling),13990.634,0.992365
+reactive (sibling),13993.927,0.992371
+reactive (sibling),14001.564,0.992373
+reactive (sibling),14009.286,0.992384
+reactive (sibling),14013.777,0.992363
+reactive (sibling),14020.067,0.992361
+reactive (sibling),14028.799,0.992337
+reactive (sibling),14038.771,0.992323
+reactive (sibling),14045.331,0.992321
+reactive (sibling),14053.625,0.992316
+reactive (sibling),14060.246,0.992300
+reactive (sibling),14068.473,0.992295
+reactive (sibling),14071.137,0.992311
+reactive (sibling),14077.259,0.992326
+reactive (sibling),14085.983,0.992316
+reactive (sibling),14091.174,0.992326
+reactive (sibling),14095.917,0.992318
+reactive (sibling),14104.849,0.992328
+reactive (sibling),14110.662,0.992337
+reactive (sibling),14113.224,0.992325
+reactive (sibling),14121.295,0.992337
+reactive (sibling),14126.617,0.992338
+reactive (sibling),14135.997,0.992309
+reactive (sibling),14139.250,0.992323
+reactive (sibling),14148.847,0.992332
+reactive (sibling),14159.027,0.992342
+reactive (sibling),14168.835,0.992358
+reactive (sibling),14179.035,0.992377
+reactive (sibling),14187.222,0.992382
+reactive (sibling),14190.272,0.992365
+reactive (sibling),14199.388,0.992355
+reactive (sibling),14202.331,0.992371
+reactive (sibling),14209.780,0.992377
+reactive (sibling),14217.774,0.992384
+reactive (sibling),14220.304,0.992363
+reactive (sibling),14230.117,0.992347
+reactive (sibling),14241.557,0.992331
+reactive (sibling),14247.968,0.992316
+reactive (sibling),14251.666,0.992321
+reactive (sibling),14258.540,0.992314
+reactive (sibling),14267.948,0.992300
+reactive (sibling),14276.140,0.992295
+reactive (sibling),14279.398,0.992311
+reactive (sibling),14286.475,0.992326
+reactive (sibling),14294.879,0.992316
+reactive (sibling),14300.918,0.992318
+reactive (sibling),14305.734,0.992318
+reactive (sibling),14313.004,0.992331
+reactive (sibling),14319.244,0.992347
+reactive (sibling),14322.621,0.992332
+reactive (sibling),14331.848,0.992337
+reactive (sibling),14337.589,0.992337
+reactive (sibling),14346.509,0.992311
+reactive (sibling),14351.302,0.992323
+reactive (sibling),14357.325,0.992332
+reactive (sibling),14364.102,0.992332
+reactive (sibling),14372.397,0.992356
+reactive (sibling),14385.304,0.992377
+reactive (sibling),14391.957,0.992377
+reactive (sibling),14395.130,0.992363
+reactive (sibling),14405.786,0.992358
+reactive (sibling),14408.437,0.992378
+reactive (sibling),14414.676,0.992373
+reactive (sibling),14423.682,0.992384
+reactive (sibling),14428.555,0.992363
+reactive (sibling),14442.027,0.992347
+reactive (sibling),14450.494,0.992331
+reactive (sibling),14457.947,0.992324
+reactive (sibling),14462.102,0.992321
+reactive (sibling),14467.383,0.992316
+reactive (sibling),14475.495,0.992289
+reactive (sibling),14482.857,0.992295
+reactive (sibling),14485.653,0.992311
+reactive (sibling),14493.795,0.992326
+reactive (sibling),14503.336,0.992316
+reactive (sibling),14509.593,0.992318
+reactive (sibling),14516.958,0.992318
+reactive (sibling),14522.004,0.992328
+reactive (sibling),14527.719,0.992347
+reactive (sibling),14530.701,0.992332
+reactive (sibling),14540.538,0.992337
+reactive (sibling),14546.372,0.992311
+reactive (sibling),14552.110,0.992309
+reactive (sibling),14555.283,0.992323
+reactive (sibling),14563.228,0.992325
+reactive (sibling),14571.461,0.992332
+reactive (sibling),14584.891,0.992358
+reactive (sibling),14595.244,0.992377
+reactive (sibling),14601.568,0.992377
+reactive (sibling),14606.053,0.992363
+reactive (sibling),14613.364,0.992365
+reactive (sibling),14616.322,0.992371
+reactive (sibling),14623.887,0.992377
+reactive (sibling),14633.495,0.992389
+reactive (sibling),14638.266,0.992363
+reactive (sibling),14650.957,0.992347
+reactive (sibling),14658.984,0.992331
+reactive (sibling),14666.387,0.992324
+reactive (sibling),14669.562,0.992321
+reactive (sibling),14675.794,0.992316
+reactive (sibling),14683.692,0.992300
+reactive (sibling),14691.577,0.992295
+reactive (sibling),14696.844,0.992311
+reactive (sibling),14704.758,0.992326
+reactive (sibling),14711.138,0.992316
+reactive (sibling),14718.284,0.992318
+reactive (sibling),14725.678,0.992318
+reactive (sibling),14732.539,0.992331
+reactive (sibling),14737.872,0.992347
+reactive (sibling),14741.448,0.992332
+reactive (sibling),14749.433,0.992337
+reactive (sibling),14756.608,0.992337
+reactive (sibling),14765.393,0.992311
+reactive (sibling),14768.687,0.992323
+reactive (sibling),14777.010,0.992332
+reactive (sibling),14785.248,0.992332
+reactive (sibling),14795.779,0.992358
+reactive (sibling),14803.290,0.992377
+reactive (sibling),14808.765,0.992378
+reactive (sibling),14812.928,0.992363
+reactive (sibling),14820.009,0.992358
+reactive (sibling),14823.033,0.992370
+reactive (sibling),14830.435,0.992373
+reactive (sibling),14841.595,0.992384
+reactive (sibling),14846.561,0.992363
+reactive (sibling),14852.655,0.992361
+reactive (sibling),14859.514,0.992337
+reactive (sibling),14865.249,0.992323
+reactive (sibling),14868.681,0.992321
+reactive (sibling),14876.796,0.992314
+reactive (sibling),14884.265,0.992300
+reactive (sibling),14892.016,0.992295
+reactive (sibling),14894.209,0.992323
+reactive (sibling),14904.162,0.992309
+reactive (sibling),14913.480,0.992316
+reactive (sibling),14918.111,0.992318
+reactive (sibling),14923.812,0.992318
+reactive (sibling),14930.683,0.992331
+reactive (sibling),14941.077,0.992347
+reactive (sibling),14945.429,0.992331
+reactive (sibling),14952.597,0.992337
+reactive (sibling),14956.372,0.992311
+reactive (sibling),14964.577,0.992311
+reactive (sibling),14968.774,0.992323
+reactive (sibling),14974.958,0.992332
+reactive (sibling),14988.028,0.992342
+reactive (sibling),15001.646,0.992354
+reactive (sibling),15011.745,0.992377
+reactive (sibling),15021.205,0.992382
+reactive (sibling),15025.032,0.992375
+reactive (sibling),15032.258,0.992355
+reactive (sibling),15036.125,0.992375
+reactive (sibling),15043.733,0.992377
+reactive (sibling),15054.861,0.992389
+reactive (sibling),15058.912,0.992363
+reactive (sibling),15066.798,0.992347
+reactive (sibling),15072.393,0.992331
+reactive (sibling),15080.392,0.992323
+reactive (sibling),15086.434,0.992321
+reactive (sibling),15095.752,0.992316
+reactive (sibling),15104.662,0.992289
+reactive (sibling),15113.549,0.992295
+reactive (sibling),15117.460,0.992311
+reactive (sibling),15125.038,0.992326
+reactive (sibling),15134.414,0.992324
+reactive (sibling),15141.505,0.992336
+reactive (sibling),15149.501,0.992330
+reactive (sibling),15158.007,0.992342
+reactive (sibling),15165.212,0.992348
+reactive (sibling),15167.431,0.992331
+reactive (sibling),15175.318,0.992337
+reactive (sibling),15201.461,0.992322
+reactive (sibling),15208.903,0.992315
+reactive (sibling),15212.692,0.992342
+reactive (sibling),15219.246,0.992342
+reactive (sibling),15226.577,0.992335
+reactive (sibling),15232.539,0.992375
+reactive (sibling),15244.640,0.992375
+reactive (sibling),15255.201,0.992377
+reactive (sibling),15259.368,0.992363
+reactive (sibling),15269.934,0.992365
+reactive (sibling),15272.494,0.992378
+reactive (sibling),15280.891,0.992377
+reactive (sibling),15292.817,0.992375
+reactive (sibling),15296.642,0.992348
+reactive (sibling),15306.853,0.992342
+reactive (sibling),15314.159,0.992331
+reactive (sibling),15322.465,0.992324
+reactive (sibling),15326.548,0.992321
+reactive (sibling),15331.170,0.992316
+reactive (sibling),15340.151,0.992300
+reactive (sibling),15348.415,0.992295
+reactive (sibling),15351.757,0.992323
+reactive (sibling),15358.752,0.992326
+reactive (sibling),15367.831,0.992316
+reactive (sibling),15374.607,0.992326
+reactive (sibling),15381.914,0.992318
+reactive (sibling),15388.001,0.992331
+reactive (sibling),15396.918,0.992347
+reactive (sibling),15400.053,0.992332
+reactive (sibling),15408.584,0.992337
+reactive (sibling),15414.319,0.992311
+reactive (sibling),15420.011,0.992311
+reactive (sibling),15424.655,0.992323
+reactive (sibling),15434.283,0.992332
+reactive (sibling),15441.250,0.992332
+reactive (sibling),15450.363,0.992358
+reactive (sibling),15460.695,0.992377
+reactive (sibling),15466.878,0.992378
+reactive (sibling),15471.150,0.992363
+reactive (sibling),15478.484,0.992358
+reactive (sibling),15482.500,0.992378
+reactive (sibling),15489.996,0.992373
+reactive (sibling),15500.231,0.992384
+reactive (sibling),15505.537,0.992363
+reactive (sibling),15511.912,0.992347
+reactive (sibling),15517.297,0.992337
+reactive (sibling),15523.809,0.992323
+reactive (sibling),15528.187,0.992314
+reactive (sibling),15534.440,0.992314
+reactive (sibling),15541.888,0.992318
+reactive (sibling),15548.053,0.992304
+reactive (sibling),15550.303,0.992323
+reactive (sibling),15556.713,0.992321
+reactive (sibling),15564.232,0.992303
+reactive (sibling),15570.158,0.992321
+reactive (sibling),15575.291,0.992312
+reactive (sibling),15581.435,0.992321
+reactive (sibling),15590.804,0.992337
+reactive (sibling),15594.454,0.992332
+reactive (sibling),15605.906,0.992337
+reactive (sibling),15611.542,0.992311
+reactive (sibling),15619.924,0.992311
+reactive (sibling),15624.853,0.992331
+reactive (sibling),15629.984,0.992332
+reactive (sibling),15638.166,0.992342
+reactive (sibling),15645.840,0.992358
+reactive (sibling),15655.244,0.992377
+reactive (sibling),15661.005,0.992378
+reactive (sibling),15664.447,0.992365
+reactive (sibling),15672.477,0.992358
+reactive (sibling),15675.455,0.992370
+reactive (sibling),15682.502,0.992379
+reactive (sibling),15690.595,0.992384
+reactive (sibling),15695.182,0.992361
+reactive (sibling),15705.831,0.992361
+reactive (sibling),15713.910,0.992337
+reactive (sibling),15720.698,0.992323
+reactive (sibling),15725.614,0.992321
+reactive (sibling),15734.931,0.992316
+reactive (sibling),15744.251,0.992289
+reactive (sibling),15750.701,0.992277
+reactive (sibling),15754.715,0.992311
+reactive (sibling),15766.656,0.992324
+reactive (sibling),15781.729,0.992335
+reactive (sibling),15787.670,0.992342
+reactive (sibling),15794.939,0.992342

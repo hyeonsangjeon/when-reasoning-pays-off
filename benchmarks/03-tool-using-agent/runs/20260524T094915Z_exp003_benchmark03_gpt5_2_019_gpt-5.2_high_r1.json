@@ -1,0 +1,121 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 2.4224963751621544,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "2b5386dbe223f3a983f41403a13d4aaab5dbadf07840d9a075e26e8079820616"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 4723.056707996875,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "1.74",
+  "retry_count": 0,
+  "sample_id": "tu_20",
+  "sample_idx": 19,
+  "sample_metadata": {
+    "expected_output_shape": "A decimal number rounded to 2 places. Both populations looked up; calculator used for the ratio.",
+    "expected_tool_calls": [
+      "web_search",
+      "web_search",
+      "calculator"
+    ],
+    "id": "tu_20",
+    "input": "Look up the population of Vega City and the population of Northbridge, then compute their ratio rounded to 2 decimal places (Vega City / Northbridge).",
+    "quality_rubric_notes": "Correct iff web_search is invoked for 'population of Vega City' (= 812400) and 'population of Northbridge' (= 466700), and the calculator computes 812400/466700 = 1.7407... rounded to 1.74.",
+    "tags": [
+      "multi-tool",
+      "two-searches-plus-calc"
+    ],
+    "verifiable_answer": "1.74"
+  },
+  "timestamp_utc": "2026-05-24T09:49:15Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1841.7976661585271,
+      "tool_args": {
+        "query": "population of Vega City"
+      },
+      "tool_call_id": "call_3qgeHoQFTzIPP1vv1md0gHDe",
+      "tool_name": "web_search",
+      "tool_result_summary": "812400",
+      "usage": {
+        "input_tokens": 590,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 77,
+        "output_tokens_details": {
+          "reasoning_tokens": 21
+        },
+        "total_tokens": 667
+      }
+    },
+    {
+      "iteration": 1,
+      "latency_ms": 1841.7976661585271,
+      "tool_args": {
+        "query": "population of Northbridge"
+      },
+      "tool_call_id": "call_ARnVDB9a9xkJ986CVPcglXMi",
+      "tool_name": "web_search",
+      "tool_result_summary": "466700",
+      "usage": {
+        "input_tokens": 590,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 77,
+        "output_tokens_details": {
+          "reasoning_tokens": 21
+        },
+        "total_tokens": 667
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 1305.7606248185039,
+      "tool_args": {
+        "expr": "round(812400/466700, 2)"
+      },
+      "tool_call_id": "call_mwq0lFoNnR45ZQujaR1a1Z1M",
+      "tool_name": "calculator",
+      "tool_result_summary": "1.74",
+      "usage": {
+        "input_tokens": 668,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 28,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 696
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1965,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 112,
+    "output_tokens_details": {
+      "reasoning_tokens": 21
+    },
+    "total_tokens": 2077
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0017067091539502144,
+    "tool_config_sha256": null,
+    "user_input_sha256": "a708a17a1f856d771b754fdb85dc4f3c720a6a5dc6dbf33490d2af9d963d9d50"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1290.1599579490721,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "4",
+  "retry_count": 0,
+  "sample_id": "mr_14",
+  "sample_idx": 13,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no surrounding prose.",
+    "id": "mr_14",
+    "input": "Trace this Python snippet and report the printed value:\n\nx = [1, 2, 3]\ny = x\ny.append(4)\nprint(len(x))",
+    "quality_rubric_notes": "Correct answer is exactly 4 (y is an alias for x; appending 4 mutates the list that x also references; len(x) is therefore 4). Any other integer fails; in particular '3' indicates the candidate missed the aliasing.",
+    "tags": [
+      "code-trace"
+    ],
+    "verifiable_answer": "4"
+  },
+  "timestamp_utc": "2026-05-21T09:23:21Z",
+  "usage": {
+    "input_tokens": 288,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 293
+  }
+}

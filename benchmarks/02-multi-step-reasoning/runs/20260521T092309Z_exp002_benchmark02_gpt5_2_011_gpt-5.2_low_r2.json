@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0016329162754118443,
+    "tool_config_sha256": null,
+    "user_input_sha256": "c6255619abbe110f9bc0ba99786f3906742bd434d34bb7a94d402c0f240f07b2"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "low",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1568.8151246868074,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "yes",
+  "retry_count": 0,
+  "sample_id": "mr_12",
+  "sample_idx": 11,
+  "sample_metadata": {
+    "expected_output_shape": "A single lowercase word that is either 'yes' or 'no'.",
+    "id": "mr_12",
+    "input": "Consider the following rules: 1) If it rains, the picnic is canceled. 2) If the picnic is canceled, the children stay indoors. 3) If the children stay indoors, Dad walks the dog. It rained today. Did Dad walk the dog? Answer yes or no.",
+    "quality_rubric_notes": "Correct answer is 'yes' (chaining the implications: rain -> picnic canceled -> children indoors -> Dad walks dog). Case-insensitive match acceptable; any other token fails.",
+    "tags": [
+      "causal-chain"
+    ],
+    "verifiable_answer": "yes"
+  },
+  "timestamp_utc": "2026-05-21T09:23:09Z",
+  "usage": {
+    "input_tokens": 321,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 326
+  }
+}

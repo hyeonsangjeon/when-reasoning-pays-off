@@ -1,0 +1,99 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 0.0022954577580094337,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "6386daa888be7beb8db9608ceebbe4102e2871415c5839efab1c659811698a08"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 4510.247291997075,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "39",
+  "retry_count": 0,
+  "sample_id": "tu_16",
+  "sample_idx": 15,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer (years). Both tools used.",
+    "expected_tool_calls": [
+      "web_search",
+      "calculator"
+    ],
+    "id": "tu_16",
+    "input": "Look up the founding year of the Atlas Foundation, then compute the foundation's age in years as of 2026.",
+    "quality_rubric_notes": "Correct iff web_search retrieves 1987 (founding year of Atlas Foundation) and calculator computes 2026-1987 = 39. The final answer must be 39.",
+    "tags": [
+      "multi-tool",
+      "search-then-calc"
+    ],
+    "verifiable_answer": "39"
+  },
+  "timestamp_utc": "2026-05-24T09:48:24Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 2145.1137089170516,
+      "tool_args": {
+        "query": "founding year of Atlas Foundation"
+      },
+      "tool_call_id": "call_hNJt5atGmGKnCsEdE5pK4c4G",
+      "tool_name": "web_search",
+      "tool_result_summary": "1987",
+      "usage": {
+        "input_tokens": 572,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 51,
+        "output_tokens_details": {
+          "reasoning_tokens": 26
+        },
+        "total_tokens": 623
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 1311.872124671936,
+      "tool_args": {
+        "expr": "2026-1987"
+      },
+      "tool_call_id": "call_TECUIhQEvTkuUtjHkJRcYUDG",
+      "tool_name": "calculator",
+      "tool_result_summary": "39",
+      "usage": {
+        "input_tokens": 605,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 22,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 627
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1813,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 78,
+    "output_tokens_details": {
+      "reasoning_tokens": 26
+    },
+    "total_tokens": 1891
+  }
+}

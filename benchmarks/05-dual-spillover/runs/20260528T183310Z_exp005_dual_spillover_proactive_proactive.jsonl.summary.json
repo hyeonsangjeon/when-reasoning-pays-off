@@ -1,0 +1,51 @@
+{
+  "api_version": "preview",
+  "cache_hit_ratio_by_endpoint": {
+    "primary": {
+      "cache_hit_ratio": 0.9775009279819485,
+      "cached_tokens": 23511040,
+      "input_tokens": 24052192,
+      "n_requests": 1305
+    },
+    "spillover": {
+      "cache_hit_ratio": 0.9873646557370185,
+      "cached_tokens": 20845056,
+      "input_tokens": 21111811,
+      "n_requests": 998
+    }
+  },
+  "cache_hit_ratio_overall": 0.9821117052002676,
+  "completed_request_count": 2303,
+  "dirty": false,
+  "dry_run": false,
+  "experiment_id": "exp005_dual_spillover_proactive",
+  "first_token_latency_ms_p50": 10239.955834113061,
+  "first_token_latency_ms_p95": 34631.71207117848,
+  "git_commit": "9a266efec53ca9e1e86c8f9a1b45808808d656d8",
+  "halt_reason": null,
+  "jsonl_path": "benchmarks/05-dual-spillover/runs/20260528T183310Z_exp005_dual_spillover_proactive_proactive.jsonl",
+  "n_requests": 2303,
+  "policy": "proactive",
+  "policy_params_sha256": "678c908ced201ee6ef8b5f0be007931cdfb62b030f58dfa3f48b9fd6cf837ec5",
+  "pricing_accessed_date": "2026-05-19",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "pricing_source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/",
+  "primary_deployment": "ptu-deploy-throttled",
+  "primary_real_429_count": 167,
+  "scheduled_request_count": 2136,
+  "smoke": false,
+  "spillover_deployment": "gpt-5.2",
+  "spillover_real_429_count": 0,
+  "spillover_real_429_fraction": 0.0,
+  "spillover_request_count": 998,
+  "spillover_request_fraction": 0.4333478072079896,
+  "system_prompt_sha256": "98d3a559c54c42f683a4cc0d09e6fb4cc10034cc80203d58121edbaca606088a",
+  "totals": {
+    "cached_tokens": 44356096,
+    "input_tokens": 45164003,
+    "output_tokens": 687848,
+    "reasoning_tokens": 27749,
+    "total_tokens": 45851851,
+    "total_usd": 18.806026
+  }
+}

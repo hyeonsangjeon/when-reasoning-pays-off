@@ -1,0 +1,48 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "874bb4f088ff47f39b9656a46b4d34de0c4f40ca65f27df5dd04efc3e1b011e6"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": false,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline_gpt4o",
+  "git_commit": "a9c9ccec30a030e73185a66b51a6373b8f6f05ce",
+  "latency_ms": 5773.064166773111,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "The team decided to launch the new dashboard in May, with the next sync on Friday.",
+  "retry_count": 0,
+  "sample_id": "sf_05",
+  "sample_idx": 4,
+  "sample_metadata": {
+    "expected_output_shape": "A single-sentence summary covering the launch decision and the next sync day.",
+    "id": "sf_05",
+    "input": "Meeting started at 9 AM. The team agreed to launch the new dashboard in May. Next sync is on Friday.",
+    "quality_rubric_notes": "Summary must reference the dashboard launch in May and the Friday sync, both inside one sentence. Word choice is flexible.",
+    "tags": [
+      "summarization"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:56:30Z",
+  "usage": {
+    "input_tokens": 225,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 19,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 244
+  }
+}

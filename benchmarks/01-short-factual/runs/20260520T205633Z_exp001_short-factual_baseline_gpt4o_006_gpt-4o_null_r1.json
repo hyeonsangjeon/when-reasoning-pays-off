@@ -1,0 +1,55 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0018157502636313438,
+    "tool_config_sha256": null,
+    "user_input_sha256": "10fd28b3ba637d6a422e6898adb8124f8fc99d47e21facd49f239b1e70fa1cf3"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": false,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline_gpt4o",
+  "git_commit": "a9c9ccec30a030e73185a66b51a6373b8f6f05ce",
+  "latency_ms": 1257.0784580893815,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "- product: Widget A\n- qty: 3\n- warehouse: WH-North\n- color: blue\n- in_stock: true",
+  "retry_count": 0,
+  "sample_id": "sf_07",
+  "sample_idx": 6,
+  "sample_metadata": {
+    "expected_output_shape": "A markdown bullet list with one item per field showing the field name and its value.",
+    "id": "sf_07",
+    "input": {
+      "color": "blue",
+      "in_stock": true,
+      "product": "Widget A",
+      "qty": 3,
+      "warehouse": "WH-North"
+    },
+    "quality_rubric_notes": "Output must include all five fields (product, qty, warehouse, color, in_stock) each on its own bullet line with the corresponding value. Order may vary.",
+    "tags": [
+      "enumeration",
+      "formatting"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:56:33Z",
+  "usage": {
+    "input_tokens": 243,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 30,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 273
+  }
+}

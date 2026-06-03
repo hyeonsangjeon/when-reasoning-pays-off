@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "18e83284e346015a556ffdfd385cc4fa7e196833d75122bca1d678612a145221"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1738.6657083407044,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "8",
+  "retry_count": 0,
+  "sample_id": "mr_11",
+  "sample_idx": 10,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "id": "mr_11",
+    "input": "A balloon's volume doubles every minute. After exactly 10 minutes the balloon is completely full. After how many minutes was the balloon exactly one quarter full?",
+    "quality_rubric_notes": "Correct answer is exactly 8 (full at 10; half at 9; quarter at 8). Any other integer is a fail.",
+    "tags": [
+      "causal-chain"
+    ],
+    "verifiable_answer": "8"
+  },
+  "timestamp_utc": "2026-05-21T09:22:58Z",
+  "usage": {
+    "input_tokens": 287,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 292
+  }
+}

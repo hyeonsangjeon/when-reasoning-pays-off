@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0013312920928001404,
+    "tool_config_sha256": null,
+    "user_input_sha256": "c607960d2ca10644a151d122a354ae7ff5a7687370bd2bf8d315341168db888d"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1316.5876250714064,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "-3",
+  "retry_count": 0,
+  "sample_id": "mr_13",
+  "sample_idx": 12,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer (which may be negative) with no surrounding prose.",
+    "id": "mr_13",
+    "input": "Trace this Python function and report what it prints:\n\ndef f(n):\n    total = 0\n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            total += i\n        else:\n            total -= i\n    return total\n\nprint(f(5))",
+    "quality_rubric_notes": "Correct answer is exactly -3 (i=1: -1; i=2: +2 -> 1; i=3: -3 -> -2; i=4: +4 -> 2; i=5: -5 -> -3). The literal '-3' must be the only integer in the response.",
+    "tags": [
+      "code-trace"
+    ],
+    "verifiable_answer": "-3"
+  },
+  "timestamp_utc": "2026-05-21T09:23:13Z",
+  "usage": {
+    "input_tokens": 325,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 6,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 331
+  }
+}

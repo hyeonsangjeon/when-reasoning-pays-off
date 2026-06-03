@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security / data-leakage report
+    url: https://github.com/hyeonsangjeon/when-reasoning-pays-off/security/advisories/new
+    about: Report a security or data-leakage issue privately. Do not open a public issue. See SECURITY.md.
+  - name: Support and scope questions
+    url: https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/SUPPORT.md
+    about: Read SUPPORT.md before filing. This repository is a research artifact, not a hosted product.

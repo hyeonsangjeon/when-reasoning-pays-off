@@ -1,0 +1,65 @@
+# exp002 — gpt-4o baseline column on benchmarks/02-multi-step-reasoning.
+#
+# This is the cross-model baseline for benchmark 02. Pair experiment to
+# exp002_benchmark02_gpt5_2; sweep is intentionally empty because gpt-4o has
+# no reasoning parameter (passing one raises an API error). The runner emits
+# a single column with effort=null.
+#
+# Phase-3 root experiment (parent_experiment: null) per Task 009 spec: this
+# is the cross-model baseline column, not a variant of any prior run. Runs
+# FIRST in the Task 007 ordering (cheaper, lower variance — gives a
+# known-good baseline before the gpt-5.2 sweep).
+
+experiment_id: exp002_benchmark02_gpt4o
+description: >-
+  Phase-3 GPT-4o baseline column on benchmarks/02-multi-step-reasoning. Same
+  prompts, dataset, N=20, R=3 as the gpt-5.2 sibling run. Cross-model lens
+  per REPO_SCAFFOLD_SPEC.md "Cross-Model Comparison". Runs FIRST per Task 009
+  §Run sequencing (mirroring Task 007's order).
+parent_experiment: null
+benchmark: 02-multi-step-reasoning
+
+dataset_size: 20
+repeats: 3
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_4O}
+  family: gpt-4o
+  version: 2024-11-20
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# gpt-4o accepts both temperature and top_p; we pin temperature=0.0 to
+# minimize sampler variance across the N×R cell grid. Reasoning families
+# would reject this — see the gpt-5.2 sibling YAML.
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+
+# gpt-4o has no reasoning parameter; sweep.effort intentionally empty.
+sweep:
+  effort: []
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+# Per-YAML budget split mirroring Task 007 (NOT $25/$30 on each):
+# combined estimated ≤ $25 and combined hard ceiling ≤ $30 (operator-enforced
+# cross-run budget gate between this YAML and the gpt-5.2 sibling).
+budget:
+  estimated_cost_usd: 5.0
+  hard_ceiling_usd: 5.0
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-21
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  # Pinned SHA-256 hashes of the Task 009 dataset and system prompt.
+  dataset_sha256: d55b975eec249c65831f0c0d916fc752d09959fa0fee1d6f489e2a709fcf2698
+  system_prompt_sha256: 974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23
+
+concurrency: 5

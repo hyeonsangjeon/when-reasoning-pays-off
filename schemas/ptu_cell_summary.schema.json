@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PTUCellSummary",
+  "description": "Canonical per-cell aggregation record (Task 028). azure_monitor_metrics_to_query is the frozen Appendix C list.",
+  "type": "object",
+  "properties": {
+    "cell_id": {
+      "type": "string",
+      "description": "repo convention (Task 013 cell taxonomy)",
+      "category": "operational_inference"
+    },
+    "cell_label": {
+      "type": "string",
+      "description": "repo convention",
+      "category": "operational_inference"
+    },
+    "window_start_iso": {
+      "type": "string",
+      "description": "client-side window boundary",
+      "category": "operational_inference"
+    },
+    "window_end_iso": {
+      "type": "string",
+      "description": "client-side window boundary",
+      "category": "operational_inference"
+    },
+    "deployment_name": {
+      "type": "string",
+      "description": "repo convention",
+      "category": "operational_inference"
+    },
+    "request_count": {
+      "type": "integer",
+      "description": "aggregation over PTURequestRecord",
+      "category": "operational_inference"
+    },
+    "real_429_count": {
+      "type": "integer",
+      "description": "aggregation over PTURequestRecord.response_status_code == 429",
+      "category": "operational_inference"
+    },
+    "mean_cached_fraction": {
+      "type": "number",
+      "description": "aggregation over cached_tokens / prompt_tokens",
+      "category": "operational_inference"
+    },
+    "p50_ttft_ms": {
+      "type": "number",
+      "description": "aggregation over first_token_latency_ms",
+      "category": "operational_inference"
+    },
+    "p95_ttft_ms": {
+      "type": "number",
+      "description": "aggregation over first_token_latency_ms",
+      "category": "operational_inference"
+    },
+    "p99_ttft_ms": {
+      "type": "number",
+      "description": "aggregation over first_token_latency_ms",
+      "category": "operational_inference"
+    },
+    "mean_retry_after_ms_on_429": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "aggregation over retry_after_ms on 429 responses",
+      "category": "operational_inference"
+    },
+    "azure_monitor_metrics_to_query": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Guide Appendix C \u2014 frozen list of metric names that MUST be queried on the same time window when interpreting this cell.",
+      "category": "official_spec"
+    }
+  },
+  "required": [
+    "cell_id",
+    "cell_label",
+    "window_start_iso",
+    "window_end_iso",
+    "deployment_name",
+    "request_count",
+    "real_429_count",
+    "mean_cached_fraction",
+    "p50_ttft_ms",
+    "p95_ttft_ms",
+    "p99_ttft_ms",
+    "azure_monitor_metrics_to_query"
+  ],
+  "additionalProperties": false
+}

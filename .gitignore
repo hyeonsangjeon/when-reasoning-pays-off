@@ -1,0 +1,97 @@
+# Internal working directory (separate private repo, cloned in)
+.internal/
+
+# Task 034 — internal worker-prompt files (analyzer, coder,
+# extreme-reasoner, first-reviewer, frontend-developer, git-committer,
+# llm-systems-engineer, measurement-engineer, strategy-consultant,
+# ui-designer) are private to the internal review pipeline and MUST NOT
+# appear in the public Track A surface. The active copies live in the
+# private archive at .internal/agents-public-release-backup/. Any
+# reappearance of a tracked file under .github/agents/ would be a
+# data-leakage event per docs/16; gitignore the directory so accidental
+# `git add .` runs cannot resurface it.
+.github/agents/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.uv/
+
+# Python build / packaging artifacts produced by `pip install -e .`
+# (setuptools editable build), wheel builds, and sdist builds. Tracked
+# package layout is configured in pyproject.toml ([tool.setuptools.
+# packages.find]); these are local install byproducts only.
+*.egg-info/
+*.egg
+build/
+dist/
+.ruff_cache/
+
+# Node (if any tooling needs it)
+node_modules/
+
+# Results — raw runs are committed, but local scratch isn't
+results/raw/
+*.local.json
+*.scratch.*
+
+# Operator local logs (Task 019 v2.2.1 live runs). Logs themselves are
+# nohup transcripts; the audit-grade artifacts live under
+# benchmarks/*/runs/*.jsonl{,.summary.json{,.sha256}} and
+# benchmarks/*/runs/*.calibration.{result,summary}.json.
+logs/
+
+# v2.3 microfix 2026-05-30 fix loop #2 (auditor finding #4) — operator
+# forensic quarantine for live Azure run artifacts that pre-date a fix
+# loop closing and therefore must NOT enter any Task 019 PR. Files are
+# retained on disk for operator review but excluded from git scope.
+# Convention: any directory named `_quarantined_*` under benchmarks/runs/
+# is treated as quarantine. Pre-v2.3 cost-fix partial captures use
+# `_partial_pre_cost_fix/` (legacy name retained for backwards
+# compatibility with existing operator workflows).
+benchmarks/*/runs/_quarantined_*/
+benchmarks/*/runs/_partial_pre_cost_fix/
+
+# Per-benchmark pre-run manifests captured by the operator's measurement
+# workflow (Task 007 §Pre-flight). These are throwaway diff anchors, not
+# audit evidence — the audit evidence is the resulting RUN_REPORT.md.
+benchmarks/*/.pre_run_manifest.txt
+
+# Per-benchmark run-lock files (Task 019 v2.3 fix loop #3 — auditor
+# REQUEST-CHANGES on the v2.3 PR). The run-lock is a purely-runtime
+# fcntl.flock(LOCK_EX | LOCK_NB) artifact created on demand by
+# acquire_runlock() via os.open(..., O_CREAT | O_RDWR, 0o600). It is
+# NEVER PR evidence — it carries a transient {pid, hostname,
+# experiment_id, started_at_iso, expected_completion_iso} payload that
+# is rewritten on every run. Run-lock semantics (cross-task deployment
+# exclusivity at the local benchmark dir) are fully preserved without
+# the lock file being tracked in git, since acquire_runlock always
+# recreates the file when absent.
+benchmarks/*/.runlock
+
+# Operator-local scratch trees for Task 019 v26/v27 live runs. These
+# directories (`tmp_task019_v26_live2/`, `tmp_task019_v27_live/`, …)
+# hold throwaway exploratory artifacts that pre-date the public release
+# work and must never enter the public tree. Gitignoring the
+# `tmp_task019_*/` prefix prevents `git add .` from accidentally
+# resurfacing them.
+tmp_task019_*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+.claude/

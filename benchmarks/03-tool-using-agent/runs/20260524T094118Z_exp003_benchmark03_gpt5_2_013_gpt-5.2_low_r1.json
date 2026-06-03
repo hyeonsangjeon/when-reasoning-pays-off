@@ -1,0 +1,77 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "d8c8d20355eb90ef85201ffbeb41174b1ff1ea795df04869c53ac9531047b595"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "low",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 3364.585750270635,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "Aurora",
+  "retry_count": 0,
+  "sample_id": "tu_14",
+  "sample_idx": 13,
+  "sample_metadata": {
+    "expected_output_shape": "A single city name. web_search used.",
+    "expected_tool_calls": [
+      "web_search"
+    ],
+    "id": "tu_14",
+    "input": "Look up the headquarters city of Helio Robotics. Use the web_search tool.",
+    "quality_rubric_notes": "Correct iff web_search is invoked with 'headquarters city of Helio Robotics' and the response is 'Aurora'. Helio Robotics is fictional.",
+    "tags": [
+      "one-tool",
+      "web_search"
+    ],
+    "verifiable_answer": "Aurora"
+  },
+  "timestamp_utc": "2026-05-24T09:41:18Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1328.9628750644624,
+      "tool_args": {
+        "query": "headquarters city of Helio Robotics"
+      },
+      "tool_call_id": "call_lKI813ARUXRX5wbvlbJlD13d",
+      "tool_name": "web_search",
+      "tool_result_summary": "Aurora",
+      "usage": {
+        "input_tokens": 563,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 24,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 587
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1163,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 30,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1193
+  }
+}

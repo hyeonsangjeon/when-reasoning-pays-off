@@ -1,0 +1,53 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0006789998151361942,
+    "tool_config_sha256": null,
+    "user_input_sha256": "477fa9580b51c1028b8119a58d30975742e33016422a179ebe0f62b5b08c4891"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1725.1365832053125,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "New users with accounts created within the last hour are affected, and the regression began after Monday's deploy.",
+  "retry_count": 0,
+  "sample_id": "sf_06",
+  "sample_idx": 5,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence stating who is affected and when the regression began.",
+    "id": "sf_06",
+    "input": {
+      "description": "After the deploy on Monday, accounts created within the last hour cannot log in. Existing accounts are unaffected.",
+      "ticket_id": "TKT-7781",
+      "title": "Login fails for new users"
+    },
+    "quality_rubric_notes": "Sentence must indicate the affected group (new accounts created within the last hour) and link the issue to the Monday deploy. Both facts are required for full credit.",
+    "tags": [
+      "summarization",
+      "extraction"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:58:47Z",
+  "usage": {
+    "input_tokens": 249,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 25,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 274
+  }
+}

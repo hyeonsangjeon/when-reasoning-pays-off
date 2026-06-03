@@ -1,0 +1,27 @@
+{
+  "effort": null,
+  "git_commit": "5ad584484c622d8b6170910b3ec40a8a0fc6a253",
+  "judge_model": "gpt-4o",
+  "judge_prompt_sha256": "fb997c90fe0778681194809793cdce218bcb9d6537304a525f2916cf29ba6942",
+  "model": "gpt-4o",
+  "rationale": "The model response correctly states the exact answer of 6, satisfying the rubric requirements.",
+  "raw_response": {
+    "output_text": "{\"score\": 2, \"rationale\": \"The model response correctly states the exact answer of 6, satisfying the rubric requirements.\"}",
+    "usage": {
+      "input_tokens": 189,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 30,
+      "output_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "total_tokens": 219
+    }
+  },
+  "repeat": 2,
+  "sample_id": "mr_18",
+  "score": 2,
+  "source_run_filename": "20260521T092102Z_exp002_benchmark02_gpt4o_017_gpt-4o_null_r2.json",
+  "timestamp_utc": "2026-05-21T09:32:41Z"
+}

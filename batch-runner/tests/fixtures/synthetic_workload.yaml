@@ -1,0 +1,7 @@
+mean_prompt_tokens: 1000
+mean_cached_fraction: 0.30
+mean_visible_output_tokens: 200
+mean_reasoning_tokens: 0
+mean_max_output_tokens: 8000
+expected_rpm: 60.0
+model_id: gpt-5.2

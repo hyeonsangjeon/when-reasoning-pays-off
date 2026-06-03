@@ -1,0 +1,434 @@
+# Release tiers and redaction policy
+
+**Public-facing release governance for this repository.** This document
+defines the three-tier data classification used by every artifact in
+this repo, the redaction rules that gate promotion between tiers, the
+raw-data preservation rule, the per-surface tier permission matrix for
+each public publication channel, and the governance / readiness
+checklist a maintainer follows before any public release.
+
+It is a companion to:
+
+- `docs/05-methodology.md` (reproducibility contract — frozen) — how a
+  measurement is reproducible. This document does not modify it.
+- `docs/14-observability-schema.md` (canonical per-request / per-cell
+  record contract) — *which* fields exist. This document classifies
+  those fields by publication sensitivity.
+- `docs/15-spec-vs-inference-taxonomy.md` (Tier 1 / Tier 2 claim-authority
+  taxonomy) — *which* claims are vendor spec and which are this repo's
+  inference. Orthogonal axis. A single artifact carries both a
+  claim-authority label (spec / inference) and a release tier label
+  (raw / sanitized / aggregate).
+- `docs/17-foundry-packaging-relationship.md` — how this repo relates to
+  the downstream Azure AI Foundry sample repo and to the public Pages /
+  Medium / arXiv surfaces.
+
+---
+
+## 1. Why three tiers
+
+Two failure modes drive the design: (1) **leakage** — raw outputs
+carry endpoint URLs, deployment names, request IDs, regions, and
+free-text payloads that may encode workload fingerprints; (2) **loss
+of scientific record** — deleting raw outputs to make publishing
+easier destroys the primary evidence behind every public claim. The
+three tiers separate the original scientific record from the
+publishable derivative and the operator-facing aggregate. Each tier
+has a fixed redaction bar and a fixed set of surfaces it is allowed
+to appear on. Promotion is one-directional: raw → sanitized →
+aggregate. Demotion is not defined.
+
+---
+
+## 2. The three tiers
+
+### 2.1 `RAW_PRIVATE`
+
+**Definition.** Original, unmodified output of an experiment run.
+Full Azure response headers (request IDs, region, deployment-name
+headers, rate-limit counters), exact prompt / response pairs, exact
+deployment names, exact endpoint URLs, exact experiment YAML inputs.
+
+**Storage.** Held in a private, owner-controlled archive that is not
+part of the public mirror. Indexed by a manifest that records, per
+file: a SHA-256 of the file contents, the run identifier, a hash of
+the experiment YAML that produced it, the wallclock capture timestamp
+(UTC), and the git commit SHA of the producing code.
+
+**Preservation.** **Raw experiment data is never deleted.** It is the
+primary scientific record. Any workflow proposing to remove a raw
+output instead *moves* the file into the private archive and records
+a manifest entry. The redaction tooling is read-only against the
+archive (reads from archive, writes a sanitized derivative to a
+public tree, never modifies or removes the source).
+
+**Publication.** Forbidden. `RAW_PRIVATE` content does not appear in
+the public research repo, the Pages dashboard / blog, Medium posts,
+arXiv submissions, the Foundry sample repo, social-share previews,
+analytics payloads, build artifacts, or source maps. Any surface
+that detects a `RAW_PRIVATE` input MUST fail its build.
+
+### 2.2 `SANITIZED_PUBLIC`
+
+**Definition.** A derivative of `RAW_PRIVATE` produced by applying
+the redaction rules in §3. Same scientific content (same per-request
+rows, per-cell aggregations, numeric series) with sensitive fields
+removed, replaced, or pseudonymized.
+
+**Required transforms** (per-field rules in §3): endpoint URLs
+removed or replaced with a placeholder; deployment names replaced
+with stable pseudonyms (`ptu-deploy-a`, `payg-deploy-b`) via a
+one-way mapping held only in the private archive; region tags,
+request IDs, and deployment-name response headers dropped; customer-
+shape fingerprints (prompts that encode a specific workload's data
+shape, schema, or identifier ranges) replaced with synthetic
+equivalents or dropped where no synthetic exists; secret patterns
+(API keys, bearer tokens, signed URL parameters, account keys) MUST
+be absent (a detected secret aborts the redaction run with a
+non-zero exit; the run does not produce a partial public artifact);
+wallclock timestamps rounded to the nearest UTC hour.
+
+**Provenance.** Provenance for every `SANITIZED_PUBLIC` artifact is
+recorded as one entry in the single tracked public manifest
+`release/public_sanitized_manifest.json` (the canonical provenance
+record for this repo). Each entry is keyed by the sanitized artifact's
+repo-relative path and carries: the SHA-256 of the artifact in its
+current publishable form (`sanitized_sha256`), the SHA-256 of its
+source `RAW_PRIVATE` file (`source_raw_sha256`), an opaque
+`source_archive_id` for cross-reference into the private archive, the
+SHA-256 of the public-safe description of the redaction rules used
+(`redaction_rules_sha256`), the SHA-256 of the redactor script bytes
+(`redactor_script_sha256`), the redaction timestamp (UTC), the git
+commit SHA of the redactor code, and a `sweep_id`. The on-disk
+private archive path is *not* recorded in the public manifest —
+references back to the source are only by opaque id and SHA-256.
+Legitimate downstream edits to a previously-sanitized public file
+that do not reintroduce any forbidden token are tracked by re-running
+`scripts/sanitize_public_artifacts.py --apply`, which refreshes the
+entry's `sanitized_sha256` to the new on-disk sha while leaving
+`source_raw_sha256` and `source_archive_id` pinned to the original
+`RAW_PRIVATE` source. One central manifest is functionally equivalent
+to a sidecar file per artifact (every `SANITIZED_PUBLIC` artifact has
+exactly one provenance entry) while keeping the working tree free of
+several thousand sidecar files. The hash of the redaction rules is
+computed over a public-safe canonical description (class labels,
+placeholder outputs, ordering rule) — *never* over the private
+workload tokens themselves, because a deterministic hash of low-
+entropy private values would otherwise act as an offline confirmation
+oracle. Per-file sidecar manifests and first-JSONL-row provenance
+records are not used in this repo; any future surface that adds them
+MUST also represent the same provenance in the central manifest so
+that the central manifest remains the single source of truth.
+
+**Publication.** Allowed in the public research repo (this repo,
+once made public), in chart series consumed by the Pages dashboard /
+blog, and as supporting evidence in Medium posts and arXiv ancillary
+files that link to the public research repo.
+
+### 2.3 `AGGREGATE_AZURE_SAMPLE`
+
+**Definition.** Per-cell or per-experiment aggregations only; no
+per-request rows. Designed for inclusion in a downstream Azure AI
+Foundry sample repo whose audience is operator-facing (decision
+tables, throughput / cost curves) and for whom per-request payloads
+carry no decision value.
+
+**Required transforms.** All `SANITIZED_PUBLIC` transforms apply,
+plus: per-request rows removed (only summary statistics remain:
+count, mean, median, p95, p99, standard deviation, cell identifier);
+free-text prompt / response fields removed entirely (only shape
+metadata such as token counts, latency, status-code histograms
+remains); pseudonymized deployment names further generalized to role
+labels (`ptu-primary`, `ptu-spillover`, `payg-baseline`); cells with
+`n < 5` dropped to prevent re-identification by row count.
+
+**Provenance.** Each `AGGREGATE_AZURE_SAMPLE` artifact carries the
+list of contributing `SANITIZED_PUBLIC` source SHA-256s, the SHA-256
+of the aggregation script, and the semver of the aggregate schema.
+
+**Publication.** Primary surface is the downstream Azure AI Foundry
+sample repo. MAY also appear in the public research repo as a
+convenience summary alongside the `SANITIZED_PUBLIC` per-request
+data, but does not replace it.
+
+---
+
+## 3. Redaction rule categories
+
+The redaction rule set is implemented as a declarative configuration
+held in the private working tree. Categories below are summarized for
+public documentation; the live configuration is the source of truth
+for any operational sweep.
+
+| Category | Detection | Action | `SANITIZED_PUBLIC` | `AGGREGATE_AZURE_SAMPLE` |
+|---|---|---|---|---|
+| Secrets | regex on common key / token / signed-URL / account-key patterns and environment-variable names | abort the run | abort | abort |
+| Endpoint URLs | regex on Azure OpenAI / Cognitive Services hostnames | replace with placeholder | required | required |
+| Deployment names | field-name match on request and response deployment headers and on YAML-side deployment identifiers | pseudonym via one-way map | required | further generalized to role labels |
+| Region | field-name match on the region response header | drop | required | required |
+| Request IDs | field-name match on request-id and correlation-request-id response headers | drop | required | required |
+| Wallclock timestamps | field-name match on capture / start / end timestamps | round to nearest UTC hour | required | required |
+| Customer-shape fingerprints | prompt-content allow-list (only synthetic prompts pass; private-corpus prompts are dropped) | drop or replace with synthetic | required | required |
+| Free-text payloads | field-name match on prompt, response, message content, tool-call arguments | retain in `SANITIZED_PUBLIC`; drop in `AGGREGATE_AZURE_SAMPLE` | retain | drop |
+| Internal hostnames | regex on `*.internal`, RFC 1918 ranges, common corp suffixes | drop or replace | required | required |
+| Email addresses | RFC 5322 regex | drop | required | required |
+| Workload-identifying names | curated deny-list held privately | abort the run if matched | abort | abort |
+
+Two design choices are deliberate: **customer-shape redaction is
+allow-list**, not deny-list (a prompt from a private workload corpus
+is dropped, not transformed, because semantic fingerprints can
+survive lexical scrubbing); **secret detection aborts**, not redacts
+(allowing partial output would mask the source of the leak and could
+publish a near-secret in an adjacent field).
+
+---
+
+## 4. Per-surface tier permission matrix
+
+Each public surface consumes only the tiers listed for it. A surface
+that detects an unlisted tier MUST fail its build.
+
+| Surface | `RAW_PRIVATE` | `SANITIZED_PUBLIC` | `AGGREGATE_AZURE_SAMPLE` |
+|---|---|---|---|
+| Public research repo (this repo, made public) | forbidden | allowed (per-request rows + per-cell aggregations) | allowed (as convenience summary alongside sanitized data) |
+| GitHub Pages dashboard / blog | forbidden | allowed (chart series, per-request rows referenced by sanitized path) | allowed (decision tables, throughput / cost curves) |
+| Medium syndication | forbidden | allowed only by reference to the canonical Pages article and to the public research repo at a pinned commit SHA — no new data series introduced in the Medium post itself | allowed by reference under the same constraint |
+| Optional arXiv manuscript | forbidden | allowed (figures, tables, ancillary files; every evidence citation resolves to a pinned public-research-repo commit SHA) | allowed under the same constraint |
+| Downstream Azure AI Foundry sample repo | forbidden | forbidden (per-request rows are not part of the Foundry sample contract) | allowed (primary surface) |
+
+Notes on the matrix:
+
+- The Pages dashboard / blog is the canonical surface for any public
+  numeric claim; Medium and arXiv are derivative. The per-channel
+  rules in `docs/17-foundry-packaging-relationship.md` make the
+  canonical / derivative relationship explicit.
+- The Foundry sample repo is `AGGREGATE_AZURE_SAMPLE`-only on purpose:
+  per-request rows are the public research repo's contract with
+  researchers, not the Foundry sample's contract with operators.
+- A single artifact may carry more than one tier label across its
+  lifecycle (raw in the private archive, sanitized in the public repo,
+  aggregate in the Foundry sample).
+
+---
+
+## 5. Data and charts — allowed tiers
+
+| Artifact type | Allowed tiers for publication |
+|---|---|
+| Per-request JSONL records | `SANITIZED_PUBLIC` only |
+| Per-cell summary statistics | `SANITIZED_PUBLIC` or `AGGREGATE_AZURE_SAMPLE` |
+| Throughput / latency / cost curves | `SANITIZED_PUBLIC` or `AGGREGATE_AZURE_SAMPLE` (sourced from numeric series of either tier) |
+| Decision tables (PTU vs PAYG, lever-effect summaries) | `AGGREGATE_AZURE_SAMPLE` preferred; `SANITIZED_PUBLIC` allowed when the table is built from sanitized per-cell summaries |
+| Free-text prompt / response excerpts | `SANITIZED_PUBLIC` only, and only when the excerpt is synthetic (allow-list); never in `AGGREGATE_AZURE_SAMPLE` |
+| Header captures (region, request ID, deployment name) | none — these fields are removed before any public tier |
+| Endpoint URLs | none — removed or placeholdered before any public tier |
+| Secrets of any kind | none — detection aborts the run |
+
+Chart series data files consumed by the Pages dashboard MUST be
+locale-agnostic (numeric series plus metric / dimension keys only).
+Per-locale label bundles are separate; one dataset, N label bundles.
+This rule is restated in `docs/17-foundry-packaging-relationship.md`.
+
+---
+
+## 6. Raw-data preservation rule (HARD)
+
+> **Original raw experiment data MUST NOT be deleted.** It is
+> archived to an owner-controlled private location, indexed by
+> manifest, and linked from every public derivative by SHA-256. Any
+> downstream task, script, or workflow that proposes deleting a raw
+> run artifact, a log file, a judge transcript, or an intermediate
+> result file MUST instead *move* the file to the private archive
+> and write a manifest entry.
+
+Concrete obligations:
+
+- The redaction tooling operates as a *read-from-archive, write-to-
+  public-tree* transform. It does not modify or remove the source.
+- If a `RAW_PRIVATE` file is found on a public-tree path during the
+  pre-release audit, it MUST be moved (not copied, not deleted) to
+  the private archive, and a `SANITIZED_PUBLIC` derivative MUST be
+  written in its place before any public release.
+- The private archive MUST have a secondary backup (owner-chosen
+  mechanism) before any public release, verified at the §8.3
+  readiness gate.
+- Manifest integrity MUST be re-verified (recompute SHA-256 across
+  the archive, compare to manifest) at any release readiness check.
+
+The scientific record is irrecoverable: a measurement gone from the
+archive cannot be re-run identically (upstream service moves,
+deployment topology changes, pricing changes). Public derivatives
+are *links into* the archive by hash; breaking the archive breaks
+the reproducibility of every prior public claim.
+
+---
+
+## 7. Channel-level rules (summary)
+
+Detailed per-channel rules — canonical Pages source-of-truth, Medium
+canonical back-links and `source_hash` drift detection, arXiv as a
+distinct scholarly manuscript, downstream Foundry sample packaging —
+live in `docs/17-foundry-packaging-relationship.md`. Tier-level
+invariants each channel inherits from this document:
+
+- **Public research repo.** `SANITIZED_PUBLIC` and
+  `AGGREGATE_AZURE_SAMPLE` only. Methodology, hypothesis ledger,
+  decision tools, citation taxonomy, sanitized benchmark slices.
+- **Pages dashboard / blog.** Canonical surface for public-facing
+  essays, analyses, chart series, and numeric claims. i18n-first
+  with initial locales `ko`, `en`, `ja`, `zh-CN`, `hi` (Hindi
+  represents "Indian language"; additional Indian languages added
+  only by explicit owner decision). `SANITIZED_PUBLIC` and
+  `AGGREGATE_AZURE_SAMPLE` only.
+- **Medium syndication.** Derivative. Canonical URL set to the
+  Pages article; in-body links to Pages and the public research
+  repo; `source_hash` footer for drift detection; no new claims,
+  data series, charts, or numbers beyond the pinned Pages article.
+- **Optional arXiv manuscript.** Distinct scholarly artifact (own
+  abstract, methods, evidence, limitations, references). No
+  substantial verbatim duplication of Pages / blog text; evidence
+  citations resolve to a pinned public-repo commit SHA; English full
+  version is the submission.
+- **Downstream Azure AI Foundry sample repo.** Separately named,
+  separately governed. `AGGREGATE_AZURE_SAMPLE` only. Cites the
+  public research repo and does not author methodology.
+
+---
+
+## 8. Governance and release-readiness checklist
+
+A maintainer runs this checklist before any public release (public
+research repo flip, Pages publication, Medium post, arXiv submission,
+or downstream Foundry sample release). The checklist is the same
+across surfaces; the per-surface scope differs.
+
+### 8.1 Tier-label and provenance gates
+
+- [ ] Every artifact proposed for publication carries an explicit tier
+  label (`RAW_PRIVATE` / `SANITIZED_PUBLIC` / `AGGREGATE_AZURE_SAMPLE`).
+- [ ] No artifact carrying the `RAW_PRIVATE` label appears on any
+  public-tree path. Any such file has been moved to the private
+  archive and replaced with its `SANITIZED_PUBLIC` derivative.
+- [ ] Every `SANITIZED_PUBLIC` artifact has a corresponding entry in
+  the central tracked public manifest
+  `release/public_sanitized_manifest.json` with: source raw SHA-256,
+  sanitized SHA-256, opaque `source_archive_id`, redaction-rules
+  SHA-256, redactor-script SHA-256, redaction timestamp (UTC),
+  redactor commit SHA, and `sweep_id`. The public manifest contains
+  no private filesystem path (no references to the private archive
+  tree), no endpoint URLs, no deployment names, and no secret
+  patterns. The
+  release-readiness CI job runs `python scripts/sanitize_public_artifacts.py
+  --verify --require-public-manifest` and fails if the manifest is
+  missing, drifted, internally inconsistent, or any entry's on-disk
+  artifact SHA-256 disagrees with the recorded `sanitized_sha256`.
+- [ ] Every `AGGREGATE_AZURE_SAMPLE` artifact carries the list of
+  source `SANITIZED_PUBLIC` SHA-256s, aggregation-script SHA-256, and
+  schema semver.
+
+### 8.2 Redaction-rule gates
+
+- [ ] The redaction-detector CI job runs against the proposed
+  publication set and reports zero matches in categories that abort
+  (secrets, workload-identifying names).
+- [ ] Endpoint URLs, deployment names (raw), regions, request IDs,
+  internal hostnames, and email addresses have been removed or
+  pseudonymized per §3.
+- [ ] Wallclock timestamps have been rounded to the nearest UTC hour
+  in every `SANITIZED_PUBLIC` artifact.
+- [ ] Customer-shape redaction has been verified against the allow-
+  list (no private-corpus prompts present).
+- [ ] Cells with `n < 5` have been dropped from `AGGREGATE_AZURE_SAMPLE`
+  artifacts.
+
+### 8.3 Raw-archive integrity gates
+
+- [ ] Manifest hashes have been recomputed against the private archive
+  and match the recorded manifest entries.
+- [ ] Secondary backup of the private archive is current.
+- [ ] No raw run artifact, log file, judge transcript, or intermediate
+  result file has been deleted as part of the release preparation;
+  any such file was moved to the archive with a manifest entry.
+
+### 8.4 Per-surface gates
+
+- [ ] **Public research repo:** community-health files present
+  (`LICENSE`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`,
+  issue / PR templates, CODEOWNERS for methodology-frozen files, CI
+  with redaction-detector and methodology-freeze jobs, dependency
+  scan, `CHANGELOG.md` in Keep-a-Changelog format, `GOVERNANCE.md`).
+- [ ] **Pages dashboard / blog:** locale-prefixed routes
+  (`/en`, `/ko`, `/ja`, `/zh-cn`, `/hi`); per-page `hreflang` for all
+  published locales plus `hreflang="x-default"` and a `canonical`
+  link; per-translation status (`translated` / `machine_translated` /
+  `stale` / `untranslated_fallback_to_en`) and `last_translated_at`
+  timestamp; source-content hash check passed; glossary covers at
+  minimum *Foundry*, *PTU*, *PAYG*, *reasoning*, *cache*, *429* with
+  a fixed per-locale translation; chart series data files are
+  locale-agnostic.
+- [ ] **Medium post:** canonical URL set to the corresponding Pages
+  article URL; in-body links to Pages article and public research
+  repo; footer carries Pages article URL + commit SHA + `source_hash`;
+  no claims, data series, charts, or numbers beyond the pinned Pages
+  article.
+- [ ] **arXiv manuscript:** distinct scholarly artifact (own abstract,
+  methods, evidence, limitations, references); no substantial verbatim
+  duplication of Pages / blog text in evidence / analysis; every
+  evidence citation resolves to a pinned public-research-repo commit
+  SHA; figures / tables regenerated from public-tier artifacts;
+  English full version; submission license reviewed against the
+  public research repo license with explicit acknowledgement that the
+  submission license is irrevocable; ancillary files limited to
+  public-tier artifacts and passed through the redaction-detector.
+- [ ] **Foundry sample repo:** Microsoft sample-repo `LICENSE`
+  verified with the Foundry samples program; Microsoft Open Source
+  `CODE_OF_CONDUCT.md`; MSRC `SECURITY.md`; `README.md` per the
+  Foundry sample template; notebooks runnable end-to-end on Azure AI
+  Foundry with a pinned dependency manifest; per-file
+  SPDX-License-Identifier headers; no reference to private customer
+  engagements, private communication channels, or private task
+  identifiers; `AGGREGATE_AZURE_SAMPLE` data only; `PROVENANCE.md`
+  links back to the public research repo at the pinned commit SHA.
+
+### 8.5 Stop-the-release conditions
+
+Any of the following stops the release until remediated:
+
+- A secret pattern detected in any candidate artifact.
+- A workload-identifying name detected in any candidate artifact.
+- A `RAW_PRIVATE` artifact on a public-tree path.
+- A `SANITIZED_PUBLIC` artifact missing its entry in
+  `release/public_sanitized_manifest.json`, or an
+  `AGGREGATE_AZURE_SAMPLE` artifact missing its provenance manifest.
+- A Pages translation whose source-content hash differs from the
+  recorded translation-time hash (the page is marked `stale` and the
+  user-visible banner is shown; the release proceeds only with the
+  stale banner visible, or after re-translation).
+- A Medium post whose `source_hash` footer disagrees with the
+  canonical Pages article at the pinned commit SHA.
+- A Foundry sample artifact carrying per-request rows.
+
+---
+
+## 9. Relationship to other documents
+
+- `docs/05-methodology.md` (reproducibility contract — frozen): not
+  modified. Methodology defines *how* a measurement is reproducible;
+  this document defines *which* slices are publishable.
+- `docs/14-observability-schema.md`: redaction categories in §3 align
+  field-by-field with the record schema. New fields added to the
+  record contract are reviewed against §3 for tier classification
+  before they appear in any publication candidate.
+- `docs/15-spec-vs-inference-taxonomy.md`: orthogonal axis. Every
+  published artifact carries both a claim-authority label (spec /
+  inference) and a release tier label (raw / sanitized / aggregate).
+- `docs/17-foundry-packaging-relationship.md`: per-channel canonical /
+  derivative rules, Pages i18n-first acceptance bar, Medium canonical
+  and `source_hash` rules, arXiv distinct-manuscript rule, and the
+  Track A ↔ Track B Foundry packaging relationship.
+
+Material changes to this document (new tier, new redaction category,
+change to a per-surface permission, change to the raw-data
+preservation rule) are recorded in `CHANGELOG.md` under
+Keep-a-Changelog conventions and require owner approval per
+`GOVERNANCE.md`.

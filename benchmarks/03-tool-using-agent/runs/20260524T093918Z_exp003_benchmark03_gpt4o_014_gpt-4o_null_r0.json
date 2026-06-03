@@ -1,0 +1,99 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "22178f74160456069d6bc8aff6f82194cfc09dc1457875579bfd8b88a9fa6e6f"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": true,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt4o",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 4824.870083015412,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "101550",
+  "retry_count": 0,
+  "sample_id": "tu_15",
+  "sample_idx": 14,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer. Both web_search and calculator must be used.",
+    "expected_tool_calls": [
+      "web_search",
+      "calculator"
+    ],
+    "id": "tu_15",
+    "input": "Look up the population of Vega City, then compute 12.5% of that population. Use the tools available.",
+    "quality_rubric_notes": "Correct iff web_search is invoked first with the Vega City population key (returns 812400) and then calculator computes 0.125*812400 = 101550. The final answer must be 101550 (101,550 acceptable).",
+    "tags": [
+      "multi-tool",
+      "search-then-calc"
+    ],
+    "verifiable_answer": "101550"
+  },
+  "timestamp_utc": "2026-05-24T09:39:18Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1426.2757077813148,
+      "tool_args": {
+        "query": "population of Vega City"
+      },
+      "tool_call_id": "call_YKRv6snYsjAvx1w3iFvT0gfU",
+      "tool_name": "web_search",
+      "tool_result_summary": "812400",
+      "usage": {
+        "input_tokens": 567,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 18,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 585
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 2244.7106251493096,
+      "tool_args": {
+        "expr": "12.5/100 * 812400"
+      },
+      "tool_call_id": "call_QGuPwtvPiD2hgMt3u9YksZnN",
+      "tool_name": "calculator",
+      "tool_result_summary": "101550",
+      "usage": {
+        "input_tokens": 595,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 23,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 618
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1790,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 45,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1835
+  }
+}

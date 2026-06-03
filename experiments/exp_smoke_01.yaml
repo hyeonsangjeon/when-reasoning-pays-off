@@ -1,0 +1,72 @@
+# exp_smoke_01 — Phase-1 smoke run for the gpt-5.2 effort sweep.
+#
+# Hypothesis: a 4-call live invocation against the real Foundry v1 endpoint
+# (N=2, R=1, effort sweep over the extremes [low, high]) is sufficient to
+# expose any integration defect the dry-run cannot catch — Entra ID token
+# resolution, response shape, usage.output_tokens_details.reasoning_tokens
+# presence, usage.input_tokens_details.cached_tokens presence, 429 / cold-start
+# behavior. If this smoke passes, Task 007 (the 300-call full run) proceeds
+# with confidence; if it fails, Task 007 would waste 50× the budget on the
+# same defect.
+#
+# Effort levels: the live gpt-5.2-2025-12-11 deployment accepts exactly
+# ``none / low / medium / high / xhigh`` (HTTP 400 on any other value; the
+# spec's original ``minimal`` is rejected by the API). The smoke therefore
+# samples the practical extremes ``low`` and ``high`` — ``none`` would
+# disable reasoning entirely (which gpt-4o already covers as a baseline)
+# and ``xhigh`` is reserved for the Task 007 production sweep.
+#
+# parent_experiment is null because this is a Phase-1 smoke gate; the real
+# baseline is exp001_short-factual_baseline, which is a sibling, not a parent.
+
+experiment_id: exp_smoke_01
+description: >-
+  Phase-1 smoke run — end-to-end pipeline validation. Real Foundry v1 endpoint,
+  gpt-5.2 deployment, effort sweep over [low, high] (the practical extremes
+  the live API accepts; medium values are covered by Task 007). N=2 samples
+  (sf_01, sf_02), R=1. This is a throwaway smoke, not a statistical claim.
+parent_experiment: null
+benchmark: 01-short-factual
+
+dataset_size: 2
+repeats: 1
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+call_params:
+  # Foundry v1 reasoning models (gpt-5.2 family) return HTTP 400
+  # "Unsupported parameter: 'temperature' is not supported with this
+  # model." The runner now rejects temperature/top_p for reasoning
+  # families at config-validation time (see scripts/run_benchmark.py
+  # build_call_kwargs); omit them from this YAML.
+  max_output_tokens: 4096
+
+sweep:
+  effort:
+    - low
+    - high
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+budget:
+  estimated_cost_usd: 0.20
+  hard_ceiling_usd: 1.00
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-20
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  experiment_id: exp_smoke_01
+  description: Phase-1 smoke run — end-to-end pipeline validation
+
+concurrency: 5

@@ -1,0 +1,37 @@
+{
+  "calibration_result_path": "benchmarks/07-max-output-tokens-reservation/runs/20260530T190054Z_exp007_max_output_tokens_sweep_calibration.result.json",
+  "calibration_result_sha256": "4ec002b6c4929880ab0e02b13ca43bef38ac3019ab5be416fc423c7e32ed7c6e",
+  "candidate_tps_grid": [
+    0.33,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0
+  ],
+  "candidate_tps_grid_phase_b": [
+    5.0,
+    8.0,
+    12.0,
+    16.0,
+    24.0,
+    32.0
+  ],
+  "completed_at_iso": "2026-05-30T19:56:09.534260Z",
+  "experiment_id": "exp007_max_output_tokens_sweep",
+  "guardrail": "Do not exhaust shared budget; cap is an accounting guardrail, not a spend target",
+  "halt_reason": null,
+  "n_bracket_points_evaluated": 3,
+  "n_probes": 7,
+  "outcome": "selected",
+  "run_id_short": "4fb5ccfa",
+  "schema_version": "task019.v2.3.calibration_summary",
+  "selected_at_phase": "bracket",
+  "selected_bracket_root_phase": "A",
+  "selected_peak_tps": 0.47469318448182934,
+  "selected_via": "bracket_search",
+  "started_at_iso": "2026-05-30T19:00:54.194135Z",
+  "total_committed_usd": 5.823,
+  "total_usd": 3.102285
+}

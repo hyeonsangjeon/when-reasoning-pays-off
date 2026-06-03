@@ -1,0 +1,51 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "ba97f3e7a375fe23cf9e80e294e28bf644a46e358b54d66ef2dafdc9de7ad6b1"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "low",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1067.9741250351071,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "3 hours is 180 minutes.",
+  "retry_count": 0,
+  "sample_id": "sf_18",
+  "sample_idx": 17,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence giving the duration in minutes as a whole number.",
+    "id": "sf_18",
+    "input": {
+      "hours": 3
+    },
+    "quality_rubric_notes": "Sentence must contain 180 as the minute equivalent of 3 hours; the word 'minutes' (or 'min') should be near the number.",
+    "tags": [
+      "formatting",
+      "unit-conversion"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:59:41Z",
+  "usage": {
+    "input_tokens": 207,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 11,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 218
+  }
+}

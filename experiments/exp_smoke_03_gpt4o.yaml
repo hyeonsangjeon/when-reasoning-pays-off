@@ -1,0 +1,61 @@
+# Smoke pass — gpt-4o single column over benchmarks/03-tool-using-agent.
+#
+# Mirrors Task 007/009 smoke pattern: N=2, R=1, no sweep -> 2 live calls.
+# Tool-loop mode enabled (live ReAct dispatch). Combined with
+# exp_smoke_03.yaml (gpt-5.2 sweep [low, high] x N=2 x R=1 = 4 calls) the
+# smoke pass is 6 live calls, <= $0.50.
+
+experiment_id: exp_smoke_03_gpt4o
+description: >-
+  Smoke pass for benchmark 03 (gpt-4o column). 2 samples x 1 repeat x 1
+  effort=null = 2 live calls. Used to verify tool-loop runner wiring and JSON
+  shape before the full run.
+parent_experiment: null
+benchmark: 03-tool-using-agent
+
+dataset_size: 2
+repeats: 1
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_4O}
+  family: gpt-4o
+  version: 2024-11-20
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+
+sweep:
+  effort: []
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+budget:
+  estimated_cost_usd: 0.25
+  hard_ceiling_usd: 0.50
+  confirmed: true
+
+agent:
+  tool_loop: true
+  max_tool_iterations: 4
+  tools:
+    - name: calculator
+      schema_path: benchmarks/03-tool-using-agent/prompts/tool_schemas/calculator.json
+    - name: web_search
+      schema_path: benchmarks/03-tool-using-agent/prompts/tool_schemas/web_search.json
+  search_kb_path: benchmarks/03-tool-using-agent/search_kb.json
+
+metadata:
+  created_at: 2026-05-24
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  dataset_sha256: 1d717b4f59b34535fae88ac7fbcb8f56302bb18fc5a9a709753357642cb1cef0
+  system_prompt_sha256: 5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82
+
+concurrency: 2

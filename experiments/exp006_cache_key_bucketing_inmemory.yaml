@@ -1,0 +1,193 @@
+# exp006_cache_key_bucketing_inmemory — Task 018 v2.4.
+#
+# Hypothesis: prompt_cache_key bucket cardinality is a first-class capacity
+# lever. At 0.5 TPS (30 RPM common-prefix), a sweep across
+# bucket_cardinality in [1, 8] places card=1 above the docs-stated ~15 req/min
+# per-(prefix_hash, prompt_cache_key) overflow threshold (30 RPM = 2× the
+# threshold) and card=8 below it (30 / 8 = 3.75 RPM/bucket). Under in_memory
+# retention (Azure default), the measured cache hit ratio should drop at
+# card=1 and recover at card=8.
+#
+# This YAML is the in_memory-retention sibling. The 24h-retention variant
+# (exp006_cache_key_bucketing_24h.yaml) flips ONLY prompt_cache_retention and
+# washout_seconds. Both YAMLs share byte-identical v2.4 pinned controls. The
+# user_prompts.json file remains byte-identical to Task 012 / exp004; the
+# system_prompt_corpus.json is Task-018-specific and ~10K input tokens (see
+# benchmarks/06-cache-key-bucketing/README.md for corpus-divergence rationale
+# and SHA-256s).
+#
+# This is NOT a simulation: routing happens at Azure via the prompt_cache_key
+# the workload generator sets per request. It is NOT a PTU benchmark: it runs
+# on a single Azure Global Standard PAYG deployment of gpt-5.2. PTU-specific
+# phenomena (slot routing, admission-time reservation) cannot be directly
+# measured here — Task 022 must cite this benchmark only with the PAYG-
+# not-PTU caveat that analysis.md's opening paragraph carries.
+#
+# v2.4 hotfix rationale (.internal/tasks/018-cache-key-bucketing-benchmark.md):
+# v2.3 Stage 1 smoke (live gpt-5.2 PAYG) saturated the dispatcher semaphore
+# at sem=8 because live P95 TTFT ≈ 128 s — far above the assumed ~9 s used to
+# size sem=8. With 0.5 TPS × ~128 s ≈ 64 in-flight at Little's-Law steady
+# state, sem=8 capped throughput and produced backlog_excessive=true on both
+# YAMLs (inmemory card=1 P95 backlog=2398 ms, realized admitted RPM=22.87;
+# 24h card=1 P95 backlog=111,238 ms, realized admitted RPM=13.23; both with
+# max_in_flight_observed=8). The v2.4 fix raises runtime.concurrency to 96 —
+# ~50% headroom over the 64-in-flight steady state — and leaves every other
+# v2.3 pin verbatim. TPM math is unchanged: 60 × 0.5 × 11000 = 330000 ≤
+# 0.70 × 500000 = 350000. The original v2.3 history is preserved:
+# v2.1 (concurrency=1) could not reach the 15 RPM threshold; v2.2-attempted
+# (concurrency=12, 30K corpus, sustain_tps=1.0) violated the sliding-window
+# TPM quota (60 × 1.0 × 30512 ≈ 1.83M > 350K).
+
+experiment_id: exp006_cache_key_bucketing_inmemory
+description: >-
+  Task 018 v2.4 prompt_cache_key bucketing benchmark — in_memory retention.
+  Single-deployment unthrottled gpt-5.2 (500K TPM) PAYG async-scheduled sweep
+  across bucket_cardinality in [1, 8] at 0.5 TPS (30 RPM common-prefix) with
+  concurrency=96 (v2.4 — raised from v2.3 sem=8 to absorb live gpt-5.2 P95
+  TTFT ≈ 128 s without saturating the dispatcher semaphore) and a Task-018-
+  specific ~10K-token system prompt corpus.
+  Measures whether the docs-stated ~15 req/min per-bucket overflow threshold
+  is operationally visible in cache_hit_ratio and TTFT p95, with admitted
+  (post-semaphore-acquire) dispatch timestamps authoritative for all RPM
+  bookkeeping.
+parent_experiment: null
+benchmark: 06-cache-key-bucketing
+
+# Single deployment. Same endpoint base + Entra ID auth as Task 012 / 013.
+# The throttled deployment (ptu-deploy-throttled) is REJECTED at YAML load
+# time so the Hypothesis G saturation signal does NOT confound the
+# bucketing signal — Task 018's whole point is to isolate the bucketing
+# lever. The env-var name AZURE_OPENAI_DEPLOYMENT_GPT_5_2 resolves to the
+# unthrottled 500K-TPM gpt-5.2 deployment per .env.example.
+deployment:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  deployment_name: gpt-5.2
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+  tpm: 500000
+  rpm: 5000
+
+# Foundry v1 API version literal, copied verbatim from Task 013's
+# scripts/measure_dual_spillover.py FOUNDRY_API_VERSION constant. Do NOT
+# substitute any classic-Azure-OpenAI api-version string.
+client:
+  api_version: preview
+
+# Pinned request shape — every cell in this YAML and the 24h sibling must
+# send byte-identical kwargs except prompt_cache_key (bucket-rotated per
+# request). max_output_tokens=512 keeps PTU-style admission-time
+# reservation out of the picture (Task 019 owns that sweep);
+# reasoning.effort=low is the smallest non-zero gpt-5.2-supported value
+# (effort="minimal" was rejected by prior repo hotfixes as unsupported).
+# estimated_processed_tokens_max=11000 (preserved from v2.3) is the per-
+# request hard ceiling on input + output tokens — the runner refuses to
+# construct any prompt that exceeds this — and is the multiplicand in the
+# TPM feasibility preflight gate (60 × sustain_tps × est_max ≤ 0.70 × quota).
+request_template:
+  max_output_tokens: 512
+  reasoning:
+    effort: low
+  # in_memory retention is the Azure default for gpt-5.x prompt-caching.
+  # The 24h sibling YAML flips this to "24h".
+  prompt_cache_retention: in_memory
+  estimated_processed_tokens_max: 11000
+
+# v2.4 async_scheduled dispatcher. concurrency: 96 (v2.4 — raised from
+# v2.3 sem=8 to absorb live gpt-5.2 P95 TTFT ≈ 128 s; Little's-Law
+# steady-state in-flight = 0.5 TPS × ~128 s ≈ 64, so sem=96 gives ~50%
+# headroom for sporadic 100s+ retry-induced outliers). sustain_tps: 0.5
+# is unchanged from v2.3: 60 × 0.5 × 11000 = 330,000 projected TPM, which
+# sits 6 % below 0.70 × deployment_tpm_quota (= 350,000). Lowering
+# sustain_tps further would push card=1 below the 15 RPM overflow
+# threshold (30 RPM ÷ card=1 = 30 RPM is the target observation for the
+# per-bucket signal); raising concurrency further is harmless (the
+# wall-clock pacer caps cell-level throughput at sustain_tps × 60) but
+# unneeded — 96 covers the observed regime with margin.
+#
+# dispatcher: async_scheduled means the runner uses an asyncio.Semaphore-
+# guarded loop with a wall-clock pacer; per-record telemetry distinguishes
+# scheduled_dispatch_cell_elapsed_ms (pre-acquire) from
+# admitted_dispatch_cell_elapsed_ms (post-acquire, immediately before HTTP
+# send). All RPM bookkeeping uses the admitted timestamps.
+runtime:
+  concurrency: 96
+  sustain_tps: 0.5
+  dispatcher: async_scheduled
+  cell_duration_seconds: 960       # 16 min wall = 3 min warmup + 13 min steady
+  smoke_calls_per_cell: 60         # Stage 1 smoke profile (120 s @ 0.5 TPS)
+  washout_seconds: 120             # 2 min idle between cells (in_memory only)
+
+# Default sweep covers card=1 (above the docs-stated 15 RPM threshold)
+# and card=8 (well below it). The runner accepts the operator-confirmed
+# extension [2, 4, 16] only if (a) the USD preflight projection sits at or
+# below 0.9 × evidence_hard_ceiling_usd, (b) the mid-run gate is armed at
+# 0.85 × the same ceiling, and (c) the TPM feasibility preflight still
+# passes at the extended TPS. Lowering sustain_tps / concurrency /
+# max_output_tokens / reasoning.effort / api_version is NEVER an
+# acceptable fallback (see v2.4 spec §Acceptance criteria; v2.4 itself is
+# the permitted semaphore-resize remediation under the per-cell backlog
+# fail condition, not a violation of this rule).
+sweep:
+  bucket_cardinality:
+    - 1
+    - 8
+
+# Stage 2 evidence budget. Derivation (Task 018 v2.4 §Cost & Time; same as
+# v2.3 — concurrency change does not alter cost): 2 cells × 480 calls ×
+# ~$0.012/call = $11.52 projected. Hard ceiling $60/YAML is sized well
+# above the projection so preflight (0.9 × $60 = $54) passes with a ~$42
+# (78%) safety margin. Mid-run gate halts at 0.85 × $60 = $51 — under the
+# default sweep of [1, 8] we expect both cells to complete with substantial
+# headroom; the [2,4,16] extension (5 cells = $28.80 projected) also clears
+# the gates. Stage 1 smoke ceiling $8/YAML (~6× safety margin on the $1.44
+# smoke projection).
+#
+# confirmed: true acknowledges the operator-confirmed Stage 2 spend; the
+# preflight gate (in scripts/measure_cache_key_bucketing.py) is the actual
+# enforcement, not this flag.
+budget:
+  evidence_estimated_usd: 11.52
+  evidence_hard_ceiling_usd: 60.0
+  smoke_hard_ceiling_usd: 8.0
+  confirmed: true
+
+# Deterministic system-prompt construction. corpus_seed is preserved from
+# the v2.1 wiring so the constructed prompt is bit-stable across a given
+# corpus file. The corpus file itself is Task-018-specific (see
+# benchmarks/06-cache-key-bucketing/README.md for the divergence
+# rationale and SHA-256). target_system_prompt_tokens is dropped from
+# the v2.1 30 000-token figure to ~9 500 tokens so the constructed system
+# prompt + user prompt + max_output_tokens fits inside
+# estimated_processed_tokens_max above with deliberate margin.
+corpus_seed: 4242
+target_system_prompt_tokens: 9500
+system_prompt_corpus_path: benchmarks/06-cache-key-bucketing/system_prompt_corpus.json
+user_prompts_path: benchmarks/06-cache-key-bucketing/user_prompts.json
+
+# Pricing snapshot reference. The runner aborts (exit 5) if this file is
+# missing OR its accessed_date is older than 90 days. When Azure publishes
+# a rate change, add a new dated snapshot under pricing/ and update this
+# field; never silently overwrite an existing dated snapshot.
+pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+
+# PAYG / PTU / live-vs-simulation declaration (Task 018 v2.4 spec, unchanged
+# from v2.3). The runner echoes this block verbatim into every
+# runs/*.summary.json so downstream readers and Task 022 cannot mis-cite
+# this benchmark as PTU evidence without violating the explicit
+# ptu_evidence: false flag. deployment_tpm_quota: 500000 (preserved from
+# v2.3) is the denominator in the TPM feasibility preflight:
+# 60 × runtime.sustain_tps × request_template.estimated_processed_tokens_max
+# ≤ 0.70 × this value.
+metadata:
+  consumption_model_context: paygo_standard
+  runtime_mode: live_azure_single_deployment
+  deployment_kind: GlobalStandard_PAYG
+  simulation: false
+  ptu_evidence: false
+  tenant: <project>
+  created_at: 2026-05-29
+  architecture_context: single_call_react
+  hypothesis_under_test: prompt_cache_key_overflow_threshold
+  deployment_tpm_quota: 500000

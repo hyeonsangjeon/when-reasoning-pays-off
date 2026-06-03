@@ -1,0 +1,50 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0026717078872025013,
+    "tool_config_sha256": null,
+    "user_input_sha256": "79066a8631016a8ee25849dba7e5167052292f2adfa05cbdff58336bf02b0a5a"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 896.3440842926502,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "Jane Doe",
+  "retry_count": 0,
+  "sample_id": "sf_11",
+  "sample_idx": 10,
+  "sample_metadata": {
+    "expected_output_shape": "A single string with the name trimmed of whitespace and rewritten in Title Case.",
+    "id": "sf_11",
+    "input": {
+      "name": "  jane DOE  "
+    },
+    "quality_rubric_notes": "Output must be exactly 'Jane Doe' with no leading or trailing whitespace and no surrounding quotation marks.",
+    "tags": [
+      "normalization"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:59:11Z",
+  "usage": {
+    "input_tokens": 212,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 6,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 218
+  }
+}

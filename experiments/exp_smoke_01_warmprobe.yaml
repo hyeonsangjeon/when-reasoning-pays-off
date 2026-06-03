@@ -1,0 +1,72 @@
+# exp_smoke_01_warmprobe — 2-call warm-prefix probe for Task 006 follow-up.
+#
+# Purpose. The Phase-1 smoke (exp_smoke_01) returned reasoning_tokens=0 at
+# both `low` and `high` effort across all 4 gpt-5.2 cells. That is plausible
+# for `low` on a 1-sentence factual prompt but surprising at `high`. Three
+# hypotheses survive after the smoke:
+#   (a) short-factual prompts genuinely don't trigger reasoning expansion
+#       under Foundry v1's gpt-5.2 sampler,
+#   (b) the cold deployment behaves differently from a warm one,
+#   (c) the field is reported on a delay or only after some warm-up.
+#
+# Hypothesis. Running the same `sf_01 + effort=high` cell twice ≥60 s apart
+# distinguishes (b) from (a)/(c): if reasoning_tokens stays at 0 on the warm
+# second call, the cold-start hypothesis is falsified and the dominant story
+# is (a) — short-factual prompts don't expand under v1's sampler. If
+# reasoning_tokens jumps on the warm call, (b) is the culprit and Task 007's
+# baseline needs an explicit warm-up phase.
+#
+# Execution. This YAML is invoked twice from the shell with a `sleep 65`
+# between invocations (not via repeats: 2, which would fire both calls
+# concurrently). Each invocation produces one JSON; the pair lands under the
+# same experiment_id `exp_smoke_01_warmprobe` and differs only in timestamp.
+#
+# Out of scope. This is a measurement-design probe, not a statistical claim.
+# R=1, N=1. Findings feed back into the SMOKE_REPORT.md Anomalies section
+# and into Task 007's warm-up handling.
+
+experiment_id: exp_smoke_01_warmprobe
+description: >-
+  Phase-1 smoke follow-up — 2-call warm-prefix probe to distinguish
+  cold-vs-warm reasoning_tokens behavior on gpt-5.2 at effort=high.
+  Invoked twice from the shell with sleep 65s between invocations.
+parent_experiment: exp_smoke_01
+benchmark: 01-short-factual
+
+dataset_size: 1
+repeats: 1
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+call_params:
+  # Reasoning families reject temperature/top_p (Foundry v1 HTTP 400).
+  max_output_tokens: 4096
+
+sweep:
+  effort:
+    - high
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+budget:
+  estimated_cost_usd: 0.05
+  hard_ceiling_usd: 0.50
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-20
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  experiment_id: exp_smoke_01_warmprobe
+  description: Warm-prefix probe for reasoning_tokens=0 anomaly (Task 006 follow-up)
+
+concurrency: 1

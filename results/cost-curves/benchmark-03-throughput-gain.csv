@@ -1,0 +1,10 @@
+baseline_label,baseline_tokens_per_request,effort,model,throughput_gain_factor,tokens_per_request
+gpt-4o baseline (mean tokens-per-request),1224.95,,gpt-4o,1.0,1224.95
+gpt-4o baseline (mean tokens-per-request),1224.95,none,gpt-5.2,0.925445,1323.633333
+gpt-4o baseline (mean tokens-per-request),1224.95,low,gpt-5.2,0.93883,1304.762712
+gpt-4o baseline (mean tokens-per-request),1224.95,medium,gpt-5.2,0.914813,1339.016667
+gpt-4o baseline (mean tokens-per-request),1224.95,high,gpt-5.2,0.932668,1313.383334
+gpt-4o baseline (mean tokens-per-request),1224.95,xhigh,gpt-5.2,0.89217,1373.0
+# baseline_label: gpt-4o baseline (mean tokens-per-request)
+# baseline_tokens_per_request: 1224.95
+# throughput_gain_factor = baseline.tokens_per_request / target.tokens_per_request

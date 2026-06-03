@@ -1,0 +1,53 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 0.0007046246901154518,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "ce8dde270e2c6c92e80bf9dd36bcc7a26817aa14c656fd965f2f8ed41b8c6fb9"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 1263.2402502931654,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "Paris",
+  "retry_count": 0,
+  "sample_id": "tu_06",
+  "sample_idx": 5,
+  "sample_metadata": {
+    "expected_output_shape": "A single word. The trajectory should contain no tool invocations.",
+    "expected_tool_calls": null,
+    "id": "tu_06",
+    "input": "Name the capital of France from general knowledge alone.",
+    "quality_rubric_notes": "Correct iff the response is exactly 'Paris' (capitalization and surrounding punctuation flexible) and the trajectory contains no tool calls. Invoking web_search for a well-known fact is excessive tool use.",
+    "tags": [
+      "no-tool",
+      "knowledge-recall"
+    ],
+    "verifiable_answer": "Paris"
+  },
+  "timestamp_utc": "2026-05-24T09:40:22Z",
+  "tool_calls": [],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 561,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 566
+  }
+}

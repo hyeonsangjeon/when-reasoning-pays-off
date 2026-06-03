@@ -1,0 +1,10 @@
+effort,mean_usd_per_request,model,n_used,pricing_accessed_date,pricing_snapshot_path,pricing_source_url,std_usd_per_request
+,0.003286,gpt-4o,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.001562
+none,0.002762,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.001562
+low,0.002773,gpt-5.2,59,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.001603
+medium,0.002894,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.001763
+high,0.003178,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.002892
+xhigh,0.003499,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.0026
+# pricing_source_url: https://azure.microsoft.com/en-us/pricing/details/azure-openai/
+# pricing_accessed_date: 2026-05-19
+# pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml

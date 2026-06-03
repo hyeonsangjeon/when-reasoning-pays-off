@@ -1,0 +1,229 @@
+{
+  "by_mechanism": {
+    "task013_burst_driven": {
+      "benchmark_id": "05-dual-spillover",
+      "description": "Primary-deployment 429s observed under dual-endpoint burst load (Task 013 Phase 2 dual-spillover); workload-shaped, not customer-attributed",
+      "distribution": {
+        "count": 167,
+        "max": 17258.0,
+        "min": 1.0,
+        "p10": 4.0,
+        "p50": 43.0,
+        "p90": 49.0,
+        "p99": 16983.260000000002
+      },
+      "source": "task013"
+    },
+    "task019_reservation_driven": {
+      "benchmark_id": "07-max-output-tokens-reservation",
+      "description": "429s observed during max_output_tokens reservation sweep on a PAYG-throttled deployment (proxy for admission-control behavior, not direct PTU evidence)",
+      "distribution": {
+        "count": 26,
+        "max": 60.0,
+        "min": 1.0,
+        "p10": 2.0,
+        "p50": 3.0,
+        "p90": 60.0,
+        "p99": 60.0
+      },
+      "source": "task019"
+    }
+  },
+  "caveats": [
+    "Task 019 source is PAYG-throttled-quota, not direct PTU evidence.",
+    "Task 013 source is workload-shaped and not customer-attributed.",
+    "Findings are descriptive of these source runs only; do not generalize across tenants, regions, deployments, model versions, or time periods.",
+    "Practical advice: honor the retry-after / retry-after-ms header Azure returns. The observed p50/p99 are descriptive context only."
+  ],
+  "correlation_with_overshoot": {
+    "reason": "no numeric projected/admitted utilization proxy with a calibrated capacity denominator is present in Task 013 v2 records; Task 019 v2 records expose arrival_rpm_at_request_time but no calibrated capacity denominator (selected_peak_tps null in available calibration outcomes), so overshoot-above-100% cannot be computed for these source runs",
+    "status": "not_computable"
+  },
+  "counts": {
+    "files_scanned": 12,
+    "http_date_retry_after_skipped": 0,
+    "missing_retry_after_skipped": 0,
+    "records_scanned": 8526,
+    "task013_429": 167,
+    "task019_429": 26,
+    "total_429": 193,
+    "unparseable_retry_after_ms_skipped": 0
+  },
+  "distribution_shape": {
+    "by_source": {
+      "task013": {
+        "appearance": "clustered / integer-ms quantized",
+        "count": 167,
+        "integer_ms_share": 1.0,
+        "top_values": [
+          {
+            "count": 14,
+            "retry_after_ms": 46.0
+          },
+          {
+            "count": 14,
+            "retry_after_ms": 43.0
+          },
+          {
+            "count": 13,
+            "retry_after_ms": 48.0
+          },
+          {
+            "count": 11,
+            "retry_after_ms": 45.0
+          },
+          {
+            "count": 10,
+            "retry_after_ms": 41.0
+          },
+          {
+            "count": 8,
+            "retry_after_ms": 49.0
+          },
+          {
+            "count": 8,
+            "retry_after_ms": 1.0
+          },
+          {
+            "count": 8,
+            "retry_after_ms": 44.0
+          },
+          {
+            "count": 8,
+            "retry_after_ms": 39.0
+          },
+          {
+            "count": 7,
+            "retry_after_ms": 42.0
+          }
+        ],
+        "unique_count": 40,
+        "unique_ratio": 0.23952095808383234
+      },
+      "task019": {
+        "appearance": "clustered / integer-ms quantized",
+        "count": 26,
+        "integer_ms_share": 1.0,
+        "top_values": [
+          {
+            "count": 14,
+            "retry_after_ms": 3.0
+          },
+          {
+            "count": 6,
+            "retry_after_ms": 60.0
+          },
+          {
+            "count": 2,
+            "retry_after_ms": 2.0
+          },
+          {
+            "count": 2,
+            "retry_after_ms": 4.0
+          },
+          {
+            "count": 2,
+            "retry_after_ms": 1.0
+          }
+        ],
+        "unique_count": 5,
+        "unique_ratio": 0.19230769230769232
+      }
+    },
+    "overall": {
+      "appearance": "clustered / integer-ms quantized",
+      "count": 193,
+      "integer_ms_share": 1.0,
+      "top_values": [
+        {
+          "count": 17,
+          "retry_after_ms": 3.0
+        },
+        {
+          "count": 14,
+          "retry_after_ms": 46.0
+        },
+        {
+          "count": 14,
+          "retry_after_ms": 43.0
+        },
+        {
+          "count": 13,
+          "retry_after_ms": 48.0
+        },
+        {
+          "count": 11,
+          "retry_after_ms": 45.0
+        },
+        {
+          "count": 10,
+          "retry_after_ms": 1.0
+        },
+        {
+          "count": 10,
+          "retry_after_ms": 41.0
+        },
+        {
+          "count": 8,
+          "retry_after_ms": 49.0
+        },
+        {
+          "count": 8,
+          "retry_after_ms": 44.0
+        },
+        {
+          "count": 8,
+          "retry_after_ms": 39.0
+        }
+      ],
+      "unique_count": 41,
+      "unique_ratio": 0.21243523316062177
+    },
+    "summary": "Observed retry-after values appear clustered / integer-ms quantized, not continuous, in these source runs."
+  },
+  "flags": {
+    "imbalanced": true,
+    "imbalanced_threshold": "max(task013_429, task019_429)/total_429 >= 0.80",
+    "sparse": false,
+    "sparse_threshold": "total_429 < 50"
+  },
+  "methodology": {
+    "parse_rules": "retry_after_ms numeric => ms; retry_after numeric => seconds*1000; non-numeric retry_after (HTTP-date / token) => skipped and counted in counts.http_date_retry_after_skipped",
+    "selectors": {
+      "task013": "real_429_observed == true",
+      "task019": "429_observed == true OR first_429_metadata present"
+    },
+    "stat_rules": "empirical percentiles only (p10/p50/p90/p99/min/max/count); no CIs, no p-values, no significance language, no causal/reset-formula language"
+  },
+  "overall_distribution": {
+    "count": 193,
+    "max": 17258.0,
+    "min": 1.0,
+    "p10": 3.0,
+    "p50": 43.0,
+    "p90": 50.80000000000001,
+    "p99": 16921.119999999995
+  },
+  "per_source_distribution": {
+    "task013": {
+      "count": 167,
+      "max": 17258.0,
+      "min": 1.0,
+      "p10": 4.0,
+      "p50": 43.0,
+      "p90": 49.0,
+      "p99": 16983.260000000002
+    },
+    "task019": {
+      "count": 26,
+      "max": 60.0,
+      "min": 1.0,
+      "p10": 2.0,
+      "p50": 3.0,
+      "p90": 60.0,
+      "p99": 60.0
+    }
+  },
+  "schema_version": "task020.v1",
+  "scope": "single-tenant source-run-scoped re-aggregation; descriptive only"
+}

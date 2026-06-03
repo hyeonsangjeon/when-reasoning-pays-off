@@ -1,0 +1,76 @@
+# exp003 — gpt-4o baseline column on benchmarks/03-tool-using-agent.
+#
+# Cross-model baseline for benchmark 03 (tool-using agent). Pair experiment to
+# exp003_benchmark03_gpt5_2. Sweep is empty because gpt-4o has no reasoning
+# parameter. Tool-loop mode is enabled (agent.tool_loop: true): every cell may
+# invoke calculator and/or web_search per the dataset's expected_tool_calls.
+#
+# Phase-3 root experiment (parent_experiment: null) per Task 010 spec. Runs
+# FIRST in the Task 010 ordering (mirroring Task 007/009) — cheaper, lower
+# variance, gives a known-good baseline before the gpt-5.2 sweep.
+
+experiment_id: exp003_benchmark03_gpt4o
+description: >-
+  Phase-3 GPT-4o baseline column on benchmarks/03-tool-using-agent. Same
+  prompts, dataset, N=20, R=3 as the gpt-5.2 sibling run. Tool-loop mode
+  enabled. Cross-model baseline per REPO_SCAFFOLD_SPEC.md "Cross-Model
+  Comparison".
+parent_experiment: null
+benchmark: 03-tool-using-agent
+
+dataset_size: 20
+repeats: 3
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_4O}
+  family: gpt-4o
+  version: 2024-11-20
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# gpt-4o accepts both temperature and top_p; pin temperature=0.0 to minimize
+# sampler variance across the N x R cell grid.
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+
+# gpt-4o has no reasoning parameter; sweep.effort intentionally empty.
+sweep:
+  effort: []
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+# Per-YAML budget mirroring Task 007/009: gpt-4o estimated $8, hard ceiling
+# $10. Combined with the gpt-5.2 sibling ($25 / $35) the totals are estimated
+# $33 and ceiling $45. The operator enforces the cross-run budget gate.
+budget:
+  estimated_cost_usd: 8.0
+  hard_ceiling_usd: 10.0
+  confirmed: false
+
+# Task 010 tool-loop block. The runner loads each schema_path, builds the
+# Responses-API tools list, SHA-256 hashes the list, and records the digest
+# as call_metadata.tool_config_sha256 on every cell (byte-identical tool
+# config invariant).
+agent:
+  tool_loop: true
+  max_tool_iterations: 4
+  tools:
+    - name: calculator
+      schema_path: benchmarks/03-tool-using-agent/prompts/tool_schemas/calculator.json
+    - name: web_search
+      schema_path: benchmarks/03-tool-using-agent/prompts/tool_schemas/web_search.json
+  search_kb_path: benchmarks/03-tool-using-agent/search_kb.json
+
+metadata:
+  created_at: 2026-05-24
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  dataset_sha256: 1d717b4f59b34535fae88ac7fbcb8f56302bb18fc5a9a709753357642cb1cef0
+  system_prompt_sha256: 5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82
+
+concurrency: 5

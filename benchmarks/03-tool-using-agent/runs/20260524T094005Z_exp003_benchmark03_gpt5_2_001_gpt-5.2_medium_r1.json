@@ -1,0 +1,53 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 0.003475874662399292,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "d35b18ad380a740d0682ab8682a114ce0d4b41b865a90fe4ee4557b22517c542"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 1759.0055000036955,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "acknowledged",
+  "retry_count": 0,
+  "sample_id": "tu_02",
+  "sample_idx": 1,
+  "sample_metadata": {
+    "expected_output_shape": "A single word, no punctuation, no surrounding prose. The trajectory should contain no tool invocations.",
+    "expected_tool_calls": null,
+    "id": "tu_02",
+    "input": "Reply with the single word 'acknowledged'.",
+    "quality_rubric_notes": "Correct iff the response is exactly the word 'acknowledged' (case-insensitive) with no surrounding prose and the trajectory contains no tool calls. Any tool invocation is a fail.",
+    "tags": [
+      "no-tool",
+      "echo"
+    ],
+    "verifiable_answer": "acknowledged"
+  },
+  "timestamp_utc": "2026-05-24T09:40:05Z",
+  "tool_calls": [],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 568,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 7,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 575
+  }
+}

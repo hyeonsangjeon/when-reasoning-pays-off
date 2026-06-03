@@ -1,0 +1,77 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "4542ace69ea24a6a1be0a5a2bd853afa59e72eb262d7a5c87b02223fe7bb2512"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 2531.097499653697,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "teal",
+  "retry_count": 0,
+  "sample_id": "tu_13",
+  "sample_idx": 12,
+  "sample_metadata": {
+    "expected_output_shape": "A single color word. web_search used.",
+    "expected_tool_calls": [
+      "web_search"
+    ],
+    "id": "tu_13",
+    "input": "What is the official mascot color of the Northbridge Owls? Use the web_search tool.",
+    "quality_rubric_notes": "Correct iff web_search is invoked with 'official mascot color of the Northbridge Owls' and the response is 'teal'. Northbridge Owls is a fictional team; only the KB has the answer.",
+    "tags": [
+      "one-tool",
+      "web_search"
+    ],
+    "verifiable_answer": "teal"
+  },
+  "timestamp_utc": "2026-05-24T09:48:02Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1300.1190000213683,
+      "tool_args": {
+        "query": "official mascot color of the Northbridge Owls"
+      },
+      "tool_call_id": "call_u1t39nu5SB51vhm9sjYFahrH",
+      "tool_name": "web_search",
+      "tool_result_summary": "teal",
+      "usage": {
+        "input_tokens": 566,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 54,
+        "output_tokens_details": {
+          "reasoning_tokens": 26
+        },
+        "total_tokens": 620
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1168,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 60,
+    "output_tokens_details": {
+      "reasoning_tokens": 26
+    },
+    "total_tokens": 1228
+  }
+}

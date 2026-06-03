@@ -1,0 +1,107 @@
+# exp006_cache_key_bucketing_24h — Task 018 v2.4.
+#
+# Sibling of exp006_cache_key_bucketing_inmemory.yaml. The ONLY varying
+# fields vs the in_memory YAML are request_template.prompt_cache_retention
+# ("24h" here, "in_memory" there) AND runtime.washout_seconds: 0 (the
+# 24h-retention YAML does NOT insert a washout — washing out a 24h-retained
+# prefix between cells is operationally infeasible; the analysis records
+# this asymmetry explicitly). Every other v2.4 pinned control is
+# byte-identical to the in_memory YAML so the cross-retention comparison
+# is fair.
+#
+# This is NOT a simulation: routing happens at Azure via the prompt_cache_key
+# the workload generator sets per request. It is NOT a PTU benchmark: it runs
+# on a single Azure Global Standard PAYG deployment of gpt-5.2.
+#
+# Cell isolation relies entirely on the cell-unique namespace (Task 018 v2.4
+# spec, Implementation Notes "Key namespace"). The namespace includes an
+# 8-char lowercase-hex slice of a UUID-v4 generated at process start, so
+# even consecutive runs on the same deployment cannot reuse prior buckets'
+# cached prefixes under 24h retention.
+#
+# v2.4 hotfix vs v2.3: runtime.concurrency 8 → 96 to absorb live gpt-5.2
+# P95 TTFT ≈ 128 s without saturating the dispatcher semaphore (Little's-
+# Law steady-state in-flight = 0.5 TPS × ~128 s ≈ 64; sem=96 gives ~50%
+# headroom). v2.3 sem=8 produced backlog_excessive=true on this YAML's
+# Stage 1 smoke (card=1 P95 backlog=111,238 ms, realized admitted
+# RPM=13.23, max_in_flight_observed=8). All other v2.3 pins are verbatim;
+# TPM math unchanged (60 × 0.5 × 11000 = 330000 ≤ 0.70 × 500000 = 350000).
+
+experiment_id: exp006_cache_key_bucketing_24h
+description: >-
+  Task 018 v2.4 prompt_cache_key bucketing benchmark — 24h retention.
+  Sibling of exp006_cache_key_bucketing_inmemory.yaml; only
+  prompt_cache_retention (and washout_seconds=0) differ. Single-deployment
+  unthrottled gpt-5.2 PAYG async-scheduled sweep across bucket_cardinality
+  in [1, 8] at 0.5 TPS with concurrency=96 (v2.4 — raised from v2.3 sem=8
+  to absorb live gpt-5.2 P95 TTFT ≈ 128 s without saturating the
+  dispatcher semaphore). Measures whether the ~15 req/min per-bucket
+  overflow threshold has the same shape under extended retention as under
+  default in_memory retention.
+parent_experiment: exp006_cache_key_bucketing_inmemory
+benchmark: 06-cache-key-bucketing
+
+deployment:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  deployment_name: gpt-5.2
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+  tpm: 500000
+  rpm: 5000
+
+client:
+  api_version: preview
+
+request_template:
+  max_output_tokens: 512
+  reasoning:
+    effort: low
+  # 24h opt-in retention — Azure keeps the prefix cache entry for up to
+  # 24h after last hit. This makes inter-cell prewarm a real risk, which
+  # is precisely why the cell-unique namespace (see Implementation Notes
+  # in .internal/tasks/018-cache-key-bucketing-benchmark.md) is mandatory.
+  prompt_cache_retention: 24h
+  estimated_processed_tokens_max: 11000
+
+runtime:
+  concurrency: 96
+  sustain_tps: 0.5
+  dispatcher: async_scheduled
+  cell_duration_seconds: 960
+  smoke_calls_per_cell: 60
+  # 24h-retention washout is operationally infeasible (waiting 24h between
+  # cells defeats the experiment). Cell isolation relies entirely on the
+  # namespace; analysis.md records this asymmetry vs the in_memory YAML.
+  washout_seconds: 0
+
+sweep:
+  bucket_cardinality:
+    - 1
+    - 8
+
+budget:
+  evidence_estimated_usd: 11.52
+  evidence_hard_ceiling_usd: 60.0
+  smoke_hard_ceiling_usd: 8.0
+  confirmed: true
+
+corpus_seed: 4242
+target_system_prompt_tokens: 9500
+system_prompt_corpus_path: benchmarks/06-cache-key-bucketing/system_prompt_corpus.json
+user_prompts_path: benchmarks/06-cache-key-bucketing/user_prompts.json
+
+pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+
+metadata:
+  consumption_model_context: paygo_standard
+  runtime_mode: live_azure_single_deployment
+  deployment_kind: GlobalStandard_PAYG
+  simulation: false
+  ptu_evidence: false
+  tenant: <project>
+  created_at: 2026-05-29
+  architecture_context: single_call_react
+  hypothesis_under_test: prompt_cache_key_overflow_threshold
+  deployment_tpm_quota: 500000

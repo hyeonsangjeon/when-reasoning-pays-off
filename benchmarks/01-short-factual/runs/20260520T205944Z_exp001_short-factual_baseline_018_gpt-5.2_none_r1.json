@@ -1,0 +1,48 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "5e1197b6eaed7c1160bbc0e8f511f24d2481b46011b6a4251e841266f163a625"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 4035.395957995206,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "Clear skies today with a high of 22 C, light west winds, and no rain expected until tomorrow morning.",
+  "retry_count": 0,
+  "sample_id": "sf_19",
+  "sample_idx": 18,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence summarizing the day's weather in plain language.",
+    "id": "sf_19",
+    "input": "Skies are clear across the region today. High of 22 C with light winds from the west. No rain is expected before tomorrow morning.",
+    "quality_rubric_notes": "Summary should mention clear or sunny skies and a high near 22 C, both within one sentence; the wind detail is optional.",
+    "tags": [
+      "summarization"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:59:44Z",
+  "usage": {
+    "input_tokens": 226,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 27,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 253
+  }
+}

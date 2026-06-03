@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "a4499ae8f355a7d751c28cf76db650c894301e3745f7a9497be3006af9e47a18"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": false,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt4o",
+  "git_commit": "69f3e3a6f51a1c59d60b2380108bed5b43c433a9",
+  "latency_ms": 1202.1247083321214,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "16.20",
+  "retry_count": 0,
+  "sample_id": "mr_04",
+  "sample_idx": 3,
+  "sample_metadata": {
+    "expected_output_shape": "A single number with two decimal places, no dollar sign, no commas, and no surrounding prose.",
+    "id": "mr_04",
+    "input": "A book is listed at 24 dollars. The shop applies a 25 percent discount, then applies an additional 10 percent discount on the already-discounted price. What is the final price in dollars, rounded to two decimal places?",
+    "quality_rubric_notes": "Correct answer is exactly 16.20 (24 * 0.75 = 18; 18 * 0.90 = 16.20). Accept '16.20' or '16.2'; any other value is a fail. Surrounding prose with the correct number is partial credit.",
+    "tags": [
+      "arithmetic-word"
+    ],
+    "verifiable_answer": "16.20"
+  },
+  "timestamp_utc": "2026-05-21T09:20:50Z",
+  "usage": {
+    "input_tokens": 315,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 4,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 319
+  }
+}

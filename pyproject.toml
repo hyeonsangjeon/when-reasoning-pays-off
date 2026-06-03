@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "when-reasoning-pays-off"
+version = "0.1.0"
+description = "When does GPT-5.2 reasoning model earn its cost?"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=2.37.0",
+    "azure-identity>=1.19.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "matplotlib>=3.8",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+    "jsonschema>=4.0",
+]
+
+# Task 034 (public-readiness): the public repo layout has several
+# top-level data / document directories (``experiments/``, ``pricing/``,
+# ``release/``, ``results/``, ``schemas/``, ``benchmarks/``, ``docs/``,
+# ``logs/``) that are NOT Python packages. Without explicit
+# configuration, setuptools' flat-layout auto-discovery refuses to build
+# the project (``Multiple top-level packages discovered``). The two
+# packages we actually want installed in editable mode are:
+#   - ``batch_runner`` (lives under ``batch-runner/`` because the
+#     directory uses a hyphen; the importable name is underscored).
+#   - ``scripts`` (top-level utility / measurement modules imported by
+#     the ``tests/`` suite as ``from scripts import ...``).
+# ``tests*`` is excluded so test trees are never packaged into the
+# installed distribution.
+[tool.setuptools.packages.find]
+where = ["batch-runner", "."]
+include = ["batch_runner*", "scripts*"]
+exclude = ["tests*"]
+namespaces = false
+
+[tool.pytest.ini_options]
+markers = [
+    "adaptive_calibration: Task 019 v2.5 adaptive contrast tests (spec §11 / §13(i) gate selector)",
+]
+
+# Task 034 (public-readiness): the CI runs `ruff check .` to keep new
+# code clean. A small set of pre-existing F401 / F811 / F841 findings
+# in long-running measurement / replay-simulator code is owned by the
+# data-redaction sweep (Task 019 / 024 follow-ups) and is allow-listed
+# here narrowly so the CI remains useful for new changes. Do NOT
+# extend this list for new code — fix the lint violation instead. The
+# same scope is mirrored by the REDACTION_WORKER_SCOPE allow-list in
+# `scripts/check_public_surface.sh`.
+[tool.ruff.lint.per-file-ignores]
+"batch-runner/batch_runner/ptu/replay_simulator.py" = ["F401"]
+"batch-runner/tests/test_cooldown_coordinator.py" = ["F401"]
+"batch-runner/tests/test_cooldown_thundering_herd.py" = ["F401"]
+"batch-runner/tests/test_replay_simulator.py" = ["F401"]
+"scripts/measure_cache_key_bucketing.py" = ["F401"]
+"scripts/measure_max_output_tokens_sweep.py" = ["F401"]
+"scripts/preflight_native_spillover.py" = ["F401"]
+"scripts/task019_v25_adaptive.py" = ["F401"]
+"tests/test_measure_cache_key_bucketing.py" = ["F841"]
+"tests/test_measure_max_output_tokens_sweep.py" = ["F401", "F811", "F841"]

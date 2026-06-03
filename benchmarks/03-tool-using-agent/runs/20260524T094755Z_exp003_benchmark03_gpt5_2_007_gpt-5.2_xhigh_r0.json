@@ -1,0 +1,77 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": true,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "08db7cae8caf95d53bdc14a1b4ca1324056aa3285f0be6c539d5760b546dbcc3"
+  },
+  "cold_start": true,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 5975.426292046905,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "40751341",
+  "retry_count": 0,
+  "sample_id": "tu_08",
+  "sample_idx": 7,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer. Calculator tool used exactly once.",
+    "expected_tool_calls": [
+      "calculator"
+    ],
+    "id": "tu_08",
+    "input": "What is 4567 multiplied by 8923? Use the calculator.",
+    "quality_rubric_notes": "Correct iff the calculator is invoked exactly once with 4567*8923 and the final integer is 40751341. Answering from memory without the tool is a fail.",
+    "tags": [
+      "one-tool",
+      "calculator"
+    ],
+    "verifiable_answer": "40751341"
+  },
+  "timestamp_utc": "2026-05-24T09:47:55Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 2203.9990415796638,
+      "tool_args": {
+        "expr": "4567*8923"
+      },
+      "tool_call_id": "call_Z6UnRDeiLk6dUwAIz4x1aOh2",
+      "tool_name": "calculator",
+      "tool_result_summary": "40751341",
+      "usage": {
+        "input_tokens": 563,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 22,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 585
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1159,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 29,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1188
+  }
+}

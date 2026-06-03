@@ -1,0 +1,73 @@
+# exp_smoke_02 — Phase-1 smoke run for the gpt-5.2 effort sweep on
+# benchmarks/02-multi-step-reasoning.
+#
+# Hypothesis: a 4-call live invocation against the real Foundry v1 endpoint
+# (N=2, R=1, effort sweep over the practical extremes [low, high]) is
+# sufficient to expose any integration defect the dry-run cannot catch — on a
+# harder input shape than benchmark 01. Reasoning-token emission is *expected*
+# on benchmark-02 inputs (multi-step), so this smoke also doubles as a sanity
+# check that `usage.output_tokens_details.reasoning_tokens` is non-zero at
+# `high` (unlike benchmark 01 where the null-case prompts did not trigger
+# reasoning expansion at all).
+#
+# Effort levels: the live gpt-5.2-2025-12-11 deployment accepts exactly
+# ``none / low / medium / high / xhigh``. ``minimal`` is rejected with
+# HTTP 400 (Task 006 finding). The smoke samples the practical extremes
+# ``low`` and ``high``; ``none`` would disable reasoning entirely (gpt-4o
+# already covers that baseline) and ``xhigh`` is reserved for the production
+# sweep.
+
+experiment_id: exp_smoke_02
+description: >-
+  Phase-1 smoke run — end-to-end pipeline validation. Real Foundry v1 endpoint,
+  gpt-5.2 deployment, effort sweep over [low, high] (the practical extremes
+  the live API accepts; medium values are covered by the full run). N=2
+  samples (mr_01, mr_02), R=1. This is a throwaway smoke, not a statistical
+  claim.
+parent_experiment: null
+benchmark: 02-multi-step-reasoning
+
+dataset_size: 2
+repeats: 1
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+call_params:
+  # Foundry v1 reasoning models (gpt-5.2 family) return HTTP 400 on
+  # ``temperature``. The runner rejects ``temperature`` / ``top_p`` for
+  # reasoning families at config-validation time (see
+  # scripts/run_benchmark.py build_call_kwargs).
+  max_output_tokens: 4096
+
+sweep:
+  effort:
+    - low
+    - high
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+budget:
+  estimated_cost_usd: 0.30
+  hard_ceiling_usd: 1.00
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-21
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  # Pinned SHA-256 hashes of the Task 009 dataset and system prompt. Operator
+  # pre-flight check verifies the on-disk dataset/system.md match these values
+  # before launching the run; mismatch = silent prompt drift, abort.
+  dataset_sha256: d55b975eec249c65831f0c0d916fc752d09959fa0fee1d6f489e2a709fcf2698
+  system_prompt_sha256: 974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23
+
+concurrency: 5

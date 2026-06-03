@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PTURequestRecord",
+  "description": "Canonical per-request PTU observability record (Task 028). Header field names match Azure OpenAI PTU Operations Guide Appendix A and B verbatim.",
+  "type": "object",
+  "properties": {
+    "request_idx": {
+      "type": "integer",
+      "description": "repo convention",
+      "category": "operational_inference"
+    },
+    "wallclock_timestamp_iso": {
+      "type": "string",
+      "description": "repo convention",
+      "category": "operational_inference"
+    },
+    "deployment_name_requested": {
+      "type": "string",
+      "description": "repo convention (client-side request target)",
+      "category": "operational_inference"
+    },
+    "response_status_code": {
+      "type": "integer",
+      "description": "HTTP/1.1 status line",
+      "category": "official_spec"
+    },
+    "retry_after_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Guide Appendix A \u2014 retry-after-ms (contract-reliable on 429)",
+      "category": "official_spec",
+      "header_name": "retry-after-ms"
+    },
+    "retry_after_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Guide Appendix A \u2014 retry-after (contract-reliable on 429)",
+      "category": "official_spec",
+      "header_name": "retry-after"
+    },
+    "x_ms_region": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide Appendix A \u2014 observability header",
+      "category": "official_spec",
+      "header_name": "x-ms-region"
+    },
+    "x_request_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide Appendix A \u2014 observability header",
+      "category": "official_spec",
+      "header_name": "x-request-id"
+    },
+    "x_ms_deployment_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide Appendix B \u2014 actual server deployment",
+      "category": "official_spec",
+      "header_name": "x-ms-deployment-name"
+    },
+    "x_ms_spillover_from_deployment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide Appendix B \u2014 spillover origin",
+      "category": "official_spec",
+      "header_name": "x-ms-spillover-from-deployment"
+    },
+    "x_ms_spillover_error": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide Appendix B \u2014 spillover failure code",
+      "category": "official_spec",
+      "header_name": "x-ms-spillover-error"
+    },
+    "x_ratelimit_remaining_requests": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Guide Appendix A \u2014 x-ratelimit-* headers are described for Standard deployments; OPTIONAL on PTU path.",
+      "category": "official_spec",
+      "header_name": "x-ratelimit-remaining-requests",
+      "optional_on_ptu": true
+    },
+    "prompt_tokens": {
+      "type": "integer",
+      "description": "OpenAI usage.prompt_tokens",
+      "category": "official_spec"
+    },
+    "completion_tokens": {
+      "type": "integer",
+      "description": "OpenAI usage.completion_tokens",
+      "category": "official_spec"
+    },
+    "cached_tokens": {
+      "type": "integer",
+      "description": "OpenAI usage.prompt_tokens_details.cached_tokens",
+      "category": "official_spec"
+    },
+    "reasoning_tokens": {
+      "type": "integer",
+      "description": "OpenAI usage.completion_tokens_details.reasoning_tokens",
+      "category": "official_spec"
+    },
+    "total_tokens": {
+      "type": "integer",
+      "description": "OpenAI usage.total_tokens",
+      "category": "official_spec"
+    },
+    "max_output_tokens_sent": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "OpenAI request parameter \u2014 max_output_tokens",
+      "category": "official_spec"
+    },
+    "prompt_cache_key_used": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Guide \u00a71 \u2014 prompt_cache_key routing parameter; ALWAYS stored as hash via hash_cache_key, never raw.",
+      "category": "official_spec",
+      "pattern": "^[0-9a-f]{16}$",
+      "minLength": 16,
+      "maxLength": 16
+    },
+    "prompt_cache_retention_sent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "in_memory",
+        "24h",
+        null
+      ],
+      "description": "OpenAI request parameter \u2014 prompt_cache_retention",
+      "category": "official_spec"
+    },
+    "reasoning_effort_sent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        null
+      ],
+      "description": "OpenAI request parameter \u2014 reasoning.effort",
+      "category": "official_spec"
+    },
+    "model_id": {
+      "type": "string",
+      "description": "OpenAI request parameter \u2014 model",
+      "category": "official_spec"
+    },
+    "first_token_latency_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "client-side measurement",
+      "category": "operational_inference"
+    },
+    "total_latency_ms": {
+      "type": "number",
+      "description": "client-side measurement",
+      "category": "operational_inference"
+    }
+  },
+  "required": [
+    "request_idx",
+    "wallclock_timestamp_iso",
+    "deployment_name_requested",
+    "response_status_code",
+    "prompt_tokens",
+    "completion_tokens",
+    "cached_tokens",
+    "reasoning_tokens",
+    "total_tokens",
+    "model_id",
+    "total_latency_ms"
+  ],
+  "additionalProperties": false
+}

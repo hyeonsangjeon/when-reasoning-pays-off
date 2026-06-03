@@ -1,0 +1,51 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0008786669932305813,
+    "tool_config_sha256": null,
+    "user_input_sha256": "907fcc35e33bb8dcf0b87095ff31e75ce9961aad6ace4f203088a7451fde87ad"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1519.7523748502135,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "The integer sum is 42.",
+  "retry_count": 0,
+  "sample_id": "sf_15",
+  "sample_idx": 14,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence stating the integer sum of the two values.",
+    "id": "sf_15",
+    "input": {
+      "a": 17,
+      "b": 25
+    },
+    "quality_rubric_notes": "Sentence must contain the number 42 as the stated sum of a and b; phrasing around it is flexible.",
+    "tags": [
+      "arithmetic-trivial"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:59:28Z",
+  "usage": {
+    "input_tokens": 213,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 11,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 224
+  }
+}

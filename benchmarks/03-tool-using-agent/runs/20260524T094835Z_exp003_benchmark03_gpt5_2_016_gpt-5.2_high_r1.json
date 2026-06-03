@@ -1,0 +1,121 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 0.002326458226889372,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "c5c19f77075ab0f5e8825a3aa08abd075ba21bff8266c507806b8c07afa06b08"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 5422.181542031467,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "2950000000",
+  "retry_count": 0,
+  "sample_id": "tu_17",
+  "sample_idx": 16,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer (USD). Both companies looked up; calculator used to sum.",
+    "expected_tool_calls": [
+      "web_search",
+      "web_search",
+      "calculator"
+    ],
+    "id": "tu_17",
+    "input": "Look up the annual revenue of Helio Robotics and the annual revenue of Vega Logistics, then compute the combined revenue.",
+    "quality_rubric_notes": "Correct iff web_search is invoked twice (once for 'annual revenue of Helio Robotics' = 1200000000, once for 'annual revenue of Vega Logistics' = 1750000000) and calculator computes the sum = 2950000000. The final answer must be 2950000000.",
+    "tags": [
+      "multi-tool",
+      "two-searches-plus-calc"
+    ],
+    "verifiable_answer": "2950000000"
+  },
+  "timestamp_utc": "2026-05-24T09:48:35Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1975.9325003251433,
+      "tool_args": {
+        "query": "annual revenue of Helio Robotics"
+      },
+      "tool_call_id": "call_Czau9YJSX9pO9eyGsBs5yaYA",
+      "tool_name": "web_search",
+      "tool_result_summary": "1200000000",
+      "usage": {
+        "input_tokens": 577,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 80,
+        "output_tokens_details": {
+          "reasoning_tokens": 21
+        },
+        "total_tokens": 657
+      }
+    },
+    {
+      "iteration": 1,
+      "latency_ms": 1975.9325003251433,
+      "tool_args": {
+        "query": "annual revenue of Vega Logistics"
+      },
+      "tool_call_id": "call_moObmvY82H5FL4z4bs6Vp06z",
+      "tool_name": "web_search",
+      "tool_result_summary": "1750000000",
+      "usage": {
+        "input_tokens": 577,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 80,
+        "output_tokens_details": {
+          "reasoning_tokens": 21
+        },
+        "total_tokens": 657
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 2085.5609998106956,
+      "tool_args": {
+        "expr": "1200000000+1750000000"
+      },
+      "tool_call_id": "call_uwjGHSipKHfJJdMDURFwlxVH",
+      "tool_name": "calculator",
+      "tool_result_summary": "2950000000",
+      "usage": {
+        "input_tokens": 662,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 26,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 688
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1939,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 114,
+    "output_tokens_details": {
+      "reasoning_tokens": 21
+    },
+    "total_tokens": 2053
+  }
+}

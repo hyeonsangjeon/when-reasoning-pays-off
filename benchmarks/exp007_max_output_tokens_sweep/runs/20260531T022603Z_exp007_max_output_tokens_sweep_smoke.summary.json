@@ -1,0 +1,6 @@
+{
+  "empirical_promotion_denied_reason": "empirical_promotion_disabled_cache_hit_below_floor",
+  "exit_reason": "TPM_FEASIBILITY_ABORT",
+  "schema_version": "task019.v2.4.abort_envelope",
+  "stage": "smoke"
+}

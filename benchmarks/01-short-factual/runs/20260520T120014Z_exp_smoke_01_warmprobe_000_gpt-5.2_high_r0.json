@@ -1,0 +1,56 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": true,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "8313f5e6707b80ee609cee2064a7015a9319d8ae95fe60b8a5815d221b5da0fa"
+  },
+  "cold_start": true,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp_smoke_01_warmprobe",
+  "git_commit": "92c8c9656e5c2528915a1a6cf33acfae6376af69",
+  "latency_ms": 2652.0236250944436,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "Jane Doe has 2 items in order ORD-1042.",
+  "retry_count": 0,
+  "sample_id": "sf_01",
+  "sample_idx": 0,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence that names the customer and the number of items in the order.",
+    "id": "sf_01",
+    "input": {
+      "customer_name": "Jane Doe",
+      "items": [
+        "Widget A",
+        "Widget B"
+      ],
+      "order_id": "ORD-1042"
+    },
+    "quality_rubric_notes": "Must mention 'Jane Doe' verbatim and the item count (the number two, as a digit or spelled out). Phrasing is flexible.",
+    "tags": [
+      "extraction",
+      "synthesis"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T12:00:14Z",
+  "usage": {
+    "input_tokens": 231,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 17,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 248
+  }
+}

@@ -1,0 +1,7 @@
+effort,mean_cached_tokens,mean_input_tokens_noncached,mean_output_tokens,mean_reasoning_tokens,model,n_used
+,0.0,247.603448,12.793103,0.0,gpt-4o,58
+minimal,0.0,248.137931,12.672414,3.655172,gpt-5.2,58
+low,0.0,247.5,13.866667,29.233333,gpt-5.2,60
+medium,0.0,247.847458,14.20339,88.0,gpt-5.2,59
+high,0.0,247.5,16.266667,185.45,gpt-5.2,60
+xhigh,0.0,247.0,17.881356,311.474576,gpt-5.2,59

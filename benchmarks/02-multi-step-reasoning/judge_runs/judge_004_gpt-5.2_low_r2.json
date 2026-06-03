@@ -1,0 +1,27 @@
+{
+  "effort": "low",
+  "git_commit": "5ad584484c622d8b6170910b3ec40a8a0fc6a253",
+  "judge_model": "gpt-4o",
+  "judge_prompt_sha256": "fb997c90fe0778681194809793cdce218bcb9d6537304a525f2916cf29ba6942",
+  "model": "gpt-5.2",
+  "rationale": "The response matches the required order 'Bob, Carol, Alice, Dan' exactly with proper spacing, capitalization, and separators.",
+  "raw_response": {
+    "output_text": "{\"score\": 2, \"rationale\": \"The response matches the required order 'Bob, Carol, Alice, Dan' exactly with proper spacing, capitalization, and separators.\"}",
+    "usage": {
+      "input_tokens": 283,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 38,
+      "output_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "total_tokens": 321
+    }
+  },
+  "repeat": 2,
+  "sample_id": "mr_05",
+  "score": 2,
+  "source_run_filename": "20260521T092210Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_low_r2.json",
+  "timestamp_utc": "2026-05-21T09:33:05Z"
+}

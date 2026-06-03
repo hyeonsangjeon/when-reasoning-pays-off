@@ -1,0 +1,29 @@
+# CODEOWNERS for when-reasoning-pays-off
+#
+# Owner approval is required for changes to frozen artifacts that
+# constitute the reproducibility contract or the public-release
+# governance. See GOVERNANCE.md "Escalation: changing a frozen artifact".
+
+# Default: owner reviews everything.
+*                                                       @hyeonsangjeon
+
+# Frozen methodology contract.
+/docs/05-methodology.md                                 @hyeonsangjeon
+
+# Citation tier convention used across all docs.
+/docs/15-spec-vs-inference-taxonomy.md                  @hyeonsangjeon
+/docs/15-spec-vs-inference-taxonomy.examples.md         @hyeonsangjeon
+
+# Public-release governance.
+/docs/16-release-tiers-and-redaction-policy.md          @hyeonsangjeon
+/docs/17-foundry-packaging-relationship.md              @hyeonsangjeon
+
+# Per-benchmark analyses are immutable post-APPROVE per docs/16 §6.
+/benchmarks/*/analysis.md                               @hyeonsangjeon
+
+# CI hardening and release-tooling code.
+/.github/                                               @hyeonsangjeon
+/.github/workflows/                                     @hyeonsangjeon
+/scripts/check_public_surface.sh                        @hyeonsangjeon
+/batch-runner/batch_runner/release/                     @hyeonsangjeon
+/schemas/                                               @hyeonsangjeon

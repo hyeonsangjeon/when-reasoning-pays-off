@@ -1,0 +1,77 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": 0.0012675407342612743,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "98f2561d83ed09f61e09cdf5d45c119771e00377b4958bf81fa3041a026b19bf"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt5_2",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 2691.8357918038964,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "812400",
+  "retry_count": 0,
+  "sample_id": "tu_11",
+  "sample_idx": 10,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer (population count). web_search used.",
+    "expected_tool_calls": [
+      "web_search"
+    ],
+    "id": "tu_11",
+    "input": "Look up the current population of Vega City from the corporate knowledge base. Use the web_search tool.",
+    "quality_rubric_notes": "Correct iff web_search is invoked with a query that exactly matches 'population of Vega City' (the KB key) and the response is 812400. Vega City is a fictional entity \u2014 answering from memory is a fail (no real-world knowledge can satisfy the prompt).",
+    "tags": [
+      "one-tool",
+      "web_search"
+    ],
+    "verifiable_answer": "812400"
+  },
+  "timestamp_utc": "2026-05-24T09:41:01Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1324.695082847029,
+      "tool_args": {
+        "query": "population of Vega City"
+      },
+      "tool_call_id": "call_6ZSx0AygBuKK30Hn3sHHFwVL",
+      "tool_name": "web_search",
+      "tool_result_summary": "812400",
+      "usage": {
+        "input_tokens": 569,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 21,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 590
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1172,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 27,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1199
+  }
+}

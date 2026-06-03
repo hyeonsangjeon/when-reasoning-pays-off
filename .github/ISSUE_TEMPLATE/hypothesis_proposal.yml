@@ -1,0 +1,76 @@
+name: Hypothesis proposal
+description: Propose a new testable hypothesis for the cache-hit / PTU / cost-model framework.
+labels: ["hypothesis"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hypotheses extend the testable claim ledger maintained in
+        `docs/07-cache-hit-degradation.md`,
+        `docs/08-customer-simulation-findings.md`, and
+        `docs/14-observability-schema.md`.
+
+        A good hypothesis names a specific mechanism, a falsifiable
+        prediction, and a measurement that would refute it.
+  - type: input
+    id: name
+    attributes:
+      label: Short name
+      description: One-word or hyphenated identifier (e.g. `cache_key_collision`, `payg_concurrency_bound`).
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim
+      description: One paragraph. What do you predict, and under what conditions?
+    validations:
+      required: true
+  - type: textarea
+    id: mechanism
+    attributes:
+      label: Proposed mechanism
+      description: Why would this be true? Cite specific behaviour, not vague intuition.
+    validations:
+      required: true
+  - type: textarea
+    id: falsifier
+    attributes:
+      label: Falsifier
+      description: What measurement, with what outcome, would refute this hypothesis?
+    validations:
+      required: true
+  - type: dropdown
+    id: citation_tier
+    attributes:
+      label: Citation tier (per docs/15)
+      options:
+        - OPERATIONAL_INFERENCE (Tier 2 — repo-inferred, requires rationale + in-repo evidence)
+        - OFFICIAL_SPEC (Tier 1 — vendor-documented, requires vendor URL + ISO access date)
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: |
+        For Tier 1, paste the vendor URL and access date. For Tier 2,
+        cite in-repo paths (e.g. `benchmarks/02-multi-step-reasoning/analysis.md` §X).
+    validations:
+      required: true
+  - type: textarea
+    id: related_docs
+    attributes:
+      label: Related existing claims
+      description: Which `docs/` files does this hypothesis extend or contradict?
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) and [docs/15-spec-vs-inference-taxonomy.md](../blob/main/docs/15-spec-vs-inference-taxonomy.md).
+          required: true
+        - label: My proposal contains no endpoint hostnames, deployment names, request IDs, region identifiers, customer names, or secrets.
+          required: true

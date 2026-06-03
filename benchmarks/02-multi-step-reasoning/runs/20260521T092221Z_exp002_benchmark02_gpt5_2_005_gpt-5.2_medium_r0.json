@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.06709258304908872,
+    "tool_config_sha256": null,
+    "user_input_sha256": "bf5828f1a3158a5a685706ffa0d24059a511e2c32012188b675b16e49af761f6"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "medium",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1869.5679171942174,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "apple",
+  "retry_count": 0,
+  "sample_id": "mr_06",
+  "sample_idx": 5,
+  "sample_metadata": {
+    "expected_output_shape": "A single lowercase word that is one of: apple, banana, cherry.",
+    "id": "mr_06",
+    "input": "Three boxes are labeled red, green, and blue. Each box contains exactly one of three fruits: an apple, a banana, or a cherry. Each fruit appears in exactly one box. The red box does not contain the apple. The green box contains the cherry. Which fruit is in the blue box?",
+    "quality_rubric_notes": "Correct answer is 'apple' (green has cherry; red is not apple, so red has banana; therefore blue has apple). Any case is acceptable for the literal token 'apple'; any other fruit or extra prose fails.",
+    "tags": [
+      "constraint-satisfaction"
+    ],
+    "verifiable_answer": "apple"
+  },
+  "timestamp_utc": "2026-05-21T09:22:21Z",
+  "usage": {
+    "input_tokens": 323,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 40,
+    "output_tokens_details": {
+      "reasoning_tokens": 33
+    },
+    "total_tokens": 363
+  }
+}

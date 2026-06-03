@@ -1,0 +1,7 @@
+effort,judge_n,mean_judge_score,model,std_judge_score
+,60,1.85,gpt-4o,0.480995
+none,60,1.966667,gpt-5.2,0.258199
+low,59,2.0,gpt-5.2,0.0
+medium,60,1.983333,gpt-5.2,0.129099
+high,60,1.966667,gpt-5.2,0.258199
+xhigh,60,2.0,gpt-5.2,0.0

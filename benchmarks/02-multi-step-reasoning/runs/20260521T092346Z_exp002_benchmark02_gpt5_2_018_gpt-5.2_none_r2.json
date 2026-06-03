@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "2b2882f0101977d292ffc595f2e192c300a458ac799d2fd9ecf0fee7c2ebbdb5"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1379.5581669546664,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "2",
+  "retry_count": 0,
+  "sample_id": "mr_19",
+  "sample_idx": 18,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no surrounding prose.",
+    "id": "mr_19",
+    "input": "In a class of 20 students, 12 study Spanish, 10 study French, and 4 study both Spanish and French. How many students in the class study neither Spanish nor French?",
+    "quality_rubric_notes": "Correct answer is exactly 2 (inclusion-exclusion: 12 + 10 - 4 = 18 study at least one language; 20 - 18 = 2 study neither). Any other integer fails.",
+    "tags": [
+      "counting"
+    ],
+    "verifiable_answer": "2"
+  },
+  "timestamp_utc": "2026-05-21T09:23:46Z",
+  "usage": {
+    "input_tokens": 293,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 298
+  }
+}

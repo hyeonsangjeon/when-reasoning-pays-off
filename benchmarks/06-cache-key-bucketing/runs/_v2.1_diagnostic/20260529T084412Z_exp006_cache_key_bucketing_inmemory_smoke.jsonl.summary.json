@@ -1,0 +1,103 @@
+{
+  "api_version": "preview",
+  "benchmark": "06-cache-key-bucketing",
+  "calls_per_cell": 60,
+  "cardinalities_planned": [
+    1,
+    8
+  ],
+  "cell_summaries": [
+    {
+      "cache_hit_ratio_steady_state": 0.9592592767674667,
+      "calls_in_cell": 60,
+      "cardinality": 1,
+      "cell_idx": 0,
+      "cell_usd": 0.566691,
+      "common_prefix_rpm_mean_steady_state": 6.916666666666667,
+      "first_token_latency_ms_p50_steady_state": 8679.411395918578,
+      "first_token_latency_ms_p95_steady_state": 13514.297734852878,
+      "n_records": 60,
+      "n_steady_state_records": 60,
+      "namespace": "benchmark06_inmemory_card01_b80cd304",
+      "per_bucket_rpm_mean_steady_state": 6.916666666666667,
+      "rate_limited_count": 0,
+      "warmup_exclusion_s": 0.0
+    },
+    {
+      "cache_hit_ratio_steady_state": 0.8931034645766069,
+      "calls_in_cell": 60,
+      "cardinality": 8,
+      "cell_idx": 1,
+      "cell_usd": 0.699991,
+      "common_prefix_rpm_mean_steady_state": 6.75,
+      "first_token_latency_ms_p50_steady_state": 9288.469417020679,
+      "first_token_latency_ms_p95_steady_state": 13653.514835773965,
+      "n_records": 60,
+      "n_steady_state_records": 60,
+      "namespace": "benchmark06_inmemory_card08_b80cd304",
+      "per_bucket_rpm_mean_steady_state": 1.0,
+      "rate_limited_count": 0,
+      "warmup_exclusion_s": 0.0
+    }
+  ],
+  "cells_completed": 2,
+  "cells_planned": 2,
+  "citations": {
+    "azure_doc": {
+      "accessed_date": "2026-05-29",
+      "claims_cited": [
+        "prompt_cache_key combined with prefix hash influences routing",
+        "~15 req/min per (prefix_hash, prompt_cache_key) overflow threshold",
+        "24h retention when prompt_cache_retention='24h'",
+        "in_memory retention is the default"
+      ],
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching"
+    },
+    "pricing": {
+      "accessed_date": "2026-05-19",
+      "path": "pricing/azure-openai-payg-2026-05.yaml",
+      "source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/"
+    }
+  },
+  "deployment_env": "AZURE_OPENAI_DEPLOYMENT_GPT_5_2",
+  "deployment_used": "gpt-5.2",
+  "dirty": true,
+  "dry_run": false,
+  "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+  "experiment_id": "exp006_cache_key_bucketing_inmemory",
+  "git_commit": "4391d4bd2562068baae262bb57abbc8c4364eea2",
+  "halt_reason": null,
+  "hard_ceiling_usd": 8.0,
+  "jsonl_path": "benchmarks/06-cache-key-bucketing/runs/20260529T084412Z_exp006_cache_key_bucketing_inmemory_smoke.jsonl",
+  "metadata": {
+    "architecture_context": "single_call_react",
+    "consumption_model_context": "paygo_standard",
+    "created_at": "2026-05-29",
+    "deployment_kind": "GlobalStandard_PAYG",
+    "hypothesis_under_test": "prompt_cache_key_overflow_threshold",
+    "ptu_evidence": false,
+    "runtime_mode": "live_azure_single_deployment",
+    "simulation": false,
+    "tenant": "<project>"
+  },
+  "midrun_threshold_usd": 6.8,
+  "model": "gpt-5.2",
+  "partial": false,
+  "pinned_confounds_echo": {
+    "api_version": "preview",
+    "concurrency": 1,
+    "max_output_tokens": 512,
+    "prompt_cache_retention": "in_memory",
+    "reasoning_effort": "low",
+    "sustain_tps": 1.0
+  },
+  "preflight_threshold_usd": 7.2,
+  "pricing_accessed_date": "2026-05-19",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "pricing_source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/",
+  "projected_usd": 2.3205,
+  "run_id_short": "b80cd304",
+  "stage": "smoke",
+  "system_prompt_sha256": "98d3a559c54c42f683a4cc0d09e6fb4cc10034cc80203d58121edbaca606088a",
+  "total_usd": 1.266682
+}

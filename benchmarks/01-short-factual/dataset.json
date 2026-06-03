@@ -1,0 +1,266 @@
+[
+  {
+    "id": "sf_01",
+    "input": {
+      "order_id": "ORD-1042",
+      "customer_name": "Jane Doe",
+      "items": [
+        "Widget A",
+        "Widget B"
+      ]
+    },
+    "expected_output_shape": "A single sentence that names the customer and the number of items in the order.",
+    "quality_rubric_notes": "Must mention 'Jane Doe' verbatim and the item count (the number two, as a digit or spelled out). Phrasing is flexible.",
+    "tags": [
+      "extraction",
+      "synthesis"
+    ]
+  },
+  {
+    "id": "sf_02",
+    "input": {
+      "meeting": {
+        "title": "Quarterly review",
+        "date": "2026-04-12",
+        "duration_minutes": 30
+      }
+    },
+    "expected_output_shape": "A single sentence stating the meeting title and date.",
+    "quality_rubric_notes": "Must include the title 'Quarterly review' verbatim and the date 2026-04-12 in some recognizable form. Other words around them are acceptable.",
+    "tags": [
+      "extraction"
+    ]
+  },
+  {
+    "id": "sf_03",
+    "input": {
+      "day": 7,
+      "month": 3,
+      "year": 2026
+    },
+    "expected_output_shape": "A single ISO 8601 date string in the form YYYY-MM-DD.",
+    "quality_rubric_notes": "Output must be exactly '2026-03-07' with no quotation marks, no labels, and no surrounding prose.",
+    "tags": [
+      "formatting"
+    ]
+  },
+  {
+    "id": "sf_04",
+    "input": {
+      "amount_cents": 1499,
+      "currency": "USD"
+    },
+    "expected_output_shape": "A single short string showing the amount in dollar-and-cents form with a dollar sign.",
+    "quality_rubric_notes": "Acceptable outputs include '$14.99' or 'USD 14.99' or equivalent representations showing 14 dollars and 99 cents; the dollar sign or 'USD' must appear.",
+    "tags": [
+      "formatting"
+    ]
+  },
+  {
+    "id": "sf_05",
+    "input": "Meeting started at 9 AM. The team agreed to launch the new dashboard in May. Next sync is on Friday.",
+    "expected_output_shape": "A single-sentence summary covering the launch decision and the next sync day.",
+    "quality_rubric_notes": "Summary must reference the dashboard launch in May and the Friday sync, both inside one sentence. Word choice is flexible.",
+    "tags": [
+      "summarization"
+    ]
+  },
+  {
+    "id": "sf_06",
+    "input": {
+      "ticket_id": "TKT-7781",
+      "title": "Login fails for new users",
+      "description": "After the deploy on Monday, accounts created within the last hour cannot log in. Existing accounts are unaffected."
+    },
+    "expected_output_shape": "A single sentence stating who is affected and when the regression began.",
+    "quality_rubric_notes": "Sentence must indicate the affected group (new accounts created within the last hour) and link the issue to the Monday deploy. Both facts are required for full credit.",
+    "tags": [
+      "summarization",
+      "extraction"
+    ]
+  },
+  {
+    "id": "sf_07",
+    "input": {
+      "product": "Widget A",
+      "qty": 3,
+      "warehouse": "WH-North",
+      "color": "blue",
+      "in_stock": true
+    },
+    "expected_output_shape": "A markdown bullet list with one item per field showing the field name and its value.",
+    "quality_rubric_notes": "Output must include all five fields (product, qty, warehouse, color, in_stock) each on its own bullet line with the corresponding value. Order may vary.",
+    "tags": [
+      "enumeration",
+      "formatting"
+    ]
+  },
+  {
+    "id": "sf_08",
+    "input": [
+      1,
+      4,
+      7,
+      2,
+      9,
+      6
+    ],
+    "expected_output_shape": "A bullet list of the even numbers from the input in their original order.",
+    "quality_rubric_notes": "Result must list exactly the items 4, 2, and 6 in that order, one number per bullet line, with no odd numbers included.",
+    "tags": [
+      "enumeration",
+      "filtering"
+    ]
+  },
+  {
+    "id": "sf_09",
+    "input": "I love this product. It works exactly as described and shipping was fast. Five stars!",
+    "expected_output_shape": "A single lowercase word that is one of positive, negative, or neutral.",
+    "quality_rubric_notes": "Correct label is 'positive'. Case-insensitive match is acceptable; any additional text disqualifies the response.",
+    "tags": [
+      "classification",
+      "sentiment"
+    ]
+  },
+  {
+    "id": "sf_10",
+    "input": {
+      "ticket_id": "TKT-9001",
+      "description": "Production database is down; all writes failing.",
+      "tags": [
+        "outage",
+        "production"
+      ]
+    },
+    "expected_output_shape": "A single lowercase word that is one of high, medium, or low.",
+    "quality_rubric_notes": "Correct priority is 'high' because the ticket describes a production outage with failing writes. Case-insensitive match acceptable; extra prose disqualifies.",
+    "tags": [
+      "classification",
+      "triage"
+    ]
+  },
+  {
+    "id": "sf_11",
+    "input": {
+      "name": "  jane DOE  "
+    },
+    "expected_output_shape": "A single string with the name trimmed of whitespace and rewritten in Title Case.",
+    "quality_rubric_notes": "Output must be exactly 'Jane Doe' with no leading or trailing whitespace and no surrounding quotation marks.",
+    "tags": [
+      "normalization"
+    ]
+  },
+  {
+    "id": "sf_12",
+    "input": [
+      "banana",
+      "apple",
+      "cherry",
+      "date"
+    ],
+    "expected_output_shape": "A bullet list of the input strings in ascending alphabetical order.",
+    "quality_rubric_notes": "Result must list apple, banana, cherry, date in that order, one per bullet line. Any other ordering is incorrect.",
+    "tags": [
+      "normalization",
+      "ordering"
+    ]
+  },
+  {
+    "id": "sf_13",
+    "input": {
+      "number": 42
+    },
+    "expected_output_shape": "A single lowercase English phrase spelling out the number.",
+    "quality_rubric_notes": "Output must be 'forty-two' (hyphenated, lowercase, no surrounding text or punctuation).",
+    "tags": [
+      "transliteration"
+    ]
+  },
+  {
+    "id": "sf_14",
+    "input": {
+      "year": 1999
+    },
+    "expected_output_shape": "A single lowercase English phrase spelling out the year as it is commonly spoken.",
+    "quality_rubric_notes": "Acceptable outputs include 'nineteen ninety-nine' or 'one thousand nine hundred ninety-nine'; any natural English reading of 1999 qualifies.",
+    "tags": [
+      "transliteration"
+    ]
+  },
+  {
+    "id": "sf_15",
+    "input": {
+      "a": 17,
+      "b": 25
+    },
+    "expected_output_shape": "A single sentence stating the integer sum of the two values.",
+    "quality_rubric_notes": "Sentence must contain the number 42 as the stated sum of a and b; phrasing around it is flexible.",
+    "tags": [
+      "arithmetic-trivial"
+    ]
+  },
+  {
+    "id": "sf_16",
+    "input": [
+      "pen",
+      "notebook",
+      "stapler",
+      "eraser",
+      "ruler"
+    ],
+    "expected_output_shape": "A single sentence stating the count of items in the list.",
+    "quality_rubric_notes": "Sentence must contain the number 5 (digit or word) as the count of the listed items; phrasing around it is flexible.",
+    "tags": [
+      "arithmetic-trivial",
+      "counting"
+    ]
+  },
+  {
+    "id": "sf_17",
+    "input": {
+      "length_km": 2.5
+    },
+    "expected_output_shape": "A single sentence giving the length in meters as a whole number.",
+    "quality_rubric_notes": "Sentence must contain 2500 as the meter equivalent of 2.5 kilometers; the word 'meters' (or 'm') should be near the number.",
+    "tags": [
+      "formatting",
+      "unit-conversion"
+    ]
+  },
+  {
+    "id": "sf_18",
+    "input": {
+      "hours": 3
+    },
+    "expected_output_shape": "A single sentence giving the duration in minutes as a whole number.",
+    "quality_rubric_notes": "Sentence must contain 180 as the minute equivalent of 3 hours; the word 'minutes' (or 'min') should be near the number.",
+    "tags": [
+      "formatting",
+      "unit-conversion"
+    ]
+  },
+  {
+    "id": "sf_19",
+    "input": "Skies are clear across the region today. High of 22 C with light winds from the west. No rain is expected before tomorrow morning.",
+    "expected_output_shape": "A single sentence summarizing the day's weather in plain language.",
+    "quality_rubric_notes": "Summary should mention clear or sunny skies and a high near 22 C, both within one sentence; the wind detail is optional.",
+    "tags": [
+      "summarization"
+    ]
+  },
+  {
+    "id": "sf_20",
+    "input": [
+      "alpha",
+      "bravo",
+      "charlie",
+      "delta"
+    ],
+    "expected_output_shape": "A JSON object with a single key 'first' whose value is the first element of the list.",
+    "quality_rubric_notes": "Output must be exactly the JSON object {\"first\": \"alpha\"} with no surrounding prose, labels, or code fences.",
+    "tags": [
+      "extraction",
+      "formatting"
+    ]
+  }
+]

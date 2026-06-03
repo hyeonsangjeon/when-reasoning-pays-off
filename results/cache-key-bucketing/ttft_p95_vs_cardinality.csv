@@ -1,0 +1,5 @@
+retention,cardinality,cache_hit_ratio,ttft_p95_ms,n_steady_state_records,n_records,realized_admitted_per_bucket_rpm,max_in_flight_observed,namespace
+in_memory,1,0.9334358541506478,106389.95699360967,388,480,30.6520618556701,33,benchmark06_inmemory_card01_9dbd08f2
+in_memory,8,0.9585958502193984,16623.65559153258,389,480,4.0,11,benchmark06_inmemory_card08_9dbd08f2
+24h,1,0.9611893392904594,9899.743904476052,390,480,30.73076923076923,6,benchmark06_24h_card01_eebe5e4b
+24h,8,0.9611506941577268,15549.084083177126,389,480,4.0,10,benchmark06_24h_card08_eebe5e4b

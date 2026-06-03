@@ -1,0 +1,17 @@
+# Synthetic PTU pricing fixture for unit tests. NOT production data.
+source_url: https://example.test/azure-ptu-onboarding
+accessed_date: 2026-05-19
+archive_url: https://web.archive.org/web/20260519000000/https://example.test/azure-ptu-onboarding
+currency: USD
+region: eastus2
+models:
+  gpt-4o:
+    ptu_hourly_rate_usd: 2.0
+    min_ptu: 50
+    max_ptu_per_deployment: 100000
+    baseline_throughput_tpm_per_ptu: 2500
+  gpt-5.2:
+    ptu_hourly_rate_usd: 2.0
+    min_ptu: 50
+    max_ptu_per_deployment: 100000
+    baseline_throughput_tpm_per_ptu: 3400

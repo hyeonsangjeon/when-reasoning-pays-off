@@ -1,0 +1,362 @@
+# exp007_max_output_tokens_sweep — Task 019 v2.3.
+#
+# v2.3 supersedes v2.2.1's single-grid Stage 0.5 calibration with a
+# TWO-PHASE escalate-until-429 procedure (Phase A + Phase B) plus an
+# admitted-pressure validation gate, a bounded bracket search on
+# no-usable-contrast, and a deterministic-conservative USD preflight
+# estimator (NO 429-no-bill discount, NO cached-token discount, NO
+# pricing assumptions for the preflight gate). v2.3 microfix 2026-05-30
+# fix loop #4 pins the preflight to that estimator for smoke/evidence
+# (the pricing-driven projector remains in use for dry-run only) and
+# implements the spec-pinned early-stop-on-first-429 for calibration
+# probes per `early_stop_on_first_429_largest/smallest`.
+#
+# Hypothesis I: Azure's admission controller debits per-request token
+# reservation as (prompt_tokens + max_output_tokens), regardless of actual
+# generated output. The closest in-repo proxy for that mechanism is the PAYG
+# GlobalStandard `ptu-deploy-throttled` deployment (60K TPM / 600 RPM). A
+# controlled sweep — same prompt, same reasoning.effort, same arrival
+# schedule, varying only `max_output_tokens` over [256, 512, 1024, 2048,
+# 4096, 8192, 16384] — should produce a monotone-decreasing 429-onset RPM
+# while visible output stays approximately flat (±20%).
+#
+# This is PAYG throttled-quota / Azure admission-reservation **proxy**
+# evidence for Hypothesis I. It is **NOT** direct PTU evidence; the
+# `ptu-deploy-throttled` deployment is PAYG GlobalStandard, not PTU.
+# PTU-specific gating (slot routing, expected-utilization tiering,
+# capacity-correlated cache effects) cannot be ruled out from this data;
+# `metadata.ptu_evidence: false` is the load-time enforcement of that
+# framing. Task 022 must cite this benchmark only with the explicit
+# PAYG-not-PTU caveat that `analysis.md`'s opening paragraph carries.
+#
+# v2.1 prompt-identity contract (pinned ex-ante; runtime-verified, exit 7
+# on any mismatch): the source corpus and user-prompt source files are
+# READ-ONLY from Task 012's `benchmarks/04-spillover-simulation/`
+# directory. NO Task-019-specific corpus or user-prompt files are written
+# under `benchmarks/07-max-output-tokens-reservation/`. The assembled
+# system prompt is constructed deterministically by
+# `scripts.simulate_spillover.build_system_prompt` with `corpus_seed=4242,
+# target_tokens=2000`. Reviewers can verify the assembled SHA without
+# Azure access:
+#   python3 -c "import sys, hashlib, pathlib; sys.path.insert(0, '.'); \
+#     from scripts.simulate_spillover import build_system_prompt; \
+#     p = build_system_prompt(pathlib.Path('benchmarks/04-spillover-simulation/system_prompt_corpus.json'), \
+#                              corpus_seed=4242, target_tokens=2000); \
+#     print(hashlib.sha256(p.encode('utf-8')).hexdigest())"
+#   → must print f8a74528164b22eed27d30a5fa089b1d0fbfb38440cc341b043c2cb24e9289c7
+#
+# v2.1 blocker #4 (TPM math reconciliation): one canonical projection
+# formula is used in this YAML, in the runner's startup TPM feasibility
+# preflight gate, in the pytest expected values, and in the spec's Cost &
+# Time Budget. It evaluates to:
+#   projected_tpm(cell) = 60 * peak_ramp_tps * (base_prompt_tokens_for_gate
+#                                                 + cell.max_output_tokens)
+#   base_prompt_tokens_for_gate = max(assembled_system_prompt_tokens,
+#                                     target_system_prompt_tokens) + 100
+#                                = max(2058, 2000) + 100 = 2158
+# This TPM-feasibility formula is INDEPENDENT of the v2.3 deterministic
+# USD preflight estimator (the latter charges $0.009/dispatched-call and
+# does not consume pricing or cache assumptions).
+
+experiment_id: exp007_max_output_tokens_sweep
+description: >-
+  Task 019 v2.3 max_output_tokens admission-reservation proxy sweep on the
+  PAYG GlobalStandard ptu-deploy-throttled deployment (60K TPM / 600 RPM).
+  Controlled log2 sweep over [256, 512, 1024, 2048, 4096, 8192, 16384]
+  with visible output held near-constant via reasoning.effort=low and a
+  ~2,000-token assembled system prompt READ-ONLY from
+  benchmarks/04-spillover-simulation/system_prompt_corpus.json. Measures
+  the 429-onset RPM curve under varying admission-time token reservation.
+  PAYG throttled-quota / Azure admission-reservation proxy evidence for
+  Hypothesis I — NOT direct PTU evidence (ptu_evidence: false enforced).
+  v2.3: two-phase escalate-until-429 Stage 0.5 calibration (Phase A
+  predeclared 7-member candidate_tps_grid + Phase B exact 6-member
+  candidate_tps_grid_phase_b [5.0, 8.0, 12.0, 16.0, 24.0, 32.0]) plus
+  admitted-pressure validation gate (0.70 floor over last 30 s),
+  bounded geometric-midpoint bracket search (depth 3), and a
+  deterministic-conservative USD preflight estimator ($0.009/call,
+  no 429-no-bill discount) for smoke/evidence. Calibration probes use
+  spec-pinned early-stop-on-first-429 (largest/smallest) per
+  v2.3 fix loop #4.
+parent_experiment: null
+benchmark: 07-max-output-tokens-reservation
+
+# Single deployment: the Task-013-provisioned throttled deployment.
+# Custom-router spillover is disabled; native spillover is Task 021's
+# scope. The unthrottled gpt-5.2 deployment is REJECTED at YAML load
+# time (it would not produce 429s at the arrival rates this sweep uses,
+# eliminating the signal).
+deployment:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED}
+  deployment_name: ptu-deploy-throttled
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+  tpm: 60000
+  rpm: 600
+
+# Foundry v1 API version literal, identical to Task 013 / 018. Classic
+# Azure-OpenAI api-version strings are REJECTED at YAML load.
+client:
+  api_version: preview
+  # SDK retry policy: MANDATORY 0. The default of 2 silently absorbs the
+  # FIRST 429-onset signal this benchmark exists to measure. Echoed into
+  # every per-request record as `sdk_max_retries`.
+  max_retries: 0
+
+# Pinned request shape. `reasoning.effort: low` keeps actual output bytes
+# near-constant across cells so visible-output-tokens stays flat (±20%
+# audited post-run); the only varying knob is `max_output_tokens` (the
+# admission-time reservation). `max_output_tokens` is supplied per cell
+# by the sweep, NOT here.
+request_template:
+  reasoning:
+    effort: low
+
+# v2.3 async_scheduled dispatcher. concurrency=96 (Task 018 v2.4 pin —
+# sized for sporadic 100s+ retry-induced outliers; in this task we
+# EXPECT 429s, but max_retries=0 makes them fail fast so steady-state
+# in-flight stays well below 96 except during the ramp's saturation
+# tail). v2.3 NEW: `concurrency_phase_b: 512` scoped to Phase B (and
+# Phase-B-rooted bracket probes) only. peak_ramp_tps=0.33 here is the
+# v2.1 historical baseline retained as the LOWEST candidate in the
+# Phase A grid for pinned-value test reuse; at runtime smoke/evidence
+# ALWAYS read `selected_peak_tps` from the Stage 0.5 calibration
+# result (the `--peak-ramp-tps` CLI override is FORBIDDEN, exit 9).
+runtime:
+  concurrency: 96
+  concurrency_phase_b: 512           # v2.3 — Phase B escalate-until-429 saturation (scoped to Phase B only)
+  dispatcher: async_scheduled
+  prewarm_calls_per_cell: 12
+  prewarm_tps: 0.05
+  ramp_duration_seconds: 600        # 10-min linear ramp prewarm_tps → selected_peak_tps
+  peak_ramp_tps: 0.33               # v2.1 baseline; smoke/evidence use Stage 0.5 `selected_peak_tps`
+  cool_down_seconds: 120            # 2-min idle between cells; TPM window reset
+  smoke_ramp_duration_seconds: 120  # 2-min ramp at smoke
+  smoke_cool_down_seconds: 30       # 30-s cool-down at smoke
+
+  # v2.4 — empirical-promotion gate (§10 PINS, single source of truth
+  # in scripts/measure_max_output_tokens_sweep.py). Every key below is
+  # a PIN; any value an operator sets here MUST equal the constant in
+  # the script. v2.3-shaped YAMLs missing this entire block load
+  # cleanly with these defaults. To opt into the mini-probe path the
+  # spec REQUIRES an auditor-approved comment of shape
+  # `# auditor-approved-YYYY-MM-DD: <auditor-handle>` IMMEDIATELY above
+  # the `mini_probe_enabled: true` key; the YAML loader rejects
+  # `mini_probe_enabled: true` without that comment (v2.4 §7,
+  # LinkageValidationError reason
+  # `mini_probe_yaml_enabled_without_auditor_approved_comment`).
+  # v2.5 — adaptive Stage 0.5.C contrast calibration (Task 019 v2.5
+  # spec §3 / §4 / §5 / §10 PINNED RFCs). DEFAULT enabled: false so
+  # the v2.4 protocol remains the live default. When `enabled: true`,
+  # the YAML loader REQUIRES both
+  # `prior_calibrations_disclosure_path` (§0.9) and an
+  # `adaptive_calibration_auditor_approval.comment` matching the §3.2
+  # regex `^methodology-auditor approved v2\.5 adaptive — [a-z0-9-]+ —
+  # \d{4}-\d{2}-\d{2}$` (mirrors the v2.4 mini-probe approval gate).
+  # The fixture path below is committed even when disabled so a
+  # future flip of `enabled` to true does not surprise the operator
+  # (§0.9). Loosening any §10 RFC requires a v2.6 spec revision.
+  adaptive_calibration:
+    enabled: false                                              # PIN-default; opt-in only
+    prior_calibrations_disclosure_path: benchmarks/07-max-output-tokens-reservation/prior-calibrations-disclosure.json
+    adaptive_calibration_auditor_approval:
+      comment: ""                                               # required when enabled: true; must match §3.2 regex
+  empirical_promotion:
+    cache_hit_floor_smallest_control: 0.80   # PIN; v2.3 measured 0.8517 (margin +0.0517)
+    cache_hit_floor_largest: 0.80            # PIN; v2.3 measured 0.8829 (margin +0.0829)
+    calibration_max_age_hours: 24            # PIN; matches v2.2.1 calibration_max_age_hours verbatim
+    minimum_records_at_selected_tps: 30      # PIN; ≥30 records ⇒ n_429==0 is statistically meaningful at selected_peak_tps
+    mini_probe_enabled: false                # PIN-default; mini-probe is OPT-IN only with auditor-approved comment
+    mini_probe_max_usd: 1.00                 # PIN; per-mini-probe spend cap
+    mini_probe_max_attempts_per_run: 1       # PIN; at most one mini-probe per smoke run + one per evidence run
+
+# Stage 0.5 — v2.3 two-phase adaptive TPS calibration.
+#
+# Phase A: predeclared `candidate_tps_grid` (the v2.2.1 7-member grid
+#   retained verbatim for backwards compatibility) — ascend until either
+#   (a) the largest-cell probe observes ≥ 1 real 429 → smallest-cell
+#   control probe at the SAME candidate_tps; or (b) the grid is
+#   exhausted with zero largest-cell 429s on every candidate AND every
+#   Phase A largest probe passed the admitted-pressure gate, in which
+#   case the runner enters Phase B.
+# Phase B (v2.3): the exact pinned `candidate_tps_grid_phase_b`
+#   ([5.0, 8.0, 12.0, 16.0, 24.0, 32.0], six members in ascending
+#   order) — escalate-until-429. Phase B runs at
+#   `runtime.concurrency_phase_b: 512`; Phase B per-probe call cap is
+#   `probe_max_calls_phase_b: 6624` (≈ ceil(32 × 180 × 1.15)). The
+#   v2.3 9-member outcome enum applies.
+#
+# BOTH grids are PINNED — any ad hoc value outside the allowed set is
+# REJECTED at YAML load time with 4 distinct LinkageValidationError
+# reasons (duplicate, ad_hoc, member-missing, not-ascending) per grid.
+# The `--peak-ramp-tps` CLI override is FORBIDDEN (exit 9 immediately).
+# Smoke + evidence runners refuse to start without a fresh (≤ 24 h)
+# `outcome: "selected"` calibration result.
+#
+# Early-stop-on-first-429 semantics (v2.3 fix loop #4): when a real
+# 429 is observed during a largest-cell probe (with
+# `early_stop_on_first_429_largest: true`), the probe halts promptly
+# — an internal stop event is set, no NEW ramp dispatches occur,
+# already-in-flight tasks complete normally, and the per-probe
+# `halt_reason` is recorded as `first_429_observed`. Smallest-cell
+# control probe behaviour is identical when
+# `early_stop_on_first_429_smallest: true`. The concurrency invariant
+# (no sequential-await dispatch under any cap) is preserved: the stop
+# event is consulted BEFORE `asyncio.create_task` and inside
+# `_admit_and_call` after the pacer sleep returns; HTTP is NEVER
+# awaited inside the dispatch loop body.
+calibration:
+  candidate_tps_grid: [0.33, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+  candidate_tps_grid_phase_b: [5.0, 8.0, 12.0, 16.0, 24.0, 32.0]  # v2.3 exact full grid
+  prewarm_calls: 12          # same as full evidence — NO shorter calibration prewarm
+  prewarm_tps: 0.05          # same as full evidence
+  probe_duration_s: 180      # constant-rate probe window (NOT a ramp)
+  probe_max_calls: 600       # hard call-count cap per probe (Phase A; defensive)
+  probe_max_calls_phase_b: 6624  # v2.3 Phase B per-probe call cap (32 TPS × 180 s × ~1.15)
+  probe_max_usd: 60.0        # v2.3 per-probe spend cap (conservative + non-blocking advisory)
+  total_max_usd: 220.0       # v2.3 ACTIVE total calibration cap = $220 (NOT $800)
+  largest_cell_max_output_tokens: 16384   # probe target — matches largest sweep cell
+  smallest_cell_max_output_tokens: 256    # control probe target — matches smallest sweep cell
+  early_stop_on_first_429_largest: true   # halt largest-cell probe on first real 429 (v2.3 fix loop #4 implements this)
+  early_stop_on_first_429_smallest: true  # halt smallest-cell probe on first real 429 (v2.3 fix loop #4 implements this)
+  inter_probe_cooldown_s: 120  # idle between candidates — sliding-60s TPM window reset
+  calibration_max_age_hours: 24  # smoke + evidence refuse if calibration is older
+  admitted_pressure_floor_ratio: 0.70  # v2.3 admitted-pressure gate (last-30s)
+  admitted_pressure_window_s: 30       # v2.3 admitted-pressure rolling window
+  bracket_max_depth: 3                 # v2.3 bracket search bounded depth
+
+# Stage 1 + Stage 2 budgets (v2.3 conservative-but-useful Task 019
+# active caps). Active total = calibration $220 + smoke $50 + evidence
+# $100 + contingency $30 = **$400**, which is the hard task-total cap
+# (NOT the $800 figure that appeared in a superseded v2.3 draft).
+#
+# v2.3 microfix 2026-05-30 fix loop #4 (auditor finding #1): the
+# smoke/evidence preflight gate uses
+# `deterministic_conservative_cost_estimator` (NO 429-no-bill
+# discount, NO cached-token discount, NO pricing assumptions). At
+# $0.009 per dispatched call, the gate's abort thresholds are:
+#   * smoke @ selected_peak_tps  =  3.0 → projected $12.29 < $45 → PASS
+#   * smoke @ selected_peak_tps  =  8.0 → projected $31.19 < $45 → PASS
+#   * smoke @ selected_peak_tps  = 11.0 → projected $42.53 < $45 → PASS
+#   * smoke @ selected_peak_tps  = 12.0 → projected $46.31 > $45 → ABORT
+#       reason: smoke_preflight_over_ceiling_narrow_sweep_or_file_new_spec
+#   * evidence @ selected_peak_tps =  3.0 → projected $58.40 < $90 → PASS
+#   * evidence @ selected_peak_tps =  4.0 → projected $77.30 < $90 → PASS
+#   * evidence @ selected_peak_tps =  5.0 → projected $96.20 > $90 → ABORT
+#       reason: evidence_preflight_over_ceiling_narrow_sweep_or_file_new_spec
+# Lower selected_peak_tps values continue to pass under the same
+# estimator. The pricing-driven `compute_projected_usd` is retained
+# for dry-run only.
+#
+# Calibration two-phase deterministic-conservative pessimistic worst
+# case (Phase A safe + Phase B exhaustive) projects ≈ $187 which is at
+# 0.85 × $220 = $187 — note this is the `total_max_usd` stop_event
+# threshold, NOT a hard error.
+#
+# Do not exhaust shared budget; cap is an accounting guardrail, not a
+# spend target.
+budget:
+  evidence_estimated_usd: 7.94            # at selected_peak_tps=0.33 baseline
+  evidence_hard_ceiling_usd: 100.0        # v2.3 active cap
+  smoke_estimated_usd: 2.21               # at selected_peak_tps=0.33 baseline
+  smoke_hard_ceiling_usd: 50.0            # v2.3 active cap
+  calibration_estimated_usd: 6.34         # expected median per Cost & Time Budget
+  calibration_hard_ceiling_usd: 220.0     # v2.3 active cap
+  calibration_probe_hard_ceiling_usd: 60.0  # v2.3 per-probe spend cap
+  contingency_hard_ceiling_usd: 30.0      # v2.3 contingency within $400 total
+  total_task_hard_ceiling_usd: 400.0      # v2.3 ACTIVE total = $400, NOT $800
+  confirmed: true
+
+# The ONLY varying variable in Task 019. Log2-spaced 7 cells. Order
+# is small → large so if the largest cells exhaust budget or are
+# aborted by the mid-run USD gate, the smallest cells (most signal per
+# dollar) are already complete and the truncated curve still informs
+# the monotone-or-not question.
+sweep:
+  max_output_tokens:
+    - 256
+    - 512
+    - 1024
+    - 2048
+    - 4096
+    - 8192
+    - 16384
+
+# Deterministic system-prompt construction. The runner aborts (exit 7)
+# if any of the three SHA pins below does not match at runtime.
+# `target_system_prompt_tokens=2000` is the pinned target; the actual
+# assembled prompt is `~2058` approximate tokens (8233 chars). The
+# +100 user-prompt allowance in the TPM feasibility gate covers the
+# user-prompt tokens; the gate uses
+# `base_prompt_tokens_for_gate = max(2058, 2000) + 100 = 2158`.
+corpus_seed: 4242
+target_system_prompt_tokens: 2000
+source_corpus_path: benchmarks/04-spillover-simulation/system_prompt_corpus.json
+source_corpus_sha256: 6a8ab5a3cb1ad3dace030a82ec1327496b39e65b77a627714a27c39017ca19e3
+expected_assembled_system_prompt_sha256: f8a74528164b22eed27d30a5fa089b1d0fbfb38440cc341b043c2cb24e9289c7
+user_prompts_source_path: benchmarks/04-spillover-simulation/user_prompts.json
+user_prompts_source_sha256: 45f4a95b5cfe208a3555683fe22c6eb74f1b0e46d621723b1ea1480713ab3087
+# Pinned deterministic 10-prompt working subset. Every 3rd prompt from
+# index 0 across the 30-prompt source. The selection rule is a constant,
+# NOT a runtime computation. Each request in a cell rotates round-robin
+# through these 10 prompts so visible output is sampled across the
+# subset (not dominated by one prompt).
+user_prompts_index_set:
+  - 0
+  - 3
+  - 6
+  - 9
+  - 12
+  - 15
+  - 18
+  - 21
+  - 24
+  - 27
+
+# Pricing snapshot reference. The runner aborts (exit 5) if this file is
+# missing OR its accessed_date is older than 90 days. When Azure publishes
+# a rate change, add a new dated snapshot under pricing/ and update this
+# field; never silently overwrite an existing dated snapshot. Note: the
+# v2.3 smoke/evidence USD preflight gate does NOT consume this pricing
+# snapshot — it uses the deterministic $0.009/call conservative
+# estimator. The snapshot is still required for per-record cost
+# attribution and for the dry-run pricing-driven projection.
+pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+
+# PAYG / PTU / live-vs-simulation declaration. The runner echoes this
+# block verbatim into every runs/*.summary.json so downstream readers
+# and Task 022 cannot mis-cite this benchmark as PTU evidence without
+# violating the explicit ptu_evidence: false flag.
+# deployment_tpm_quota: 60000 is the denominator of the TPM
+# admission-reservation feasibility preflight gate; the canonical
+# projection formula
+#   projected_tpm = 60 * peak_ramp_tps * (base_prompt_tokens_for_gate
+#                                          + max_output_tokens)
+# with base_prompt_tokens_for_gate = max(2058, 2000) + 100 = 2158 must
+# satisfy
+#   smallest cell  ≤ 0.85 × deployment_tpm_quota  AND
+#   largest  cell  ≥ 1.25 × deployment_tpm_quota
+# for the TPM-feasibility gate to pass. This gate is INDEPENDENT of
+# the v2.3 deterministic USD preflight estimator.
+metadata:
+  consumption_model_context: paygo_standard_throttled
+  runtime_mode: live_azure_single_deployment
+  deployment_kind: payg_global_standard_throttled
+  simulation: false
+  ptu_evidence: false
+  deployment_tpm_quota: 60000
+  quota_source: ".env.example AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED + Task 013 v1 HOTFIX 2026-05-21: GlobalStandard PAYG, 60K TPM / 600 RPM"
+  architecture_context: single_call_react
+  hypothesis_under_test: admission_reservation_payg_proxy_for_hypothesis_i
+  tenant: <project>
+  created_at: 2026-05-29
+  source_corpus_path: benchmarks/04-spillover-simulation/system_prompt_corpus.json
+  source_corpus_sha256: 6a8ab5a3cb1ad3dace030a82ec1327496b39e65b77a627714a27c39017ca19e3
+  corpus_seed: 4242
+  target_system_prompt_tokens: 2000
+  expected_assembled_system_prompt_sha256: f8a74528164b22eed27d30a5fa089b1d0fbfb38440cc341b043c2cb24e9289c7
+  user_prompts_source_path: benchmarks/04-spillover-simulation/user_prompts.json
+  user_prompts_source_sha256: 45f4a95b5cfe208a3555683fe22c6eb74f1b0e46d621723b1ea1480713ab3087
+  user_prompts_index_set: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27]

@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": true,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "41e368809dcb790ab52a3547822d5200dcb49ccc9058501af3e5c7e42257ceee"
+  },
+  "cold_start": true,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "high",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp_smoke_02",
+  "git_commit": "4f8adf80bca135e16bfc066120594009c1b60d58",
+  "latency_ms": 2766.679209191352,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "672",
+  "retry_count": 0,
+  "sample_id": "mr_01",
+  "sample_idx": 0,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no units, commas, or surrounding prose.",
+    "id": "mr_01",
+    "input": "A farmer plants apple trees in three fields. The first field has 12 trees. Each subsequent field has twice as many trees as the previous field. Every tree yields exactly 8 apples in a season. How many apples does the farmer harvest from the three fields combined in one season?",
+    "quality_rubric_notes": "Correct answer is exactly 672 (trees: 12 + 24 + 48 = 84; apples: 84 * 8 = 672). The response must contain the integer 672 as the final numeric token. If the response is exactly '672' it passes; if the response wraps the number in prose but the only integer present is 672, partial credit; any other integer is a fail.",
+    "tags": [
+      "arithmetic-word"
+    ],
+    "verifiable_answer": "672"
+  },
+  "timestamp_utc": "2026-05-21T09:19:21Z",
+  "usage": {
+    "input_tokens": 316,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 33,
+    "output_tokens_details": {
+      "reasoning_tokens": 26
+    },
+    "total_tokens": 349
+  }
+}

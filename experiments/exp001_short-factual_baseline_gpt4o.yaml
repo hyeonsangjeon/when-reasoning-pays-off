@@ -1,0 +1,66 @@
+# exp001 — gpt-4o baseline column for cross-model comparison on
+# 01-short-factual. Pair experiment to exp001_short-factual_baseline; sweep is
+# intentionally empty because gpt-4o has no reasoning parameter (passing one
+# raises an API error). The runner emits a single column with effort=null.
+#
+# Phase-2 root experiment (parent_experiment: null) per Task 007 spec:
+# treated as an independent root rather than a child of the gpt-5.2 sibling,
+# so the audit-trail expresses "this is the cross-model baseline column,"
+# not "this is a variant of the gpt-5.2 sweep."
+
+experiment_id: exp001_short-factual_baseline_gpt4o
+description: >-
+  Phase-2 GPT-4o baseline column on benchmarks/01-short-factual. Same prompts,
+  dataset, N=20, R=3 as the gpt-5.2 sibling run. Cross-model lens per
+  REPO_SCAFFOLD_SPEC.md "Cross-Model Comparison". Runs FIRST (cheaper,
+  lower variance — gives a known-good baseline before the gpt-5.2 sweep
+  per Task 007 §Run order).
+parent_experiment: null
+benchmark: 01-short-factual
+
+dataset_size: 20
+repeats: 3
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_4O}
+  family: gpt-4o
+  version: 2024-11-20
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# gpt-4o accepts both temperature and top_p; we pin temperature=0.0 to
+# minimize sampler variance across the N×R cell grid. Reasoning families
+# would reject this — see the gpt-5.2 sibling YAML.
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+
+# gpt-4o has no reasoning parameter; sweep.effort intentionally empty.
+sweep:
+  effort: []
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+# Pre-run estimate yields ~$0.2 at the runner's ESTIMATE_INPUT/OUTPUT
+# heuristic; per Task 007 Cost & Time Budget the hard ceiling is $5 (the
+# combined ≤$30 envelope is $5 gpt-4o + $25 gpt-5.2).
+budget:
+  estimated_cost_usd: 0.5
+  hard_ceiling_usd: 5.0
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-21
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  # Pinned SHA-256 hashes of frozen Task 005 deliverables. Operator pre-flight
+  # check verifies the on-disk dataset/system.md match these values before
+  # launching the run; mismatch = silent prompt drift, abort.
+  dataset_sha256: 09caa4fe525c5cfd4e94696f70ff61bf30d7615bd659d3c80892b2e1b4f2974f
+  system_prompt_sha256: 95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64
+
+concurrency: 5

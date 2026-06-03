@@ -1,0 +1,115 @@
+# Experiment YAML template — see docs/05-methodology.md §7 (Reproducibility).
+#
+# Copy this file to experiments/<expNNN>_<benchmark>_<variant>.yaml, then change
+# EXACTLY one variable from the parent experiment (set parent_experiment to the
+# parent's experiment_id). Commit the YAML BEFORE running it so the git_commit
+# embedded in every raw run JSON is meaningful.
+#
+# Field enumeration matches REPO_SCAFFOLD_SPEC.md "experiments/_template.yaml".
+# Field order below is the canonical read-order; do not reorder per-instance.
+
+# ---------------------------------------------------------------------------
+# Identity
+# ---------------------------------------------------------------------------
+experiment_id: exp000_template
+description: >-
+  One sentence stating the hypothesis under test. The hypothesis MUST identify
+  the single variable that differs from parent_experiment.
+parent_experiment: null  # experiment_id of the control run, or null for root
+benchmark: 01-short-factual  # benchmarks/<this>/dataset.json + prompts/ must exist
+
+# ---------------------------------------------------------------------------
+# Sample size (N, R) — see methodology §3
+# ---------------------------------------------------------------------------
+dataset_size: 20  # N: number of distinct samples drawn from dataset.json (cap)
+repeats: 3        # R: repeats per (sample, effort) cell
+
+# ---------------------------------------------------------------------------
+# Model + deployment
+# ---------------------------------------------------------------------------
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}  # env-var indirection, resolved at runtime
+  family: gpt-5.2          # gpt-5.2 | gpt-4o — controls conditional reasoning param
+  version: 2025-12-11      # model version label, for the audit trail
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT  # env var holding the Foundry v1 URL
+  auth_mode: entra         # entra only; the apikey code path does not exist
+
+# Call-shape parameters held constant within a benchmark (methodology §2).
+# Cache invalidation is sensitive — any change to system/user prompts forces a
+# new experiment_id and a re-baseline; these knobs are the controlled levers.
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+  # Optional Azure prompt-cache controls. Commented out by default so per-run
+  # YAMLs opt in explicitly when testing cache hypotheses (see
+  # docs/07-cache-hit-degradation.md). Both fields are forwarded to the request
+  # only when set.
+  #
+  # prompt_cache_key: <string>  # request-scoped key combined with the prefix hash
+  #   # for routing affinity; reusing the same key+prefix bucket keeps requests
+  #   # on the same machine. Above ~15 req/min for a single bucket can spill to
+  #   # additional machines and erode the cache effect.
+  # prompt_cache_retention: in_memory  # allowed: "in_memory" | "24h"
+  #   # Azure default on gpt-5.x is in_memory (5-10 min idle, max ~1h).
+  #   # Set "24h" to opt into extended retention (Hypothesis C).
+  prompt_cache_key: null
+  prompt_cache_retention: null
+
+# ---------------------------------------------------------------------------
+# Sweep (independent variable) — methodology §2
+# ---------------------------------------------------------------------------
+# For gpt-5.2: list the effort levels to sweep. For gpt-4o: leave sweep.effort
+# empty (the gpt-4o branch never sends a reasoning parameter; the runner emits
+# a single column with effort=null).
+sweep:
+  effort:
+    - minimal
+    - low
+    - medium
+    - high
+
+# ---------------------------------------------------------------------------
+# Capture flags — what the per-cell raw JSON records
+# ---------------------------------------------------------------------------
+# `usage` (the full response.usage object) and `call_metadata` are ALWAYS
+# captured per methodology §7 — they are not toggleable. These flags govern
+# the optional/heavy-weight fields.
+capture:
+  response_text: true       # needed for quality eval pass
+  token_categories: true    # always true; flag is documentation
+  latency_ms: true          # wall-clock around the API call
+
+# ---------------------------------------------------------------------------
+# Budget guards — methodology §6 budget guards
+# ---------------------------------------------------------------------------
+# estimated_cost_usd is checked PRE-RUN against MAX_COST_PER_BENCHMARK_USD;
+# hard_ceiling_usd is enforced MID-RUN (running USD total >= ceiling halts the
+# batch). If estimated_cost_usd exceeds MAX_COST_PER_BENCHMARK_USD, the runner
+# aborts unless budget.confirmed: true is set in this YAML.
+budget:
+  estimated_cost_usd: 2.0
+  hard_ceiling_usd: 5.0
+  confirmed: false
+
+# ---------------------------------------------------------------------------
+# Metadata (recorded but not controlled — methodology §2)
+# ---------------------------------------------------------------------------
+metadata:
+  created_at: 2026-05-20  # YYYY-MM-DD, the day the YAML was authored
+  git_commit: null        # resolved at runtime via `git rev-parse HEAD`; do NOT hard-code
+  tenant: <project>
+  # consumption_model_context is the MEASUREMENT ENVIRONMENT, not the audience.
+  # paygo | ptu | both. This repo runs on paygo; analysis serves both audiences
+  # via translation (see docs/06-ptu-vs-paygo.md).
+  consumption_model_context: paygo
+  # architecture_context is the simulated/measured workload architecture, not the audience.
+  # multi_node_orchestration: separate calls for intent, retrieval, drafting, verification
+  # single_call_react: one call internally plans, reflects, produces output
+  # mixed: a hybrid (rare; document why in description)
+  # Affects which cache-hit hypotheses in docs/07-cache-hit-degradation.md apply.
+  architecture_context: single_call_react
+
+# ---------------------------------------------------------------------------
+# Concurrency (async semaphore size — default 5 per methodology)
+# ---------------------------------------------------------------------------
+concurrency: 5

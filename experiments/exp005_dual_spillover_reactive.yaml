@@ -1,0 +1,163 @@
+# exp005 — Phase 2 dual-endpoint spillover MEASUREMENT, REACTIVE policy.
+#
+# Hypothesis: weak-form G (saturation-sensitive cache dip) measured against
+# two physically separate Azure deployments (separate cache pools by Azure
+# design — caching is keyed on deployment name) with the primary route
+# throttling for real instead of via internal simulator bookkeeping. The
+# proactive sibling experiment varies exactly one variable: policy.type.
+# Corpus, user-prompt pool, simulation load profile, and per-policy
+# defaults are byte-identical to Task 012 (exp004) so Phase 1 ↔ Phase 2
+# recovery-curve shape is directly comparable.
+#
+# This is NOT a simulation: throttling and cache-pool separation are real.
+# This is NOT a replica of any specific deployment: TPM, prompt corpus,
+# user pool, and load pattern are workload-shaping parameters chosen to
+# expose the mechanism. Never customer-attributed.
+#
+# Position in series: parent exp004_spillover_baseline_reactive (Phase 1).
+# Consumed by scripts/measure_dual_spillover.py — independent of both
+# scripts/run_benchmark.py and scripts/simulate_spillover.py at the
+# orchestration layer (the pure-function policy primitives are imported
+# from Task 012 unchanged so behavior remains byte-identical).
+
+experiment_id: exp005_dual_spillover_reactive
+description: >-
+  Phase 2 dual-endpoint spillover measurement — REACTIVE policy. Two real
+  Azure gpt-5.2 deployments: primary at low TPM (intermittent real 429s)
+  and spillover at high TPM (anomaly route). Real 429s from primary are
+  the trigger this benchmark exists to measure; reactive routes the
+  failing request and the next stay_on_spillover_min_requests to the
+  spillover deployment. Same corpus_seed / load profile as exp004 so
+  Phase 1 ↔ Phase 2 cache-recovery curves are comparable.
+parent_experiment: exp004_spillover_baseline_reactive
+benchmark: 05-dual-spillover
+
+# Two deployments. Same endpoint base, same Entra ID auth, same family —
+# they differ ONLY in deployment name (and therefore in cache pool, by
+# Azure design). The dual-client construction is mechanically distinct
+# so future variants (different region, etc.) can swap endpoints.
+primary:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED}
+  deployment_name: ptu-deploy-throttled
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+  # TPM/RPM here are documentation only; runtime never reads them.
+  # The PRIMARY is intentionally throttled so the ~30K-token sustained
+  # workload produces real 429s — the mechanism this benchmark exposes.
+  tpm: 60000
+  rpm: 600
+
+spillover:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  deployment_name: gpt-5.2
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+  # SPILLOVER must NOT throttle. If aggregate real 429s on spillover
+  # exceed 1% of spillover requests, the runner halts with non-zero
+  # exit (signal that the spillover TPM is misconfigured).
+  tpm: 500000
+  rpm: 5000
+
+# Reasoning families on Foundry v1 reject temperature / top_p — both
+# keys are intentionally absent.
+call_params:
+  max_output_tokens: 1024
+  # Optional Azure prompt-cache controls. Left null so Azure defaults
+  # apply; passed value (if any) is captured verbatim per request.
+  prompt_cache_key: null
+  prompt_cache_retention: null
+
+effort: low
+# 2026-05-28: effort changed from "minimal" → "low". gpt-5.2-2025-12-11
+# rejects effort="minimal" at dispatch (HTTP 400 unsupported_value;
+# supported: none / low / medium / high / xhigh) — same lesson exp004
+# (Phase 1) learned in its v3 HOTFIX 2026-05-27. Matching exp004's
+# effort=low keeps the Phase 1 ↔ Phase 2 recovery-curve comparison fair
+# (both phases use the same model-accepted effort level).
+
+# Policy contract — verbatim Phase 2 spec (Task 013 §YAML structure).
+# Reactive policy:
+#   treat_real_429_as_trigger: TRUE means a real 429 from primary is
+#   itself the trigger — equivalent (within this measurement scope)
+#   to a first-token-latency timeout. The failing request and the next
+#   stay_on_spillover_min_requests are routed to spillover. Real 429s
+#   are NEVER silently retried away.
+policy:
+  type: reactive
+  reactive_params:
+    first_token_timeout_ms: 3000
+    health_check_interval_ms: 30000
+    stay_on_spillover_min_requests: 10
+    treat_real_429_as_trigger: true
+  # Proactive params present for shape symmetry; ignored when
+  # policy.type == reactive.
+  proactive_params:
+    latency_window_size: 50
+    p95_threshold_multiplier: 1.5
+    spillover_fraction_max: 0.8
+    measurement_window_seconds: 10
+    ramp_up_step: 0.2
+    ramp_back_factor: 0.9
+    real_429_observed_action: route_to_spillover
+    real_429_followup_requests: 5
+
+# Load shape — verbatim from Task 012 so Phase 1 ↔ Phase 2 compare
+# fairly. Warmup 0.3 TPS / ramp 0.5→2.5 TPS / sustain 2.0 TPS over
+# 22 minutes. The TPS values are mechanism-exposing parameters chosen
+# to push the 60K-TPM primary into saturation. Never customer-attributed.
+simulation:
+  duration_seconds: 1320         # 22 min total
+  warmup:
+    duration_seconds: 120        # 2 min
+    tps: 0.3
+  load_pattern:
+    type: ramp_then_sustain
+    ramp_start_tps: 0.5
+    ramp_end_tps: 2.5
+    ramp_duration_seconds: 600   # 10 min
+    sustain_tps: 2.0
+    sustain_duration_seconds: 600  # 10 min
+
+# Deterministic system-prompt construction. SAME corpus_seed as exp004
+# so Phase 1 and Phase 2 use byte-identical system prompts (the corpus
+# and user-prompts files are also byte-identical copies — SHA-256s
+# logged in benchmarks/05-dual-spillover/README.md).
+corpus_seed: 4242
+target_system_prompt_tokens: 30000
+system_prompt_corpus_path: benchmarks/05-dual-spillover/system_prompt_corpus.json
+user_prompts_path: benchmarks/05-dual-spillover/user_prompts.json
+
+# Per-policy YAML budget. Phase 2 spend is higher than Phase 1 because
+# real 429 churn forces cache rebuild on both pools; typical actual
+# spend is $3-6. Hard ceiling is the per-policy cap from Task 013
+# §Cost & Time Budget ($75).
+budget:
+  # 2026-05-28: budget envelope aligned with exp004 v3 HOTFIX after the
+  # effort=minimal → low migration. The conservative no-cache pre-run
+  # estimate (~$118 per policy) now exceeds MAX_COST_PER_BENCHMARK_USD,
+  # so `confirmed: true` is load-bearing (owner-approved Phase 2 live
+  # spend, Task 015 Phase 2 data generation, reactive policy). Expected
+  # cached per-policy spend remains roughly $3-6 thanks to Foundry
+  # prompt caching; `hard_ceiling_usd: 60.0` is the mid-run guard.
+  estimated_cost_usd: 118.31
+  hard_ceiling_usd: 60.0
+  confirmed: true
+
+metadata:
+  created_at: 2026-05-25
+  git_commit: null
+  tenant: <project>
+  # consumption_model_context is the MEASUREMENT ENVIRONMENT. We are
+  # exercising a PTU-with-spillover *pattern* using two PAYG
+  # deployments; the consumption model annotation reflects the pattern
+  # we simulate, not the billing model the experiment runs on.
+  consumption_model_context: ptu
+  architecture_context: single_call_react
+  hypothesis_under_test: G_weak
+  phase: 2
+
+concurrency: 4

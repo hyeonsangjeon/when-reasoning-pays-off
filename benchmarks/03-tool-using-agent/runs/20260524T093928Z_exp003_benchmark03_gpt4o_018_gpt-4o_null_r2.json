@@ -1,0 +1,121 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "5f74b9880c51ff591ec1dd994bf8e1715d33a2ca106f083b645fd35a053e4e82",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": "0c4f778c655f6535985b5ee6f83e96847cca53243c5056068e20511d73a5e53c",
+    "user_input_sha256": "f898b9050911051253c662dd441f1b38acf646df3e15a6f724933bc46a42f32d"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": true,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp003_benchmark03_gpt4o",
+  "git_commit": "38aee6ecb869bb7469f92c1b8abb8691b2a8d9f2",
+  "latency_ms": 4755.982999689877,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "289",
+  "retry_count": 0,
+  "sample_id": "tu_19",
+  "sample_idx": 18,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer. web_search once, calculator twice (or chained).",
+    "expected_tool_calls": [
+      "web_search",
+      "calculator",
+      "calculator"
+    ],
+    "id": "tu_19",
+    "input": "Look up the founding year of Helio Robotics, then compute its age in years as of 2026, then compute that age squared.",
+    "quality_rubric_notes": "Correct iff web_search retrieves 'founding year of Helio Robotics' = 2009, and the calculator is used to derive 2026-2009 = 17, then 17*17 = 289 (a single combined expression (2026-2009)**2 also accepted). The final answer must be 289.",
+    "tags": [
+      "multi-tool",
+      "chained-calc"
+    ],
+    "verifiable_answer": "289"
+  },
+  "timestamp_utc": "2026-05-24T09:39:28Z",
+  "tool_calls": [
+    {
+      "iteration": 1,
+      "latency_ms": 1620.4862501472235,
+      "tool_args": {
+        "query": "founding year of Helio Robotics"
+      },
+      "tool_call_id": "call_xGZhvsHxrDnbVAl4wAz0YOhR",
+      "tool_name": "web_search",
+      "tool_result_summary": "2009",
+      "usage": {
+        "input_tokens": 572,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 21,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 593
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 1454.6328326687217,
+      "tool_args": {
+        "expr": "2026-2009"
+      },
+      "tool_call_id": "call_XSt9t71i5HVledRswOBd46GV",
+      "tool_name": "calculator",
+      "tool_result_summary": "17",
+      "usage": {
+        "input_tokens": 603,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 56,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 659
+      }
+    },
+    {
+      "iteration": 2,
+      "latency_ms": 1454.6328326687217,
+      "tool_args": {
+        "expr": "(2026-2009)**2"
+      },
+      "tool_call_id": "call_3peKiZ4qPOsYMo4SqyaiklLm",
+      "tool_name": "calculator",
+      "tool_result_summary": "289",
+      "usage": {
+        "input_tokens": 603,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 56,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 659
+      }
+    }
+  ],
+  "tool_loop_terminated": "ok",
+  "usage": {
+    "input_tokens": 1831,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 80,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1911
+  }
+}

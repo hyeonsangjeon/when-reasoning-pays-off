@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0013125836849212646,
+    "tool_config_sha256": null,
+    "user_input_sha256": "38333ad992ee525e8f30ce5a64c9fdbca1999d1a05e8e244cda4a28f9e3ae4d2"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1561.4835829474032,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "false",
+  "retry_count": 0,
+  "sample_id": "mr_16",
+  "sample_idx": 15,
+  "sample_metadata": {
+    "expected_output_shape": "A single lowercase word that is either 'true' or 'false'.",
+    "id": "mr_16",
+    "input": "Evaluate the boolean expression (A AND B) AND (NOT C) given A=true, B=false, C=true. Report 'true' or 'false'.",
+    "quality_rubric_notes": "Correct answer is 'false' (A AND B = true AND false = false; NOT C = false; false AND false = false). Case-insensitive match acceptable; any other token fails.",
+    "tags": [
+      "boolean-logic"
+    ],
+    "verifiable_answer": "false"
+  },
+  "timestamp_utc": "2026-05-21T09:23:31Z",
+  "usage": {
+    "input_tokens": 292,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 297
+  }
+}

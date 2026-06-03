@@ -1,0 +1,74 @@
+# exp001 — baseline measurement of GPT-5.2 reasoning effort sweep on the
+# 01-short-factual benchmark. This is the root Phase-2 experiment (no parent).
+#
+# Hypothesis: on short-factual tasks the reasoning-effort axis produces a
+# detectable token cost increase with negligible quality change. This run
+# captures the cost surface; the cost-vs-quality verdict lands in
+# benchmarks/01-short-factual/analysis.md after Task 008 lands.
+#
+# Methodology invariant: Foundry v1 reasoning models (gpt-5.2 family) reject
+# `temperature` and `top_p` with HTTP 400 (see scripts/run_benchmark.py
+# build_call_kwargs guard). This YAML therefore omits both keys from
+# call_params; the runner validates that fact at config-load time.
+#
+# Effort whitelist matches the live Foundry v1 gpt-5.2 deployment as observed
+# during the Task 006 smoke: {none, low, medium, high, xhigh}. The Task 006
+# smoke (commit db3db26) confirmed `minimal` is rejected with HTTP 400.
+
+experiment_id: exp001_short-factual_baseline
+description: >-
+  Phase-2 baseline GPT-5.2 effort sweep over benchmarks/01-short-factual.
+  Same prompt, same dataset, same R=3 across all five effort levels; the
+  only variable is reasoning.effort. Pair experiment to
+  exp001_short-factual_baseline_gpt4o (gpt-4o sibling column).
+parent_experiment: null
+benchmark: 01-short-factual
+
+dataset_size: 20
+repeats: 3
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}
+  family: gpt-5.2
+  version: 2025-12-11
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+# Reasoning families reject temperature / top_p — both keys intentionally
+# absent here. The runner raises ValueError if either reappears.
+call_params:
+  max_output_tokens: 4096
+
+sweep:
+  effort:
+    - none
+    - low
+    - medium
+    - high
+    - xhigh
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+# Pre-run estimate (PER_EFFORT_REASONING_HEURISTIC + ESTIMATE_INPUT/OUTPUT
+# in scripts/run_benchmark.py) yields ~$8.3 for this run shape. The hard
+# ceiling is set per Task 007 spec (combined ≤ $30: $25 gpt-5.2 + $5 gpt-4o).
+budget:
+  estimated_cost_usd: 9.0
+  hard_ceiling_usd: 25.0
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-21
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  # Pinned SHA-256 hashes of frozen Task 005 deliverables. Operator pre-flight
+  # check verifies the on-disk dataset/system.md match these values before
+  # launching the run; mismatch = silent prompt drift, abort.
+  dataset_sha256: 09caa4fe525c5cfd4e94696f70ff61bf30d7615bd659d3c80892b2e1b4f2974f
+  system_prompt_sha256: 95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64
+
+concurrency: 5

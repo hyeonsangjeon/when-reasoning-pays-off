@@ -1,0 +1,14 @@
+{
+  "name": "calculator",
+  "description": "Evaluate a numeric arithmetic expression using exact decimal arithmetic. Supports +, -, *, /, **, parentheses, unary minus, and the functions sqrt(x), abs(x), round(x, n). Returns the numeric result as a string.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expr": {
+        "type": "string",
+        "description": "A single arithmetic expression. Examples: '17.3/100*241000', 'sqrt(2025)', '(123+456)/7', '2026-1987'."
+      }
+    },
+    "required": ["expr"]
+  }
+}

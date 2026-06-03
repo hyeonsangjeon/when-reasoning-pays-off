@@ -1,0 +1,14 @@
+{
+  "name": "web_search",
+  "description": "Look up a single fact from the corporate knowledge base. Returns the value associated with the query, or 'no results' if the key is not present. The KB only contains facts about a fixed set of fictional entities; do not use this for general web search.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "A query string that must exactly match a KB key, e.g. 'population of Vega City', 'founding year of Atlas Foundation'."
+      }
+    },
+    "required": ["query"]
+  }
+}

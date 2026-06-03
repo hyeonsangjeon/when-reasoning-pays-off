@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "05c07e4c3fc4ed9b017a78a50fac8e38d590487d717178e2e1916261b2583f78"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": false,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt4o",
+  "git_commit": "69f3e3a6f51a1c59d60b2380108bed5b43c433a9",
+  "latency_ms": 3638.1334578618407,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "Bob, Carol, Alice, Dan",
+  "retry_count": 0,
+  "sample_id": "mr_05",
+  "sample_idx": 4,
+  "sample_metadata": {
+    "expected_output_shape": "Four names separated by ', ' (comma and space) in the order from first to last in line, with no surrounding prose.",
+    "id": "mr_05",
+    "input": "Bob, Carol, Alice, and Dan stand in a single line at a coffee shop. Alice is not first in line. Carol stands directly behind Bob (so Bob is immediately ahead of Carol). Dan stands last in line. Write the order from first in line to last in line, names separated by commas.",
+    "quality_rubric_notes": "The only valid order is 'Bob, Carol, Alice, Dan' (Dan is last; Bob immediately ahead of Carol means Bob-Carol is a contiguous pair; Alice is not first, so Alice cannot be position 1; the only consistent arrangement is Bob-Carol-Alice-Dan). Spacing and capitalization must match the four names; commas optional but required as separators. Reorderings or extra prose fail.",
+    "tags": [
+      "constraint-satisfaction"
+    ],
+    "verifiable_answer": "Bob, Carol, Alice, Dan"
+  },
+  "timestamp_utc": "2026-05-21T09:20:51Z",
+  "usage": {
+    "input_tokens": 335,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 8,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 343
+  }
+}

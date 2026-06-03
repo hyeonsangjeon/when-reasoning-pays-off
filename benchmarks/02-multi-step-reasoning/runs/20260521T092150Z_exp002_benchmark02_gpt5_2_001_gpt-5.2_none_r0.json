@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "12c086b07dcac429ebfd756e312a0923fd03ec5de480b7c7ae6382a470f95bee"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 1581.9474998861551,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "175",
+  "retry_count": 0,
+  "sample_id": "mr_02",
+  "sample_idx": 1,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no dollar sign, commas, or surrounding prose.",
+    "id": "mr_02",
+    "input": "Sarah saves 15 dollars every week for 12 weeks. She then spends one quarter of her total savings on a gift. After that, she earns an additional 40 dollars. How many dollars does Sarah have at the end?",
+    "quality_rubric_notes": "Correct answer is exactly 175 (savings: 15 * 12 = 180; after spending: 180 * 0.75 = 135; final: 135 + 40 = 175). The integer 175 must appear and be the sole numeric token; any other integer is a fail.",
+    "tags": [
+      "arithmetic-word"
+    ],
+    "verifiable_answer": "175"
+  },
+  "timestamp_utc": "2026-05-21T09:21:50Z",
+  "usage": {
+    "input_tokens": 306,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 5,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 311
+  }
+}

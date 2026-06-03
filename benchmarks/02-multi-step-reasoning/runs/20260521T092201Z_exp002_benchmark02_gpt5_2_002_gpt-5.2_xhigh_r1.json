@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": 0.0010058330371975899,
+    "tool_config_sha256": null,
+    "user_input_sha256": "2469e79610a632496dc867ba3c8724bd7bd136496b5987e6e83d67f09941263e"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt5_2",
+  "git_commit": "ea4ee2757a9e6b4b1ff27623b2a7090f28f56e0f",
+  "latency_ms": 2521.0274159908295,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "4",
+  "retry_count": 0,
+  "sample_id": "mr_03",
+  "sample_idx": 2,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer with no units or surrounding prose.",
+    "id": "mr_03",
+    "input": "Train A leaves a station heading east at 60 kilometers per hour. Two hours after Train A departs, Train B leaves the same station heading east on the same track at 90 kilometers per hour. How many hours after Train B departs does Train B catch up to Train A?",
+    "quality_rubric_notes": "Correct answer is exactly 4 (Train A has a 120 km head start; closing speed is 30 km/h; time to close = 4 hours). The integer 4 must be the only number in the response.",
+    "tags": [
+      "arithmetic-word"
+    ],
+    "verifiable_answer": "4"
+  },
+  "timestamp_utc": "2026-05-21T09:22:01Z",
+  "usage": {
+    "input_tokens": 314,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 97,
+    "output_tokens_details": {
+      "reasoning_tokens": 90
+    },
+    "total_tokens": 411
+  }
+}

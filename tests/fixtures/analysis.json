@@ -1,0 +1,33 @@
+{
+  "benchmark_id": "test-bench-001",
+  "git_commit": "0000000000000000000000000000000000000000",
+  "cells": [
+    {
+      "model": "gpt-4o",
+      "effort": null,
+      "sample_count": 3,
+      "input_tokens_mean": 412.0,
+      "cached_tokens_mean": 0.0,
+      "output_tokens_mean": 88.0,
+      "reasoning_tokens_mean": 0.0
+    },
+    {
+      "model": "gpt-5.2",
+      "effort": "minimal",
+      "sample_count": 3,
+      "input_tokens_mean": 412.0,
+      "cached_tokens_mean": 0.0,
+      "output_tokens_mean": 138.0,
+      "reasoning_tokens_mean": 50.0
+    },
+    {
+      "model": "gpt-5.2",
+      "effort": "high",
+      "sample_count": 3,
+      "input_tokens_mean": 412.0,
+      "cached_tokens_mean": 0.0,
+      "output_tokens_mean": 588.0,
+      "reasoning_tokens_mean": 500.0
+    }
+  ]
+}

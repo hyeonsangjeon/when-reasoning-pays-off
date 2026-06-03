@@ -1,0 +1,54 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "93eee9a74270a47b4520e42d79dfba318158b3b173e97927d1d5c6b282c93db9"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "none",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1475.2885843627155,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 1,
+  "response_text": "The meeting titled \"Quarterly review\" is on 2026-04-12.",
+  "retry_count": 0,
+  "sample_id": "sf_02",
+  "sample_idx": 1,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence stating the meeting title and date.",
+    "id": "sf_02",
+    "input": {
+      "meeting": {
+        "date": "2026-04-12",
+        "duration_minutes": 30,
+        "title": "Quarterly review"
+      }
+    },
+    "quality_rubric_notes": "Must include the title 'Quarterly review' verbatim and the date 2026-04-12 in some recognizable form. Other words around them are acceptable.",
+    "tags": [
+      "extraction"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:58:26Z",
+  "usage": {
+    "input_tokens": 233,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 22,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 255
+  }
+}

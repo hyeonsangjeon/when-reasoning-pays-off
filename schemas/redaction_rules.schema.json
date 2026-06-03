@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RedactionRules",
+  "description": "Public-safe JSON Schema for the redaction-rules YAML referenced by Task 030 / docs/16. The runtime YAML lives in a private, gitignored location and is intentionally NOT tracked in this public repo; this schema documents the shape of that file using placeholder examples only. No real endpoint host, deployment name, region, customer name, or secret pattern appears in this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "rules"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of the rules-file schema.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "rules": {
+      "type": "array",
+      "description": "Ordered list of redaction rules. Order matters: 'abort' rules MUST be evaluated before lossy transforms so a secret hit is never written to a redacted output.",
+      "items": {
+        "$ref": "#/definitions/RedactionRule"
+      }
+    }
+  },
+  "definitions": {
+    "RedactionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "detect",
+        "action",
+        "tiers"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable rule identifier (kebab-case). Greppable from audit reports.",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "category": {
+          "type": "string",
+          "description": "Coarse rule category. Mirrors the Task 030 redaction-rule categories table.",
+          "enum": [
+            "secrets",
+            "endpoint-urls",
+            "deployment-names",
+            "region",
+            "request-ids",
+            "wallclock-timestamps",
+            "customer-shape-fingerprints",
+            "free-text-payloads",
+            "internal-hostnames",
+            "email-addresses",
+            "customer-names"
+          ]
+        },
+        "detect": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "How the rule recognises a hit. Exactly one of 'regex' or 'field_names' is required.",
+          "properties": {
+            "regex": {
+              "type": "string",
+              "description": "PCRE-style regex evaluated case-insensitively. Example placeholder: '<PATTERN-PLACEHOLDER>'. The real patterns live in the private rules YAML, not in this schema."
+            },
+            "field_names": {
+              "type": "array",
+              "description": "Exact field-name matches in structured records. Example placeholders only.",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z_][a-z0-9_.\\[\\]*]*$"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        "action": {
+          "type": "string",
+          "description": "What to do when the detector hits.",
+          "enum": [
+            "abort",
+            "drop",
+            "replace",
+            "pseudonymize",
+            "round-to-hour-utc"
+          ]
+        },
+        "replacement": {
+          "type": "string",
+          "description": "Placeholder string used when action='replace'. Example: '<redacted>'. MUST be public-safe; no real values."
+        },
+        "tiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Tier-specific application of this rule. Each entry is one of: 'required' (rule MUST run), 'further-generalized' (a stricter variant runs at this tier), 'retain' (this rule does NOT apply at this tier).",
+          "properties": {
+            "SANITIZED_PUBLIC": {
+              "$ref": "#/definitions/TierAction"
+            },
+            "AGGREGATE_AZURE_SAMPLE": {
+              "$ref": "#/definitions/TierAction"
+            }
+          }
+        }
+      }
+    },
+    "TierAction": {
+      "type": "string",
+      "enum": [
+        "required",
+        "further-generalized",
+        "retain",
+        "abort"
+      ]
+    }
+  }
+}

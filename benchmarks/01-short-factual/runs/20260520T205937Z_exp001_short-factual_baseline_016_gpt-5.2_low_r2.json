@@ -1,0 +1,51 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0010768747888505459,
+    "tool_config_sha256": null,
+    "user_input_sha256": "657c4655ac6a83a2604a0872bfa63de2cde4e059b18405a71ff08568cee3ee42"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "low",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1511.717583052814,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "The length is 2500 meters.",
+  "retry_count": 0,
+  "sample_id": "sf_17",
+  "sample_idx": 16,
+  "sample_metadata": {
+    "expected_output_shape": "A single sentence giving the length in meters as a whole number.",
+    "id": "sf_17",
+    "input": {
+      "length_km": 2.5
+    },
+    "quality_rubric_notes": "Sentence must contain 2500 as the meter equivalent of 2.5 kilometers; the word 'meters' (or 'm') should be near the number.",
+    "tags": [
+      "formatting",
+      "unit-conversion"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:59:37Z",
+  "usage": {
+    "input_tokens": 211,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 12,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 223
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "time_since_last_identical_prefix_seconds": 0.0012340000830590725,
+    "tool_config_sha256": null,
+    "user_input_sha256": "08d7b996f994d7f387862281b5e1b467dfb78bc3d8ce09fefa0a5d8359f377e4"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-5.2",
+  "dirty": false,
+  "dry_run": false,
+  "effort": "xhigh",
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp001_short-factual_baseline",
+  "git_commit": "b0ee8ff185865db57b12de6dc90b9910b1e8991c",
+  "latency_ms": 1430.85095891729,
+  "model": "gpt-5.2",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 2,
+  "response_text": "$14.99",
+  "retry_count": 0,
+  "sample_id": "sf_04",
+  "sample_idx": 3,
+  "sample_metadata": {
+    "expected_output_shape": "A single short string showing the amount in dollar-and-cents form with a dollar sign.",
+    "id": "sf_04",
+    "input": {
+      "amount_cents": 1499,
+      "currency": "USD"
+    },
+    "quality_rubric_notes": "Acceptable outputs include '$14.99' or 'USD 14.99' or equivalent representations showing 14 dollars and 99 cents; the dollar sign or 'USD' must appear.",
+    "tags": [
+      "formatting"
+    ]
+  },
+  "timestamp_utc": "2026-05-20T20:58:39Z",
+  "usage": {
+    "input_tokens": 222,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 8,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 230
+  }
+}

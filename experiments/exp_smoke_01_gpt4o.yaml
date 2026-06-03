@@ -1,0 +1,55 @@
+# exp_smoke_01_gpt4o — Phase-1 smoke run for the gpt-4o baseline column.
+#
+# Hypothesis: a 2-call live invocation against the real Foundry v1 endpoint
+# (N=2, R=1, no effort sweep — gpt-4o has no reasoning parameter) exercises
+# the non-reasoning code path and confirms that no `reasoning` key appears in
+# the request payload and no `reasoning_tokens > 0` appears in the response.
+# Sibling to exp_smoke_01; same dataset slice (sf_01, sf_02) so the smoke
+# pipeline check is symmetric across families.
+
+experiment_id: exp_smoke_01_gpt4o
+description: >-
+  Phase-1 smoke run — end-to-end pipeline validation. Real Foundry v1 endpoint,
+  gpt-4o deployment, N=2 samples (sf_01, sf_02), R=1, no effort sweep (gpt-4o
+  has no reasoning parameter; passing one raises an API error). Throwaway
+  smoke, not a statistical claim.
+parent_experiment: null
+benchmark: 01-short-factual
+
+dataset_size: 2
+repeats: 1
+
+model:
+  deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT_4O}
+  family: gpt-4o
+  version: 2024-11-20
+  endpoint_env: AZURE_OPENAI_FOUNDRY_ENDPOINT
+  auth_mode: entra
+
+call_params:
+  max_output_tokens: 4096
+  temperature: 0.0
+
+# gpt-4o has no reasoning parameter; sweep.effort intentionally empty.
+sweep:
+  effort: []
+
+capture:
+  response_text: true
+  token_categories: true
+  latency_ms: true
+
+budget:
+  estimated_cost_usd: 0.10
+  hard_ceiling_usd: 1.00
+  confirmed: false
+
+metadata:
+  created_at: 2026-05-20
+  git_commit: null
+  tenant: <project>
+  consumption_model_context: paygo
+  experiment_id: exp_smoke_01_gpt4o
+  description: Phase-1 smoke run — end-to-end pipeline validation
+
+concurrency: 5

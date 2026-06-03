@@ -1,0 +1,72 @@
+name: Reproducibility report
+description: Report that you cannot reproduce a published number, chart, or claim from this repository.
+labels: ["reproducibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reproducibility is the contract of this repository. If you
+        cannot reproduce a published claim, please file this report so
+        the maintainer can investigate.
+
+        Methodology is frozen in `docs/05-methodology.md`. Changes to
+        the methodology follow the escalation in `GOVERNANCE.md`.
+  - type: input
+    id: claim
+    attributes:
+      label: Published claim being reproduced
+      description: |
+        Quote or link the exact published claim. Include the doc / analysis
+        file and the section / table / figure.
+      placeholder: e.g. `benchmarks/02-multi-step-reasoning/analysis.md` Table 3
+    validations:
+      required: true
+  - type: input
+    id: commit_sha
+    attributes:
+      label: Commit SHA you tested at
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command(s) you ran
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected_vs_actual
+    attributes:
+      label: Expected vs actual result
+      description: |
+        Paste the published number and the number you observed. Include
+        units. If a chart, attach or describe the divergence.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Python version, OS, Azure region (if relevant), deployment family
+        (e.g. `gpt-5.2`, not the specific private deployment name), and
+        any other context. Do **not** paste a specific deployment name
+        or endpoint hostname.
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: What you think might explain the divergence
+      description: Optional. Pricing snapshot drift? Region difference? Methodology gap?
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read [docs/05-methodology.md](../blob/main/docs/05-methodology.md).
+          required: true
+        - label: My report contains no endpoint hostnames, deployment names, request IDs, region identifiers, customer names, or secrets.
+          required: true

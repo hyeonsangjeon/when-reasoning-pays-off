@@ -1,0 +1,49 @@
+{
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "call_metadata": {
+    "deployment_cold_start": false,
+    "system_prompt_sha256": "974aac89df8346c8068a3bf8a05d5829677566dd2fce264c0dd99db26528ab23",
+    "time_since_last_identical_prefix_seconds": null,
+    "tool_config_sha256": null,
+    "user_input_sha256": "f6e40c52af6ccbb963770641daed046bfb0ae4d341573337ea4392e3b6f13a81"
+  },
+  "cold_start": false,
+  "deployment_name": "gpt-4o",
+  "dirty": false,
+  "dry_run": false,
+  "effort": null,
+  "endpoint": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+  "experiment_id": "exp002_benchmark02_gpt4o",
+  "git_commit": "69f3e3a6f51a1c59d60b2380108bed5b43c433a9",
+  "latency_ms": 962.4442076310515,
+  "model": "gpt-4o",
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-05.yaml",
+  "repeat": 0,
+  "response_text": "4",
+  "retry_count": 0,
+  "sample_id": "mr_07",
+  "sample_idx": 6,
+  "sample_metadata": {
+    "expected_output_shape": "A single integer that is 1, 2, 3, or 4, with no surrounding prose.",
+    "id": "mr_07",
+    "input": "Four people sit around a circular table with four chairs. Going clockwise around the table, the seats are numbered 1, 2, 3, 4. Alice sits in seat 1. Bob sits in the seat immediately clockwise from Alice. Carol sits directly across the table from Alice (in the seat that is two positions away). In which seat number does Dan sit?",
+    "quality_rubric_notes": "Correct answer is exactly 4 (Alice=1, Bob=2, Carol=3, so Dan must occupy the remaining seat, 4). Any other integer is a fail.",
+    "tags": [
+      "constraint-satisfaction"
+    ],
+    "verifiable_answer": "4"
+  },
+  "timestamp_utc": "2026-05-21T09:20:53Z",
+  "usage": {
+    "input_tokens": 346,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 2,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 348
+  }
+}
