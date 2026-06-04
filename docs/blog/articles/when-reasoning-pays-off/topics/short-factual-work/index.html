@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Short factual work | when reasoning pays off</title>
+  <meta name="description" content="A detailed topic essay on why short factual work often does not benefit from higher reasoning effort.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical_topic">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../../" data-locale="en" aria-current="true">English article</a>
+        <a href="../../ko/" data-locale="ko">한국어</a>
+        <a href="../../ja/" data-locale="ja">日本語</a>
+        <a href="../../zh-CN/" data-locale="zh-CN">简体中文</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">Topic essay · benchmark-01 short factual work</p>
+    <h1>Short factual work: when extra reasoning buys cost, not quality</h1>
+    <p class="lede">
+      This topic is the first trap a migration team should test. A model can
+      spend more internal reasoning tokens on a short factual answer, but the
+      visible answer may not become better. The result is a cleaner-looking
+      demo and a messier bill.
+    </p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile">
+        <h2>Story question</h2>
+        <p>If the task mostly asks for short factual answers, does higher reasoning effort improve quality enough to justify the bill?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence used</h2>
+        <p>benchmark-01 cost, quality, latency, and token-shape charts, paired with the public data tables.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Default low. Escalate only after an evaluator shows a real quality lift on this workload shape.</p>
+      </section>
+    </div>
+
+    <p class="banner">
+      <strong>Open the matching chart family:</strong>
+      <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">benchmark-01 cost chart</a>
+      and the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-quality">paired quality chart</a>.
+    </p>
+
+    <section class="article-section">
+      <h2>The intuition we tested</h2>
+      <p>
+        The tempting rule is simple: if reasoning models are stronger, raise
+        reasoning effort and let the model think more. That rule is dangerous
+        for short factual work. The task may not need a long internal search;
+        it may need retrieval, a stable prompt, or simply the lowest effort
+        setting that already answers correctly.
+      </p>
+      <p>
+        The experiment therefore asks a narrow question: when the answer is
+        short and factual, does the effort ladder create a measurable quality
+        improvement, or does it mostly create a larger hidden-token budget?
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>How to read the chart</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>X-axis</h3>
+          <p>
+            The bars move left to right across reasoning effort levels: baseline,
+            minimal, low, medium, high, and extra-high. Treat this as the
+            control knob the operator can change.
+          </p>
+        </div>
+        <div>
+          <h3>Y-axis</h3>
+          <p>
+            In the cost chart, bar height means mean USD per request. In the
+            quality chart, bar height means mean judge score. Read them as a
+            pair, not separately.
+          </p>
+        </div>
+        <div>
+          <h3>Bars and table</h3>
+          <p>
+            Each bar is an aggregate cell. The table below the chart shows the
+            exact value, standard deviation where available, and sample count.
+            Error bars are standard deviation, not confidence intervals.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="article-section">
+      <h2>What happened</h2>
+      <p>
+        The cost curve rose sharply. Minimal effort averaged $0.000663 per
+        request; extra-high effort averaged $0.005043 per request, a 7.6x bill.
+        The paired quality movement did not justify that spend: the mean judge
+        score moved from 1.87931 to 1.779661.
+      </p>
+      <p>
+        That is not a universal claim that reasoning is bad. It is a workload
+        shape claim. In this slice, the added internal computation did not buy
+        a matching answer-quality gain. The dashboard makes the mismatch visible
+        because cost and quality are kept side by side.
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>What we learned while benchmarking</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>More thinking is not a default</h3>
+          <p>
+            Effort is a treatment. It should be applied to a slice, measured,
+            and promoted only if the evaluator moves. Treating it as a global
+            default hides the bill until production traffic arrives.
+          </p>
+        </div>
+        <div>
+          <h3>Cost must be paired with quality</h3>
+          <p>
+            A cost-only chart can make the change look obvious but incomplete.
+            A quality-only chart can hide the economic cost. The useful view is
+            the pair: what did we buy, and did it improve the answer?
+          </p>
+        </div>
+        <div>
+          <h3>Short factual work needs a low-effort baseline</h3>
+          <p>
+            The lowest acceptable effort level is the baseline to beat. If a
+            higher level does not beat it on quality, the operator should keep
+            the cheaper setting and spend optimization time elsewhere.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>Operator playbook</h2>
+      <ol>
+        <li>Start short factual workloads at the lowest available effort level.</li>
+        <li>Define a quality gate before raising effort.</li>
+        <li>Read cost, quality, latency, and token composition together.</li>
+        <li>Promote a higher effort only when quality improves enough to justify the bill.</li>
+      </ol>
+      <p>
+        <a class="button-link" href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">Inspect the source chart</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>
