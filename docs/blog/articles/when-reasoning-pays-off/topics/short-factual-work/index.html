@@ -36,16 +36,16 @@
 
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile">
-        <h2>Story question</h2>
+        <h2>Question</h2>
         <p>If the task mostly asks for short factual answers, does higher reasoning effort improve quality enough to justify the bill?</p>
       </section>
       <section class="summary-tile">
-        <h2>Evidence used</h2>
+        <h2>Evidence</h2>
         <p>benchmark-01 cost, quality, latency, and token-shape charts, paired with the public data tables.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
-        <p>Default low. Escalate only after an evaluator shows a real quality lift on this workload shape.</p>
+        <p>Default to the lowest effort that already answers correctly. Escalate only after an evaluator shows a real quality lift on this workload shape.</p>
       </section>
     </div>
 
@@ -250,16 +250,54 @@
       </p>
     </section>
 
+    <section class="article-section">
+      <h2>Sources and evidence boundary</h2>
+      <p>
+        Every number above traces to a public artifact in this repository, and
+        every cost figure is computed against a dated pricing snapshot. The
+        operating interpretation — that higher effort should stay experimental
+        for this slice — is this essay's own. The two tiers below mark where the
+        documented input ends and the inference begins.
+      </p>
+      <ul>
+        <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
+        <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000663 at minimal effort, $0.005043 at extra-high effort, the 7.6x bill) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The ratio drifts if list pricing moves.</li>
+        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the cost climb, the 1.87931 to 1.779661 mean judge-score movement, the ~1.1s to ~3.1s latency stretch, and the 0.98 to 0.45 throughput factor.</li>
+        <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the 3.655172 to 311.474576 reasoning-token shift against visible output that moves only from about 12.7 to 17.9 tokens.</li>
+        <li><strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>
+      </ul>
+      <p>
+        What this slice does and does not prove: it shows that on this
+        short-factual workload shape, in one tenant and one region under this
+        pricing snapshot, the effort ladder bought cost and hidden tokens
+        without a matching quality lift. It does not prove the same shape holds
+        for synthesis, multi-step, or tool-using work, or under a future
+        pricing snapshot.
+      </p>
+    </section>
+
     <section class="article-section decision-box">
-      <h2>Operator playbook</h2>
-      <ol>
-        <li>Start short factual workloads at the lowest available effort level.</li>
-        <li>Define a quality gate before raising effort.</li>
-        <li>Read cost, quality, latency, and token composition together.</li>
-        <li>Promote a higher effort only when quality improves enough to justify the bill.</li>
-      </ol>
+      <h2>The practical rule</h2>
+      <p>
+        <strong>The practical rule: keep short factual work at the lowest
+        effort that already answers correctly, and promote a higher effort only
+        after a quality gate moves on this workload shape — read next to its
+        paired cost, latency, and token-composition charts.</strong>
+      </p>
+      <p>
+        The evidence dashboard is the audit trail behind that rule.
+      </p>
       <p>
         <a class="button-link" href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">Inspect the source chart</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>Next:</strong>
+        <a href="../invisible-reasoning-tokens/">Invisible reasoning tokens: where the hidden cost goes</a>
+        &mdash; If the answer text stays short, where did the extra cost come
+        from?
       </p>
     </section>
   </main>
