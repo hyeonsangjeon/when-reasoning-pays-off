@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>माइग्रेशन साइज़िंग एक मापन है | when reasoning pays off</title>
+  <meta name="description" content="GPT-4o वर्कलोड को GPT-5.x पर ले जाते समय आउटपुट वज़न, reasoning टोकन, कैश दर और max_output_tokens को फिर से मापने पर एक सार्वजनिक ऑपरेशन्स लेख।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="भाषा">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / ऑपरेशन्स निबंध</p>
+    <p class="article-kicker">ऑपरेशन्स निबंध · GPT-4o से GPT-5.x साइज़िंग</p>
+    <h1>किसी reasoning माइग्रेशन को केवल मॉडल के नाम से दोबारा साइज़ न करें</h1>
+    <p class="lede">
+      किसी वर्कलोड को <code>gpt-4o</code> से किसी GPT-5.x reasoning मॉडल पर ले
+      जाना कोई एक-संख्या वाला माइग्रेशन नहीं है। सही सवाल यह नहीं है कि “क्या नया
+      मॉडल भारी है?” बल्कि यह है कि “अनुरोध की बनावट, आउटपुट मिश्रण, छिपे हुए
+      reasoning टोकन, कैश हिट दर और प्रतिक्रिया की अधिकतम सीमा में क्या बदला?”
+    </p>
+
+    <div class="article-summary-grid" aria-label="लेख सारांश">
+      <section class="summary-tile">
+        <h2>प्रश्न</h2>
+        <p>किसी GPT-4o वर्कलोड को PTU पर GPT-5.x के लिए साइज़ करने से पहले क्या-क्या फिर से मापा जाना चाहिए?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>साक्ष्य</h2>
+        <p>Microsoft Learn normalized-TPM का सूत्र देता है; OpenAI reasoning-टोकन की गणना का दस्तावेज़ीकरण करता है।</p>
+      </section>
+      <section class="summary-tile">
+        <h2>निर्णय</h2>
+        <p>“5.x” के बारे में फैमिली-स्तरीय धारणाओं से नहीं, बल्कि मापी गई टोकन बनावट से साइज़ करें।</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="लेख अनुभाग">
+      <strong>प्रश्न के अनुसार पढ़ें:</strong>
+      <a href="#formula">साइज़िंग सूत्र</a>
+      <a href="#drivers">चार चालक</a>
+      <a href="#chart">उदाहरणात्मक चार्ट</a>
+      <a href="#checklist">माइग्रेशन चेकलिस्ट</a>
+      <a href="#sources">स्रोत</a>
+    </nav>
+
+    <p class="banner">
+      <strong>दायरे का नोट:</strong>
+      नीचे दिया गया चार्ट एक उदाहरणात्मक साइज़िंग गणना है, कोई सार्वभौमिक क्षमता
+      दावा नहीं। इसका उपयोग निर्णय की बनावट समझने के लिए करें, फिर वही गणना अपने
+      ट्रैफ़िक नमूने पर चलाएँ।
+    </p>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">आधिकारिक व्यवहार · normalized TPM</p>
+      <h2>साइज़िंग सूत्र टोकन की बनावट के बारे में है</h2>
+      <p>
+        Microsoft Learn ट्रैफ़िक को normalized TPM में बदलकर PTU माँग का आकार
+        तय करता है। इनपुट हैं: पीक RPM, औसत prompt टोकन, औसत उत्पन्न आउटपुट
+        टोकन, कैश दर, मॉडल का आउटपुट-से-इनपुट अनुपात, और मॉडल का Input TPM
+        प्रति PTU मान।
+      </p>
+      <div class="decision-box">
+        <p><strong>सूत्र:</strong></p>
+        <p>
+          <code>normalized_tpm = rpm × (prompt_tokens × (1 - cache_rate) + output_ratio × output_tokens)</code>
+        </p>
+        <p>
+          <code>raw_ptu = normalized_tpm ÷ input_tpm_per_ptu</code>
+        </p>
+      </div>
+      <p>
+        यही सूत्र बताता है कि फैमिली-स्तरीय शॉर्टकट क्यों भ्रामक हो सकता है। किसी
+        मॉडल का आउटपुट अनुपात भारी हो सकता है और फिर भी उसका Input TPM प्रति PTU
+        पिछले मॉडल से अधिक हो सकता है। उत्तर आपके वर्कलोड की वास्तविक prompt,
+        आउटपुट और कैश प्रोफ़ाइल पर निर्भर करता है।
+      </p>
+    </section>
+
+    <section id="drivers" class="article-section">
+      <p class="section-label">परिचालन दृष्टिकोण · माइग्रेशन में क्या बदलता है</p>
+      <h2>चार चालक तय करते हैं कि माइग्रेशन फिट बैठता है या नहीं</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>1. आउटपुट वज़न</h3>
+          <p>GPT-4.1 और उसके बाद के लिए, Microsoft Learn कहता है कि उपयोग के लिए आउटपुट टोकन एक मॉडल-विशिष्ट इनपुट-टोकन वज़न रखते हैं।</p>
+        </div>
+        <div>
+          <h3>2. छिपा हुआ reasoning</h3>
+          <p>OpenAI reasoning टोकन को अदृश्य आउटपुट-पक्ष टोकन के रूप में दस्तावेज़ित करता है। इन्हें <code>output_tokens_details.reasoning_tokens</code> से मापें।</p>
+        </div>
+        <div>
+          <h3>3. कैश दर</h3>
+          <p>Microsoft Learn कहता है कि कैश किए गए prompt टोकन PTU उपयोग से घटा दिए जाते हैं। इसलिए prefix-बनावट में बदलाव साइज़िंग परिणाम को हिला सकता है।</p>
+        </div>
+        <div>
+          <h3>4. प्रतिक्रिया सीमा</h3>
+          <p><code>max_output_tokens</code> रिकॉर्ड करें। यह रिपॉज़िटरी बहुत बड़ी सीमाओं को परखने योग्य PTU प्रवेश-जोखिम परिकल्पना मानती है, अनुमान लगाने योग्य मान नहीं।</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="chart" class="article-section">
+      <p class="section-label">उदाहरणात्मक गणना · समान दृश्यमान वर्कलोड</p>
+      <h2>छिपा हुआ आउटपुट उत्तर बदल सकता है</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य चार्ट:</strong> 200 इनपुट टोकन और 20 दृश्यमान
+          आउटपुट टोकन के साथ एक 1,000 RPM उदाहरण। पहले तीन बार आधिकारिक
+          normalized-TPM सूत्र और मॉडल तालिका का उपयोग करते हैं। अंतिम दो बार
+          एक 60-टोकन reasoning धारणा जोड़ते हैं ताकि यह दिखाया जा सके कि अदृश्य
+          आउटपुट को क्यों मापा जाना चाहिए।
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="GPT-4o और GPT-5.2 माइग्रेशन चालकों की तुलना करता उदाहरणात्मक PTU साइज़िंग चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>उदाहरणात्मक साइज़िंग पंक्तियाँ</caption>
+        <thead>
+          <tr>
+            <th>पंक्ति</th>
+            <th>मॉडल</th>
+            <th>कैश दर</th>
+            <th>उत्पन्न आउटपुट धारणा</th>
+            <th>पूर्णांकित PTUs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>दृश्यमान आधार रेखा</td><td>gpt-4o</td><td>0%</td><td>20 आउटपुट टोकन</td><td>112</td></tr>
+          <tr><td>दृश्यमान माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 आउटपुट टोकन</td><td>110</td></tr>
+          <tr><td>दृश्यमान माइग्रेशन + कैश</td><td>gpt-5.2</td><td>50%</td><td>20 आउटपुट टोकन</td><td>80</td></tr>
+          <tr><td>reasoning माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 दृश्यमान + 60 reasoning टोकन</td><td>250</td></tr>
+          <tr><td>reasoning माइग्रेशन + कैश</td><td>gpt-5.2</td><td>50%</td><td>20 दृश्यमान + 60 reasoning टोकन</td><td>220</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>इसका क्या अर्थ है</h3>
+        <p>
+          केवल-दृश्यमान पंक्तियाँ इस सर्वव्यापी दावे का समर्थन नहीं करतीं कि
+          GPT-5.x हमेशा GPT-4o से कम कुशल है। reasoning पंक्तियाँ जाल दिखाती हैं:
+          जैसे ही छिपा हुआ reasoning आउटपुट प्रकट होता है, वही दृश्यमान उत्तर
+          बहुत अधिक normalized TPM माँग सकता है—जब तक कि कैश और प्रतिक्रिया नीति
+          को मापा और ट्यून न किया जाए।
+        </p>
+      </div>
+    </section>
+
+    <section id="checklist" class="article-section">
+      <p class="section-label">ऑपरेटर चेकलिस्ट · क्षमता खरीदने से पहले फिर से मापें</p>
+      <h2>माइग्रेशन को एक मापन की तरह चलाएँ, नाम बदलने की तरह नहीं</h2>
+      <ol>
+        <li><strong>टास्क मिश्रण को स्थिर रखें।</strong> मॉडल सेल के बीच prompt, टूल, स्कीमा, रिट्रीवल स्थान और नमूना वितरण को बाइट-स्थिर रखें।</li>
+        <li><strong>दृश्यमान आउटपुट मापें।</strong> माइग्रेशन से पहले और बाद में माध्य व p95 दृश्यमान आउटपुट टोकन की तुलना करें।</li>
+        <li><strong>reasoning आउटपुट मापें।</strong> <code>reasoning_tokens</code> कैप्चर करें; इसे अंतिम उत्तर टेक्स्ट से अनुमानित न करें।</li>
+        <li><strong>कैश दर मापें।</strong> प्रति cache-key बकेट <code>cached_tokens / prompt_tokens</code> रिकॉर्ड करें, खासकर ReAct या tool-स्कीमा बदलावों के बाद।</li>
+        <li><strong>सीमा को सही-आकार दें।</strong> <code>max_output_tokens</code> को एक प्रतिनिधि दृश्यमान-साथ-reasoning प्रतिशतक से सेट करें, फिर दुर्लभ लंबे उत्तरों के लिए प्रति-कॉल ओवरराइड का उपयोग करें।</li>
+        <li><strong>तभी PTU साइज़ करें।</strong> normalized-TPM सूत्र को वर्तमान मॉडल तालिका और अपनी मापी गई वर्कलोड बनावट के साथ लागू करें।</li>
+      </ol>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>स्रोत और साक्ष्य की सीमा</h2>
+      <ul>
+        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU साइज़िंग गाइड</a>।</li>
+        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn provisioned throughput अवधारणाएँ</a>।</li>
+        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching गाइड</a>।</li>
+        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI reasoning मॉडल गाइड</a>।</li>
+        <li><strong>सार्वजनिक रिपॉज़िटरी संदर्भ:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU vs PAYG decision runbook</a> और <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">observability schema</a>।</li>
+      </ul>
+      <p>
+        व्यावहारिक नियम: GPT-4o ट्रैफ़िक को PTU पर GPT-5.x की ओर ले जाने से पहले,
+        आउटपुट, reasoning, कैश और सीमा नीति को फिर से मापें। वर्कलोड को साइज़
+        करने के लिए मॉडल का नाम पर्याप्त जानकारी नहीं है।
+      </p>
+      <p><a class="button-link" href="../">लेख सूचकांक पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समेकित है।</p>
+  </footer>
+</body>
+</html>
