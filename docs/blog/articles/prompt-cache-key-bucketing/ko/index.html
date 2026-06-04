@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>캐시 키는 라우팅 힌트다 | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_key 버킷팅, 캐시 가능한 프리픽스, 그리고 희소한 공개 캐시 적중 증거를 다루는 공개 운영 아티클.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="2f84fcdf1cdf391719ab6ac2e09568e97d214211947740cc240f72079a22d727">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ko/">when reasoning pays off</a>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 운영 에세이 / 한국어 번역</p>
+    <p class="article-kicker">운영 에세이 · 프롬프트 캐싱과 라우팅 힌트</p>
+    <h1>캐시 키는 라벨이 아니라 라우팅 힌트다</h1>
+    <p class="lede">
+      <code>prompt_cache_key</code>는 무해한 메타데이터로 오해하기 쉽습니다.
+      하지만 실제로는 그보다 훨씬 운영적인 값입니다. 프롬프트 프리픽스
+      해시와 결합되어 일치하는 작업이 어디로 라우팅될지에 영향을 줍니다.
+      좋은 키는 재사용을 모으고, 나쁜 키는 그것을 조각냅니다.
+    </p>
+
+    <div class="article-summary-grid" aria-label="글 요약">
+      <section class="summary-tile">
+        <h2>질문</h2>
+        <p>공유 프롬프트 프리픽스는 몇 개의 캐시 키 버킷을 사용해야 할까요?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>증거</h2>
+        <p>Microsoft Learn은 라우팅 힌트와 대략적인 오버플로 지점을 정의하고, 이 저장소는 희소한 공개 측정을 더합니다.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>결정</h2>
+        <p>워크로드 단위로 버킷을 나누고, 버킷별 비율을 위험 구간 아래로 유지하며, 적중률과 첫 토큰 지연을 함께 모니터링하세요.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="글 섹션">
+      <strong>질문으로 읽기:</strong>
+      <a href="#spec">공식 동작</a>
+      <a href="#formula">버킷 공식</a>
+      <a href="#evidence">공개 증거</a>
+      <a href="#patterns">좋은 키와 나쁜 키</a>
+      <a href="#sources">출처</a>
+    </nav>
+
+    <p class="banner">
+      <strong>범위 안내:</strong>
+      여기 측정값은 희소한 소스 실행 증거입니다. 보편적인 캐시 적중
+      곡선을 주장하기 위해서가 아니라, 운영 체크리스트를 다듬는 데
+      사용하세요.
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">공식 동작 · 키가 바꾸는 것</p>
+      <h2>캐시는 동일한 프리픽스에서 시작된다</h2>
+      <p>
+        Microsoft Learn에 따르면 프롬프트 캐싱에는 최소 1,024개의 입력
+        토큰이 필요하며 처음 1,024개 토큰이 동일해야 합니다. 초기
+        프리픽스는 라우팅을 위해 해시되고, 처음 1,024개 토큰 이후에는
+        추가 캐시 일치가 128개 토큰 단위로 발생합니다. 처음 1,024개 토큰
+        안에서 단 한 글자만 달라져도 캐시 적중이 미스로 바뀔 수 있습니다.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>프리픽스가 먼저</h3>
+          <p>반복되는 지시문, 스키마, 도구, 예시를 앞쪽에 두세요. 프리픽스가 바뀌면 뒤쪽 재사용은 덜 유용합니다.</p>
+        </div>
+        <div>
+          <h3>키가 그다음</h3>
+          <p><code>prompt_cache_key</code>는 프리픽스 해시와 결합되어 반복 작업의 라우팅에 영향을 줍니다.</p>
+        </div>
+        <div>
+          <h3>보장은 결코 없음</h3>
+          <p>키는 재사용 확률을 높이지만 적중을 약속하지는 않습니다. 운영 힌트로 다루세요.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">크기 산정 · 버킷을 위험 구간 아래로 유지</p>
+      <h2>버킷 하나는 너무 뜨거울 수 있고, 너무 많으면 너무 차가울 수 있다</h2>
+      <p>
+        Microsoft Learn은 대략적인 오버플로 지점을 설명합니다. 동일한
+        프리픽스와 <code>prompt_cache_key</code> 조합이 분당 약 15개
+        요청을 초과하면 일부 요청이 추가 머신으로 라우팅되어 캐시
+        효율이 떨어질 수 있습니다. 실무적인 크기 산정 규칙은 공유
+        프리픽스를 충분히 안정적인 버킷으로 나누어 각 버킷이 여유를
+        두고 그 위험 구간 아래에 머무르도록 하는 것입니다.
+      </p>
+      <div class="chart-reading-note">
+        <h3>버킷 개수 규칙</h3>
+        <p>
+          <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
+          <code>recommended_buckets = ceil(common_prefix_rpm / target_rpm_per_bucket)</code>
+        </p>
+      </div>
+      <div class="evidence-grid">
+        <div>
+          <h3>계산 예시</h3>
+          <p>1.4 TPS에서 공통 프리픽스는 84 RPM을 봅니다. 15-RPM 하한은 6개 버킷을, 10-RPM 목표는 9개를 줍니다.</p>
+        </div>
+        <div>
+          <h3>왜 하나가 아닌가?</h3>
+          <p>겉으로 보이는 프롬프트가 안정적이어도 단일 핫 버킷은 로컬 캐시 경로를 넘칠 수 있습니다.</p>
+        </div>
+        <div>
+          <h3>왜 고유 키가 아닌가?</h3>
+          <p>호출마다 고유한 키는 재사용이 쌓이는 것을 막습니다. 캐시는 결코 군중을 얻지 못합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">관측된 증거 · 희소한 공개 단면</p>
+      <h2>적중률과 지연을 함께 측정하라</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>읽어야 할 차트:</strong> 공개 집계 캐시 키 단면.
+          왼쪽 패널은 캐시 적중률을 보여줍니다. 오른쪽 패널은 첫 토큰까지의
+          p95 시간을 보여줍니다. X축은 보존 모드와 버킷 카디널리티입니다.
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="캐시 적중률과 TTFT p95를 비교하는 프롬프트 캐시 키 버킷팅 증거 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>공개 캐시 키 버킷팅 증거</caption>
+        <thead>
+          <tr>
+            <th>보존</th>
+            <th>카디널리티</th>
+            <th>적중률</th>
+            <th>TTFT p95</th>
+            <th>버킷별 RPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>30.73</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>4.00</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>이것이 증명하는 것과 증명하지 못하는 것</h3>
+        <p>
+          이 공개 단면은 보편적인 임계 곡선을 증명하지 않습니다. 다만
+          운영자가 적중률만 봐서는 안 되는 이유를 보여줍니다. 보존 모드,
+          버킷 비율, 첫 토큰 지연이 모두 사용자 경험을 움직입니다.
+        </p>
+      </div>
+    </section>
+
+    <section id="patterns" class="article-section">
+      <p class="section-label">키 설계 · 안정적인 워크로드 버킷</p>
+      <h2>호출이 아니라 워크로드 단위로 버킷을 나눠라</h2>
+      <p>
+        좋은 키는 동일한 워크로드에 대해 결정적이어야 합니다. 나쁜 키는
+        호출마다 달라지는 엔트로피를 담습니다. 타임스탬프, UUID, 무작위
+        접미사, 또는 고유한 호출 토큰이 키에 들어가면 캐시 키 공간이
+        폭발하고 프리픽스가 재사용을 쌓을 수 없습니다.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>좋음</h3>
+          <p><code>tenant:flow:locale:schema</code>는 동일한 에이전트, 스키마, 로케일, 작업 형태를 함께 묶습니다.</p>
+        </div>
+        <div>
+          <h3>나쁨</h3>
+          <p>고유 id, 타임스탬프, 무작위 UUID, 원시 사용자 질문은 호출마다 버킷 하나를 만듭니다.</p>
+        </div>
+        <div>
+          <h3>모니터링</h3>
+          <p>버킷별 RPM, 캐시된 토큰 비중, 첫 토큰 지연을 추적하세요. 트래픽 형태가 바뀌면 크기를 조정하세요.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>출처 및 증거의 경계</h2>
+      <ul>
+        <li><strong>공식 사양, 2026-06-04 접속:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 프롬프트 캐싱 가이드</a>.</li>
+        <li><strong>공개 집계 증거:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">캐시 키 버킷팅 CSV</a>.</li>
+        <li><strong>공개 운영자 가이드:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key 정책 런북</a>.</li>
+      </ul>
+      <p>
+        실무 규칙은 이렇습니다. 캐시 가능한 프리픽스를 안정적으로 유지하고,
+        여유를 둔 워크로드 버킷을 선택하며, 적중률 지표를 약속이 아니라
+        운영 신호로 다루세요.
+      </p>
+      <p><a class="button-link" href="../../">아티클 목록으로 돌아가기</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 라이선스 연구 산출물 · 공개 데이터는 정제 또는 집계된 형태로만 제공됩니다.</p>
+  </footer>
+</body>
+</html>

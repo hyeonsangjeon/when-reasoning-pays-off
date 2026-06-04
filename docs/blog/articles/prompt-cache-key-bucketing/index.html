@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cache keys are routing hints | when reasoning pays off</title>
+  <meta name="description" content="A public operations article about prompt_cache_key bucketing, cacheable prefixes, and sparse public cache-hit evidence.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
+    <p class="article-kicker">Operations essay · prompt caching and routing hints</p>
+    <h1>Cache keys are routing hints, not labels</h1>
+    <p class="lede">
+      <code>prompt_cache_key</code> is easy to mistake for harmless metadata.
+      It is more operational than that: it is combined with the prompt prefix
+      hash to influence where matching work is routed. A good key gathers reuse;
+      a bad key fragments it.
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>Question</h2>
+        <p>How many cache-key buckets should a shared prompt prefix use?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence</h2>
+        <p>Microsoft Learn defines the routing hint and approximate overflow point; this repo adds sparse public measurement.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Bucket by workload, keep per-bucket rate below the risk zone, and monitor hit rate plus first-token latency.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>Read by question:</strong>
+      <a href="#spec">Official behavior</a>
+      <a href="#formula">Bucket formula</a>
+      <a href="#evidence">Public evidence</a>
+      <a href="#patterns">Good and bad keys</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Scope note:</strong>
+      The measurements here are sparse source-run evidence. Use them to shape
+      an operating checklist, not to claim a universal cache-hit curve.
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">Official behavior · what the key changes</p>
+      <h2>The cache starts with an identical prefix</h2>
+      <p>
+        Microsoft Learn says prompt caching needs at least 1,024 input tokens and
+        the first 1,024 tokens must be identical. The initial prefix is hashed for
+        routing, and after the first 1,024 tokens, additional cache matches happen
+        in 128-token steps. A single character difference inside the first 1,024
+        tokens can turn the cache hit into a miss.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Prefix first</h3>
+          <p>Put repeated instructions, schemas, tools, and examples early. Late reuse is less useful if the prefix changes.</p>
+        </div>
+        <div>
+          <h3>Key second</h3>
+          <p><code>prompt_cache_key</code> is combined with the prefix hash to influence routing for repeated work.</p>
+        </div>
+        <div>
+          <h3>Guarantee never</h3>
+          <p>The key improves the odds of reuse; it does not promise a hit. Treat it as an operating hint.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">Sizing · keep buckets below the risk zone</p>
+      <h2>One bucket can be too hot; too many buckets can be too cold</h2>
+      <p>
+        Microsoft Learn describes an approximate overflow point: when the same
+        prefix plus <code>prompt_cache_key</code> combination exceeds about 15
+        requests per minute, some requests can route to extra machines and cache
+        effectiveness can drop. The practical sizing rule is to split a shared
+        prefix into enough stable buckets that each bucket stays below that risk
+        zone with headroom.
+      </p>
+      <div class="chart-reading-note">
+        <h3>Bucket-count rule</h3>
+        <p>
+          <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
+          <code>recommended_buckets = ceil(common_prefix_rpm / target_rpm_per_bucket)</code>
+        </p>
+      </div>
+      <div class="evidence-grid">
+        <div>
+          <h3>Worked example</h3>
+          <p>At 1.4 TPS, the common prefix sees 84 RPM. The 15-RPM floor gives 6 buckets; a 10-RPM target gives 9.</p>
+        </div>
+        <div>
+          <h3>Why not one?</h3>
+          <p>A single hot bucket can overflow the local cache path even when the visible prompt looks stable.</p>
+        </div>
+        <div>
+          <h3>Why not unique?</h3>
+          <p>A unique key per call prevents reuse from accumulating. The cache never gets a crowd.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">Observed evidence · sparse public slice</p>
+      <h2>Measure hit rate and latency together</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> public aggregate cache-key slice. The
+          left panel shows cache hit ratio. The right panel shows p95 time to
+          first token. The X-axis is retention mode plus bucket cardinality.
+        </figcaption>
+        <img src="../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="Prompt cache key bucketing evidence chart comparing cache hit ratio and TTFT p95." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>Public cache-key bucketing evidence</caption>
+        <thead>
+          <tr>
+            <th>Retention</th>
+            <th>Cardinality</th>
+            <th>Hit ratio</th>
+            <th>TTFT p95</th>
+            <th>Per-bucket RPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>30.73</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>4.00</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>What this does and does not prove</h3>
+        <p>
+          The public slice does not prove a universal threshold curve. It does
+          show why operators should not look at hit ratio alone: retention mode,
+          bucket rate, and first-token latency all move the user experience.
+        </p>
+      </div>
+    </section>
+
+    <section id="patterns" class="article-section">
+      <p class="section-label">Key design · stable workload buckets</p>
+      <h2>Bucket by workload, not by call</h2>
+      <p>
+        A good key should be deterministic for the same workload. A bad key
+        contains per-call entropy. If a timestamp, UUID, random suffix, or unique
+        call token enters the key, the cache-key space explodes and the prefix
+        cannot build reuse.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Good</h3>
+          <p><code>tenant:flow:locale:schema</code> keeps the same agent, schema, locale, and task shape together.</p>
+        </div>
+        <div>
+          <h3>Bad</h3>
+          <p>Unique ids, timestamps, random UUIDs, and raw user questions create one bucket per call.</p>
+        </div>
+        <div>
+          <h3>Monitor</h3>
+          <p>Track per-bucket RPM, cached-token share, and first-token latency. Resize when traffic shape changes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>Sources and evidence boundary</h2>
+      <ul>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching guide</a>.</li>
+        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">cache-key bucketing CSV</a>.</li>
+        <li><strong>Public operator guide:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key policy runbook</a>.</li>
+      </ul>
+      <p>
+        The practical rule: keep the cacheable prefix stable, choose workload
+        buckets with headroom, and treat the hit-rate metric as an operating
+        signal rather than a promise.
+      </p>
+      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>
