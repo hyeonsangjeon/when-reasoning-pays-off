@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb">
+  <meta name="article:source-article-sha256" content="ff7d2486246e4682ef21f53b58e0e7c3d1f5b14be8cf53b8c703773ce42c8c78">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -94,9 +94,17 @@
         <figcaption>
           <strong>要读的图:</strong> 每个请求的平均成本，并与同一短事实切片的评审分数图配对阅读。
         </figcaption>
-        <div class="mini-chart" aria-hidden="true">
-          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
-          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        <div class="mini-chart labeled-mini-chart" role="img" aria-label="柱状图：X轴是推理强度；Y轴根据配对源图表示成本或评审分数。">
+          <div class="mini-axis-row"><span>Y：成本 / 评审分数</span><span>每个柱：一个强度单元</span></div>
+          <div class="mini-plot">
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X：推理强度</div>
         </div>
       </figure>
       <div class="chart-reading-note">
@@ -137,8 +145,14 @@
         <figcaption>
           <strong>要读的图:</strong> 按强度拆分的 token 构成 — 缓存输入、非缓存输入、可见输出和推理 token。
         </figcaption>
-        <div class="stacked-mini-chart" aria-hidden="true">
-          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="堆叠 token 构成：X轴是 token 组件；Y轴是每个请求的平均 token 数。">
+          <div class="mini-axis-row"><span>Y：每请求平均 token</span><span>X：token 组件</span></div>
+          <div class="stack-track">
+            <div class="stack-segment stack-input"><b class="segment-label">输入 token</b></div>
+            <div class="stack-segment stack-output"><b class="segment-label">可见输出</b></div>
+            <div class="stack-segment stack-reason"><b class="segment-label">推理 token</b></div>
+          </div>
+          <div class="mini-legend">进度条含义：即使可见输出很小，隐藏推理也可能主导账单。</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -171,8 +185,13 @@
         <figcaption>
           <strong>要读的图:</strong> 先读质量柱，再读配对成本柱。质量差异才是支出的理由。
         </figcaption>
-        <div class="mini-compare" aria-hidden="true">
-          <span class="dot-low"></span><span class="dot-high"></span>
+        <div class="mini-compare labeled-dot-chart" role="img" aria-label="对比图：X轴比较 baseline 和 high effort；Y轴是平均评审分数。">
+          <div class="mini-axis-row"><span>Y：平均评审分数</span><span>点大小：质量水平</span></div>
+          <div class="dot-plot">
+            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">Baseline</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">High effort</b></div>
+          </div>
+          <div class="mini-x-axis">X：对比单元</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -204,8 +223,15 @@
         <figcaption>
           <strong>要读的图:</strong> 同时读质量和延迟。如果分数已经接近评分标准上限，下一个约束往往是延迟。
         </figcaption>
-        <div class="ceiling-mini-chart" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="天花板效应柱状图：X轴是强度设置；Y轴是接近评分上限的质量分数。">
+          <div class="mini-axis-row"><span>Y：质量分数</span><span>平顶：天花板效应</span></div>
+          <div class="ceiling-plot">
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X：强度设置</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -237,7 +263,12 @@
         <figcaption>
           <strong>要读的图:</strong> 将建模得到的交叉点与配对的质量护栏一起阅读。这是规模规划参考，不是实测容量证据。
         </figcaption>
-        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="建模交叉点图：X轴是请求率；Y轴是小时成本模型。圆点表示建模交叉阈值。">
+          <div class="mini-axis-row"><span>Y：建模小时成本</span><span>X：请求率</span></div>
+          <b class="crossover-label payg">PAYG 曲线</b>
+          <b class="crossover-label ptu">PTU 下限</b>
+          <i class="crossover-point"></i><b class="crossover-label point">交叉点</b>
+        </div>
       </figure>
       <div class="evidence-grid">
         <div>

@@ -123,9 +123,17 @@
           <strong>Chart to read:</strong> mean cost per request, paired with the
           judge-score chart for the same short-factual slice.
         </figcaption>
-        <div class="mini-chart" aria-hidden="true">
-          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
-          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        <div class="mini-chart labeled-mini-chart" role="img" aria-label="Bar chart: X-axis is reasoning effort; Y-axis is cost or judge score depending on the paired source chart.">
+          <div class="mini-axis-row"><span>Y: cost / judge score</span><span>Each bar: one effort cell</span></div>
+          <div class="mini-plot">
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X: reasoning effort</div>
         </div>
       </figure>
       <div class="chart-reading-note">
@@ -173,8 +181,14 @@
           <strong>Chart to read:</strong> token composition by effort level —
           cached input, non-cached input, visible output, and reasoning tokens.
         </figcaption>
-        <div class="stacked-mini-chart" aria-hidden="true">
-          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="Stacked token composition: X-axis is token component; Y-axis is mean tokens per request.">
+          <div class="mini-axis-row"><span>Y: mean tokens/request</span><span>X: token component</span></div>
+          <div class="stack-track">
+            <div class="stack-segment stack-input"><b class="segment-label">Input tokens</b></div>
+            <div class="stack-segment stack-output"><b class="segment-label">Visible output</b></div>
+            <div class="stack-segment stack-reason"><b class="segment-label">Reasoning tokens</b></div>
+          </div>
+          <div class="mini-legend">Progress bar meaning: hidden reasoning can dominate the bill even when visible output stays small.</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -213,8 +227,13 @@
           <strong>Chart to read:</strong> quality bars first, then the paired
           cost bars. The quality delta is the reason to spend.
         </figcaption>
-        <div class="mini-compare" aria-hidden="true">
-          <span class="dot-low"></span><span class="dot-high"></span>
+        <div class="mini-compare labeled-dot-chart" role="img" aria-label="Comparison chart: X-axis contrasts baseline and high effort; Y-axis is mean judge score.">
+          <div class="mini-axis-row"><span>Y: mean judge score</span><span>Dot size: quality level</span></div>
+          <div class="dot-plot">
+            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">Baseline</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">High effort</b></div>
+          </div>
+          <div class="mini-x-axis">X: comparison cell</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -252,8 +271,15 @@
           score is already near the top of the rubric, latency becomes the next
           constraint.
         </figcaption>
-        <div class="ceiling-mini-chart" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="Ceiling-effect bar chart: X-axis is effort setting; Y-axis is quality score near the rubric ceiling.">
+          <div class="mini-axis-row"><span>Y: quality score</span><span>Flat top: ceiling effect</span></div>
+          <div class="ceiling-plot">
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X: effort setting</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -290,7 +316,12 @@
           <strong>Chart to read:</strong> modeled crossover against the paired
           quality guardrail. This is sizing guidance, not measured capacity.
         </figcaption>
-        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="Modeled crossover chart: X-axis is request rate; Y-axis is hourly cost model. The point marks the modeled crossover threshold.">
+          <div class="mini-axis-row"><span>Y: modeled hourly cost</span><span>X: request rate</span></div>
+          <b class="crossover-label payg">PAYG curve</b>
+          <b class="crossover-label ptu">PTU floor</b>
+          <i class="crossover-point"></i><b class="crossover-label point">Crossover</b>
+        </div>
       </figure>
       <div class="evidence-grid">
         <div>
