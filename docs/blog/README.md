@@ -1,9 +1,8 @@
 # `docs/blog/` — Blogging & Articles Data Inventory
 
-Planning workspace for the upcoming GitHub Pages **blogging / articles**
-section. **No articles are published from here yet.** This directory is a
-topic-by-topic map of the public, sanitized data and the visualization
-candidates that future articles can draw on.
+Public GitHub Pages **blogging / articles** section. This directory is a
+topic-by-topic map of the public, sanitized data, the visualization candidates
+that articles can draw on, and the published article surfaces.
 
 ## Contents
 
@@ -13,6 +12,7 @@ candidates that future articles can draw on.
 | [`chart-candidates.json`](./chart-candidates.json) | Machine-readable manifest of topics + reusable chart families for later article rendering. |
 | [`data/reasoning_effort_summary.csv`](./data/reasoning_effort_summary.csv) | Derived, aggregate-safe stub: an exact (unrounded) re-projection of fields from `benchmarks/0{1,2,3}/analysis.json` (cost, quality, latency, reasoning tokens, throughput gain per effort cell). Metric columns are blank where `n_used=0`. |
 | [`charts/`](./charts/) | Static GitHub Pages dashboard rendering the governed public chart-data snapshot with locale labels and inspectable tables. |
+| [`articles/`](./articles/) | Published article index, canonical English article, locale summary or fallback pages, and the per-article numeric-claims ledger. |
 
 ## Ground rules (public-safety)
 
