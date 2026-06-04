@@ -196,19 +196,64 @@
       </div>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>Sources and evidence boundary</h2>
+      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> The
+        prompt-caching prefix rule, prefix-hash routing, the per-128-token match
+        step, the single-character miss, the <code>prompt_cache_key</code>
+        routing hint, and the approximate 15-requests-per-minute overflow point
+        are documented here.</p>
       <ul>
-        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching guide</a>.</li>
-        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">cache-key bucketing CSV</a>.</li>
-        <li><strong>Public operator guide:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key policy runbook</a>.</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> — documents the
+          1,024-token minimum and identical-prefix requirement, routing by a hash
+          of the initial prefix, a cache match for every 128 additional identical
+          tokens after the first 1,024, the single-character cache miss, the
+          <code>prompt_cache_key</code> hint combined with the prefix hash to
+          influence routing, and the approximate 15-requests-per-minute point
+          above which requests for the same prefix and key overflow to extra
+          machines and cache effectiveness drops. accessed_date: 2026-06-04.
+          source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.
+          archive_url: <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+      </ul>
+      <p><strong>Tier 2 — operational inference (this repository).</strong> The
+        bucket-count math and the public hit-ratio slice are repository
+        operational inference and source-run evidence, not Learn specifications.</p>
+      <ul>
+        <li><strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+          — the bucket-sizing runbook: the repository derives
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> from the
+          documented approximate 15-RPM figure, while the
+          <code>recommended_buckets</code> formula and its default
+          10-RPM-per-bucket target are repository operational inference, not a
+          Learn specification. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">source</a>.</li>
+        <li><strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+          — the sparse public aggregate slice behind the hit-ratio and
+          first-token-latency table; source-run evidence, not a universal curve.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source</a>.</li>
       </ul>
       <p>
-        The practical rule: keep the cacheable prefix stable, choose workload
-        buckets with headroom, and treat the hit-rate metric as an operating
-        signal rather than a promise.
+        <strong>What this topic does and does not prove.</strong> It documents
+        the prompt-caching contract as Microsoft Learn states it on the access
+        date — the 1,024-token prefix rule, routing by the prefix hash, the
+        <code>prompt_cache_key</code> hint, and the approximate
+        15-requests-per-minute overflow point — plus a repository sizing rule of
+        thumb: split a shared prefix into enough stable buckets that each stays
+        below that overflow point with headroom. The bucket-count formula and the
+        public hit-ratio slice are operational inference and source-run evidence,
+        not a guaranteed cache-hit curve. It does not prove a universal threshold
+        that holds identically across every model, region, or traffic shape.
       </p>
-      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>The practical rule</h2>
+      <p><strong>The practical rule: keep the cacheable prefix stable, bucket by
+        workload so each <code>prefix + prompt_cache_key</code> stays below the
+        documented approximate 15-requests-per-minute overflow point with
+        headroom, and read cache-hit ratio beside first-token latency rather than
+        trusting either alone.</strong></p>
+      <p>The next essay turns from how to bucket the key to how long the cache should survive.</p>
+      <p><a class="button-link" href="../prompt-cache-retention/">When cache reuse must survive a short idle window, what must the request say explicitly?</a></p>
     </section>
   </main>
 
