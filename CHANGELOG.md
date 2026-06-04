@@ -6,6 +6,24 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Visible labels for evidence-dashboard bars (2026-06-04)
+
+The evidence dashboard charts now expose the chart title, axis labels, per-bar
+category labels, and per-bar value labels directly in the rendered SVG.
+
+- Updated `docs/assets/charts.js` so every bar chart renders a visible chart
+  title, X/Y axes, effort/category labels, and compact value labels above bars.
+- Updated chart styles to support larger readable SVG charts and visible axis /
+  value label typography.
+- Added missing `none` effort labels in English and Korean locale bundles.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Overview and evidence-dashboard public labels (2026-06-04)
 
 The public Pages entry points now use launch-ready labels: the main narrative is
