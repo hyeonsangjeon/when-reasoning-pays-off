@@ -25,9 +25,9 @@ LOCALE_PAGES = {
 
 EXPECTED_STATUS = {
     "en": "canonical",
-    "ko": "translated_summary",
-    "ja": "untranslated_fallback_to_en",
-    "zh-CN": "untranslated_fallback_to_en",
+    "ko": "translated",
+    "ja": "translated",
+    "zh-CN": "translated",
     "hi": "untranslated_fallback_to_en",
 }
 
