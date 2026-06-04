@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>429 is a recovery signal | when reasoning pays off</title>
+  <meta name="description" content="A public operations article about treating Azure OpenAI PTU 429 responses as retry-after-ms recovery signals rather than generic failures.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="../when-reasoning-pays-off/ko/" data-locale="ko">한국어</a>
+        <a href="../when-reasoning-pays-off/ja/" data-locale="ja">日本語</a>
+        <a href="../when-reasoning-pays-off/zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../when-reasoning-pays-off/hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
+    <p class="article-kicker">Operations essay · PTU recovery and 429 handling</p>
+    <h1>429 is a recovery signal, not just an error</h1>
+    <p class="lede">
+      A 429 from a saturated PTU target should not start a blind polling loop.
+      It already carries the recovery signal the client needs: <code>retry-after-ms</code>.
+      The operating question is not “did the call fail?” but “who owns the next
+      decision: wait, redirect, or give up?”
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>Question</h2>
+        <p>When PTU capacity says “not now,” how should the client decide the next move?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence</h2>
+        <p>Microsoft Learn defines the header contract; public aggregate runs show why median-only waits miss the tail.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Use one retry owner. Honor the header, add jitter, and redirect only when latency policy demands it.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>Read by question:</strong>
+      <a href="#spec">Official signal</a>
+      <a href="#evidence">Observed shape</a>
+      <a href="#pattern">Operating pattern</a>
+      <a href="#fallback">Redirect choices</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Scope note:</strong>
+      The measured numbers below describe this repository's public aggregate
+      artifacts only. They are useful for designing the retry wrapper, not for
+      claiming universal Azure behavior.
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">Official spec · what the service tells you</p>
+      <h2>The header is the admission signal</h2>
+      <p>
+        Microsoft Learn describes PTU high-utilization handling as an immediate
+        429 path with <code>retry-after-ms</code> and <code>retry-after</code>
+        response headers. The same production guide explains that the wait can
+        be used either for client-side retry or for redirecting the request to a
+        different serving target.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>What is documented</h3>
+          <p>
+            Treat <code>retry-after-ms</code> as a service-provided wait value.
+            It is stronger than a guessed fixed reset interval.
+          </p>
+        </div>
+        <div>
+          <h3>What is not documented</h3>
+          <p>
+            The exact formula behind the wait value is not public. Do not invent
+            a deterministic reset model in your client.
+          </p>
+        </div>
+        <div>
+          <h3>Operational inference</h3>
+          <p>
+            If the header already says when to try again, health-check polling is
+            usually a weaker signal plus extra traffic and noisier telemetry.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">Observed evidence · public aggregate only</p>
+      <h2>The median was tiny; the tail was not</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> empirical <code>retry-after-ms</code>
+          percentiles from public aggregate 429 events. The X-axis is the wait
+          advised by the response header, in milliseconds. The dots are p50,
+          p90, and p99 for each source group.
+        </figcaption>
+        <img src="../../../assets/retry-after-ms-distribution.svg" alt="Retry-after-ms percentile chart comparing overall, burst-shaped, and reservation-shaped sources." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>Public aggregate retry-after-ms percentiles</caption>
+        <thead>
+          <tr>
+            <th>Source group</th>
+            <th>429 count</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Overall</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>Burst-shaped source</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>Reservation-shaped source</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>How to read this table</h3>
+        <p>
+          The median says many 429s were short-lived. The p99 says a production
+          wrapper still needs a tail policy: sleep only up to the latency budget,
+          then redirect or fail gracefully. The source split matters because
+          burst-shaped and reservation-shaped pressure did not look the same.
+        </p>
+      </div>
+    </section>
+
+    <section id="pattern" class="article-section">
+      <p class="section-label">Operating pattern · one owner for retry</p>
+      <h2>Do not stack retry loops</h2>
+      <p>
+        The safe pattern is boring on purpose: pick exactly one component to own
+        429 recovery. If the SDK is configured to retry, let it own the wait. If
+        an application router owns recovery, disable SDK auto-retry and make the
+        router parse <code>retry-after-ms</code> directly.
+      </p>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Reference implementation:</strong> the public repo includes a
+          small header-driven admission controller that parses
+          <code>retry-after-ms</code>, falls back to <code>retry-after</code>,
+          emits safe throttle events, and refuses double-retry ownership.
+        </figcaption>
+        <img src="../../../assets/ptu-admission-controller.svg" alt="PTU admission controller flow: observe 429, parse retry-after-ms, sleep or redirect, then resume." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Sleep path</h3>
+          <p>Use when throughput matters more than per-call latency. Wait the header value plus jitter, then try again.</p>
+        </div>
+        <div>
+          <h3>Redirect path</h3>
+          <p>Use when latency matters more than staying on PTU. Route to a standard target as soon as the 429 arrives.</p>
+        </div>
+        <div>
+          <h3>Give-up path</h3>
+          <p>Use when both wait and redirect violate policy. Return a controlled response rather than hiding retry storms.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fallback" class="article-section">
+      <p class="section-label">Fallback · native or custom</p>
+      <h2>Redirect is a policy choice, not a panic button</h2>
+      <p>
+        Microsoft Learn's spillover feature can redirect overage traffic to a
+        standard target and exposes headers that identify spillover behavior.
+        That is the low-operations path when the platform-supported shape fits.
+        A custom router is still useful when the application must decide before
+        the PTU target returns 429, or when routing policy depends on tenant,
+        region, latency budget, or business priority.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Native spillover</h3>
+          <p>Best when the simple overflow lane fits and extra routing logic would add more risk than value.</p>
+        </div>
+        <div>
+          <h3>Custom router</h3>
+          <p>Best when application policy must choose among wait, redirect, and give-up before user latency is spent.</p>
+        </div>
+        <div>
+          <h3>Anti-pattern</h3>
+          <p>SDK retry plus router retry plus spillover can multiply attempts. Consolidate ownership first.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>Sources and evidence boundary</h2>
+      <ul>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU production operations guide</a>.</li>
+        <li><strong>Official spillover behavior, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn spillover traffic management guide</a>.</li>
+        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms percentile CSV</a> and <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 event CSV</a>.</li>
+        <li><strong>Public reference implementation:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">header-driven admission controller</a>.</li>
+      </ul>
+      <p>
+        The practical rule: do not poll blindly for PTU recovery. Honor the
+        header, log the decision, and make the latency tradeoff explicit.
+      </p>
+      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>

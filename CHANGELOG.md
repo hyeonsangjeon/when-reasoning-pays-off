@@ -6,6 +6,28 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Retry-after-ms operations essay (2026-06-04)
+
+The public blog now includes the first operations essay promoted from the TBD
+candidate list: 429 recovery with `retry-after-ms`.
+
+- Added `docs/blog/articles/ptu-retry-after-recovery/index.html`, framing 429
+  as a recovery signal with official-spec versus operational-inference
+  boundaries.
+- Added a public SVG chart for retry-after-ms percentile shape using aggregate
+  public CSV evidence.
+- Promoted the 429 candidate card from TBD to a live article link and connected
+  the overview essay / localized overview surfaces to the new article.
+- Refreshed overview article source hashes and public manifest metadata.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally. Browser preview confirms the article card,
+article body, source section, and retry-after-ms SVG render.
+
 ### Changed — Operations essay candidates on public articles surface (2026-06-04)
 
 The public article index and overview essay now make the next operations-story

@@ -18,9 +18,9 @@
       "redaction_rules_sha256": "f5e4bb64d5d5bc2ca1bc868c891ffd097feb5f74315afbdbf3f2562a47c8bec6",
       "redactor_commit_sha": "fa06dd9b35774530e45b5149429cc3123acee570",
       "redactor_script_sha256": "63240f236e09e3ff3b0568214b0780ee470a46c7b50d095d87c9f89ce83c6edd",
-      "sanitized_sha256": "87e9079d368a37eca5ee4cf1d2c8f38c83fee819df845f5ab4f7f8b1bcecba91",
-      "source_archive_id": "raw-c2b50d0c499cc14df856d9ff2b88d325",
-      "source_raw_sha256": "87e9079d368a37eca5ee4cf1d2c8f38c83fee819df845f5ab4f7f8b1bcecba91",
+      "sanitized_sha256": "694e4f4235e52863d9ab54233f8cd5ac9ade72aeae430b23ebc7f469743cd859",
+      "source_archive_id": "raw-76684bfa4d89d35b40f1cd5cf1015036",
+      "source_raw_sha256": "694e4f4235e52863d9ab54233f8cd5ac9ade72aeae430b23ebc7f469743cd859",
       "sweep_id": "20260603-public-readiness",
       "tier": "SANITIZED_PUBLIC"
     },
