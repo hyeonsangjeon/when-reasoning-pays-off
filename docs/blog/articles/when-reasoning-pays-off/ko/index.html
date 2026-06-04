@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb">
+  <meta name="article:source-article-sha256" content="ff7d2486246e4682ef21f53b58e0e7c3d1f5b14be8cf53b8c703773ce42c8c78">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -98,9 +98,17 @@
           <strong>읽을 차트:</strong> 요청당 평균 비용과 같은 짧은 사실형 구간의
           평가 점수 차트를 함께 봅니다.
         </figcaption>
-        <div class="mini-chart" aria-hidden="true">
-          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
-          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        <div class="mini-chart labeled-mini-chart" role="img" aria-label="막대 차트: X축은 추론 강도이고, Y축은 짝지은 원천 차트에 따라 비용 또는 평가 점수입니다.">
+          <div class="mini-axis-row"><span>Y: 비용 / 평가 점수</span><span>각 막대: 하나의 노력 셀</span></div>
+          <div class="mini-plot">
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">기준선</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">최소</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">낮음</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">중간</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">높음</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">매우 높음</b></div>
+          </div>
+          <div class="mini-x-axis">X: 추론 강도</div>
         </div>
       </figure>
       <div class="chart-reading-note">
@@ -148,8 +156,14 @@
           <strong>읽을 차트:</strong> 노력 수준별 토큰 구성 — 캐시 입력, 비캐시
           입력, 보이는 출력, 추론 토큰입니다.
         </figcaption>
-        <div class="stacked-mini-chart" aria-hidden="true">
-          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="누적 토큰 구성: X축은 토큰 구성요소이고, Y축은 요청당 평균 토큰 수입니다.">
+          <div class="mini-axis-row"><span>Y: 요청당 평균 토큰</span><span>X: 토큰 구성요소</span></div>
+          <div class="stack-track">
+            <div class="stack-segment stack-input"><b class="segment-label">입력 토큰</b></div>
+            <div class="stack-segment stack-output"><b class="segment-label">보이는 출력</b></div>
+            <div class="stack-segment stack-reason"><b class="segment-label">추론 토큰</b></div>
+          </div>
+          <div class="mini-legend">프로그레스바 의미: 보이는 출력이 작아도 숨은 추론이 청구서를 지배할 수 있습니다.</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -187,8 +201,13 @@
           <strong>읽을 차트:</strong> 먼저 품질 막대를 보고, 그 다음 대응되는
           비용 막대를 봅니다. 지출의 이유는 품질 차이입니다.
         </figcaption>
-        <div class="mini-compare" aria-hidden="true">
-          <span class="dot-low"></span><span class="dot-high"></span>
+        <div class="mini-compare labeled-dot-chart" role="img" aria-label="비교 차트: X축은 기준선과 높은 노력을 비교하고, Y축은 평균 평가 점수입니다.">
+          <div class="mini-axis-row"><span>Y: 평균 평가 점수</span><span>점 크기: 품질 수준</span></div>
+          <div class="dot-plot">
+            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">기준선</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">높은 노력</b></div>
+          </div>
+          <div class="mini-x-axis">X: 비교 셀</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -224,8 +243,15 @@
           <strong>읽을 차트:</strong> 품질과 지연 시간을 함께 봅니다. 점수가 이미
           평가 기준의 상단에 가깝다면, 다음 제약은 지연 시간이 됩니다.
         </figcaption>
-        <div class="ceiling-mini-chart" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="천장효과 막대 차트: X축은 노력 설정이고, Y축은 루브릭 상단에 가까운 품질 점수입니다.">
+          <div class="mini-axis-row"><span>Y: 품질 점수</span><span>평평한 상단: 천장효과</span></div>
+          <div class="ceiling-plot">
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">낮음</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">중간</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">높음</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">매우 높음</b></div>
+          </div>
+          <div class="mini-x-axis">X: 노력 설정</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -262,7 +288,12 @@
           <strong>읽을 차트:</strong> 품질 가드레일과 함께 모델링된 교차점을
           봅니다. 이것은 크기 산정 안내이지 측정된 용량 증거가 아닙니다.
         </figcaption>
-        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="모델링된 교차점 차트: X축은 요청률, Y축은 시간당 비용 모델입니다. 점은 모델링된 교차 임계값입니다.">
+          <div class="mini-axis-row"><span>Y: 모델링된 시간당 비용</span><span>X: 요청률</span></div>
+          <b class="crossover-label payg">PAYG 곡선</b>
+          <b class="crossover-label ptu">PTU 바닥값</b>
+          <i class="crossover-point"></i><b class="crossover-label point">교차점</b>
+        </div>
       </figure>
       <div class="evidence-grid">
         <div>

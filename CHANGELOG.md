@@ -6,6 +6,25 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Visible labels for overview essay mini charts (2026-06-04)
+
+The overview essay mini charts now carry their own axis and component labels
+instead of relying on nearby prose alone.
+
+- Converted the short-factual mini bar chart into a labeled chart with X/Y-axis
+  meaning and one visible label per effort bar.
+- Added visible labels for the token-composition progress bar, multi-step
+  comparison dots, tool-agent ceiling bars, and PTU/PAYG crossover sketch.
+- Applied the same labeled mini-chart structure to English, Korean, Japanese,
+  and Simplified Chinese overview pages, and refreshed article source hashes.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Deeper chart-reading prose for overview and short-factual topic (2026-06-04)
 
 The overview essay and first topic essay now explain how to read the evidence

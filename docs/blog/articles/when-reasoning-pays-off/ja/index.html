@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb">
+  <meta name="article:source-article-sha256" content="ff7d2486246e4682ef21f53b58e0e7c3d1f5b14be8cf53b8c703773ce42c8c78">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -96,9 +96,17 @@
         <figcaption>
           <strong>読むチャート:</strong> リクエストあたり平均コストを、同じ短い事実回答スライスの評価スコアチャートと並べて読みます。
         </figcaption>
-        <div class="mini-chart" aria-hidden="true">
-          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
-          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        <div class="mini-chart labeled-mini-chart" role="img" aria-label="棒グラフ: X軸は推論 effort、Y軸は組み合わせる元チャートに応じてコストまたは評価スコアです。">
+          <div class="mini-axis-row"><span>Y: コスト / 評価スコア</span><span>各棒: 1つの effort セル</span></div>
+          <div class="mini-plot">
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X: 推論 effort</div>
         </div>
       </figure>
       <div class="chart-reading-note">
@@ -142,8 +150,14 @@
         <figcaption>
           <strong>読むチャート:</strong> effort レベル別のトークン構成 — キャッシュ入力、非キャッシュ入力、見える出力、推論トークンです。
         </figcaption>
-        <div class="stacked-mini-chart" aria-hidden="true">
-          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="積み上げトークン構成: X軸はトークン構成要素、Y軸はリクエストあたり平均トークン数です。">
+          <div class="mini-axis-row"><span>Y: 平均トークン/リクエスト</span><span>X: トークン構成要素</span></div>
+          <div class="stack-track">
+            <div class="stack-segment stack-input"><b class="segment-label">入力トークン</b></div>
+            <div class="stack-segment stack-output"><b class="segment-label">見える出力</b></div>
+            <div class="stack-segment stack-reason"><b class="segment-label">推論トークン</b></div>
+          </div>
+          <div class="mini-legend">プログレスバーの意味: 見える出力が小さくても、隠れた推論が請求額を支配することがあります。</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -177,8 +191,13 @@
         <figcaption>
           <strong>読むチャート:</strong> まず品質バーを読み、そのあと対応するコストバーを読みます。支出の理由は品質差です。
         </figcaption>
-        <div class="mini-compare" aria-hidden="true">
-          <span class="dot-low"></span><span class="dot-high"></span>
+        <div class="mini-compare labeled-dot-chart" role="img" aria-label="比較チャート: X軸は baseline と high effort の比較、Y軸は平均評価スコアです。">
+          <div class="mini-axis-row"><span>Y: 平均評価スコア</span><span>点の大きさ: 品質水準</span></div>
+          <div class="dot-plot">
+            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">Baseline</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">High effort</b></div>
+          </div>
+          <div class="mini-x-axis">X: 比較セル</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -211,8 +230,15 @@
         <figcaption>
           <strong>読むチャート:</strong> 品質とレイテンシを一緒に読みます。スコアがすでに評価基準の上限近くなら、次の制約はレイテンシです。
         </figcaption>
-        <div class="ceiling-mini-chart" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="天井効果の棒グラフ: X軸は effort 設定、Y軸はルーブリック上限に近い品質スコアです。">
+          <div class="mini-axis-row"><span>Y: 品質スコア</span><span>平らな上端: 天井効果</span></div>
+          <div class="ceiling-plot">
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
+            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
+          </div>
+          <div class="mini-x-axis">X: effort 設定</div>
         </div>
       </figure>
       <div class="evidence-grid">
@@ -244,7 +270,12 @@
         <figcaption>
           <strong>読むチャート:</strong> 品質ガードレールとともに、モデル化された交点を読みます。これはサイジングの目安であり、測定された容量証拠ではありません。
         </figcaption>
-        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="モデル化されたクロスオーバーチャート: X軸はリクエスト率、Y軸は時間あたりコストモデルです。点はモデル化された閾値です。">
+          <div class="mini-axis-row"><span>Y: モデル化された時間あたりコスト</span><span>X: リクエスト率</span></div>
+          <b class="crossover-label payg">PAYG 曲線</b>
+          <b class="crossover-label ptu">PTU 下限</b>
+          <i class="crossover-point"></i><b class="crossover-label point">クロスオーバー</b>
+        </div>
       </figure>
       <div class="evidence-grid">
         <div>
