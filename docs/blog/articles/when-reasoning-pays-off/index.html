@@ -378,17 +378,58 @@
       </p>
     </section>
 
+    <section id="sources" class="article-section">
+      <p class="section-label">Sources · evidence boundary</p>
+      <h2>Sources and evidence boundary</h2>
+      <p>
+        The overview reads cost, quality, latency, and token composition
+        together across five slices. Every numeric claim above traces to a
+        public artifact in this repository; the operating interpretation is
+        this essay's own. The two tiers below mark where documented contract
+        ends and operational inference begins.
+      </p>
+      <ul>
+        <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance and does not claim p-values at N = 20.</li>
+        <li><strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The ratios will drift if list pricing moves.</li>
+        <li><strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a>; archive_url: <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
+        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the $0.000663 to $0.005043 cost climb (7.6x bill), the 1.87931 to 1.779661 mean judge-score movement, and the 3.655172 to 311.474576 reasoning-token shift.</li>
+        <li><strong>Tier 2 — multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
+        <li><strong>Tier 2 — tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>
+        <li><strong>Tier 2 — modeled crossover:</strong> 149 rpm with a 50 PTU floor for the short-factual extra-high row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
+        <li><strong>Evidence dashboard:</strong> the per-essay tables and rendered source charts at the <a href="../../charts/?lang=en">evidence dashboard</a> are the auditable form of the same artifacts.</li>
+      </ul>
+      <p>
+        What this overview does and does not prove: it shows the shape of
+        five slices on this benchmark sample; it does not prove the same
+        shape will hold on a different workload mix, a different tenant, a
+        different region, or a future pricing snapshot. Each per-topic essay
+        carries the boundary specific to its slice.
+      </p>
+    </section>
+
     <section id="decision" class="article-section decision-box">
       <h2>The practical rule</h2>
       <p>
-        Use low effort as the default for short factual work. Raise effort for
-        multi-step work only when the evaluator moves enough to justify the
-        cost. For tool-agent work, check for ceiling effects before spending
-        more. Always read the evidence dashboard beside the article, because the
-        dashboard is the evidence trail and the article is the decision frame.
+        <strong>The practical rule: raise reasoning effort only where the
+        evaluator moves on this workload shape, and read every cost claim
+        next to its paired quality, latency, and token-composition chart
+        before committing the spend to production.</strong>
+      </p>
+      <p>
+        The evidence dashboard is the audit trail behind that rule; the
+        per-topic essays carry the per-slice version of it.
       </p>
       <p>
         <a class="button-link" href="../../charts/?lang=en">Open the evidence dashboard</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>Next:</strong>
+        <a href="topics/short-factual-work/">Short factual work: when extra reasoning buys cost, not quality</a>
+        &mdash; If the task mostly asks for short factual answers, does
+        higher reasoning effort improve quality enough to justify the bill?
       </p>
     </section>
   </main>
