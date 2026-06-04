@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tool-agent ceiling checks | when reasoning pays off</title>
+  <meta name="description" content="एक विषय निबंध: जब quality score rubric के शिखर के पास पहुँच जाए, तब tool-agent quality और latency को एक साथ कैसे पढ़ें।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="3c2aee9f1c499d5f04a6d00f0948b791b1c117fbdd2cb2e71fc04ad86f395576">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">लेख</a> / <a href="../../../">When reasoning pays off</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय निबंध · benchmark-03 tool-agent काम</p>
+    <h1>Tool-agent काम: quality के शिखर पर पहुँचते ही latency बोलने लगती है</h1>
+    <p class="lede">Tool-agent tasks को ज़रूरत से ज़्यादा रोमांटिक बना देना आसान है। इनमें tools होते हैं, branching होती है, और यह एहसास होता है कि model असली काम कर रहा है। benchmark-03 quality को latency के साथ जोड़कर इस रोमांस को क़ाबू में रखता है। नतीजा “ज़्यादा effort बेहतर है” से कहीं ज़्यादा सूक्ष्म है।</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>सवाल</h2><p>जब tool-agent quality पहले से ही शिखर के पास हो, तब अतिरिक्त effort आख़िर क्या खरीदता है?</p></section>
+      <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-03 की quality, latency, cost और throughput charts।</p></section>
+      <section class="summary-tile"><h2>निष्कर्ष</h2><p>कई GPT-5.2 cells quality की छत के पास या उस पर बैठी हैं; latency और token shape ही असली विभेदक बन जाते हैं।</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>विषय-सूत्र के अनुसार पढ़ें:</strong>
+      <a href="#s1">छत वाला असर ही मुद्दा है</a>
+      <a href="#s2">chart को कैसे पढ़ें</a>
+      <a href="#s3">tools पढ़ाई क्यों बदल देते हैं</a>
+      <a href="#s4">याद रखने लायक कहानी</a>
+      <a href="#table">साक्ष्य तालिका</a>
+    </nav>
+
+    <p class="banner">
+      <strong>संबंधित source chart खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 latency chart</a>।
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="benchmark-03 में effort के अनुसार latency दिखाता bar chart, साथ में judge score के labels।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>छत वाला असर ही मुद्दा है</h2>
+      <p>benchmark-03 ने कोई सीधी-सरल एकदिशीय कहानी नहीं दी। GPT-4o का औसत judge score 1.85 रहा। GPT-5.2 none का औसत 1.966667, low ने 2.0 छुआ, medium का औसत 1.983333, high का औसत 1.966667, और extra-high ने 2.0 छुआ। यह baseline पर quality सुधार है, पर यह एक छत भी है।</p><p>एक बार जब कई cells शिखर के पास सिमट जाएँ, तो effort बढ़ाना अपने-आप अर्थपूर्ण नहीं रह जाता। अगला साक्ष्य latency, token shape, और समुच्चय score के भीतर छिपे failure modes से आता है।</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>chart को कैसे पढ़ें</h2>
+      <p>यह chart bar की ऊँचाई के रूप में latency का इस्तेमाल करती है, क्योंकि quality पहले ही शिखर के पास सिमट चुकी है। X-axis पर model/effort cell है। Y-axis पर milliseconds में औसत latency है। हर bar के नीचे का label उससे जुड़ा औसत judge score देता है।</p><p>यह chart जानबूझकर histogram नहीं है। यह सारांशित cells की तुलना है: अगर दो cells की quality एक जैसी हो, तो छोटी bar पूछती है कि क्या लंबा इंतज़ार अब भी कुछ दिखने लायक खरीद रहा है।</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>tools पढ़ाई क्यों बदल देते हैं</h2>
+      <p>Tool-agent काम में tool चुनाव, बीच की अवस्था (intermediate state) और जवाब का संश्लेषण शामिल है। इससे task short factual काम से ज़्यादा माँग वाला बन जाता है। इसका यह भी मतलब है कि समुच्चय quality score अलग-अलग तरह के व्यवहार छिपा सकता है: कोई cell इसलिए पास हो सकती है क्योंकि tool ने ज़्यादातर काम किया, या इसलिए फ़ेल कि model ने सही tool इस्तेमाल किया पर सारांश ख़राब किया।</p><p>charts निरीक्षण की ज़रूरत ख़त्म नहीं करतीं। वे बताती हैं कि कहाँ निरीक्षण करना है। इस run में low effort आकर्षक क्षेत्र है, क्योंकि वह quality की छत तक पहुँचा और baseline latency के पास ही रहा।</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>याद रखने लायक कहानी</h2>
+      <p>Tool-agent benchmarks को दो बार पढ़ना पड़ता है। पहले पूछें कि क्या reasoning ने सटीकता सुधारी। फिर, अगर quality शिखर के पास सिमटी हो, तो पूछें कि कौन-सी cell latency और token दबाव को क़ाबू में रखती है। यह दूसरी पढ़ाई कोई बाद की सोच नहीं है; यही वह तरीका है जिससे नतीजा benchmark के बाहर इस्तेमाल लायक बनता है।</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>साक्ष्य तालिका</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-03 quality-latency के साक्ष्य</caption>
+        <thead><tr><th>साक्ष्य पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ता है</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s औसत latency</td><td>मज़बूत baseline, पर छत नहीं।</td></tr>
+<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s औसत latency</td><td>लगभग उतनी ही latency पर बेहतर quality।</td></tr>
+<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s औसत latency</td><td>छत वाला score, latency में मामूली बढ़ोतरी।</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s औसत latency</td><td>फिर वही छत वाला score, पर ज़्यादा धीमा।</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>साक्ष्य हमें क्या कहने देता है</h2>
+      <p>tool-agent काम के लिए काम का वाक्य “effort बढ़ाओ” नहीं है। यह है “वह सबसे निचला effort ढूँढो जो उस agent व्यवहार को बनाए रखे जिसकी आपको असल में ज़रूरत है।”</p>
+      <p><a class="button-link" href="../../../">overview निबंध पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p></footer>
+</body>
+</html>

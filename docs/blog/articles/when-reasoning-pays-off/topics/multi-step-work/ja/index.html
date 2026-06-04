@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多段タスク | 推論がコストに見合うとき</title>
+  <meta name="description" content="品質の差がはっきり見えるとき、多段タスクは推論 effort を正当化しうる——その条件を読み解くトピック記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fa569e15f07e4d1d0c8b0b37e991306b7bf1fa88e5d07098986cdd18dc02cd06">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="article-kicker">トピック記事 · benchmark-02 多段タスク</p>
+    <h1>多段タスク：推論が試す価値を稼ぐとき</h1>
+    <p class="lede">二つ目のベンチマークは、short-factual の罠に対する対の重りだ。ここでのタスクは、単なる想起では足りない。正しく答えるのに十分なあいだ、小さな制約の連なりを保ち続けることをモデルに求める。そういう設定でこそ、推論 effort には果たすべき有用な仕事が生まれる。</p>
+
+    <div class="article-summary-grid" aria-label="トピックの要約">
+      <section class="summary-tile"><h2>問い</h2><p>追加の推論が、ただ請求額を膨らませるのではなく品質の改善を買うのは、どんなときか。</p></section>
+      <section class="summary-tile"><h2>証拠</h2><p>benchmark-02 の品質・コスト・レイテンシ・トークン形状のチャート。</p></section>
+      <section class="summary-tile"><h2>わかったこと</h2><p>GPT-5.2 の low/none の領域は、最も高い effort 設定を使わずとも、GPT-4o のベースラインに対して目に見える品質の上積みを出した。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="トピックのセクション">
+      <strong>筋ごとに読む：</strong>
+      <a href="#s1">品質の動きが解釈を変えた</a>
+      <a href="#s2">チャートの読み方</a>
+      <a href="#s3">このベンチマークが違っていた理由</a>
+      <a href="#s4">残しておきたい話</a>
+      <a href="#table">証拠の表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>対応する元チャートを開く：</strong>
+      <a href="../../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 品質チャート</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="Bar chart showing benchmark-02 mean judge score by model and effort with cost labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>品質の動きが解釈を変えた</h2>
+      <p>benchmark-02 では、ベースラインの GPT-4o セルが judge score 平均 1.5 だった。GPT-5.2 は none・medium・high・extra-high effort で 2.0 に達し、low effort でも 1.933333 に届いた。チャートは「常に effort を上げよ」とは言っていない。このワークロードには、推論が効くだけの構造が備わっている、と言っているのだ。</p><p>より大事な読みは、最初に成功したセルの形状にある。GPT-5.2 none はリクエストあたり平均 $0.000618 で 2.0 に達した。これによって、最も高い effort 設定をデフォルトに祭り上げることなく、試行そのものが有用になる。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>チャートの読み方</h2>
+      <p>X 軸はモデル/effort のセル、Y 軸は平均 judge score。各棒の下のラベルは、同じセルのリクエストあたり平均コストだ。この対の見方が大事なのは、品質の棒だけを見ると過剰選択を誘いかねないからだ。もし複数のセルがルーブリックの頂点に達するなら、より安く速いほうが面白くなる。</p><p>これは度数のヒストグラムではない。各棒は、元データの表に独自のサンプル数と標準偏差を持つ、要約された実験セルである。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>このベンチマークが違っていた理由</h2>
+      <p>short-factual のタスクは、おおむね短い回答を求めるものだった。多段タスクは、小さな推論の連鎖を保ち続けることをモデルに求めた。それが「追加の思考」で買えるものを変えた。推論予算はもはや単なる隠れた支出ではなく、誤答を減らす経路になった。</p><p>とはいえ、証拠は最大化主義に報いてはいない。effort が上がればレイテンシも上がり、extra-high effort は平均 3.3s だった。品質がいったんルーブリックの頂点に達したら、次の問いは「より遅いセルは何か新しいことを語っているのか」になる。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>残しておきたい話</h2>
+      <p>推論が報われるのは、それが回答を変えるときであって、回答の雰囲気を変えるときではない。試行がまず属すべき場所は多段タスクだ。タスクにはモデルが恩恵を受けるだけの内部構造があり、評価者はその差を見て取れる。</p><p>したがって判断は「どこでももっと推論を使え」ではない。「多段のスライスは、品質の基準を超える最も低い effort のレベルへ振り向けよ」だ。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>証拠の表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-02 cost-quality evidence</caption>
+        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>超えるべき明確なベースライン。</td></tr>
+<tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>この公開スライスで最も安い最高得点セル。</td></tr>
+<tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>ベースラインは上回るが、ここでは明快な勝者ではない。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>最高得点だが、請求はより大きくレイテンシは長い。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>この証拠から言えること</h2>
+      <p>多段タスクは「推論がコストに見合うとき」という言葉が具体になる場所だ。評価者が動いたからこそ、支出には証拠の裏づけができた。</p>
+      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

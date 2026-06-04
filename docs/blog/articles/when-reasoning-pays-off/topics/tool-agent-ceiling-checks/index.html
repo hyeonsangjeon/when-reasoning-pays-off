@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tool-agent ceiling checks | when reasoning pays off</title>
+  <meta name="description" content="A topic essay on reading tool-agent quality and latency together when the quality score nears the top of the rubric.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical_topic">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">Topic essay · benchmark-03 tool-agent work</p>
+    <h1>Tool-agent work: after quality reaches the ceiling, latency starts speaking</h1>
+    <p class="lede">Tool-agent tasks are easy to over-romanticize. They involve tools, branching, and a sense that the model is doing real work. Benchmark-03 keeps the romance in check by pairing quality with latency. The result is subtler than “more effort is better.”</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>Question</h2><p>When tool-agent quality is already near the top, what does extra effort still buy?</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>benchmark-03 quality, latency, cost, and throughput charts.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>Several GPT-5.2 cells sit near or at the quality ceiling; latency and token shape become the discriminators.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>Read by thread:</strong>
+      <a href="#s1">The ceiling effect is the point</a>
+      <a href="#s2">How to read the chart</a>
+      <a href="#s3">Why tools change the reading</a>
+      <a href="#s4">The story to keep</a>
+      <a href="#table">Evidence table</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Open the matching source chart:</strong>
+      <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 latency chart</a>.
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> this topic pulls one chart-sized question out of the dashboard and pairs it with the source table below.
+        </figcaption>
+        <img class="wide-chart" src="../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>The ceiling effect is the point</h2>
+      <p>Benchmark-03 did not produce a simple monotonic story. GPT-4o averaged a judge score of 1.85. GPT-5.2 none averaged 1.966667, low reached 2.0, medium averaged 1.983333, high averaged 1.966667, and extra-high reached 2.0. That is a quality improvement over the baseline, but it is also a ceiling.</p><p>Once several cells are clustered near the top, raising effort is no longer automatically meaningful. The next evidence comes from latency, token shape, and the failure modes hidden inside the aggregate score.</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>How to read the chart</h2>
+      <p>The chart uses latency as the bar height because quality has already compressed near the top. The X-axis is the model/effort cell. The Y-axis is mean latency in milliseconds. The label under each bar gives the paired mean judge score.</p><p>This chart is deliberately not a histogram. It is a comparison of summarized cells: if two cells have similar quality, the shorter bar asks whether the longer wait is still buying something visible.</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>Why tools change the reading</h2>
+      <p>Tool-agent work includes tool selection, intermediate state, and answer synthesis. That makes the task more demanding than short factual work. It also means the aggregate quality score can hide different kinds of behavior: a cell may pass because the tool did most of the work, or fail because the model used the right tool but summarized poorly.</p><p>The charts do not remove the need for inspection. They tell us where to inspect. In this run, low effort is the attractive region because it reached the quality ceiling while staying close to the baseline latency.</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>The story to keep</h2>
+      <p>Tool-agent benchmarks need two reads. First, ask whether reasoning improved correctness. Then, if quality is clustered near the top, ask which cell keeps latency and token pressure under control. The second read is not an afterthought; it is how the result becomes usable outside the benchmark.</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>The evidence table</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-03 quality-latency evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s mean latency</td><td>Strong baseline, but not the ceiling.</td></tr>
+<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s mean latency</td><td>Better quality with similar latency.</td></tr>
+<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s mean latency</td><td>Ceiling score with modest latency increase.</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s mean latency</td><td>Ceiling score again, but slower.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>What the evidence lets us say</h2>
+      <p>For tool-agent work, the useful sentence is not “raise effort.” It is “find the lowest effort that preserves the agent behavior you actually need.”</p>
+      <p><a class="button-link" href="../../">Back to the overview essay</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

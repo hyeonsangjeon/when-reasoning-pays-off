@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTU/PAYG planning | when reasoning pays off</title>
+  <meta name="description" content="A topic essay on reading PTU/PAYG crossover charts as planning models rather than direct capacity measurements.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical_topic">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">Topic essay · PTU/PAYG planning model</p>
+    <h1>PTU/PAYG crossover: a planning line, not a capacity result</h1>
+    <p class="lede">The crossover chart is useful precisely because it is limited. It turns the public cost and token-shape snapshot into a planning question: at what request rate would fixed PTU spend begin to look cheaper than PAYG for this measured workload shape? It does not prove how a live PTU target will behave under load.</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>Question</h2><p>What can a modeled PTU/PAYG crossover tell us, and what must it not claim?</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>Public crossover JSON, pricing snapshots, and token-shape throughput factors.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>The crossover is a decision prompt. It is not direct evidence of saturation, 429 onset, or live capacity.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>Read by thread:</strong>
+      <a href="#s1">The model answers a narrow question</a>
+      <a href="#s2">How to read the chart</a>
+      <a href="#s3">Why the distinction matters</a>
+      <a href="#s4">The story to keep</a>
+      <a href="#table">Evidence table</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Open the matching source chart:</strong>
+      <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG crossover chart family</a>.
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> this topic pulls one chart-sized question out of the dashboard and pairs it with the source table below.
+        </figcaption>
+        <img class="wide-chart" src="../../../../../assets/topic-ptu-payg-planning.svg" alt="Bar chart showing modeled PTU/PAYG break-even RPM for selected benchmark rows." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>The model answers a narrow question</h2>
+      <p>The crossover calculation combines mean cost per request, token-shape throughput factor, a public pricing snapshot, and a 50 PTU floor. The output is a modeled break-even RPM. For example, benchmark-01 extra-high effort lands around 149 rpm, benchmark-02 none around 2,680 rpm, and benchmark-03 low around 564 rpm.</p><p>Those numbers are useful because they expose how workload shape changes the planning conversation. They are not live-load measurements. They do not say where 429 begins, how cache behaves near saturation, or what a particular serving setup will do at p95 latency.</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>How to read the chart</h2>
+      <p>The X-axis is a set of selected benchmark rows. The Y-axis is modeled break-even RPM. A taller bar means PAYG can rise to a higher request rate before the modeled PTU floor looks cheaper. A shorter bar means the workload reaches the modeled crossover earlier.</p><p>The bars are not a continuous capacity curve. They are planning markers derived from public aggregate data and a pricing snapshot.</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>Why the distinction matters</h2>
+      <p>Without the distinction, a crossover chart can be misread as a promise. It is tempting to say that a row with a 149 rpm crossover “needs PTU” or that a row with a 2,680 rpm crossover “does not need PTU.” The evidence is more careful than that. The chart says what the economics look like under the modeled assumptions. A live system still needs latency, cache, retry, and saturation evidence.</p><p>That caution is not weakness. It is what makes the chart usable: it tells the team when to run a capacity experiment, not what the capacity experiment will find.</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>The story to keep</h2>
+      <p>PAYG and PTU answer different questions. PAYG asks how much each completed request costs. PTU asks what fixed capacity can carry at an acceptable quality and latency level. The crossover line connects those worlds, but it does not collapse them into one measurement.</p><p>In this project, the line is therefore labeled as a modeled hypothesis. It belongs beside the measured charts, not above them.</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>The evidence table</h2>
+      <table class="chart-table evidence-table">
+        <caption>selected crossover examples</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>Early crossover because the per-request bill is high.</td></tr>
+<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>Late crossover because the measured request is cheap.</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>Middle case: agent workload has a larger token shape.</td></tr>
+<tr><td>Evidence boundary</td><td>Modeled economics</td><td>not live capacity</td><td>Use it to decide what to test next.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>What the evidence lets us say</h2>
+      <p>The crossover is valuable when it stays humble: it converts evidence into a planning question and leaves live capacity to live measurement.</p>
+      <p><a class="button-link" href="../../">Back to the overview essay</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

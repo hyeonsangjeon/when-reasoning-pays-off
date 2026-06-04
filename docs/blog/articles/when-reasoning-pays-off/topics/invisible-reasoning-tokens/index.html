@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Invisible reasoning tokens | when reasoning pays off</title>
+  <meta name="description" content="A topic essay on how hidden reasoning tokens changed the bill even when visible answers stayed short.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical_topic">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">Topic essay · hidden billing surface</p>
+    <h1>Invisible reasoning tokens: the part of the bill the answer does not show</h1>
+    <p class="lede">The short-factual run looked ordinary if you only read the answers. Most responses were brief. The bill told a different story because reasoning models can spend tokens inside the model before producing the visible text. Those internal tokens are not shown to the user, but they are part of the measured usage surface.</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>Question</h2><p>If the answer text stays short, where did the extra cost come from?</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>benchmark-01 token composition, cost, and latency charts, read as one evidence chain.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>The visible answer length barely moved, while hidden reasoning tokens grew across the effort ladder.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>Read by thread:</strong>
+      <a href="#s1">The answer was short; the internal work was not</a>
+      <a href="#s2">How to read the chart</a>
+      <a href="#s3">What the source charts add</a>
+      <a href="#s4">The story to keep</a>
+      <a href="#table">Evidence table</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Open the matching source chart:</strong>
+      <a href="../../../../charts/?lang=en#chart-token-composition-benchmark-01-tokens">benchmark-01 token composition chart</a>.
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> this topic pulls one chart-sized question out of the dashboard and pairs it with the source table below.
+        </figcaption>
+        <img class="wide-chart" src="../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>The answer was short; the internal work was not</h2>
+      <p>The useful surprise in benchmark-01 is not that extra-high effort cost more. That part is expected. The useful surprise is how little of the increase was visible in the final answer. Minimal effort averaged 12.7 visible output tokens and 3.7 reasoning tokens. Extra-high effort averaged 17.9 visible output tokens and 311.5 reasoning tokens.</p><p>That means the text a reader sees is a poor proxy for the computation that was purchased. A short answer can hide a large reasoning budget, and a plausible answer can still be a bad economic trade if the paired quality chart does not move.</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>How to read the chart</h2>
+      <p>The bars are aggregate effort cells, not a histogram of individual requests. The X-axis is the reasoning-effort setting. The Y-axis is mean reasoning tokens per request. The small label under each bar gives mean visible output tokens for the same cell.</p><p>Read the chart from bottom to top: first ask whether visible output changed enough to explain the bill; then compare the hidden reasoning bar. In this slice, the explanation is not answer length. It is internal work.</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>What the source charts add</h2>
+      <p>Token composition explains the mechanism, but it is not enough by itself. The cost chart shows the bill growing. The quality chart asks whether that bill bought a better answer. The latency chart shows the user-facing wait. Together they make the hidden surface legible: more internal tokens, more spend, more latency, and no matching quality lift in this short factual slice.</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>The story to keep</h2>
+      <p>The lesson is not that reasoning tokens are bad. They are the point of a reasoning model. The lesson is that they need a job. If the task only needs a short factual answer, internal reasoning can become a silent budget leak. If the task needs multi-step resolution, those same tokens may be exactly what earns the quality gain.</p><p>This is why the overview essay keeps cost, quality, latency, and token composition together. The bill is not fully visible in the answer.</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>The evidence table</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 hidden-token evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>Short answer, tiny hidden budget.</td></tr>
+<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>Still short text, much larger internal budget.</td></tr>
+<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>Hidden work did not buy a quality lift in this slice.</td></tr>
+<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>The hidden work also stretched wait time.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>What the evidence lets us say</h2>
+      <p>A reasoning-token budget should be visible in telemetry even when it is invisible in the answer. That is the core accounting habit this topic adds to the series.</p>
+      <p><a class="button-link" href="../../">Back to the overview essay</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

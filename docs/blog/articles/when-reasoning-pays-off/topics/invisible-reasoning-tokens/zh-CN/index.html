@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>看不见的 reasoning tokens | when reasoning pays off</title>
+  <meta name="description" content="一篇专题随笔：当可见的回答依旧很短时，隐藏的 reasoning tokens 如何悄悄改变了账单。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">专题随笔 · 隐藏的计费面</p>
+    <h1>看不见的 reasoning tokens：账单里那段回答没有显示的部分</h1>
+    <p class="lede">如果只读回答，那次短问答（short-factual）的运行看上去平平无奇——大多数响应都很简短。但账单讲的是另一个故事：推理模型会在生成可见文字之前，先在模型内部消耗大量 token。这些内部 token 不会展示给用户，却实实在在地被计入了用量。</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>问题</h2><p>既然回答文本一直很短，多出来的成本到底是从哪儿来的？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>把 benchmark-01 的 token 构成、成本与延迟三张图，当作同一条证据链来读。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>沿着 effort 阶梯往上走，可见回答的长度几乎没动，隐藏的 reasoning tokens 却一路上涨。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>按线索阅读：</strong>
+      <a href="#s1">回答很短，内部的活儿一点不少</a>
+      <a href="#s2">这张图该怎么读</a>
+      <a href="#s3">源图补上了什么</a>
+      <a href="#s4">值得记住的那句话</a>
+      <a href="#table">证据表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>打开对应的源图：</strong>
+      <a href="../../../../../charts/?lang=en#chart-token-composition-benchmark-01-tokens">benchmark-01 token 构成图</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>回答很短，内部的活儿一点不少</h2>
+      <p>benchmark-01 真正值得玩味的地方，并不是 extra-high effort 更贵——这本在意料之中。值得玩味的是：这部分增长，在最终回答里几乎看不出来。minimal effort 平均产出 12.7 个可见输出 token、3.7 个 reasoning tokens；extra-high effort 平均产出 17.9 个可见输出 token，却用掉了 311.5 个 reasoning tokens。</p><p>这意味着，读者看到的文字，并不能很好地代表你买下的那部分算力。一个简短的回答可能藏着一大笔推理预算；而一个看似合理的回答，如果配套的质量图没有动，仍然可能是一笔糟糕的经济账。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>这张图该怎么读</h2>
+      <p>每根柱子是按 effort 聚合的实验格，而不是单个请求的直方图。横轴是 reasoning-effort 档位，纵轴是每个请求的平均 reasoning tokens；柱子下方那行小字，给出同一格的平均可见输出 token。</p><p>从下往上读：先问可见输出有没有变化到足以解释账单；再去比对隐藏的 reasoning 柱。在这一片数据里，能解释账单的不是回答长度，而是内部的运算。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>源图补上了什么</h2>
+      <p>token 构成解释了机制，但单凭它还不够。成本图显示账单在上涨；质量图追问这笔账单有没有换来更好的回答；延迟图则反映用户那一端要等多久。把它们放在一起，隐藏的计费面才变得可读：在这一片短问答的切片里，内部 token 更多、花销更大、延迟更长，而质量却没有相应抬升。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>值得记住的那句话</h2>
+      <p>这堂课不是说 reasoning tokens 不好——它们正是推理模型的意义所在。这堂课是说：它们需要有活儿可干。如果任务只需要一个简短的事实回答，内部推理就可能变成一处无声的预算漏点；如果任务需要多步推演，同样这些 token 也许恰恰是质量提升的来源。</p><p>这也正是综述随笔为什么始终把成本、质量、延迟和 token 构成放在一起看：账单并没有完全显示在回答里。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>证据表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 hidden-token evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>回答简短，隐藏预算极小。</td></tr>
+<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>文本依旧很短，内部预算却大得多。</td></tr>
+<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>在这一片切片里，隐藏的运算没有换来质量提升。</td></tr>
+<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>这些隐藏的运算还把等待时间拉长了。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>证据允许我们说什么</h2>
+      <p>哪怕在回答里看不见，reasoning-token 预算也应当在遥测数据里看得见。这正是本专题为整个系列补上的那条核心记账习惯。</p>
+      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>見えない reasoning tokens | 推論がコストに見合うとき</title>
+  <meta name="description" content="表に出る回答が短いままでも、隠れた reasoning tokens が請求額を動かしていた——その仕組みを読み解くトピック記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="article-kicker">トピック記事 · 隠れた請求の面</p>
+    <h1>見えない reasoning tokens：回答には現れない、もう一つの請求</h1>
+    <p class="lede">short-factual のランは、回答だけを眺めるとごく普通に見えた。応答の多くは短い。だが請求額はまったく別の話を語っていた。reasoning model は、目に見えるテキストを出力する前に、モデルの内側でトークンを費やせるからだ。その内部トークンはユーザーには表示されないが、計測される利用量の一部として確かに存在している。</p>
+
+    <div class="article-summary-grid" aria-label="トピックの要約">
+      <section class="summary-tile"><h2>問い</h2><p>回答テキストが短いままなら、追加のコストはどこから来たのか。</p></section>
+      <section class="summary-tile"><h2>証拠</h2><p>benchmark-01 のトークン構成・コスト・レイテンシのチャートを、一本の証拠の連なりとして読む。</p></section>
+      <section class="summary-tile"><h2>わかったこと</h2><p>目に見える回答の長さはほとんど変わらないのに、隠れた reasoning tokens は effort の段階を上がるほど増えていった。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="トピックのセクション">
+      <strong>筋ごとに読む：</strong>
+      <a href="#s1">回答は短く、内部の作業は短くなかった</a>
+      <a href="#s2">チャートの読み方</a>
+      <a href="#s3">元チャートが付け加えるもの</a>
+      <a href="#s4">残しておきたい話</a>
+      <a href="#table">証拠の表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>対応する元チャートを開く：</strong>
+      <a href="../../../../../charts/?lang=en#chart-token-composition-benchmark-01-tokens">benchmark-01 トークン構成チャート</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>回答は短く、内部の作業は短くなかった</h2>
+      <p>benchmark-01 で役に立つ意外性は、extra-high effort のコストが高かったこと自体ではない。そこは想定どおりだ。本当に注目すべきは、その増加のうち最終的な回答に現れたぶんがいかに小さかったか、という点である。minimal effort では visible output が平均 12.7 トークン、reasoning tokens が平均 3.7 トークン。extra-high effort では visible output が平均 17.9 トークン、reasoning tokens が平均 311.5 トークンだった。</p><p>つまり、読者が目にするテキストは、購入された計算量の代理指標としては当てにならない。短い回答が大きな推論予算を覆い隠すこともあるし、もっともらしい回答であっても、対になる品質チャートが動かなければ経済的には割の悪い取引になりうる。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>チャートの読み方</h2>
+      <p>棒は effort セルごとの集計値であって、個々のリクエストのヒストグラムではない。X 軸は reasoning-effort の設定、Y 軸はリクエストあたりの平均 reasoning tokens。各棒の下にある小さなラベルは、同じセルの平均 visible output トークン数を示している。</p><p>チャートは下から上へ読むとよい。まず、請求額を説明できるほど visible output が変化したかを問う。次に、隠れた reasoning の棒と見比べる。このスライスでは、説明要因は回答の長さではない。内部の作業である。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>元チャートが付け加えるもの</h2>
+      <p>トークン構成はメカニズムを説明するが、それだけでは足りない。コストチャートは請求額が膨らんでいくことを示す。品質チャートは、その請求でより良い回答が買えたのかを問う。レイテンシチャートはユーザーが体感する待ち時間を示す。三つが揃ってはじめて、隠れた面が読み取れるようになる——この short-factual のスライスでは、内部トークンが増え、支出が増え、レイテンシが伸び、それに見合う品質の上積みはなかった。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>残しておきたい話</h2>
+      <p>教訓は「reasoning tokens が悪い」ということではない。それらは reasoning model の本質そのものだ。教訓は、reasoning tokens には仕事が必要だ、という点にある。タスクが短い事実回答しか求めないなら、内部の推論は静かな予算の漏れになりうる。タスクが多段の解決を必要とするなら、同じトークンこそが品質向上を稼ぎ出す当のものになりうる。</p><p>だからこそ概要記事は、コスト・品質・レイテンシ・トークン構成を常に並べて扱う。請求額は、回答のなかにすべて見えているわけではない。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>証拠の表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 hidden-token evidence</caption>
+        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>短い回答、ごく小さな隠れ予算。</td></tr>
+<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>テキストは依然短いのに、内部予算ははるかに大きい。</td></tr>
+<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>このスライスでは、隠れた作業は品質の上積みを買わなかった。</td></tr>
+<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>隠れた作業は待ち時間も引き伸ばした。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>この証拠から言えること</h2>
+      <p>reasoning-token の予算は、回答のなかでは見えなくても、テレメトリのなかでは見えているべきだ。これがこのトピックがシリーズに加える、会計上の基本的な習慣である。</p>
+      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

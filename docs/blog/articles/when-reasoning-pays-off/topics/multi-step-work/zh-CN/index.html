@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多步任务 | when reasoning pays off</title>
+  <meta name="description" content="一篇专题随笔：当质量差距清晰可见时，多步任务为什么能让推理 effort 值回票价。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fa569e15f07e4d1d0c8b0b37e991306b7bf1fa88e5d07098986cdd18dc02cd06">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">专题随笔 · benchmark-02 多步任务</p>
+    <h1>多步任务：推理终于值得一试</h1>
+    <p class="lede">第二个基准是对“短问答陷阱”的一记反作用力。这里的任务要的不只是回忆，而是让模型把一小串约束条件一直“记在心里”，直到正确作答。在这种场景下，推理 effort 终于有了正经活儿可干。</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>问题</h2><p>什么时候多花的推理是买来质量提升，而不只是换来一张更大的账单？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>benchmark-02 的质量、成本、延迟与 token 形态四张图。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>GPT-5.2 的 low/none 区间相对 GPT-4o 基线带来了可见的质量提升，而且并不需要拉到最高的 effort 档。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>按线索阅读：</strong>
+      <a href="#s1">质量动了，解读也就变了</a>
+      <a href="#s2">这张图该怎么读</a>
+      <a href="#s3">这个基准为什么不一样</a>
+      <a href="#s4">值得记住的那句话</a>
+      <a href="#table">证据表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>打开对应的源图：</strong>
+      <a href="../../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 质量图</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="Bar chart showing benchmark-02 mean judge score by model and effort with cost labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>质量动了，解读也就变了</h2>
+      <p>在 benchmark-02 里，基线 GPT-4o 的格平均评审分是 1.5。GPT-5.2 在 none、medium、high、extra-high 各档都达到了 2.0，low 档达到 1.933333。这张图并没有说“总是该加 effort”，它说的是：这个工作负载具备足够的结构，让推理能真正起作用。</p><p>更要紧的，是去看最早“达标”的那几个格的形态。GPT-5.2 none 平均每个请求 $0.000618，就已经摸到了 2.0。这让“试一试”变得划算，而不必把最高 effort 档默认当成起点。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>这张图该怎么读</h2>
+      <p>横轴是“模型／effort”格，纵轴是平均评审分，每根柱子下方的标签是同一格每个请求的平均成本。这种成对视图之所以重要，是因为只看质量柱容易诱使人过度选择：如果好几个格都摸到了评分上限，那么更便宜、更快的那个反而更值得关注。</p><p>这不是频次直方图。每根柱子都是一个被汇总过的实验格，在源表里有各自的样本数和标准差。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>这个基准为什么不一样</h2>
+      <p>短问答任务大多只要简短回答；多步任务则要求模型维持住一小条推理链。这就改变了“多想一会儿”能买到什么——推理预算不再只是隐藏的花销，而成了通往“少答错”的一条路径。</p><p>不过证据并不奖励“越多越好”。延迟随 effort 上升，extra-high effort 平均要 3.3s。一旦质量已经触顶，下一个问题就变成：更慢的那个格，是不是还在告诉我们什么新东西。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>值得记住的那句话</h2>
+      <p>推理之所以值回票价，是因为它改变了答案本身，而不是改变了答案的“气场”。多步任务正是“试一试”最该先落地的地方：任务有足够的内部结构让模型获益，评审者也能看出区别。</p><p>所以结论不是“到处都用更多推理”，而是“把多步切片路由到能跨过质量门槛的最低 effort 档”。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>证据表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-02 cost-quality evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>一个清晰的、要去超越的基线。</td></tr>
+<tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>这一公开切片里最便宜的满分格。</td></tr>
+<tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>仍高于基线，但在这里并非干净利落的赢家。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>同样满分，却伴随更大的账单和更长的延迟。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>证据允许我们说什么</h2>
+      <p>多步任务正是让“when reasoning pays off”落到实处的地方：评审者动了，于是这笔花销背后才有了证据。</p>
+      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

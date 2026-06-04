@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工具代理的天花板检查 | when reasoning pays off</title>
+  <meta name="description" content="一篇专题随笔：当质量分逼近评分上限时，如何把工具代理的质量与延迟放在一起读。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="3c2aee9f1c499d5f04a6d00f0948b791b1c117fbdd2cb2e71fc04ad86f395576">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">专题随笔 · benchmark-03 工具代理任务</p>
+    <h1>工具代理任务：质量触顶之后，延迟开始说话</h1>
+    <p class="lede">工具代理任务很容易被浪漫化——它们涉及工具、分支，还带着一种“模型在真干活”的感觉。benchmark-03 用质量与延迟的成对视图，给这份浪漫降了温。结论比“effort 越多越好”要微妙得多。</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>问题</h2><p>当工具代理的质量已经逼近上限时，再加 effort 还能买到什么？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>benchmark-03 的质量、延迟、成本与吞吐四张图。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>多个 GPT-5.2 格已经贴近或触到质量天花板，于是延迟和 token 形态成了真正的区分项。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>按线索阅读：</strong>
+      <a href="#s1">天花板效应才是重点</a>
+      <a href="#s2">这张图该怎么读</a>
+      <a href="#s3">为什么工具会改变读法</a>
+      <a href="#s4">值得记住的那句话</a>
+      <a href="#table">证据表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>打开对应的源图：</strong>
+      <a href="../../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 延迟图</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>天花板效应才是重点</h2>
+      <p>benchmark-03 并没有给出一个简单的单调上升的故事。GPT-4o 平均评审分是 1.85；GPT-5.2 none 平均 1.966667，low 达到 2.0，medium 平均 1.983333，high 平均 1.966667，extra-high 达到 2.0。这相对基线确有提升，但同时也是一道天花板。</p><p>一旦好几个格都挤在顶端附近，再加 effort 就不再自动有意义了。下一份证据来自延迟、token 形态，以及藏在聚合分数背后的那些失败模式。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>这张图该怎么读</h2>
+      <p>这张图把延迟当作柱高，因为质量已经压缩在顶端附近。横轴是“模型／effort”格，纵轴是平均延迟（毫秒），每根柱子下方的标签给出成对的平均评审分。</p><p>这张图刻意不做成直方图。它比较的是被汇总过的实验格：如果两个格质量相近，更矮的那根柱就在追问——更长的等待，是不是还买到了什么看得见的东西。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>为什么工具会改变读法</h2>
+      <p>工具代理任务包含工具选择、中间状态和答案综合，这让它比短问答更吃力。这也意味着聚合质量分可能掩盖不同类型的行为：某个格通过，也许是工具干了大部分活儿；而某个格失败，也许是模型选对了工具，却总结得很糟。</p><p>这些图并不能免去人工检查的必要，但它们告诉我们该往哪儿检查。在这次运行里，low effort 是最有吸引力的区间——它既摸到了质量天花板，又把延迟保持在贴近基线的水平。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>值得记住的那句话</h2>
+      <p>工具代理基准需要读两遍。先问推理有没有提升正确性；如果质量已挤在顶端附近，再问哪个格能把延迟和 token 压力控制住。第二遍不是补充动作，而是让结果在基准之外真正可用的关键。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>证据表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-03 quality-latency evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s mean latency</td><td>基线很强，但还不是天花板。</td></tr>
+<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s mean latency</td><td>延迟相近，质量更好。</td></tr>
+<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s mean latency</td><td>触顶分数，延迟仅略有增加。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s mean latency</td><td>同样触顶，但更慢。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>证据允许我们说什么</h2>
+      <p>对工具代理任务，有用的那句话不是“加 effort”，而是“找到能保住你真正需要的代理行为的最低 effort”。</p>
+      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>
