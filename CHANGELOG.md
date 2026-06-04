@@ -6,6 +6,33 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Reasoning-model migration sizing essay (2026-06-04)
+
+The public blog now includes the fourth operations essay promoted from the TBD
+candidate list: GPT-4o to GPT-5.x migration sizing.
+
+- Added `docs/blog/articles/reasoning-migration-sizing/index.html` with the
+  official normalized-TPM formula, output-weighting context, hidden reasoning
+  token accounting, cache-rate impact, and max-output-token policy guidance.
+- Added localized versions for Korean, Japanese, Simplified Chinese, and Hindi,
+  produced by parallel Mac Mini local Copilot CLI i18n workers using
+  `--model claude-opus-4.8`.
+- Added a public SVG chart showing an illustrative sizing calculation for the
+  same visible workload under GPT-4o and GPT-5.2, with explicit cache and
+  reasoning-token assumptions.
+- Promoted the migration-sizing candidate card from TBD to a live article link
+  and connected the overview essay / localized overview surfaces to the new
+  article.
+
+Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally after staging the new article files.
+
+Worker routing: Mac Mini local `copilot` CLI with `--model claude-opus-4.8` for
+four parallel migration-sizing i18n worker prompts.
+
 ### Added — Explicit cache-retention operations essay (2026-06-04)
 
 The public blog now includes the third operations essay promoted from the TBD

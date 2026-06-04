@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Migration sizing is measurement | when reasoning pays off</title>
+  <meta name="description" content="A public operations article about re-measuring output weight, reasoning tokens, cache rate, and max_output_tokens when moving GPT-4o workloads to GPT-5.x.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
+    <p class="article-kicker">Operations essay · GPT-4o to GPT-5.x sizing</p>
+    <h1>Do not resize a reasoning migration from the model name alone</h1>
+    <p class="lede">
+      Moving a workload from <code>gpt-4o</code> to a GPT-5.x reasoning model is
+      not a one-number migration. The right question is not “is the new model
+      heavier?” It is “what changed in the request shape, output mix, hidden
+      reasoning tokens, cache hit rate, and response ceiling?”
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>Question</h2>
+        <p>What must be re-measured before a GPT-4o workload is sized for GPT-5.x on PTU?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence</h2>
+        <p>Microsoft Learn gives the normalized-TPM formula; OpenAI documents reasoning-token accounting.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Size from measured token shape, not from family-level assumptions about “5.x”.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>Read by question:</strong>
+      <a href="#formula">Sizing formula</a>
+      <a href="#drivers">Four drivers</a>
+      <a href="#chart">Illustrative chart</a>
+      <a href="#checklist">Migration checklist</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Scope note:</strong>
+      The chart below is an illustrative sizing calculation, not a universal
+      capacity claim. Use it to understand the shape of the decision, then run
+      the same calculation on your own traffic sample.
+    </p>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">Official behavior · normalized TPM</p>
+      <h2>The sizing formula is about token shape</h2>
+      <p>
+        Microsoft Learn sizes PTU demand by converting traffic into
+        normalized TPM. The inputs are peak RPM, average prompt tokens, average
+        generated output tokens, cache rate, the model's output-to-input ratio,
+        and the model's Input TPM per PTU value.
+      </p>
+      <div class="decision-box">
+        <p><strong>Formula:</strong></p>
+        <p>
+          <code>normalized_tpm = rpm × (prompt_tokens × (1 - cache_rate) + output_ratio × output_tokens)</code>
+        </p>
+        <p>
+          <code>raw_ptu = normalized_tpm ÷ input_tpm_per_ptu</code>
+        </p>
+      </div>
+      <p>
+        That formula is why a family-level shortcut can mislead. A model can
+        have a heavier output ratio and still have a higher Input TPM per PTU
+        than the previous model. The answer depends on your workload's actual
+        prompt, output, and cache profile.
+      </p>
+    </section>
+
+    <section id="drivers" class="article-section">
+      <p class="section-label">Operating lens · what changes in migration</p>
+      <h2>Four drivers decide whether the migration fits</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>1. Output weighting</h3>
+          <p>For GPT-4.1 and later, Microsoft Learn says output tokens carry a model-specific input-token weight for utilization.</p>
+        </div>
+        <div>
+          <h3>2. Hidden reasoning</h3>
+          <p>OpenAI documents reasoning tokens as non-visible output-side tokens. Measure them from <code>output_tokens_details.reasoning_tokens</code>.</p>
+        </div>
+        <div>
+          <h3>3. Cache rate</h3>
+          <p>Microsoft Learn says cached prompt tokens are deducted from PTU utilization. A prefix-shape change can therefore move the sizing result.</p>
+        </div>
+        <div>
+          <h3>4. Response ceiling</h3>
+          <p>Record <code>max_output_tokens</code>. This repo treats oversized ceilings as a PTU admission-risk hypothesis to test, not a value to guess.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="chart" class="article-section">
+      <p class="section-label">Illustrative calculation · same visible workload</p>
+      <h2>Hidden output can change the answer</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> a 1,000 RPM example with 200 input
+          tokens and 20 visible output tokens. The first three bars use the
+          official normalized-TPM formula and model table. The final two bars
+          add a 60-token reasoning assumption to show why invisible output must
+          be measured.
+        </figcaption>
+        <img class="wide-chart" src="../../../assets/reasoning-migration-sizing.svg" alt="Illustrative PTU sizing chart comparing GPT-4o and GPT-5.2 migration drivers." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>Illustrative sizing rows</caption>
+        <thead>
+          <tr>
+            <th>Row</th>
+            <th>Model</th>
+            <th>Cache rate</th>
+            <th>Generated output assumption</th>
+            <th>Rounded PTUs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Visible baseline</td><td>gpt-4o</td><td>0%</td><td>20 output tokens</td><td>112</td></tr>
+          <tr><td>Visible migration</td><td>gpt-5.2</td><td>0%</td><td>20 output tokens</td><td>110</td></tr>
+          <tr><td>Visible migration + cache</td><td>gpt-5.2</td><td>50%</td><td>20 output tokens</td><td>80</td></tr>
+          <tr><td>Reasoning migration</td><td>gpt-5.2</td><td>0%</td><td>20 visible + 60 reasoning tokens</td><td>250</td></tr>
+          <tr><td>Reasoning migration + cache</td><td>gpt-5.2</td><td>50%</td><td>20 visible + 60 reasoning tokens</td><td>220</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>What this means</h3>
+        <p>
+          The visible-only rows do not support a blanket claim that GPT-5.x is
+          always less efficient than GPT-4o. The reasoning rows show the trap:
+          once hidden reasoning output appears, the same visible answer can
+          need much more normalized TPM unless cache and response policy are
+          measured and tuned.
+        </p>
+      </div>
+    </section>
+
+    <section id="checklist" class="article-section">
+      <p class="section-label">Operator checklist · re-measure before buying capacity</p>
+      <h2>Run the migration as a measurement, not a rename</h2>
+      <ol>
+        <li><strong>Pin the task mix.</strong> Keep prompt, tools, schema, retrieval placement, and sample distribution byte-stable across model cells.</li>
+        <li><strong>Measure visible output.</strong> Compare mean and p95 visible output tokens before and after migration.</li>
+        <li><strong>Measure reasoning output.</strong> Capture <code>reasoning_tokens</code>; do not infer it from the final answer text.</li>
+        <li><strong>Measure cache rate.</strong> Record <code>cached_tokens / prompt_tokens</code> per cache-key bucket, especially after ReAct or tool-schema changes.</li>
+        <li><strong>Right-size the ceiling.</strong> Set <code>max_output_tokens</code> from a representative visible-plus-reasoning percentile, then use per-call overrides for rare long answers.</li>
+        <li><strong>Only then size PTU.</strong> Apply the normalized-TPM formula with the current model table and your measured workload shape.</li>
+      </ol>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>Sources and evidence boundary</h2>
+      <ul>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU sizing guide</a>.</li>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn provisioned throughput concepts</a>.</li>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching guide</a>.</li>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI reasoning models guide</a>.</li>
+        <li><strong>Public repo context:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU vs PAYG decision runbook</a> and <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">observability schema</a>.</li>
+      </ul>
+      <p>
+        The practical rule: before moving GPT-4o traffic to GPT-5.x on PTU,
+        re-measure output, reasoning, cache, and ceiling policy. The model name
+        is not enough information to size the workload.
+      </p>
+      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>

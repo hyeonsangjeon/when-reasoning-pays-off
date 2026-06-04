@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>迁移容量评估是一项测量工作 | when reasoning pays off</title>
+  <meta name="description" content="一篇面向公众的运营文章，讲述在将 GPT-4o 工作负载迁移到 GPT-5.x 时，如何重新测量输出权重、推理 token、缓存命中率以及 max_output_tokens。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 运营随笔</p>
+    <p class="article-kicker">运营随笔 · 从 GPT-4o 到 GPT-5.x 的容量评估</p>
+    <h1>不要仅凭模型名称来重新评估推理迁移的容量</h1>
+    <p class="lede">
+      把一个工作负载从 <code>gpt-4o</code> 迁移到 GPT-5.x 推理模型，
+      并不是一次只看一个数字的迁移。真正该问的问题不是“新模型是不是
+      更重？”，而是“请求形态、输出构成、隐藏的推理 token、缓存命中率
+      以及响应上限分别发生了什么变化？”
+    </p>
+
+    <div class="article-summary-grid" aria-label="文章摘要">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>在按 PTU 为 GPT-5.x 评估一个 GPT-4o 工作负载的容量之前，必须重新测量哪些指标？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>Microsoft Learn 给出了归一化 TPM 的公式；OpenAI 记录了推理 token 的计量方式。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>决策</h2>
+        <p>依据实测的 token 形态来评估容量，而不是依据对“5.x”这一家族层面的笼统假设。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="文章章节">
+      <strong>按问题阅读：</strong>
+      <a href="#formula">容量评估公式</a>
+      <a href="#drivers">四个驱动因素</a>
+      <a href="#chart">示意图表</a>
+      <a href="#checklist">迁移清单</a>
+      <a href="#sources">来源</a>
+    </nav>
+
+    <p class="banner">
+      <strong>适用范围说明：</strong>
+      下方图表是一次示意性的容量评估计算，并非普适的容量结论。
+      请用它来理解决策的形态，然后用你自己的流量样本运行同样的计算。
+    </p>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">官方行为 · 归一化 TPM</p>
+      <h2>容量评估公式关乎 token 形态</h2>
+      <p>
+        Microsoft Learn 通过把流量换算为归一化 TPM 来评估 PTU 需求。
+        输入项包括峰值 RPM、平均 prompt token、平均生成的 output token、
+        缓存率、模型的输出对输入比率，以及模型每 PTU 的 Input TPM 值。
+      </p>
+      <div class="decision-box">
+        <p><strong>公式：</strong></p>
+        <p>
+          <code>normalized_tpm = rpm × (prompt_tokens × (1 - cache_rate) + output_ratio × output_tokens)</code>
+        </p>
+        <p>
+          <code>raw_ptu = normalized_tpm ÷ input_tpm_per_ptu</code>
+        </p>
+      </div>
+      <p>
+        正是这条公式说明了为什么家族层面的捷径会产生误导。一个模型可能
+        具有更重的输出比率，但每 PTU 的 Input TPM 仍然高于上一代模型。
+        答案取决于你的工作负载实际的 prompt、输出和缓存特征。
+      </p>
+    </section>
+
+    <section id="drivers" class="article-section">
+      <p class="section-label">运营视角 · 迁移中会变化的因素</p>
+      <h2>四个驱动因素决定迁移是否合适</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>1. 输出权重</h3>
+          <p>对于 GPT-4.1 及更新的模型，Microsoft Learn 指出 output token 在利用率计算中带有特定于模型的 input-token 权重。</p>
+        </div>
+        <div>
+          <h3>2. 隐藏的推理</h3>
+          <p>OpenAI 将推理 token 记录为不可见的输出侧 token。请从 <code>output_tokens_details.reasoning_tokens</code> 测量它们。</p>
+        </div>
+        <div>
+          <h3>3. 缓存率</h3>
+          <p>Microsoft Learn 指出，缓存的 prompt token 会从 PTU 利用率中扣除。因此前缀形态的变化可能会改变容量评估结果。</p>
+        </div>
+        <div>
+          <h3>4. 响应上限</h3>
+          <p>记录 <code>max_output_tokens</code>。本仓库把过大的上限视为一个需要验证的 PTU 准入风险假设，而不是一个可以靠猜测得出的值。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="chart" class="article-section">
+      <p class="section-label">示意性计算 · 相同的可见工作负载</p>
+      <h2>隐藏的输出可能改变答案</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>图表解读：</strong>一个 1,000 RPM 的示例，包含 200 个 input
+          token 和 20 个可见 output token。前三根柱子使用官方的归一化 TPM
+          公式和模型表。最后两根柱子加入了 60 个推理 token 的假设，以说明
+          为什么必须测量不可见的输出。
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="对比 GPT-4o 与 GPT-5.2 迁移驱动因素的示意性 PTU 容量评估图表。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>示意性容量评估行</caption>
+        <thead>
+          <tr>
+            <th>行</th>
+            <th>模型</th>
+            <th>缓存率</th>
+            <th>生成输出假设</th>
+            <th>四舍五入后的 PTU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>可见基线</td><td>gpt-4o</td><td>0%</td><td>20 个 output token</td><td>112</td></tr>
+          <tr><td>可见迁移</td><td>gpt-5.2</td><td>0%</td><td>20 个 output token</td><td>110</td></tr>
+          <tr><td>可见迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 个 output token</td><td>80</td></tr>
+          <tr><td>推理迁移</td><td>gpt-5.2</td><td>0%</td><td>20 个可见 + 60 个推理 token</td><td>250</td></tr>
+          <tr><td>推理迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 个可见 + 60 个推理 token</td><td>220</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>这意味着什么</h3>
+        <p>
+          仅看可见输出的那几行，并不能支撑“GPT-5.x 总是比 GPT-4o 效率更低”
+          这样的笼统结论。推理那几行揭示了陷阱：一旦出现隐藏的推理输出，
+          除非对缓存和响应策略进行测量与调优，否则相同的可见答案可能需要
+          多得多的归一化 TPM。
+        </p>
+      </div>
+    </section>
+
+    <section id="checklist" class="article-section">
+      <p class="section-label">运营者清单 · 在购买容量前先重新测量</p>
+      <h2>把迁移当作一次测量，而不是一次改名</h2>
+      <ol>
+        <li><strong>固定任务组合。</strong>在各个模型单元之间，保持 prompt、工具、schema、检索位置以及样本分布在字节级别上稳定一致。</li>
+        <li><strong>测量可见输出。</strong>对比迁移前后可见 output token 的均值和 p95。</li>
+        <li><strong>测量推理输出。</strong>采集 <code>reasoning_tokens</code>；不要从最终答案文本去推断它。</li>
+        <li><strong>测量缓存率。</strong>按 cache-key 分桶记录 <code>cached_tokens / prompt_tokens</code>，尤其是在 ReAct 或工具 schema 发生变化之后。</li>
+        <li><strong>合理设定上限。</strong>根据一个有代表性的“可见加推理”百分位来设置 <code>max_output_tokens</code>，再对罕见的长答案使用逐次调用的覆盖值。</li>
+        <li><strong>最后才评估 PTU。</strong>用当前的模型表和你实测的工作负载形态来套用归一化 TPM 公式。</li>
+      </ol>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>来源与证据边界</h2>
+      <ul>
+        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU 容量评估指南</a>。</li>
+        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 预置吞吐量概念</a>。</li>
+        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 提示缓存指南</a>。</li>
+        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 推理模型指南</a>。</li>
+        <li><strong>公开仓库背景：</strong><a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU 与 PAYG 决策手册</a>，以及<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">可观测性 schema</a>。</li>
+      </ul>
+      <p>
+        实用法则：在把 GPT-4o 流量按 PTU 迁移到 GPT-5.x 之前，先重新测量
+        输出、推理、缓存和上限策略。仅凭模型名称，并不足以为工作负载评估容量。
+      </p>
+      <p><a class="button-link" href="../">返回文章索引</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究产物 · 已发布数据均经过脱敏或仅为聚合形式。</p>
+  </footer>
+</body>
+</html>

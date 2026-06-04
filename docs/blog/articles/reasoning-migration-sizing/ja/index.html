@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>移行のサイジングは測定である | when reasoning pays off</title>
+  <meta name="description" content="GPT-4o のワークロードを GPT-5.x へ移行する際に、出力の重み・推論トークン・キャッシュ率・max_output_tokens を再測定することを扱う公開運用記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ</p>
+    <p class="article-kicker">運用エッセイ · GPT-4o から GPT-5.x へのサイジング</p>
+    <h1>推論モデルへの移行を、モデル名だけでサイジングしてはいけない</h1>
+    <p class="lede">
+      ワークロードを <code>gpt-4o</code> から GPT-5.x の推論モデルへ移すことは、
+      ひとつの数字で済む移行ではありません。問うべきは「新しいモデルは
+      重いのか？」ではなく、「リクエストの形・出力の構成・隠れた推論トークン・
+      キャッシュヒット率・応答上限のうち、何が変わったのか？」です。
+    </p>
+
+    <div class="article-summary-grid" aria-label="記事の要約">
+      <section class="summary-tile">
+        <h2>問い</h2>
+        <p>GPT-4o のワークロードを PTU 上の GPT-5.x 向けにサイジングする前に、何を再測定すべきか？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>根拠</h2>
+        <p>Microsoft Learn は正規化 TPM の計算式を示し、OpenAI は推論トークンの会計方法を文書化している。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>判断</h2>
+        <p>「5.x」というファミリーレベルの前提ではなく、実測したトークンの形からサイジングする。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="記事のセクション">
+      <strong>問いから読む:</strong>
+      <a href="#formula">サイジング計算式</a>
+      <a href="#drivers">4 つの要因</a>
+      <a href="#chart">例示チャート</a>
+      <a href="#checklist">移行チェックリスト</a>
+      <a href="#sources">出典</a>
+    </nav>
+
+    <p class="banner">
+      <strong>スコープに関する注記:</strong>
+      以下のチャートは例示的なサイジング計算であり、普遍的なキャパシティの主張では
+      ありません。判断の形を理解するために用いたうえで、同じ計算をあなた自身の
+      トラフィックサンプルで実行してください。
+    </p>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">公式の挙動 · 正規化 TPM</p>
+      <h2>サイジング計算式はトークンの形に関するものである</h2>
+      <p>
+        Microsoft Learn は、トラフィックを正規化 TPM に変換することで PTU 需要を
+        サイジングします。入力となるのは、ピーク RPM、平均プロンプトトークン、
+        平均生成出力トークン、キャッシュ率、モデルの出力対入力比、そして
+        モデルの PTU あたり Input TPM 値です。
+      </p>
+      <div class="decision-box">
+        <p><strong>計算式:</strong></p>
+        <p>
+          <code>normalized_tpm = rpm × (prompt_tokens × (1 - cache_rate) + output_ratio × output_tokens)</code>
+        </p>
+        <p>
+          <code>raw_ptu = normalized_tpm ÷ input_tpm_per_ptu</code>
+        </p>
+      </div>
+      <p>
+        この計算式があるからこそ、ファミリーレベルの近道は誤解を招きます。あるモデルは
+        出力比がより重くても、前のモデルより高い PTU あたり Input TPM を持つことが
+        あり得ます。答えは、あなたのワークロード実際のプロンプト・出力・キャッシュ
+        プロファイルに依存します。
+      </p>
+    </section>
+
+    <section id="drivers" class="article-section">
+      <p class="section-label">運用の視点 · 移行で何が変わるか</p>
+      <h2>移行が適合するかを決めるのは 4 つの要因</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>1. 出力の重み付け</h3>
+          <p>GPT-4.1 以降について、Microsoft Learn は出力トークンが使用率においてモデル固有の入力トークン重みを持つと述べています。</p>
+        </div>
+        <div>
+          <h3>2. 隠れた推論</h3>
+          <p>OpenAI は推論トークンを、表示されない出力側のトークンとして文書化しています。<code>output_tokens_details.reasoning_tokens</code> から測定してください。</p>
+        </div>
+        <div>
+          <h3>3. キャッシュ率</h3>
+          <p>Microsoft Learn は、キャッシュされたプロンプトトークンが PTU 使用率から差し引かれると述べています。したがってプレフィックスの形の変化はサイジング結果を動かし得ます。</p>
+        </div>
+        <div>
+          <h3>4. 応答上限</h3>
+          <p><code>max_output_tokens</code> を記録してください。本リポジトリは、過大な上限を、推測する値ではなく、検証すべき PTU 受け入れリスクの仮説として扱います。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="chart" class="article-section">
+      <p class="section-label">例示的な計算 · 同一の可視ワークロード</p>
+      <h2>隠れた出力が答えを変え得る</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読み解くチャート:</strong> 200 入力トークンと 20 可視出力トークンを
+          持つ 1,000 RPM の例です。最初の 3 本のバーは公式の正規化 TPM 計算式と
+          モデル表を使用します。最後の 2 本のバーは 60 トークンの推論を仮定として
+          加え、不可視の出力をなぜ測定しなければならないかを示します。
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="GPT-4o と GPT-5.2 の移行要因を比較する例示的な PTU サイジングチャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>例示的なサイジングの行</caption>
+        <thead>
+          <tr>
+            <th>行</th>
+            <th>モデル</th>
+            <th>キャッシュ率</th>
+            <th>生成出力の仮定</th>
+            <th>丸めた PTU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>可視ベースライン</td><td>gpt-4o</td><td>0%</td><td>20 出力トークン</td><td>112</td></tr>
+          <tr><td>可視移行</td><td>gpt-5.2</td><td>0%</td><td>20 出力トークン</td><td>110</td></tr>
+          <tr><td>可視移行 + キャッシュ</td><td>gpt-5.2</td><td>50%</td><td>20 出力トークン</td><td>80</td></tr>
+          <tr><td>推論移行</td><td>gpt-5.2</td><td>0%</td><td>20 可視 + 60 推論トークン</td><td>250</td></tr>
+          <tr><td>推論移行 + キャッシュ</td><td>gpt-5.2</td><td>50%</td><td>20 可視 + 60 推論トークン</td><td>220</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>これが意味すること</h3>
+        <p>
+          可視のみの行は、GPT-5.x が常に GPT-4o より効率が低いという一律の主張を
+          裏付けません。推論の行が罠を示しています。隠れた推論出力が現れると、
+          キャッシュと応答ポリシーを測定して調整しない限り、同じ可視の答えが
+          はるかに多くの正規化 TPM を必要とし得ます。
+        </p>
+      </div>
+    </section>
+
+    <section id="checklist" class="article-section">
+      <p class="section-label">運用者チェックリスト · キャパシティを買う前に再測定する</p>
+      <h2>移行を、名称変更ではなく測定として実行する</h2>
+      <ol>
+        <li><strong>タスク構成を固定する。</strong> プロンプト・ツール・スキーマ・検索の配置・サンプル分布を、モデルセル間でバイト単位で安定させる。</li>
+        <li><strong>可視出力を測定する。</strong> 移行前後で可視出力トークンの平均と p95 を比較する。</li>
+        <li><strong>推論出力を測定する。</strong> <code>reasoning_tokens</code> を取得する。最終的な答えのテキストから推測しない。</li>
+        <li><strong>キャッシュ率を測定する。</strong> 特に ReAct やツールスキーマの変更後は、キャッシュキーのバケットごとに <code>cached_tokens / prompt_tokens</code> を記録する。</li>
+        <li><strong>上限を適正化する。</strong> 代表的な「可視 + 推論」のパーセンタイルから <code>max_output_tokens</code> を設定し、まれな長文の答えにはコールごとのオーバーライドを用いる。</li>
+        <li><strong>そのうえで初めて PTU をサイジングする。</strong> 現行のモデル表と実測したワークロードの形を用いて、正規化 TPM 計算式を適用する。</li>
+      </ol>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>出典と根拠の境界</h2>
+      <ul>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU サイジングガイド</a>。</li>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn プロビジョニングされたスループットの概念</a>。</li>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 推論モデルガイド</a>。</li>
+        <li><strong>公開リポジトリのコンテキスト:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU 対 PAYG 判断ランブック</a> と <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">可観測性スキーマ</a>。</li>
+      </ul>
+      <p>
+        実務上の原則は次のとおりです。GPT-4o のトラフィックを PTU 上の GPT-5.x へ
+        移す前に、出力・推論・キャッシュ・上限ポリシーを再測定する。モデル名だけでは、
+        ワークロードをサイジングするのに十分な情報ではありません。
+      </p>
+      <p><a class="button-link" href="../../">記事一覧へ戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT ライセンスのリサーチ成果物 · 公開データはサニタイズ済みまたは集計のみ。</p>
+  </footer>
+</body>
+</html>
