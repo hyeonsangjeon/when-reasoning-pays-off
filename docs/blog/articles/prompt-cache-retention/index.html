@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retention is a policy | when reasoning pays off</title>
+  <meta name="description" content="A public operations article about making prompt_cache_retention explicit instead of assuming a cache window.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
+    <p class="article-kicker">Operations essay · prompt cache retention</p>
+    <h1>Retention is a request policy, not an assumption</h1>
+    <p class="lede">
+      Prompt caching can feel automatic because supported models cache eligible
+      prefixes by default. The retention window is not something to assume,
+      though. If an operation depends on longer reuse, the request should say so
+      with <code>prompt_cache_retention</code>.
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>Question</h2>
+        <p>When the operation expects cache reuse later, does the request actually ask for that window?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence</h2>
+        <p>Microsoft Learn defines the retention modes; this repo adds sparse public latency and hit-rate evidence.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Make retention explicit, keep the prefix stable, and read latency beside cached-token share.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>Read by question:</strong>
+      <a href="#spec">Official behavior</a>
+      <a href="#evidence">Public evidence</a>
+      <a href="#policy">Operating policy</a>
+      <a href="#residency">Residency note</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Scope note:</strong>
+      The public measurements below are sparse source-run evidence. They support
+      an operating checklist, not a universal latency claim.
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">Official behavior · two retention modes</p>
+      <h2>Automatic caching is not the same as explicit retention</h2>
+      <p>
+        Microsoft Learn describes two prompt-cache retention policies:
+        <code>in_memory</code> and <code>24h</code>. In-memory cache entries are
+        typically cleared within 5 to 10 minutes of inactivity and are always
+        removed within one hour of last use. Extended retention can keep cached
+        prefixes active for longer, up to a maximum of 24 hours.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Default can be short</h3>
+          <p>For <code>gpt-5.4</code> and older models, omitted retention means <code>in_memory</code>.</p>
+        </div>
+        <div>
+          <h3>Longer reuse is explicit</h3>
+          <p>If the operation expects later reuse, set <code>prompt_cache_retention</code> to <code>24h</code> where supported.</p>
+        </div>
+        <div>
+          <h3>Price is not the differentiator</h3>
+          <p>Microsoft Learn states prompt-cache pricing is the same for both retention policies.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">Observed evidence · sparse public slice</p>
+      <h2>Latency made the retention choice visible</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>Chart to read:</strong> public aggregate cache-key slice, now
+          grouped by retention mode. The left panel shows p95 time to first
+          token. The right panel shows cache hit ratio. Each group compares
+          <code>in_memory</code> with <code>24h</code> for the same cardinality.
+        </figcaption>
+        <img src="../../../assets/prompt-cache-retention-evidence.svg" alt="Prompt cache retention evidence chart comparing TTFT p95 and cache hit ratio." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>Public retention evidence</caption>
+        <thead>
+          <tr>
+            <th>Retention</th>
+            <th>Cardinality</th>
+            <th>Hit ratio</th>
+            <th>TTFT p95</th>
+            <th>Steady records</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>390</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>389</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>What this does and does not prove</h3>
+        <p>
+          In this public slice, the cardinality-1 cell made retention visible in
+          first-token latency. That is source-run evidence, not a universal
+          rule. The durable lesson is simpler: read retention mode, hit ratio,
+          and latency together.
+        </p>
+      </div>
+    </section>
+
+    <section id="policy" class="article-section">
+      <p class="section-label">Operating policy · fail closed on ambiguity</p>
+      <h2>If retention matters, make the choice observable</h2>
+      <p>
+        The public repo includes a small retention-policy helper that rejects an
+        omitted value on models whose documented default is <code>in_memory</code>.
+        That sounds strict, but it prevents the common failure mode: the design
+        assumes a longer cache window while the request body silently takes the
+        short default.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Good</h3>
+          <p><code>prompt_cache_retention="24h"</code> when the workload depends on later reuse.</p>
+        </div>
+        <div>
+          <h3>Also good</h3>
+          <p><code>prompt_cache_retention="in_memory"</code> when the workload only needs short reuse and says so explicitly.</p>
+        </div>
+        <div>
+          <h3>Risky</h3>
+          <p>Leaving the value absent while the operating runbook assumes a longer window.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="residency" class="article-section">
+      <p class="section-label">Governance note · retention is not just latency</p>
+      <h2>Longer retention also needs a governance check</h2>
+      <p>
+        Microsoft Learn states that in-memory prompt caching is compatible with
+        all data-residency regions. For extended retention, it says cached data
+        stays in-region only for Regional Standard or Regional Provisioned modes.
+        That makes retention a governance decision as well as a performance
+        decision.
+      </p>
+      <p>
+        The practical rule: do not bury retention in defaults. Put the intended
+        value in code, observe cached-token share and latency, and confirm the
+        residency requirement for the serving mode you use.
+      </p>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>Sources and evidence boundary</h2>
+      <ul>
+        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching guide</a>.</li>
+        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">cache-key bucketing CSV</a>.</li>
+        <li><strong>Public operator guide:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key policy runbook</a>.</li>
+      </ul>
+      <p>
+        The practical rule: if cache reuse matters after the short window, make
+        <code>prompt_cache_retention</code> explicit and verify the observed
+        latency shape.
+      </p>
+      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>

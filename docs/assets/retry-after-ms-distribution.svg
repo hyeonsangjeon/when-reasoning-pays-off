@@ -1,8 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 860 390">
-<title id="title">Retry-after-ms distribution by source</title>
-<desc id="desc">A public aggregate chart of retry-after-ms percentiles for 193 HTTP 429 events. It compares overall, burst-shaped, and reservation-shaped sources.</desc>
-<rect width="860" height="390" fill="#f8fbff"/>
-<text x="28" y="34" font-family="Segoe UI, system-ui, sans-serif" font-size="20" font-weight="700" fill="#102a43">Retry-after-ms is usually small, but the tail matters</text>
-<text x="28" y="58" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">X-axis: wait advised by the response header, milliseconds. Scale is compressed so the p99 tail stays visible.</text>
-<line x1="155" y1="275" x2="795" y2="275" stroke="#9fb3c8" stroke-width="2"/>
-<line x1="155.0" y1="270" x2="155.0" y2="280" stroke="#9fb3c8"/><text x="155.0" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">0</text><line x1="188.7" y1="270" x2="188.7" y2="280" stroke="#9fb3c8"/><text x="188.7" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">50</text><line x1="305.8" y1="270" x2="305.8" y2="280" stroke="#9fb3c8"/><text x="305.8" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">1000</text><line x1="492.3" y1="270" x2="492.3" y2="280" stroke="#9fb3c8"/><text x="492.3" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">5000</text><line x1="632.0" y1="270" x2="632.0" y2="280" stroke="#9fb3c8"/><text x="632.0" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">10000</text><line x1="777.0" y1="270" x2="777.0" y2="280" stroke="#9fb3c8"/><text x="777.0" y="299" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#53687c">17000</text><text x="475.0" y="327" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#53687c">retry-after-ms</text><text x="28" y="105" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#31475e">Overall 429 events</text><text x="28" y="123" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">n=193</text><circle cx="186.3" cy="100" r="7" fill="#3a86ff" stroke="#fff" stroke-width="2"/><text x="196.3" y="84" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p50: 43 ms</text><circle cx="189.0" cy="100" r="7" fill="#06d6a0" stroke="#fff" stroke-width="2"/><text x="199.0" y="100" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p90: 50.8 ms</text><circle cx="775.5" cy="100" r="7" fill="#ffb703" stroke="#fff" stroke-width="2"/><text x="785.5" y="116" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p99: 16921.1 ms</text><text x="28" y="175" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#31475e">Burst-shaped source</text><text x="28" y="193" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">n=167</text><circle cx="186.3" cy="170" r="7" fill="#3a86ff" stroke="#fff" stroke-width="2"/><text x="196.3" y="154" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p50: 43 ms</text><circle cx="188.4" cy="170" r="7" fill="#06d6a0" stroke="#fff" stroke-width="2"/><text x="198.4" y="170" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p90: 49 ms</text><circle cx="776.7" cy="170" r="7" fill="#ffb703" stroke="#fff" stroke-width="2"/><text x="786.7" y="186" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p99: 16983.3 ms</text><text x="28" y="245" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#31475e">Reservation-shaped source</text><text x="28" y="263" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">n=26</text><circle cx="163.3" cy="240" r="7" fill="#3a86ff" stroke="#fff" stroke-width="2"/><text x="173.3" y="224" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p50: 3 ms</text><circle cx="192.0" cy="240" r="7" fill="#06d6a0" stroke="#fff" stroke-width="2"/><text x="202.0" y="240" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p90: 60 ms</text><circle cx="192.0" cy="240" r="7" fill="#ffb703" stroke="#fff" stroke-width="2"/><text x="202.0" y="256" font-family="Segoe UI, system-ui, sans-serif" font-size="11" font-weight="700" fill="#102a43">p99: 60 ms</text><circle cx="155" cy="370" r="6" fill="#3a86ff"/><text x="167" y="374" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">p50</text><circle cx="251" cy="370" r="6" fill="#06d6a0"/><text x="263" y="374" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">p90</text><circle cx="347" cy="370" r="6" fill="#ffb703"/><text x="359" y="374" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">p99</text><text x="28" y="365" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">Source: public aggregate CSV; source-run descriptive only, not an Azure-wide percentile claim.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 520">
+  <title id="title">Retry-after-ms distribution by source</title>
+  <desc id="desc">A public aggregate chart of retry-after-ms percentiles for 193 HTTP 429 events. It compares overall, burst-shaped, and reservation-shaped sources.</desc>
+  <rect width="980" height="520" fill="#f8fbff"/>
+  <text x="32" y="40" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">Retry-after-ms is usually small, but the tail matters</text>
+  <text x="32" y="68" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">X-axis: wait advised by the response header, in milliseconds. The scale is compressed so both short waits and the p99 tail remain visible.</text>
+
+  <rect x="30" y="92" width="920" height="300" rx="16" fill="#ffffff" stroke="#dce6f0"/>
+
+  <!-- plot lanes -->
+  <line x1="218" y1="135" x2="905" y2="135" stroke="#e8f0f8" stroke-width="2"/>
+  <line x1="218" y1="220" x2="905" y2="220" stroke="#e8f0f8" stroke-width="2"/>
+  <line x1="218" y1="305" x2="905" y2="305" stroke="#e8f0f8" stroke-width="2"/>
+
+  <!-- left labels -->
+  <text x="58" y="127" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="700" fill="#31475e">Overall 429 events</text>
+  <text x="58" y="147" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#6b7c8e">n=193</text>
+  <text x="58" y="212" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="700" fill="#31475e">Burst-shaped source</text>
+  <text x="58" y="232" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#6b7c8e">n=167</text>
+  <text x="58" y="297" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="700" fill="#31475e">Reservation-shaped source</text>
+  <text x="58" y="317" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#6b7c8e">n=26</text>
+
+  <!-- axis -->
+  <line x1="218" y1="358" x2="905" y2="358" stroke="#9fb3c8" stroke-width="2"/>
+  <g font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c" text-anchor="middle">
+    <line x1="218" y1="352" x2="218" y2="365" stroke="#9fb3c8"/><text x="218" y="384">0</text>
+    <line x1="254" y1="352" x2="254" y2="365" stroke="#9fb3c8"/><text x="254" y="384">50</text>
+    <line x1="376" y1="352" x2="376" y2="365" stroke="#9fb3c8"/><text x="376" y="384">1,000</text>
+    <line x1="575" y1="352" x2="575" y2="365" stroke="#9fb3c8"/><text x="575" y="384">5,000</text>
+    <line x1="724" y1="352" x2="724" y2="365" stroke="#9fb3c8"/><text x="724" y="384">10,000</text>
+    <line x1="882" y1="352" x2="882" y2="365" stroke="#9fb3c8"/><text x="882" y="384">17,000</text>
+  </g>
+  <text x="561" y="412" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">retry-after-ms from 429 response header</text>
+
+  <!-- overall dots and labels -->
+  <circle cx="249" cy="135" r="8" fill="#3a86ff" stroke="#fff" stroke-width="2"/>
+  <circle cx="255" cy="135" r="8" fill="#06d6a0" stroke="#fff" stroke-width="2"/>
+  <circle cx="875" cy="135" r="8" fill="#ffb703" stroke="#fff" stroke-width="2"/>
+  <text x="280" y="117" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p50 43 ms</text>
+  <text x="280" y="142" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p90 50.8 ms</text>
+  <text x="790" y="122" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p99 16,921 ms</text>
+
+  <!-- burst dots and labels -->
+  <circle cx="249" cy="220" r="8" fill="#3a86ff" stroke="#fff" stroke-width="2"/>
+  <circle cx="254" cy="220" r="8" fill="#06d6a0" stroke="#fff" stroke-width="2"/>
+  <circle cx="877" cy="220" r="8" fill="#ffb703" stroke="#fff" stroke-width="2"/>
+  <text x="280" y="202" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p50 43 ms</text>
+  <text x="280" y="227" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p90 49 ms</text>
+  <text x="790" y="207" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p99 16,983 ms</text>
+
+  <!-- reservation dots and labels -->
+  <circle cx="224" cy="305" r="8" fill="#3a86ff" stroke="#fff" stroke-width="2"/>
+  <circle cx="261" cy="305" r="8" fill="#06d6a0" stroke="#fff" stroke-width="2"/>
+  <circle cx="261" cy="305" r="4" fill="#ffb703" stroke="#102a43" stroke-width="1"/>
+  <text x="280" y="287" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p50 3 ms</text>
+  <text x="280" y="312" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#102a43">p90 / p99 60 ms</text>
+
+  <!-- legend and notes; kept away from the source line so it does not collide when scaled -->
+  <g font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#31475e">
+    <circle cx="60" cy="452" r="7" fill="#3a86ff"/><text x="76" y="456">p50 median wait</text>
+    <circle cx="210" cy="452" r="7" fill="#06d6a0"/><text x="226" y="456">p90 near-tail wait</text>
+    <circle cx="390" cy="452" r="7" fill="#ffb703"/><text x="406" y="456">p99 tail wait</text>
+  </g>
+  <text x="60" y="485" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#6b7c8e">Source: public aggregate CSV; source-run descriptive only, not an Azure-wide percentile claim.</text>
+</svg>

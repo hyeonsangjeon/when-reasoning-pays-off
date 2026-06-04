@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>留存是一种策略 | when reasoning pays off</title>
+  <meta name="description" content="一篇面向公众的运营文章，主张显式声明 prompt_cache_retention，而不是凭假设认定某个缓存窗口。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="465256148cc70cf1aa740a55dfdba8b4f117511c0441c22d7ba70d25ec9aec20">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 运营随笔</p>
+    <p class="article-kicker">运营随笔 · 提示缓存留存</p>
+    <h1>留存是一项请求策略，而非一种假设</h1>
+    <p class="lede">
+      提示缓存看起来似乎是自动的，因为受支持的模型会默认缓存符合条件的
+      前缀。但留存窗口并不是可以想当然认定的东西。
+      如果某项操作依赖更长时间的复用，请求就应当通过
+      <code>prompt_cache_retention</code> 把这一点明确说出来。
+    </p>
+
+    <div class="article-summary-grid" aria-label="文章摘要">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>当操作预期稍后会复用缓存时，请求是否真的申请了那个窗口？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>Microsoft Learn 定义了这些留存模式；本仓库补充了稀疏的公开延迟与命中率证据。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>决策</h2>
+        <p>把留存设为显式，保持前缀稳定，并把延迟与缓存令牌占比放在一起读。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="文章章节">
+      <strong>按问题阅读：</strong>
+      <a href="#spec">官方行为</a>
+      <a href="#evidence">公开证据</a>
+      <a href="#policy">运营策略</a>
+      <a href="#residency">驻留说明</a>
+      <a href="#sources">来源</a>
+    </nav>
+
+    <p class="banner">
+      <strong>范围说明：</strong>
+      下文的公开测量是稀疏的源运行证据。它们支撑的是一份运营检查清单，
+      而不是一项普适的延迟结论。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">官方行为 · 两种留存模式</p>
+      <h2>自动缓存与显式留存并不是一回事</h2>
+      <p>
+        Microsoft Learn 描述了两种提示缓存留存策略：
+        <code>in_memory</code> 与 <code>24h</code>。内存中的缓存条目
+        通常会在停用 5 到 10 分钟内被清除，并且总会在最后一次使用后
+        一小时内被移除。扩展留存可以让缓存的前缀保持更长时间的活跃，
+        最长可达 24 小时。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>默认可能很短</h3>
+          <p>对于 <code>gpt-5.4</code> 及更早的模型，省略留存意味着 <code>in_memory</code>。</p>
+        </div>
+        <div>
+          <h3>更长的复用需显式声明</h3>
+          <p>如果操作预期稍后会复用，请在受支持的情况下把 <code>prompt_cache_retention</code> 设为 <code>24h</code>。</p>
+        </div>
+        <div>
+          <h3>价格不是区分点</h3>
+          <p>Microsoft Learn 指出，两种留存策略的提示缓存定价是相同的。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">观测证据 · 稀疏的公开切片</p>
+      <h2>延迟让留存选择变得可见</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>图表解读：</strong>公开聚合的缓存键切片，现在
+          按留存模式分组。左侧面板显示首个令牌的 p95 时间。
+          右侧面板显示缓存命中率。每一组都在相同基数下比较
+          <code>in_memory</code> 与 <code>24h</code>。
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="提示缓存留存证据图，对比 TTFT p95 与缓存命中率。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公开留存证据</caption>
+        <thead>
+          <tr>
+            <th>留存</th>
+            <th>基数</th>
+            <th>命中率</th>
+            <th>TTFT p95</th>
+            <th>稳态记录数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>390</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>389</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>它证明了什么，又没有证明什么</h3>
+        <p>
+          在这份公开切片中，基数为 1 的单元让留存在首个令牌延迟上
+          变得可见。那是源运行证据，而不是一条普适规则。
+          更经久的教训其实更简单：把留存模式、命中率
+          和延迟放在一起读。
+        </p>
+      </div>
+    </section>
+
+    <section id="policy" class="article-section">
+      <p class="section-label">运营策略 · 遇到歧义即失败关闭</p>
+      <h2>如果留存很重要，就让这个选择可被观察</h2>
+      <p>
+        公开仓库包含一个小型的留存策略辅助工具，它会对那些
+        文档默认值为 <code>in_memory</code> 的模型拒绝省略的取值。
+        这听起来很严格，但它能防止常见的失败模式：设计假设了
+        一个更长的缓存窗口，而请求体却悄悄沿用了那个较短的默认值。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>好</h3>
+          <p>当工作负载依赖稍后复用时，使用 <code>prompt_cache_retention="24h"</code>。</p>
+        </div>
+        <div>
+          <h3>也好</h3>
+          <p>当工作负载只需要短时复用并且明确说明时，使用 <code>prompt_cache_retention="in_memory"</code>。</p>
+        </div>
+        <div>
+          <h3>有风险</h3>
+          <p>在运营手册假设了更长窗口的情况下，却让该取值缺省。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="residency" class="article-section">
+      <p class="section-label">治理说明 · 留存不只关乎延迟</p>
+      <h2>更长的留存还需要一次治理检查</h2>
+      <p>
+        Microsoft Learn 指出，内存中的提示缓存与所有数据驻留
+        区域兼容。对于扩展留存，它表示缓存数据只有在区域标准
+        或区域预置模式下才会保持在区域内。这使得留存既是一项
+        性能决策，也是一项治理决策。
+      </p>
+      <p>
+        实用规则是：不要把留存埋在默认值里。把预期的取值
+        写进代码，观察缓存令牌占比与延迟，并为你所使用的
+        服务模式确认其驻留要求。
+      </p>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>来源与证据边界</h2>
+      <ul>
+        <li><strong>官方规范，访问于 2026-06-04：</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 提示缓存指南</a>。</li>
+        <li><strong>公开聚合证据：</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">缓存键分桶 CSV</a>。</li>
+        <li><strong>公开操作者指南：</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">提示缓存键策略运营手册</a>。</li>
+      </ul>
+      <p>
+        实用规则是：如果在短窗口之后缓存复用仍然重要，就把
+        <code>prompt_cache_retention</code> 显式化，并验证观测到的
+        延迟形态。
+      </p>
+      <p><a class="button-link" href="../">返回文章索引</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究产物 · 已发布数据均经过脱敏或仅为聚合数据。</p>
+  </footer>
+</body>
+</html>

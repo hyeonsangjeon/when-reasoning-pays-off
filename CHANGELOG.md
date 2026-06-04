@@ -6,6 +6,36 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Explicit cache-retention operations essay (2026-06-04)
+
+The public blog now includes the third operations essay promoted from the TBD
+candidate list: explicit `prompt_cache_retention` policy for workloads that
+depend on later prompt-cache reuse.
+
+- Added `docs/blog/articles/prompt-cache-retention/index.html` with official
+  retention-mode behavior, public aggregate evidence, operating policy, and
+  residency/governance boundaries.
+- Added localized versions for Korean, Japanese, Simplified Chinese, and Hindi,
+  produced by parallel Mac Mini local Copilot CLI i18n workers using
+  `--model claude-opus-4.8`.
+- Added a public SVG chart comparing TTFT p95 and cache hit ratio across
+  `in_memory` and `24h` retention slices from sanitized aggregate evidence.
+- Promoted the explicit-retention candidate card from TBD to a live article link
+  and connected the overview essay / localized overview surfaces to the new
+  article.
+- Fixed the retry-after-ms evidence SVG layout so chart labels, legend, and
+  source note no longer collide at narrower reading widths.
+
+Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally. Browser preview confirms the 429 SVG and the
+new retention article render correctly.
+
+Worker routing: Mac Mini local `copilot` CLI with `--model claude-opus-4.8` for
+four parallel retention i18n worker prompts.
+
 ### Fixed — Article index and 429 locale routing (2026-06-04)
 
 The public article navigation now keeps readers on the requested article family
