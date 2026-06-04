@@ -175,25 +175,84 @@
         decision.
       </p>
       <p>
-        The practical rule: do not bury retention in defaults. Put the intended
-        value in code, observe cached-token share and latency, and confirm the
-        residency requirement for the serving mode you use.
+        Longer retention is therefore a governance decision as much as a
+        performance one: confirm that the serving mode keeps cached data in-region
+        before relying on the extended window, instead of leaving the choice to a
+        default.
       </p>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>Sources and evidence boundary</h2>
+      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> The two
+        retention policies, the in-memory clear-and-removal windows, the 24-hour
+        extended-retention ceiling, the <code>gpt-5.4</code>-and-older
+        <code>in_memory</code> default, the equal pricing across both policies,
+        and the data-residency behavior are documented here.</p>
       <ul>
-        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching guide</a>.</li>
-        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">cache-key bucketing CSV</a>.</li>
-        <li><strong>Public operator guide:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key policy runbook</a>.</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> — documents the
+          <code>in_memory</code> and <code>24h</code> retention policies, the
+          in-memory clear within 5 to 10 minutes of inactivity and removal within
+          one hour of last use, the extended-retention ceiling of 24 hours, the
+          default of <code>in_memory</code> for <code>gpt-5.4</code> and older
+          models, equal prompt-cache pricing across both retention policies, and
+          the data-residency rule that extended retention keeps cached data
+          in-region only for Regional Standard or Regional Provisioned deployment
+          types. accessed_date: 2026-06-04. source_url:
+          <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.
+          archive_url:
+          <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+      </ul>
+      <p><strong>Tier 2 — operational inference (this repository).</strong> The
+        retention-policy helper that fails closed on an omitted value for
+        <code>in_memory</code>-default models, and the sparse public hit-ratio and
+        first-token-latency slice, are repository operational inference and
+        source-run evidence, not Learn specifications.</p>
+      <ul>
+        <li><strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+          — the prompt-cache-key and retention runbook: §4 derives the
+          <code>in_memory</code> default table from the documented per-model
+          defaults and prescribes making <code>prompt_cache_retention</code>
+          explicit.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">source</a>.</li>
+        <li><strong>this repository, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
+          — the <code>ensure_explicit</code> helper that raises on an omitted
+          value for a model whose documented default is <code>in_memory</code>;
+          operational inference, not a Learn specification.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">source</a>.</li>
+        <li><strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+          — the sparse public aggregate slice behind the retention hit-ratio and
+          first-token-latency table; source-run evidence, not a universal latency
+          rule.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source</a>.</li>
       </ul>
       <p>
-        The practical rule: if cache reuse matters after the short window, make
-        <code>prompt_cache_retention</code> explicit and verify the observed
-        latency shape.
+        <strong>What this topic does and does not prove.</strong> It documents the
+        prompt-cache retention contract as Microsoft Learn states it on the access
+        date — the <code>in_memory</code> and <code>24h</code> policies, the
+        in-memory clear-and-removal windows, the 24-hour extended ceiling, the
+        <code>gpt-5.4</code>-and-older <code>in_memory</code> default, equal
+        pricing across both policies, and the in-region residency condition for
+        extended retention — plus a repository rule of thumb: make
+        <code>prompt_cache_retention</code> explicit and fail closed when it is
+        omitted on an <code>in_memory</code>-default model. The single public slice
+        showed retention becoming visible in first-token latency at cardinality 1;
+        that is source-run evidence, not proof of a universal latency curve across
+        every model, region, or traffic shape.
       </p>
-      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>The practical rule</h2>
+      <p><strong>The practical rule: when cache reuse must survive a short idle
+        window on a model that can fall back to <code>in_memory</code>, set
+        <code>prompt_cache_retention</code> explicitly instead of trusting the
+        default, keep the cacheable prefix stable, and read first-token latency
+        beside cached-token share to confirm the window you asked for is the
+        window you got.</strong></p>
+      <p>The next essay turns from a single request's cache policy to what changes
+        when a whole GPT-4o workload is re-sized for GPT-5.x on PTU.</p>
+      <p><a class="button-link" href="../reasoning-migration-sizing/">When GPT-4o traffic moves to GPT-5.x on PTU, what actually changes in the capacity math?</a></p>
     </section>
   </main>
 
