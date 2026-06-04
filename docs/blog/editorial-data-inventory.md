@@ -6,7 +6,7 @@
 >
 > **Sources:** public-mirror tracked files only, under `benchmarks/`,
 > `results/`, `docs/`, `scripts/`, `pricing/`, `schemas/`, `release/`.
-> **Excluded:** any `RAW_PRIVATE` data, `.internal/` files, secrets, endpoint
+> **Excluded:** any private operator data, unpublished files, secrets, endpoint
 > names, or private identifiers. Each measured number cites the exact public
 > file path it comes from; no claim or number is altered.
 >

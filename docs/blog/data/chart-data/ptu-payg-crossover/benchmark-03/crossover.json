@@ -1,0 +1,100 @@
+{
+  "benchmark_key": "benchmark-03",
+  "dimension_keys": [
+    "effort",
+    "model"
+  ],
+  "family_key": "ptu-payg-crossover",
+  "framing_key": "throughput_gain_hypothesis",
+  "metric_key": "ptu_payg_crossover",
+  "pricing_snapshot_sha256": {
+    "payg_pricing_sha256": "fc19f0ecd4945c883e3e67032ee9877e155f132c4efcb7f42b58d54b739b64be",
+    "ptu_pricing_sha256": "4c080139788b31cdc2d9c4b12cb0bf0aaabe1a7591ca010465eb6657edfa5368"
+  },
+  "quality_pairing": {
+    "quality_benchmark_key": "benchmark-03",
+    "quality_chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-03/quality.json",
+    "quality_family_key": "cost-curves-effort",
+    "quality_metric_key": "quality"
+  },
+  "rows": [
+    {
+      "effort": "na",
+      "mean_usd_per_request": 0.003286,
+      "min_ptu": 50,
+      "model": "gpt-4o",
+      "modeled_break_even_rpm": 507.202272,
+      "n_used": 60,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 1.0
+    },
+    {
+      "effort": "none",
+      "mean_usd_per_request": 0.002762,
+      "min_ptu": 50,
+      "model": "gpt-5.2",
+      "modeled_break_even_rpm": 558.438933,
+      "n_used": 60,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 0.925445
+    },
+    {
+      "effort": "low",
+      "mean_usd_per_request": 0.002773,
+      "min_ptu": 50,
+      "model": "gpt-5.2",
+      "modeled_break_even_rpm": 564.268542,
+      "n_used": 59,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 0.93883
+    },
+    {
+      "effort": "medium",
+      "mean_usd_per_request": 0.002894,
+      "min_ptu": 50,
+      "model": "gpt-5.2",
+      "modeled_break_even_rpm": 526.844621,
+      "n_used": 60,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 0.914813
+    },
+    {
+      "effort": "high",
+      "mean_usd_per_request": 0.003178,
+      "min_ptu": 50,
+      "model": "gpt-5.2",
+      "modeled_break_even_rpm": 489.127334,
+      "n_used": 60,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 0.932668
+    },
+    {
+      "effort": "xhigh",
+      "mean_usd_per_request": 0.003499,
+      "min_ptu": 50,
+      "model": "gpt-5.2",
+      "modeled_break_even_rpm": 424.964276,
+      "n_used": 60,
+      "ptu_hourly_rate_usd": 2.0,
+      "throughput_gain_factor": 0.89217
+    }
+  ],
+  "schema": "wrpo.chart_data",
+  "schema_semver": "0.1.0",
+  "series_keys": [
+    "mean_usd_per_request",
+    "throughput_gain_factor",
+    "modeled_break_even_rpm",
+    "ptu_hourly_rate_usd",
+    "min_ptu",
+    "n_used"
+  ],
+  "source_sanitized_sha256": [
+    "69b49013b778028b143c051cba763f094fc8d71a27024a10367e3d1e2a5d285f",
+    "031861130ee589a7d02a3cde328c610d996bc3eeb7e3ef90cdf97f320ffe0511",
+    "3b3381ee23f7dbec6a8eb24bab926cfdffd65375e65b7a00e60cf673b5b2edf1",
+    "7ee6463abbc8c3340a6d536080acbc10cbe95b14d8eb31703d2ded1d1bd78b16"
+  ],
+  "tier": "SANITIZED_PUBLIC",
+  "units_key": "mixed_usd_rpm"
+}

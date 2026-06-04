@@ -1,0 +1,65 @@
+{
+  "benchmark_key": "benchmark-01",
+  "dimension_keys": [
+    "effort",
+    "model"
+  ],
+  "family_key": "cost-curves-effort",
+  "metric_key": "cost_per_request",
+  "rows": [
+    {
+      "effort": "na",
+      "mean_usd_per_request": 0.000747,
+      "model": "gpt-4o",
+      "n_used": 58,
+      "std_usd_per_request": 6.3e-05
+    },
+    {
+      "effort": "minimal",
+      "mean_usd_per_request": 0.000663,
+      "model": "gpt-5.2",
+      "n_used": 58,
+      "std_usd_per_request": 5.4e-05
+    },
+    {
+      "effort": "low",
+      "mean_usd_per_request": 0.001037,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_usd_per_request": 0.000178
+    },
+    {
+      "effort": "medium",
+      "mean_usd_per_request": 0.001865,
+      "model": "gpt-5.2",
+      "n_used": 59,
+      "std_usd_per_request": 0.0004
+    },
+    {
+      "effort": "high",
+      "mean_usd_per_request": 0.003257,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_usd_per_request": 0.000569
+    },
+    {
+      "effort": "xhigh",
+      "mean_usd_per_request": 0.005043,
+      "model": "gpt-5.2",
+      "n_used": 59,
+      "std_usd_per_request": 0.000718
+    }
+  ],
+  "schema": "wrpo.chart_data",
+  "schema_semver": "0.1.0",
+  "series_keys": [
+    "mean_usd_per_request",
+    "std_usd_per_request",
+    "n_used"
+  ],
+  "source_sanitized_sha256": [
+    "2fdecd3514215cd1d86e9a412e3fe7a3ef339f7336fec4a577d54b63ee4fbeb2"
+  ],
+  "tier": "SANITIZED_PUBLIC",
+  "units_key": "usd_per_request"
+}

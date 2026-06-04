@@ -125,3 +125,25 @@ footer.site {
   font-size: 0.9rem;
   border-top: 1px solid #dce6f0;
 }
+
+.charts-page { max-width: 1120px; }
+.chart-family { margin-top: 2rem; }
+.chart-card {
+  background: #fff;
+  border: 1px solid #dce6f0;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+.chart-card h3 { margin-top: 0; }
+.chart-note { color: #4a5d70; margin: 0.5rem 0; }
+.ptu-hypothesis { border-left: 4px solid var(--accent-2); padding-left: 0.75rem; }
+.quality-guardrail, .quality-pairing { border-left: 4px solid var(--accent); padding-left: 0.75rem; }
+.chart-svg { width: 100%; max-width: 520px; height: auto; display: block; margin: 0.75rem 0; }
+.chart-svg rect { fill: var(--accent); }
+.chart-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 0.75rem; }
+.chart-table caption { text-align: left; font-weight: 600; margin-bottom: 0.35rem; }
+.chart-table th, .chart-table td { border: 1px solid #dce6f0; padding: 0.35rem 0.45rem; text-align: left; }
+.chart-table th { background: #eef5fb; }
+.fallback-badge { display: inline-block; }

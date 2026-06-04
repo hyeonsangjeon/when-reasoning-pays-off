@@ -6,7 +6,7 @@
   "provenance_note": "Every numeric value referenced here cites its exact public source file path. Inline figures may be rounded for readability; the cited file holds the exact value. No measured number is altered or recomputed. The derived stub docs/blog/data/reasoning_effort_summary.csv is an exact (unrounded) re-projection of fields already present in benchmarks/<id>/analysis.json, with metric columns left blank for cells where n_used=0.",
   "public_safety": {
     "data_sources_scope": "Public-mirror tracked files only under benchmarks/, results/, docs/, scripts/, pricing/, schemas/, release/.",
-    "excluded": "No RAW_PRIVATE data, no .internal/ files, no secrets, endpoint names, or private identifiers are referenced.",
+    "excluded": "No private operator data, unpublished files, secrets, endpoint names, or private identifiers are referenced.",
     "consumption_model_caveats": "Benchmarks 06/07 are PAYG, not PTU evidence (metadata.ptu_evidence=false). Benchmark 08 retry-after is single-tenant, source-run-scoped, descriptive only. Benchmark 09 replay is a calibration/validation proxy, not direct PTU-pool observation."
   },
   "chart_families": [

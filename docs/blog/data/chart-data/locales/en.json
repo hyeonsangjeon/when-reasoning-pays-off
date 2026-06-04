@@ -1,0 +1,52 @@
+{
+  "meta": {"locale": "en", "translation_status": "translated", "fallback": false},
+  "page": {
+    "title": "Public chart-data dashboard",
+    "lede": "Static charts rendered from sanitized public chart-data. Labels live in locale bundles; numeric chart-data remains stable-key only.",
+    "loading": "Loading chart data...",
+    "error": "Chart data is unavailable.",
+    "fallbackBadge": "Showing English labels"
+  },
+  "families": {
+    "cost-curves-effort": {"title": "Reasoning effort cost, quality, latency, and throughput", "description": "PAYG cost, quality, latency, and token-shape throughput factor by benchmark and reasoning effort."},
+    "token-composition": {"title": "Token composition", "description": "Cached input, non-cached input, output, and reasoning tokens by benchmark and effort."},
+    "ptu-payg-crossover": {"title": "Modeled PTU/PAYG crossover", "description": "Modeled break-even request rate using PAYG cost and token-shape throughput factor."}
+  },
+  "metrics": {
+    "cost_per_request": "Mean cost per request",
+    "latency": "Mean latency",
+    "quality": "Mean judge score",
+    "throughput_gain": "Token-shape throughput factor",
+    "token_composition": "Token composition",
+    "ptu_payg_crossover": "Modeled break-even RPM"
+  },
+  "dimensions": {"effort": "Reasoning effort", "model": "Model", "benchmark": "Benchmark"},
+  "effort": {"na": "Baseline", "minimal": "Minimal", "low": "Low", "medium": "Medium", "high": "High", "xhigh": "Extra-high"},
+  "series": {
+    "mean_usd_per_request": "Mean USD per request",
+    "std_usd_per_request": "Std. dev. USD per request",
+    "mean_latency_ms": "Mean latency (ms)",
+    "std_latency_ms": "Std. dev. latency (ms)",
+    "mean_judge_score": "Mean judge score",
+    "std_judge_score": "Std. dev. judge score",
+    "judge_n": "Judge count",
+    "throughput_gain_factor": "Token-shape throughput factor",
+    "tokens_per_request": "Tokens per request",
+    "baseline_tokens_per_request": "Baseline tokens per request",
+    "mean_input_tokens_noncached": "Non-cached input tokens",
+    "mean_cached_tokens": "Cached input tokens",
+    "mean_output_tokens": "Output tokens",
+    "mean_reasoning_tokens": "Reasoning tokens",
+    "modeled_break_even_rpm": "Modeled break-even requests per minute",
+    "ptu_hourly_rate_usd": "PTU hourly rate (USD)",
+    "min_ptu": "Minimum PTU",
+    "n_used": "Samples used"
+  },
+  "units": {"usd_per_request": "USD/request", "milliseconds": "milliseconds", "judge_score": "judge score", "factor": "factor", "tokens": "tokens", "mixed_usd_rpm": "USD and requests/minute"},
+  "notes": {
+    "ptu_payg_modeled_hypothesis": "Modeled hypothesis, not measured PTU throughput.",
+    "quality_guardrail": "Read cost, throughput, and crossover views with the paired quality guardrail. Error bars are standard deviation where available, not confidence intervals.",
+    "static_source": "Rendered from same-origin static JSON; no live service calls are made."
+  },
+  "a11y": {"chartLabel": "Chart", "tableCaption": "Data table"}
+}

@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:wrpo:schema:public-chart-candidates:0.1.0",
+  "title": "PublicChartCandidates",
+  "description": "Committed catalog of promoted SANITIZED_PUBLIC chart-data artifacts for the first public chart-data tranche. Each candidate references a locale-agnostic, numeric-only chart-data file under results/public/chart-data/** by stable keys/slugs only. No titles, legends, prose, private paths, endpoint/deployment names, request IDs, or human labels appear here. Pricing-provenance fields are excluded from chart payloads by construction; only contributing source digests are recorded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_semver",
+    "tier",
+    "candidates"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "wrpo-public-chart-candidates",
+      "description": "Stable schema identifier."
+    },
+    "schema_semver": {
+      "$ref": "#/definitions/semver",
+      "description": "Semantic version of this catalog contract."
+    },
+    "tier": {
+      "type": "string",
+      "const": "SANITIZED_PUBLIC",
+      "description": "Release tier (docs/16). This catalog is tier-pinned to SANITIZED_PUBLIC."
+    },
+    "candidates": {
+      "type": "array",
+      "description": "One entry per emitted chart-data artifact.",
+      "items": {
+        "$ref": "#/definitions/candidate"
+      }
+    }
+  },
+  "definitions": {
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stable_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$",
+      "description": "Lowercase, locale-agnostic stable key or slug (no prose, no human labels)."
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family_key",
+        "chart_data_path",
+        "dimension_keys",
+        "series_keys",
+        "units_key",
+        "tier",
+        "target_topic_slug",
+        "source_sanitized_sha256",
+        "schema_semver"
+      ],
+      "properties": {
+        "family_key": {
+          "$ref": "#/definitions/stable_key",
+          "description": "Stable chart-family key (e.g. cost-curves-effort, token-composition)."
+        },
+        "chart_data_path": {
+          "type": "string",
+          "pattern": "^results/public/chart-data/[A-Za-z0-9._/-]+\\.json$",
+          "description": "Repo-relative path to the numeric chart-data artifact."
+        },
+        "dimension_keys": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/stable_key"
+          },
+          "description": "Stable dimension (categorical axis) keys for the chart rows."
+        },
+        "series_keys": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/stable_key"
+          },
+          "description": "Stable numeric value keys present in each chart row."
+        },
+        "units_key": {
+          "$ref": "#/definitions/stable_key",
+          "description": "Stable units key for the metric (e.g. usd_per_request, milliseconds, tokens, factor)."
+        },
+        "tier": {
+          "type": "string",
+          "const": "SANITIZED_PUBLIC",
+          "description": "Release tier of the candidate artifact."
+        },
+        "target_topic_slug": {
+          "$ref": "#/definitions/stable_key",
+          "description": "Stable, prose-free routing slug for the target blog topic."
+        },
+        "source_sanitized_sha256": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/sha256"
+          },
+          "description": "SHA-256(s) of the contributing SANITIZED_PUBLIC source artifact(s)."
+        },
+        "schema_semver": {
+          "$ref": "#/definitions/semver",
+          "description": "Semantic version of the chart-data payload contract."
+        }
+      }
+    }
+  }
+}
