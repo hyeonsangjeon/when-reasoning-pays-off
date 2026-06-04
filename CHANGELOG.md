@@ -6,6 +6,26 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Operations essay candidates on public articles surface (2026-06-04)
+
+The public article index and overview essay now make the next operations-story
+candidates visible before the full essays are written.
+
+- Added TBD candidate cards for 429 recovery with `retry-after-ms`,
+  `prompt_cache_key` bucketing, explicit cache retention, and GPT-4o to GPT-5.x
+  sizing.
+- Added an operations-next note to the overview essay and localized overview
+  surfaces so readers can see the upcoming PTU and cache-operations layer.
+- Refreshed the canonical article hash, locale source-hash metadata, and Hindi
+  fallback card after the overview update.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Visible labels for overview essay mini charts (2026-06-04)
 
 The overview essay mini charts now carry their own axis and component labels
