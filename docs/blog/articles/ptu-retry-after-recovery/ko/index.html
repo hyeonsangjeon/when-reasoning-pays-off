@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>429는 복구 신호다 | when reasoning pays off</title>
+  <meta name="description" content="Azure OpenAI PTU의 429 응답을 일반적인 실패가 아니라 retry-after-ms 복구 신호로 다루는 방법을 설명하는 공개 운영 아티클.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0085d22acd1ce1916ec0497df14098fcafd8d3bcfdba6d70d1e61389d235915c">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ko/">when reasoning pays off</a>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 운영 에세이 / 한국어 번역</p>
+    <p class="article-kicker">운영 에세이 · PTU 복구와 429 처리</p>
+    <h1>429는 단순한 오류가 아니라 복구 신호다</h1>
+    <p class="lede">
+      포화 상태의 PTU 대상에서 돌아온 429는 맹목적인 폴링 루프를 시작하게
+      만들어서는 안 됩니다. 그 응답에는 클라이언트가 필요로 하는 복구 신호가
+      이미 담겨 있습니다. 바로 <code>retry-after-ms</code>입니다. 운영의 질문은
+      “호출이 실패했는가?”가 아니라 “다음 결정의 주체는 누구인가, 즉 기다릴지,
+      우회할지, 포기할지”입니다.
+    </p>
+
+    <div class="article-summary-grid" aria-label="아티클 요약">
+      <section class="summary-tile">
+        <h2>질문</h2>
+        <p>PTU 용량이 “지금은 안 됩니다”라고 말할 때, 클라이언트는 다음 행동을 어떻게 결정해야 할까요?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>증거</h2>
+        <p>Microsoft Learn이 헤더 계약을 정의합니다. 공개 집계 실행 결과는 중앙값만 보면 꼬리를 놓치는 이유를 보여줍니다.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>결정</h2>
+        <p>재시도 주체를 하나로 둡니다. 헤더를 존중하고, 지터를 더하며, 지연 정책이 요구할 때만 우회하세요.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="아티클 섹션">
+      <strong>질문으로 읽기:</strong>
+      <a href="#spec">공식 신호</a>
+      <a href="#evidence">관측된 형태</a>
+      <a href="#pattern">운영 패턴</a>
+      <a href="#fallback">우회 선택지</a>
+      <a href="#sources">출처</a>
+    </nav>
+
+    <p class="banner">
+      <strong>범위 안내:</strong>
+      아래의 측정 수치는 이 저장소의 공개 집계 산출물만을 설명합니다. 재시도
+      래퍼를 설계하는 데에는 유용하지만, 보편적인 Azure 동작을 주장하는
+      근거로는 사용할 수 없습니다.
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">공식 사양 · 서비스가 알려주는 것</p>
+      <h2>헤더가 곧 입장 신호다</h2>
+      <p>
+        Microsoft Learn은 PTU 고이용률 처리를 <code>retry-after-ms</code> 및
+        <code>retry-after</code> 응답 헤더를 동반하는 즉시 429 경로로
+        설명합니다. 같은 프로덕션 가이드는 이 대기 시간을 클라이언트 측
+        재시도에 사용하거나, 요청을 다른 서빙 대상으로 우회하는 데 사용할 수
+        있다고 설명합니다.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>문서화된 것</h3>
+          <p>
+            <code>retry-after-ms</code>를 서비스가 제공한 대기 값으로
+            취급하세요. 추측으로 정한 고정 리셋 간격보다 강력합니다.
+          </p>
+        </div>
+        <div>
+          <h3>문서화되지 않은 것</h3>
+          <p>
+            대기 값 뒤에 있는 정확한 공식은 공개되지 않았습니다. 클라이언트에서
+            결정론적 리셋 모델을 임의로 만들어내지 마세요.
+          </p>
+        </div>
+        <div>
+          <h3>운영적 추론</h3>
+          <p>
+            헤더가 이미 언제 다시 시도해야 할지 알려준다면, 헬스 체크 폴링은
+            대개 더 약한 신호에 더해 추가 트래픽과 더 시끄러운 텔레메트리를
+            만들 뿐입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">관측된 증거 · 공개 집계만</p>
+      <h2>중앙값은 작았지만, 꼬리는 그렇지 않았다</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>읽어야 할 차트:</strong> 공개 집계 429 이벤트에서 얻은 경험적
+          <code>retry-after-ms</code> 백분위. X축은 응답 헤더가 권고한 대기
+          시간이며 단위는 밀리초입니다. 점은 각 출처 그룹의 p50, p90, p99입니다.
+        </figcaption>
+        <img src="../../../../assets/retry-after-ms-distribution.svg" alt="전체, 버스트 형태, 예약 형태 출처를 비교하는 retry-after-ms 백분위 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>공개 집계 retry-after-ms 백분위</caption>
+        <thead>
+          <tr>
+            <th>출처 그룹</th>
+            <th>429 횟수</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>최댓값</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>전체</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>버스트 형태 출처</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>예약 형태 출처</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>이 표를 읽는 법</h3>
+        <p>
+          중앙값은 많은 429가 짧게 끝났음을 말해줍니다. p99는 프로덕션 래퍼에
+          여전히 꼬리 정책이 필요함을 말해줍니다. 즉 지연 예산까지만 대기하고,
+          그다음에는 우회하거나 우아하게 실패해야 합니다. 버스트 형태와 예약
+          형태의 압력이 서로 다르게 보였기 때문에 출처를 나누는 것이
+          중요합니다.
+        </p>
+      </div>
+    </section>
+
+    <section id="pattern" class="article-section">
+      <p class="section-label">운영 패턴 · 재시도의 단일 주체</p>
+      <h2>재시도 루프를 중첩하지 마라</h2>
+      <p>
+        안전한 패턴은 일부러 지루합니다. 429 복구를 책임질 컴포넌트를 정확히
+        하나만 고르세요. SDK가 재시도하도록 구성되어 있다면 SDK가 대기를
+        담당하게 하세요. 애플리케이션 라우터가 복구를 담당한다면 SDK 자동
+        재시도를 비활성화하고 라우터가 직접 <code>retry-after-ms</code>를
+        파싱하게 하세요.
+      </p>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>참조 구현:</strong> 공개 저장소에는 <code>retry-after-ms</code>를
+          파싱하고, <code>retry-after</code>로 폴백하며, 안전한 스로틀
+          이벤트를 방출하고, 이중 재시도 소유를 거부하는 작은 헤더 기반 입장
+          제어기가 포함되어 있습니다.
+        </figcaption>
+        <img src="../../../../assets/ptu-admission-controller.svg" alt="PTU 입장 제어기 흐름: 429 관측, retry-after-ms 파싱, 대기 또는 우회, 그다음 재개." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>대기 경로</h3>
+          <p>호출당 지연보다 처리량이 더 중요할 때 사용하세요. 헤더 값에 지터를 더해 대기한 뒤 다시 시도합니다.</p>
+        </div>
+        <div>
+          <h3>우회 경로</h3>
+          <p>PTU에 머무는 것보다 지연이 더 중요할 때 사용하세요. 429가 도착하는 즉시 표준 대상으로 라우팅합니다.</p>
+        </div>
+        <div>
+          <h3>포기 경로</h3>
+          <p>대기와 우회가 모두 정책을 위반할 때 사용하세요. 재시도 폭주를 숨기는 대신 통제된 응답을 반환합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fallback" class="article-section">
+      <p class="section-label">폴백 · 네이티브 또는 커스텀</p>
+      <h2>우회는 비상 버튼이 아니라 정책적 선택이다</h2>
+      <p>
+        Microsoft Learn의 스필오버 기능은 초과 트래픽을 표준 대상으로 우회할
+        수 있으며, 스필오버 동작을 식별하는 헤더를 노출합니다. 플랫폼이
+        지원하는 형태가 들어맞을 때는 이것이 운영 부담이 가장 적은 경로입니다.
+        그래도 애플리케이션이 PTU 대상이 429를 반환하기 전에 결정해야 하거나,
+        라우팅 정책이 테넌트, 리전, 지연 예산, 비즈니스 우선순위에 따라 달라질
+        때는 커스텀 라우터가 여전히 유용합니다.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>네이티브 스필오버</h3>
+          <p>단순한 오버플로 경로가 들어맞고 추가 라우팅 로직이 가치보다 위험을 더할 때 가장 적합합니다.</p>
+        </div>
+        <div>
+          <h3>커스텀 라우터</h3>
+          <p>사용자 지연을 소모하기 전에 애플리케이션 정책이 대기, 우회, 포기 중에서 선택해야 할 때 가장 적합합니다.</p>
+        </div>
+        <div>
+          <h3>안티패턴</h3>
+          <p>SDK 재시도에 라우터 재시도, 거기에 스필오버까지 겹치면 시도가 배가될 수 있습니다. 먼저 소유권을 일원화하세요.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>출처와 증거의 경계</h2>
+      <ul>
+        <li><strong>공식 사양, 2026-06-04 접속:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU 프로덕션 운영 가이드</a>.</li>
+        <li><strong>공식 스필오버 동작, 2026-06-04 접속:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 스필오버 트래픽 관리 가이드</a>.</li>
+        <li><strong>공개 집계 증거:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms 백분위 CSV</a> 및 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 이벤트 CSV</a>.</li>
+        <li><strong>공개 참조 구현:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">헤더 기반 입장 제어기</a>.</li>
+      </ul>
+      <p>
+        실용적인 규칙: PTU 복구를 맹목적으로 폴링하지 마세요. 헤더를 존중하고,
+        결정을 로깅하며, 지연 트레이드오프를 명시적으로 드러내세요.
+      </p>
+      <p><a class="button-link" href="../../">아티클 목록으로 돌아가기</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 라이선스 연구 산출물 · 게시된 데이터는 정제 또는 집계 형태만 제공됩니다.</p>
+  </footer>
+</body>
+</html>

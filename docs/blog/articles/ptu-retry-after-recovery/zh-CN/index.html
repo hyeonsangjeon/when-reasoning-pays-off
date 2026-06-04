@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>429 是一种恢复信号 | when reasoning pays off</title>
+  <meta name="description" content="一篇面向公众的运维文章，讲述如何将 Azure OpenAI PTU 的 429 响应视为 retry-after-ms 恢复信号，而不是泛泛的失败。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0085d22acd1ce1916ec0497df14098fcafd8d3bcfdba6d70d1e61389d235915c">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 运维随笔</p>
+    <p class="article-kicker">运维随笔 · PTU 恢复与 429 处理</p>
+    <h1>429 是一种恢复信号，而不仅仅是错误</h1>
+    <p class="lede">
+      来自饱和 PTU 目标的 429 不应触发盲目的轮询循环。
+      它已经携带了客户端所需的恢复信号：<code>retry-after-ms</code>。
+      要回答的运维问题不是“调用是否失败了？”，而是“谁拥有下一个
+      决策权：等待、重定向，还是放弃？”
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>当 PTU 容量表示“现在不行”时，客户端应如何决定下一步？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>Microsoft Learn 定义了响应头契约；公开的聚合运行结果说明了为何只看中位数的等待会错过尾部。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>决策</h2>
+        <p>使用唯一的重试责任方。遵循响应头，加入抖动，只有在延迟策略要求时才重定向。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>按问题阅读：</strong>
+      <a href="#spec">官方信号</a>
+      <a href="#evidence">观测形态</a>
+      <a href="#pattern">运维模式</a>
+      <a href="#fallback">重定向选择</a>
+      <a href="#sources">来源</a>
+    </nav>
+
+    <p class="banner">
+      <strong>范围说明：</strong>
+      下文的测量数字仅描述本仓库的公开聚合
+      产物。它们对设计重试包装器有用，但不能用于
+      宣称 Azure 的普遍行为。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">官方规范 · 服务告诉你的内容</p>
+      <h2>响应头就是准入信号</h2>
+      <p>
+        Microsoft Learn 将 PTU 高利用率处理描述为一条带有
+        <code>retry-after-ms</code> 和 <code>retry-after</code>
+        响应头的即时 429 路径。同一份生产指南说明了这个等待时间
+        既可用于客户端重试，也可用于将请求重定向到
+        不同的服务目标。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>有文档记录的内容</h3>
+          <p>
+            将 <code>retry-after-ms</code> 视为服务提供的等待值。
+            它比猜测的固定重置间隔更可靠。
+          </p>
+        </div>
+        <div>
+          <h3>没有文档记录的内容</h3>
+          <p>
+            等待值背后的确切公式并未公开。不要在客户端
+            臆造一个确定性的重置模型。
+          </p>
+        </div>
+        <div>
+          <h3>运维推断</h3>
+          <p>
+            如果响应头已经告诉你何时重试，那么健康检查轮询
+            通常是更弱的信号，并带来额外流量和更嘈杂的遥测。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">观测证据 · 仅限公开聚合</p>
+      <h2>中位数很小；尾部并不小</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要看的图表：</strong>来自公开聚合 429 事件的经验
+          <code>retry-after-ms</code> 百分位。X 轴是响应头
+          建议的等待时间，单位为毫秒。圆点是每个来源分组的
+          p50、p90 和 p99。
+        </figcaption>
+        <img src="../../../../assets/retry-after-ms-distribution.svg" alt="Retry-after-ms percentile chart comparing overall, burst-shaped, and reservation-shaped sources." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公开聚合 retry-after-ms 百分位</caption>
+        <thead>
+          <tr>
+            <th>来源分组</th>
+            <th>429 计数</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>最大值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>总体</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>突发形态来源</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>预留形态来源</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>如何解读此表</h3>
+        <p>
+          中位数表明许多 429 都很短暂。p99 则表明生产环境的
+          包装器仍然需要尾部策略：只在延迟预算内休眠，
+          然后重定向或优雅失败。来源拆分很重要，因为
+          突发形态和预留形态的压力并不一样。
+        </p>
+      </div>
+    </section>
+
+    <section id="pattern" class="article-section">
+      <p class="section-label">运维模式 · 重试由唯一责任方负责</p>
+      <h2>不要叠加重试循环</h2>
+      <p>
+        安全的模式有意做到平淡无奇：恰好选定一个组件来负责
+        429 恢复。如果 SDK 被配置为重试，就让它负责等待。如果
+        由应用路由器负责恢复，则禁用 SDK 自动重试，并让
+        路由器直接解析 <code>retry-after-ms</code>。
+      </p>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>参考实现：</strong>公开仓库包含一个
+          小型的、由响应头驱动的准入控制器，它解析
+          <code>retry-after-ms</code>，回退到 <code>retry-after</code>，
+          发出安全的限流事件，并拒绝双重重试的所有权。
+        </figcaption>
+        <img src="../../../../assets/ptu-admission-controller.svg" alt="PTU admission controller flow: observe 429, parse retry-after-ms, sleep or redirect, then resume." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>休眠路径</h3>
+          <p>当吞吐量比单次调用延迟更重要时使用。等待响应头的值加上抖动，然后重试。</p>
+        </div>
+        <div>
+          <h3>重定向路径</h3>
+          <p>当延迟比留在 PTU 上更重要时使用。一旦 429 到达就路由到标准目标。</p>
+        </div>
+        <div>
+          <h3>放弃路径</h3>
+          <p>当等待和重定向都违反策略时使用。返回受控的响应，而不是隐藏重试风暴。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fallback" class="article-section">
+      <p class="section-label">回退 · 原生或自定义</p>
+      <h2>重定向是一种策略选择，而不是惊慌按钮</h2>
+      <p>
+        Microsoft Learn 的溢出（spillover）功能可以将超额流量重定向到
+        标准目标，并暴露用于标识溢出行为的响应头。
+        当平台支持的形态适用时，这是运维成本最低的路径。
+        当应用必须在 PTU 目标返回 429 之前就做出决定，
+        或当路由策略取决于租户、区域、延迟预算或业务优先级时，
+        自定义路由器仍然有用。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>原生溢出</h3>
+          <p>当简单的溢出通道适用，且额外的路由逻辑带来的风险大于价值时最佳。</p>
+        </div>
+        <div>
+          <h3>自定义路由器</h3>
+          <p>当应用策略必须在耗费用户延迟之前在等待、重定向和放弃之间做出选择时最佳。</p>
+        </div>
+        <div>
+          <h3>反模式</h3>
+          <p>SDK 重试加路由器重试加溢出会成倍增加尝试次数。先整合所有权。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>来源与证据边界</h2>
+      <ul>
+        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU 生产运维指南</a>。</li>
+        <li><strong>官方溢出行为，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 溢出流量管理指南</a>。</li>
+        <li><strong>公开聚合证据：</strong><a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms 百分位 CSV</a> 和 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 事件 CSV</a>。</li>
+        <li><strong>公开参考实现：</strong><a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">由响应头驱动的准入控制器</a>。</li>
+      </ul>
+      <p>
+        实用规则：不要为 PTU 恢复盲目轮询。遵循
+        响应头，记录决策，并让延迟权衡显式化。
+      </p>
+      <p><a class="button-link" href="../../">返回文章索引</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究产物 · 已发布数据仅为脱敏或聚合数据。</p>
+  </footer>
+</body>
+</html>

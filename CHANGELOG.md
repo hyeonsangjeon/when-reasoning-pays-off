@@ -6,6 +6,30 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Fixed — Article index and 429 locale routing (2026-06-04)
+
+The public article navigation now keeps readers on the requested article family
+instead of sending them back to the overview essay.
+
+- Replaced the Articles index header language switcher with article navigation
+  links so the index no longer routes language clicks into the overview essay.
+- Fixed localized overview breadcrumbs so their article-index link returns to
+  the Articles index instead of the English overview page.
+- Added localized 429 recovery article pages for Korean, Japanese, Simplified
+  Chinese, and Hindi, produced by parallel Copilot CLI i18n workers.
+- Updated the 429 recovery article language switcher to point to the 429 locale
+  pages, not the overview locale pages.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
+Worker routing: Mac Mini local `copilot` CLI with `--model claude-opus-4.8` for
+four parallel 429 i18n worker prompts.
+
 ### Added — Prompt-cache-key bucketing operations essay (2026-06-04)
 
 The public blog now includes the second operations essay promoted from the TBD
