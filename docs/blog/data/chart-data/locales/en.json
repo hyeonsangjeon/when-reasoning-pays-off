@@ -5,8 +5,8 @@
     "fallback": false
   },
   "page": {
-    "title": "Public chart-data dashboard",
-    "lede": "Static charts rendered from sanitized public chart-data. Labels live in locale bundles; numeric chart-data remains stable-key only.",
+    "title": "Evidence dashboard",
+    "lede": "Static charts rendered from sanitized public chart-data. Use this as the evidence layer behind the overview essay and topic notes.",
     "loading": "Loading chart data...",
     "error": "Chart data is unavailable.",
     "fallbackBadge": "Showing English labels"

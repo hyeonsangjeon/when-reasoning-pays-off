@@ -6,10 +6,28 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Overview and evidence-dashboard public labels (2026-06-04)
+
+The public Pages entry points now use launch-ready labels: the main narrative is
+an overview essay, and the chart surface is framed as the evidence dashboard.
+
+- Renamed the article index hero, article breadcrumbs, localized home links, and
+  Hindi fallback card from internal/canonical wording to overview-essay wording.
+- Renamed the public chart surface to the evidence dashboard in the chart page,
+  article index, overview essay, localized article pages, and README entry point.
+- Updated the canonical article hash ledger after the overview-label copy change.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Topic detail page and dashboard chart explainers (2026-06-04)
 
 The article index now routes one topic into a real detail essay, while unfinished
-topic essays are explicitly marked as TBD. The chart dashboard also explains how
+topic essays are explicitly marked as TBD. The evidence dashboard also explains how
 to read each rendered chart.
 
 - Added `docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/`
@@ -30,17 +48,17 @@ Validation: `node --check docs/assets/charts.js`,
 `scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
 `git diff --check` pass locally.
 
-### Changed — Full translated first article for Korean, Japanese, and Simplified Chinese (2026-06-04)
+### Changed — Full translated overview article for Korean, Japanese, and Simplified Chinese (2026-06-04)
 
-The first GitHub Pages article is now available as a full translated article in
+The overview GitHub Pages article is now available as a full translated article in
 Korean, Japanese, and Simplified Chinese rather than a Korean summary plus
 English fallbacks.
 
 - Replaced the Korean summary page with a full topic-by-topic translation of
-  the first article, preserving the question/evidence/decision opening, topic
+  the overview article, preserving the question/evidence/decision opening, topic
   outline, chart callouts, and operator lessons.
 - Replaced the Japanese and Simplified Chinese fallback pages with full
-  translated articles using the same article structure and localized chart
+  translated articles using the same article structure and localized evidence
   dashboard links.
 - Updated `scripts/check_blog_article_release.py` so the article release gate
   expects `ko`, `ja`, and `zh-CN` to be `translated`; Hindi remains an explicit
@@ -52,9 +70,9 @@ Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
 `scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
 `git diff --check` pass locally.
 
-### Changed — First blog article structure and public release-surface cleanup (2026-06-04)
+### Changed — Overview blog article structure and public release-surface cleanup (2026-06-04)
 
-The first GitHub Pages article now reads as a blog essay rather than a short
+The overview GitHub Pages article now reads as a blog essay rather than a short
 summary that sends readers to raw charts. Public release-governance docs also
 keep external publication planning out of the public mirror.
 
@@ -63,13 +81,13 @@ keep external publication planning out of the public mirror.
   a topic outline, figure callouts, and explicit why / meaning / operator-lesson
   blocks for short factual work, reasoning tokens, multi-step work, tool-agent
   ceiling checks, and PTU/PAYG planning.
-- Reworked `docs/blog/articles/index.html` into a blog index with a first-essay
-  entry and per-topic deep links; the chart dashboard is now framed as the data
+- Reworked `docs/blog/articles/index.html` into a blog index with an overview-essay
+  entry and per-topic deep links; the evidence dashboard is now framed as the data
   appendix rather than the only reader path.
 - Added article layout styles in `docs/assets/styles.css`, updated the
   canonical article hash in locale fallback pages and the numeric-claims ledger,
   and refreshed `docs/blog/editorial-data-inventory.md` to reflect that the
-  first public article exists.
+  overview public article exists.
 - Removed external publication-surface planning from public governance docs
   (`docs/16-release-tiers-and-redaction-policy.md`,
   `docs/17-foundry-packaging-relationship.md`) and updated the Foundry bridge
