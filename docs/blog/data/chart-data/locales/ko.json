@@ -1,0 +1,52 @@
+{
+  "meta": {"locale": "ko", "translation_status": "translated", "fallback": false},
+  "page": {
+    "title": "공개 차트 데이터 대시보드",
+    "lede": "정제된 공개 차트 데이터를 정적 차트로 렌더링합니다. 라벨은 로케일 번들에만 있고, 숫자 차트 데이터는 안정적인 키만 유지합니다.",
+    "loading": "차트 데이터를 불러오는 중...",
+    "error": "차트 데이터를 사용할 수 없습니다.",
+    "fallbackBadge": "영어 라벨 표시 중"
+  },
+  "families": {
+    "cost-curves-effort": {"title": "추론 노력별 비용, 품질, 지연시간, 처리량", "description": "벤치마크와 추론 노력별 PAYG 비용, 품질, 지연시간, 토큰 형태 처리량 계수입니다."},
+    "token-composition": {"title": "토큰 구성", "description": "벤치마크와 노력 수준별 캐시 입력, 비캐시 입력, 출력, 추론 토큰 구성입니다."},
+    "ptu-payg-crossover": {"title": "모델링된 PTU/PAYG 교차점", "description": "PAYG 비용과 토큰 형태 처리량 계수를 사용한 모델링된 손익분기 요청률입니다."}
+  },
+  "metrics": {
+    "cost_per_request": "요청당 평균 비용",
+    "latency": "평균 지연시간",
+    "quality": "평균 평가 점수",
+    "throughput_gain": "토큰 형태 처리량 계수",
+    "token_composition": "토큰 구성",
+    "ptu_payg_crossover": "모델링된 손익분기 RPM"
+  },
+  "dimensions": {"effort": "추론 노력", "model": "모델", "benchmark": "벤치마크"},
+  "effort": {"na": "기준선", "minimal": "최소", "low": "낮음", "medium": "중간", "high": "높음", "xhigh": "매우 높음"},
+  "series": {
+    "mean_usd_per_request": "요청당 평균 USD",
+    "std_usd_per_request": "요청당 USD 표준편차",
+    "mean_latency_ms": "평균 지연시간(ms)",
+    "std_latency_ms": "지연시간 표준편차(ms)",
+    "mean_judge_score": "평균 평가 점수",
+    "std_judge_score": "평가 점수 표준편차",
+    "judge_n": "평가 수",
+    "throughput_gain_factor": "토큰 형태 처리량 계수",
+    "tokens_per_request": "요청당 토큰",
+    "baseline_tokens_per_request": "기준 요청당 토큰",
+    "mean_input_tokens_noncached": "비캐시 입력 토큰",
+    "mean_cached_tokens": "캐시 입력 토큰",
+    "mean_output_tokens": "출력 토큰",
+    "mean_reasoning_tokens": "추론 토큰",
+    "modeled_break_even_rpm": "모델링된 손익분기 요청/분",
+    "ptu_hourly_rate_usd": "PTU 시간당 요금(USD)",
+    "min_ptu": "최소 PTU",
+    "n_used": "사용 샘플 수"
+  },
+  "units": {"usd_per_request": "USD/요청", "milliseconds": "밀리초", "judge_score": "평가 점수", "factor": "계수", "tokens": "토큰", "mixed_usd_rpm": "USD 및 요청/분"},
+  "notes": {
+    "ptu_payg_modeled_hypothesis": "모델링된 가설이며 측정된 PTU 처리량이 아닙니다.",
+    "quality_guardrail": "비용, 처리량, 교차점 뷰는 연결된 품질 가드레일과 함께 해석해야 합니다. 가능한 오류 막대는 신뢰구간이 아니라 표준편차입니다.",
+    "static_source": "동일 출처 정적 JSON에서 렌더링되며 live 서비스 호출은 없습니다."
+  },
+  "a11y": {"chartLabel": "차트", "tableCaption": "데이터 표"}
+}

@@ -18,7 +18,9 @@
 #   5. Leakage grep: the site source and the README contain none of the
 #      forbidden public-surface patterns (private tree references, internal
 #      worker/role names, agent-prompt paths, or secret patterns).
-#   6. If the repository's existing public-surface checker is present, run it.
+#   6. Chart-data Pages gates: mirrored chart-data must be current and chart
+#      assets/pages must pass the Pages chart checker.
+#   7. If the repository's existing public-surface checker is present, run it.
 #
 # Exit 0 on success; non-zero with a printed reason on the first failure.
 
@@ -217,7 +219,22 @@ for pat in "${patterns[@]}"; do
 done
 [ "$fail" -eq 0 ] && note "OK   leakage grep clean over site source and README"
 
-# 6. Defer to the repository's existing public-surface checker when available.
+# 6. Chart-data Pages gates.
+note "running scripts/sync_pages_chart_data.py --check ..."
+if python3 scripts/sync_pages_chart_data.py --check; then
+  note "OK   chart-data sync check passed"
+else
+  err "scripts/sync_pages_chart_data.py --check reported findings"
+fi
+
+note "running scripts/check_pages_charts.py ..."
+if python3 scripts/check_pages_charts.py; then
+  note "OK   Pages chart checker passed"
+else
+  err "scripts/check_pages_charts.py reported findings"
+fi
+
+# 7. Defer to the repository's existing public-surface checker when available.
 if [ -x scripts/check_public_surface.sh ]; then
   note "running scripts/check_public_surface.sh ..."
   if bash scripts/check_public_surface.sh; then

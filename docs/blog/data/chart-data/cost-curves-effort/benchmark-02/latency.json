@@ -1,0 +1,65 @@
+{
+  "benchmark_key": "benchmark-02",
+  "dimension_keys": [
+    "effort",
+    "model"
+  ],
+  "family_key": "cost-curves-effort",
+  "metric_key": "latency",
+  "rows": [
+    {
+      "effort": "na",
+      "mean_latency_ms": 1381.963382,
+      "model": "gpt-4o",
+      "n_used": 60,
+      "std_latency_ms": 523.183287
+    },
+    {
+      "effort": "none",
+      "mean_latency_ms": 1588.904051,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_latency_ms": 505.91239
+    },
+    {
+      "effort": "low",
+      "mean_latency_ms": 1869.142269,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_latency_ms": 776.270127
+    },
+    {
+      "effort": "medium",
+      "mean_latency_ms": 2039.414781,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_latency_ms": 728.543476
+    },
+    {
+      "effort": "high",
+      "mean_latency_ms": 2324.938405,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_latency_ms": 746.712347
+    },
+    {
+      "effort": "xhigh",
+      "mean_latency_ms": 3264.953921,
+      "model": "gpt-5.2",
+      "n_used": 60,
+      "std_latency_ms": 1807.003168
+    }
+  ],
+  "schema": "wrpo.chart_data",
+  "schema_semver": "0.1.0",
+  "series_keys": [
+    "mean_latency_ms",
+    "std_latency_ms",
+    "n_used"
+  ],
+  "source_sanitized_sha256": [
+    "dcaee17680b4b5aa1d3a81a8747e08a76cf9592be9556fa2d6763f5e5fab810e"
+  ],
+  "tier": "SANITIZED_PUBLIC",
+  "units_key": "milliseconds"
+}

@@ -1,0 +1,65 @@
+{
+  "benchmark_key": "benchmark-01",
+  "dimension_keys": [
+    "effort",
+    "model"
+  ],
+  "family_key": "cost-curves-effort",
+  "metric_key": "quality",
+  "rows": [
+    {
+      "effort": "na",
+      "judge_n": 58,
+      "mean_judge_score": 1.87931,
+      "model": "gpt-4o",
+      "std_judge_score": 0.37825
+    },
+    {
+      "effort": "minimal",
+      "judge_n": 58,
+      "mean_judge_score": 1.87931,
+      "model": "gpt-5.2",
+      "std_judge_score": 0.37825
+    },
+    {
+      "effort": "low",
+      "judge_n": 60,
+      "mean_judge_score": 1.766667,
+      "model": "gpt-5.2",
+      "std_judge_score": 0.499717
+    },
+    {
+      "effort": "medium",
+      "judge_n": 59,
+      "mean_judge_score": 1.728814,
+      "model": "gpt-5.2",
+      "std_judge_score": 0.551815
+    },
+    {
+      "effort": "high",
+      "judge_n": 60,
+      "mean_judge_score": 1.883333,
+      "model": "gpt-5.2",
+      "std_judge_score": 0.372425
+    },
+    {
+      "effort": "xhigh",
+      "judge_n": 59,
+      "mean_judge_score": 1.779661,
+      "model": "gpt-5.2",
+      "std_judge_score": 0.527447
+    }
+  ],
+  "schema": "wrpo.chart_data",
+  "schema_semver": "0.1.0",
+  "series_keys": [
+    "mean_judge_score",
+    "std_judge_score",
+    "judge_n"
+  ],
+  "source_sanitized_sha256": [
+    "7a3b1ca1c4c9c5da8d555b4fa2322f1e47967881ada9d8b74245f6b8345d8ab8"
+  ],
+  "tier": "SANITIZED_PUBLIC",
+  "units_key": "judge_score"
+}
