@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>When reasoning pays off | Same token price, different bill</title>
-  <meta name="description" content="A public article about when reasoning effort earns its cost, when it does not, and how to read the chart dashboard.">
+  <meta name="description" content="A chart-backed public article about when reasoning effort earns its cost, when it does not, and how operators should read the evidence.">
   <meta name="article:locale" content="en">
   <meta name="article:translation-status" content="canonical">
   <link rel="stylesheet" href="../../../assets/styles.css">
@@ -30,96 +30,256 @@
     </div>
   </header>
 
-  <main id="article-content">
-    <p><a href="../">Articles</a> / Canonical English article</p>
-    <h1>When reasoning pays off</h1>
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / First essay / Canonical English article</p>
+    <p class="article-kicker">Field note · reasoning effort, quality, and spend</p>
+    <h1>When reasoning pays off: same token price, different bill</h1>
     <p class="lede">
       A reasoning model can have the same per-token price card and still create
       a different bill. The missing piece is the reasoning-token budget: tokens
       generated inside the model, billed like usage, and never shown in the
       response.
     </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>Question</h2>
+        <p>When does extra reasoning effort buy measurable quality, and when does it only buy hidden compute?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Evidence</h2>
+        <p>Public chart-data slices compare cost, judge score, token composition, latency, and modeled reserved-capacity crossover.</p>
+      </section>
+      <section class="summary-tile">
+        <h2>Decision</h2>
+        <p>Raise effort only where the evaluator moves; keep the dashboard as the audit trail behind the prose.</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>Read by topic:</strong>
+      <a href="#short-factual">Short factual work</a>
+      <a href="#reasoning-tokens">Invisible tokens</a>
+      <a href="#multi-step">Multi-step work</a>
+      <a href="#tool-agent">Tool agents</a>
+      <a href="#ptu-payg">PTU/PAYG planning</a>
+    </nav>
+
     <p class="banner">
-      <strong>Inspect the source charts:</strong>
-      <a href="../../charts/?lang=en">open the chart dashboard</a>.
+      <strong>Data appendix:</strong>
+      The full tables and rendered source charts remain inspectable in the
+      <a href="../../charts/?lang=en">public chart-data dashboard</a>. This
+      essay explains why each chart exists and how to use it.
     </p>
 
-    <section id="short-factual">
+    <section id="short-factual" class="article-section">
+      <p class="section-label">Topic · short factual answers</p>
       <h2>Short factual work often does not pay</h2>
-      <p>
-        In the short-factual slice, minimal effort averaged $0.000663 per
-        request. Xhigh effort averaged $0.005043 per request, a 7.6x bill, while
-        the mean judge score moved from 1.87931 to 1.779661.
-      </p>
-      <p>
-        That is the core failure mode: effort can buy more hidden computation
-        without buying a better answer. For short factual work, start at the
-        lowest effort level and raise it only after a quality gate shows a real
-        gain.
-      </p>
+      <figure class="article-figure" id="figure-short-factual">
+        <figcaption>
+          <strong>Chart to read:</strong> mean cost per request, paired with the
+          judge-score chart for the same short-factual slice.
+        </figcaption>
+        <div class="mini-chart" aria-hidden="true">
+          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
+          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Why this chart exists</h3>
+          <p>
+            It tests the simplest migration trap: a team raises reasoning
+            effort globally, then asks why the bill moved even though the task
+            mostly needed short factual answers.
+          </p>
+        </div>
+        <div>
+          <h3>What it means</h3>
+          <p>
+            In the short-factual slice, minimal effort averaged $0.000663 per
+            request. Xhigh effort averaged $0.005043 per request, a 7.6x bill,
+            while the mean judge score moved from 1.87931 to 1.779661.
+          </p>
+        </div>
+        <div>
+          <h3>Operator lesson</h3>
+          <p>
+            Effort can buy more hidden computation without buying a better
+            answer. For short factual work, start at the lowest effort level and
+            raise it only after a quality gate shows a real gain.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <section id="multi-step">
+    <section id="reasoning-tokens" class="article-section">
+      <p class="section-label">Topic · invisible billing surface</p>
+      <h2>Reasoning tokens explain the bill gap</h2>
+      <figure class="article-figure" id="figure-reasoning-tokens">
+        <figcaption>
+          <strong>Chart to read:</strong> token composition by effort level —
+          cached input, non-cached input, visible output, and reasoning tokens.
+        </figcaption>
+        <div class="stacked-mini-chart" aria-hidden="true">
+          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Why this chart exists</h3>
+          <p>
+            A visible response can look almost unchanged while the model has
+            spent many internal reasoning tokens to produce it. A plain output
+            length chart would miss the billable work.
+          </p>
+        </div>
+        <div>
+          <h3>What it means</h3>
+          <p>
+            In the short-factual slice, minimal effort averaged 3.655172
+            reasoning tokens per request. Xhigh effort averaged 311.474576
+            reasoning tokens per request.
+          </p>
+        </div>
+        <div>
+          <h3>Operator lesson</h3>
+          <p>
+            The answer text does not reveal that difference. A production budget
+            needs the usage breakdown: input, cached input, output, and
+            reasoning tokens.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="multi-step" class="article-section">
+      <p class="section-label">Topic · multi-step reasoning</p>
       <h2>Multi-step work can pay</h2>
-      <p>
-        In the multi-step slice, the non-reasoning baseline scored 1.5. High
-        effort scored 2.0 at $0.00125 per request.
-      </p>
-      <p>
-        This is the case where reasoning earns a trial: the quality delta is
-        visible, the spend is explicit, and the dashboard lets you compare that
-        delta against latency, token composition, and cost.
-      </p>
+      <figure class="article-figure" id="figure-multi-step">
+        <figcaption>
+          <strong>Chart to read:</strong> quality bars first, then the paired
+          cost bars. The quality delta is the reason to spend.
+        </figcaption>
+        <div class="mini-compare" aria-hidden="true">
+          <span class="dot-low"></span><span class="dot-high"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Why this chart exists</h3>
+          <p>
+            It is the contrast case: a workload where intermediate reasoning is
+            load-bearing and a higher-effort cell deserves a trial.
+          </p>
+        </div>
+        <div>
+          <h3>What it means</h3>
+          <p>
+            In the multi-step slice, the non-reasoning baseline scored 1.5.
+            High effort scored 2.0 at $0.00125 per request.
+          </p>
+        </div>
+        <div>
+          <h3>Operator lesson</h3>
+          <p>
+            Reasoning earns its keep only when the evaluator moves enough to
+            matter. Read quality before cost, then decide whether the marginal
+            spend is justified.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <section id="tool-agent">
+    <section id="tool-agent" class="article-section">
+      <p class="section-label">Topic · tool-using agents</p>
       <h2>Tool-agent work needs ceiling checks</h2>
-      <p>
-        Tool-agent workloads can flatten near the top of a rubric. When the
-        chart already shows a ceiling effect, raising effort may mostly add
-        internal tokens and latency. Treat effort as a controlled experiment,
-        not a default.
-      </p>
+      <figure class="article-figure" id="figure-tool-agent">
+        <figcaption>
+          <strong>Chart to read:</strong> quality and latency together. If the
+          score is already near the top of the rubric, latency becomes the next
+          constraint.
+        </figcaption>
+        <div class="ceiling-mini-chart" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Why this chart exists</h3>
+          <p>
+            Tool agents can look like they need more thinking, but sometimes the
+            tool call already carries the hard part of the work.
+          </p>
+        </div>
+        <div>
+          <h3>What it means</h3>
+          <p>
+            When the chart already shows a ceiling effect, raising effort may
+            mostly add internal tokens and latency rather than better answers.
+          </p>
+        </div>
+        <div>
+          <h3>Operator lesson</h3>
+          <p>
+            Treat effort as a controlled experiment, not a default. For agentic
+            workloads, check whether the limiting factor is reasoning quality,
+            tool choice, tool latency, or orchestration.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <section id="reasoning-tokens">
-      <h2>Reasoning tokens are invisible but billable</h2>
-      <p>
-        In the short-factual slice, minimal effort averaged 3.655172 reasoning
-        tokens per request. Xhigh effort averaged 311.474576 reasoning tokens
-        per request.
-      </p>
-      <p>
-        The answer text does not reveal that difference. A production budget
-        needs the usage breakdown: input, cached input, output, and reasoning
-        tokens.
-      </p>
+    <section id="ptu-payg" class="article-section">
+      <p class="section-label">Topic · capacity planning</p>
+      <h2>PTU/PAYG crossover is a planning model</h2>
+      <figure class="article-figure" id="figure-ptu-payg">
+        <figcaption>
+          <strong>Chart to read:</strong> modeled crossover against the paired
+          quality guardrail. This is sizing guidance, not measured capacity.
+        </figcaption>
+        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>Why this chart exists</h3>
+          <p>
+            PAYG and reserved-capacity decisions answer different questions.
+            The chart translates reasoning-inclusive token shape into a planning
+            threshold.
+          </p>
+        </div>
+        <div>
+          <h3>What it means</h3>
+          <p>
+            For the short-factual xhigh row, the PTU/PAYG crossover is a modeled
+            hypothesis at 149 rpm with a 50 PTU floor. It is not measured PTU
+            throughput.
+          </p>
+        </div>
+        <div>
+          <h3>Operator lesson</h3>
+          <p>
+            Read that number as a planning threshold, not as capacity evidence.
+            On PAYG, cutting reasoning tokens cuts variable spend. On PTU, the
+            same cut may show up as room for more requests inside a fixed
+            reservation.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <section id="ptu-payg">
-      <h2>PTU/PAYG crossover is modeled</h2>
-      <p>
-        For the short-factual xhigh row, the PTU/PAYG crossover is a modeled
-        hypothesis at 149 rpm with a 50 PTU floor. It is not measured PTU
-        throughput.
-      </p>
-      <p>
-        Read that number as a planning threshold, not as capacity evidence. On
-        PAYG, cutting reasoning tokens cuts variable spend. On PTU, the same
-        cut may show up as room for more requests inside a fixed reservation.
-      </p>
-    </section>
-
-    <section id="decision">
+    <section id="decision" class="article-section decision-box">
       <h2>The practical rule</h2>
       <p>
         Use low effort as the default for short factual work. Raise effort for
         multi-step work only when the evaluator moves enough to justify the
         cost. For tool-agent work, check for ceiling effects before spending
-        more. Always read the chart dashboard beside the article.
+        more. Always read the chart dashboard beside the article, because the
+        dashboard is the evidence trail and the article is the decision frame.
       </p>
-      <p class="banner">
-        <a href="../../charts/?lang=en">Open the chart dashboard</a>
+      <p>
+        <a class="button-link" href="../../charts/?lang=en">Open the chart dashboard</a>
       </p>
     </section>
   </main>

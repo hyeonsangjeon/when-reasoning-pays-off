@@ -6,11 +6,40 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — First blog article structure and public release-surface cleanup (2026-06-04)
+
+The first GitHub Pages article now reads as a blog essay rather than a short
+summary that sends readers to raw charts. Public release-governance docs also
+keep external publication planning out of the public mirror.
+
+- Reworked `docs/blog/articles/when-reasoning-pays-off/index.html` into a
+  topic-by-topic narrative with an opening question/evidence/decision summary,
+  a topic outline, figure callouts, and explicit why / meaning / operator-lesson
+  blocks for short factual work, reasoning tokens, multi-step work, tool-agent
+  ceiling checks, and PTU/PAYG planning.
+- Reworked `docs/blog/articles/index.html` into a blog index with a first-essay
+  entry and per-topic deep links; the chart dashboard is now framed as the data
+  appendix rather than the only reader path.
+- Added article layout styles in `docs/assets/styles.css`, updated the
+  canonical article hash in locale fallback pages and the numeric-claims ledger,
+  and refreshed `docs/blog/editorial-data-inventory.md` to reflect that the
+  first public article exists.
+- Removed external publication-surface planning from public governance docs
+  (`docs/16-release-tiers-and-redaction-policy.md`,
+  `docs/17-foundry-packaging-relationship.md`) and updated the Foundry bridge
+  SVG so the public mirror documents only the public research repo, Pages, and
+  downstream Foundry sample relationship.
+
+Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Added — Blogging data inventory & chart-candidate manifest (2026-06-04)
 
-Pre-work for the upcoming GitHub Pages blogging / articles section: a
+Pre-work for the GitHub Pages blogging / articles section: a
 topic-by-topic map of the public, sanitized data and the visualization
-candidates available for future articles. No articles are published yet.
+candidates available for published and upcoming articles.
 
 - Added `docs/blog/editorial-data-inventory.md` — a human-readable,
   topic-by-topic inventory (12 topics) of public data sources, chart

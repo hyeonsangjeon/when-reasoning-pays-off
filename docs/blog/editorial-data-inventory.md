@@ -1,8 +1,8 @@
 # Editorial Data Inventory — Public Blogging Prep
 
-> **Status:** planning artifact for the GitHub Pages blogging/articles section.
-> No articles are published yet. This file maps the **public, sanitized** data
-> and the visualization candidates available for future articles.
+> **Status:** editorial inventory for the GitHub Pages blogging/articles section.
+> The first public article is published; this file maps the **public, sanitized**
+> data and the visualization candidates available for article expansion.
 >
 > **Sources:** public-mirror tracked files only, under `benchmarks/`,
 > `results/`, `docs/`, `scripts/`, `pricing/`, `schemas/`, `release/`.
