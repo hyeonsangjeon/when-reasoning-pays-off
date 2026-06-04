@@ -22,8 +22,8 @@ It is a companion to:
   claim-authority label (spec / inference) and a release tier label
   (raw / sanitized / aggregate).
 - `docs/17-foundry-packaging-relationship.md` — how this repo relates to
-  the downstream Azure AI Foundry sample repo and to the public Pages /
-  Medium / arXiv surfaces.
+  the downstream Azure AI Foundry sample repo and to the public Pages
+  surface.
 
 ---
 
@@ -65,9 +65,9 @@ archive (reads from archive, writes a sanitized derivative to a
 public tree, never modifies or removes the source).
 
 **Publication.** Forbidden. `RAW_PRIVATE` content does not appear in
-the public research repo, the Pages dashboard / blog, Medium posts,
-arXiv submissions, the Foundry sample repo, social-share previews,
-analytics payloads, build artifacts, or source maps. Any surface
+the public research repo, the Pages dashboard / blog, the Foundry sample
+repo, social-share previews, analytics payloads, build artifacts, or
+source maps. Any surface
 that detects a `RAW_PRIVATE` input MUST fail its build.
 
 ### 2.2 `SANITIZED_PUBLIC`
@@ -123,9 +123,8 @@ MUST also represent the same provenance in the central manifest so
 that the central manifest remains the single source of truth.
 
 **Publication.** Allowed in the public research repo (this repo,
-once made public), in chart series consumed by the Pages dashboard /
-blog, and as supporting evidence in Medium posts and arXiv ancillary
-files that link to the public research repo.
+once made public) and in chart series consumed by the Pages dashboard /
+blog.
 
 ### 2.3 `AGGREGATE_AZURE_SAMPLE`
 
@@ -194,16 +193,12 @@ that detects an unlisted tier MUST fail its build.
 |---|---|---|---|
 | Public research repo (this repo, made public) | forbidden | allowed (per-request rows + per-cell aggregations) | allowed (as convenience summary alongside sanitized data) |
 | GitHub Pages dashboard / blog | forbidden | allowed (chart series, per-request rows referenced by sanitized path) | allowed (decision tables, throughput / cost curves) |
-| Medium syndication | forbidden | allowed only by reference to the canonical Pages article and to the public research repo at a pinned commit SHA — no new data series introduced in the Medium post itself | allowed by reference under the same constraint |
-| Optional arXiv manuscript | forbidden | allowed (figures, tables, ancillary files; every evidence citation resolves to a pinned public-research-repo commit SHA) | allowed under the same constraint |
 | Downstream Azure AI Foundry sample repo | forbidden | forbidden (per-request rows are not part of the Foundry sample contract) | allowed (primary surface) |
 
 Notes on the matrix:
 
-- The Pages dashboard / blog is the canonical surface for any public
-  numeric claim; Medium and arXiv are derivative. The per-channel
-  rules in `docs/17-foundry-packaging-relationship.md` make the
-  canonical / derivative relationship explicit.
+- The Pages dashboard / blog is the canonical public surface for any
+  public numeric claim in this repo.
 - The Foundry sample repo is `AGGREGATE_AZURE_SAMPLE`-only on purpose:
   per-request rows are the public research repo's contract with
   researchers, not the Foundry sample's contract with operators.
@@ -267,11 +262,10 @@ the reproducibility of every prior public claim.
 
 ## 7. Channel-level rules (summary)
 
-Detailed per-channel rules — canonical Pages source-of-truth, Medium
-canonical back-links and `source_hash` drift detection, arXiv as a
-distinct scholarly manuscript, downstream Foundry sample packaging —
-live in `docs/17-foundry-packaging-relationship.md`. Tier-level
-invariants each channel inherits from this document:
+Detailed per-channel rules — canonical Pages source-of-truth and
+downstream Foundry sample packaging — live in
+`docs/17-foundry-packaging-relationship.md`. Tier-level invariants
+each channel inherits from this document:
 
 - **Public research repo.** `SANITIZED_PUBLIC` and
   `AGGREGATE_AZURE_SAMPLE` only. Methodology, hypothesis ledger,
@@ -282,15 +276,6 @@ invariants each channel inherits from this document:
   represents "Indian language"; additional Indian languages added
   only by explicit owner decision). `SANITIZED_PUBLIC` and
   `AGGREGATE_AZURE_SAMPLE` only.
-- **Medium syndication.** Derivative. Canonical URL set to the
-  Pages article; in-body links to Pages and the public research
-  repo; `source_hash` footer for drift detection; no new claims,
-  data series, charts, or numbers beyond the pinned Pages article.
-- **Optional arXiv manuscript.** Distinct scholarly artifact (own
-  abstract, methods, evidence, limitations, references). No
-  substantial verbatim duplication of Pages / blog text; evidence
-  citations resolve to a pinned public-repo commit SHA; English full
-  version is the submission.
 - **Downstream Azure AI Foundry sample repo.** Separately named,
   separately governed. `AGGREGATE_AZURE_SAMPLE` only. Cites the
   public research repo and does not author methodology.
@@ -300,9 +285,9 @@ invariants each channel inherits from this document:
 ## 8. Governance and release-readiness checklist
 
 A maintainer runs this checklist before any public release (public
-research repo flip, Pages publication, Medium post, arXiv submission,
-or downstream Foundry sample release). The checklist is the same
-across surfaces; the per-surface scope differs.
+research repo flip, Pages publication, or downstream Foundry sample
+release). The checklist is the same across surfaces; the per-surface
+scope differs.
 
 ### 8.1 Tier-label and provenance gates
 
@@ -368,20 +353,6 @@ across surfaces; the per-surface scope differs.
   minimum *Foundry*, *PTU*, *PAYG*, *reasoning*, *cache*, *429* with
   a fixed per-locale translation; chart series data files are
   locale-agnostic.
-- [ ] **Medium post:** canonical URL set to the corresponding Pages
-  article URL; in-body links to Pages article and public research
-  repo; footer carries Pages article URL + commit SHA + `source_hash`;
-  no claims, data series, charts, or numbers beyond the pinned Pages
-  article.
-- [ ] **arXiv manuscript:** distinct scholarly artifact (own abstract,
-  methods, evidence, limitations, references); no substantial verbatim
-  duplication of Pages / blog text in evidence / analysis; every
-  evidence citation resolves to a pinned public-research-repo commit
-  SHA; figures / tables regenerated from public-tier artifacts;
-  English full version; submission license reviewed against the
-  public research repo license with explicit acknowledgement that the
-  submission license is irrevocable; ancillary files limited to
-  public-tier artifacts and passed through the redaction-detector.
 - [ ] **Foundry sample repo:** Microsoft sample-repo `LICENSE`
   verified with the Foundry samples program; Microsoft Open Source
   `CODE_OF_CONDUCT.md`; MSRC `SECURITY.md`; `README.md` per the
@@ -406,8 +377,6 @@ Any of the following stops the release until remediated:
   recorded translation-time hash (the page is marked `stale` and the
   user-visible banner is shown; the release proceeds only with the
   stale banner visible, or after re-translation).
-- A Medium post whose `source_hash` footer disagrees with the
-  canonical Pages article at the pinned commit SHA.
 - A Foundry sample artifact carrying per-request rows.
 
 ---
@@ -424,10 +393,9 @@ Any of the following stops the release until remediated:
 - `docs/15-spec-vs-inference-taxonomy.md`: orthogonal axis. Every
   published artifact carries both a claim-authority label (spec /
   inference) and a release tier label (raw / sanitized / aggregate).
-- `docs/17-foundry-packaging-relationship.md`: per-channel canonical /
-  derivative rules, Pages i18n-first acceptance bar, Medium canonical
-  and `source_hash` rules, arXiv distinct-manuscript rule, and the
-  Track A ↔ Track B Foundry packaging relationship.
+- `docs/17-foundry-packaging-relationship.md`: Pages i18n-first
+  acceptance bar and the Track A ↔ Track B Foundry packaging
+  relationship.
 
 ---
 

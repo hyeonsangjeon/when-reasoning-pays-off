@@ -3,13 +3,15 @@
   "schema_semver": "0.1.0",
   "article": "when-reasoning-pays-off",
   "canonical_locale": "en",
-  "canonical_article_sha256": "aab37f6bcd54ce82dedf72fb9c596ba828409685301c66b3e03d6e4ed6d4658f",
+  "canonical_article_sha256": "13d25e638c1b665343130c239694ca1d77cb88842d023b984673b7150fa0490d",
   "claims": [
     {
       "id": "short-factual-minimal-cost",
       "status": "verified",
       "display_value": "$0.000663",
-      "source_values": ["0.000663"],
+      "source_values": [
+        "0.000663"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
       ],
@@ -29,7 +31,9 @@
       "id": "short-factual-xhigh-cost",
       "status": "verified",
       "display_value": "$0.005043",
-      "source_values": ["0.005043"],
+      "source_values": [
+        "0.005043"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
       ],
@@ -49,7 +53,10 @@
       "id": "short-factual-cost-ratio",
       "status": "verified",
       "display_value": "7.6x",
-      "source_values": ["0.000663", "0.005043"],
+      "source_values": [
+        "0.000663",
+        "0.005043"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
       ],
@@ -66,7 +73,9 @@
       "id": "short-factual-minimal-quality",
       "status": "verified",
       "display_value": "1.87931",
-      "source_values": ["1.87931"],
+      "source_values": [
+        "1.87931"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
       ],
@@ -86,7 +95,9 @@
       "id": "short-factual-xhigh-quality",
       "status": "verified",
       "display_value": "1.779661",
-      "source_values": ["1.779661"],
+      "source_values": [
+        "1.779661"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
       ],
@@ -106,7 +117,9 @@
       "id": "multi-step-baseline-quality",
       "status": "verified",
       "display_value": "1.5",
-      "source_values": ["1.5"],
+      "source_values": [
+        "1.5"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json"
       ],
@@ -126,7 +139,9 @@
       "id": "multi-step-high-quality",
       "status": "verified",
       "display_value": "2.0",
-      "source_values": ["2.0"],
+      "source_values": [
+        "2.0"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json"
       ],
@@ -146,7 +161,9 @@
       "id": "multi-step-high-cost",
       "status": "verified",
       "display_value": "$0.00125",
-      "source_values": ["0.00125"],
+      "source_values": [
+        "0.00125"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json"
       ],
@@ -166,7 +183,9 @@
       "id": "short-factual-minimal-reasoning-tokens",
       "status": "verified",
       "display_value": "3.655172",
-      "source_values": ["3.655172"],
+      "source_values": [
+        "3.655172"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
       ],
@@ -186,7 +205,9 @@
       "id": "short-factual-xhigh-reasoning-tokens",
       "status": "verified",
       "display_value": "311.474576",
-      "source_values": ["311.474576"],
+      "source_values": [
+        "311.474576"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
       ],
@@ -206,7 +227,9 @@
       "id": "ptu-payg-xhigh-modeled-break-even",
       "status": "verified",
       "display_value": "149 rpm",
-      "source_values": ["149.315222"],
+      "source_values": [
+        "149.315222"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"
       ],
@@ -226,7 +249,9 @@
       "id": "ptu-payg-xhigh-min-ptu",
       "status": "verified",
       "display_value": "50 PTU",
-      "source_values": ["50"],
+      "source_values": [
+        "50"
+      ],
       "source_paths": [
         "docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"
       ],

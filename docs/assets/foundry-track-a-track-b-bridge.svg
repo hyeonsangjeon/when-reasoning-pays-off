@@ -2,7 +2,7 @@
      aria-labelledby="fbTitle fbDesc" width="900" height="340">
   <title id="fbTitle">Track A and Track B: the packaging bridge</title>
   <desc id="fbDesc">A conceptual bridge: Track A is the public research repository and its surfaces
-  (Pages, Medium, arXiv); Track B is the downstream Azure AI Foundry sample. An arrow shows the
+  (Pages dashboard / blog); Track B is the downstream Azure AI Foundry sample. An arrow shows the
   one-way packaging relationship between the canonical research and the downstream sample. No
   measured numbers are shown.</desc>
   <defs>
@@ -26,8 +26,8 @@
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
     <text x="80" y="184">&#8226; canonical content</text>
     <text x="80" y="212">&#8226; GitHub Pages dashboard</text>
-    <text x="80" y="240">&#8226; Medium syndication</text>
-    <text x="80" y="268">&#8226; optional arXiv manuscript</text>
+    <text x="80" y="240">&#8226; sanitized evidence</text>
+    <text x="80" y="268">&#8226; chart-backed articles</text>
   </g>
 
   <!-- bridge arrow -->
