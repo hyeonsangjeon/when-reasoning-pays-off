@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>保持期間はポリシーである | when reasoning pays off</title>
+  <meta name="description" content="キャッシュ保持期間を暗黙の前提にせず、prompt_cache_retention で明示することを扱う公開運用記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="465256148cc70cf1aa740a55dfdba8b4f117511c0441c22d7ba70d25ec9aec20">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ</p>
+    <p class="article-kicker">運用エッセイ · プロンプトキャッシュ保持期間</p>
+    <h1>保持期間は前提ではなく、リクエストのポリシーである</h1>
+    <p class="lede">
+      対応モデルは対象となるプレフィックスを既定でキャッシュするため、プロンプト
+      キャッシュは自動的に効くように感じられます。しかし、保持期間は当然のものとして
+      前提にしてよいものではありません。後からの再利用に依存する運用なら、リクエスト
+      自身が <code>prompt_cache_retention</code> でそれを表明すべきです。
+    </p>
+
+    <div class="article-summary-grid" aria-label="記事の要約">
+      <section class="summary-tile">
+        <h2>問い</h2>
+        <p>後でキャッシュの再利用を見込んでいる運用において、リクエストは実際にその保持期間を要求しているか?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>根拠</h2>
+        <p>Microsoft Learn が保持モードを定義し、本リポジトリが断片的な公開レイテンシとヒット率の証跡を補足します。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>判断</h2>
+        <p>保持期間を明示し、プレフィックスを安定させ、レイテンシをキャッシュ済みトークンの比率と並べて読む。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="記事のセクション">
+      <strong>問いから読む:</strong>
+      <a href="#spec">公式の挙動</a>
+      <a href="#evidence">公開された根拠</a>
+      <a href="#policy">運用ポリシー</a>
+      <a href="#residency">データ所在に関する注記</a>
+      <a href="#sources">出典</a>
+    </nav>
+
+    <p class="banner">
+      <strong>範囲に関する注記:</strong>
+      以下の公開計測値は、ソース実行から得た断片的な証跡です。これらは運用上の
+      チェックリストを支えるものであり、普遍的なレイテンシの主張ではありません。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">公式の挙動 · 2 つの保持モード</p>
+      <h2>自動キャッシュは、明示的な保持期間と同じではない</h2>
+      <p>
+        Microsoft Learn は 2 つのプロンプトキャッシュ保持ポリシー、
+        <code>in_memory</code> と <code>24h</code> を説明しています。インメモリの
+        キャッシュエントリは、通常は非アクティブになってから 5〜10 分以内にクリア
+        され、最後の使用から 1 時間以内には必ず削除されます。拡張保持を使えば、
+        キャッシュ済みプレフィックスを最大 24 時間まで、より長くアクティブに保てます。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>既定は短いことがある</h3>
+          <p><code>gpt-5.4</code> 以前のモデルでは、保持期間を省略すると <code>in_memory</code> を意味します。</p>
+        </div>
+        <div>
+          <h3>長い再利用は明示する</h3>
+          <p>後からの再利用を見込む運用なら、対応している箇所で <code>prompt_cache_retention</code> を <code>24h</code> に設定します。</p>
+        </div>
+        <div>
+          <h3>価格は判断材料にならない</h3>
+          <p>Microsoft Learn は、プロンプトキャッシュの価格はどちらの保持ポリシーでも同じだと述べています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">観測された根拠 · 断片的な公開スライス</p>
+      <h2>レイテンシが保持期間の選択を可視化した</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読み取るチャート:</strong> 公開された集計済みキャッシュキーの
+          スライスを、保持モードでグループ化したものです。左パネルは最初のトークン
+          までの時間の p95 を示します。右パネルはキャッシュヒット率を示します。
+          各グループは同じカーディナリティについて <code>in_memory</code> と
+          <code>24h</code> を比較しています。
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="TTFT p95 とキャッシュヒット率を比較するプロンプトキャッシュ保持期間の証跡チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公開された保持期間の証跡</caption>
+        <thead>
+          <tr>
+            <th>保持</th>
+            <th>カーディナリティ</th>
+            <th>ヒット率</th>
+            <th>TTFT p95</th>
+            <th>定常レコード数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>390</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>389</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>これが示すこと、示さないこと</h3>
+        <p>
+          この公開スライスでは、カーディナリティ 1 のセルが最初のトークンの
+          レイテンシにおいて保持期間を可視化しました。それはソース実行から得た
+          証跡であり、普遍的な規則ではありません。長く通用する教訓はもっと単純で、
+          保持モード・ヒット率・レイテンシをまとめて読む、ということです。
+        </p>
+      </div>
+    </section>
+
+    <section id="policy" class="article-section">
+      <p class="section-label">運用ポリシー · 曖昧さには安全側で倒す</p>
+      <h2>保持期間が重要なら、その選択を観測可能にする</h2>
+      <p>
+        公開リポジトリには、文書化された既定が <code>in_memory</code> である
+        モデルに対して値の省略を拒否する、小さな保持ポリシーのヘルパーが含まれて
+        います。厳しく聞こえますが、これはよくある失敗パターンを防ぎます。設計は
+        より長いキャッシュ期間を前提にしているのに、リクエストボディは黙って短い
+        既定を採用してしまう、という事態です。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>良い例</h3>
+          <p>ワークロードが後からの再利用に依存するときの <code>prompt_cache_retention="24h"</code>。</p>
+        </div>
+        <div>
+          <h3>これも良い例</h3>
+          <p>ワークロードが短い再利用だけを必要とし、それを明示しているときの <code>prompt_cache_retention="in_memory"</code>。</p>
+        </div>
+        <div>
+          <h3>危うい例</h3>
+          <p>運用手順書はより長い期間を前提としているのに、値を未指定のまま放置すること。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="residency" class="article-section">
+      <p class="section-label">ガバナンスに関する注記 · 保持期間はレイテンシだけの話ではない</p>
+      <h2>長い保持期間にはガバナンスの確認も必要</h2>
+      <p>
+        Microsoft Learn は、インメモリのプロンプトキャッシュはすべてのデータ所在
+        リージョンと互換性があると述べています。拡張保持については、キャッシュ
+        データがリージョン内にとどまるのは Regional Standard または Regional
+        Provisioned モードの場合のみだとしています。これにより保持期間は、
+        パフォーマンス上の判断であると同時にガバナンス上の判断にもなります。
+      </p>
+      <p>
+        実務上の原則は、保持期間を既定値の中に埋もれさせないことです。意図した値を
+        コードに明記し、キャッシュ済みトークンの比率とレイテンシを観測し、利用する
+        サービングモードに対するデータ所在の要件を確認します。
+      </p>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>出典と証跡の範囲</h2>
+      <ul>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
+        <li><strong>公開された集計済みの根拠:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーのバケッティング CSV</a>。</li>
+        <li><strong>公開運用ガイド:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">プロンプトキャッシュキーのポリシー手順書</a>。</li>
+      </ul>
+      <p>
+        実務上の原則は次のとおりです。短い期間を過ぎてもキャッシュの再利用が重要なら、
+        <code>prompt_cache_retention</code> を明示し、観測されるレイテンシの形を検証する。
+      </p>
+      <p><a class="button-link" href="../../">記事一覧へ戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT ライセンスのリサーチ成果物 · 公開データはサニタイズ済みまたは集計のみ。</p>
+  </footer>
+</body>
+</html>

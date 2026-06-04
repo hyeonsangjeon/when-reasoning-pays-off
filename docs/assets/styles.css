@@ -215,8 +215,9 @@ footer.site {
   margin-top: 2.4rem;
   padding-top: 1.2rem;
 }
-.article-figure { margin: 1rem 0; }
+.article-figure { margin: 1rem 0; overflow-x: auto; }
 .article-figure figcaption { color: #34495e; margin-bottom: 0.9rem; }
+.article-figure img.wide-chart { min-width: 720px; }
 .mini-chart,
 .stacked-mini-chart,
 .mini-compare,

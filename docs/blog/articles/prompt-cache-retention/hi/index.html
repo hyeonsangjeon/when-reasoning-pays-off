@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>रिटेंशन एक नीति है | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_retention को किसी कैश विंडो को मान लेने के बजाय स्पष्ट रूप से तय करने पर एक सार्वजनिक ऑपरेशन्स लेख।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="465256148cc70cf1aa740a55dfdba8b4f117511c0441c22d7ba70d25ec9aec20">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="भाषा">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / ऑपरेशन्स निबंध</p>
+    <p class="article-kicker">ऑपरेशन्स निबंध · prompt cache retention</p>
+    <h1>रिटेंशन एक अनुरोध-नीति है, कोई धारणा नहीं</h1>
+    <p class="lede">
+      प्रॉम्प्ट कैशिंग स्वचालित लग सकती है, क्योंकि समर्थित मॉडल पात्र
+      प्रीफ़िक्स को डिफ़ॉल्ट रूप से कैश कर लेते हैं। फिर भी रिटेंशन विंडो को
+      मान लेना उचित नहीं है। यदि कोई ऑपरेशन लंबे पुनः-उपयोग पर निर्भर है, तो
+      अनुरोध को यह बात <code>prompt_cache_retention</code> के साथ स्पष्ट रूप से
+      कहनी चाहिए।
+    </p>
+
+    <div class="article-summary-grid" aria-label="लेख सारांश">
+      <section class="summary-tile">
+        <h2>प्रश्न</h2>
+        <p>जब ऑपरेशन बाद में कैश पुनः-उपयोग की अपेक्षा करता है, तो क्या अनुरोध वास्तव में उस विंडो की माँग करता है?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>प्रमाण</h2>
+        <p>Microsoft Learn रिटेंशन मोड परिभाषित करता है; यह रिपॉज़िटरी विरल सार्वजनिक लेटेंसी और हिट-रेट प्रमाण जोड़ती है।</p>
+      </section>
+      <section class="summary-tile">
+        <h2>निर्णय</h2>
+        <p>रिटेंशन को स्पष्ट रखें, प्रीफ़िक्स को स्थिर रखें, और लेटेंसी को कैश-किए गए टोकन हिस्से के साथ पढ़ें।</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="लेख खंड">
+      <strong>प्रश्न के अनुसार पढ़ें:</strong>
+      <a href="#spec">आधिकारिक व्यवहार</a>
+      <a href="#evidence">सार्वजनिक प्रमाण</a>
+      <a href="#policy">संचालन नीति</a>
+      <a href="#residency">रेज़िडेंसी टिप्पणी</a>
+      <a href="#sources">स्रोत</a>
+    </nav>
+
+    <p class="banner">
+      <strong>दायरा टिप्पणी:</strong>
+      नीचे दिए सार्वजनिक मापन विरल स्रोत-रन प्रमाण हैं। ये एक संचालन
+      चेकलिस्ट का समर्थन करते हैं, किसी सार्वभौमिक लेटेंसी दावे का नहीं।
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">आधिकारिक व्यवहार · दो रिटेंशन मोड</p>
+      <h2>स्वचालित कैशिंग और स्पष्ट रिटेंशन एक बात नहीं हैं</h2>
+      <p>
+        Microsoft Learn दो प्रॉम्प्ट-कैश रिटेंशन नीतियाँ बताता है:
+        <code>in_memory</code> और <code>24h</code>। इन-मेमोरी कैश प्रविष्टियाँ
+        आमतौर पर निष्क्रियता के 5 से 10 मिनट के भीतर साफ़ हो जाती हैं और अंतिम
+        उपयोग के एक घंटे के भीतर हमेशा हटा दी जाती हैं। विस्तारित रिटेंशन
+        कैश किए गए प्रीफ़िक्स को अधिक देर तक, अधिकतम 24 घंटे तक, सक्रिय रख
+        सकता है।
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>डिफ़ॉल्ट छोटा हो सकता है</h3>
+          <p><code>gpt-5.4</code> और पुराने मॉडलों के लिए, रिटेंशन न देने का अर्थ है <code>in_memory</code>।</p>
+        </div>
+        <div>
+          <h3>लंबा पुनः-उपयोग स्पष्ट होता है</h3>
+          <p>यदि ऑपरेशन बाद में पुनः-उपयोग की अपेक्षा करता है, तो जहाँ समर्थित हो वहाँ <code>prompt_cache_retention</code> को <code>24h</code> पर सेट करें।</p>
+        </div>
+        <div>
+          <h3>मूल्य विभेदक नहीं है</h3>
+          <p>Microsoft Learn बताता है कि दोनों रिटेंशन नीतियों के लिए प्रॉम्प्ट-कैश मूल्य समान है।</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">देखा गया प्रमाण · विरल सार्वजनिक स्लाइस</p>
+      <h2>लेटेंसी ने रिटेंशन के चुनाव को दृश्यमान बनाया</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य चार्ट:</strong> सार्वजनिक समग्र कैश-की स्लाइस, अब
+          रिटेंशन मोड के अनुसार समूहित। बायाँ पैनल पहले टोकन तक का p95 समय
+          दिखाता है। दायाँ पैनल कैश हिट अनुपात दिखाता है। प्रत्येक समूह समान
+          कार्डिनैलिटी के लिए <code>in_memory</code> की तुलना <code>24h</code>
+          से करता है।
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="TTFT p95 और कैश हिट अनुपात की तुलना करने वाला प्रॉम्प्ट कैश रिटेंशन प्रमाण चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>सार्वजनिक रिटेंशन प्रमाण</caption>
+        <thead>
+          <tr>
+            <th>रिटेंशन</th>
+            <th>कार्डिनैलिटी</th>
+            <th>हिट अनुपात</th>
+            <th>TTFT p95</th>
+            <th>स्थिर रिकॉर्ड</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>390</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>389</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>यह क्या सिद्ध करता है और क्या नहीं</h3>
+        <p>
+          इस सार्वजनिक स्लाइस में, कार्डिनैलिटी-1 वाली कोशिका ने रिटेंशन को
+          पहले-टोकन लेटेंसी में दृश्यमान बना दिया। यह स्रोत-रन प्रमाण है, कोई
+          सार्वभौमिक नियम नहीं। स्थायी सबक सरल है: रिटेंशन मोड, हिट अनुपात और
+          लेटेंसी को साथ में पढ़ें।
+        </p>
+      </div>
+    </section>
+
+    <section id="policy" class="article-section">
+      <p class="section-label">संचालन नीति · अस्पष्टता पर सुरक्षित रूप से बंद हों</p>
+      <h2>यदि रिटेंशन मायने रखता है, तो चुनाव को अवलोकनीय बनाएँ</h2>
+      <p>
+        सार्वजनिक रिपॉज़िटरी में एक छोटा रिटेंशन-नीति सहायक है जो उन मॉडलों पर
+        छोड़े गए मान को अस्वीकार कर देता है जिनका प्रलेखित डिफ़ॉल्ट
+        <code>in_memory</code> है। यह सख़्त लगता है, पर यह सामान्य विफलता को
+        रोकता है: डिज़ाइन एक लंबी कैश विंडो मान लेता है जबकि अनुरोध बॉडी
+        चुपचाप छोटा डिफ़ॉल्ट ले लेती है।
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>अच्छा</h3>
+          <p><code>prompt_cache_retention="24h"</code> जब वर्कलोड बाद के पुनः-उपयोग पर निर्भर हो।</p>
+        </div>
+        <div>
+          <h3>यह भी अच्छा</h3>
+          <p><code>prompt_cache_retention="in_memory"</code> जब वर्कलोड को केवल छोटे पुनः-उपयोग की ज़रूरत हो और वह यह स्पष्ट रूप से कहे।</p>
+        </div>
+        <div>
+          <h3>जोखिमपूर्ण</h3>
+          <p>मान को अनुपस्थित छोड़ देना जबकि संचालन रनबुक एक लंबी विंडो मान लेती है।</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="residency" class="article-section">
+      <p class="section-label">अभिशासन टिप्पणी · रिटेंशन केवल लेटेंसी नहीं है</p>
+      <h2>लंबे रिटेंशन के लिए अभिशासन जाँच भी ज़रूरी है</h2>
+      <p>
+        Microsoft Learn बताता है कि इन-मेमोरी प्रॉम्प्ट कैशिंग सभी
+        डेटा-रेज़िडेंसी क्षेत्रों के साथ संगत है। विस्तारित रिटेंशन के लिए, यह
+        कहता है कि कैश किया गया डेटा केवल Regional Standard या Regional
+        Provisioned मोड के लिए ही क्षेत्र के भीतर रहता है। इससे रिटेंशन एक
+        अभिशासन निर्णय बन जाता है, साथ ही एक प्रदर्शन निर्णय भी।
+      </p>
+      <p>
+        व्यावहारिक नियम: रिटेंशन को डिफ़ॉल्ट में मत दबाइए। इच्छित मान को कोड
+        में रखें, कैश-किए गए टोकन हिस्से और लेटेंसी का अवलोकन करें, और आप जिस
+        सर्विंग मोड का उपयोग करते हैं उसके लिए रेज़िडेंसी आवश्यकता की पुष्टि
+        करें।
+      </p>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>स्रोत और प्रमाण की सीमा</h2>
+      <ul>
+        <li><strong>आधिकारिक विनिर्देश, 2026-06-04 को देखा गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn प्रॉम्प्ट कैशिंग गाइड</a>।</li>
+        <li><strong>सार्वजनिक समग्र प्रमाण:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">कैश-की बकेटिंग CSV</a>।</li>
+        <li><strong>सार्वजनिक ऑपरेटर गाइड:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">प्रॉम्प्ट-कैश-की नीति रनबुक</a>।</li>
+      </ul>
+      <p>
+        व्यावहारिक नियम: यदि छोटे विंडो के बाद कैश पुनः-उपयोग मायने रखता है, तो
+        <code>prompt_cache_retention</code> को स्पष्ट करें और देखी गई लेटेंसी
+        की आकृति को सत्यापित करें।
+      </p>
+      <p><a class="button-link" href="../../">लेख सूचकांक पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समग्र है।</p>
+  </footer>
+</body>
+</html>
