@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>보이지 않는 reasoning tokens | when reasoning pays off</title>
+  <meta name="description" content="눈에 보이는 답변은 짧게 유지되었는데도 숨은 reasoning tokens가 청구서를 바꿔 놓은 과정을 다룬 토픽 에세이.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="../ko/">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ko/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">토픽 에세이 · 숨어 있는 과금 영역</p>
+    <h1>보이지 않는 reasoning tokens: 답변에는 드러나지 않는 청구서의 일부</h1>
+    <p class="lede">짧은 사실 응답을 다룬 이번 실행은 답변만 읽으면 지극히 평범해 보였다. 대부분의 응답은 짧았다. 그런데 청구서는 전혀 다른 이야기를 들려준다. reasoning 모델은 눈에 보이는 텍스트를 내놓기 전에 모델 내부에서 토큰을 소비할 수 있기 때문이다. 이 내부 토큰은 사용자에게 노출되지 않지만, 우리가 측정하는 사용량 영역에는 분명히 포함되어 있다.</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>질문</h2><p>답변 텍스트가 짧게 유지되었다면, 추가 비용은 도대체 어디에서 나온 것일까?</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>benchmark-01의 토큰 구성·비용·지연 차트를 하나의 증거 사슬로 이어서 읽는다.</p></section>
+      <section class="summary-tile"><h2>발견</h2><p>눈에 보이는 답변 길이는 거의 움직이지 않았지만, 숨은 reasoning tokens는 effort 사다리를 따라 늘어났다.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>맥락별로 읽기:</strong>
+      <a href="#s1">답변은 짧았지만, 내부 작업은 그렇지 않았다</a>
+      <a href="#s2">차트를 읽는 법</a>
+      <a href="#s3">원본 차트가 더해 주는 것</a>
+      <a href="#s4">남겨 둘 이야기</a>
+      <a href="#table">근거 표</a>
+    </nav>
+
+    <p class="banner">
+      <strong>대응되는 원본 차트 열기:</strong>
+      <a href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-tokens">benchmark-01 토큰 구성 차트</a>.
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>읽어야 할 차트:</strong> 이 토픽은 대시보드에서 차트 한 장 크기의 질문 하나를 떼어 내, 아래의 원본 표와 짝지어 보여 준다.
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>답변은 짧았지만, 내부 작업은 그렇지 않았다</h2>
+      <p>benchmark-01에서 정작 흥미로운 지점은 extra-high effort가 더 비쌌다는 사실이 아니다. 그건 예상된 일이다. 진짜 흥미로운 점은, 그 증가분이 최종 답변에는 거의 드러나지 않았다는 데 있다. minimal effort는 평균적으로 보이는 출력 12.7 토큰과 reasoning 토큰 3.7개를 기록했다. extra-high effort는 보이는 출력 17.9 토큰과 reasoning 토큰 311.5개를 기록했다.</p><p>다시 말해 독자가 보는 텍스트는, 실제로 구매한 연산량을 가늠하기에는 형편없는 대용물이다. 짧은 답변이 큰 reasoning 예산을 감출 수 있고, 그럴듯한 답변이라 해도 짝지은 품질 차트가 움직이지 않는다면 경제적으로는 나쁜 거래일 수 있다.</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>차트를 읽는 법</h2>
+      <p>막대는 개별 요청의 히스토그램이 아니라 effort별로 묶은 집계 셀이다. X축은 reasoning-effort 설정이고, Y축은 요청당 평균 reasoning tokens다. 각 막대 아래의 작은 라벨은 같은 셀의 평균 보이는 출력 토큰 수를 알려 준다.</p><p>차트는 아래에서 위로 읽는다. 먼저 청구서를 설명할 만큼 보이는 출력이 변했는지 묻고, 그다음 숨은 reasoning 막대와 비교한다. 이 구간에서 설명의 열쇠는 답변 길이가 아니다. 내부 작업이다.</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>원본 차트가 더해 주는 것</h2>
+      <p>토큰 구성은 메커니즘을 설명해 주지만, 그것만으로는 충분하지 않다. 비용 차트는 청구서가 불어나는 모습을 보여 주고, 품질 차트는 그 청구서가 더 나은 답변을 사 왔는지를 묻는다. 지연 차트는 사용자가 체감하는 대기 시간을 보여 준다. 이 셋을 함께 놓으면 숨은 영역이 비로소 읽힌다. 내부 토큰은 더 많아졌고, 지출도 늘었고, 지연도 길어졌지만, 이 짧은 사실 구간에서 그에 걸맞은 품질 상승은 없었다.</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>남겨 둘 이야기</h2>
+      <p>교훈은 reasoning tokens가 나쁘다는 게 아니다. 그것이야말로 reasoning 모델의 존재 이유다. 교훈은 그 토큰에 맡길 일이 있어야 한다는 것이다. 과제가 짧은 사실 답변만 필요로 한다면, 내부 reasoning은 조용한 예산 누수가 될 수 있다. 반대로 과제가 여러 단계의 해결을 요구한다면, 바로 그 토큰이 품질 향상을 벌어다 주는 핵심일 수 있다.</p><p>개요 에세이가 비용·품질·지연·토큰 구성을 한자리에 묶어 두는 이유가 여기에 있다. 청구서는 답변 안에 온전히 드러나지 않는다.</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>근거 표</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 hidden-token evidence</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>짧은 답변, 아주 작은 숨은 예산.</td></tr>
+<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>텍스트는 여전히 짧지만, 내부 예산은 훨씬 크다.</td></tr>
+<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>이 구간에서 숨은 작업은 품질 상승을 사 오지 못했다.</td></tr>
+<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>숨은 작업은 대기 시간까지 늘려 놓았다.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>근거가 말하게 해 주는 것</h2>
+      <p>reasoning-token 예산은 답변에서는 보이지 않더라도 텔레메트리에서는 보여야 한다. 이것이 이 토픽이 시리즈에 더하는 핵심적인 회계 습관이다.</p>
+      <p><a class="button-link" href="../../../">Back to the overview essay</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

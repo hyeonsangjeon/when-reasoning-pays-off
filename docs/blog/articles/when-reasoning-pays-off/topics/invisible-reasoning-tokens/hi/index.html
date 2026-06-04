@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>अदृश्य reasoning tokens | when reasoning pays off</title>
+  <meta name="description" content="एक विषय निबंध: कैसे छिपे हुए reasoning tokens ने बिल बदला, जबकि दिखने वाले जवाब छोटे ही बने रहे।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">लेख</a> / <a href="../../../">When reasoning pays off</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय निबंध · छिपी हुई billing surface</p>
+    <h1>अदृश्य reasoning tokens: बिल का वह हिस्सा जो जवाब में नहीं दिखता</h1>
+    <p class="lede">अगर आप सिर्फ़ जवाब पढ़ें तो short-factual run बिलकुल सामान्य लगता है। ज़्यादातर responses छोटे थे। पर बिल एक अलग कहानी कहता है, क्योंकि reasoning models visible text तैयार करने से पहले model के भीतर ही tokens खर्च कर सकते हैं। ये भीतरी tokens user को नहीं दिखाए जाते, फिर भी ये मापी गई usage surface का हिस्सा होते हैं।</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>सवाल</h2><p>अगर जवाब का text छोटा ही रहता है, तो अतिरिक्त लागत आख़िर कहाँ से आई?</p></section>
+      <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-01 की token composition, cost और latency charts—जिन्हें एक ही साक्ष्य-श्रृंखला की तरह पढ़ा गया।</p></section>
+      <section class="summary-tile"><h2>निष्कर्ष</h2><p>दिखने वाले जवाब की लंबाई मुश्किल से बदली, जबकि छिपे हुए reasoning tokens effort ladder के साथ बढ़ते गए।</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>विषय-सूत्र के अनुसार पढ़ें:</strong>
+      <a href="#s1">जवाब छोटा था; भीतर का काम नहीं</a>
+      <a href="#s2">chart को कैसे पढ़ें</a>
+      <a href="#s3">source charts क्या जोड़ती हैं</a>
+      <a href="#s4">याद रखने लायक कहानी</a>
+      <a href="#table">साक्ष्य तालिका</a>
+    </nav>
+
+    <p class="banner">
+      <strong>संबंधित source chart खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-token-composition-benchmark-01-tokens">benchmark-01 token composition chart</a>।
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="benchmark-01 में effort के अनुसार औसत reasoning tokens दिखाता bar chart, साथ में visible output के labels।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>जवाब छोटा था; भीतर का काम नहीं</h2>
+      <p>benchmark-01 में काम की हैरानी यह नहीं है कि extra-high effort की लागत ज़्यादा रही—वह तो अपेक्षित ही था। काम की हैरानी यह है कि इस बढ़ोतरी का कितना कम हिस्सा final answer में दिखा। minimal effort पर औसतन 12.7 visible output tokens और 3.7 reasoning tokens रहे। extra-high effort पर औसतन 17.9 visible output tokens और 311.5 reasoning tokens रहे।</p><p>इसका मतलब है कि पाठक को दिखने वाला text उस computation का कमज़ोर proxy है जिसके लिए असल में भुगतान हुआ। एक छोटा जवाब बड़े reasoning budget को छिपा सकता है, और अगर साथ वाली quality chart नहीं हिलती तो एक भरोसेमंद-सा जवाब भी आर्थिक रूप से घाटे का सौदा हो सकता है।</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>chart को कैसे पढ़ें</h2>
+      <p>ये bars समुच्चय (aggregate) effort cells हैं, अलग-अलग requests का histogram नहीं। X-axis पर reasoning-effort setting है। Y-axis पर प्रति request औसत reasoning tokens हैं। हर bar के नीचे का छोटा label उसी cell के औसत visible output tokens बताता है।</p><p>chart को नीचे से ऊपर की ओर पढ़ें: पहले पूछें कि क्या visible output इतना बदला कि बिल की व्याख्या हो सके; फिर छिपे हुए reasoning bar से तुलना करें। इस slice में व्याख्या जवाब की लंबाई नहीं है—यह भीतर का काम है।</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>source charts क्या जोड़ती हैं</h2>
+      <p>Token composition तंत्र को समझाती है, पर अकेले यह काफ़ी नहीं। cost chart दिखाती है कि बिल बढ़ रहा है। quality chart पूछती है कि क्या उस बिल ने बेहतर जवाब खरीदा। latency chart user को दिखने वाला इंतज़ार दिखाती है। मिलकर ये छिपी हुई surface को पढ़ने लायक बनाती हैं: ज़्यादा भीतरी tokens, ज़्यादा खर्च, ज़्यादा latency—और इस short factual slice में कोई संगत quality लाभ नहीं।</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>याद रखने लायक कहानी</h2>
+      <p>सबक यह नहीं कि reasoning tokens बुरे हैं—वे तो reasoning model का मूल उद्देश्य हैं। सबक यह है कि उन्हें कोई काम चाहिए। अगर task को सिर्फ़ छोटा factual जवाब चाहिए, तो भीतरी reasoning एक मौन budget leak बन सकता है। अगर task को multi-step समाधान चाहिए, तो वही tokens शायद ठीक वही हों जो quality लाभ कमाते हैं।</p><p>यही वजह है कि overview निबंध cost, quality, latency और token composition को एक साथ रखता है। बिल जवाब में पूरी तरह नहीं दिखता।</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>साक्ष्य तालिका</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 छिपे-token के साक्ष्य</caption>
+        <thead><tr><th>साक्ष्य पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ता है</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>छोटा जवाब, बहुत छोटा छिपा budget।</td></tr>
+<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>text अब भी छोटा, पर भीतरी budget कहीं बड़ा।</td></tr>
+<tr><td>संगत quality</td><td>minimal पर 1.87931</td><td>extra-high पर 1.779661</td><td>इस slice में छिपे काम ने कोई quality लाभ नहीं खरीदा।</td></tr>
+<tr><td>Latency</td><td>minimal पर 1.1s</td><td>extra-high पर 3.1s</td><td>छिपे काम ने इंतज़ार का समय भी बढ़ाया।</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>साक्ष्य हमें क्या कहने देता है</h2>
+      <p>reasoning-token budget telemetry में दिखना चाहिए, भले ही वह जवाब में अदृश्य रहे। यही वह बुनियादी हिसाब-किताब की आदत है जो यह विषय इस श्रृंखला में जोड़ता है।</p>
+      <p><a class="button-link" href="../../../">overview निबंध पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p></footer>
+</body>
+</html>

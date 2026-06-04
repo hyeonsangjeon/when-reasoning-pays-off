@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTU/PAYG planning | when reasoning pays off</title>
+  <meta name="description" content="एक विषय निबंध: PTU/PAYG crossover charts को सीधे capacity माप के बजाय planning models की तरह कैसे पढ़ें।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0f722594147c0c2d7f0c875d8adfbb756b0e7e949547eaf35fd9a97d14dc7b28">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">लेख</a> / <a href="../../../">When reasoning pays off</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय निबंध · PTU/PAYG planning model</p>
+    <h1>PTU/PAYG crossover: एक planning रेखा, capacity का नतीजा नहीं</h1>
+    <p class="lede">crossover chart ठीक इसलिए उपयोगी है क्योंकि यह सीमित है। यह सार्वजनिक cost और token-shape snapshot को एक planning सवाल में बदल देती है: किस request rate पर तय PTU खर्च इस मापे गए workload shape के लिए PAYG से सस्ता दिखने लगेगा? यह यह साबित नहीं करती कि कोई जीवित PTU target भार के नीचे कैसा बर्ताव करेगा।</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>सवाल</h2><p>एक modeled PTU/PAYG crossover हमें क्या बता सकता है, और उसे क्या दावा नहीं करना चाहिए?</p></section>
+      <section class="summary-tile"><h2>साक्ष्य</h2><p>सार्वजनिक crossover JSON, pricing snapshots, और token-shape throughput factors।</p></section>
+      <section class="summary-tile"><h2>निष्कर्ष</h2><p>crossover एक निर्णय-संकेत है। यह saturation, 429 की शुरुआत, या जीवित capacity का सीधा साक्ष्य नहीं है।</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>विषय-सूत्र के अनुसार पढ़ें:</strong>
+      <a href="#s1">model एक सँकरे सवाल का जवाब देता है</a>
+      <a href="#s2">chart को कैसे पढ़ें</a>
+      <a href="#s3">यह फ़र्क़ क्यों मायने रखता है</a>
+      <a href="#s4">याद रखने लायक कहानी</a>
+      <a href="#table">साक्ष्य तालिका</a>
+    </nav>
+
+    <p class="banner">
+      <strong>संबंधित source chart खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG crossover chart परिवार</a>।
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="चुनी गई benchmark पंक्तियों के लिए modeled PTU/PAYG break-even RPM दिखाता bar chart।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>model एक सँकरे सवाल का जवाब देता है</h2>
+      <p>crossover गणना प्रति request औसत cost, token-shape throughput factor, एक सार्वजनिक pricing snapshot, और 50 PTU की न्यूनतम सीमा को जोड़ती है। नतीजा एक modeled break-even RPM है। उदाहरण के लिए, benchmark-01 extra-high effort लगभग 149 rpm पर बैठता है, benchmark-02 none लगभग 2,680 rpm पर, और benchmark-03 low लगभग 564 rpm पर।</p><p>ये आँकड़े इसलिए उपयोगी हैं क्योंकि ये उजागर करते हैं कि workload shape किस तरह planning की बातचीत बदल देता है। ये जीवित-भार के माप नहीं हैं। ये यह नहीं बताते कि 429 कहाँ शुरू होता है, saturation के पास cache कैसा बर्ताव करता है, या कोई ख़ास serving व्यवस्था p95 latency पर क्या करेगी।</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>chart को कैसे पढ़ें</h2>
+      <p>X-axis पर चुनी गई benchmark पंक्तियों का एक समूह है। Y-axis पर modeled break-even RPM है। ऊँची bar का मतलब है कि PAYG किसी ऊँचे request rate तक चढ़ सकता है, इससे पहले कि modeled PTU सीमा सस्ती दिखे। छोटी bar का मतलब है कि workload modeled crossover तक जल्दी पहुँच जाता है।</p><p>ये bars कोई सतत (continuous) capacity वक्र नहीं हैं। ये सार्वजनिक समुच्चय डेटा और एक pricing snapshot से निकाले गए planning चिह्न हैं।</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>यह फ़र्क़ क्यों मायने रखता है</h2>
+      <p>इस फ़र्क़ के बिना crossover chart को एक वादे की तरह ग़लत पढ़ा जा सकता है। यह कहना लुभावना है कि 149 rpm crossover वाली पंक्ति को “PTU चाहिए” या 2,680 rpm crossover वाली पंक्ति को “PTU नहीं चाहिए।” साक्ष्य इससे ज़्यादा सावधान है। chart बताती है कि modeled मान्यताओं के तहत अर्थशास्त्र कैसा दिखता है। एक जीवित system को फिर भी latency, cache, retry, और saturation का साक्ष्य चाहिए।</p><p>यह सावधानी कोई कमज़ोरी नहीं है। यही chart को उपयोगी बनाती है: यह team को बताती है कि capacity प्रयोग कब चलाना है, न कि वह प्रयोग क्या पाएगा।</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>याद रखने लायक कहानी</h2>
+      <p>PAYG और PTU अलग सवालों के जवाब देते हैं। PAYG पूछता है कि हर पूरा हुआ request कितना महँगा है। PTU पूछता है कि तय capacity एक स्वीकार्य quality और latency स्तर पर कितना ढो सकती है। crossover रेखा इन दुनियाओं को जोड़ती है, पर उन्हें एक ही माप में समेट नहीं देती।</p><p>इसलिए इस project में इस रेखा को एक modeled परिकल्पना के रूप में चिह्नित किया गया है। यह मापी गई charts के बग़ल में आती है, उनके ऊपर नहीं।</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>साक्ष्य तालिका</h2>
+      <table class="chart-table evidence-table">
+        <caption>चुने गए crossover उदाहरण</caption>
+        <thead><tr><th>साक्ष्य पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ता है</th></tr></thead>
+        <tbody>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU सीमा</td><td>जल्दी crossover, क्योंकि प्रति-request बिल ऊँचा है।</td></tr>
+<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU सीमा</td><td>देर से crossover, क्योंकि मापा गया request सस्ता है।</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU सीमा</td><td>बीच का मामला: agent workload का token shape बड़ा है।</td></tr>
+<tr><td>साक्ष्य की सीमा</td><td>Modeled अर्थशास्त्र</td><td>जीवित capacity नहीं</td><td>इसका इस्तेमाल यह तय करने में करें कि अगला क्या परखना है।</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>साक्ष्य हमें क्या कहने देता है</h2>
+      <p>crossover तभी मूल्यवान है जब वह विनम्र रहे: यह साक्ष्य को एक planning सवाल में बदलता है और जीवित capacity को जीवित माप पर छोड़ देता है।</p>
+      <p><a class="button-link" href="../../../">overview निबंध पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p></footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTU/PAYG プランニング | 推論がコストに見合うとき</title>
+  <meta name="description" content="PTU/PAYG のクロスオーバーチャートを、直接の容量計測ではなくプランニング用のモデルとして読むためのトピック記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0f722594147c0c2d7f0c875d8adfbb756b0e7e949547eaf35fd9a97d14dc7b28">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="article-kicker">トピック記事 · PTU/PAYG プランニングモデル</p>
+    <h1>PTU/PAYG クロスオーバー：容量の結果ではなく、プランニングの線</h1>
+    <p class="lede">クロスオーバーチャートが有用なのは、まさにそれが限定的だからだ。これは公開されたコストとトークン形状のスナップショットを、一つのプランニングの問いに変える。すなわち、この計測されたワークロード形状において、固定の PTU 支出が PAYG より安く見え始めるのはどのリクエストレートか、という問いだ。稼働中の PTU ターゲットが負荷下でどう振る舞うかを証明するものではない。</p>
+
+    <div class="article-summary-grid" aria-label="トピックの要約">
+      <section class="summary-tile"><h2>問い</h2><p>モデル化された PTU/PAYG クロスオーバーは何を語れて、何を主張してはならないのか。</p></section>
+      <section class="summary-tile"><h2>証拠</h2><p>公開のクロスオーバー JSON、価格スナップショット、トークン形状のスループット係数。</p></section>
+      <section class="summary-tile"><h2>わかったこと</h2><p>クロスオーバーは意思決定のきっかけだ。飽和、429 の発生、稼働中の容量の直接的な証拠ではない。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="トピックのセクション">
+      <strong>筋ごとに読む：</strong>
+      <a href="#s1">モデルは狭い問いに答える</a>
+      <a href="#s2">チャートの読み方</a>
+      <a href="#s3">この区別が大事な理由</a>
+      <a href="#s4">残しておきたい話</a>
+      <a href="#table">証拠の表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>対応する元チャートを開く：</strong>
+      <a href="../../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG クロスオーバーチャート群</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="Bar chart showing modeled PTU/PAYG break-even RPM for selected benchmark rows." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>モデルは狭い問いに答える</h2>
+      <p>クロスオーバーの計算は、リクエストあたり平均コスト、トークン形状のスループット係数、公開の価格スナップショット、そして 50 PTU の下限を組み合わせる。出力されるのは、モデル化された損益分岐 RPM だ。たとえば benchmark-01 extra-high effort はおよそ 149 rpm、benchmark-02 none はおよそ 2,680 rpm、benchmark-03 low はおよそ 564 rpm に着地する。</p><p>これらの数字が有用なのは、ワークロード形状がプランニングの会話をどう変えるかを露わにするからだ。これらは稼働負荷の計測ではない。429 がどこで始まるか、飽和近くで cache がどう振る舞うか、特定の構成が p95 レイテンシで何をするか——そうしたことは語らない。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>チャートの読み方</h2>
+      <p>X 軸は選ばれた一連のベンチマーク行、Y 軸はモデル化された損益分岐 RPM。棒が高いほど、モデル化された PTU の下限が安く見え始めるまでに PAYG がより高いリクエストレートへ伸びられることを意味する。棒が低いほど、そのワークロードはモデル上のクロスオーバーに早く到達する。</p><p>これらの棒は連続的な容量曲線ではない。公開の集計データと価格スナップショットから導かれた、プランニング上の目印だ。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>この区別が大事な理由</h2>
+      <p>この区別がなければ、クロスオーバーチャートは約束のように誤読されうる。149 rpm のクロスオーバーを持つ行は「PTU が必要」、2,680 rpm のクロスオーバーを持つ行は「PTU は不要」と言いたくなる。だが証拠はもっと慎重だ。チャートが語るのは、モデル化された前提のもとで経済性がどう見えるか、である。稼働中のシステムには、なおレイテンシ、cache、リトライ、飽和の証拠が必要だ。</p><p>その慎重さは弱さではない。チャートを使えるものにしているのは、まさにそれだ。チャートはチームに、いつ容量実験を走らせるべきかを告げる。その実験が何を見つけるかは告げない。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>残しておきたい話</h2>
+      <p>PAYG と PTU は別々の問いに答える。PAYG は、完了した各リクエストにいくらかかるかを問う。PTU は、許容できる品質とレイテンシのもとで、固定容量が何を運べるかを問う。クロスオーバーの線はその二つの世界をつなぐが、それらを一つの計測へと畳み込みはしない。</p><p>だからこのプロジェクトでは、その線をモデル化された仮説として明示する。線は計測されたチャートの上ではなく、その傍らに属するものだ。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>証拠の表</h2>
+      <table class="chart-table evidence-table">
+        <caption>selected crossover examples</caption>
+        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <tbody>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>リクエストあたりの請求が高いため、早いクロスオーバー。</td></tr>
+<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>計測されたリクエストが安いため、遅いクロスオーバー。</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>中間のケース。エージェントのワークロードはトークン形状が大きい。</td></tr>
+<tr><td>Evidence boundary</td><td>Modeled economics</td><td>not live capacity</td><td>次に何を試すべきかを決めるために使う。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>この証拠から言えること</h2>
+      <p>クロスオーバーが価値を持つのは、それが謙虚にとどまるときだ。証拠をプランニングの問いに変え、稼働中の容量は稼働中の計測に委ねる。</p>
+      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

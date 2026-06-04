@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTU/PAYG 规划 | when reasoning pays off</title>
+  <meta name="description" content="一篇专题随笔：把 PTU/PAYG 交叉点图当作规划模型来读，而不是直接的容量测量结果。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0f722594147c0c2d7f0c875d8adfbb756b0e7e949547eaf35fd9a97d14dc7b28">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">专题随笔 · PTU/PAYG 规划模型</p>
+    <h1>PTU/PAYG 交叉点：一条规划线，而非容量结论</h1>
+    <p class="lede">这张交叉点图之所以有用，恰恰是因为它有边界。它把公开的成本与 token 形态快照，转化成一个规划问题：在多大的请求速率下，固定的 PTU 花销才会比 PAYG 更划算——针对的是这份被测出来的工作负载形态。它并不能证明一个在线运行的 PTU 资源在压力下会如何表现。</p>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>问题</h2><p>一条被建模出来的 PTU/PAYG 交叉点能告诉我们什么，又绝不能宣称什么？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>公开的交叉点 JSON、定价快照，以及 token 形态的吞吐系数。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>交叉点是一个决策提示，而不是饱和、429 起点或在线容量的直接证据。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>按线索阅读：</strong>
+      <a href="#s1">这个模型回答的是一个很窄的问题</a>
+      <a href="#s2">这张图该怎么读</a>
+      <a href="#s3">为什么这个区分很重要</a>
+      <a href="#s4">值得记住的那句话</a>
+      <a href="#table">证据表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>打开对应的源图：</strong>
+      <a href="../../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG 交叉点系列图</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="Bar chart showing modeled PTU/PAYG break-even RPM for selected benchmark rows." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>这个模型回答的是一个很窄的问题</h2>
+      <p>交叉点计算把每个请求的平均成本、token 形态的吞吐系数、一份公开定价快照，以及 50 PTU 的下限组合在一起，输出一个被建模出来的盈亏平衡 RPM。举例来说，benchmark-01 extra-high effort 落在约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm。</p><p>这些数字之所以有用，是因为它们揭示了工作负载形态如何改变规划这场对话。它们不是在线压测的测量值——它们不会告诉你 429 从哪里开始、缓存在接近饱和时如何表现，也不会告诉你某套具体服务配置在 p95 延迟下会怎样。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>这张图该怎么读</h2>
+      <p>横轴是一组选定的基准行，纵轴是被建模出来的盈亏平衡 RPM。柱子越高，意味着 PAYG 可以爬到更高的请求速率，才会让被建模的 PTU 下限显得更便宜；柱子越矮，意味着这份工作负载更早触及建模出的交叉点。</p><p>这些柱子并不是一条连续的容量曲线。它们是从公开聚合数据和一份定价快照推导出来的规划标记。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>为什么这个区分很重要</h2>
+      <p>少了这个区分，一张交叉点图很容易被误读成一种承诺。人们很容易说：交叉点在 149 rpm 的那一行“需要 PTU”，而交叉点在 2,680 rpm 的那一行“不需要 PTU”。但证据要比这谨慎得多。这张图说的是：在建模假设之下，经济账长什么样。一个在线系统仍然需要延迟、缓存、重试和饱和方面的证据。</p><p>这份谨慎并不是软弱，它正是让这张图可用的原因：它告诉团队何时该去跑一次容量实验，而不是替你预言那次实验会发现什么。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>值得记住的那句话</h2>
+      <p>PAYG 和 PTU 回答的是不同的问题。PAYG 问的是每个已完成的请求要花多少钱；PTU 问的是固定容量在可接受的质量与延迟水平下能扛住多少。交叉点这条线把这两个世界连了起来，却没有把它们塌缩成同一个测量。</p><p>所以在本项目里，这条线被明确标注为一个被建模出来的假设。它该摆在那些被测量出来的图旁边，而不是凌驾其上。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>证据表</h2>
+      <table class="chart-table evidence-table">
+        <caption>selected crossover examples</caption>
+        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>因为单个请求的账单很高，交叉点来得早。</td></tr>
+<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>因为被测请求很便宜，交叉点来得晚。</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>居中情形：代理工作负载的 token 形态更大。</td></tr>
+<tr><td>Evidence boundary</td><td>Modeled economics</td><td>not live capacity</td><td>用它来决定接下来该测什么。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>证据允许我们说什么</h2>
+      <p>交叉点在保持谦逊时最有价值：它把证据转化成一个规划问题，而把在线容量留给在线测量。</p>
+      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

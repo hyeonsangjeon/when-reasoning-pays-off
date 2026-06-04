@@ -6,6 +6,32 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Complete overview topic essay set (2026-06-04)
+
+The public blog now promotes the remaining four overview-topic TBD cards into
+full analytical topic essays with chart evidence and localized narrative pages.
+
+- Added detailed topic essays for invisible reasoning tokens, multi-step work,
+  tool-agent ceiling checks, and PTU/PAYG planning.
+- Added Korean, Japanese, Simplified Chinese, and Hindi narrative localizations
+  for each of the four topic essays, produced by parallel Mac Mini local Copilot
+  CLI workers using `--model claude-opus-4.8`.
+- Added four public SVG topic charts with labeled axes, readable bars, and
+  source-boundary notes.
+- Promoted all remaining topic cards from TBD to live topic links and removed
+  stale candidate/TBD language from the public article surfaces.
+- Refreshed overview article source hashes and numeric-claim ledger metadata.
+
+Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally. Browser preview verifies the article index and
+all four topic chart pages render without broken chart layout.
+
+Worker routing: Mac Mini local `copilot` CLI with `--model claude-opus-4.8` for
+four parallel locale workers; each worker created four localized topic pages.
+
 ### Added — Reasoning-model migration sizing essay (2026-06-04)
 
 The public blog now includes the fourth operations essay promoted from the TBD

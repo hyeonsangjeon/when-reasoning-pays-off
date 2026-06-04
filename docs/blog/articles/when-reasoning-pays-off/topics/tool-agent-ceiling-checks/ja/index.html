@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ツールエージェントの天井チェック | 推論がコストに見合うとき</title>
+  <meta name="description" content="品質スコアがルーブリックの頂点に近づいたとき、ツールエージェントの品質とレイテンシをどう並べて読むかを論じるトピック記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="3c2aee9f1c499d5f04a6d00f0948b791b1c117fbdd2cb2e71fc04ad86f395576">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="article-kicker">トピック記事 · benchmark-03 ツールエージェント</p>
+    <h1>ツールエージェント：品質が天井に達したあと、語り始めるのはレイテンシ</h1>
+    <p class="lede">ツールエージェントのタスクは、つい美化されやすい。ツールを使い、分岐し、モデルが本物の仕事をしているという手応えがある。benchmark-03 は、品質とレイテンシを対にすることでその美化を抑える。結果は「effort は多いほど良い」よりも、ずっと微妙だ。</p>
+
+    <div class="article-summary-grid" aria-label="トピックの要約">
+      <section class="summary-tile"><h2>問い</h2><p>ツールエージェントの品質がすでに頂点近くにあるとき、追加の effort はなお何を買うのか。</p></section>
+      <section class="summary-tile"><h2>証拠</h2><p>benchmark-03 の品質・レイテンシ・コスト・スループットのチャート。</p></section>
+      <section class="summary-tile"><h2>わかったこと</h2><p>GPT-5.2 の複数セルが品質の天井近く、あるいは天井そのものに並ぶ。判別の決め手になるのはレイテンシとトークン形状だ。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="トピックのセクション">
+      <strong>筋ごとに読む：</strong>
+      <a href="#s1">天井効果こそが要点</a>
+      <a href="#s2">チャートの読み方</a>
+      <a href="#s3">ツールが読みを変える理由</a>
+      <a href="#s4">残しておきたい話</a>
+      <a href="#table">証拠の表</a>
+    </nav>
+
+    <p class="banner">
+      <strong>対応する元チャートを開く：</strong>
+      <a href="../../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 レイテンシチャート</a>。
+    </p>
+
+    <section class="article-section">
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>天井効果こそが要点</h2>
+      <p>benchmark-03 は単純な単調増加の物語を生まなかった。GPT-4o は judge score 平均 1.85。GPT-5.2 は none で平均 1.966667、low で 2.0、medium で平均 1.983333、high で平均 1.966667、extra-high で 2.0 に達した。ベースラインに対する品質の改善ではあるが、同時にこれは天井でもある。</p><p>いったん複数のセルが頂点近くに固まってしまえば、effort を上げることに自動的な意味はなくなる。次の証拠は、レイテンシ、トークン形状、そして集計スコアの内側に隠れた失敗モードから来る。</p>
+    </section>
+    <section id="s2" class="article-section">
+      <h2>チャートの読み方</h2>
+      <p>このチャートは、品質がすでに頂点近くに圧縮されているため、棒の高さにレイテンシを使っている。X 軸はモデル/effort のセル、Y 軸は平均レイテンシ（ミリ秒）。各棒の下のラベルは、対になる平均 judge score を示す。</p><p>このチャートは意図的にヒストグラムではない。要約されたセル同士の比較だ。二つのセルの品質が近いなら、短いほうの棒が「長く待つことでなお何か目に見えるものを買えているのか」を問いかける。</p>
+    </section>
+    <section id="s3" class="article-section">
+      <h2>ツールが読みを変える理由</h2>
+      <p>ツールエージェントの作業には、ツールの選択、中間状態、回答の統合が含まれる。それが短い事実タスクよりも要求度を高くしている。同時に、集計の品質スコアが異なる種類の振る舞いを覆い隠しうる、ということでもある。あるセルは、ツールが大半を片づけたから通ったのかもしれないし、正しいツールを使いながら要約が下手で落ちたのかもしれない。</p><p>チャートは検査の必要をなくしはしない。どこを検査すべきかを教えてくれるのだ。このランでは、low effort が魅力的な領域である。ベースラインのレイテンシ近くにとどまりながら品質の天井に達したからだ。</p>
+    </section>
+    <section id="s4" class="article-section">
+      <h2>残しておきたい話</h2>
+      <p>ツールエージェントのベンチマークには二度の読みが要る。まず、推論が正しさを改善したかを問う。次に、品質が頂点近くに固まっているなら、どのセルがレイテンシとトークンの圧力を抑え込んでいるかを問う。二度目の読みは付け足しではない。結果をベンチマークの外で使えるものにするのは、まさにこの読みだ。</p>
+    </section>
+
+    <section id="table" class="article-section">
+      <h2>証拠の表</h2>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-03 quality-latency evidence</caption>
+        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s mean latency</td><td>強いベースライン。ただし天井ではない。</td></tr>
+<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s mean latency</td><td>ほぼ同じレイテンシで品質が上。</td></tr>
+<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s mean latency</td><td>わずかなレイテンシ増で天井スコア。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s mean latency</td><td>同じく天井スコア。だが、より遅い。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>この証拠から言えること</h2>
+      <p>ツールエージェントの作業で役に立つ一文は「effort を上げよ」ではない。「本当に必要なエージェントの振る舞いを保つ、最も低い effort を見つけよ」だ。</p>
+      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>
