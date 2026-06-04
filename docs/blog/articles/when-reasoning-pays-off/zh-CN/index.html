@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>When reasoning pays off | English fallback</title>
-  <meta name="description" content="This locale falls back to the canonical English article.">
+  <title>什么时候推理值得付费 | 同样的 token 单价，不同的账单</title>
+  <meta name="description" content="一篇基于图表数据的中文文章，说明推理强度什么时候带来质量收益，什么时候只增加隐藏成本。">
   <meta name="article:locale" content="zh-CN">
-  <meta name="article:translation-status" content="untranslated_fallback_to_en">
+  <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
   <meta name="article:source-article-sha256" content="13d25e638c1b665343130c239694ca1d77cb88842d023b984673b7150fa0490d">
   <link rel="stylesheet" href="../../../../assets/styles.css">
-  <link rel="canonical" href="../">
+  <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="../ja/">
@@ -22,7 +22,7 @@
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../zh-CN/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="语言">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
@@ -32,26 +32,230 @@
     </div>
   </header>
 
-  <main id="article-content">
-    <h1>English article available</h1>
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / 第一篇文章 / 简体中文译文</p>
+    <p class="article-kicker">现场笔记 · 推理强度、质量与支出</p>
+    <h1>什么时候推理值得付费：同样的 token 单价，不同的账单</h1>
     <p class="lede">
-      A localized article is not published for this locale yet. Use the
-      canonical English article and the localized chart dashboard.
+      推理模型即使使用同一张 token 单价表，也可能产生完全不同的账单。
+      缺失的关键是推理 token 预算：这些 token 在模型内部生成，像普通用量一样计费，
+      但不会出现在最终回复中。
     </p>
-    <div class="cards">
-      <article class="card">
-        <h2>Canonical article</h2>
-        <p><a href="../">Read the English article</a></p>
-      </article>
-      <article class="card">
-        <h2>Chart dashboard</h2>
-        <p><a href="../../../charts/?lang=zh-CN">Open charts in this locale</a></p>
-      </article>
+
+    <div class="article-summary-grid" aria-label="文章摘要">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>额外的推理强度什么时候买到可衡量的质量，什么时候只是买到隐藏计算？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>公开图表数据比较成本、评审分数、token 构成、延迟，以及建模得到的预留容量交叉点。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>决策</h2>
+        <p>只有在评估结果真正变化时才提高推理强度；让仪表盘保留为文章背后的审计线索。</p>
+      </section>
     </div>
+
+    <nav class="article-outline" aria-label="文章章节">
+      <strong>按主题阅读:</strong>
+      <a href="#short-factual">短事实任务</a>
+      <a href="#reasoning-tokens">不可见 token</a>
+      <a href="#multi-step">多步骤任务</a>
+      <a href="#tool-agent">工具代理</a>
+      <a href="#ptu-payg">PTU/PAYG 规划</a>
+    </nav>
+
+    <p class="banner">
+      <strong>数据附录:</strong>
+      完整表格和渲染后的源图表可以在
+      <a href="../../../charts/?lang=zh-CN">公开图表数据仪表盘</a>查看。
+      本文解释每张图为什么存在，以及应该如何使用。
+    </p>
+
+    <section id="short-factual" class="article-section">
+      <p class="section-label">主题 · 短事实回答</p>
+      <h2>短事实任务通常不值得增加推理</h2>
+      <figure class="article-figure" id="figure-short-factual">
+        <figcaption>
+          <strong>要读的图:</strong> 每个请求的平均成本，并与同一短事实切片的评审分数图配对阅读。
+        </figcaption>
+        <div class="mini-chart" aria-hidden="true">
+          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
+          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>为什么需要这张图</h3>
+          <p>
+            它检验最简单的迁移陷阱：团队把推理强度全局调高，然后发现任务大多只是短事实回答，却不知道账单为什么变了。
+          </p>
+        </div>
+        <div>
+          <h3>它意味着什么</h3>
+          <p>
+            在短事实切片中，minimal 强度的平均成本是每个请求 $0.000663。
+            Xhigh 强度的平均成本是每个请求 $0.005043，账单达到 7.6x。
+            平均评审分数则从 1.87931 变为 1.779661。
+          </p>
+        </div>
+        <div>
+          <h3>运营启示</h3>
+          <p>
+            更高强度可能买到更多隐藏计算，却买不到更好的答案。短事实任务应从最低强度开始，只有质量门槛显示真实收益时才提高。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="reasoning-tokens" class="article-section">
+      <p class="section-label">主题 · 不可见的计费面</p>
+      <h2>推理 token 解释了账单差异</h2>
+      <figure class="article-figure" id="figure-reasoning-tokens">
+        <figcaption>
+          <strong>要读的图:</strong> 按强度拆分的 token 构成 — 缓存输入、非缓存输入、可见输出和推理 token。
+        </figcaption>
+        <div class="stacked-mini-chart" aria-hidden="true">
+          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>为什么需要这张图</h3>
+          <p>
+            可见回复可能几乎没有变化，但模型为了生成它可能消耗了大量内部推理 token。只看输出长度会漏掉这部分可计费工作。
+          </p>
+        </div>
+        <div>
+          <h3>它意味着什么</h3>
+          <p>
+            在短事实切片中，minimal 强度平均每个请求使用 3.655172 个推理 token。
+            Xhigh 强度平均每个请求使用 311.474576 个推理 token。
+          </p>
+        </div>
+        <div>
+          <h3>运营启示</h3>
+          <p>
+            仅靠答案文本看不到这种差异。生产预算需要拆分用量：输入、缓存输入、输出和推理 token。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="multi-step" class="article-section">
+      <p class="section-label">主题 · 多步骤推理</p>
+      <h2>多步骤任务中，推理可能值得付费</h2>
+      <figure class="article-figure" id="figure-multi-step">
+        <figcaption>
+          <strong>要读的图:</strong> 先读质量柱，再读配对成本柱。质量差异才是支出的理由。
+        </figcaption>
+        <div class="mini-compare" aria-hidden="true">
+          <span class="dot-low"></span><span class="dot-high"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>为什么需要这张图</h3>
+          <p>
+            这是对照案例：一个中间推理确实承载正确性的任务，因此较高强度值得试验。
+          </p>
+        </div>
+        <div>
+          <h3>它意味着什么</h3>
+          <p>
+            在多步骤切片中，非推理基线得分为 1.5。High 强度在每个请求 $0.00125 的成本下得到 2.0。
+          </p>
+        </div>
+        <div>
+          <h3>运营启示</h3>
+          <p>
+            只有当评估结果移动到足够重要时，推理才真正值回成本。先看质量，再判断边际支出是否合理。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tool-agent" class="article-section">
+      <p class="section-label">主题 · 使用工具的代理</p>
+      <h2>工具代理任务需要检查天花板效应</h2>
+      <figure class="article-figure" id="figure-tool-agent">
+        <figcaption>
+          <strong>要读的图:</strong> 同时读质量和延迟。如果分数已经接近评分标准上限，下一个约束往往是延迟。
+        </figcaption>
+        <div class="ceiling-mini-chart" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>为什么需要这张图</h3>
+          <p>
+            工具代理看起来似乎需要更多思考，但有时真正困难的部分已经由工具调用承担了。
+          </p>
+        </div>
+        <div>
+          <h3>它意味着什么</h3>
+          <p>
+            如果图表已经显示天花板效应，提高推理强度可能主要增加内部 token 和延迟，而不是更好的答案。
+          </p>
+        </div>
+        <div>
+          <h3>运营启示</h3>
+          <p>
+            把推理强度当作受控实验，而不是默认值。代理型任务要先判断瓶颈是推理质量、工具选择、工具延迟，还是编排方式。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="ptu-payg" class="article-section">
+      <p class="section-label">主题 · 容量规划</p>
+      <h2>PTU/PAYG 交叉点是规划模型</h2>
+      <figure class="article-figure" id="figure-ptu-payg">
+        <figcaption>
+          <strong>要读的图:</strong> 将建模得到的交叉点与配对的质量护栏一起阅读。这是规模规划参考，不是实测容量证据。
+        </figcaption>
+        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>为什么需要这张图</h3>
+          <p>
+            PAYG 和预留容量回答的是不同问题。这张图把包含推理的 token 形状转换成一个规划阈值。
+          </p>
+        </div>
+        <div>
+          <h3>它意味着什么</h3>
+          <p>
+            对于短事实 xhigh 行，PTU/PAYG 交叉点是在 50 PTU 底线下得到的 149 rpm 建模假设。
+            它不是实测 PTU 吞吐量。
+          </p>
+        </div>
+        <div>
+          <h3>运营启示</h3>
+          <p>
+            把这个数看作规划阈值，而不是容量证据。在 PAYG 下，减少推理 token 会减少可变支出。
+            在 PTU 下，同样的减少可能表现为固定预留内可容纳更多请求。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>实用规则</h2>
+      <p>
+        短事实任务默认使用较低推理强度。多步骤任务只有在评估结果足以证明成本合理时才提高强度。
+        工具代理任务在增加支出前先检查天花板效应。始终把图表仪表盘和文章一起阅读：仪表盘是证据线索，文章是决策框架。
+      </p>
+      <p>
+        <a class="button-link" href="../../../charts/?lang=zh-CN">打开图表仪表盘</a>
+      </p>
+    </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+    <p>MIT 许可研究产物 · 公开数据仅包含已清洗或聚合后的数据。</p>
   </footer>
 </body>
 </html>

@@ -6,6 +6,28 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Full translated first article for Korean, Japanese, and Simplified Chinese (2026-06-04)
+
+The first GitHub Pages article is now available as a full translated article in
+Korean, Japanese, and Simplified Chinese rather than a Korean summary plus
+English fallbacks.
+
+- Replaced the Korean summary page with a full topic-by-topic translation of
+  the first article, preserving the question/evidence/decision opening, topic
+  outline, chart callouts, and operator lessons.
+- Replaced the Japanese and Simplified Chinese fallback pages with full
+  translated articles using the same article structure and localized chart
+  dashboard links.
+- Updated `scripts/check_blog_article_release.py` so the article release gate
+  expects `ko`, `ja`, and `zh-CN` to be `translated`; Hindi remains an explicit
+  English fallback for now.
+
+Validation: `scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — First blog article structure and public release-surface cleanup (2026-06-04)
 
 The first GitHub Pages article now reads as a blog essay rather than a short

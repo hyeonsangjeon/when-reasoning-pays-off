@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>When reasoning pays off | English fallback</title>
-  <meta name="description" content="This locale falls back to the canonical English article.">
+  <title>推論がコストに見合うとき | 同じトークン単価、違う請求額</title>
+  <meta name="description" content="推論 effort がいつ品質を買い、いつ見えないコストだけを増やすのかを説明するチャートベースの記事。">
   <meta name="article:locale" content="ja">
-  <meta name="article:translation-status" content="untranslated_fallback_to_en">
+  <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
   <meta name="article:source-article-sha256" content="13d25e638c1b665343130c239694ca1d77cb88842d023b984673b7150fa0490d">
   <link rel="stylesheet" href="../../../../assets/styles.css">
-  <link rel="canonical" href="../">
+  <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="./">
@@ -22,7 +22,7 @@
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../ja/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="言語">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="./" data-locale="ja" aria-current="true">日本語</a>
@@ -32,26 +32,236 @@
     </div>
   </header>
 
-  <main id="article-content">
-    <h1>English article available</h1>
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / 最初の記事 / 日本語訳</p>
+    <p class="article-kicker">フィールドノート · 推論 effort、品質、支出</p>
+    <h1>推論がコストに見合うとき: 同じトークン単価、違う請求額</h1>
     <p class="lede">
-      A localized article is not published for this locale yet. Use the
-      canonical English article and the localized chart dashboard.
+      推論モデルは同じトークン単価表を使っていても、まったく違う請求額を
+      生むことがあります。欠けているピースは推論トークンの予算です。
+      モデル内部で生成され、利用量として課金されますが、応答本文には
+      表示されないトークンです。
     </p>
-    <div class="cards">
-      <article class="card">
-        <h2>Canonical article</h2>
-        <p><a href="../">Read the English article</a></p>
-      </article>
-      <article class="card">
-        <h2>Chart dashboard</h2>
-        <p><a href="../../../charts/?lang=ja">Open charts in this locale</a></p>
-      </article>
+
+    <div class="article-summary-grid" aria-label="記事の要約">
+      <section class="summary-tile">
+        <h2>問い</h2>
+        <p>追加の推論 effort は、いつ測定可能な品質を買い、いつ見えない計算だけを買うのか。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>根拠</h2>
+        <p>公開チャートデータは、コスト、評価スコア、トークン構成、レイテンシ、モデル化された予約容量の交点を比較します。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>判断</h2>
+        <p>評価が動く場所でだけ effort を上げ、ダッシュボードは本文の背後にある監査証跡として残します。</p>
+      </section>
     </div>
+
+    <nav class="article-outline" aria-label="記事のセクション">
+      <strong>トピック別に読む:</strong>
+      <a href="#short-factual">短い事実回答</a>
+      <a href="#reasoning-tokens">見えないトークン</a>
+      <a href="#multi-step">複数ステップ</a>
+      <a href="#tool-agent">ツールエージェント</a>
+      <a href="#ptu-payg">PTU/PAYG 計画</a>
+    </nav>
+
+    <p class="banner">
+      <strong>データ付録:</strong>
+      完全な表とレンダリング済みの元チャートは
+      <a href="../../../charts/?lang=ja">公開チャートデータのダッシュボード</a>で
+      確認できます。この記事では、それぞれのチャートがなぜ必要で、どう使うべきかを説明します。
+    </p>
+
+    <section id="short-factual" class="article-section">
+      <p class="section-label">トピック · 短い事実回答</p>
+      <h2>短い事実回答では、推論はしばしば割に合いません</h2>
+      <figure class="article-figure" id="figure-short-factual">
+        <figcaption>
+          <strong>読むチャート:</strong> リクエストあたり平均コストを、同じ短い事実回答スライスの評価スコアチャートと並べて読みます。
+        </figcaption>
+        <div class="mini-chart" aria-hidden="true">
+          <span class="bar-xs"></span><span class="bar-xs"></span><span class="bar-sm"></span>
+          <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>なぜこのチャートがあるのか</h3>
+          <p>
+            いちばん単純な移行時の落とし穴を検証します。チームが推論 effort
+            を全体で上げたあと、タスクの大半は短い事実回答なのに、なぜ請求額が動いたのかを問う場面です。
+          </p>
+        </div>
+        <div>
+          <h3>何を意味するのか</h3>
+          <p>
+            短い事実回答スライスでは、minimal effort はリクエストあたり平均 $0.000663 でした。
+            Xhigh effort はリクエストあたり平均 $0.005043 で、7.6x の請求額です。
+            平均評価スコアは 1.87931 から 1.779661 に動きました。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の教訓</h3>
+          <p>
+            effort は見えない計算を増やしても、より良い答えを買えないことがあります。
+            短い事実回答は最も低い effort から始め、品質ゲートが実際の改善を示したときだけ上げてください。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="reasoning-tokens" class="article-section">
+      <p class="section-label">トピック · 見えない課金面</p>
+      <h2>推論トークンが請求額の差を説明します</h2>
+      <figure class="article-figure" id="figure-reasoning-tokens">
+        <figcaption>
+          <strong>読むチャート:</strong> effort レベル別のトークン構成 — キャッシュ入力、非キャッシュ入力、見える出力、推論トークンです。
+        </figcaption>
+        <div class="stacked-mini-chart" aria-hidden="true">
+          <span class="stack-visible"></span><span class="stack-reasoning"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>なぜこのチャートがあるのか</h3>
+          <p>
+            見える応答はほとんど同じに見えても、モデルはそれを生成するために多くの内部推論トークンを使っている場合があります。
+            単なる出力長のチャートでは、その課金対象の作業を見落とします。
+          </p>
+        </div>
+        <div>
+          <h3>何を意味するのか</h3>
+          <p>
+            短い事実回答スライスでは、minimal effort はリクエストあたり平均 3.655172 推論トークンでした。
+            Xhigh effort はリクエストあたり平均 311.474576 推論トークンでした。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の教訓</h3>
+          <p>
+            応答テキストだけではこの差は見えません。運用予算には、入力、キャッシュ入力、出力、推論トークンの利用量内訳が必要です。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="multi-step" class="article-section">
+      <p class="section-label">トピック · 複数ステップ推論</p>
+      <h2>複数ステップの作業では、推論が割に合うことがあります</h2>
+      <figure class="article-figure" id="figure-multi-step">
+        <figcaption>
+          <strong>読むチャート:</strong> まず品質バーを読み、そのあと対応するコストバーを読みます。支出の理由は品質差です。
+        </figcaption>
+        <div class="mini-compare" aria-hidden="true">
+          <span class="dot-low"></span><span class="dot-high"></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>なぜこのチャートがあるのか</h3>
+          <p>
+            これは対照例です。中間推論が実際に重要で、より高い effort のセルを試す価値があるワークロードです。
+          </p>
+        </div>
+        <div>
+          <h3>何を意味するのか</h3>
+          <p>
+            複数ステップスライスでは、非推論のベースラインは 1.5 点でした。
+            High effort はリクエストあたり $0.00125 で 2.0 点でした。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の教訓</h3>
+          <p>
+            推論は、評価が意味のある幅で動くときだけ価値を発揮します。まず品質を読み、そのあと限界支出が正当化されるかを判断してください。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tool-agent" class="article-section">
+      <p class="section-label">トピック · ツール利用エージェント</p>
+      <h2>ツールエージェントには天井効果の確認が必要です</h2>
+      <figure class="article-figure" id="figure-tool-agent">
+        <figcaption>
+          <strong>読むチャート:</strong> 品質とレイテンシを一緒に読みます。スコアがすでに評価基準の上限近くなら、次の制約はレイテンシです。
+        </figcaption>
+        <div class="ceiling-mini-chart" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>なぜこのチャートがあるのか</h3>
+          <p>
+            ツールエージェントはもっと考える必要があるように見えることがあります。しかし、ときには難しい部分をすでにツール呼び出しが担っています。
+          </p>
+        </div>
+        <div>
+          <h3>何を意味するのか</h3>
+          <p>
+            チャートがすでに天井効果を示しているなら、effort を上げても、より良い答えではなく内部トークンとレイテンシを主に増やす可能性があります。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の教訓</h3>
+          <p>
+            effort は既定値ではなく、制御された実験として扱ってください。エージェント型の作業では、制約が推論品質、ツール選択、ツールの遅さ、オーケストレーションのどれなのかを先に確認します。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="ptu-payg" class="article-section">
+      <p class="section-label">トピック · 容量計画</p>
+      <h2>PTU/PAYG の交点は計画モデルです</h2>
+      <figure class="article-figure" id="figure-ptu-payg">
+        <figcaption>
+          <strong>読むチャート:</strong> 品質ガードレールとともに、モデル化された交点を読みます。これはサイジングの目安であり、測定された容量証拠ではありません。
+        </figcaption>
+        <div class="crossover-mini-chart" aria-hidden="true"><span></span></div>
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>なぜこのチャートがあるのか</h3>
+          <p>
+            PAYG と予約容量の判断は、異なる問いに答えます。このチャートは、推論込みのトークン形状を計画しきい値に変換します。
+          </p>
+        </div>
+        <div>
+          <h3>何を意味するのか</h3>
+          <p>
+            短い事実回答の xhigh 行では、PTU/PAYG の交点は 50 PTU の下限を置いた 149 rpm のモデル化された仮説です。
+            測定された PTU スループットではありません。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の教訓</h3>
+          <p>
+            この数値は容量証拠ではなく、計画しきい値として読んでください。PAYG では推論トークンを減らすと変動支出が減ります。
+            PTU では、同じ削減が固定予約内でより多くのリクエストを処理する余地として現れる可能性があります。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>実務上のルール</h2>
+      <p>
+        短い事実回答では低い effort を既定値にします。複数ステップの作業では、評価がコストを正当化するほど動くときだけ effort を上げます。
+        ツールエージェントでは、追加で支出する前に天井効果を確認します。記事の横で常にチャートダッシュボードを読んでください。
+        ダッシュボードは根拠の証跡であり、記事は意思決定のフレームです。
+      </p>
+      <p>
+        <a class="button-link" href="../../../charts/?lang=ja">チャートダッシュボードを開く</a>
+      </p>
+    </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+    <p>MIT ライセンスの研究成果物 · 公開データはサニタイズ済みまたは集計済みのみです。</p>
   </footer>
 </body>
 </html>
