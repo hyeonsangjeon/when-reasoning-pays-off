@@ -16,6 +16,8 @@ category labels, and per-bar value labels directly in the rendered SVG.
 - Updated chart styles to support larger readable SVG charts and visible axis /
   value label typography.
 - Added missing `none` effort labels in English and Korean locale bundles.
+- Cache-busted the chart renderer script URL so deployed Pages readers pick up
+  the visible-label renderer immediately.
 
 Validation: `node --check docs/assets/charts.js`,
 `scripts/check_blog_article_release.py --changed-from origin/main`,
