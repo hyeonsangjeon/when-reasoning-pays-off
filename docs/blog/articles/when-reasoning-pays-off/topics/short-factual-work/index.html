@@ -56,6 +56,25 @@
     </p>
 
     <section class="article-section">
+      <h2>The source-chart story in one paragraph</h2>
+      <p>
+        The short-factual slice is a clean example of a failed promotion test.
+        The cost bars climb from $0.000663 at minimal effort to $0.005043 at
+        extra-high effort, but the quality bars do not climb with them: the mean
+        judge score is 1.87931 at minimal effort and 1.779661 at extra-high
+        effort. Latency also stretches from about 1.1s to about 3.1s. The work
+        is not free on the capacity side either: the token-shape throughput
+        factor falls from 0.98 to 0.45.
+      </p>
+      <p>
+        That is the whole story the chart is trying to tell. The taller cost
+        bar is real, the taller hidden-token budget is real, and the matching
+        quality lift is missing. For this workload shape, higher effort should
+        stay experimental rather than become the default.
+      </p>
+    </section>
+
+    <section class="article-section">
       <h2>The intuition we tested</h2>
       <p>
         The tempting rule is simple: if reasoning models are stronger, raise
@@ -73,6 +92,11 @@
 
     <section class="article-section">
       <h2>How to read the chart</h2>
+      <p>
+        The bars are aggregate bar charts, not frequency histograms. Each bar
+        stands for one effort cell in benchmark-01, so the comparison is about
+        how the same workload shape changes as effort rises.
+      </p>
       <div class="evidence-grid">
         <div>
           <h3>X-axis</h3>
@@ -102,6 +126,60 @@
     </section>
 
     <section class="article-section">
+      <h2>What the source charts contribute</h2>
+      <p>
+        Each source chart answers a different part of the decision. The cost
+        chart says what the setting costs. The quality chart says whether the
+        spend bought a better answer. Latency and token composition explain the
+        operational side effects. The throughput view translates the same token
+        shape into planning pressure.
+      </p>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 source-chart takeaways</caption>
+        <thead>
+          <tr>
+            <th>Source chart</th>
+            <th>How to read it</th>
+            <th>Observed pattern</th>
+            <th>Decision implication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cost per request</td>
+            <td>X-axis is effort level; Y-axis is mean USD per request.</td>
+            <td>$0.000663 at minimal effort; $0.005043 at extra-high effort.</td>
+            <td>The bill climbs before quality proves it should.</td>
+          </tr>
+          <tr>
+            <td>Quality guardrail</td>
+            <td>X-axis is the same effort ladder; Y-axis is mean judge score.</td>
+            <td>1.87931 at minimal effort; 1.779661 at extra-high effort.</td>
+            <td>The higher-cost cell does not clear the promotion bar.</td>
+          </tr>
+          <tr>
+            <td>Latency</td>
+            <td>X-axis is effort level; Y-axis is mean response latency.</td>
+            <td>About 1.1s at minimal effort; about 3.1s at extra-high effort.</td>
+            <td>Users wait longer without a matching quality payoff.</td>
+          </tr>
+          <tr>
+            <td>Token composition</td>
+            <td>X-axis is effort level; Y-axis is mean tokens per request.</td>
+            <td>Reasoning tokens rise from 3.655172 to 311.474576; visible output changes only from about 12.7 to 17.9 tokens.</td>
+            <td>The answer text hides most of the billable growth.</td>
+          </tr>
+          <tr>
+            <td>Token-shape throughput</td>
+            <td>X-axis is effort level; Y-axis is throughput factor versus baseline.</td>
+            <td>The factor moves from 0.98 at minimal effort to 0.45 at extra-high effort.</td>
+            <td>The same traffic shape needs more capacity headroom.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section">
       <h2>What happened</h2>
       <p>
         The cost curve rose sharply. Minimal effort averaged $0.000663 per
@@ -114,6 +192,13 @@
         shape claim. In this slice, the added internal computation did not buy
         a matching answer-quality gain. The dashboard makes the mismatch visible
         because cost and quality are kept side by side.
+      </p>
+      <p>
+        The key trap is that the output can still look reasonable. If a reviewer
+        only samples a few answers, extra-high effort may feel safer because the
+        model appears to have thought harder. The chart prevents that intuition
+        from becoming policy: it asks for a measured quality delta before
+        accepting the higher cost, slower latency, and larger hidden-token bill.
       </p>
     </section>
 
@@ -145,6 +230,24 @@
           </p>
         </div>
       </div>
+    </section>
+
+    <section class="article-section">
+      <h2>When to revisit the decision</h2>
+      <p>
+        Do not freeze this conclusion forever. Re-test if the task changes from
+        short recall into synthesis, if the judge rubric starts rewarding
+        multi-hop justification, if the prompt begins carrying tool outputs, or
+        if a new model changes the cost-quality shape. The lesson is not “never
+        use reasoning.” The lesson is “do not promote effort without paired
+        evidence.”
+      </p>
+      <p>
+        A useful follow-up experiment keeps the same X-axis but changes the
+        workload slice: short factual, multi-step, tool-agent, and synthesis
+        tasks should each earn their own effort setting. That routing policy is
+        where reasoning usually pays off.
+      </p>
     </section>
 
     <section class="article-section decision-box">

@@ -351,3 +351,17 @@ footer.site {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.18);
 }
+
+.chart-reading-guide .evidence-grid { margin-top: 1rem; }
+.chart-reading-note {
+  background: #f8fbff;
+  border: 1px solid #cfe1f3;
+  border-left: 4px solid var(--accent-2);
+  border-radius: 10px;
+  color: #31475e;
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem 1rem;
+}
+.chart-reading-note h3 { margin: 0 0 0.35rem; }
+.chart-reading-note p { margin: 0; }
+.evidence-table td { vertical-align: top; }

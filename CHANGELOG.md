@@ -6,6 +6,29 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Deeper chart-reading prose for overview and short-factual topic (2026-06-04)
+
+The overview essay and first topic essay now explain how to read the evidence
+charts instead of leaving readers to infer axis and bar meaning from the
+dashboard alone.
+
+- Added a chart-reading convention section to the overview essay, including the
+  difference between aggregate bar charts and frequency histograms in both overview and topic prose.
+- Added X/Y-axis and bar-meaning callouts to the overview short-factual section
+  in English, Korean, Japanese, and Simplified Chinese.
+- Expanded the short-factual topic essay with source-chart storyline, a
+  decision-oriented evidence table, latency / token-composition / throughput
+  details, and a revisit rule for future workload changes.
+- Updated the canonical article hash, locale source-hash metadata, and numeric
+  claims ledger for the added public evidence values.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Visible labels for evidence-dashboard bars (2026-06-04)
 
 The evidence dashboard charts now expose the chart title, axis labels, per-bar
