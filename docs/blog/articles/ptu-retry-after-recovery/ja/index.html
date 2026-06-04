@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>429 は回復シグナルである | when reasoning pays off</title>
+  <meta name="description" content="Azure OpenAI PTU の 429 レスポンスを、一般的な失敗ではなく retry-after-ms の回復シグナルとして扱うことに関する公開運用記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0085d22acd1ce1916ec0497df14098fcafd8d3bcfdba6d70d1e61389d235915c">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ / 日本語訳</p>
+    <p class="article-kicker">運用エッセイ · PTU の回復と 429 ハンドリング</p>
+    <h1>429 は単なるエラーではなく、回復シグナルである</h1>
+    <p class="lede">
+      飽和した PTU ターゲットからの 429 で、当てずっぽうのポーリングループを
+      始めるべきではありません。それはすでに、クライアントが必要とする回復シグナル
+      <code>retry-after-ms</code> を含んでいます。運用上の問いは「呼び出しは失敗したか?」
+      ではなく、「次の判断を誰が持つか: 待つ、リダイレクトする、あきらめる」です。
+    </p>
+
+    <div class="article-summary-grid" aria-label="記事の要約">
+      <section class="summary-tile">
+        <h2>問い</h2>
+        <p>PTU 容量が「今はだめ」と返したとき、クライアントは次の手をどう判断すべきか?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>証跡</h2>
+        <p>Microsoft Learn がヘッダーの契約を定義し、公開集計の実行が、中央値だけの待機ではテールを取りこぼす理由を示します。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>判断</h2>
+        <p>リトライのオーナーを一つに絞ります。ヘッダーを尊重し、ジッターを加え、遅延ポリシーが要求するときだけリダイレクトします。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="記事のセクション">
+      <strong>問いから読む:</strong>
+      <a href="#spec">公式シグナル</a>
+      <a href="#evidence">観測された形状</a>
+      <a href="#pattern">運用パターン</a>
+      <a href="#fallback">リダイレクトの選択</a>
+      <a href="#sources">出典</a>
+    </nav>
+
+    <p class="banner">
+      <strong>スコープ注記:</strong>
+      以下の測定値は本リポジトリの公開集計アーティファクトのみを記述しています。
+      リトライラッパーの設計には有用ですが、Azure の普遍的な挙動を主張するものでは
+      ありません。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">公式仕様 · サービスが何を伝えるか</p>
+      <h2>ヘッダーがアドミッションシグナルである</h2>
+      <p>
+        Microsoft Learn は、PTU の高負荷ハンドリングを、<code>retry-after-ms</code>
+        と <code>retry-after</code> レスポンスヘッダーを伴う即時の 429 経路として
+        説明しています。同じ本番ガイドは、この待機をクライアント側のリトライにも、
+        リクエストを別のサービングターゲットへリダイレクトするためにも使えると述べて
+        います。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>文書化されていること</h3>
+          <p>
+            <code>retry-after-ms</code> をサービス提供の待機値として扱います。
+            推測した固定のリセット間隔よりも強い根拠になります。
+          </p>
+        </div>
+        <div>
+          <h3>文書化されていないこと</h3>
+          <p>
+            待機値の背後にある正確な計算式は公開されていません。クライアント側で
+            決定論的なリセットモデルを発明しないでください。
+          </p>
+        </div>
+        <div>
+          <h3>運用上の推論</h3>
+          <p>
+            ヘッダーがすでに再試行のタイミングを伝えているなら、ヘルスチェックの
+            ポーリングは通常、弱いシグナルに加えて余分なトラフィックとノイズの多い
+            テレメトリをもたらします。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">観測された証跡 · 公開集計のみ</p>
+      <h2>中央値は小さく、テールはそうではなかった</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート:</strong> 公開集計の 429 イベントから得られた
+          経験的な <code>retry-after-ms</code> パーセンタイル。X 軸はレスポンス
+          ヘッダーが助言する待機時間 (ミリ秒)。点は各ソースグループの p50、p90、
+          p99 です。
+        </figcaption>
+        <img src="../../../../assets/retry-after-ms-distribution.svg" alt="全体・バースト型・予約型のソースを比較した retry-after-ms パーセンタイルチャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公開集計の retry-after-ms パーセンタイル</caption>
+        <thead>
+          <tr>
+            <th>ソースグループ</th>
+            <th>429 件数</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>最大</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>全体</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>バースト型ソース</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>予約型ソース</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>この表の読み方</h3>
+        <p>
+          中央値は、多くの 429 が短命だったことを示します。p99 は、本番のラッパーには
+          やはりテールポリシーが必要であることを示します: 遅延予算までしかスリープせず、
+          その後はリダイレクトするか、優雅に失敗します。バースト型と予約型の負荷は同じ
+          形には見えなかったため、ソースの分割が重要です。
+        </p>
+      </div>
+    </section>
+
+    <section id="pattern" class="article-section">
+      <p class="section-label">運用パターン · リトライのオーナーは一つ</p>
+      <h2>リトライループを積み重ねない</h2>
+      <p>
+        安全なパターンは、意図的に退屈です: 429 の回復を持つコンポーネントを
+        ちょうど一つだけ選びます。SDK がリトライするよう構成されているなら、待機は
+        SDK に任せます。アプリケーションのルーターが回復を持つなら、SDK の自動
+        リトライを無効化し、ルーターに <code>retry-after-ms</code> を直接パースさせます。
+      </p>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>リファレンス実装:</strong> 公開リポジトリには、<code>retry-after-ms</code>
+          をパースし、<code>retry-after</code> にフォールバックし、安全なスロットル
+          イベントを発行し、二重のリトライ所有権を拒否する、小さなヘッダー駆動の
+          アドミッションコントローラーが含まれています。
+        </figcaption>
+        <img src="../../../../assets/ptu-admission-controller.svg" alt="PTU アドミッションコントローラーのフロー: 429 を観測し、retry-after-ms をパースし、スリープまたはリダイレクトして、再開する。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>スリープ経路</h3>
+          <p>呼び出しごとの遅延よりもスループットが重要なときに使います。ヘッダー値とジッターの分だけ待ってから、再試行します。</p>
+        </div>
+        <div>
+          <h3>リダイレクト経路</h3>
+          <p>PTU に留まることよりも遅延が重要なときに使います。429 が来たらすぐに標準ターゲットへルーティングします。</p>
+        </div>
+        <div>
+          <h3>あきらめる経路</h3>
+          <p>待機もリダイレクトもポリシーに違反するときに使います。リトライの嵐を隠すのではなく、制御されたレスポンスを返します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fallback" class="article-section">
+      <p class="section-label">フォールバック · ネイティブかカスタムか</p>
+      <h2>リダイレクトはポリシーの選択であり、パニックボタンではない</h2>
+      <p>
+        Microsoft Learn のスピルオーバー機能は、超過トラフィックを標準ターゲットへ
+        リダイレクトでき、スピルオーバーの挙動を識別するヘッダーを公開します。
+        プラットフォームがサポートする形が合致するなら、それが運用の手間が少ない
+        経路です。カスタムルーターは、PTU ターゲットが 429 を返す前にアプリケーションが
+        判断しなければならないとき、あるいはルーティングポリシーがテナント、リージョン、
+        遅延予算、ビジネス優先度に依存するときに、依然として有用です。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>ネイティブスピルオーバー</h3>
+          <p>単純なオーバーフローレーンが合致し、追加のルーティングロジックが価値以上にリスクを増やすときに最適です。</p>
+        </div>
+        <div>
+          <h3>カスタムルーター</h3>
+          <p>ユーザー遅延が費やされる前に、待機・リダイレクト・あきらめのどれを選ぶかをアプリケーションポリシーが決めなければならないときに最適です。</p>
+        </div>
+        <div>
+          <h3>アンチパターン</h3>
+          <p>SDK のリトライ + ルーターのリトライ + スピルオーバーは、試行回数を掛け算で増やしかねません。まず所有権を統合します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>出典と証跡の境界</h2>
+      <ul>
+        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU 本番運用ガイド</a>。</li>
+        <li><strong>公式スピルオーバー挙動、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn スピルオーバートラフィック管理ガイド</a>。</li>
+        <li><strong>公開集計の証跡:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms パーセンタイル CSV</a> および <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 イベント CSV</a>。</li>
+        <li><strong>公開リファレンス実装:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">ヘッダー駆動のアドミッションコントローラー</a>。</li>
+      </ul>
+      <p>
+        実用的なルール: PTU の回復のために当てずっぽうでポーリングしないこと。
+        ヘッダーを尊重し、判断をログに残し、遅延のトレードオフを明示します。
+      </p>
+      <p><a class="button-link" href="../../">記事インデックスに戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT ライセンスの研究アーティファクト · 公開データはサニタイズまたは集計のみです。</p>
+  </footer>
+</body>
+</html>

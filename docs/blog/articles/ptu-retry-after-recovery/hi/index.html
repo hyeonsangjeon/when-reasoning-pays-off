@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>429 एक रिकवरी संकेत है | when reasoning pays off</title>
+  <meta name="description" content="Azure OpenAI PTU 429 प्रतिक्रियाओं को सामान्य विफलताओं के बजाय retry-after-ms रिकवरी संकेतों के रूप में मानने पर एक सार्वजनिक संचालन लेख।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="0085d22acd1ce1916ec0497df14098fcafd8d3bcfdba6d70d1e61389d235915c">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">लेख</a> / संचालन निबंध</p>
+    <p class="article-kicker">संचालन निबंध · PTU रिकवरी और 429 हैंडलिंग</p>
+    <h1>429 एक रिकवरी संकेत है, केवल एक त्रुटि नहीं</h1>
+    <p class="lede">
+      किसी संतृप्त PTU लक्ष्य से आया 429 कोई अंधा पोलिंग लूप शुरू नहीं करना चाहिए।
+      यह पहले से ही वह रिकवरी संकेत साथ लाता है जिसकी क्लाइंट को ज़रूरत है: <code>retry-after-ms</code>।
+      संचालनात्मक प्रश्न यह नहीं है कि “क्या कॉल विफल हुई?” बल्कि यह है कि “अगला
+      निर्णय किसका है: प्रतीक्षा करना, पुनर्निर्देशित करना, या हार मान लेना?”
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>प्रश्न</h2>
+        <p>जब PTU क्षमता कहती है “अभी नहीं,” तो क्लाइंट को अगला कदम कैसे तय करना चाहिए?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>प्रमाण</h2>
+        <p>Microsoft Learn हेडर अनुबंध को परिभाषित करता है; सार्वजनिक समग्र रन दिखाते हैं कि केवल माध्यिका वाली प्रतीक्षाएँ टेल को क्यों चूक जाती हैं।</p>
+      </section>
+      <section class="summary-tile">
+        <h2>निर्णय</h2>
+        <p>एक ही रिट्राई स्वामी रखें। हेडर का सम्मान करें, जिटर जोड़ें, और केवल तभी पुनर्निर्देशित करें जब लेटेंसी नीति माँग करे।</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>प्रश्न के अनुसार पढ़ें:</strong>
+      <a href="#spec">आधिकारिक संकेत</a>
+      <a href="#evidence">देखी गई आकृति</a>
+      <a href="#pattern">संचालन पैटर्न</a>
+      <a href="#fallback">पुनर्निर्देशन विकल्प</a>
+      <a href="#sources">स्रोत</a>
+    </nav>
+
+    <p class="banner">
+      <strong>दायरा टिप्पणी:</strong>
+      नीचे दी गई मापी गई संख्याएँ केवल इस रिपॉज़िटरी के सार्वजनिक समग्र
+      आर्टिफैक्ट्स का वर्णन करती हैं। ये रिट्राई रैपर डिज़ाइन करने के लिए उपयोगी हैं,
+      सार्वभौमिक Azure व्यवहार का दावा करने के लिए नहीं।
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">आधिकारिक स्पेक · सेवा आपको क्या बताती है</p>
+      <h2>हेडर ही प्रवेश संकेत है</h2>
+      <p>
+        Microsoft Learn, PTU उच्च-उपयोग हैंडलिंग को एक तत्काल 429 पथ के रूप में
+        वर्णित करता है जिसमें <code>retry-after-ms</code> और <code>retry-after</code>
+        प्रतिक्रिया हेडर होते हैं। वही प्रोडक्शन गाइड समझाता है कि इस प्रतीक्षा का
+        उपयोग या तो क्लाइंट-साइड रिट्राई के लिए, या अनुरोध को किसी भिन्न सर्विंग
+        लक्ष्य पर पुनर्निर्देशित करने के लिए किया जा सकता है।
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>क्या प्रलेखित है</h3>
+          <p>
+            <code>retry-after-ms</code> को सेवा द्वारा प्रदान किए गए प्रतीक्षा मान के
+            रूप में मानें। यह किसी अनुमानित स्थिर रीसेट अंतराल से अधिक सशक्त है।
+          </p>
+        </div>
+        <div>
+          <h3>क्या प्रलेखित नहीं है</h3>
+          <p>
+            प्रतीक्षा मान के पीछे का सटीक सूत्र सार्वजनिक नहीं है। अपने क्लाइंट में
+            कोई नियतात्मक रीसेट मॉडल मत गढ़ें।
+          </p>
+        </div>
+        <div>
+          <h3>संचालनात्मक अनुमान</h3>
+          <p>
+            यदि हेडर पहले ही बता देता है कि दोबारा कब प्रयास करना है, तो हेल्थ-चेक
+            पोलिंग आमतौर पर एक कमज़ोर संकेत होता है — साथ में अतिरिक्त ट्रैफ़िक और
+            अधिक शोर वाली टेलीमेट्री।
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">देखा गया प्रमाण · केवल सार्वजनिक समग्र</p>
+      <h2>माध्यिका नन्ही थी; टेल नहीं</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>पढ़ने योग्य चार्ट:</strong> सार्वजनिक समग्र 429 घटनाओं से
+          अनुभवजन्य <code>retry-after-ms</code> पर्सेंटाइल। X-अक्ष प्रतिक्रिया हेडर
+          द्वारा सुझाई गई प्रतीक्षा है, मिलीसेकंड में। बिंदु प्रत्येक स्रोत समूह के
+          लिए p50, p90, और p99 हैं।
+        </figcaption>
+        <img src="../../../../assets/retry-after-ms-distribution.svg" alt="Retry-after-ms percentile chart comparing overall, burst-shaped, and reservation-shaped sources." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>सार्वजनिक समग्र retry-after-ms पर्सेंटाइल</caption>
+        <thead>
+          <tr>
+            <th>स्रोत समूह</th>
+            <th>429 गणना</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>अधिकतम</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>समग्र</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>बर्स्ट-आकार वाला स्रोत</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>रिज़र्वेशन-आकार वाला स्रोत</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>इस तालिका को कैसे पढ़ें</h3>
+        <p>
+          माध्यिका कहती है कि कई 429 अल्पकालिक थे। p99 कहता है कि एक प्रोडक्शन
+          रैपर को फिर भी एक टेल नीति चाहिए: केवल लेटेंसी बजट तक ही सोएँ, फिर
+          पुनर्निर्देशित करें या सहजता से विफल हों। स्रोत का विभाजन मायने रखता है
+          क्योंकि बर्स्ट-आकार और रिज़र्वेशन-आकार वाला दबाव एक जैसा नहीं दिखता था।
+        </p>
+      </div>
+    </section>
+
+    <section id="pattern" class="article-section">
+      <p class="section-label">संचालन पैटर्न · रिट्राई का एक ही स्वामी</p>
+      <h2>रिट्राई लूप एक के ऊपर एक मत लगाएँ</h2>
+      <p>
+        सुरक्षित पैटर्न जानबूझकर उबाऊ है: 429 रिकवरी का स्वामी बनने के लिए ठीक एक
+        घटक चुनें। यदि SDK रिट्राई के लिए कॉन्फ़िगर है, तो उसी को प्रतीक्षा का स्वामी
+        बनने दें। यदि कोई एप्लिकेशन राउटर रिकवरी का स्वामी है, तो SDK ऑटो-रिट्राई को
+        अक्षम करें और राउटर को <code>retry-after-ms</code> सीधे पार्स करने दें।
+      </p>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>संदर्भ कार्यान्वयन:</strong> सार्वजनिक रिपॉज़िटरी में एक छोटा
+          हेडर-संचालित प्रवेश नियंत्रक शामिल है जो <code>retry-after-ms</code> को
+          पार्स करता है, <code>retry-after</code> पर फ़ॉलबैक करता है, सुरक्षित
+          थ्रॉटल घटनाएँ उत्सर्जित करता है, और दोहरे रिट्राई स्वामित्व से इनकार करता है।
+        </figcaption>
+        <img src="../../../../assets/ptu-admission-controller.svg" alt="PTU admission controller flow: observe 429, parse retry-after-ms, sleep or redirect, then resume." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <div class="evidence-grid">
+        <div>
+          <h3>स्लीप पथ</h3>
+          <p>तब उपयोग करें जब थ्रूपुट प्रति-कॉल लेटेंसी से अधिक मायने रखता हो। हेडर मान और जिटर जितना प्रतीक्षा करें, फिर दोबारा प्रयास करें।</p>
+        </div>
+        <div>
+          <h3>पुनर्निर्देशन पथ</h3>
+          <p>तब उपयोग करें जब PTU पर बने रहने से अधिक लेटेंसी मायने रखती हो। 429 आते ही किसी मानक लक्ष्य पर रूट करें।</p>
+        </div>
+        <div>
+          <h3>हार मानने का पथ</h3>
+          <p>तब उपयोग करें जब प्रतीक्षा और पुनर्निर्देशन दोनों नीति का उल्लंघन करते हों। रिट्राई तूफ़ानों को छिपाने के बजाय एक नियंत्रित प्रतिक्रिया लौटाएँ।</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fallback" class="article-section">
+      <p class="section-label">फ़ॉलबैक · नेटिव या कस्टम</p>
+      <h2>पुनर्निर्देशन एक नीतिगत विकल्प है, घबराहट का बटन नहीं</h2>
+      <p>
+        Microsoft Learn की स्पिलओवर सुविधा अतिरिक्त ट्रैफ़िक को किसी मानक लक्ष्य पर
+        पुनर्निर्देशित कर सकती है और ऐसे हेडर उजागर करती है जो स्पिलओवर व्यवहार की
+        पहचान करते हैं। जब प्लेटफ़ॉर्म-समर्थित आकृति फिट बैठती है, तो यही कम-संचालन
+        वाला पथ है। एक कस्टम राउटर तब भी उपयोगी है जब एप्लिकेशन को PTU लक्ष्य के 429
+        लौटाने से पहले निर्णय लेना हो, या जब रूटिंग नीति टेनेंट, क्षेत्र, लेटेंसी बजट,
+        या व्यावसायिक प्राथमिकता पर निर्भर हो।
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>नेटिव स्पिलओवर</h3>
+          <p>तब सर्वोत्तम जब सरल ओवरफ़्लो लेन फिट बैठती हो और अतिरिक्त रूटिंग लॉजिक मूल्य से अधिक जोखिम जोड़े।</p>
+        </div>
+        <div>
+          <h3>कस्टम राउटर</h3>
+          <p>तब सर्वोत्तम जब एप्लिकेशन नीति को उपयोगकर्ता लेटेंसी खर्च होने से पहले प्रतीक्षा, पुनर्निर्देशन और हार मानने में से चुनना हो।</p>
+        </div>
+        <div>
+          <h3>एंटी-पैटर्न</h3>
+          <p>SDK रिट्राई, राउटर रिट्राई और स्पिलओवर मिलकर प्रयासों को कई गुना कर सकते हैं। पहले स्वामित्व को एकीकृत करें।</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>स्रोत और प्रमाण की सीमा</h2>
+      <ul>
+        <li><strong>आधिकारिक स्पेक, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU production operations guide</a>।</li>
+        <li><strong>आधिकारिक स्पिलओवर व्यवहार, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn spillover traffic management guide</a>।</li>
+        <li><strong>सार्वजनिक समग्र प्रमाण:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms percentile CSV</a> और <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 event CSV</a>।</li>
+        <li><strong>सार्वजनिक संदर्भ कार्यान्वयन:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">header-driven admission controller</a>।</li>
+      </ul>
+      <p>
+        व्यावहारिक नियम: PTU रिकवरी के लिए अंधाधुंध पोल मत करें। हेडर का सम्मान करें,
+        निर्णय को लॉग करें, और लेटेंसी ट्रेडऑफ़ को स्पष्ट करें।
+      </p>
+      <p><a class="button-link" href="../../">लेख सूची पर वापस जाएँ</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-लाइसेंस प्राप्त शोध आर्टिफैक्ट · प्रकाशित डेटा केवल सैनिटाइज़्ड या समग्र है।</p>
+  </footer>
+</body>
+</html>
