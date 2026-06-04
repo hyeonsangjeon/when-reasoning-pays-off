@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="9e257b5ed3f422b613cb56faaf4760900bb961abdd2ec06409906d04c6c2edc3">
+  <meta name="article:source-article-sha256" content="0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -73,6 +73,20 @@
       本文解释每张图为什么存在，以及应该如何使用。
     </p>
 
+    <section class="article-section chart-reading-guide">
+      <p class="section-label">阅读约定 · 柱、坐标轴和表格</p>
+      <h2>如何阅读本文中的图表</h2>
+      <p>
+        本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 extra-high。
+      </p>
+      <div class="evidence-grid">
+        <div><h3>X轴</h3><p>X轴是运营者可以调节的推理强度阶梯。从左到右表示允许模型消耗更多内部推理工作。</p></div>
+        <div><h3>Y轴</h3><p>Y轴随图表而变：成本是每个请求的 USD，质量是评审分数，延迟是毫秒，token 构成是 token 数，交叉点是建模的每分钟请求数。</p></div>
+        <div><h3>柱子</h3><p>柱子更高并不总是更好。质量柱更高可能是好事；成本、延迟或推理 token 柱更高，则需要相应的质量提升来证明其合理性。</p></div>
+        <div><h3>源表格</h3><p>精确值、标准差和样本数请看仪表盘表格。正文只提取对决策最重要的形状。</p></div>
+      </div>
+    </section>
+
     <section id="short-factual" class="article-section">
       <p class="section-label">主题 · 短事实回答</p>
       <h2>短事实任务通常不值得增加推理</h2>
@@ -85,6 +99,13 @@
           <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
         </div>
       </figure>
+      <div class="chart-reading-note">
+        <h3>如何阅读这张柱状图</h3>
+        <p>
+          X轴是推理强度。成本图的 Y轴是每个请求的平均 USD；配对质量图的 Y轴是平均评审分数。
+          因此，柱子的形状提出一个简单问题：更高支出是否买到了更高分数，还是只让账单变高？
+        </p>
+      </div>
       <div class="evidence-grid">
         <div>
           <h3>为什么需要这张图</h3>

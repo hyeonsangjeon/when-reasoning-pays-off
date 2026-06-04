@@ -72,6 +72,49 @@
       essay explains why each chart exists and how to use it.
     </p>
 
+    <section class="article-section chart-reading-guide">
+      <p class="section-label">Reading convention · bars, axes, and tables</p>
+      <h2>How to read the charts in this essay</h2>
+      <p>
+        The small bar figures in this essay are guideposts for the full source
+        charts. They are not frequency histograms. Each bar is an aggregate
+        measurement for one effort cell: baseline, minimal, low, medium, high,
+        or extra-high.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>X-axis</h3>
+          <p>
+            The X-axis is the operator's effort ladder. Moving left to right
+            means allowing the model to spend more internal reasoning work.
+          </p>
+        </div>
+        <div>
+          <h3>Y-axis</h3>
+          <p>
+            The Y-axis changes by chart: USD per request for cost, judge score
+            for quality, milliseconds for latency, token count for composition,
+            and modeled requests per minute for crossover planning.
+          </p>
+        </div>
+        <div>
+          <h3>Bars</h3>
+          <p>
+            Taller is not always better. A taller quality bar can be good; a
+            taller cost, latency, or reasoning-token bar is a tradeoff that
+            needs a matching quality gain.
+          </p>
+        </div>
+        <div>
+          <h3>Source table</h3>
+          <p>
+            Use the dashboard table for exact values, standard deviations, and
+            sample counts. The prose pulls out only the decision-relevant shape.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section id="short-factual" class="article-section">
       <p class="section-label">Topic · short factual answers</p>
       <h2>Short factual work often does not pay</h2>
@@ -85,6 +128,15 @@
           <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
         </div>
       </figure>
+      <div class="chart-reading-note">
+        <h3>Reading this bar chart</h3>
+        <p>
+          The X-axis is reasoning effort. The cost chart's Y-axis is mean USD
+          per request; the paired quality chart's Y-axis is mean judge score.
+          The bar shape therefore asks a simple question: did the higher spend
+          buy a higher score, or did it only make the bill taller?
+        </p>
+      </div>
       <div class="evidence-grid">
         <div>
           <h3>Why this chart exists</h3>

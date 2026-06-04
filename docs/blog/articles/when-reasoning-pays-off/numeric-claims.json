@@ -3,7 +3,7 @@
   "schema_semver": "0.1.0",
   "article": "when-reasoning-pays-off",
   "canonical_locale": "en",
-  "canonical_article_sha256": "9e257b5ed3f422b613cb56faaf4760900bb961abdd2ec06409906d04c6c2edc3",
+  "canonical_article_sha256": "0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb",
   "claims": [
     {
       "id": "short-factual-minimal-cost",
@@ -264,6 +264,144 @@
         {
           "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
           "section": "ptu-payg"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-minimal-latency-rounded",
+      "status": "verified",
+      "display_value": "1.1s",
+      "source_values": [
+        "1112.798745"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/latency.json"
+      ],
+      "derived_expression": "1112.798745 ms rounded to about 1.1s",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "mean_latency_ms"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-latency-rounded",
+      "status": "verified",
+      "display_value": "3.1s",
+      "source_values": [
+        "3088.001225"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/latency.json"
+      ],
+      "derived_expression": "3088.001225 ms rounded to about 3.1s",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "mean_latency_ms"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-minimal-throughput-factor-rounded",
+      "status": "verified",
+      "display_value": "0.98",
+      "source_values": [
+        "0.984614"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/throughput-gain.json"
+      ],
+      "derived_expression": "0.984614 rounded to 0.98",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "throughput_gain_factor"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-throughput-factor-rounded",
+      "status": "verified",
+      "display_value": "0.45",
+      "source_values": [
+        "0.451798"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/throughput-gain.json"
+      ],
+      "derived_expression": "0.451798 rounded to 0.45",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "throughput_gain_factor"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-minimal-visible-output-rounded",
+      "status": "verified",
+      "display_value": "12.7",
+      "source_values": [
+        "12.672414"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "derived_expression": "12.672414 rounded to about 12.7 visible output tokens",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "mean_output_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-visible-output-rounded",
+      "status": "verified",
+      "display_value": "17.9",
+      "source_values": [
+        "17.881356"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "derived_expression": "17.881356 rounded to about 17.9 visible output tokens",
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "mean_output_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/index.html",
+          "section": "source-chart-takeaways"
         }
       ]
     }

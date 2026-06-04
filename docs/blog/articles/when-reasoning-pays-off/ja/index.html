@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="9e257b5ed3f422b613cb56faaf4760900bb961abdd2ec06409906d04c6c2edc3">
+  <meta name="article:source-article-sha256" content="0bd67a321013d6df14b119cf23d64c4d9f5b02ff1edbacdb78c89b5c3400bdeb">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -74,6 +74,21 @@
       確認できます。この記事では、それぞれのチャートがなぜ必要で、どう使うべきかを説明します。
     </p>
 
+    <section class="article-section chart-reading-guide">
+      <p class="section-label">読み方 · 棒、軸、表</p>
+      <h2>この記事のチャートの読み方</h2>
+      <p>
+        この記事の小さな棒グラフは、完全な元チャートを読むための道しるべです。
+        頻度分布のヒストグラムではありません。各棒は、baseline、minimal、low、medium、high、extra-high という effort セルごとの集計値です。
+      </p>
+      <div class="evidence-grid">
+        <div><h3>X軸</h3><p>X軸は運用者が変えられる effort の段階です。左から右に進むほど、モデルにより多くの内部推論作業を許します。</p></div>
+        <div><h3>Y軸</h3><p>Y軸はチャートごとに変わります。コストはリクエストあたり USD、品質は評価スコア、レイテンシはミリ秒、トークン構成はトークン数、クロスオーバーはモデル化された分あたりリクエスト数です。</p></div>
+        <div><h3>棒</h3><p>高い棒が常によいとは限りません。品質の棒なら良い場合がありますが、コスト、レイテンシ、推論トークンの棒は、それに見合う品質上昇が必要なトレードオフです。</p></div>
+        <div><h3>元表</h3><p>正確な値、標準偏差、サンプル数はダッシュボードの表で確認します。本文では意思決定に必要な形だけを抜き出します。</p></div>
+      </div>
+    </section>
+
     <section id="short-factual" class="article-section">
       <p class="section-label">トピック · 短い事実回答</p>
       <h2>短い事実回答では、推論はしばしば割に合いません</h2>
@@ -86,6 +101,14 @@
           <span class="bar-md"></span><span class="bar-lg"></span><span class="bar-xl"></span>
         </div>
       </figure>
+      <div class="chart-reading-note">
+        <h3>この棒グラフの読み方</h3>
+        <p>
+          X軸は推論 effort です。コストチャートの Y軸はリクエストあたり平均 USD、
+          対になる品質チャートの Y軸は平均評価スコアです。つまり、この棒の形は、
+          より高い支出がより高いスコアを買ったのか、それとも請求額だけを高くしたのかを問います。
+        </p>
+      </div>
       <div class="evidence-grid">
         <div>
           <h3>なぜこのチャートがあるのか</h3>

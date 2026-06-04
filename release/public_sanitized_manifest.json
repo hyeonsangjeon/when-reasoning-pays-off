@@ -18,7 +18,7 @@
       "redaction_rules_sha256": "f5e4bb64d5d5bc2ca1bc868c891ffd097feb5f74315afbdbf3f2562a47c8bec6",
       "redactor_commit_sha": "fa06dd9b35774530e45b5149429cc3123acee570",
       "redactor_script_sha256": "63240f236e09e3ff3b0568214b0780ee470a46c7b50d095d87c9f89ce83c6edd",
-      "sanitized_sha256": "1f551505a9c3d85c2363f8f7660f6b56020b114e18da45841ec22194448671ea",
+      "sanitized_sha256": "a7e8587ad9c61e0fd34cadc34d4050d9dd121636a6a0c0582d506d2ae2f87bb7",
       "source_archive_id": "raw-7c9e2d09143410f3069aebf6c8d42fc2",
       "source_raw_sha256": "48fd15a829aa4bb244f34334fd71eaf8a365fe48a74640f4eb255b253a7c44d7",
       "sweep_id": "20260603-public-readiness",
