@@ -96,6 +96,19 @@
     return Number(value.toFixed(4)).toString();
   }
 
+  function shortNumber(value) {
+    if (typeof value !== "number") return value;
+    if (value === 0) return "0";
+    if (Math.abs(value) < 0.01) return value.toPrecision(3);
+    if (Math.abs(value) >= 1000) return Math.round(value).toLocaleString();
+    return Number(value.toFixed(3)).toString();
+  }
+
+  function rowLabel(row) {
+    if (row.effort !== undefined) return effortLabel(row.effort);
+    return Object.keys(row).slice(0, 2).map(function (key) { return row[key]; }).join(" / ");
+  }
+
   function chartDomId(chart) {
     return "chart-" + [chart.family_key, chart.benchmark_key, chart.metric_key]
       .join("-")
@@ -106,21 +119,38 @@
     var key = primarySeries(chart);
     var rows = chart.rows;
     var max = Math.max.apply(null, rows.map(function (row) { return Number(row[key]) || 0; })) || 1;
+    var left = 68;
+    var right = 28;
+    var top = 46;
+    var bottom = 182;
+    var barWidth = rows.length > 7 ? 28 : 38;
+    var gap = rows.length > 7 ? 14 : 28;
+    var plotHeight = bottom - top;
+    var plotWidth = rows.length * barWidth + Math.max(0, rows.length - 1) * gap;
+    var w = Math.max(430, left + plotWidth + right);
     var bars = rows.map(function (row, i) {
       var value = Number(row[key]) || 0;
-      var width = 28;
-      var gap = 12;
-      var height = Math.max(2, Math.round((value / max) * 120));
-      var x = 46 + i * (width + gap);
-      var y = 150 - height;
-      return `<rect x="${x}" y="${y}" width="${width}" height="${height}"><title>${esc(effortLabel(row.effort) + " " + formatNumber(value))}</title></rect>`;
+      var height = Math.max(2, Math.round((value / max) * plotHeight));
+      var x = left + i * (barWidth + gap);
+      var y = bottom - height;
+      var label = rowLabel(row);
+      var tooltip = label + " · " + valueLabel(key) + ": " + formatNumber(value);
+      if (row.model) tooltip += " · " + row.model;
+      return `<g class="chart-bar" data-effort="${esc(row.effort || "")}">` +
+        `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}"><title>${esc(tooltip)}</title></rect>` +
+        `<text class="chart-value-label" x="${x + barWidth / 2}" y="${Math.max(top + 12, y - 7)}" text-anchor="middle">${esc(shortNumber(value))}</text>` +
+        `<text class="chart-category-label" x="${x + barWidth / 2}" y="${bottom + 18}" text-anchor="middle">${esc(label)}</text>` +
+        `</g>`;
     }).join("");
-    var w = Math.max(340, 84 + rows.length * 40);
+    var title = esc(chart.benchmark_key + " · " + metricTitle(chart));
     var xLabel = esc(t("chart_explainer.x_axis_label"));
     var yLabel = esc(valueLabel(key));
-    var axisLabels = `<text class="chart-axis-label chart-x-axis" x="${w / 2}" y="184" text-anchor="middle">${xLabel}</text>` +
-      `<text class="chart-axis-label chart-y-axis" x="14" y="92" text-anchor="middle" transform="rotate(-90 14 92)">${yLabel}</text>`;
-    return `<svg class="chart-svg" role="img" aria-label="${esc(metricTitle(chart))}" viewBox="0 0 ${w} 190">${axisLabels}${bars}</svg>`;
+    var axes = `<line class="chart-axis" x1="${left}" y1="${bottom}" x2="${w - right}" y2="${bottom}"></line>` +
+      `<line class="chart-axis" x1="${left}" y1="${top}" x2="${left}" y2="${bottom}"></line>`;
+    var labels = `<text class="chart-title" x="${w / 2}" y="22" text-anchor="middle">${title}</text>` +
+      `<text class="chart-axis-label chart-x-axis" x="${(left + w - right) / 2}" y="228" text-anchor="middle">${xLabel}</text>` +
+      `<text class="chart-axis-label chart-y-axis" x="18" y="${(top + bottom) / 2}" text-anchor="middle" transform="rotate(-90 18 ${(top + bottom) / 2})">${yLabel}</text>`;
+    return `<svg class="chart-svg" role="img" aria-label="${title}" viewBox="0 0 ${w} 238">${labels}${axes}${bars}</svg>`;
   }
 
   function chartExplainer(chart) {

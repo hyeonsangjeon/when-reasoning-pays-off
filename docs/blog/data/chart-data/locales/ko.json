@@ -40,6 +40,7 @@
   },
   "effort": {
     "na": "기준선",
+    "none": "없음",
     "minimal": "최소",
     "low": "낮음",
     "medium": "중간",
