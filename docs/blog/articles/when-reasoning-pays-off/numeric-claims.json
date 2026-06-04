@@ -1,0 +1,246 @@
+{
+  "schema": "wrpo.blog.numeric_claims",
+  "schema_semver": "0.1.0",
+  "article": "when-reasoning-pays-off",
+  "canonical_locale": "en",
+  "canonical_article_sha256": "2bf8315dfde837f9ceaf08c50591abf8c189ef8a78f9cccd32be10ebbbf61a6d",
+  "claims": [
+    {
+      "id": "short-factual-minimal-cost",
+      "status": "verified",
+      "display_value": "$0.000663",
+      "source_values": ["0.000663"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "mean_usd_per_request"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-cost",
+      "status": "verified",
+      "display_value": "$0.005043",
+      "source_values": ["0.005043"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "mean_usd_per_request"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-cost-ratio",
+      "status": "verified",
+      "display_value": "7.6x",
+      "source_values": ["0.000663", "0.005043"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
+      ],
+      "derived_exact": "7.606334841628959276018099548",
+      "derived_expression": "0.005043 / 0.000663",
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-minimal-quality",
+      "status": "verified",
+      "display_value": "1.87931",
+      "source_values": ["1.87931"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "mean_judge_score"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-quality",
+      "status": "verified",
+      "display_value": "1.779661",
+      "source_values": ["1.779661"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "mean_judge_score"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "multi-step-baseline-quality",
+      "status": "verified",
+      "display_value": "1.5",
+      "source_values": ["1.5"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json"
+      ],
+      "selector": {
+        "model": "gpt-4o",
+        "effort": "na",
+        "field": "mean_judge_score"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "multi-step"
+        }
+      ]
+    },
+    {
+      "id": "multi-step-high-quality",
+      "status": "verified",
+      "display_value": "2.0",
+      "source_values": ["2.0"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "high",
+        "field": "mean_judge_score"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "multi-step"
+        }
+      ]
+    },
+    {
+      "id": "multi-step-high-cost",
+      "status": "verified",
+      "display_value": "$0.00125",
+      "source_values": ["0.00125"],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "high",
+        "field": "mean_usd_per_request"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "multi-step"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-minimal-reasoning-tokens",
+      "status": "verified",
+      "display_value": "3.655172",
+      "source_values": ["3.655172"],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "minimal",
+        "field": "mean_reasoning_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "reasoning-tokens"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-xhigh-reasoning-tokens",
+      "status": "verified",
+      "display_value": "311.474576",
+      "source_values": ["311.474576"],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "mean_reasoning_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "reasoning-tokens"
+        }
+      ]
+    },
+    {
+      "id": "ptu-payg-xhigh-modeled-break-even",
+      "status": "verified",
+      "display_value": "149 rpm",
+      "source_values": ["149.315222"],
+      "source_paths": [
+        "docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "modeled_break_even_rpm"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "ptu-payg"
+        }
+      ]
+    },
+    {
+      "id": "ptu-payg-xhigh-min-ptu",
+      "status": "verified",
+      "display_value": "50 PTU",
+      "source_values": ["50"],
+      "source_paths": [
+        "docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "xhigh",
+        "field": "min_ptu"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "ptu-payg"
+        }
+      ]
+    }
+  ]
+}

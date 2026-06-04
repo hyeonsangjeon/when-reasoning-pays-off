@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>When reasoning pays off | Same token price, different bill</title>
+  <meta name="description" content="A public article about when reasoning effort earns its cost, when it does not, and how to read the chart dashboard.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content">
+    <p><a href="../">Articles</a> / Canonical English article</p>
+    <h1>When reasoning pays off</h1>
+    <p class="lede">
+      A reasoning model can have the same per-token price card and still create
+      a different bill. The missing piece is the reasoning-token budget: tokens
+      generated inside the model, billed like usage, and never shown in the
+      response.
+    </p>
+    <p class="banner">
+      <strong>Inspect the source charts:</strong>
+      <a href="/blog/charts/?lang=en">open the chart dashboard</a>.
+    </p>
+
+    <section id="short-factual">
+      <h2>Short factual work often does not pay</h2>
+      <p>
+        In the short-factual slice, minimal effort averaged $0.000663 per
+        request. Xhigh effort averaged $0.005043 per request, a 7.6x bill, while
+        the mean judge score moved from 1.87931 to 1.779661.
+      </p>
+      <p>
+        That is the core failure mode: effort can buy more hidden computation
+        without buying a better answer. For short factual work, start at the
+        lowest effort level and raise it only after a quality gate shows a real
+        gain.
+      </p>
+    </section>
+
+    <section id="multi-step">
+      <h2>Multi-step work can pay</h2>
+      <p>
+        In the multi-step slice, the non-reasoning baseline scored 1.5. High
+        effort scored 2.0 at $0.00125 per request.
+      </p>
+      <p>
+        This is the case where reasoning earns a trial: the quality delta is
+        visible, the spend is explicit, and the dashboard lets you compare that
+        delta against latency, token composition, and cost.
+      </p>
+    </section>
+
+    <section id="tool-agent">
+      <h2>Tool-agent work needs ceiling checks</h2>
+      <p>
+        Tool-agent workloads can flatten near the top of a rubric. When the
+        chart already shows a ceiling effect, raising effort may mostly add
+        internal tokens and latency. Treat effort as a controlled experiment,
+        not a default.
+      </p>
+    </section>
+
+    <section id="reasoning-tokens">
+      <h2>Reasoning tokens are invisible but billable</h2>
+      <p>
+        In the short-factual slice, minimal effort averaged 3.655172 reasoning
+        tokens per request. Xhigh effort averaged 311.474576 reasoning tokens
+        per request.
+      </p>
+      <p>
+        The answer text does not reveal that difference. A production budget
+        needs the usage breakdown: input, cached input, output, and reasoning
+        tokens.
+      </p>
+    </section>
+
+    <section id="ptu-payg">
+      <h2>PTU/PAYG crossover is modeled</h2>
+      <p>
+        For the short-factual xhigh row, the PTU/PAYG crossover is a modeled
+        hypothesis at 149 rpm with a 50 PTU floor. It is not measured PTU
+        throughput.
+      </p>
+      <p>
+        Read that number as a planning threshold, not as capacity evidence. On
+        PAYG, cutting reasoning tokens cuts variable spend. On PTU, the same
+        cut may show up as room for more requests inside a fixed reservation.
+      </p>
+    </section>
+
+    <section id="decision">
+      <h2>The practical rule</h2>
+      <p>
+        Use low effort as the default for short factual work. Raise effort for
+        multi-step work only when the evaluator moves enough to justify the
+        cost. For tool-agent work, check for ceiling effects before spending
+        more. Always read the chart dashboard beside the article.
+      </p>
+      <p class="banner">
+        <a href="/blog/charts/?lang=en">Open the chart dashboard</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+  </footer>
+</body>
+</html>
