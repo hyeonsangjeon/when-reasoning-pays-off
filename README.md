@@ -5,7 +5,9 @@ reasoning models earn their cost.*
 
 ![Same token price, different bill: a reasoning workload pays the same per-token price but bills extra hidden reasoning tokens, so its total bill is taller.](docs/assets/hero.svg)
 
-📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English and Korean; Japanese, Simplified Chinese, and Hindi in progress).
+📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English, Korean, Japanese, and Simplified Chinese; Hindi fallback in progress).
+
+Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
 
 ## What this repo is
 

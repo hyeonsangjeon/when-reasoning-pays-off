@@ -1,7 +1,7 @@
 # Editorial Data Inventory — Public Blogging Prep
 
 > **Status:** editorial inventory for the GitHub Pages blogging/articles section.
-> The first public article is published; this file maps the **public, sanitized**
+> The overview public article is published; this file maps the **public, sanitized**
 > data and the visualization candidates available for article expansion.
 >
 > **Sources:** public-mirror tracked files only, under `benchmarks/`,
