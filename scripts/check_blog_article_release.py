@@ -10,6 +10,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BLOG_ROOT = ROOT / "docs" / "blog"
 ARTICLE_ROOT = ROOT / "docs" / "blog" / "articles"
 ARTICLE_DIR = ARTICLE_ROOT / "when-reasoning-pays-off"
 LEDGER = ARTICLE_DIR / "numeric-claims.json"
@@ -32,6 +33,7 @@ EXPECTED_STATUS = {
 
 PUBLIC_SUFFIXES = {".html", ".md", ".json"}
 HEX_SHA_RE = re.compile(r"^[a-f0-9]{64}$")
+ROOT_RELATIVE_BLOG_URL_RE = re.compile(r"\b(?:href|src)=[\"']/blog/")
 
 
 def require(condition: bool, message: str) -> None:
@@ -199,6 +201,20 @@ def check_ptu_wording() -> None:
     )
 
 
+def check_no_root_relative_blog_urls() -> int:
+    checked = 0
+    for path in sorted(BLOG_ROOT.rglob("*.html"), key=rel):
+        checked += 1
+        for line_number, line in enumerate(read_text(path).splitlines(), start=1):
+            if ROOT_RELATIVE_BLOG_URL_RE.search(line):
+                raise SystemExit(
+                    "FAIL: root-relative blog URL in "
+                    f"{rel(path)}:{line_number}; use a relative URL so GitHub "
+                    "Pages project paths keep working"
+                )
+    return checked
+
+
 def git_changed_files(changed_from: str) -> list[Path]:
     result = subprocess.run(
         ["git", "diff", "--name-only", "--diff-filter=ACMRT", changed_from],
@@ -312,13 +328,15 @@ def main() -> None:
     canonical_sha = check_article_meta()
     claim_count = check_ledger(canonical_sha)
     check_ptu_wording()
+    blog_url_count = check_no_root_relative_blog_urls()
     scanned_count = check_forbidden_public_patterns(
         args.changed_from,
         args.pr_metadata_file,
     )
     print(
         "check passed: blog article release "
-        f"sha={canonical_sha} claims={claim_count} scanned_public_files={scanned_count}"
+        f"sha={canonical_sha} claims={claim_count} "
+        f"blog_html_files={blog_url_count} scanned_public_files={scanned_count}"
     )
 
 
