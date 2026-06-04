@@ -75,6 +75,36 @@
         <p><a href="../charts/?lang=en">Open the evidence dashboard</a></p>
       </article>
     </div>
+
+    <h2>Operations essay candidates</h2>
+    <p class="muted-note">
+      Candidate essays below are marked TBD until the public prose, chart evidence,
+      and official-spec citations are pinned. They are the next operating layer
+      after the overview essay.
+    </p>
+    <div class="cards topic-cards">
+      <article class="card tbd-card">
+        <h3>429 recovery with <code>retry-after-ms</code> <span class="tbd-badge">TBD</span></h3>
+        <p>Why PTU recovery should follow the service header instead of health-check polling.</p>
+        <p class="muted-note">Candidate article: recovery signal, retry ownership, and fallback shape.</p>
+      </article>
+      <article class="card tbd-card">
+        <h3><code>prompt_cache_key</code> bucketing <span class="tbd-badge">TBD</span></h3>
+        <p>Cache keys are routing-affinity controls; bucket by workload, not by request ID.</p>
+        <p class="muted-note">Candidate article: bucket formula, cardinality traps, and hit-rate monitoring.</p>
+      </article>
+      <article class="card tbd-card">
+        <h3>Explicit cache retention <span class="tbd-badge">TBD</span></h3>
+        <p>When the operation assumes a longer cache window, make retention an explicit request policy.</p>
+        <p class="muted-note">Candidate article: retention mode, residency caveats, and measurement guardrails.</p>
+      </article>
+      <article class="card tbd-card">
+        <h3>Reasoning-model migration sizing <span class="tbd-badge">TBD</span></h3>
+        <p>Explain PTU demand through output weighting, reasoning tokens, cache shape, and max-token reservation.</p>
+        <p class="muted-note">Candidate article: what to re-measure before moving GPT-4o workloads to GPT-5.x.</p>
+      </article>
+    </div>
+
   </main>
 
   <footer class="site">
