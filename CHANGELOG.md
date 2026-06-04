@@ -6,6 +6,32 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Prompt-cache-key bucketing operations essay (2026-06-04)
+
+The public blog now includes the second operations essay promoted from the TBD
+candidate list: `prompt_cache_key` bucketing and cacheable-prefix design.
+
+- Added `docs/blog/articles/prompt-cache-key-bucketing/index.html` with
+  official-spec versus sparse-measurement boundaries.
+- Added localized versions for Korean, Japanese, Simplified Chinese, and Hindi,
+  produced by parallel Copilot CLI i18n workers.
+- Added a public SVG chart for cache-hit ratio and TTFT p95 using aggregate
+  public cache-key bucketing CSV evidence.
+- Promoted the `prompt_cache_key` candidate card from TBD to a live article link
+  and connected the overview essay / localized overview surfaces to the new
+  article.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
+Worker routing: Mac Mini local `copilot` CLI. Requested model `claude-opus-4.8`
+was used for the four i18n worker prompts after confirming that hyphenated model
+aliases were unavailable in the local CLI.
+
 ### Added — Retry-after-ms operations essay (2026-06-04)
 
 The public blog now includes the first operations essay promoted from the TBD

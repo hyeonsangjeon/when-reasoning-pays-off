@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>キャッシュキーはルーティングのヒント | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_key のバケット分割、キャッシュ可能なプレフィックス、そして疎な公開キャッシュヒット証跡に関する公開運用記事。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="2f84fcdf1cdf391719ab6ac2e09568e97d214211947740cc240f72079a22d727">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ja/">when reasoning pays off</a>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ / 日本語訳</p>
+    <p class="article-kicker">運用エッセイ · プロンプトキャッシュとルーティングのヒント</p>
+    <h1>キャッシュキーはラベルではなくルーティングのヒント</h1>
+    <p class="lede">
+      <code>prompt_cache_key</code> は、害のないメタデータと勘違いしやすいものです。
+      しかし実態はもっと運用に関わるもので、プロンプトのプレフィックスハッシュと
+      組み合わされ、一致する処理がどこにルーティングされるかに影響します。良いキーは
+      再利用を集約し、悪いキーは再利用を断片化させます。
+    </p>
+
+    <div class="article-summary-grid" aria-label="記事の要約">
+      <section class="summary-tile">
+        <h2>問い</h2>
+        <p>共有プロンプトプレフィックスは、キャッシュキーのバケットをいくつ使うべきか?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>証跡</h2>
+        <p>Microsoft Learn がルーティングのヒントとおおよそのオーバーフロー地点を定義し、本リポジトリが疎な公開測定を追加します。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>判断</h2>
+        <p>ワークロード単位でバケットを分け、バケットあたりのレートをリスクゾーンより低く保ち、ヒット率と最初のトークンまでの遅延を監視します。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="記事のセクション">
+      <strong>問いから読む:</strong>
+      <a href="#spec">公式の挙動</a>
+      <a href="#formula">バケットの計算式</a>
+      <a href="#evidence">公開証跡</a>
+      <a href="#patterns">良いキーと悪いキー</a>
+      <a href="#sources">出典</a>
+    </nav>
+
+    <p class="banner">
+      <strong>スコープに関する注記:</strong>
+      ここでの測定値は、疎なソース実行の証跡です。普遍的なキャッシュヒット曲線を
+      主張するためではなく、運用チェックリストを形作るために使ってください。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">公式の挙動 · キーが変えるもの</p>
+      <h2>キャッシュは同一のプレフィックスから始まる</h2>
+      <p>
+        Microsoft Learn によれば、プロンプトキャッシュには少なくとも 1,024 入力トークンが
+        必要で、最初の 1,024 トークンが同一でなければなりません。最初のプレフィックスは
+        ルーティングのためにハッシュ化され、最初の 1,024 トークン以降は 128 トークン刻みで
+        追加のキャッシュ一致が発生します。最初の 1,024 トークン内に 1 文字でも違いがあると、
+        キャッシュヒットがミスに変わる可能性があります。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>まずプレフィックス</h3>
+          <p>繰り返される指示、スキーマ、ツール、例を前方に置きます。プレフィックスが変わると、後方の再利用は役に立ちにくくなります。</p>
+        </div>
+        <div>
+          <h3>次にキー</h3>
+          <p><code>prompt_cache_key</code> はプレフィックスハッシュと組み合わされ、繰り返し処理のルーティングに影響します。</p>
+        </div>
+        <div>
+          <h3>保証はない</h3>
+          <p>キーは再利用の確率を高めますが、ヒットを約束するものではありません。運用上のヒントとして扱ってください。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">サイジング · バケットをリスクゾーンより低く保つ</p>
+      <h2>バケットが 1 つでは熱くなりすぎ、多すぎると冷たくなりすぎる</h2>
+      <p>
+        Microsoft Learn はおおよそのオーバーフロー地点を説明しています。同じプレフィックスと
+        <code>prompt_cache_key</code> の組み合わせが 1 分あたり約 15 リクエストを超えると、
+        一部のリクエストが追加のマシンにルーティングされ、キャッシュの有効性が低下する
+        可能性があります。実用的なサイジングのルールは、共有プレフィックスを、各バケットが
+        余裕をもってそのリスクゾーンより下にとどまるだけの安定したバケットに分割することです。
+      </p>
+      <div class="chart-reading-note">
+        <h3>バケット数のルール</h3>
+        <p>
+          <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
+          <code>recommended_buckets = ceil(common_prefix_rpm / target_rpm_per_bucket)</code>
+        </p>
+      </div>
+      <div class="evidence-grid">
+        <div>
+          <h3>計算例</h3>
+          <p>1.4 TPS のとき、共通プレフィックスは 84 RPM になります。15-RPM の下限なら 6 バケット、10-RPM の目標なら 9 バケットです。</p>
+        </div>
+        <div>
+          <h3>なぜ 1 つではだめか?</h3>
+          <p>1 つの熱いバケットは、見えているプロンプトが安定していても、ローカルキャッシュ経路をオーバーフローさせる可能性があります。</p>
+        </div>
+        <div>
+          <h3>なぜ一意ではだめか?</h3>
+          <p>呼び出しごとに一意のキーを使うと、再利用が蓄積されません。キャッシュには人が集まりません。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">観測された証跡 · 疎な公開スライス</p>
+      <h2>ヒット率と遅延を一緒に測定する</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>読むべきチャート:</strong> 公開された集計キャッシュキースライス。
+          左パネルはキャッシュヒット率を示します。右パネルは最初のトークンまでの
+          p95 時間を示します。X 軸は保持モードとバケットのカーディナリティです。
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="キャッシュヒット率と TTFT p95 を比較したプロンプトキャッシュキーバケット分割の証跡チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公開キャッシュキーバケット分割の証跡</caption>
+        <thead>
+          <tr>
+            <th>保持</th>
+            <th>カーディナリティ</th>
+            <th>ヒット率</th>
+            <th>TTFT p95</th>
+            <th>バケットあたり RPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>30.73</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>4.00</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>これが証明するものとしないもの</h3>
+        <p>
+          この公開スライスは、普遍的なしきい値曲線を証明するものではありません。ただし、
+          運用者がヒット率だけを見るべきでない理由は示しています。保持モード、バケット
+          レート、最初のトークンまでの遅延は、いずれもユーザー体験を左右します。
+        </p>
+      </div>
+    </section>
+
+    <section id="patterns" class="article-section">
+      <p class="section-label">キー設計 · 安定したワークロードバケット</p>
+      <h2>呼び出し単位ではなく、ワークロード単位でバケットを分ける</h2>
+      <p>
+        良いキーは、同じワークロードに対して決定的であるべきです。悪いキーは呼び出しごとの
+        エントロピーを含みます。タイムスタンプ、UUID、ランダムなサフィックス、一意の呼び出し
+        トークンがキーに入ると、キャッシュキー空間が爆発し、プレフィックスは再利用を蓄積
+        できなくなります。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>良い例</h3>
+          <p><code>tenant:flow:locale:schema</code> は、同じエージェント、スキーマ、ロケール、タスク形状をひとまとめにします。</p>
+        </div>
+        <div>
+          <h3>悪い例</h3>
+          <p>一意の ID、タイムスタンプ、ランダムな UUID、生のユーザー質問は、呼び出しごとに 1 つのバケットを作ります。</p>
+        </div>
+        <div>
+          <h3>監視</h3>
+          <p>バケットあたり RPM、キャッシュ済みトークンの割合、最初のトークンまでの遅延を追跡します。トラフィックの形状が変わったらサイズを変更します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>出典と証跡の境界</h2>
+      <ul>
+        <li><strong>公式仕様、アクセス日 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
+        <li><strong>公開集計証跡:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーバケット分割 CSV</a>。</li>
+        <li><strong>公開運用者ガイド:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key ポリシー運用手順書</a>。</li>
+      </ul>
+      <p>
+        実用的なルール: キャッシュ可能なプレフィックスを安定させ、余裕をもってワークロード
+        バケットを選び、ヒット率の指標は約束ではなく運用上のシグナルとして扱うことです。
+      </p>
+      <p><a class="button-link" href="../../">記事一覧に戻る</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT ライセンスの研究成果物 · 公開データはサニタイズまたは集計済みのみ。</p>
+  </footer>
+</body>
+</html>

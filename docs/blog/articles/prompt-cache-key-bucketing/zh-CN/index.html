@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>缓存键是路由提示 | 推理何时值得</title>
+  <meta name="description" content="一篇关于 prompt_cache_key 分桶、可缓存前缀以及稀疏公开缓存命中证据的公开运维文章。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="2f84fcdf1cdf391719ab6ac2e09568e97d214211947740cc240f72079a22d727">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../zh-CN/">推理何时值得</a>
+      <nav class="lang" aria-label="Language">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page">
+    <p class="breadcrumb"><a href="../../">文章</a> / 运维随笔</p>
+    <p class="article-kicker">运维随笔 · 提示缓存与路由提示</p>
+    <h1>缓存键是路由提示，而非标签</h1>
+    <p class="lede">
+      <code>prompt_cache_key</code> 很容易被误认为无害的元数据。
+      它其实更偏向运维层面：它会与提示前缀哈希结合，影响匹配工作被路由到哪里。
+      好的键能聚拢复用；糟糕的键则会让复用碎片化。
+    </p>
+
+    <div class="article-summary-grid" aria-label="Article summary">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>一个共享提示前缀应该使用多少个缓存键分桶？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>Microsoft Learn 定义了路由提示和大致的溢出临界点；本仓库补充了稀疏的公开测量。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>决策</h2>
+        <p>按工作负载分桶，让每个桶的速率保持在风险区以下，并同时监控命中率与首字延迟。</p>
+      </section>
+    </div>
+
+    <nav class="article-outline" aria-label="Article sections">
+      <strong>按问题阅读：</strong>
+      <a href="#spec">官方行为</a>
+      <a href="#formula">分桶公式</a>
+      <a href="#evidence">公开证据</a>
+      <a href="#patterns">好键与坏键</a>
+      <a href="#sources">来源</a>
+    </nav>
+
+    <p class="banner">
+      <strong>范围说明：</strong>
+      这里的测量是稀疏的源运行证据。请用它来塑造运维检查清单，
+      而不要据此宣称存在一条通用的缓存命中曲线。
+    </p>
+
+    <section id="spec" class="article-section">
+      <p class="section-label">官方行为 · 这个键改变了什么</p>
+      <h2>缓存从完全相同的前缀开始</h2>
+      <p>
+        Microsoft Learn 指出，提示缓存至少需要 1,024 个输入 token，
+        且前 1,024 个 token 必须完全相同。初始前缀会被哈希用于路由，
+        在前 1,024 个 token 之后，额外的缓存匹配以 128-token 为步长发生。
+        前 1,024 个 token 内哪怕只有一个字符不同，都可能让缓存命中变成未命中。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>前缀优先</h3>
+          <p>把重复的指令、模式、工具和示例放在前面。如果前缀会变化，靠后的复用就没那么有用。</p>
+        </div>
+        <div>
+          <h3>键其次</h3>
+          <p><code>prompt_cache_key</code> 会与前缀哈希结合，影响重复工作的路由。</p>
+        </div>
+        <div>
+          <h3>永不保证</h3>
+          <p>键能提高复用的概率；它并不承诺命中。请把它当作一个运维提示来对待。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula" class="article-section">
+      <p class="section-label">容量规划 · 让分桶保持在风险区以下</p>
+      <h2>一个桶可能太热；太多桶又可能太冷</h2>
+      <p>
+        Microsoft Learn 描述了一个大致的溢出临界点：当相同前缀加上
+        <code>prompt_cache_key</code> 的组合每分钟超过约 15 个请求时，
+        部分请求可能被路由到额外的机器上，缓存有效性可能下降。
+        实用的容量规划规则是：把一个共享前缀拆分成足够多的稳定分桶，
+        使每个桶都留有余量地保持在该风险区以下。
+      </p>
+      <div class="chart-reading-note">
+        <h3>分桶数量规则</h3>
+        <p>
+          <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
+          <code>recommended_buckets = ceil(common_prefix_rpm / target_rpm_per_bucket)</code>
+        </p>
+      </div>
+      <div class="evidence-grid">
+        <div>
+          <h3>计算示例</h3>
+          <p>在 1.4 TPS 时，公共前缀的速率为 84 RPM。15-RPM 下限给出 6 个桶；10-RPM 目标给出 9 个桶。</p>
+        </div>
+        <div>
+          <h3>为什么不是一个？</h3>
+          <p>即使可见的提示看起来稳定，单个热桶也可能让本地缓存路径溢出。</p>
+        </div>
+        <div>
+          <h3>为什么不是唯一？</h3>
+          <p>每次调用使用唯一键会阻止复用的累积。缓存永远聚不起人气。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence" class="article-section">
+      <p class="section-label">观测证据 · 稀疏公开切片</p>
+      <h2>同时测量命中率与延迟</h2>
+      <figure class="article-figure">
+        <figcaption>
+          <strong>要读的图表：</strong>公开聚合的缓存键切片。
+          左侧面板显示缓存命中率。右侧面板显示首字时间的 p95。
+          X 轴是保留模式加上分桶基数。
+        </figcaption>
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="对比缓存命中率与 TTFT p95 的提示缓存键分桶证据图表。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>公开缓存键分桶证据</caption>
+        <thead>
+          <tr>
+            <th>保留</th>
+            <th>基数</th>
+            <th>命中率</th>
+            <th>TTFT p95</th>
+            <th>每桶 RPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
+          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
+          <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>30.73</td></tr>
+          <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>4.00</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-reading-note">
+        <h3>这能证明什么，又不能证明什么</h3>
+        <p>
+          这个公开切片并不能证明一条通用的阈值曲线。但它确实
+          说明了为什么运维者不应只看命中率：保留模式、
+          分桶速率和首字延迟都会改变用户体验。
+        </p>
+      </div>
+    </section>
+
+    <section id="patterns" class="article-section">
+      <p class="section-label">键设计 · 稳定的工作负载分桶</p>
+      <h2>按工作负载分桶，而非按调用</h2>
+      <p>
+        好的键对于相同的工作负载应当是确定性的。坏的键包含
+        每次调用的熵。如果时间戳、UUID、随机后缀或唯一调用 token
+        进入了键，缓存键空间就会爆炸，前缀也就无法建立复用。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>好</h3>
+          <p><code>tenant:flow:locale:schema</code> 把相同的代理、模式、区域设置和任务形态聚在一起。</p>
+        </div>
+        <div>
+          <h3>坏</h3>
+          <p>唯一 id、时间戳、随机 UUID 和原始用户问题会让每次调用都产生一个桶。</p>
+        </div>
+        <div>
+          <h3>监控</h3>
+          <p>跟踪每桶 RPM、缓存 token 占比和首字延迟。当流量形态变化时重新调整分桶。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources" class="article-section decision-box">
+      <h2>来源与证据边界</h2>
+      <ul>
+        <li><strong>官方规范，访问于 2026-06-04：</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 提示缓存指南</a>。</li>
+        <li><strong>公开聚合证据：</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">缓存键分桶 CSV</a>。</li>
+        <li><strong>公开运维者指南：</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key 策略运维手册</a>。</li>
+      </ul>
+      <p>
+        实用规则：保持可缓存前缀稳定，选择留有余量的工作负载分桶，
+        并把命中率指标当作一个运维信号，而非一种承诺。
+      </p>
+      <p><a class="button-link" href="../../">返回文章索引</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究产物 · 已发布数据仅经过脱敏或聚合处理。</p>
+  </footer>
+</body>
+</html>
