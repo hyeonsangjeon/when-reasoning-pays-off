@@ -35,7 +35,7 @@
     <p class="article-kicker">Operations essay · PTU recovery and 429 handling</p>
     <h1>429 is a recovery signal, not just an error</h1>
     <p class="lede">
-      A 429 from a saturated PTU target should not start a blind polling loop.
+      Do not start a blind polling loop when a saturated PTU target returns 429.
       It already carries the recovery signal the client needs: <code>retry-after-ms</code>.
       The operating question is not “did the call fail?” but “who owns the next
       decision: wait, redirect, or give up?”
@@ -48,7 +48,7 @@
       </section>
       <section class="summary-tile">
         <h2>Evidence</h2>
-        <p>Microsoft Learn defines the header contract; public aggregate runs show why median-only waits miss the tail.</p>
+        <p>Microsoft Learn provisioned-throughput and spillover documentation, plus this repository's PTU admission-controller operational note.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
@@ -59,7 +59,7 @@
     <nav class="article-outline" aria-label="Article sections">
       <strong>Read by question:</strong>
       <a href="#spec">Official signal</a>
-      <a href="#evidence">Observed shape</a>
+      <a href="#evidence">Service behavior</a>
       <a href="#pattern">Operating pattern</a>
       <a href="#fallback">Redirect choices</a>
       <a href="#sources">Sources</a>
@@ -67,13 +67,14 @@
 
     <p class="banner">
       <strong>Scope note:</strong>
-      The measured numbers below describe this repository's public aggregate
-      artifacts only. They are useful for designing the retry wrapper, not for
-      claiming universal Azure behavior.
+      This essay states the PTU 429 admission contract as Microsoft Learn
+      documents it on the access date, plus a small set of operational rules of
+      thumb this repository defends. It is a runbook for the retry wrapper, not a
+      measurement of any specific deployment.
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">Official spec · what the service tells you</p>
+      <p class="section-label">Official spec · what the service states</p>
       <h2>The header is the admission signal</h2>
       <p>
         Microsoft Learn describes PTU high-utilization handling as an immediate
@@ -93,8 +94,8 @@
         <div>
           <h3>What is not documented</h3>
           <p>
-            The exact formula behind the wait value is not public. Do not invent
-            a deterministic reset model in your client.
+            The exact formula behind the wait value is not public. Do not encode
+            a deterministic reset model in the client.
           </p>
         </div>
         <div>
@@ -108,43 +109,40 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">Observed evidence · public aggregate only</p>
-      <h2>The median was tiny; the tail was not</h2>
-      <figure class="article-figure">
-        <figcaption>
-          <strong>Chart to read:</strong> empirical <code>retry-after-ms</code>
-          percentiles from public aggregate 429 events. The X-axis is the wait
-          advised by the response header, in milliseconds. The dots are p50,
-          p90, and p99 for each source group.
-        </figcaption>
-        <img class="wide-chart" src="../../../assets/retry-after-ms-distribution.svg" alt="Retry-after-ms percentile chart comparing overall, burst-shaped, and reservation-shaped sources." style="width:100%;height:auto;display:block;border-radius:12px;">
-      </figure>
-      <table class="chart-table evidence-table">
-        <caption>Public aggregate retry-after-ms percentiles</caption>
-        <thead>
-          <tr>
-            <th>Source group</th>
-            <th>429 count</th>
-            <th>p50</th>
-            <th>p90</th>
-            <th>p99</th>
-            <th>Max</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Overall</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
-          <tr><td>Burst-shaped source</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
-          <tr><td>Reservation-shaped source</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
-        </tbody>
-      </table>
-      <div class="chart-reading-note">
-        <h3>How to read this table</h3>
-        <p>
-          The median says many 429s were short-lived. The p99 says a production
-          wrapper still needs a tail policy: sleep only up to the latency budget,
-          then redirect or fail gracefully. The source split matters because
-          burst-shaped and reservation-shaped pressure did not look the same.
-        </p>
+      <p class="section-label">Service behavior · why the wait is not a constant</p>
+      <h2>The wait is admission control, not a fixed cooldown</h2>
+      <p>
+        Microsoft Learn documents PTU utilization as a variation of the leaky
+        bucket algorithm. Each request adds an estimated compute cost — the
+        prompt token count, minus cached tokens, plus the call's
+        <code>max_tokens</code> — while deployed capacity drains continuously in
+        proportion to the number of PTUs. When a request arrives and utilization
+        is already at 100%, the service returns HTTP 429 immediately and attaches
+        <code>retry-after-ms</code> and <code>retry-after</code> headers
+        indicating how long to wait before the next request is accepted.
+      </p>
+      <p>
+        Because the wait reflects how the bucket is draining at that instant, it
+        is not a fixed cooldown. The same documented contract therefore supports
+        two client paths rather than one: honor the header when the wait fits the
+        caller's latency budget, and treat any wait that exceeds that budget as a
+        redirect-or-fail condition. That a single budget ceiling should split the
+        two paths is operational inference this repository defends; the immediate
+        429 and the header contract are what Microsoft Learn documents.
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>Documented (Tier 1)</h3>
+          <p>At 100% utilization the service returns 429 at once with <code>retry-after-ms</code> and <code>retry-after</code>; Learn calls the 429 a traffic-management signal, not a service error.</p>
+        </div>
+        <div>
+          <h3>Documented (Tier 1)</h3>
+          <p>The estimate uses <code>max_tokens</code>; setting it close to true generation size raises concurrency. Cached tokens receive a full discount and do not add to utilization.</p>
+        </div>
+        <div>
+          <h3>Inferred (Tier 2)</h3>
+          <p>That a caller should set one latency-budget ceiling and switch from waiting to redirecting above it is a repository rule of thumb, not a Learn specification.</p>
+        </div>
       </div>
     </section>
 
@@ -209,19 +207,45 @@
       </div>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>Sources and evidence boundary</h2>
+      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> The 429
+        admission behavior, both retry headers, the leaky-bucket utilization
+        model, and the SDK's default retry are documented here.</p>
       <ul>
-        <li><strong>Official spec, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU production operations guide</a>.</li>
-        <li><strong>Official spillover behavior, accessed 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn spillover traffic management guide</a>.</li>
-        <li><strong>Public aggregate evidence:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms percentile CSV</a> and <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 event CSV</a>.</li>
-        <li><strong>Public reference implementation:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">header-driven admission controller</a>.</li>
+        <li><strong>Operate provisioned throughput deployments in production</strong> — defines the immediate 429 at 100% utilization, the <code>retry-after-ms</code> and <code>retry-after</code> response headers, the leaky-bucket utilization model, and the OpenAI SDK's default 429 retry (<code>max_retries</code>). accessed_date: 2026-06-04. source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>. archive_url: <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>.</li>
+        <li><strong>Manage traffic with spillover for provisioned deployments</strong> — defines the spillover redirect of non-200 (including <code>429</code>) overage to a standard deployment via the <code>spilloverDeploymentName</code> property and the <code>x-ms-spillover-from-deployment</code> response header. accessed_date: 2026-06-04. source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>. archive_url: <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>.</li>
+      </ul>
+      <p><strong>Tier 2 — operational inference (this repository).</strong> The
+        rules of thumb — one retry owner, honor the header, add jitter to
+        de-synchronize a fleet, and redirect to spillover only after repeated
+        honored waits fail to clear — are operational, not Learn specifications.</p>
+      <ul>
+        <li><strong>this repository, <code>docs/10-ptu-admission-controller.md</code></strong> — the header-driven admission controller note: single retry owner, honor <code>retry-after-ms</code>, default jitter, and fallback once the wait exceeds a ceiling. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">source</a>.</li>
+        <li><strong>this repository, <code>batch_runner/ptu/admission_controller.py</code></strong> — the reference implementation that parses <code>retry-after-ms</code>, falls back to <code>retry-after</code>, and refuses double-retry ownership. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">source</a>.</li>
       </ul>
       <p>
-        The practical rule: do not poll blindly for PTU recovery. Honor the
-        header, log the decision, and make the latency tradeoff explicit.
+        <strong>What this topic does and does not prove.</strong> It documents the
+        PTU admission contract as Microsoft Learn states it on the access date —
+        the immediate 429 at 100% utilization, the <code>retry-after-ms</code> and
+        <code>retry-after</code> headers, and the spillover redirect path — plus a
+        small set of operational rules of thumb this repository defends: honor the
+        header, add jitter to de-synchronize a fleet, and redirect to a spillover
+        deployment only after repeated honored waits fail to clear. It does not
+        validate that the contract holds identically across every region, model
+        SKU, or future API version, and it does not measure any specific
+        deployment under load.
       </p>
-      <p><a class="button-link" href="../">Back to article index</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>The practical rule</h2>
+      <p><strong>The practical rule: when a PTU deployment returns 429, treat
+        <code>retry-after-ms</code> as the admission contract — honor it, add
+        jitter to de-synchronize the fleet, and redirect to a spillover deployment
+        only after repeated honored waits fail to clear.</strong></p>
+      <p>The next essay turns from when to retry to what a repeated prompt actually decides.</p>
+      <p><a class="button-link" href="../prompt-cache-key-bucketing/">When the same prompt repeats, what does the cache key actually decide?</a></p>
     </section>
   </main>
 
