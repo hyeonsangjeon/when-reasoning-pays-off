@@ -38,8 +38,9 @@
 
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>When tool-agent quality is already near the top, what does extra effort still buy?</p></section>
-      <section class="summary-tile"><h2>Evidence</h2><p>benchmark-03 quality, latency, cost, and throughput charts.</p></section>
-      <section class="summary-tile"><h2>Finding</h2><p>Several GPT-5.2 cells sit near or at the quality ceiling; latency and token shape become the discriminators.</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>benchmark-03 quality, cost, latency, and token-composition charts.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>GPT-5.2 quality held inside a 1.97–2.0 ceiling across the effort ladder while cost climbed from $0.002762 to $0.003499 per request and latency from 2.9s to 3.8s.</p></section>
+      <section class="summary-tile"><h2>Decision</h2><p>Route tool-agent slices to the lowest effort that reaches the quality ceiling, and treat higher effort as cost and latency you must justify, not a default.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="Topic sections">
@@ -96,10 +97,62 @@
       </table>
     </section>
 
+    <section class="article-section">
+      <h2>Sources and evidence boundary</h2>
+      <p>
+        Every number above traces to a public artifact in this repository, and
+        every cost claim is priced against a dated snapshot. The routing habit
+        this essay recommends — stop at the lowest effort that reaches the
+        quality ceiling — is its own operating inference. The two tiers below
+        mark where the documented input ends and the inference begins.
+      </p>
+      <ul>
+        <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
+        <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The cost figures drift if list pricing moves.</li>
+        <li><strong>Tier 2 — benchmark-03 slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars — the 1.85 GPT-4o baseline and the GPT-5.2 ladder that bounced inside 1.966667 (none), 2.0 (low), 1.983333 (medium), 1.966667 (high), and 2.0 (extra-high) — and the matching cost figures that climbed monotonically from $0.002762 (none) to $0.003499 (extra-high) per request as latency rose from 2901.99ms to 3770.20ms.</li>
+        <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> as paired-reading evidence that the reasoning tokens climbed from 0 to 52.15 per request without moving the quality bar off its ceiling.</li>
+        <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>
+      </ul>
+      <p>
+        What this slice does and does not prove: it shows that for this
+        tool-using-agent slice, raising reasoning effort hit a quality ceiling —
+        the GPT-5.2 score never left the 1.97–2.0 band — while cost continued to
+        climb across the effort ladder. It does not prove that the ceiling
+        appears at the same effort level for short factual work, multi-step
+        reasoning, or synthesis work; each topic carries its own measurement.
+      </p>
+    </section>
+
     <section class="article-section decision-box">
       <h2>What the evidence lets us say</h2>
       <p>For tool-agent work, the useful sentence is not “raise effort.” It is “find the lowest effort that preserves the agent behavior you actually need.”</p>
       <p><a class="button-link" href="../../">Back to the overview essay</a></p>
+
+      <h2>The practical rule</h2>
+      <ol>
+        <li>Read the quality chart paired with the cost and latency charts for the same benchmark-03 cell, not the quality bar alone.</li>
+        <li>Find the lowest effort that reaches the quality ceiling, and make that the default.</li>
+        <li>Treat any higher effort as cost and latency you must justify with a visible score move.</li>
+        <li>Inspect the aggregate before trusting it: a passing cell may lean on the tool, not the reasoning.</li>
+        <li>Re-measure when the workload shape changes; this ceiling is for tool-agent work only.</li>
+      </ol>
+      <p>
+        <strong>The practical rule: on this tool-agent slice, stop raising
+        reasoning effort once quality reaches the ceiling — the extra effort
+        bought climbing cost and latency, not a higher score.</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">Inspect the benchmark-03 quality chart</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>Next:</strong>
+        <a href="../ptu-payg-planning/">PTU/PAYG crossover: a planning line, not a capacity result</a>
+        &mdash; Once you've sized the workload, when does provisioned throughput
+        beat pay-as-you-go?
+      </p>
     </section>
   </main>
 
