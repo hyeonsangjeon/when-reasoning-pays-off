@@ -301,3 +301,47 @@ footer.site {
 }
 .button-link:hover { background: #1554b7; }
 .topic-cards .card p + p { margin-top: 0.75rem; }
+
+/* Topic-detail and chart-explainer additions */
+.tbd-card { opacity: 0.86; }
+.tbd-badge {
+  background: #eef5fb;
+  border: 1px solid #c7ddf3;
+  border-radius: 999px;
+  color: #53687c;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.42rem;
+  vertical-align: middle;
+}
+.muted-note { color: #6b7c8e !important; font-style: italic; }
+.topic-page ol { padding-left: 1.35rem; }
+.topic-page li + li { margin-top: 0.35rem; }
+.chart-explainer {
+  background: #f8fbff;
+  border: 1px solid #cfe1f3;
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem 1rem;
+}
+.chart-explainer h4 { margin: 0 0 0.55rem; }
+.chart-explainer dl {
+  display: grid;
+  gap: 0.35rem 0.75rem;
+  grid-template-columns: minmax(72px, auto) 1fr;
+  margin: 0;
+}
+.chart-explainer dt { color: #1f3a56; font-weight: 700; }
+.chart-explainer dd { color: #43566a; margin: 0; }
+.chart-axis-label {
+  fill: #53687c;
+  font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  font-size: 11px;
+}
+.chart-card:target {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.18);
+}

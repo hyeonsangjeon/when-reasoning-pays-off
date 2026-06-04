@@ -5,6 +5,7 @@
   var DATA_ROOT = "../data/chart-data/";
   var root;
   var labels = {};
+  var baseLabels = {};
 
   function get(obj, path) {
     return path.split(".").reduce(function (cur, part) {
@@ -12,8 +13,14 @@
     }, obj);
   }
 
-  function t(path) {
+  function labelValue(path) {
     var value = get(labels, path);
+    if (value === undefined && labels !== baseLabels) value = get(baseLabels, path);
+    return value;
+  }
+
+  function t(path) {
+    var value = labelValue(path);
     if (typeof value === "string") return value;
     return path.split(".").pop();
   }
@@ -38,6 +45,7 @@
     ]).then(function (items) {
       var en = items[0];
       var local = items[1];
+      baseLabels = en;
       labels = en;
       if (local && local.meta && local.meta.fallback === false) labels = local;
       if (local && local.meta && local.meta.fallback === true) labels.meta = local.meta;
@@ -88,6 +96,12 @@
     return Number(value.toFixed(4)).toString();
   }
 
+  function chartDomId(chart) {
+    return "chart-" + [chart.family_key, chart.benchmark_key, chart.metric_key]
+      .join("-")
+      .replace(/[^A-Za-z0-9_-]+/g, "-");
+  }
+
   function renderBars(chart) {
     var key = primarySeries(chart);
     var rows = chart.rows;
@@ -97,12 +111,30 @@
       var width = 28;
       var gap = 12;
       var height = Math.max(2, Math.round((value / max) * 120));
-      var x = 40 + i * (width + gap);
+      var x = 46 + i * (width + gap);
       var y = 150 - height;
-      return "<rect x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\"><title>" + esc(effortLabel(row.effort) + " " + formatNumber(value)) + "</title></rect>";
+      return `<rect x="${x}" y="${y}" width="${width}" height="${height}"><title>${esc(effortLabel(row.effort) + " " + formatNumber(value))}</title></rect>`;
     }).join("");
-    var w = Math.max(320, 70 + rows.length * 40);
-    return "<svg class=\"chart-svg\" role=\"img\" aria-label=\"" + esc(metricTitle(chart)) + "\" viewBox=\"0 0 " + w + " 170\">" + bars + "</svg>";
+    var w = Math.max(340, 84 + rows.length * 40);
+    var xLabel = esc(t("chart_explainer.x_axis_label"));
+    var yLabel = esc(valueLabel(key));
+    var axisLabels = `<text class="chart-axis-label chart-x-axis" x="${w / 2}" y="184" text-anchor="middle">${xLabel}</text>` +
+      `<text class="chart-axis-label chart-y-axis" x="14" y="92" text-anchor="middle" transform="rotate(-90 14 92)">${yLabel}</text>`;
+    return `<svg class="chart-svg" role="img" aria-label="${esc(metricTitle(chart))}" viewBox="0 0 ${w} 190">${axisLabels}${bars}</svg>`;
+  }
+
+  function chartExplainer(chart) {
+    var key = primarySeries(chart);
+    var reading = labelValue("chart_reading." + chart.metric_key) || labelValue("chart_reading.default");
+    if (!reading) return "";
+    return `<aside class="chart-explainer" aria-label="${esc(t("chart_explainer.title"))}">` +
+      `<h4>${esc(t("chart_explainer.title"))}</h4>` +
+      "<dl>" +
+      `<dt>${esc(t("chart_explainer.x_axis"))}</dt><dd>${esc(reading.x_axis || t("chart_explainer.default_x_axis"))}</dd>` +
+      `<dt>${esc(t("chart_explainer.y_axis"))}</dt><dd>${esc((reading.y_axis || t("chart_explainer.default_y_axis")).replace("{series}", valueLabel(key)))}</dd>` +
+      `<dt>${esc(t("chart_explainer.bars"))}</dt><dd>${esc(reading.bars || t("chart_explainer.default_bars"))}</dd>` +
+      `<dt>${esc(t("chart_explainer.table"))}</dt><dd>${esc(reading.table || t("chart_explainer.default_table"))}</dd>` +
+      "</dl></aside>";
   }
 
   function renderTable(chart, qualityChart) {
@@ -123,11 +155,11 @@
   }
 
   function renderChart(chart, qualityChart) {
-    var ptuNote = chart.family_key === "ptu-payg-crossover" ? "<p class=\"chart-note ptu-hypothesis\">" + esc(t("notes.ptu_payg_modeled_hypothesis")) + "</p>" : "";
-    var qualityNote = (chart.metric_key === "cost_per_request" || chart.metric_key === "throughput_gain" || chart.metric_key === "ptu_payg_crossover") ? "<p class=\"chart-note quality-guardrail\">" + esc(t("notes.quality_guardrail")) + "</p>" : "";
-    return "<article class=\"chart-card\" data-family=\"" + esc(chart.family_key) + "\" data-metric=\"" + esc(chart.metric_key) + "\" data-quality-paired=\"" + (qualityChart ? "true" : "false") + "\">" +
-      "<h3>" + esc(chart.benchmark_key + " · " + metricTitle(chart)) + "</h3>" +
-      ptuNote + qualityNote + renderBars(chart) + renderTable(chart, qualityChart) + "</article>";
+    var ptuNote = chart.family_key === "ptu-payg-crossover" ? `<p class="chart-note ptu-hypothesis">${esc(t("notes.ptu_payg_modeled_hypothesis"))}</p>` : "";
+    var qualityNote = (chart.metric_key === "cost_per_request" || chart.metric_key === "throughput_gain" || chart.metric_key === "ptu_payg_crossover") ? `<p class="chart-note quality-guardrail">${esc(t("notes.quality_guardrail"))}</p>` : "";
+    return `<article id="${esc(chartDomId(chart))}" class="chart-card" data-family="${esc(chart.family_key)}" data-metric="${esc(chart.metric_key)}" data-quality-paired="${qualityChart ? "true" : "false"}">` +
+      `<h3>${esc(chart.benchmark_key + " · " + metricTitle(chart))}</h3>` +
+      ptuNote + qualityNote + chartExplainer(chart) + renderBars(chart) + renderTable(chart, qualityChart) + "</article>";
   }
 
   function qualityKey(path) {

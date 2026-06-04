@@ -1,5 +1,9 @@
 {
-  "meta": {"locale": "en", "translation_status": "translated", "fallback": false},
+  "meta": {
+    "locale": "en",
+    "translation_status": "translated",
+    "fallback": false
+  },
   "page": {
     "title": "Public chart-data dashboard",
     "lede": "Static charts rendered from sanitized public chart-data. Labels live in locale bundles; numeric chart-data remains stable-key only.",
@@ -8,9 +12,18 @@
     "fallbackBadge": "Showing English labels"
   },
   "families": {
-    "cost-curves-effort": {"title": "Reasoning effort cost, quality, latency, and throughput", "description": "PAYG cost, quality, latency, and token-shape throughput factor by benchmark and reasoning effort."},
-    "token-composition": {"title": "Token composition", "description": "Cached input, non-cached input, output, and reasoning tokens by benchmark and effort."},
-    "ptu-payg-crossover": {"title": "Modeled PTU/PAYG crossover", "description": "Modeled break-even request rate using PAYG cost and token-shape throughput factor."}
+    "cost-curves-effort": {
+      "title": "Reasoning effort cost, quality, latency, and throughput",
+      "description": "PAYG cost, quality, latency, and token-shape throughput factor by benchmark and reasoning effort."
+    },
+    "token-composition": {
+      "title": "Token composition",
+      "description": "Cached input, non-cached input, output, and reasoning tokens by benchmark and effort."
+    },
+    "ptu-payg-crossover": {
+      "title": "Modeled PTU/PAYG crossover",
+      "description": "Modeled break-even request rate using PAYG cost and token-shape throughput factor."
+    }
   },
   "metrics": {
     "cost_per_request": "Mean cost per request",
@@ -20,8 +33,19 @@
     "token_composition": "Token composition",
     "ptu_payg_crossover": "Modeled break-even RPM"
   },
-  "dimensions": {"effort": "Reasoning effort", "model": "Model", "benchmark": "Benchmark"},
-  "effort": {"na": "Baseline", "minimal": "Minimal", "low": "Low", "medium": "Medium", "high": "High", "xhigh": "Extra-high"},
+  "dimensions": {
+    "effort": "Reasoning effort",
+    "model": "Model",
+    "benchmark": "Benchmark"
+  },
+  "effort": {
+    "na": "Baseline",
+    "minimal": "Minimal",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "xhigh": "Extra-high"
+  },
   "series": {
     "mean_usd_per_request": "Mean USD per request",
     "std_usd_per_request": "Std. dev. USD per request",
@@ -42,11 +66,77 @@
     "min_ptu": "Minimum PTU",
     "n_used": "Samples used"
   },
-  "units": {"usd_per_request": "USD/request", "milliseconds": "milliseconds", "judge_score": "judge score", "factor": "factor", "tokens": "tokens", "mixed_usd_rpm": "USD and requests/minute"},
+  "units": {
+    "usd_per_request": "USD/request",
+    "milliseconds": "milliseconds",
+    "judge_score": "judge score",
+    "factor": "factor",
+    "tokens": "tokens",
+    "mixed_usd_rpm": "USD and requests/minute"
+  },
   "notes": {
     "ptu_payg_modeled_hypothesis": "Modeled hypothesis, not measured PTU throughput.",
     "quality_guardrail": "Read cost, throughput, and crossover views with the paired quality guardrail. Error bars are standard deviation where available, not confidence intervals.",
     "static_source": "Rendered from same-origin static JSON; no live service calls are made."
   },
-  "a11y": {"chartLabel": "Chart", "tableCaption": "Data table"}
+  "a11y": {
+    "chartLabel": "Chart",
+    "tableCaption": "Data table"
+  },
+  "chart_explainer": {
+    "title": "How to read this chart",
+    "x_axis": "X-axis",
+    "y_axis": "Y-axis",
+    "bars": "Bars",
+    "table": "Table",
+    "x_axis_label": "reasoning effort",
+    "default_x_axis": "Each position is one reasoning-effort cell for the benchmark: baseline, minimal, low, medium, high, or extra-high when present.",
+    "default_y_axis": "The vertical scale is the selected metric: {series}. Taller bars mean a larger value for that metric.",
+    "default_bars": "Each bar is the aggregate value for one effort cell. Compare bars left to right to see how the metric changes as effort rises.",
+    "default_table": "The table repeats the exact values behind the bars and includes sample counts plus standard deviation where available."
+  },
+  "chart_reading": {
+    "default": {
+      "x_axis": "Each position is one reasoning-effort cell for the benchmark.",
+      "y_axis": "The vertical scale is {series}.",
+      "bars": "Each bar is one aggregate cell. Taller bars mean a larger value.",
+      "table": "Use the table for exact values, standard deviation, and sample count."
+    },
+    "cost_per_request": {
+      "x_axis": "Reasoning effort levels, from the baseline or lowest effort on the left toward higher effort on the right.",
+      "y_axis": "Mean USD per request. Taller bars mean the workload costs more per completed request under the PAYG lens.",
+      "bars": "Each bar summarizes the average bill for one effort cell. Read it beside the paired quality chart before deciding whether the spend is useful.",
+      "table": "The table gives the exact mean cost, standard deviation, and sample count used to draw the bars."
+    },
+    "latency": {
+      "x_axis": "Reasoning effort levels for the same benchmark slice.",
+      "y_axis": "Mean latency in milliseconds. Taller bars mean users wait longer for the response.",
+      "bars": "Each bar is the average latency for one effort cell. Rising bars without quality gain indicate a slower but not better setting.",
+      "table": "The table gives exact latency, standard deviation, and sample count."
+    },
+    "quality": {
+      "x_axis": "Reasoning effort levels for the benchmark slice.",
+      "y_axis": "Mean judge score. Taller bars mean the evaluator scored that effort cell higher.",
+      "bars": "Each bar is an aggregate quality score. Use it as the guardrail for cost and latency charts.",
+      "table": "The table gives the exact mean score, score spread, judge count, and sample count."
+    },
+    "throughput_gain": {
+      "x_axis": "Reasoning effort levels for the benchmark slice.",
+      "y_axis": "Token-shape throughput factor. Lower bars mean fewer requests fit into the same token-shaped capacity.",
+      "bars": "Each bar compares the token shape of that effort cell with the baseline shape. Read this as planning evidence, not direct PTU measurement.",
+      "table": "The table gives the exact factor and token-per-request values behind the planning view."
+    },
+    "token_composition": {
+      "x_axis": "Reasoning effort levels for the benchmark slice.",
+      "y_axis": "Mean token count per request for the selected token component.",
+      "bars": "The rendered bar uses the primary reasoning-token series so the hidden internal budget is visible. The table contains cached input, non-cached input, output, and reasoning tokens.",
+      "table": "Use the table to see the full token breakdown; the answer text alone does not expose reasoning tokens."
+    },
+    "ptu_payg_crossover": {
+      "x_axis": "Reasoning effort cells used in the modeled crossover calculation.",
+      "y_axis": "Modeled break-even requests per minute. Taller bars mean PAYG must sustain a higher request rate before the PTU model crosses over.",
+      "bars": "Each bar is a modeled planning threshold, not measured PTU throughput.",
+      "table": "The table gives the modeled RPM, PTU hourly rate, minimum PTU floor, and related inputs."
+    }
+  }
 }

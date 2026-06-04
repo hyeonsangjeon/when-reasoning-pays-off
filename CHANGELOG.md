@@ -6,6 +6,30 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Topic detail page and dashboard chart explainers (2026-06-04)
+
+The article index now routes one topic into a real detail essay, while unfinished
+topic essays are explicitly marked as TBD. The chart dashboard also explains how
+to read each rendered chart.
+
+- Added `docs/blog/articles/when-reasoning-pays-off/topics/short-factual-work/`
+  as the first detailed topic essay, covering the benchmark story, chart-reading
+  instructions, observed pattern, benchmarking lessons, and operator playbook.
+- Updated `docs/blog/articles/index.html` so `Short factual work` links to the
+  detailed topic page, while invisible reasoning tokens, multi-step work,
+  tool-agent ceiling checks, and PTU/PAYG planning are marked `TBD` until their
+  dedicated essays are written.
+- Added chart-card anchors, cache-busted dashboard script loading, x/y axis
+  labels, and per-metric "How to read this chart" explainers to the dashboard
+  renderer and locale bundles.
+
+Validation: `node --check docs/assets/charts.js`,
+`scripts/check_blog_article_release.py --changed-from origin/main`,
+`docs/validate.sh`, `scripts/check_public_surface.sh`,
+`scripts/sanitize_public_artifacts.py --verify --require-public-manifest`,
+`scripts/sync_pages_chart_data.py --check`, `scripts/check_pages_charts.py`, and
+`git diff --check` pass locally.
+
 ### Changed — Full translated first article for Korean, Japanese, and Simplified Chinese (2026-06-04)
 
 The first GitHub Pages article is now available as a full translated article in

@@ -1,5 +1,9 @@
 {
-  "meta": {"locale": "ko", "translation_status": "translated", "fallback": false},
+  "meta": {
+    "locale": "ko",
+    "translation_status": "translated",
+    "fallback": false
+  },
   "page": {
     "title": "공개 차트 데이터 대시보드",
     "lede": "정제된 공개 차트 데이터를 정적 차트로 렌더링합니다. 라벨은 로케일 번들에만 있고, 숫자 차트 데이터는 안정적인 키만 유지합니다.",
@@ -8,9 +12,18 @@
     "fallbackBadge": "영어 라벨 표시 중"
   },
   "families": {
-    "cost-curves-effort": {"title": "추론 노력별 비용, 품질, 지연시간, 처리량", "description": "벤치마크와 추론 노력별 PAYG 비용, 품질, 지연시간, 토큰 형태 처리량 계수입니다."},
-    "token-composition": {"title": "토큰 구성", "description": "벤치마크와 노력 수준별 캐시 입력, 비캐시 입력, 출력, 추론 토큰 구성입니다."},
-    "ptu-payg-crossover": {"title": "모델링된 PTU/PAYG 교차점", "description": "PAYG 비용과 토큰 형태 처리량 계수를 사용한 모델링된 손익분기 요청률입니다."}
+    "cost-curves-effort": {
+      "title": "추론 노력별 비용, 품질, 지연시간, 처리량",
+      "description": "벤치마크와 추론 노력별 PAYG 비용, 품질, 지연시간, 토큰 형태 처리량 계수입니다."
+    },
+    "token-composition": {
+      "title": "토큰 구성",
+      "description": "벤치마크와 노력 수준별 캐시 입력, 비캐시 입력, 출력, 추론 토큰 구성입니다."
+    },
+    "ptu-payg-crossover": {
+      "title": "모델링된 PTU/PAYG 교차점",
+      "description": "PAYG 비용과 토큰 형태 처리량 계수를 사용한 모델링된 손익분기 요청률입니다."
+    }
   },
   "metrics": {
     "cost_per_request": "요청당 평균 비용",
@@ -20,8 +33,19 @@
     "token_composition": "토큰 구성",
     "ptu_payg_crossover": "모델링된 손익분기 RPM"
   },
-  "dimensions": {"effort": "추론 노력", "model": "모델", "benchmark": "벤치마크"},
-  "effort": {"na": "기준선", "minimal": "최소", "low": "낮음", "medium": "중간", "high": "높음", "xhigh": "매우 높음"},
+  "dimensions": {
+    "effort": "추론 노력",
+    "model": "모델",
+    "benchmark": "벤치마크"
+  },
+  "effort": {
+    "na": "기준선",
+    "minimal": "최소",
+    "low": "낮음",
+    "medium": "중간",
+    "high": "높음",
+    "xhigh": "매우 높음"
+  },
   "series": {
     "mean_usd_per_request": "요청당 평균 USD",
     "std_usd_per_request": "요청당 USD 표준편차",
@@ -42,11 +66,77 @@
     "min_ptu": "최소 PTU",
     "n_used": "사용 샘플 수"
   },
-  "units": {"usd_per_request": "USD/요청", "milliseconds": "밀리초", "judge_score": "평가 점수", "factor": "계수", "tokens": "토큰", "mixed_usd_rpm": "USD 및 요청/분"},
+  "units": {
+    "usd_per_request": "USD/요청",
+    "milliseconds": "밀리초",
+    "judge_score": "평가 점수",
+    "factor": "계수",
+    "tokens": "토큰",
+    "mixed_usd_rpm": "USD 및 요청/분"
+  },
   "notes": {
     "ptu_payg_modeled_hypothesis": "모델링된 가설이며 측정된 PTU 처리량이 아닙니다.",
     "quality_guardrail": "비용, 처리량, 교차점 뷰는 연결된 품질 가드레일과 함께 해석해야 합니다. 가능한 오류 막대는 신뢰구간이 아니라 표준편차입니다.",
     "static_source": "동일 출처 정적 JSON에서 렌더링되며 live 서비스 호출은 없습니다."
   },
-  "a11y": {"chartLabel": "차트", "tableCaption": "데이터 표"}
+  "a11y": {
+    "chartLabel": "차트",
+    "tableCaption": "데이터 표"
+  },
+  "chart_explainer": {
+    "title": "이 차트 읽는 법",
+    "x_axis": "X축",
+    "y_axis": "Y축",
+    "bars": "막대",
+    "table": "표",
+    "x_axis_label": "추론 노력",
+    "default_x_axis": "각 위치는 벤치마크의 추론 노력 셀입니다.",
+    "default_y_axis": "세로 값은 선택된 지표입니다: {series}.",
+    "default_bars": "각 막대는 하나의 집계 셀입니다. 막대가 높을수록 해당 지표 값이 큽니다.",
+    "default_table": "표는 막대 뒤의 정확한 값, 표준편차, 샘플 수를 보여줍니다."
+  },
+  "chart_reading": {
+    "default": {
+      "x_axis": "각 위치는 벤치마크의 추론 노력 셀입니다.",
+      "y_axis": "세로 값은 {series}입니다.",
+      "bars": "각 막대는 하나의 집계 셀입니다. 막대가 높을수록 값이 큽니다.",
+      "table": "표에서 정확한 값, 표준편차, 샘플 수를 확인하세요."
+    },
+    "cost_per_request": {
+      "x_axis": "왼쪽의 기준선 또는 낮은 노력에서 오른쪽의 높은 노력으로 이어지는 추론 노력 수준입니다.",
+      "y_axis": "요청당 평균 USD입니다. 막대가 높을수록 PAYG 관점에서 완료 요청당 비용이 큽니다.",
+      "bars": "각 막대는 하나의 노력 셀의 평균 청구액입니다. 지출이 유용한지 판단하기 전에 연결된 품질 차트와 함께 읽으세요.",
+      "table": "표는 막대를 그린 정확한 평균 비용, 표준편차, 샘플 수를 보여줍니다."
+    },
+    "latency": {
+      "x_axis": "같은 벤치마크 구간의 추론 노력 수준입니다.",
+      "y_axis": "밀리초 단위 평균 지연시간입니다. 막대가 높을수록 사용자가 더 오래 기다립니다.",
+      "bars": "각 막대는 하나의 노력 셀의 평균 지연시간입니다. 품질 개선 없이 막대가 오르면 더 느리지만 더 낫지는 않은 설정입니다.",
+      "table": "표는 정확한 지연시간, 표준편차, 샘플 수를 보여줍니다."
+    },
+    "quality": {
+      "x_axis": "벤치마크 구간의 추론 노력 수준입니다.",
+      "y_axis": "평균 평가 점수입니다. 막대가 높을수록 평가자가 더 높게 점수화한 셀입니다.",
+      "bars": "각 막대는 집계 품질 점수입니다. 비용과 지연시간 차트의 가드레일로 읽으세요.",
+      "table": "표는 정확한 평균 점수, 점수 분산, 평가 수, 샘플 수를 보여줍니다."
+    },
+    "throughput_gain": {
+      "x_axis": "벤치마크 구간의 추론 노력 수준입니다.",
+      "y_axis": "토큰 형태 처리량 계수입니다. 막대가 낮을수록 같은 토큰 형태 용량에 들어가는 요청 수가 줄어듭니다.",
+      "bars": "각 막대는 해당 노력 셀의 토큰 형태를 기준 형태와 비교합니다. 직접 PTU 측정이 아니라 계획 근거로 읽으세요.",
+      "table": "표는 계획 뷰 뒤의 정확한 계수와 요청당 토큰 값을 보여줍니다."
+    },
+    "token_composition": {
+      "x_axis": "벤치마크 구간의 추론 노력 수준입니다.",
+      "y_axis": "선택된 토큰 구성 요소의 요청당 평균 토큰 수입니다.",
+      "bars": "렌더링된 막대는 숨은 내부 예산을 보이게 하도록 주요 추론 토큰 시리즈를 사용합니다. 표에는 캐시 입력, 비캐시 입력, 출력, 추론 토큰이 모두 있습니다.",
+      "table": "전체 토큰 분해는 표에서 확인하세요. 답변 텍스트만으로는 추론 토큰이 드러나지 않습니다."
+    },
+    "ptu_payg_crossover": {
+      "x_axis": "모델링된 교차점 계산에 사용된 추론 노력 셀입니다.",
+      "y_axis": "모델링된 손익분기 요청/분입니다. 막대가 높을수록 PTU 모델과 교차하려면 PAYG가 더 높은 요청률을 지속해야 합니다.",
+      "bars": "각 막대는 모델링된 계획 임계값이며, 측정된 PTU 처리량이 아닙니다.",
+      "table": "표는 모델링된 RPM, PTU 시간당 요금, 최소 PTU 바닥, 관련 입력을 보여줍니다."
+    }
+  }
 }
