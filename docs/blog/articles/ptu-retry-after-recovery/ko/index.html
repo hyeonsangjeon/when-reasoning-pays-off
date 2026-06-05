@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>429는 복구 신호다 | when reasoning pays off</title>
+  <title>429: 단순한 오류가 아닌 복구 신호 | when reasoning pays off</title>
   <meta name="description" content="Azure OpenAI PTU의 429 응답을 일반적인 실패가 아니라 retry-after-ms 복구 신호로 다루는 방법을 설명하는 공개 운영 아티클.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="4c882c98fedb0695de8d4d46b5a7b4d3904b1c4d7416207c379d40c73b1d15d5">
+  <meta name="article:source-article-sha256" content="526ca6551010d6eba40d7dfe2a70f33cb60a7ca52f5b0e003ae83089abeadab1">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -33,9 +33,9 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 운영 에세이 / 한국어 번역</p>
+    <p class="breadcrumb"><a href="../../">글 목록</a> / 운영 에세이</p>
     <p class="article-kicker">운영 에세이 · PTU 복구와 429 처리</p>
-    <h1>429는 단순한 오류가 아니라 복구 신호다</h1>
+    <h1>429: 단순한 오류가 아닌 복구 신호</h1>
     <p class="lede">
       포화 상태의 PTU 대상에서 돌아온 429는 맹목적인 폴링 루프를 시작하게
       만들어서는 안 됩니다. 그 응답에는 클라이언트가 필요로 하는 복구 신호가
@@ -44,25 +44,38 @@
       우회할지, 포기할지”입니다.
     </p>
 
+    <figure class="article-figure" id="figure-ptu-retry-one-pager">
+      <figcaption>
+        <strong>한눈에 보는 이 글.</strong> 포화 상태의 PTU 대상이 429를
+        반환하면, 문서화된 <code>retry-after-ms</code> 헤더가 입장 계약입니다.
+        헤더를 존중하고, 지터를 더하며, 관측된 긴 꼬리를 예산에 반영합니다. 이
+        한 장 요약은 그 단 하나의 메시지를 담고 근거 경계를 표시합니다. 헤더는
+        Microsoft Learn의 계약이고, 그 옆의 짧은 중앙값·긴 꼬리 형태는 이
+        저장소의 원천 실행에서 나온 정제된 공개 집계로, 서술용으로 제시합니다.
+        <a href="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg">429 복구 한 장 요약 SVG 열기</a>.
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg" alt="429를 retry-after-ms로 복구하는 한 장 요약. 문서화된 429 헤더 계약을, 짧은 중앙값과 긴 꼬리를 가진 관측된 retry-after-ms 분포 스케치 옆에 나란히 둡니다. 핵심 메시지: 429에서는 retry-after-ms 헤더를 존중하고 지터를 더하라는 것이며, 권고된 대기는 중앙값에서는 짧았지만 긴 꼬리를 가졌기 때문입니다. 문서화된 계약과 정제된 관측 집계로 표시되며, 서술용입니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="아티클 요약">
       <section class="summary-tile">
         <h2>질문</h2>
         <p>PTU 용량이 “지금은 안 됩니다”라고 말할 때, 클라이언트는 다음 행동을 어떻게 결정해야 할까요?</p>
       </section>
       <section class="summary-tile">
-        <h2>증거</h2>
-        <p>Microsoft Learn이 헤더 계약을 정의합니다. 공개 집계 실행 결과는 중앙값만 보면 꼬리를 놓치는 이유를 보여줍니다.</p>
+        <h2>근거</h2>
+        <p>Microsoft Learn의 프로비저닝된 처리량·스필오버 문서와, 이 저장소의 PTU 입장 제어기 운영 노트입니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
-        <p>재시도 주체를 하나로 둡니다. 헤더를 존중하고, 지터를 더하며, 지연 정책이 요구할 때만 우회하세요.</p>
+        <p>재시도 소유자를 하나로 둡니다. 헤더를 존중하고 지터를 더하며, 지연 정책이 요구할 때만 우회합니다.</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="아티클 섹션">
       <strong>질문으로 읽기:</strong>
       <a href="#spec">공식 신호</a>
-      <a href="#evidence">관측된 형태</a>
+      <a href="#evidence">서비스 동작</a>
       <a href="#pattern">운영 패턴</a>
       <a href="#fallback">우회 선택지</a>
       <a href="#sources">출처</a>
@@ -70,14 +83,17 @@
 
     <p class="banner">
       <strong>범위 안내:</strong>
-      아래의 측정 수치는 이 저장소의 공개 집계 산출물만을 설명합니다. 재시도
-      래퍼를 설계하는 데에는 유용하지만, 보편적인 Azure 동작을 주장하는
-      근거로는 사용할 수 없습니다.
+      이 글은 접근일 기준 Microsoft Learn이 문서화하는 PTU 429 입장 계약과, 이
+      저장소가 옹호하는 소수의 운영 경험칙을 진술합니다. 특정 배포를 측정한
+      것이 아니라 재시도 래퍼를 위한 런북입니다. 여기에 제시하는 하나의 관측된
+      <code>retry-after-ms</code> 분포는 이 저장소의 원천 실행에서 나온 정제된
+      공개 집계이며, 권고된 대기가 일정하지 않았음을 보여주기 위해 서술용으로
+      포함했을 뿐 서비스 수준 보장이 아닙니다.
     </p>
 
     <section id="spec" class="article-section">
       <p class="section-label">공식 사양 · 서비스가 알려주는 것</p>
-      <h2>헤더가 곧 입장 신호다</h2>
+      <h2>헤더 = 공식 입장 신호</h2>
       <p>
         Microsoft Learn은 PTU 고이용률 처리를 <code>retry-after-ms</code> 및
         <code>retry-after</code> 응답 헤더를 동반하는 즉시 429 경로로
@@ -112,18 +128,53 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">관측된 증거 · 공개 집계만</p>
-      <h2>중앙값은 작았지만, 꼬리는 그렇지 않았다</h2>
-      <figure class="article-figure">
+      <p class="section-label">서비스 동작 · 대기가 일정하지 않은 이유</p>
+      <h2>대기 시간: 고정 쿨다운이 아니라 입장 제어</h2>
+      <p>
+        Microsoft Learn은 PTU 이용률을 누수 버킷(leaky bucket) 알고리즘의
+        변형으로 설명합니다. 각 요청은 추정 컴퓨팅 비용 — 프롬프트 토큰 수에서
+        캐시된 토큰을 빼고 호출의 <code>max_tokens</code>를 더한 값 — 을 버킷에
+        더하며, 배포된 용량은 PTU 수에 비례해 계속 빠져나갑니다. 요청이
+        도착했을 때 이용률이 이미 100%라면, 서비스는 즉시 HTTP 429를 반환하고
+        다음 요청이 수락되기까지 얼마나 기다려야 하는지를 알려주는
+        <code>retry-after-ms</code> 및 <code>retry-after</code> 헤더를 붙입니다.
+      </p>
+      <p>
+        이 대기 시간은 그 순간 버킷이 빠져나가는 방식을 반영하므로 고정
+        쿨다운이 아닙니다. 따라서 같은 문서화된 계약은 하나가 아니라 두 가지
+        클라이언트 경로를 뒷받침합니다. 대기 시간이 호출자의 지연 예산에 맞으면
+        헤더를 존중하고, 그 예산을 넘는 대기는 우회 또는 실패 조건으로
+        다룹니다. 즉시 반환되는 429와 헤더 계약은 Microsoft Learn이
+        문서화합니다. 단일 예산 상한이 이 두 경로를 갈라야 한다는 것은 이
+        저장소가 옹호하는 운영적 추론입니다.
+      </p>
+      <figure class="article-figure" id="figure-ptu-retry-cdf">
         <figcaption>
-          <strong>읽어야 할 차트:</strong> 공개 집계 429 이벤트에서 얻은 경험적
-          <code>retry-after-ms</code> 백분위. X축은 응답 헤더가 권고한 대기
-          시간이며 단위는 밀리초입니다. 점은 각 출처 그룹의 p50, p90, p99입니다.
+          <strong>원천 차트 — 관측된 <code>retry-after-ms</code> 분포(서술용).</strong>
+          <strong>X축:</strong> 응답 헤더가 권고한 대기 시간이며 단위는
+          밀리초입니다. <strong>Y축:</strong> 그 대기 시간 이하인 429 응답의
+          경험적 누적 비율입니다. <strong>곡선:</strong> 출처 그룹별 곡선과 통합
+          곡선 — 버스트 형태 출처(n&nbsp;=&nbsp;167), 예약 형태
+          출처(n&nbsp;=&nbsp;26), 통합 표본(n&nbsp;=&nbsp;193) — 으로, 빈도
+          히스토그램이 아니라 경험적 누적 분포입니다. <strong>읽는 법:</strong>
+          각 곡선은 0 근처에서 거의 꼭대기까지 솟구칩니다 — 이 표본에서는
+          권고된 대기 대부분이 짧았습니다(전체 p50&nbsp;≈&nbsp;43&nbsp;ms) —
+          그다음 약 17,000&nbsp;ms까지 이어지는 긴 꼬리로 평탄해지므로, 일부
+          대기는 매우 길었습니다(전체 p99&nbsp;≈&nbsp;16,921&nbsp;ms). 이 짧은
+          중앙값·긴 꼬리 형태가 아래 운영 패턴이 대기를 지연 예산까지만 두고
+          그다음 우회하거나 실패하는 이유입니다. <strong>근거 경계:</strong>
+          이는 이 저장소의 원천 실행에서 나온 429 이벤트를 정제한 하나의 공개
+          집계이며, 서술용으로만 제시합니다. 서비스 수준 보장이나 리셋 모델이
+          아니며, 특정 배포·리전·향후 API 버전에 대한 측정도 아닙니다.
+          <strong>출처:</strong> 백분위 값은 이 저장소의
+          <code>results/retry-after-characterization/retry_after_ms_percentiles.csv</code>에서
+          가져왔습니다
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">원천 CSV</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/retry-after-ms-distribution.svg" alt="전체, 버스트 형태, 예약 형태 출처를 비교하는 retry-after-ms 백분위 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/retry-after-ms-cdf.png" alt="관측된 retry-after-ms 값의 경험적 누적 분포. 각 곡선은 0 밀리초 근처에서 거의 수직으로 솟구쳐, 이 표본의 429 권고 대기 대부분이 짧았음을 뜻하며, 그다음 약 1만 7천 밀리초까지 이어지는 긴 꼬리로 평탄해져 일부 대기가 매우 길었음을 보여줍니다. 버스트 형태 출처, 예약 형태 출처, 통합 표본을 각각의 곡선으로 비교합니다." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>공개 집계 retry-after-ms 백분위</caption>
+        <caption>관측된 retry-after-ms 백분위 (정제된 공개 집계)</caption>
         <thead>
           <tr>
             <th>출처 그룹</th>
@@ -140,21 +191,25 @@
           <tr><td>예약 형태 출처</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
         </tbody>
       </table>
-      <div class="chart-reading-note">
-        <h3>이 표를 읽는 법</h3>
-        <p>
-          중앙값은 많은 429가 짧게 끝났음을 말해줍니다. p99는 프로덕션 래퍼에
-          여전히 꼬리 정책이 필요함을 말해줍니다. 즉 지연 예산까지만 대기하고,
-          그다음에는 우회하거나 우아하게 실패해야 합니다. 버스트 형태와 예약
-          형태의 압력이 서로 다르게 보였기 때문에 출처를 나누는 것이
-          중요합니다.
-        </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>문서화됨 (Tier 1)</h3>
+          <p>이용률 100%에서 서비스는 <code>retry-after-ms</code> 및 <code>retry-after</code>와 함께 429를 즉시 반환합니다. Learn은 이 429를 서비스 오류가 아니라 트래픽 관리 신호라고 부릅니다.</p>
+        </div>
+        <div>
+          <h3>문서화됨 (Tier 1)</h3>
+          <p>추정값은 <code>max_tokens</code>를 사용합니다. 이를 실제 생성 크기에 가깝게 설정하면 동시성이 높아집니다. 캐시된 토큰은 전액 할인되어 이용률에 더해지지 않습니다.</p>
+        </div>
+        <div>
+          <h3>추론됨 (Tier 2)</h3>
+          <p>호출자가 단일 지연 예산 상한을 정하고 그 위에서는 대기에서 우회로 전환해야 한다는 것은 Learn 사양이 아니라 이 저장소의 경험칙입니다.</p>
+        </div>
       </div>
     </section>
 
     <section id="pattern" class="article-section">
-      <p class="section-label">운영 패턴 · 재시도의 단일 주체</p>
-      <h2>재시도 루프를 중첩하지 마라</h2>
+      <p class="section-label">운영 패턴 · 재시도의 단일 소유권</p>
+      <h2>재시도 루프 중첩 금지</h2>
       <p>
         안전한 패턴은 일부러 지루합니다. 429 복구를 책임질 컴포넌트를 정확히
         하나만 고르세요. SDK가 재시도하도록 구성되어 있다면 SDK가 대기를
@@ -189,7 +244,7 @@
 
     <section id="fallback" class="article-section">
       <p class="section-label">폴백 · 네이티브 또는 커스텀</p>
-      <h2>우회는 비상 버튼이 아니라 정책적 선택이다</h2>
+      <h2>우회: 비상 버튼이 아니라 정책적 선택</h2>
       <p>
         Microsoft Learn의 스필오버 기능은 초과 트래픽을 표준 대상으로 우회할
         수 있으며, 스필오버 동작을 식별하는 헤더를 노출합니다. 플랫폼이
@@ -214,19 +269,47 @@
       </div>
     </section>
 
-    <section id="sources" class="article-section decision-box">
-      <h2>출처와 증거의 경계</h2>
+    <section id="sources" class="article-section">
+      <h2>출처와 근거 경계</h2>
+      <p>
+        <strong>Tier 1 — 서비스 계약(Microsoft Learn).</strong> 429 입장 동작,
+        두 재시도 헤더, 누수 버킷 이용률 모델, SDK의 기본 재시도가 여기에
+        문서화되어 있습니다.
+      </p>
       <ul>
-        <li><strong>공식 사양, 2026-06-04 접속:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU 프로덕션 운영 가이드</a>.</li>
-        <li><strong>공식 스필오버 동작, 2026-06-04 접속:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 스필오버 트래픽 관리 가이드</a>.</li>
-        <li><strong>공개 집계 증거:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms 백분위 CSV</a> 및 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 이벤트 CSV</a>.</li>
-        <li><strong>공개 참조 구현:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">헤더 기반 입장 제어기</a>.</li>
+        <li><strong>Operate provisioned throughput deployments in production</strong> — 이용률 100%에서의 즉시 429, <code>retry-after-ms</code> 및 <code>retry-after</code> 응답 헤더, 누수 버킷 이용률 모델, 그리고 OpenAI SDK의 기본 429 재시도(<code>max_retries</code>)를 정의합니다. accessed_date: 2026-06-04. source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>. archive_url: <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>.</li>
+        <li><strong>Manage traffic with spillover for provisioned deployments</strong> — <code>spilloverDeploymentName</code> 속성과 <code>x-ms-spillover-from-deployment</code> 응답 헤더를 통해 비-200(<code>429</code> 포함) 초과분을 표준 배포로 우회하는 스필오버를 정의합니다. accessed_date: 2026-06-04. source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>. archive_url: <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>.</li>
       </ul>
       <p>
-        실용적인 규칙: PTU 복구를 맹목적으로 폴링하지 마세요. 헤더를 존중하고,
-        결정을 로깅하며, 지연 트레이드오프를 명시적으로 드러내세요.
+        <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 경험칙 — 단일 재시도
+        소유자, 헤더 존중, 플릿의 동기화를 풀기 위한 지터 추가, 그리고 존중한
+        대기가 거듭 풀리지 않을 때에만 스필오버로 우회 — 은 Learn 사양이 아니라
+        운영적 판단입니다.
       </p>
-      <p><a class="button-link" href="../../">아티클 목록으로 돌아가기</a></p>
+      <ul>
+        <li><strong>이 저장소, <code>docs/10-ptu-admission-controller.md</code></strong> — 헤더 기반 입장 제어기 노트: 단일 재시도 소유자, <code>retry-after-ms</code> 존중, 기본 지터, 그리고 대기가 상한을 넘으면 폴백. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">출처</a>.</li>
+        <li><strong>이 저장소, <code>batch_runner/ptu/admission_controller.py</code></strong> — <code>retry-after-ms</code>를 파싱하고 <code>retry-after</code>로 폴백하며 이중 재시도 소유를 거부하는 참조 구현. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">출처</a>.</li>
+      </ul>
+      <p>
+        <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일 기준
+        Microsoft Learn이 명시하는 PTU 입장 계약 — 이용률 100%에서의 즉시 429,
+        <code>retry-after-ms</code> 및 <code>retry-after</code> 헤더, 스필오버
+        우회 경로 — 과, 이 저장소가 옹호하는 소수의 운영 경험칙 — 헤더 존중,
+        플릿의 동기화를 푸는 지터 추가, 존중한 대기가 거듭 풀리지 않을 때에만
+        스필오버 배포로 우회 — 을 문서화합니다. 모든 리전·모델 SKU·향후 API
+        버전에서 이 계약이 동일하게 유지된다는 것은 검증하지 못하며, 특정
+        배포를 부하 상태에서 측정하지도 않습니다.
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>실무 규칙</h2>
+      <p><strong>실무 규칙: PTU 배포가 429를 반환하면 <code>retry-after-ms</code>를
+        입장 계약으로 다룹니다 — 헤더를 존중하고, 플릿의 동기화를 풀기 위해
+        지터를 더하며, 존중한 대기가 거듭 풀리지 않을 때에만 스필오버 배포로
+        우회합니다.</strong></p>
+      <p>다음 글은 언제 재시도할지에서, 같은 프롬프트가 반복될 때 캐시 키가 실제로 무엇을 결정하는지로 넘어갑니다.</p>
+      <p><a class="button-link" href="../../prompt-cache-key-bucketing/ko/">같은 프롬프트가 반복되면, 캐시 키는 무엇을 결정하나요?</a></p>
     </section>
   </main>
 
