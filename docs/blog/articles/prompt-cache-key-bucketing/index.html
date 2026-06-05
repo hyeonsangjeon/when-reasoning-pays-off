@@ -41,6 +41,21 @@
       a bad key fragments it.
     </p>
 
+    <figure class="article-figure" id="figure-keybucket-one-pager">
+      <figcaption>
+        <strong>This essay at a glance.</strong> A cacheable prefix plus its
+        <code>prompt_cache_key</code> routes repeated work to a machine, and
+        Microsoft Learn documents an approximate 15-requests-per-minute point
+        per bucket above which cache effectiveness can drop. The one-pager
+        carries that single message — size buckets to stay under the documented
+        ceiling — and marks the boundary: the ceiling is official spec, while
+        the hit-ratio and latency shape beside it is a sanitized public
+        aggregate measured on pay-as-you-go, shown descriptively.
+        <a href="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">Open the cache-key bucketing one-pager SVG</a>.
+      </figcaption>
+      <img src="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="One-pager for prompt cache key bucketing. It shows that one prefix-plus-key bucket routes to one machine, that roughly fifteen requests per minute per bucket is the documented overflow point, and that the source-run cache hit ratio stayed high and roughly flat while in-memory TTFT improved, so hit ratio should be read beside latency. Headline message: keep each bucket under the documented ceiling. Marked as official spec for the ceiling plus a sanitized measured aggregate for the shape, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
         <h2>Question</h2>
@@ -142,6 +157,50 @@
           first token. The X-axis is retention mode plus bucket cardinality.
         </figcaption>
         <img src="../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="Prompt cache key bucketing evidence chart comparing cache hit ratio and TTFT p95." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-keybucket-hit-ratio">
+        <figcaption>
+          <strong>Source chart &mdash; cache hit ratio vs cache-key cardinality.</strong>
+          <strong>X-axis:</strong> bucket cardinality on a log2 scale (1, then 8
+          buckets over the same prefix). <strong>Y-axis:</strong> steady-state
+          cache hit ratio, 0&ndash;1. <strong>Lines:</strong> two retention
+          series &mdash; <code>in_memory</code> and <code>24h</code>, each
+          N&nbsp;=&nbsp;960 records; this is a two-series line chart, not a
+          frequency histogram. <strong>How to read it:</strong> in this low
+          per-bucket-rate slice the hit ratio stayed high and roughly flat
+          (about 0.93&ndash;0.96) as cardinality rose, so splitting the prefix
+          into more buckets did not, by itself, collapse the hit ratio here
+          &mdash; the cost of fragmentation appeared in the latency tail in the
+          next panel, not in this one. <strong>Evidence boundary:</strong> a
+          sparse sanitized public aggregate measured on pay-as-you-go gpt-5.2 on
+          one tenant and region (not PTU); it is descriptive, not a universal
+          cache-hit curve. <strong>Source:</strong> values come from this
+          repository's
+          <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source CSV</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../assets/cache-hit-ratio-vs-cardinality.png" alt="Line chart of steady-state cache hit ratio against bucket cardinality on a log2 axis at one and eight buckets. Two near-flat lines for in_memory and 24h retention both sit high, between roughly 0.93 and 0.96, showing the hit ratio stayed about constant as cardinality increased in this slice." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-keybucket-ttft">
+        <figcaption>
+          <strong>Paired source chart &mdash; first-token latency p95 vs cache-key cardinality.</strong>
+          <strong>X-axis:</strong> the same log2 bucket-cardinality axis (1, then 8).
+          <strong>Y-axis:</strong> steady-state p95 time to first token, in
+          milliseconds. <strong>Lines:</strong> the same two retention series,
+          N&nbsp;=&nbsp;960 each. <strong>How to read it:</strong> the single hot
+          <code>in_memory</code> bucket at cardinality&nbsp;1 carried a very large
+          p95 (about 106,000&nbsp;ms) and fell sharply once traffic was spread
+          across 8 buckets (about 16,600&nbsp;ms), while the <code>24h</code>
+          series stayed lower throughout &mdash; so on this slice the bucketing
+          cost landed on the latency tail, which is why hit ratio must be read
+          beside first-token latency rather than alone.
+          <strong>Evidence boundary:</strong> the same sparse sanitized public
+          aggregate on pay-as-you-go gpt-5.2 (not PTU); descriptive, not a
+          latency guarantee. <strong>Source:</strong>
+          <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">source CSV</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../assets/ttft-p95-vs-cardinality.png" alt="Line chart of steady-state p95 time to first token against bucket cardinality on a log2 axis. The in_memory line starts very high, near one hundred six thousand milliseconds at a single bucket, and drops steeply to about sixteen thousand at eight buckets, while the 24h line stays lower and roughly flat near ten to fifteen thousand milliseconds." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
         <caption>Public cache-key bucketing evidence</caption>
