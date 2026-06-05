@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>보이지 않는 reasoning tokens | when reasoning pays off</title>
-  <meta name="description" content="눈에 보이는 답변은 짧게 유지되었는데도 숨은 reasoning tokens가 청구서를 바꿔 놓은 과정을 다룬 토픽 에세이.">
+  <title>보이지 않는 추론 토큰 | 추론이 비용을 정당화할 때</title>
+  <meta name="description" content="눈에 보이는 답변은 짧게 유지되었는데도 숨은 추론 토큰이 청구서를 바꿔 놓은 과정을 다룬 주제 글.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <meta name="article:source-article-sha256" content="26b7956018be0effdf23763f1cb1a197d14eb22b72db2ca825c0cb4c7d5e0cdf">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ko/">
   <link rel="alternate" hreflang="en" href="../">
@@ -22,7 +22,7 @@
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../../../ko/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="언어">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
@@ -33,78 +33,181 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
-    <p class="article-kicker">토픽 에세이 · 숨어 있는 과금 영역</p>
-    <h1>보이지 않는 reasoning tokens: 답변에는 드러나지 않는 청구서의 일부</h1>
-    <p class="lede">짧은 사실 응답을 다룬 이번 실행은 답변만 읽으면 지극히 평범해 보였다. 대부분의 응답은 짧았다. 그런데 청구서는 전혀 다른 이야기를 들려준다. reasoning 모델은 눈에 보이는 텍스트를 내놓기 전에 모델 내부에서 토큰을 소비할 수 있기 때문이다. 이 내부 토큰은 사용자에게 노출되지 않지만, 우리가 측정하는 사용량 영역에는 분명히 포함되어 있다.</p>
+    <p class="breadcrumb"><a href="../../../../">글 목록</a> / <a href="../../../ko/">추론이 비용을 정당화할 때</a> / 주제 상세</p>
+    <p class="article-kicker">주제 글 · 숨어 있는 과금 표면</p>
+    <h1>보이지 않는 추론 토큰: 답변에 드러나지 않는 청구서의 일부</h1>
+    <p class="lede">
+      짧은 사실형 응답을 다룬 이번 실행은 답변만 읽으면 지극히 평범해
+      보였습니다. 대부분의 응답은 짧았습니다. 그런데 청구서는 전혀 다른
+      이야기를 들려줍니다. 추론 모델은 눈에 보이는 텍스트를 내놓기 전에 모델
+      내부에서 토큰을 소비할 수 있기 때문입니다. 이 내부 토큰은 사용자에게
+      노출되지 않지만, 측정하는 사용량 영역에는 분명히 포함됩니다.
+    </p>
 
-    <div class="article-summary-grid" aria-label="Topic summary">
-      <section class="summary-tile"><h2>질문</h2><p>답변 텍스트가 짧게 유지되었다면, 추가 비용은 도대체 어디에서 나온 것일까?</p></section>
-      <section class="summary-tile"><h2>근거</h2><p>benchmark-01의 토큰 구성·비용·지연 차트를 하나의 증거 사슬로 이어서 읽는다.</p></section>
-      <section class="summary-tile"><h2>발견</h2><p>눈에 보이는 답변 길이는 거의 움직이지 않았지만, 숨은 reasoning tokens는 effort 사다리를 따라 늘어났다.</p></section>
+    <figure class="article-figure" id="figure-invisible-one-pager">
+      <figcaption>
+        <strong>한눈에 보는 주제.</strong> 과금되는 요청은 입력, 캐시된 입력,
+        보이는 출력, 숨은 추론으로 나뉘며 &mdash; 이 단면에서 규모가 커지는
+        쪽은 숨은 추론 채널입니다. 이 한 장 요약은 그 한 문장을 전하고 근거
+        경계를 표시하며, 아래 절은 측정된 세부를 더합니다.
+        <a href="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg">보이지 않는 추론 토큰 한 장 요약 SVG 열기</a>.
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg" alt="보이지 않는 추론 토큰 한 장 요약. 과금되는 각 요청이 입력, 캐시, 보이는 출력, 숨은 추론 채널로 분해되며, 강도가 오를수록 숨은 추론 부분이 커지는 모습을 보여줍니다. 핵심 메시지: 추론 토큰은 과금되지만 노출되지 않으므로, 청구서는 읽을 수 없는 부분에서 자랍니다. 토큰 구성 패밀리에서 나온 측정된 집계값입니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="주제 요약">
+      <section class="summary-tile"><h2>질문</h2><p>답변 텍스트가 짧게 유지되었다면, 추가 비용은 도대체 어디에서 나온 것일까요?</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>benchmark-01의 토큰 구성·비용·지연 시간 차트를 하나의 근거 사슬로 이어서 읽습니다.</p></section>
+      <section class="summary-tile"><h2>발견</h2><p>눈에 보이는 답변 길이는 거의 움직이지 않았지만, 숨은 추론 토큰은 추론 강도 사다리를 따라 늘어났습니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>보이는 답변이 짧더라도 추론 토큰을 텔레메트리에서 추적합니다. 숨은 토큰 예산을 응답이 끝내 보여 주지 않는 청구서의 일부로 다룹니다.</p></section>
     </div>
 
-    <nav class="article-outline" aria-label="Topic sections">
+    <nav class="article-outline" aria-label="주제 영역">
       <strong>맥락별로 읽기:</strong>
-      <a href="#s1">답변은 짧았지만, 내부 작업은 그렇지 않았다</a>
+      <a href="#s1">짧은 답변, 짧지 않은 내부 작업</a>
       <a href="#s2">차트를 읽는 법</a>
-      <a href="#s3">원본 차트가 더해 주는 것</a>
-      <a href="#s4">남겨 둘 이야기</a>
+      <a href="#s3">원천 차트가 더해 주는 것</a>
+      <a href="#s4">기억할 요점</a>
       <a href="#table">근거 표</a>
     </nav>
 
     <p class="banner">
-      <strong>대응되는 원본 차트 열기:</strong>
-      <a href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-tokens">benchmark-01 토큰 구성 차트</a>.
+      <strong>대응되는 원천 차트 열기:</strong>
+      <a href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-token_composition">benchmark-01 토큰 구성 차트</a>.
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>읽어야 할 차트:</strong> 이 토픽은 대시보드에서 차트 한 장 크기의 질문 하나를 떼어 내, 아래의 원본 표와 짝지어 보여 준다.
+          <strong>주제 안내 차트(공개 집계로 직접 작성).</strong> 이 도식은 차트 한
+          장 크기의 질문 하나 &mdash; 강도별 평균 숨은 추론 토큰, 각 막대 아래에
+          평균 보이는 출력 표기 &mdash; 를 떼어 내 아래 원천 표와 짝지어 보여
+          줍니다. 공개 차트 데이터 파이프라인에서 렌더링한 원천 차트는 더
+          아래에 이어집니다.
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="benchmark-01의 강도별 평균 추론 토큰을 보이는 출력 라벨과 함께 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>답변은 짧았지만, 내부 작업은 그렇지 않았다</h2>
-      <p>benchmark-01에서 정작 흥미로운 지점은 extra-high effort가 더 비쌌다는 사실이 아니다. 그건 예상된 일이다. 진짜 흥미로운 점은, 그 증가분이 최종 답변에는 거의 드러나지 않았다는 데 있다. minimal effort는 평균적으로 보이는 출력 12.7 토큰과 reasoning 토큰 3.7개를 기록했다. extra-high effort는 보이는 출력 17.9 토큰과 reasoning 토큰 311.5개를 기록했다.</p><p>다시 말해 독자가 보는 텍스트는, 실제로 구매한 연산량을 가늠하기에는 형편없는 대용물이다. 짧은 답변이 큰 reasoning 예산을 감출 수 있고, 그럴듯한 답변이라 해도 짝지은 품질 차트가 움직이지 않는다면 경제적으로는 나쁜 거래일 수 있다.</p>
+      <h2>짧은 답변, 짧지 않은 내부 작업</h2>
+      <p>benchmark-01에서 정작 흥미로운 지점은 매우 높은 강도(xhigh)가 더 비쌌다는 사실이 아닙니다. 그건 예상된 일입니다. 진짜 흥미로운 점은 그 증가분이 최종 답변에는 거의 드러나지 않았다는 데 있습니다. 이 단면에서 최소 강도(minimal)는 평균적으로 보이는 출력 12.7 토큰과 추론 토큰 3.655172를 기록했습니다. 매우 높은 강도는 보이는 출력 17.9 토큰과 추론 토큰 311.474576을 기록했습니다.</p>
+      <p>다시 말해 독자가 보는 텍스트는 실제로 구매한 연산량을 가늠하기에는 형편없는 대용물입니다. 짧은 답변이 큰 추론 예산을 감출 수 있고, 그럴듯한 답변이라 해도 짝지은 품질 차트가 움직이지 않는다면 경제적으로는 나쁜 거래일 수 있습니다.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>차트를 읽는 법</h2>
-      <p>막대는 개별 요청의 히스토그램이 아니라 effort별로 묶은 집계 셀이다. X축은 reasoning-effort 설정이고, Y축은 요청당 평균 reasoning tokens다. 각 막대 아래의 작은 라벨은 같은 셀의 평균 보이는 출력 토큰 수를 알려 준다.</p><p>차트는 아래에서 위로 읽는다. 먼저 청구서를 설명할 만큼 보이는 출력이 변했는지 묻고, 그다음 숨은 reasoning 막대와 비교한다. 이 구간에서 설명의 열쇠는 답변 길이가 아니다. 내부 작업이다.</p>
+      <p>막대는 개별 요청의 히스토그램이 아니라 강도별로 묶은 집계 셀입니다. X축은 추론 강도 설정이고, Y축은 요청당 평균 추론 토큰입니다. 각 막대 아래의 작은 라벨은 같은 셀의 평균 보이는 출력 토큰 수를 알려 줍니다.</p>
+      <p>차트는 아래에서 위로 읽습니다. 먼저 청구서를 설명할 만큼 보이는 출력이 변했는지 묻고, 그다음 숨은 추론 막대와 비교합니다. 이 단면에서 설명의 열쇠는 답변 길이가 아니라 내부 작업입니다.</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>원본 차트가 더해 주는 것</h2>
-      <p>토큰 구성은 메커니즘을 설명해 주지만, 그것만으로는 충분하지 않다. 비용 차트는 청구서가 불어나는 모습을 보여 주고, 품질 차트는 그 청구서가 더 나은 답변을 사 왔는지를 묻는다. 지연 차트는 사용자가 체감하는 대기 시간을 보여 준다. 이 셋을 함께 놓으면 숨은 영역이 비로소 읽힌다. 내부 토큰은 더 많아졌고, 지출도 늘었고, 지연도 길어졌지만, 이 짧은 사실 구간에서 그에 걸맞은 품질 상승은 없었다.</p>
+      <h2>원천 차트가 더해 주는 것</h2>
+      <p>토큰 구성은 메커니즘을 설명하지만, 그것만으로는 충분하지 않습니다. 비용 차트는 청구서가 불어나는 모습을 보여 주고, 품질 차트는 그 청구서가 더 나은 답변을 사 왔는지 묻습니다. 지연 시간 차트는 사용자가 체감하는 대기 시간을 보여 줍니다. 이 셋을 함께 놓으면 숨은 영역이 비로소 읽힙니다. 이 짧은 사실형 단면에서는 내부 토큰이 더 많아지고 지출도 늘고 지연 시간도 길어졌지만, 그에 걸맞은 품질 상승은 없었습니다.</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>남겨 둘 이야기</h2>
-      <p>교훈은 reasoning tokens가 나쁘다는 게 아니다. 그것이야말로 reasoning 모델의 존재 이유다. 교훈은 그 토큰에 맡길 일이 있어야 한다는 것이다. 과제가 짧은 사실 답변만 필요로 한다면, 내부 reasoning은 조용한 예산 누수가 될 수 있다. 반대로 과제가 여러 단계의 해결을 요구한다면, 바로 그 토큰이 품질 향상을 벌어다 주는 핵심일 수 있다.</p><p>개요 에세이가 비용·품질·지연·토큰 구성을 한자리에 묶어 두는 이유가 여기에 있다. 청구서는 답변 안에 온전히 드러나지 않는다.</p>
+      <h2>기억할 요점</h2>
+      <p>교훈은 추론 토큰이 나쁘다는 것이 아닙니다. 그 토큰이야말로 추론 모델의 존재 이유입니다. 교훈은 그 토큰에 맡길 일이 있어야 한다는 것입니다. 과제가 짧은 사실형 답변만 필요로 한다면, 내부 추론은 조용한 예산 누수가 될 수 있습니다. 반대로 과제가 여러 단계의 해결을 요구한다면, 바로 그 토큰이 품질 향상을 벌어다 주는 핵심일 수 있습니다.</p>
+      <p>개요 글이 비용·품질·지연 시간·토큰 구성을 한자리에 묶어 두는 이유가 여기에 있습니다. 청구서는 답변 안에 온전히 드러나지 않습니다.</p>
     </section>
 
     <section id="table" class="article-section">
       <h2>근거 표</h2>
+      <figure class="article-figure" id="figure-invisible-tokens">
+        <figcaption>
+          <strong>원천 차트 &mdash; benchmark-01 토큰 구성.</strong>
+          <strong>X축:</strong> 모델과 강도 사다리 &mdash; gpt-4o 기준선, 그다음
+          gpt-5.2의 최소·낮음·중간·높음·매우 높음 강도입니다.
+          <strong>Y축:</strong> 요청당 평균 토큰 수입니다.
+          <strong>쌓은 구간:</strong> 각 막대는 강도 셀 하나를 입력(비캐시), 캐시된
+          입력, 보이는 출력, 숨은 추론으로 쌓은 것이며 &mdash; 빈도 히스토그램이
+          아니라 집계 구성입니다.
+          <strong>읽는 법:</strong> 입력과 보이는 출력 구간은 거의 변하지 않는 반면,
+          숨은 추론 구간은 최소 강도의 3.655172에서 매우 높은 강도의 311.474576으로
+          늘어납니다. 합계는 오르지만 독자가 볼 수 있는 부분은 짧게 유지됩니다.
+          <strong>근거 경계:</strong> 셀당 N = 20, R = 3 반복이며, 하나의 Azure
+          OpenAI 테넌트와 리전에서 측정한 이 하나의 짧은 사실형 단면입니다.
+          다단계, 도구 에이전트, 종합 작업의 토큰 형태는 보여 주지 않습니다.
+          <strong>출처와 대시보드:</strong> 구간 값은
+          <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>에서
+          나오며,
+          <a href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-token_composition">근거 대시보드</a>에서
+          읽으세요
+          (<a href="../../../../../data/chart-data/token-composition/benchmark-01/tokens.json">제공되는 차트 데이터</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/benchmark-01-tokens.png" alt="benchmark-01의 모델·강도별 요청당 평균 토큰 수를 쌓은 막대 차트로, 입력과 보이는 출력 구간은 거의 일정한 반면 숨은 추론 구간이 최소에서 매우 높은 강도로 갈수록 가파르게 커집니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-01 hidden-token evidence</caption>
-        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <caption>benchmark-01 숨은 토큰 근거</caption>
+        <thead><tr><th>근거 항목</th><th>측정값 A</th><th>측정값 B</th><th>더해 주는 것</th></tr></thead>
         <tbody>
-          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>짧은 답변, 아주 작은 숨은 예산.</td></tr>
-<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>텍스트는 여전히 짧지만, 내부 예산은 훨씬 크다.</td></tr>
-<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>이 구간에서 숨은 작업은 품질 상승을 사 오지 못했다.</td></tr>
-<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>숨은 작업은 대기 시간까지 늘려 놓았다.</td></tr>
+          <tr><td>최소 강도</td><td>보이는 출력 12.7 토큰</td><td>추론 토큰 3.655172</td><td>짧은 답변, 아주 작은 숨은 예산입니다.</td></tr>
+<tr><td>매우 높은 강도</td><td>보이는 출력 17.9 토큰</td><td>추론 토큰 311.474576</td><td>텍스트는 여전히 짧지만, 내부 예산은 훨씬 큽니다.</td></tr>
+<tr><td>짝지은 품질</td><td>최소 강도 1.87931</td><td>매우 높은 강도 1.779661</td><td>이 단면에서 숨은 작업은 품질 상승을 사 오지 못했습니다.</td></tr>
+<tr><td>지연 시간</td><td>최소 강도 약 1.1초</td><td>매우 높은 강도 약 3.1초</td><td>숨은 작업은 대기 시간까지 늘렸습니다.</td></tr>
         </tbody>
       </table>
     </section>
 
-    <section class="article-section decision-box">
-      <h2>근거가 말하게 해 주는 것</h2>
-      <p>reasoning-token 예산은 답변에서는 보이지 않더라도 텔레메트리에서는 보여야 한다. 이것이 이 토픽이 시리즈에 더하는 핵심적인 회계 습관이다.</p>
-      <p><a class="button-link" href="../../../">Back to the overview essay</a></p>
+    <section id="sources" class="article-section">
+      <h2>출처와 근거 경계</h2>
+      <p>
+        위의 모든 수치는 이 저장소의 공개 산출물로 추적되며, 모든 비용 수치는
+        날짜가 박힌 가격 스냅샷을 기준으로 계산됩니다. 추론 토큰 예산을
+        텔레메트리에서 보이게 유지해야 한다는 회계 습관은 이 글 자체의 운영적
+        해석입니다. 아래 두 계층은 문서화된 입력이 끝나고 추론이 시작되는
+        경계를 표시합니다.
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.</li>
+        <li><strong>Tier 1 — PAYG 가격 스냅샷:</strong> 요청당 비용 관점은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 접근일: 2026-05-19; 출처 URL: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; 아카이브 URL: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. 정가가 움직이면 숨은 토큰 청구서도 달라집니다.</li>
+        <li><strong>Tier 2 — benchmark-01 단면 측정:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>. 3.655172에서 311.474576으로의 추론 토큰 변화, 12.7에서 17.9로의 보이는 출력 이동, 1.87931에서 1.779661로의 평균 평가 점수, 약 1.1초에서 약 3.1초로의 지연 시간 확대의 출처입니다.</li>
+        <li><strong>Tier 2 — 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>이 토큰 분해의 출처입니다. <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>과 함께 읽으면, 숨은 토큰이 그에 맞는 품질 상승 없이 청구서와 대기 시간을 함께 키웠다는 근거가 됩니다.</li>
+        <li><strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-token_composition">benchmark-01 토큰 구성 차트</a>는 같은 산출물을 감사할 수 있는 형태입니다.</li>
+      </ul>
+      <p>
+        이 단면이 증명하는 것과 증명하지 못하는 것: 이 짧은 사실형 단면에서는
+        강도 사다리를 따라 내부 추론이 늘어나는 동안 보이는 출력은 거의
+        움직이지 않았음을 보여 줍니다. 같은 숨은 토큰 형태가 다단계, 도구
+        에이전트, 종합 작업에서도 나타난다는 것은 증명하지 못합니다. 각 주제는
+        자신의 측정을 따로 가집니다.
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>근거로 말할 수 있는 것</h2>
+      <p>
+        이 단면은 숨은 추론 토큰이 청구서와 대기 시간을 키웠지만 그에 맞는
+        품질 상승은 없었음을 보여 주며, 시리즈에 ‘청구서는 답변에 온전히
+        드러나지 않는다’는 기준점을 더합니다.
+      </p>
+      <p><a class="button-link" href="../../../ko/">개요 글로 돌아가기</a></p>
+
+      <h2>실무 규칙</h2>
+      <ol>
+        <li>추론 토큰을 총 토큰만이 아니라 요청별로 보이는 출력 옆에 함께 기록하세요.</li>
+        <li>짧은 답변도 큰 내부 비용을 품을 수 있으니, 숨은 토큰 예산에 알림을 거세요.</li>
+        <li>이 워크로드 형태에서 짝지은 품질 차트가 움직인 뒤에만 더 높은 강도를 승격하세요.</li>
+      </ol>
+      <p>
+        <strong>실무 규칙: 보이는 답변이 짧더라도 추론 토큰을 텔레메트리에서
+        측정하세요 &mdash; 숨은 토큰 예산이 바로 응답이 보여 주지 않는 청구서의
+        일부입니다.</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=ko#chart-token-composition-benchmark-01-token_composition">토큰 구성 차트 살펴보기</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>다음:</strong>
+        <a href="../../multi-step-work/ko/">다단계 작업: 추론이 시험해 볼 가치를 얻을 때</a>
+        &mdash; 추가 추론은 언제 더 큰 청구서가 아니라 품질 향상을 사 올까요?
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site">
+    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
+  </footer>
 </body>
 </html>
