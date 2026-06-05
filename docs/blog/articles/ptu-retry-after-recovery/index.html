@@ -41,6 +41,20 @@
       decision: wait, redirect, or give up?”
     </p>
 
+    <figure class="article-figure" id="figure-ptu-retry-one-pager">
+      <figcaption>
+        <strong>This essay at a glance.</strong> When a saturated PTU target
+        returns 429, the documented <code>retry-after-ms</code> header is the
+        admission contract: honor it, add jitter, and budget for the observed long tail. The
+        one-pager carries that single message and marks the evidence boundary —
+        the header is Microsoft Learn's contract, while the short-median,
+        long-tail shape beside it is a sanitized public aggregate from this
+        repository's source runs, shown descriptively.
+        <a href="../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg">Open the 429 recovery one-pager SVG</a>.
+      </figcaption>
+      <img src="../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg" alt="One-pager for recovering from 429 with retry-after-ms. It places the documented 429 header contract next to a sketch of an observed retry-after-ms distribution with a short median and a long tail. Headline message: on 429, honor the retry-after-ms header and add jitter, because the advised waits were short at the median with a long tail. Marked as the documented contract plus a sanitized observed aggregate, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
         <h2>Question</h2>
@@ -70,7 +84,11 @@
       This essay states the PTU 429 admission contract as Microsoft Learn
       documents it on the access date, plus a small set of operational rules of
       thumb this repository defends. It is a runbook for the retry wrapper, not a
-      measurement of any specific deployment.
+      measurement of any specific deployment. The one observed
+      <code>retry-after-ms</code> distribution it shows is a sanitized public
+      aggregate from this repository's source runs, included descriptively to
+      show that the advised waits were not constant — not a service-level
+      guarantee.
     </p>
 
     <section id="spec" class="article-section">
@@ -130,6 +148,51 @@
         two paths is operational inference this repository defends; the immediate
         429 and the header contract are what Microsoft Learn documents.
       </p>
+      <figure class="article-figure" id="figure-ptu-retry-cdf">
+        <figcaption>
+          <strong>Source chart &mdash; observed <code>retry-after-ms</code> distribution (descriptive).</strong>
+          <strong>X-axis:</strong> the wait the response header advised, in
+          milliseconds. <strong>Y-axis:</strong> the empirical cumulative share
+          of 429 responses at or below that wait. <strong>Lines:</strong> one
+          curve per source group plus a combined curve &mdash; a burst-shaped
+          source (n&nbsp;=&nbsp;167), a scheduled-shaped source (n&nbsp;=&nbsp;26),
+          and the combined sample (n&nbsp;=&nbsp;193); this is an empirical
+          cumulative distribution, not a frequency histogram.
+          <strong>How to read it:</strong> each curve rises almost to the top
+          near zero &mdash; in this sample most advised waits were short (overall
+          p50 &asymp; 43&nbsp;ms) &mdash; then flattens into a long tail reaching
+          about 17,000&nbsp;ms, so a small share of waits were very long (overall
+          p99 &asymp; 16,921&nbsp;ms). That short-median, long-tail shape is why
+          the operating pattern below caps the wait at a latency budget and then
+          redirects or fails. <strong>Evidence boundary:</strong> this is one
+          sanitized public aggregate of 429 events from this repository's source
+          runs, shown descriptively; it is not a service-level guarantee, a
+          reset model, or a measurement of any specific deployment, region, or
+          future API version. <strong>Source:</strong> percentile values come
+          from this repository's
+          <code>results/retry-after-characterization/retry_after_ms_percentiles.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">source CSV</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../assets/retry-after-ms-cdf.png" alt="Empirical cumulative distribution of observed retry-after-ms values. Each curve rises almost vertically near zero milliseconds, meaning most advised 429 waits in this sample were short, then flattens into a long tail extending to roughly seventeen thousand milliseconds for a small share of waits. Separate curves compare a burst-shaped source, a scheduled-shaped source, and the combined sample." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <table class="chart-table evidence-table">
+        <caption>Observed retry-after-ms percentiles (sanitized public aggregate)</caption>
+        <thead>
+          <tr>
+            <th>Source group</th>
+            <th>429 count</th>
+            <th>p50</th>
+            <th>p90</th>
+            <th>p99</th>
+            <th>Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Overall</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>Burst-shaped source</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>Scheduled-shaped source</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+        </tbody>
+      </table>
       <div class="evidence-grid">
         <div>
           <h3>Documented (Tier 1)</h3>

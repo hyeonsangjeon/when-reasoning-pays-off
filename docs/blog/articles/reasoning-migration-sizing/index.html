@@ -41,6 +41,21 @@
       reasoning tokens, cache hit rate, and response ceiling?”
     </p>
 
+    <figure class="article-figure" id="figure-migration-one-pager">
+      <figcaption>
+        <strong>This essay at a glance.</strong> Migration sizing is modeled
+        arithmetic, not a model-name lookup: recommended PTU =
+        ceil(demand &divide; density &divide; target&nbsp;utilization), and an
+        oversized <code>max_output_tokens</code> reservation — not request
+        volume — tends to dominate the PTU the workload reserves. The one-pager
+        carries that single message and marks the boundary plainly: it is a
+        synthetic worked example over a modeled workload with pinned pricing
+        snapshots, not measured capacity.
+        <a href="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">Open the migration-sizing one-pager SVG</a>.
+      </figcaption>
+      <img src="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="One-pager for reasoning migration sizing. It traces the sizing chain from demand TPM through the prompt plus max_output reservation, divided by density and target utilization, to a recommended PTU ceiling, and highlights that an oversized max_output_tokens reservation, not request volume, drives the result. Headline message: migration sizing is modeled arithmetic. Marked explicitly as a synthetic worked example, not measured capacity." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
         <h2>Question</h2>
