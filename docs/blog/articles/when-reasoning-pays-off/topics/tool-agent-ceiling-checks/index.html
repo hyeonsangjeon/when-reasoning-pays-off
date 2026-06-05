@@ -36,6 +36,18 @@
     <h1>Tool-agent work: after quality reaches the ceiling, latency starts speaking</h1>
     <p class="lede">Tool-agent tasks are easy to over-romanticize. They involve tools, branching, and a sense that the model is doing real work. Benchmark-03 keeps the romance in check by pairing quality with latency. The result is subtler than “more effort is better.”</p>
 
+    <figure class="article-figure" id="figure-tool-agent-one-pager">
+      <figcaption>
+        <strong>This topic at a glance.</strong> On this capped tool/agent slice the
+        judge score flattens against a ceiling, so more reasoning effort buys cost
+        and latency rather than a higher score. The one-pager states that single
+        message and marks the evidence boundary; the sections below add the measured
+        detail.
+        <a href="../../../../../assets/when-reasoning-pays-off-tool-agent-ceiling-checks.svg">Open the tool-agent ceiling one-pager SVG</a>.
+      </figcaption>
+      <img src="../../../../../assets/when-reasoning-pays-off-tool-agent-ceiling-checks.svg" alt="One-pager for tool and agent ceiling checks. It shows judge score rising to a task ceiling and then flattening across the effort ladder. Headline message: on a capped tool or agent task, score flattens against a ceiling and more reasoning effort cannot lift it, so spend the budget where the cap is not binding. Marked as a measured aggregate, single tenant and region." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>When tool-agent quality is already near the top, what does extra effort still buy?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>benchmark-03 quality, cost, latency, and token-composition charts.</p></section>
@@ -60,7 +72,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>Chart to read:</strong> this topic pulls one chart-sized question out of the dashboard and pairs it with the source table below.
+          <strong>Topic guide chart (hand-built from the public aggregate).</strong> This schematic isolates one chart-sized question &mdash; mean latency by effort, with the paired mean judge score labelled under each bar &mdash; and pairs it with the source table below. The rendered source quality chart from the public chart-data pipeline follows further down.
         </figcaption>
         <img class="wide-chart" src="../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -85,6 +97,32 @@
 
     <section id="table" class="article-section">
       <h2>The evidence table</h2>
+      <figure class="article-figure" id="figure-tool-agent-quality">
+        <figcaption>
+          <strong>Source chart &mdash; benchmark-03 judge quality.</strong>
+          <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
+          then gpt-5.2 at none, low, medium, high, and extra-high effort.
+          <strong>Y-axis:</strong> mean judge score on the 0&ndash;2 rubric.
+          <strong>Bars:</strong> each bar is the mean score of one cell &mdash; an aggregate
+          comparison, not a frequency histogram &mdash; and the whiskers show &plusmn;1
+          standard deviation.
+          <strong>How to read it:</strong> this is the ceiling the essay describes &mdash;
+          the gpt-4o baseline sits at 1.85 and every gpt-5.2 cell clusters inside a narrow
+          1.97&ndash;2.0 band (none 1.966667, low 2.0, medium 1.983333, high 1.966667,
+          extra-high 2.0), so on this slice raising effort does not lift the score off the
+          cap.
+          <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats, this one
+          tool-agent slice on a single Azure OpenAI tenant and region; error bars are
+          standard deviation, not confidence intervals, and no p-values are claimed at
+          N = 20.
+          <strong>Source &amp; dashboard:</strong> bar values come from
+          <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/quality.json</code>;
+          read it next to the latency and cost charts in the
+          <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">evidence dashboard</a>
+          (<a href="../../../../data/chart-data/cost-curves-effort/benchmark-03/quality.json">served chart data</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../../../assets/benchmark-03-quality.png" alt="Bar chart of benchmark-03 mean judge score by model and effort; the gpt-4o baseline is about 1.85 while every gpt-5.2 effort cell clusters in a narrow band between about 1.97 and 2.0, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
         <caption>benchmark-03 quality-latency evidence</caption>
         <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>

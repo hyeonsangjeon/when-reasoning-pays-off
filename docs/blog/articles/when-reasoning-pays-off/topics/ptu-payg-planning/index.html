@@ -36,6 +36,18 @@
     <h1>PTU/PAYG crossover: a planning line, not a capacity result</h1>
     <p class="lede">The crossover chart is useful precisely because it is limited. It turns the public cost and token-shape snapshot into a planning question: at what request rate would fixed PTU spend begin to look cheaper than PAYG for this measured workload shape? It does not prove how a live PTU target will behave under load.</p>
 
+    <figure class="article-figure" id="figure-ptu-payg-one-pager">
+      <figcaption>
+        <strong>This topic at a glance (modeled, not measured).</strong> PTU versus
+        PAYG is a calculated crossover at a break-even request rate: below it PAYG is
+        cheaper, above it the committed PTU block is. The one-pager states that single
+        message and marks the modeled boundary; the sections below add the calculation
+        and its limits.
+        <a href="../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">Open the PTU/PAYG one-pager SVG</a>.
+      </figcaption>
+      <img src="../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="One-pager for PTU versus PAYG planning. It shows a rising PAYG cost line crossing a flat committed-PTU cost line at a break-even request rate. Headline message: PTU versus PAYG is a modeled crossover at a break-even request rate, below it PAYG is cheaper and above it PTU. Explicitly labeled modeled, not measured: the crossover is calculated, not a live capacity result." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>What can a modeled PTU/PAYG crossover tell us, and what must it not claim?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>A break-even calculation that combines two dated pricing snapshots — <code>pricing/azure-openai-payg-2026-05.yaml</code> and <code>pricing/azure-openai-ptu-2026-05.yaml</code> — with the measured per-request cost and token-shape throughput factor from benchmark-01, -02, and -03. The output is the <code>modeled_break_even_rpm</code> series in the crossover chart data, not a measured throughput.</p></section>
@@ -54,13 +66,13 @@
 
     <p class="banner">
       <strong>Open the matching source chart:</strong>
-      <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG crossover chart family</a>.
+      <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a>.
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>Chart to read:</strong> this topic pulls one chart-sized question out of the dashboard and pairs it with the source table below.
+          <strong>Topic guide chart (hand-built from the modeled aggregate).</strong> This schematic isolates one chart-sized question &mdash; the modeled PTU/PAYG break-even RPM for selected benchmark rows &mdash; and pairs it with the source table below. The bars are calculated break-even markers, not measured capacity; the modeled crossover JSON is cited in the sources section.
         </figcaption>
         <img class="wide-chart" src="../../../../../assets/topic-ptu-payg-planning.svg" alt="Bar chart showing modeled PTU/PAYG break-even RPM for selected benchmark rows." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -113,7 +125,7 @@
         <li><strong>Tier 1 — PTU pricing snapshot:</strong> this repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. accessed_date: 2026-05-19; source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a>; archive_url: <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a> (region eastus2). The PTU side of the formula — $2.00 per PTU-hour, a 50 PTU minimum (the floor), and the Input TPM per PTU used for the throughput factor (gpt-4o 2,500; gpt-5.2 3,400) — comes from this snapshot. Both the PAYG and PTU prices feed the break-even: a PAYG bill per request on one side, a fixed $100/hour PTU floor (50 × $2.00) on the other.</li>
         <li><strong>Tier 2 — measured per-request inputs:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, and <code>benchmarks/03-tool-using-agent/analysis.json</code>. These supply the mean cost per request and the per-cell token-per-request distribution that becomes the throughput-gain factor relative to the gpt-4o baseline.</li>
         <li><strong>Tier 2 — modeled crossover output (CALCULATION, not measurement):</strong> this repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, and <code>benchmark-03/crossover.json</code>. The <code>modeled_break_even_rpm</code> series rendered by the chart is computed as <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>. The 149 rpm figure for benchmark-01 extra-high, the 50 PTU floor, and the $2.00 PTU-hour rate are all calculated or quoted inputs — labeled MODELED, not measured throughput.</li>
-        <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG crossover chart family</a> is the auditable form of the same JSON artifacts.</li>
+        <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a> is the auditable form of the same JSON artifacts.</li>
       </ul>
       <p>
         What this slice does and does not prove: it shows where the modeled
@@ -145,7 +157,7 @@
         admission, and burst.</strong>
       </p>
       <p>
-        <a class="button-link" href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">Inspect the crossover chart</a>
+        <a class="button-link" href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">Inspect the crossover chart</a>
       </p>
     </section>
 
