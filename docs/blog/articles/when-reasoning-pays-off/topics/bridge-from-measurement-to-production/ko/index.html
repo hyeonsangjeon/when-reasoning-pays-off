@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>측정에서 프로덕션으로 | 추론이 비용을 정당화할 때</title>
+  <meta name="description" content="근거 레이어와 운영 레이어 사이에서 목소리가 달라지는 이유와, 두 층을 가로질러 이어지는 습관을 다룬 브리지 글.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="translated_bridge">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="5d13e0f2c965677521433fd5005818588300960cfb0c69f9f23107e53b1a525d">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="../ko/">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ko/">when reasoning pays off</a>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">글 목록</a> / <a href="../../../ko/">추론이 비용을 정당화할 때</a> / 브리지 글</p>
+    <p class="article-kicker">브리지 글 · 근거 레이어와 운영 레이어 사이</p>
+    <h1>측정에서 프로덕션으로</h1>
+    <p class="lede">근거 글은 측정 질문에 답했습니다. 추론 강도를 더 쓰면 어디서 품질을 사고, 어디서는 숨은 계산만 사는가 하는 질문입니다. 운영 글은 다른 질문에 답합니다. 그 강도 결정을 내리고 트래픽이 흐르기 시작한 뒤, 배포는 운영자에게 무엇을 되돌려 주어야 하는가 하는 질문입니다. 이 페이지가 존재하는 이유는 두 질문이 비슷하게 들리지만 서로 다른 것을 묻기 때문이며, 질문이 바뀌면 목소리도 바뀝니다.</p>
+
+    <figure class="article-figure" id="figure-bridge-one-pager">
+      <figcaption>
+        <strong>한눈에 보는 브리지.</strong> 이 한 장 요약은 이 페이지의 단 하나의
+        역할을 짚습니다. 근거 레이어는 &ldquo;우리의 측정값&rdquo;이라는 목소리로,
+        운영 레이어는 &ldquo;서비스 계약&rdquo;이라는 목소리로 말하며, 브리지는 주어진
+        주장이 어느 목소리를 필요로 하는지를 가립니다. 이는 시리즈 전체 흐름에
+        대한 메타 성찰이며 새로운 측정을 더하지 않습니다. 아래 절이 그 세부를
+        채웁니다.
+        <a href="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.svg">브리지 한 장 요약 SVG 열기</a>.
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.svg" alt="브리지 글 '측정에서 프로덕션으로'의 한 장 요약. 두 가지 목소리를 대비합니다. '우리의 측정값'이라고 적힌 근거 패널과 '우리가 지키는 계약'이라고 적힌 운영 패널을, 어느 목소리가 적용되는지 묻는 호가 잇습니다. 핵심 메시지: 두 가지 목소리, 즉 우리가 소유한 측정값과 남이 유지하는 계약이 있으며, 브리지는 각각이 언제 적용되는지를 이름 붙입니다. 새로운 측정을 더하지 않는, 시리즈 전체 흐름에 대한 메타 성찰임을 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="브리지 요약">
+      <section class="summary-tile"><h2>질문</h2><p>근거 습관은 언제 운영 습관이 되어야 하며, 둘 사이에서 무엇이 이어질까요?</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>근거 레이어의 다섯 주제 글은 하나의 형태를 공유합니다. 각 글은 워크로드 하나를 &mdash; 짧은 사실형 답변, 다단계 추론, 도구 사용 에이전트, 숨은 추론 토큰, 모델링된 PAYG 대 PTU 교차점 &mdash; 이름 붙이고, 비용·품질·지연 시간·토큰 구성을 하나의 작은 차트에서 함께 읽습니다. 이 형태는 의도된 설계입니다. &ldquo;비용 상승&rdquo;을 가리키는 막대 하나는, &ldquo;품질 정체&rdquo;를 가리키는 짝지은 막대 옆에서는 각주에 불과합니다. 루브릭을 통과한 품질 막대 하나도, &ldquo;지연 시간 증가&rdquo;를 가리키는 짝지은 지연 시간 막대 옆에서는 각주입니다. 각 글은 절대 수치가 사라져도 살아남는 결정 함의로 마무리합니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>운영으로 가져갈 것은 절대 수치가 아니라 근거 습관입니다. 운영 글은 벤치마크가 아니라 공식 스펙 위에 얹은 정책으로 쓰입니다. 같은 감사 추적 규율 &mdash; Tier 1 문서화된 동작, Tier 2 운영적 추론, 경계가 갈리는 지점에서 분명히 밝히는 근거 경계 &mdash; 을 빌려, 벤치마크 셀만으로는 답할 수 없는 질문에 적용합니다.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="브리지 영역">
+      <strong>맥락별로 읽기:</strong>
+      <a href="#s1">목소리가 바뀌는 이유</a>
+      <a href="#s2">두 레이어가 공유하는 것</a>
+      <a href="#s3">운영 레이어에서 진짜로 새로운 것</a>
+      <a href="#s4">근거 글을 읽은 뒤 운영 글을 읽는 법</a>
+    </nav>
+
+    <section id="s1" class="article-section">
+      <h2>목소리가 바뀌는 이유</h2>
+      <p>근거 글은 &ldquo;우리의 측정값&rdquo;을 말합니다. 그 목소리는 측정에 맞습니다. 결과를 소유하고, 잡음을 함께 지며, 독자가 표본을 두고 반박할 여지를 남깁니다. 운영 글은 &ldquo;Microsoft Learn 계약&rdquo;을 말합니다. 그 목소리는 계약에 맞습니다. 출처를 가리키고, 보장된 것과 추론된 것을 분리하며, 운영자가 재실행을 기다리지 않고 행동하게 합니다.</p>
+      <p>벤치마크 목소리는 답이 우리가 소유한 측정값에서 나올 때 적절합니다. 운영 목소리는 답이 남이 유지하는 계약에서 나오고, 우리가 그것을 런북으로 옮길 때 적절합니다. 둘을 섞으면 &mdash; 문서화된 동작을 두고 &ldquo;우리의 측정값&rdquo;을 내세우거나, 우리가 직접 돌린 강도별 비용 곡선을 두고 &ldquo;Microsoft Learn 계약&rdquo;을 내세우면 &mdash; 양쪽 모두 약해집니다. 이 구분은 비일관성이 아니라 의도된 설계입니다.</p>
+      <p>실무에서는 세 곳에서 드러납니다.</p>
+      <ul>
+        <li><strong>시제.</strong> 근거 글은 측정 결과를 과거형으로 씁니다(&ldquo;minimal 강도는 요청당 평균 $0.000663&rdquo;). 운영 글은 계약 동작을 현재형으로 씁니다(&ldquo;서비스는 <code>retry-after-ms</code> 헤더와 함께 429를 반환합니다&rdquo;).</li>
+        <li><strong>출처.</strong> 근거 글은 이 저장소의 <code>analysis.json</code> 산출물을 인용합니다. 운영 글은 접근 날짜와 함께 Microsoft Learn 페이지를 인용하고, 문서가 침묵할 때만 저장소 측정값으로 물러섭니다.</li>
+        <li><strong>맺음줄.</strong> 근거 글은 측정 단면이 허용하는 말이나 &ldquo;운영자 체크리스트&rdquo;로 끝납니다. 운영 글은 &ldquo;실무 규칙&rdquo;으로 끝납니다. 맺음줄은 독자가 방금 읽은 근거가 어떤 종류인지를 알려 줍니다.</li>
+      </ul>
+    </section>
+
+    <section id="s2" class="article-section">
+      <h2>두 레이어가 공유하는 것</h2>
+      <p>세 가지 습관이 양방향으로 브리지를 건넙니다.</p>
+      <p>첫째는 <strong>함께 읽기</strong>입니다. 벤치마크 레이어는 비용을 결코 혼자 읽지 않습니다. 비용을 품질·지연 시간·토큰 구성과 나란히 읽습니다. 운영 레이어도 한 신호를 혼자 읽지 않습니다. <code>retry-after-ms</code>를 그 대기를 책임지는 지연 시간 정책과 나란히 읽고, 캐시 적중률을 첫 토큰 지연 시간과 나란히 읽으며, <code>max_output_tokens</code>를 입장 동시성과 나란히 읽습니다. 질문의 형태는 바뀌어도, 두 가지를 한 번에 보는 습관은 바뀌지 않습니다.</p>
+      <p>둘째는 <strong>근거 경계</strong>입니다. 모든 벤치마크 글은 측정이 무엇을 다루고 무엇을 다루지 않는지를 밝힙니다 &mdash; 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면, 정가 기준만. 모든 운영 글도 같은 것을 다른 어휘로 밝힙니다 &mdash; Tier 1 스펙 대 Tier 2 추론, 공개 매니페스트 대 비공개 아카이브, 접근 날짜가 박힌 인용 대 운영 경험칙. 경계를 분명히 밝히면 독자가 어느 쪽 근거든 보장으로 과대 해석하는 일을 막습니다.</p>
+      <p>셋째는 <strong>다음 동작</strong>입니다. 각 근거 글은 워크로드 형태가 바뀌면 다음 실험이 무엇일지를 말하며 끝납니다. 각 운영 글은 다음 관측이 운영자에게 무엇을 알려 줄지를 말하며 끝납니다. 두 경우 모두 산출물은 판정이 아니라 결정 프레임입니다.</p>
+    </section>
+
+    <section id="s3" class="article-section">
+      <h2>운영 레이어에서 진짜로 새로운 것</h2>
+      <p>근거 레이어가 닿을 수 없는 세 가지가 운영 레이어에서 등장합니다.</p>
+      <p><strong>헤더 계약</strong>이 등장합니다. <code>retry-after-ms</code>, 스필오버 헤더, 캐시 일치 조건은 측정값이 아니라 서비스가 하는 약속입니다. 벤치마크 셀은 그 약속이 옳은지에 표를 던질 수 없습니다. 운영 글은 그 약속을 꼼꼼히 읽고, 그것이 무엇을 약속하고 무엇을 약속하지 않는지를 적어 둡니다.</p>
+      <p><strong>라우팅 표면</strong>이 등장합니다. <code>prompt_cache_key</code>는 메타데이터 태그가 아니라, 프리픽스 해시와 결합한 라우팅 친화도 제어입니다. 캐시 리텐션은 부수 효과가 아니라, 데이터 위치 차원을 가진 요청별 정책 선택입니다. 이는 워크로드가 배포 위에서 돌기 시작한 뒤에야 나타나는 운영 형태의 질문입니다.</p>
+      <p><strong>사이징 변환</strong>이 등장합니다. 마이그레이션 사이징 글은 같은 측정 습관을 가져와 프로비저닝된 처리량 사이징으로 되돌려 보냅니다. 그 차트의 숫자는 예시이며 &mdash; 용량 결과가 아니라 계산이라고 명시적으로 표시됩니다 &mdash; 다만 그 규율은 벤치마크 글이 훈련시킨 규율과 같습니다. 보이는 출력을 재고, 숨은 추론을 재고, 캐시된 입력을 재고, 응답 천장을 재고, 그런 다음에야 배포 크기를 정합니다.</p>
+    </section>
+
+    <section id="s4" class="article-section">
+      <h2>근거 글을 읽은 뒤 운영 글을 읽는 법</h2>
+      <p>같은 읽기 동작이 두 레이어 모두에서 통합니다. 먼저 메타 헤더 &mdash; 질문·근거·결정 &mdash; 를 읽고, 그 페이지가 내가 물으러 온 것을 묻고 있는지 판단합니다. 본문은 메커니즘과 함의를 위해 읽습니다. 출처는 근거 경계를 확인하기 위해 읽습니다. 경계가 자신의 상황에 맞을 때만 그 결정을 앞으로 가져갑니다.</p>
+      <p>근거 글에서 경계는 &ldquo;측정 범위&rdquo;입니다 &mdash; 하나의 테넌트, 하나의 리전, 하나의 가격 스냅샷에서 N = 20 표본으로 잰 단면. 운영 글에서 경계는 &ldquo;운영 경계&rdquo;입니다 &mdash; 접근 날짜 기준으로 Microsoft Learn이 문서화한 내용에, 이 저장소가 기꺼이 방어할 작은 운영적 추론 묶음을 더한 범위. 경계는 다르지만, 규율은 같습니다.</p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">출처 · 근거 경계</p>
+      <h2>출처와 근거 경계</h2>
+      <p>이 브리지 글은 새로운 측정이나 새로운 스펙 인용을 도입하지 않습니다. 두 레이어를 잇는 편집 계약을 진술할 뿐입니다. 링크된 글 안에서 인용된 출처가 브리지 양쪽에 각각 적용됩니다.</p>
+      <ul>
+        <li><strong>근거 쪽 인용:</strong> 글별 <code>analysis.json</code> 산출물, 실행 시점에 적용된 가격 스냅샷, 그리고 <code>docs/05-methodology.md</code>의 방법론 계약.</li>
+        <li><strong>운영 쪽 인용:</strong> 접근 날짜가 박힌 Microsoft Learn 제품 문서, <code>docs/15-spec-vs-inference-taxonomy.md</code>의 스펙 대 추론 분류 체계, 그리고 <code>docs/16-release-tiers-and-redaction-policy.md</code>의 릴리스 계층 정의.</li>
+      </ul>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>실무 규칙</h2>
+      <p><strong>실무 규칙: 근거 레이어는 토큰을 쓸 권리를 얻고, 운영 레이어는 배포가 가동된 뒤에도 그 토큰을 계속 쓸 권리를 얻습니다. 그 순서대로 읽고, 각 레이어가 자신의 근거 경계를 스스로 정하게 하세요.</strong></p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>다음:</strong>
+        <a href="../../../../ptu-retry-after-recovery/ko/">429: 단순한 오류가 아닌 복구 신호</a>
+        &mdash; PTU 용량이 &ldquo;대기 필요&rdquo;를 신호할 때, 클라이언트는
+        다음 동작을 어떻게 정해야 할까요?
+      </p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
+  </footer>
+</body>
+</html>
