@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>리텐션은 정책이다 | when reasoning pays off</title>
+  <title>리텐션: 가정이 아니라 요청 정책 | when reasoning pays off</title>
   <meta name="description" content="캐시 윈도를 가정하는 대신 prompt_cache_retention을 명시하는 방법에 관한 공개 운영 아티클입니다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="465256148cc70cf1aa740a55dfdba8b4f117511c0441c22d7ba70d25ec9aec20">
+  <meta name="article:source-article-sha256" content="ab731848dd8f49b15893b634023797958f77b676e4d3883075b555ef5f9f8882">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -35,7 +35,7 @@
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../">Articles</a> / 운영 에세이</p>
     <p class="article-kicker">운영 에세이 · 프롬프트 캐시 리텐션</p>
-    <h1>리텐션은 가정이 아니라 요청 정책이다</h1>
+    <h1>리텐션: 가정이 아니라 요청 정책</h1>
     <p class="lede">
       지원되는 모델은 적격 프리픽스를 기본적으로 캐싱하기 때문에 프롬프트 캐싱은
       자동처럼 느껴질 수 있습니다. 하지만 리텐션 윈도는 가정할 대상이 아닙니다.
@@ -43,10 +43,24 @@
       <code>prompt_cache_retention</code>으로 그 의도를 명시해야 합니다.
     </p>
 
+    <figure class="article-figure" id="figure-retention-one-pager">
+      <figcaption>
+        <strong>이 글 한눈에 보기.</strong> 프롬프트 캐싱은 자동이지만,
+        리텐션 윈도는 요청 정책입니다. Microsoft Learn은 몇 분 안에 비워질 수
+        있는 <code>in_memory</code> 기본값과 명시적인 <code>24h</code> 윈도를
+        문서화합니다. 이 한 장 요약은 한 가지 메시지만 전합니다 — 나중의
+        재사용이 중요하면 리텐션을 명시하세요 — 그리고 경계를 표시합니다.
+        리텐션 모드는 공식 사양이고, 그 옆의 첫 토큰 지연 형태는 PAYG에서
+        측정한 정제된 공개 집계로, 서술적으로만 제시합니다.
+        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">캐시 리텐션 한 장 요약 SVG 열기</a>.
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="프롬프트 캐시 리텐션 한 장 요약입니다. 짧은 기본 수명인 인메모리 리텐션을, 따뜻한 프리픽스를 라우팅 가능하게 유지하는 명시적 24시간 윈도와 대비하고, 이 소스 실행에서 24h 셀이 더 낮은 첫 토큰 지연 꼬리를 보였음을 나타냅니다. 핵심 메시지는 리텐션 윈도가 중요하므로 명시적으로 설정하라는 것입니다. 문서화된 리텐션 모드와 정제된 측정 집계로 표시되며, 서술용입니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
         <h2>질문</h2>
-        <p>작업이 나중의 캐시 재사용을 기대할 때, 요청은 실제로 그 윈도를 요구하고 있는가?</p>
+        <p>작업이 나중의 캐시 재사용을 기대할 때, 요청은 실제로 그 윈도를 요구하고 있나요?</p>
       </section>
       <section class="summary-tile">
         <h2>근거</h2>
@@ -54,12 +68,12 @@
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
-        <p>리텐션을 명시하고, 프리픽스를 안정적으로 유지하며, 지연 시간을 캐시 토큰 비중과 함께 읽으십시오.</p>
+        <p>리텐션을 명시하고, 프리픽스를 안정적으로 유지하며, 지연 시간을 캐시된 토큰 비중과 함께 읽으세요.</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="Article sections">
-      <strong>질문별로 읽기:</strong>
+      <strong>질문으로 읽기:</strong>
       <a href="#spec">공식 동작</a>
       <a href="#evidence">공개 근거</a>
       <a href="#policy">운영 정책</a>
@@ -68,14 +82,14 @@
     </nav>
 
     <p class="banner">
-      <strong>범위 참고:</strong>
+      <strong>범위 안내:</strong>
       아래의 공개 측정값은 희소한 소스 실행 근거입니다. 보편적인 지연 시간 주장이
       아니라 운영 체크리스트를 뒷받침합니다.
     </p>
 
     <section id="spec" class="article-section">
       <p class="section-label">공식 동작 · 두 가지 리텐션 모드</p>
-      <h2>자동 캐싱은 명시적 리텐션과 같지 않다</h2>
+      <h2>자동 캐싱과 명시적 리텐션의 차이</h2>
       <p>
         Microsoft Learn은 두 가지 프롬프트 캐시 리텐션 정책을 설명합니다.
         <code>in_memory</code>와 <code>24h</code>입니다. 인메모리 캐시 항목은
@@ -85,23 +99,23 @@
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>기본값은 짧을 수 있다</h3>
+          <h3>짧을 수 있는 기본값</h3>
           <p><code>gpt-5.4</code> 및 이전 모델에서는 리텐션을 생략하면 <code>in_memory</code>를 의미합니다.</p>
         </div>
         <div>
-          <h3>더 긴 재사용은 명시적이다</h3>
-          <p>작업이 나중의 재사용을 기대한다면, 지원되는 곳에서 <code>prompt_cache_retention</code>을 <code>24h</code>로 설정하십시오.</p>
+          <h3>명시가 필요한 더 긴 재사용</h3>
+          <p>작업이 나중의 재사용을 기대한다면, 지원되는 곳에서 <code>prompt_cache_retention</code>을 <code>24h</code>로 설정하세요.</p>
         </div>
         <div>
-          <h3>가격은 차별화 요소가 아니다</h3>
+          <h3>차별화 요소가 아닌 가격</h3>
           <p>Microsoft Learn은 프롬프트 캐시 가격이 두 리텐션 정책에서 동일하다고 명시합니다.</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">관측 근거 · 희소한 공개 단면</p>
-      <h2>지연 시간이 리텐션 선택을 드러냈다</h2>
+      <p class="section-label">관측된 근거 · 희소한 공개 단면</p>
+      <h2>지연 시간에 드러난 리텐션 선택</h2>
       <figure class="article-figure">
         <figcaption>
           <strong>읽어야 할 차트:</strong> 공개 집계 캐시 키 단면을 이제 리텐션
@@ -110,6 +124,45 @@
           <code>in_memory</code>와 <code>24h</code>를 비교합니다.
         </figcaption>
         <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="TTFT p95와 캐시 적중률을 비교하는 프롬프트 캐시 리텐션 근거 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-retention-ttft">
+        <figcaption>
+          <strong>원천 차트 — 리텐션 모드별 첫 토큰 지연 p95.</strong>
+          <strong>X축:</strong> log2 척도의 버킷 카디널리티(1, 그다음 8)입니다.
+          <strong>Y축:</strong> 밀리초 단위의 정상 상태 첫 토큰까지 p95
+          시간입니다. <strong>선:</strong> 이 글이 비교하는 두 리텐션 정책 —
+          <code>in_memory</code>와 <code>24h</code> — 이며 각각 N&nbsp;=&nbsp;960
+          레코드로, 빈도 히스토그램이 아니라 두 계열 선 차트입니다.
+          <strong>읽는 법:</strong> 카디널리티 1에서 <code>in_memory</code>
+          계열은 약 106,000&nbsp;ms p95를, <code>24h</code> 계열은 약
+          9,900&nbsp;ms를 기록했습니다 — 이 셀에서는 리텐션 선택이 지연 꼬리에
+          드러났습니다 — 그리고 트래픽이 8개 버킷으로 분산되자 두 계열이
+          가까워졌습니다. <strong>근거 경계:</strong> PAYG gpt-5.2(PTU
+          아님)에서 측정한 하나의 희소·정제 공개 집계이며, 보편적인 지연
+          규칙이 아니라 소스 실행 근거입니다. <strong>출처:</strong>
+          <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">원천 CSV</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="log2 축에서 버킷 카디널리티에 대해 정상 상태 첫 토큰까지 p95 시간을 그린 선 차트입니다. in_memory 선은 버킷 하나에서 약 106,000 밀리초로 매우 높게 시작해 8개 버킷에서 약 16,000으로 가파르게 떨어지고, 24h 선은 약 10,000~15,000 밀리초로 더 낮고 거의 평탄하게 유지됩니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-retention-hit-ratio">
+        <figcaption>
+          <strong>짝지은 원천 차트 — 리텐션 모드별 캐시 적중률.</strong>
+          <strong>X축:</strong> 동일한 log2 버킷 카디널리티 축(1, 그다음 8)입니다.
+          <strong>Y축:</strong> 0~1 범위의 정상 상태 캐시 적중률입니다.
+          <strong>선:</strong> 동일한 <code>in_memory</code>와 <code>24h</code>
+          계열이며 각각 N&nbsp;=&nbsp;960입니다. <strong>읽는 법:</strong> 이
+          단면에서는 두 계열 모두 높게(약 0.93~0.96) 유지되었고, 카디널리티
+          1에서 <code>24h</code> 계열이 약간 더 높았습니다. 여기서 더 큰 리텐션
+          차이는 적중률이 아니라 위 지연 패널에서 나타났습니다 — 그래서
+          리텐션은 캐시된 토큰 비중과 함께 지연 시간을 곁들여 읽어야 합니다.
+          <strong>근거 경계:</strong> 동일한 희소·정제 공개 집계로 PAYG
+          gpt-5.2(PTU 아님)이며, 보편적인 캐시 적중 규칙이 아니라 서술적
+          자료입니다. <strong>출처:</strong>
+          <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">원천 CSV</a>).
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="log2 축에서 1개와 8개 버킷의 정상 상태 캐시 적중률을 버킷 카디널리티에 대해 그린 선 차트입니다. in_memory와 24h 보존의 거의 평탄한 두 선이 모두 약 0.93에서 0.96 사이로 높게 위치하며, 이 단면에서 카디널리티가 늘어도 적중률이 거의 일정하게 유지되었음을 나타냅니다." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
         <caption>공개 리텐션 근거</caption>
@@ -130,18 +183,18 @@
         </tbody>
       </table>
       <div class="chart-reading-note">
-        <h3>이것이 증명하는 것과 증명하지 못하는 것</h3>
+        <h3>이 주제가 증명하는 것과 증명하지 못하는 것</h3>
         <p>
           이 공개 단면에서는 카디널리티 1 셀이 첫 토큰 지연 시간에서 리텐션을
-          드러냈습니다. 그것은 소스 실행 근거이지 보편적 규칙이 아닙니다. 변치 않는
-          교훈은 더 단순합니다. 리텐션 모드, 적중률, 지연 시간을 함께 읽으십시오.
+          드러냈습니다. 이는 소스 실행 근거이지 보편적 규칙이 아닙니다. 변치 않는
+          교훈은 더 단순합니다. 리텐션 모드, 적중률, 지연 시간을 함께 읽으세요.
         </p>
       </div>
     </section>
 
     <section id="policy" class="article-section">
       <p class="section-label">운영 정책 · 모호하면 닫힘으로 실패</p>
-      <h2>리텐션이 중요하다면, 선택을 관측 가능하게 하라</h2>
+      <h2>리텐션 선택의 관측 가능성</h2>
       <p>
         공개 저장소에는 작은 리텐션 정책 헬퍼가 포함되어 있는데, 문서화된 기본값이
         <code>in_memory</code>인 모델에서 값이 생략되면 이를 거부합니다.
@@ -150,23 +203,23 @@
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>좋음</h3>
+          <h3>권장</h3>
           <p>워크로드가 나중의 재사용에 의존할 때 <code>prompt_cache_retention="24h"</code>.</p>
         </div>
         <div>
-          <h3>이것도 좋음</h3>
+          <h3>이것도 권장</h3>
           <p>워크로드가 짧은 재사용만 필요하고 이를 명시할 때 <code>prompt_cache_retention="in_memory"</code>.</p>
         </div>
         <div>
-          <h3>위험함</h3>
+          <h3>위험 신호</h3>
           <p>운영 런북은 더 긴 윈도를 가정하는데 값을 비워 두는 것.</p>
         </div>
       </div>
     </section>
 
     <section id="residency" class="article-section">
-      <p class="section-label">거버넌스 참고 · 리텐션은 단지 지연 시간만이 아니다</p>
-      <h2>더 긴 리텐션에는 거버넌스 점검도 필요하다</h2>
+      <p class="section-label">거버넌스 참고 · 지연 시간만이 아닌 리텐션</p>
+      <h2>더 긴 리텐션에 필요한 거버넌스 점검</h2>
       <p>
         Microsoft Learn은 인메모리 프롬프트 캐싱이 모든 데이터 레지던시 지역과
         호환된다고 명시합니다. 확장 리텐션의 경우, 캐시된 데이터가 지역 내에 머무는
@@ -174,25 +227,82 @@
         말합니다. 이는 리텐션을 성능 결정뿐 아니라 거버넌스 결정으로 만듭니다.
       </p>
       <p>
-        실용적인 규칙은 이렇습니다. 리텐션을 기본값에 묻어 두지 마십시오. 의도한
-        값을 코드에 두고, 캐시 토큰 비중과 지연 시간을 관측하며, 사용하는 서빙
-        모드에 대한 레지던시 요구 사항을 확인하십시오.
+        따라서 더 긴 리텐션은 성능 결정인 동시에 거버넌스 결정입니다. 확장
+        윈도에 의존하기 전에 서빙 모드가 캐시된 데이터를 지역 내에 유지하는지
+        확인하고, 그 선택을 기본값에 맡기지 않습니다.
       </p>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>출처와 근거 경계</h2>
+      <p>
+        <strong>Tier 1 — 서비스 계약(Microsoft Learn).</strong> 두 가지 리텐션
+        정책, 인메모리 비우기·제거 윈도, 24시간 확장 리텐션 상한,
+        <code>gpt-5.4</code> 및 이전 모델의 <code>in_memory</code> 기본값, 두
+        정책에 동일한 가격, 그리고 데이터 레지던시 동작이 여기에 문서화되어
+        있습니다.
+      </p>
       <ul>
-        <li><strong>공식 명세, 2026-06-04 접근:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 프롬프트 캐싱 가이드</a>.</li>
-        <li><strong>공개 집계 근거:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">캐시 키 버케팅 CSV</a>.</li>
-        <li><strong>공개 운영자 가이드:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">프롬프트 캐시 키 정책 런북</a>.</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> —
+          <code>in_memory</code>와 <code>24h</code> 리텐션 정책, 비활성 5~10분
+          이내 인메모리 비우기와 마지막 사용 후 한 시간 이내 제거, 24시간의
+          확장 리텐션 상한, <code>gpt-5.4</code> 및 이전 모델의
+          <code>in_memory</code> 기본값, 두 리텐션 정책에 동일한 프롬프트 캐시
+          가격, 그리고 확장 리텐션이 Regional Standard 또는 Regional
+          Provisioned 배포 유형에서만 캐시된 데이터를 지역 내에 유지한다는
+          데이터 레지던시 규칙을 정의합니다. accessed_date: 2026-06-04.
+          source_url:
+          <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.
+          archive_url:
+          <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
       </ul>
       <p>
-        실용적인 규칙은 이렇습니다. 짧은 윈도 이후에도 캐시 재사용이 중요하다면,
-        <code>prompt_cache_retention</code>을 명시하고 관측된 지연 시간 형태를
-        검증하십시오.
+        <strong>Tier 2 — 운영적 추론(이 저장소).</strong> <code>in_memory</code>
+        기본값 모델에서 값이 생략되면 닫힘으로 실패하는 리텐션 정책 헬퍼와,
+        희소한 공개 적중률·첫 토큰 지연 단면은 Learn 사양이 아니라 이 저장소의
+        운영적 추론이자 소스 실행 근거입니다.
       </p>
-      <p><a class="button-link" href="../../">아티클 목록으로 돌아가기</a></p>
+      <ul>
+        <li><strong>이 저장소, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+          — 프롬프트 캐시 키·리텐션 런북: §4가 문서화된 모델별 기본값에서
+          <code>in_memory</code> 기본값 표를 도출하고
+          <code>prompt_cache_retention</code>을 명시하도록 규정합니다.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">출처</a>.</li>
+        <li><strong>이 저장소, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
+          — 문서화된 기본값이 <code>in_memory</code>인 모델에서 값이 생략되면
+          예외를 발생시키는 <code>ensure_explicit</code> 헬퍼이며, Learn 사양이
+          아니라 운영적 추론입니다.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">출처</a>.</li>
+        <li><strong>이 저장소, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+          — 리텐션 적중률·첫 토큰 지연 표의 바탕이 된 희소한 공개 집계
+          단면으로, 보편적인 지연 규칙이 아니라 소스 실행 근거입니다.
+          <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">출처</a>.</li>
+      </ul>
+      <p>
+        <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일
+        기준 Microsoft Learn이 명시하는 프롬프트 캐시 리텐션 계약 —
+        <code>in_memory</code>와 <code>24h</code> 정책, 인메모리 비우기·제거
+        윈도, 24시간 확장 상한, <code>gpt-5.4</code> 및 이전 모델의
+        <code>in_memory</code> 기본값, 두 정책에 동일한 가격, 확장 리텐션의 지역
+        내 레지던시 조건 — 과, <code>in_memory</code> 기본값 모델에서 값이
+        생략되면 <code>prompt_cache_retention</code>을 명시하고 닫힘으로
+        실패하라는 이 저장소의 경험칙을 문서화합니다. 단일 공개 단면은
+        카디널리티 1에서 리텐션이 첫 토큰 지연에 드러남을 보였습니다. 이는 소스
+        실행 근거이며, 모든 모델·리전·트래픽 형태에 걸친 보편적 지연 곡선을
+        증명하는 것은 아닙니다.
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>실무 규칙</h2>
+      <p><strong>실무 규칙: <code>in_memory</code>로 되돌아갈 수 있는 모델에서
+        캐시 재사용이 짧은 유휴 구간을 넘어 살아남아야 한다면, 기본값을 믿는
+        대신 <code>prompt_cache_retention</code>을 명시적으로 설정하고, 캐시
+        가능한 프리픽스를 안정적으로 유지하며, 요청한 윈도가 실제로
+        적용되었는지 확인하도록 첫 토큰 지연을 캐시된 토큰 비중과 함께
+        읽습니다.</strong></p>
+      <p>다음 글은 단일 요청의 캐시 정책에서, GPT-4o 워크로드 전체를 PTU의 GPT-5.x로 재산정할 때 무엇이 바뀌는지로 넘어갑니다.</p>
+      <p><a class="button-link" href="../../reasoning-migration-sizing/ko/">GPT-4o 트래픽이 PTU의 GPT-5.x로 옮겨갈 때, 용량 계산에서 실제로 무엇이 바뀌나요?</a></p>
     </section>
   </main>
 
