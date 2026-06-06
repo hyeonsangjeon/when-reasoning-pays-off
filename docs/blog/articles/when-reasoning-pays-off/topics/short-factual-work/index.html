@@ -117,18 +117,22 @@
     </section>
 
     <section class="article-section">
-      <h2>The intuition we tested</h2>
+      <h2>Why the hypothesis can fail</h2>
       <p>
-        The tempting rule is simple: if reasoning models are stronger, raise
-        reasoning effort and let the model think more. That rule is dangerous
-        for short factual work. The task may not need a long internal search;
-        it may need retrieval, a stable prompt, or simply the lowest effort
-        setting that already answers correctly.
+        The safe-looking default can still disappoint, because short factual
+        work rarely needs a long internal search. When the answer is a single
+        fact, the bottleneck tends to be retrieval, a stable prompt, or simply
+        the lowest effort setting that already lands the correct answer — not
+        extra deliberation. Past that point more thinking has nothing left to
+        find, so the effort ladder keeps adding hidden tokens without adding
+        accuracy.
       </p>
       <p>
-        The experiment therefore asks a narrow question: when the answer is
-        short and factual, does the effort ladder create a measurable quality
-        improvement, or does it mostly create a larger hidden-token budget?
+        That is the shape the slice shows. The judge score does not climb with
+        effort; it drifts from 1.88 down to 1.78 while cost, latency, and hidden
+        reasoning all grow. The thinking is real, but it stays inside the model
+        and never reaches the reader — which is exactly why a higher default
+        here becomes a cost the answer never repays.
       </p>
     </section>
 
@@ -354,7 +358,7 @@
       <ul>
         <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000663 at minimal effort, $0.005043 at extra-high effort, the 7.6x bill) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The ratio drifts if list pricing moves.</li>
-        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the cost climb,         the 1.88 to 1.78 mean judge-score movement, the ~1.1s to ~3.1s latency stretch, and the 0.98 to 0.45 throughput factor.</li>
+        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the cost climb, the 1.88 to 1.78 mean judge-score movement, the ~1.1s to ~3.1s latency stretch, and the 0.98 to 0.45 throughput factor.</li>
         <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the 3.655172 to 311.474576 reasoning-token shift against visible output that moves only from about 12.7 to 17.9 tokens.</li>
         <li><strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>
       </ul>
