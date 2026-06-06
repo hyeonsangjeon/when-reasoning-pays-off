@@ -35,10 +35,16 @@
     <p class="article-kicker">Operations essay · GPT-4o to GPT-5.x sizing</p>
     <h1>Do not resize a reasoning migration from the model name alone</h1>
     <p class="lede">
-      Moving a workload from <code>gpt-4o</code> to a GPT-5.x reasoning model is
-      not a one-number migration. The right question is not “is the new model
-      heavier?” It is “what changed in the request shape, output mix, hidden
-      reasoning tokens, cache hit rate, and response ceiling?”
+      A team plans to move its <code>gpt-4o</code> traffic to a GPT-5.x reasoning
+      model and needs a PTU number for the new deployment. The reflex is to reuse
+      what already works: carry the old <code>gpt-4o</code> PTU size forward, or
+      apply a family-level “5.x” multiplier to it, on the assumption that the
+      model name carries enough information to resize. But PTU sizing is driven by
+      token shape, not by the model name &mdash; the prompt size, visible output,
+      hidden reasoning tokens, cache hit rate, and response ceiling all move the
+      result. So the instinct to size from the name alone runs straight into the
+      operating question this essay asks &mdash; is the model name enough, or does
+      the request shape have to be re-measured first?
     </p>
 
     <figure class="article-figure" id="figure-migration-one-pager">
@@ -46,15 +52,57 @@
         <strong>This essay at a glance.</strong> Migration sizing is modeled
         arithmetic, not a model-name lookup: recommended PTU =
         ceil(demand &divide; density &divide; target&nbsp;utilization), and an
-        oversized <code>max_output_tokens</code> reservation — not request
-        volume — tends to dominate the PTU the workload reserves. The one-pager
+        oversized response ceiling (<code>max_output_tokens</code>) is treated
+        in this repository as an admission-risk hypothesis to test — not a
+        documented platform behavior — for whether it could dominate the PTU
+        the workload reserves. The one-pager
         carries that single message and marks the boundary plainly: it is a
         synthetic worked example over a modeled workload with pinned pricing
         snapshots, not measured capacity.
         <a href="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">Open the migration-sizing one-pager SVG</a>.
       </figcaption>
-      <img src="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="One-pager for reasoning migration sizing. It traces the sizing chain from demand TPM through the prompt plus max_output reservation, divided by density and target utilization, to a recommended PTU ceiling, and highlights that an oversized max_output_tokens reservation, not request volume, drives the result. Headline message: migration sizing is modeled arithmetic. Marked explicitly as a synthetic worked example, not measured capacity." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="One-pager for reasoning migration sizing. It traces the sizing chain from demand TPM through the prompt plus max_output reservation, divided by density and target utilization, to a recommended PTU ceiling, and flags an oversized response ceiling (max_output_tokens) as a sizing risk to verify rather than a documented platform behavior. Headline message: migration sizing is modeled arithmetic. Marked explicitly as a synthetic worked example, not measured capacity." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-remeasure" class="article-section">
+      <h2>Why re-measure instead of reusing the old size</h2>
+      <p>
+        The reuse reflex assumes the model name carries the size &mdash; that a
+        working <code>gpt-4o</code> number, scaled by a family multiplier, will
+        still fit GPT-5.x. Before accepting that, two things are worth putting
+        side by side. The first is what the documentation specifies: Microsoft
+        Learn converts traffic into normalized TPM from peak RPM, average prompt
+        and output tokens, cache rate, the model's output-to-input ratio, and its
+        Input TPM per PTU, and it deducts cached prompt tokens from utilization;
+        OpenAI documents reasoning tokens as non-visible output-side tokens
+        reported in <code>output_tokens_details.reasoning_tokens</code>. The
+        second is this repository's illustrative worked calculation, which runs
+        that documented formula over one example call shape so the size drivers
+        sit side by side &mdash; not a measurement of any deployment.
+      </p>
+      <p>
+        The pairing is the part worth pausing on. Read on visible output alone,
+        the migration can look manageable &mdash; the same prompt and the same
+        visible answer can size at roughly the same level, or even slightly
+        lighter, on the newer model. But the visible answer is not the whole
+        request: once hidden reasoning output appears, the same answer can need
+        far more normalized TPM, and this repository's working hypothesis &mdash;
+        an admission risk to test, not a documented platform behavior &mdash; is
+        that an oversized <code>max_output_tokens</code> ceiling could reserve
+        admission weight whether or not those tokens are ever generated. That is
+        why the operating question is not “is the new model
+        heavier?” but “what does the measured request shape &mdash; visible
+        output, reasoning output, cache rate, and response ceiling &mdash;
+        actually reserve?” The normalized-TPM formula, the per-model table, the
+        cache deduction, and the reasoning-token accounting are what Microsoft
+        Learn and OpenAI document; treating an oversized
+        <code>max_output_tokens</code> as PTU admission risk to test is
+        operational inference this repository defends. The chart that follows is a
+        synthetic worked example over a modeled workload with pinned pricing
+        snapshots &mdash; not measured capacity, live PTU throughput, or an SLA.
+        The illustrative chart below makes the size drivers explicit.
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
