@@ -35,10 +35,14 @@
     <p class="article-kicker">Operations essay · PTU recovery and 429 handling</p>
     <h1>429 is a recovery signal, not just an error</h1>
     <p class="lede">
-      Do not start a blind polling loop when a saturated PTU target returns 429.
-      It already carries the recovery signal the client needs: <code>retry-after-ms</code>.
-      The operating question is not “did the call fail?” but “who owns the next
-      decision: wait, redirect, or give up?”
+      A traffic burst pushes a PTU deployment to 100% utilization and the calls
+      start coming back as 429. The reflex is to reach for one of three moves:
+      open a health-check polling loop until capacity looks free, retry on a
+      blind fixed timer, or immediately route everything to another target. Each
+      one assumes the client has to guess when it is safe to try again. It does
+      not &mdash; the 429 already carries that answer in a header,
+      <code>retry-after-ms</code>, so the operating question is not “did the call
+      fail?” but “who owns the next decision: wait, redirect, or give up?”
     </p>
 
     <figure class="article-figure" id="figure-ptu-retry-one-pager">
@@ -54,6 +58,39 @@
       </figcaption>
       <img src="../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg" alt="One-pager for recovering from 429 with retry-after-ms. It places the documented 429 header contract next to a sketch of an observed retry-after-ms distribution with a short median and a long tail. Headline message: on 429, honor the retry-after-ms header and add jitter, because the advised waits were short at the median with a long tail. Marked as the documented contract plus a sanitized observed aggregate, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-header" class="article-section">
+      <h2>Why read the header instead of guessing</h2>
+      <p>
+        All three reflexes share one hidden assumption: that the client cannot
+        know when capacity will free up, so it has to probe, wait a fixed
+        interval, or leave. Before accepting that, two things are worth putting
+        side by side. The first is what Microsoft Learn documents: at 100%
+        utilization the service returns 429 immediately and attaches
+        <code>retry-after-ms</code>, a service-provided wait value for when to
+        try again. The second is a sanitized public
+        aggregate of the <code>retry-after-ms</code> values actually observed
+        across this repository's source runs, included descriptively to show what
+        those advised waits looked like in practice. Together they turn “when is
+        it safe to try again?” from a client-side guess into a value the service
+        hands back.
+      </p>
+      <p>
+        The shape of that aggregate is the part worth pausing on. The advised
+        waits were short at the median &mdash; overall p50 &asymp; 43&nbsp;ms
+        &mdash; so a health-check loop or a blind fixed-interval backoff would
+        usually wait far longer than the service actually asked for. But the tail
+        was not negligible: a small share of waits stretched toward
+        17,000&nbsp;ms (overall p99 &asymp; 16,921&nbsp;ms). That short-median,
+        long-tail shape is the operationally important fact &mdash; the header
+        should be treated as an admission-control signal, not a fixed reset clock.
+        The immediate 429 and the <code>retry-after-ms</code> contract are what
+        Microsoft Learn documents; that a single latency-budget ceiling should
+        decide when to stop waiting and redirect is operational inference this
+        repository defends. The source chart below makes that distribution
+        explicit.
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
