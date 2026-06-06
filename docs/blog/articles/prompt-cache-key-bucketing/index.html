@@ -35,10 +35,15 @@
     <p class="article-kicker">Operations essay · prompt caching and routing hints</p>
     <h1>Cache keys are routing hints, not labels</h1>
     <p class="lede">
-      <code>prompt_cache_key</code> is easy to mistake for harmless metadata.
-      It is more operational than that: it is combined with the prompt prefix
-      hash to influence where matching work is routed. A good key gathers reuse;
-      a bad key fragments it.
+      A team wires up <code>prompt_cache_key</code> and treats it like any
+      other label: the natural reflex is to fill it with whatever uniquely tags
+      the call &mdash; a <code>request_id</code>, the user's question text, a
+      timestamp, or a per-tenant or per-user axis fine enough to keep them
+      apart. The field is more operational than a label, though: it is combined
+      with the prompt prefix hash to influence where matching work is routed. So
+      the instinct to make the key specific runs straight into the operating
+      question this essay asks &mdash; does a more unique key gather reuse, or
+      does it fragment the cache locality the shared prefix was built to earn?
     </p>
 
     <figure class="article-figure" id="figure-keybucket-one-pager">
@@ -55,6 +60,41 @@
       </figcaption>
       <img src="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="One-pager for prompt cache key bucketing. It shows that one prefix-plus-key bucket routes to one machine, that roughly fifteen requests per minute per bucket is the documented overflow point, and that the source-run cache hit ratio stayed high and roughly flat while in-memory TTFT improved, so hit ratio should be read beside latency. Headline message: keep each bucket under the documented ceiling. Marked as official spec for the ceiling plus a sanitized measured aggregate for the shape, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-bucket" class="article-section">
+      <h2>Why size the key instead of guessing</h2>
+      <p>
+        The unique-key reflex assumes specificity is free &mdash; that a finer
+        key can only help tell requests apart. Before accepting that, two things
+        are worth putting side by side. The first is what Microsoft Learn
+        documents: prompt caching requires an identical early prefix for cache
+        eligibility, and <code>prompt_cache_key</code> is combined with the prefix
+        hash to steer where repeated work lands; the same documentation marks an
+        approximate point &mdash; about 15 requests per minute for one
+        prefix-plus-key combination &mdash; above which traffic can spill to
+        extra machines and cache effectiveness can drop. The second is a sparse
+        sanitized public aggregate from this repository's source runs, included
+        descriptively to show how cache hit ratio and first-token latency
+        actually moved as the same prefix was split into more buckets.
+      </p>
+      <p>
+        The pairing is the part worth pausing on. Hit ratio alone can read as
+        reassuring while the experience underneath shifts: in this slice the hit
+        ratio stayed high and roughly flat as bucket cardinality rose, so
+        reading it by itself would suggest the splitting cost nothing. The
+        first-token latency tail tells the other half of the story &mdash; a
+        single hot bucket carried a very large p95 that fell sharply once
+        traffic was spread across more buckets. That is why the operating
+        question is not &ldquo;did the cache hit?&rdquo; but &ldquo;is each
+        bucket sized so the prefix keeps its locality without one bucket running
+        too hot?&rdquo; The prefix-hash routing and the approximate
+        15-requests-per-minute overflow point are what Microsoft Learn
+        documents; the bucket-count math and the public
+        hit-ratio-beside-latency slice are operational inference and source-run
+        evidence this repository defends, not a universal cache-hit curve. The
+        charts below make that pairing explicit.
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
