@@ -34,13 +34,44 @@
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Topic essay · benchmark-03 tool-agent work</p>
     <h1>Tool-agent work: after quality reaches the ceiling, latency starts speaking</h1>
-    <p class="lede">Tool-agent tasks are easy to over-romanticize. They involve tools, branching, and a sense that the model is doing real work. Benchmark-03 keeps the romance in check by pairing quality with latency. The result is subtler than “more effort is better.”</p>
+    <p class="lede">When a team builds a tool-using agent and it starts making mistakes, the first instinct is usually the same: let it think harder. That instinct is reasonable — tool work involves planning, tool selection, intermediate state, and answer synthesis, so more reasoning sounds like it should help. But there is another possibility. Once the tool path is good enough and the rubric is already near the top, extra reasoning may only add latency and cost while the quality score stays capped. Benchmark-03 tests which of those readings is true on a tool-agent slice.</p>
+
+    <section class="article-section">
+      <h2>Why we tested this</h2>
+      <p>
+        The situation is familiar. A team ships a tool-using agent, watches it
+        miss on a few cases, and reaches for the reasoning-effort dial. The
+        reasoning is sound: agent work is not pure recall — it has to plan, pick
+        the right tool, carry intermediate state, and then synthesize an answer.
+        On a task with that much structure, "let it think harder" feels like the
+        obvious lever to pull first.
+      </p>
+      <p>
+        But that leaves two competing readings to check. Maybe extra reasoning
+        genuinely improves tool planning and lifts the answer. Or maybe the tool
+        path and the rubric together form a ceiling: once the agent finds a
+        good-enough route to the answer, more reasoning only adds latency and
+        cost while the quality score sits capped near the top. Benchmark-03 tests
+        which reading holds on a measured slice instead of in the abstract.
+      </p>
+      <p>
+        So we tested it. Benchmark-03 holds a tool-agent slice fixed and walks
+        the same model and effort ladder — the GPT-4o baseline, then GPT-5.2 at
+        none, low, medium, high, and extra-high effort — reading mean judge score
+        next to latency, cost, and token shape at each cell. The result is worth
+        stating plainly: GPT-5.2 lifted quality over the GPT-4o baseline, but
+        inside GPT-5.2 the quality cells clustered against a ceiling (about
+        1.97–2.00) while cost, latency, and reasoning tokens kept rising. The
+        one-pager below states that in a single frame, and the sections after it
+        show the measured detail.
+      </p>
+    </section>
 
     <figure class="article-figure" id="figure-tool-agent-one-pager">
       <figcaption>
         <strong>This topic at a glance.</strong> On this capped tool/agent slice the
         judge score flattens against a ceiling, so more reasoning effort buys cost
-        and latency rather than a higher score. The one-pager states that single
+        and latency rather than a higher score. The one-pager states the same
         message and marks the evidence boundary; the sections below add the measured
         detail.
         <a href="../../../../../assets/when-reasoning-pays-off-tool-agent-ceiling-checks.svg">Open the tool-agent ceiling one-pager SVG</a>.
@@ -51,7 +82,7 @@
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>When tool-agent quality is already near the top, what does extra effort still buy?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>benchmark-03 quality, cost, latency, and token-composition charts.</p></section>
-      <section class="summary-tile"><h2>Finding</h2><p>GPT-5.2 quality held inside a 1.97–2.0 ceiling across the effort ladder while cost climbed from $0.002762 to $0.003499 per request and latency from 2.9s to 3.8s.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>GPT-5.2 quality held inside a 1.97–2.00 ceiling across the effort ladder while cost climbed from $0.002762 to $0.003499 per request and latency from 2.9s to 3.8s.</p></section>
       <section class="summary-tile"><h2>Decision</h2><p>Route tool-agent slices to the lowest effort that reaches the quality ceiling, and treat higher effort as cost and latency you must justify, not a default.</p></section>
     </div>
 
@@ -60,7 +91,7 @@
       <a href="#s1">The ceiling effect is the point</a>
       <a href="#s2">How to read the chart</a>
       <a href="#s3">Why tools change the reading</a>
-      <a href="#s4">The story to keep</a>
+      <a href="#s4">What this means</a>
       <a href="#table">Evidence table</a>
     </nav>
 
@@ -80,18 +111,21 @@
 
     <section id="s1" class="article-section">
       <h2>The ceiling effect is the point</h2>
-      <p>Benchmark-03 did not produce a simple monotonic story. GPT-4o averaged a judge score of 1.85. GPT-5.2 none averaged 1.966667, low reached 2.0, medium averaged 1.983333, high averaged 1.966667, and extra-high reached 2.0. That is a quality improvement over the baseline, but it is also a ceiling.</p><p>Once several cells are clustered near the top, raising effort is no longer automatically meaningful. The next evidence comes from latency, token shape, and the failure modes hidden inside the aggregate score.</p>
+      <p>Benchmark-03 did not produce a simple monotonic story. GPT-4o averaged a judge score of 1.85. GPT-5.2 none averaged 1.97, low reached 2.00, medium averaged 1.98, high averaged 1.97, and extra-high reached 2.00. That is a quality improvement over the baseline, but it is also a ceiling.</p>
+      <p>Once several cells are clustered near the top, raising effort is no longer automatically meaningful. The next evidence comes from latency, token shape, and the failure modes hidden inside the aggregate score.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>How to read the chart</h2>
-      <p>The chart uses latency as the bar height because quality has already compressed near the top. The X-axis is the model/effort cell. The Y-axis is mean latency in milliseconds. The label under each bar gives the paired mean judge score.</p><p>This chart is deliberately not a histogram. It is a comparison of summarized cells: if two cells have similar quality, the shorter bar asks whether the longer wait is still buying something visible.</p>
+      <p>The chart uses latency as the bar height because quality has already compressed near the top. The X-axis is the model/effort cell. The Y-axis is mean latency in milliseconds. The label under each bar gives the paired mean judge score.</p>
+      <p>This chart is deliberately not a histogram. It is a comparison of summarized cells: if two cells have similar quality, the shorter bar asks whether the longer wait is still buying something visible.</p>
     </section>
     <section id="s3" class="article-section">
       <h2>Why tools change the reading</h2>
-      <p>Tool-agent work includes tool selection, intermediate state, and answer synthesis. That makes the task more demanding than short factual work. It also means the aggregate quality score can hide different kinds of behavior: a cell may pass because the tool did most of the work, or fail because the model used the right tool but summarized poorly.</p><p>The charts do not remove the need for inspection. They tell us where to inspect. In this run, low effort is the attractive region because it reached the quality ceiling while staying close to the baseline latency.</p>
+      <p>Tool-agent work includes tool selection, intermediate state, and answer synthesis. That makes the task more demanding than short factual work. It also means the aggregate quality score can hide different kinds of behavior: a cell may pass because the tool did most of the work, or fail because the model used the right tool but summarized poorly.</p>
+      <p>The charts do not remove the need for inspection. They tell us where to inspect. In this run the attractive region depends on where you set the bar: if you require a strict 2.00, low is the first cell that reaches it; if a near-ceiling score already satisfies the rubric, none qualifies at a latency close to the baseline. Either way the move is the same — find the lowest cell that meets the bar, then read cost and latency before promoting a higher effort.</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>The story to keep</h2>
+      <h2>What this means</h2>
       <p>Tool-agent benchmarks need two reads. First, ask whether reasoning improved correctness. Then, if quality is clustered near the top, ask which cell keeps latency and token pressure under control. The second read is not an afterthought; it is how the result becomes usable outside the benchmark.</p>
     </section>
 
@@ -108,8 +142,8 @@
           standard deviation.
           <strong>How to read it:</strong> this is the ceiling the essay describes &mdash;
           the gpt-4o baseline sits at 1.85 and every gpt-5.2 cell clusters inside a narrow
-          1.97&ndash;2.0 band (none 1.966667, low 2.0, medium 1.983333, high 1.966667,
-          extra-high 2.0), so on this slice raising effort does not lift the score off the
+          1.97&ndash;2.00 band (none 1.97, low 2.00, medium 1.98, high 1.97,
+          extra-high 2.00), so on this slice raising effort does not lift the score off the
           cap.
           <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats, this one
           tool-agent slice on a single Azure OpenAI tenant and region; error bars are
@@ -121,7 +155,7 @@
           <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">evidence dashboard</a>
           (<a href="../../../../data/chart-data/cost-curves-effort/benchmark-03/quality.json">served chart data</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../../../assets/benchmark-03-quality.png" alt="Bar chart of benchmark-03 mean judge score by model and effort; the gpt-4o baseline is about 1.85 while every gpt-5.2 effort cell clusters in a narrow band between about 1.97 and 2.0, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../assets/benchmark-03-quality.png" alt="Bar chart of benchmark-03 mean judge score by model and effort; the gpt-4o baseline is about 1.85 while every gpt-5.2 effort cell clusters in a narrow band between about 1.97 and 2.00, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
         <caption>benchmark-03 quality-latency evidence</caption>
@@ -147,14 +181,14 @@
       <ul>
         <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The cost figures drift if list pricing moves.</li>
-        <li><strong>Tier 2 — benchmark-03 slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars — the 1.85 GPT-4o baseline and the GPT-5.2 ladder that bounced inside 1.966667 (none), 2.0 (low), 1.983333 (medium), 1.966667 (high), and 2.0 (extra-high) — and the matching cost figures that climbed monotonically from $0.002762 (none) to $0.003499 (extra-high) per request as latency rose from 2901.99ms to 3770.20ms.</li>
+        <li><strong>Tier 2 — benchmark-03 slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars — the 1.85 GPT-4o baseline and the GPT-5.2 ladder that bounced inside 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), and 2.00 (extra-high) — and the matching cost figures that climbed monotonically from $0.002762 (none) to $0.003499 (extra-high) per request as latency rose from 2.9s to 3.8s.</li>
         <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> as paired-reading evidence that the reasoning tokens climbed from 0 to 52.15 per request without moving the quality bar off its ceiling.</li>
         <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>
       </ul>
       <p>
         What this slice does and does not prove: it shows that for this
         tool-using-agent slice, raising reasoning effort hit a quality ceiling —
-        the GPT-5.2 score never left the 1.97–2.0 band — while cost continued to
+        the GPT-5.2 score never left the 1.97–2.00 band — while cost continued to
         climb across the effort ladder. It does not prove that the ceiling
         appears at the same effort level for short factual work, multi-step
         reasoning, or synthesis work; each topic carries its own measurement.
@@ -169,7 +203,7 @@
       <h2>The practical rule</h2>
       <ol>
         <li>Read the quality chart paired with the cost and latency charts for the same benchmark-03 cell, not the quality bar alone.</li>
-        <li>Find the lowest effort that reaches the quality ceiling, and make that the default.</li>
+        <li>Find the lowest effort cell that meets your quality bar — whether that bar is a strict 2.00 or an accepted near-ceiling score — and make that the default.</li>
         <li>Treat any higher effort as cost and latency you must justify with a visible score move.</li>
         <li>Inspect the aggregate before trusting it: a passing cell may lean on the tool, not the reasoning.</li>
         <li>Re-measure when the workload shape changes; this ceiling is for tool-agent work only.</li>
