@@ -35,11 +35,53 @@
     <p class="article-kicker">Overview essay · reasoning effort, quality, and spend</p>
     <h1>When reasoning pays off: same token price, different bill</h1>
     <p class="lede">
-      A reasoning model can have the same per-token price card and still create
-      a different bill. The missing piece is the reasoning-token budget: tokens
-      generated inside the model, billed like usage, and never shown in the
-      response.
+      A team turns on a reasoning model, sees a per-token price card that looks
+      just like the old one, and notices a new control: a reasoning-effort dial.
+      The natural instinct is to turn it up &mdash; if a little more thinking is
+      almost free, why not buy better answers everywhere? But a reasoning model
+      can carry the same price card and still produce a very different bill,
+      because effort spends tokens generated inside the model, billed like usage
+      and never shown in the response. So the real question is not &ldquo;is
+      reasoning expensive?&rdquo; but &ldquo;where does extra effort buy a better
+      answer, and where does it only buy hidden computation?&rdquo; &mdash; and
+      this series tests that with data.
     </p>
+
+    <section class="article-section">
+      <h2>Why we tested this</h2>
+      <p>
+        The situation is familiar. A migration lands a team on a reasoning
+        model, the configuration exposes a reasoning-effort dial, and the
+        per-token price looks unchanged &mdash; so turning effort up reads like
+        cheap insurance against wrong answers. The instinct to raise it
+        everywhere is reasonable; what is missing is whether the extra thinking
+        ever reaches the reader, or only the bill.
+      </p>
+      <p>
+        That gives us a clean hypothesis to check, one slice at a time: does
+        higher reasoning effort actually buy a better answer, or does it mostly
+        buy hidden tokens, latency, and cost? Trusting the instinct would mean
+        shipping a higher default and paying for thinking that may never change
+        the output. Measuring it first means we only raise effort where a paired
+        quality signal moves &mdash; and keep it low where it does not.
+      </p>
+      <p>
+        So we tested it. We held the prompts and workload slices fixed and
+        walked the same effort ladder across each one &mdash; short factual
+        answers, multi-step reasoning, tool-using agents, token composition, and
+        latency and cost &mdash; then added a modeled PTU/PAYG planning surface
+        on top of the measured token shape. The results split the way good
+        evidence should: on short factual work the extra effort mostly bought
+        hidden reasoning tokens rather than a better answer; the invisible-token
+        view explained why bills moved when the visible output barely changed;
+        multi-step work could pay when the evaluator actually moved; tool-agent
+        quality often hit a ceiling where more effort only added latency; and the
+        PTU/PAYG crossover stayed a modeled planning threshold, not a measured
+        capacity result. The one-pager below states the single message, the
+        evidence dashboard is the audit trail behind every number, and the
+        sections after it show the measured detail.
+      </p>
+    </section>
 
     <figure class="article-figure" id="figure-overview-one-pager">
       <figcaption>
@@ -209,9 +251,9 @@
           <strong>Bars:</strong> each bar is the mean cost of one effort cell; there is
           no line series, and the vertical whiskers show &plusmn;1 standard deviation
           across the repeated measurements.
-          <strong>How to read it:</strong> cost climbs from $0.000663 at minimal effort
-          to $0.005043 at extra-high &mdash; about a 7.6x bill &mdash; while the paired
-          judge score moves only from 1.87931 to 1.779661, so the taller bars buy hidden
+          <strong>How to read it:</strong> cost climbs from about $0.0007 at minimal effort
+          to about $0.005 at extra-high &mdash; about a 7.6x bill &mdash; while the paired
+          judge score moves only from about 1.88 to about 1.78, so the taller bars buy hidden
           computation rather than a better answer.
           <strong>Evidence boundary:</strong> N = 20 authored samples per cell, R = 3
           repeats, this one short-factual slice, priced against a single dated PAYG
@@ -246,9 +288,10 @@
         <div>
           <h3>What it means</h3>
           <p>
-            In the short-factual slice, minimal effort averaged $0.000663 per
-            request. Xhigh effort averaged $0.005043 per request, a 7.6x bill,
-            while the mean judge score moved from 1.87931 to 1.779661.
+            In the short-factual slice, minimal effort averaged about $0.0007
+            per request. Extra-high effort averaged about $0.005 per request, a
+            7.6x bill, while the mean judge score moved only from about 1.88 to
+            about 1.78.
           </p>
         </div>
         <div>
@@ -292,9 +335,10 @@
         <div>
           <h3>What it means</h3>
           <p>
-            In the short-factual slice, minimal effort averaged 3.655172
-            reasoning tokens per request. Xhigh effort averaged 311.474576
-            reasoning tokens per request.
+            In the short-factual slice, minimal effort averaged about 3.7
+            reasoning tokens per request. Extra-high effort averaged about 311
+            reasoning tokens per request &mdash; an invisible jump the answer
+            text never shows.
           </p>
         </div>
         <div>
@@ -382,8 +426,11 @@
         <div>
           <h3>What it means</h3>
           <p>
-            When the chart already shows a ceiling effect, raising effort may
-            mostly add internal tokens and latency rather than better answers.
+            This is the benchmark-03 tool-agent slice. The ceiling is the point
+            where the judge score already sits near the top of the rubric, so
+            climbing the effort ladder mostly adds internal tokens and latency
+            instead of a higher score. When the bars flatten like that, the
+            limiting factor is no longer reasoning quality.
           </p>
         </div>
         <div>
