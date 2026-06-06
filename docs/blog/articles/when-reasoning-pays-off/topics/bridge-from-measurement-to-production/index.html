@@ -28,7 +28,7 @@
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Bridge essay</p>
     <p class="article-kicker">Bridge essay · Between the evidence layer and the operations layer</p>
     <h1>From measurement to production</h1>
-    <p class="lede">The evidence essays answered a measurement question: where does extra reasoning effort buy quality, and where does it only buy hidden compute? The operations essays answer a different question: once that effort decision is made and traffic is flowing, what does the deployment owe back to the operator? This page exists because the two questions sound similar but ask different things, and the voice changes when the question changes.</p>
+    <p class="lede">By the end of the five evidence essays you are carrying a habit, not just a verdict: don&rsquo;t turn reasoning effort up because it sounds smarter &mdash; read cost, quality, latency, and token shape together, and spend the extra token only where it actually pays. That habit is enough to pick an effort level on a benchmark. It is not yet enough to run a live service. The moment your choice meets real traffic, the question quietly changes shape: you stop asking <em>where did reasoning pay in the benchmark?</em> and start asking <em>how do I keep that decision safe now that requests get throttled, retried, cached, spilled over, and sized for real capacity?</em> This bridge is about that change of question &mdash; and the change of voice that has to come with it.</p>
 
     <figure class="article-figure" id="figure-bridge-one-pager">
       <figcaption>
@@ -41,6 +41,12 @@
       </figcaption>
       <img src="../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.svg" alt="One-pager for the bridge essay, From measurement to production. It contrasts two voices: an Evidence panel labeled we measured and an Operations panel labeled contract we honor, joined by an arc that asks which voice applies. Headline message: two voices, measurement we own and a contract someone else maintains, and the bridge names when each applies. Marked as a meta-reflection over the series arc that introduces no new measurement." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-bridge" class="article-section">
+      <h2>Why this bridge exists</h2>
+      <p>The five evidence essays all answer one kind of question: <em>when</em> is a reasoning token worth spending? They answer it the only honest way they can &mdash; by measuring a workload and reading cost against quality, latency, and token shape. After you deploy, that decision stops sitting still. The same prompt now arrives again and again at production volume, runs through cache behavior alongside other live traffic, sometimes comes back as a 429, and competes for provisioned capacity. The benchmark settled <em>when</em> the token is worth spending; nothing has yet settled <em>how</em> to keep spending it once something other than your test harness controls the conditions.</p>
+      <p>That gap is the whole reason for a bridge page. It is not another measurement and it is not an operations spec &mdash; it is the hand-off note between the two. The evidence layer earns the decision; the operations layer has to honor that decision under conditions the benchmark never saw. Saying the hand-off out loud is what keeps a reader from treating a documented service behavior as something we measured, or treating a number we measured as something the platform promises. Different jobs, different evidence, different voice &mdash; and the rest of this page is about telling them apart.</p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Bridge summary">
       <section class="summary-tile"><h2>Question</h2><p>When does an evidence habit need to become an operations habit, and what carries over between the two?</p></section>
