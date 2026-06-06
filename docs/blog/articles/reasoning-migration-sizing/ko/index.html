@@ -37,25 +37,68 @@
     <p class="article-kicker">운영 에세이 · GPT-4o에서 GPT-5.x로의 사이징</p>
     <h1>추론 마이그레이션 사이징: 모델 이름이 아니라 측정</h1>
     <p class="lede">
-      워크로드를 <code>gpt-4o</code>에서 GPT-5.x 추론 모델로 옮기는 일은
-      숫자 하나로 끝나는 마이그레이션이 아닙니다. 올바른 질문은 "새 모델이
-      더 무거운가?"가 아닙니다. "요청의 형태, 출력 구성, 숨은 추론 토큰,
-      캐시 적중률, 응답 상한에서 무엇이 바뀌었는가?"입니다.
+      어떤 팀이 <code>gpt-4o</code> 트래픽을 GPT-5.x 추론 모델로 옮기려 하고, 새
+      배포에 쓸 PTU 숫자가 필요합니다. 반사적으로 이미 잘 돌아가는 것을
+      재사용하려 합니다. 기존 <code>gpt-4o</code> PTU 크기를 그대로 가져가거나,
+      거기에 제품군 수준의 “5.x” 배수를 적용하는 식입니다. 모델 이름에 다시
+      사이징할 만한 정보가 충분히 담겨 있으리라는 가정입니다. 하지만 PTU
+      사이징을 좌우하는 것은 모델 이름이 아니라 토큰 형태입니다 &mdash; 프롬프트
+      크기, 보이는 출력, 숨은 추론 토큰, 캐시 적중률, 응답 상한이 모두 결과를
+      움직입니다. 그래서 이름만으로 사이징하려는 직관은 곧장 이 글이 던지는 운영
+      질문과 부딪힙니다 &mdash; 모델 이름이면 충분한가요, 아니면 요청 형태를
+      먼저 다시 측정해야 하나요?
     </p>
 
     <figure class="article-figure" id="figure-migration-one-pager">
       <figcaption>
         <strong>이 글 한눈에 보기.</strong> 마이그레이션 사이징은 모델 이름
         조회가 아니라 모델링된 산술입니다. 권장 PTU = ceil(수요 &divide; 밀도
-        &divide; 목표 사용률)이며, 요청량이 아니라 과도하게 큰
-        <code>max_output_tokens</code> 예약이 워크로드가 확보하는 PTU를
-        좌우하는 경향이 있습니다. 이 한 장 요약은 그 한 가지 메시지만 전하고
-        경계를 분명히 표시합니다. 측정된 용량이 아니라, 고정된 가격 스냅샷을
-        적용한 모델링된 워크로드에 대한 합성 예시입니다.
+        &divide; 목표 사용률)이며, 과도하게 큰 응답 상한(<code>max_output_tokens</code>)이
+        워크로드가 확보하는 PTU를 좌우할 수 있는지는, 이 저장소에서 문서화된
+        플랫폼 동작이 아니라 검증해야 할 수용 위험 가설로 다룹니다. 이 한 장
+        요약은 그 한 가지 메시지만 전하고 경계를 분명히 표시합니다. 측정된
+        용량이 아니라, 고정된 가격 스냅샷을 적용한 모델링된 워크로드에 대한 합성
+        예시입니다.
         <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">마이그레이션 사이징 한 장 요약 SVG 열기</a>.
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="추론 마이그레이션 사이징 한 장 요약입니다. 수요 TPM에서 출발해 프롬프트와 max_output 예약을 거쳐, 밀도와 목표 사용률로 나눈 뒤 권장 PTU 천장에 이르는 사이징 사슬을 따라가며, 요청량이 아니라 과도하게 큰 max_output_tokens 예약이 결과를 좌우함을 강조합니다. 핵심 메시지는 마이그레이션 사이징이 모델링된 산술이라는 것입니다. 측정된 용량이 아니라 합성 예시임을 명시적으로 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="추론 마이그레이션 사이징 한 장 요약입니다. 수요 TPM에서 출발해 프롬프트와 max_output 예약을 거쳐, 밀도와 목표 사용률로 나눈 뒤 권장 PTU 천장에 이르는 사이징 사슬을 따라가며, 과도하게 큰 응답 상한(max_output_tokens)을 문서화된 플랫폼 동작이 아니라 검증해야 할 사이징 위험으로 표시합니다. 핵심 메시지는 마이그레이션 사이징이 모델링된 산술이라는 것입니다. 측정된 용량이 아니라 합성 예시임을 명시적으로 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-remeasure" class="article-section">
+      <h2>옛 사이즈 재사용 대신 다시 측정하는 이유</h2>
+      <p>
+        재사용 반사 동작은 모델 이름이 곧 사이즈를 담고 있다고 &mdash; 잘
+        돌아가는 <code>gpt-4o</code> 숫자에 제품군 배수를 곱하면 GPT-5.x에도
+        여전히 맞으리라고 &mdash; 전제합니다. 그 전제를 받아들이기 전에 두 가지를
+        나란히 놓아 볼 만합니다. 첫째는 문서가 명시하는 내용입니다. Microsoft
+        Learn은 피크 RPM, 평균 프롬프트·출력 토큰, 캐시 적중률, 모델의 출력 대
+        입력 비율, PTU당 Input TPM으로 트래픽을 정규화 TPM으로 변환하고, 캐시된
+        프롬프트 토큰을 사용률에서 차감합니다. OpenAI는 추론 토큰을
+        <code>output_tokens_details.reasoning_tokens</code>에 보고되는, 보이지
+        않는 출력 측 토큰으로 문서화합니다. 둘째는 이 저장소의 예시용 계산으로,
+        그 문서화된 공식을 하나의 예시 호출 형태에 돌려 사이징 동인들을 나란히
+        보여 줍니다 &mdash; 어떤 배포를 측정한 것이 아닙니다.
+      </p>
+      <p>
+        잠시 멈춰 볼 부분은 그 짝짓기입니다. 보이는 출력만으로 읽으면
+        마이그레이션은 감당할 만해 보일 수 있습니다 &mdash; 같은 프롬프트와 같은
+        보이는 답변은 더 새 모델에서 비슷한 수준으로, 심지어 약간 더 가볍게
+        사이징될 수도 있습니다. 하지만 보이는 답변이 요청의 전부는 아닙니다. 숨은
+        추론 출력이 나타나는 순간 같은 답변이 훨씬 더 많은 정규화 TPM을 필요로 할
+        수 있고, 이 저장소의 작업 가설은 &mdash; 문서화된 플랫폼 동작이 아니라
+        검증해야 할 수용 위험으로 &mdash; 과도하게 큰 <code>max_output_tokens</code>
+        상한이 그 토큰이 실제로 생성되든 아니든 수용 가중치를 예약할 수 있다는
+        것입니다. 그래서 운영의 질문은 “새 모델이 더 무거운가?”가 아니라 “측정된
+        요청 형태 &mdash; 보이는 출력, 추론 출력, 캐시 적중률, 응답 상한 &mdash;
+        가 실제로 무엇을 예약하는가?”입니다. 정규화 TPM 공식, 모델별 표, 캐시
+        차감, 추론 토큰 회계는 Microsoft Learn과 OpenAI가 문서화하는 내용이고,
+        과도하게 큰 <code>max_output_tokens</code>를 검증해야 할 PTU 수용 위험으로
+        다루는 것은 이 저장소가 옹호하는 운영적 추론입니다. 이어지는 차트는
+        고정된 가격 스냅샷을 적용한 모델링된 워크로드에 대한 합성 예시이며
+        &mdash; 측정된 용량도, 실시간 PTU 처리량도, SLA도 아닙니다. 아래 예시
+        차트가 사이징 동인을 명시적으로 보여 줍니다.
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
@@ -208,29 +251,16 @@
           크기; 정규화 TPM = input TPM × (1 − 캐시 적중률) + 출력 대 입력 비율 ×
           output TPM; PTU = 정규화 TPM ÷ PTU당 Input TPM), 모델별 PTU당 Input
           TPM과 출력 대 입력 비율 값, 그리고 캐시된 토큰이 사용률 계산에서 100%
-          차감된다는 점을 정의합니다. accessed_date: 2026-06-05. source_url:
-          <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>.
-          archive_url:
-          <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>.</li>
+          차감된다는 점을 정의합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn 문서</a> (2026-06-05 접근) · <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">아카이브</a>.</li>
         <li><strong>What is provisioned throughput for Foundry Models?</strong> —
           PTU 사용률 모델과 요청 형태가 예약된 용량을 어떻게 소비하는지를
-          문서화합니다. accessed_date: 2026-06-04. source_url:
-          <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>.
-          archive_url:
-          <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>.</li>
+          문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">아카이브</a>.</li>
         <li><strong>Prompt caching with Azure OpenAI</strong> — 캐시된 prompt
           토큰이 사용률에서 차감되므로, 프리픽스 형태의 변화가 사이징 결과를
-          움직인다는 점을 문서화합니다. accessed_date: 2026-06-04. source_url:
-          <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.
-          archive_url:
-          <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+          움직인다는 점을 문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
         <li><strong>OpenAI reasoning models guide</strong> — 추론 토큰을
           <code>output_tokens_details.reasoning_tokens</code>에 보고되는 보이지
-          않는 출력 측 토큰으로 문서화합니다. accessed_date: 2026-06-04.
-          source_url:
-          <a href="https://developers.openai.com/api/docs/guides/reasoning">https://developers.openai.com/api/docs/guides/reasoning</a>.
-          archive_url:
-          <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning</a>.</li>
+          않는 출력 측 토큰으로 문서화합니다. <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">아카이브</a>.</li>
       </ul>
       <p>
         <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 과도하게 큰
