@@ -28,11 +28,40 @@
     <p class="article-kicker">Topic essay · benchmark-01 short factual work</p>
     <h1>Short factual work: when extra reasoning buys cost, not quality</h1>
     <p class="lede">
-      This topic is the first trap a migration team should test. A model can
-      spend more internal reasoning tokens on a short factual answer, but the
-      visible answer may not become better. The result is a cleaner-looking
-      demo and a messier bill.
+      When a team first adopts reasoning models, short factual questions feel
+      like the easy place to turn effort up: the answer is short, a mistake is
+      easy to spot, and a little extra thinking feels like cheap insurance. So
+      the instinct is to raise reasoning effort here first. That instinct is a
+      hypothesis worth testing, not a policy worth shipping — and this essay
+      tests it with data.
     </p>
+
+    <section class="article-section">
+      <h2>Why we tested this</h2>
+      <p>
+        The situation is familiar. A migration lands the team on a reasoning
+        model, the configuration exposes a reasoning-effort dial, and short
+        factual questions look like the safest place to turn it up. The output
+        is brief, an error is obvious, and "let it think a bit more" sounds like
+        cheap insurance — so raising the default here feels almost free.
+      </p>
+      <p>
+        That gives us a clean hypothesis to check: on short factual work, does
+        higher reasoning effort actually make the answer safer? If it does, the
+        higher default earns its place. If it does not, the team is paying for
+        thinking that never reaches the reader.
+      </p>
+      <p>
+        So we tested it. We held the workload shape fixed — the same short
+        factual slice — and walked the effort ladder one step at a time,
+        comparing cost per request, latency, the visible answer text, the hidden
+        reasoning tokens, and the judge score at each level. In this slice the
+        result was the kind that should move a default: effort bought cost,
+        latency, and hidden tokens, but not a better answer. The one-pager below
+        states that in a single frame, and the sections after it show the
+        measured detail.
+      </p>
+    </section>
 
     <figure class="article-figure" id="figure-short-factual-one-pager">
       <figcaption>
@@ -68,21 +97,22 @@
     </p>
 
     <section class="article-section">
-      <h2>The source-chart story in one paragraph</h2>
+      <h2>What the data showed</h2>
       <p>
-        The short-factual slice is a clean example of a failed promotion test.
-        The cost bars climb from $0.000663 at minimal effort to $0.005043 at
-        extra-high effort, but the quality bars do not climb with them: the mean
-        judge score is 1.87931 at minimal effort and 1.779661 at extra-high
-        effort. Latency also stretches from about 1.1s to about 3.1s. The work
-        is not free on the capacity side either: the token-shape throughput
-        factor falls from 0.98 to 0.45.
+        The hypothesis predicted a safer answer at higher effort. The data did
+        not deliver one. The cost bars climb from $0.000663 at minimal effort to
+        $0.005043 at extra-high effort, but the quality bars do not climb with
+        them: the mean judge score is 1.88 at minimal effort and 1.78 at
+        extra-high effort. Latency also stretches from about 1.1s to about 3.1s.
+        The work is not free on the capacity side either: the token-shape
+        throughput factor falls from 0.98 to 0.45.
       </p>
       <p>
-        That is the whole story the chart is trying to tell. The taller cost
-        bar is real, the taller hidden-token budget is real, and the matching
-        quality lift is missing. For this workload shape, higher effort should
-        stay experimental rather than become the default.
+        So the cost bars climbed and the quality bars did not — that is the
+        whole story the chart is trying to tell. The taller cost bar is real,
+        the taller hidden-token budget is real, and the matching quality lift is
+        missing. For this workload shape, higher effort should stay experimental
+        rather than become the default.
       </p>
     </section>
 
@@ -172,8 +202,8 @@
         aggregate comparison, not a frequency histogram &mdash; and the whiskers show
         &plusmn;1 standard deviation.
         <strong>How to read it:</strong> the quality bars do not climb with the cost bars
-        above &mdash; gpt-4o baseline 1.87931, gpt-5.2 minimal 1.87931, low 1.766667,
-        medium 1.728814, high 1.883333, extra-high 1.779661 &mdash; so on this slice the
+        above &mdash; gpt-4o baseline 1.88, gpt-5.2 minimal 1.88, low 1.77,
+        medium 1.73, high 1.88, extra-high 1.78 &mdash; so on this slice the
         taller cost bars bought hidden computation, not a better answer.
         <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats; error bars are
         standard deviation, not confidence intervals, and no p-values are claimed at
@@ -216,7 +246,7 @@
           <tr>
             <td>Quality guardrail</td>
             <td>X-axis is the same effort ladder; Y-axis is mean judge score.</td>
-            <td>1.87931 at minimal effort; 1.779661 at extra-high effort.</td>
+            <td>1.88 at minimal effort; 1.78 at extra-high effort.</td>
             <td>The higher-cost cell does not clear the promotion bar.</td>
           </tr>
           <tr>
@@ -247,7 +277,7 @@
         The cost curve rose sharply. Minimal effort averaged $0.000663 per
         request; extra-high effort averaged $0.005043 per request, a 7.6x bill.
         The paired quality movement did not justify that spend: the mean judge
-        score moved from 1.87931 to 1.779661.
+        score moved from 1.88 to 1.78.
       </p>
       <p>
         That is not a universal claim that reasoning is bad. It is a workload
@@ -324,7 +354,7 @@
       <ul>
         <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000663 at minimal effort, $0.005043 at extra-high effort, the 7.6x bill) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The ratio drifts if list pricing moves.</li>
-        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the cost climb, the 1.87931 to 1.779661 mean judge-score movement, the ~1.1s to ~3.1s latency stretch, and the 0.98 to 0.45 throughput factor.</li>
+        <li><strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the cost climb,         the 1.88 to 1.78 mean judge-score movement, the ~1.1s to ~3.1s latency stretch, and the 0.98 to 0.45 throughput factor.</li>
         <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the 3.655172 to 311.474576 reasoning-token shift against visible output that moves only from about 12.7 to 17.9 tokens.</li>
         <li><strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>
       </ul>
