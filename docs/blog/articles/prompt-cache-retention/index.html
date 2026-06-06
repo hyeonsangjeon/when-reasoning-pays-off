@@ -35,10 +35,17 @@
     <p class="article-kicker">Operations essay · prompt cache retention</p>
     <h1>Retention is a request policy, not an assumption</h1>
     <p class="lede">
-      Prompt caching can feel automatic because supported models cache eligible
-      prefixes by default. The retention window is not something to assume,
-      though. If an operation depends on longer reuse, the request should say so
-      with <code>prompt_cache_retention</code>.
+      Prompt caching can feel automatic, because supported models cache
+      eligible prefixes by default. So the reflex is to lean on it: a workload
+      reuses a shared prefix after an idle gap, across a shift boundary, after
+      a batch pause, or on a later customer turn, and the request body simply
+      omits <code>prompt_cache_retention</code> and trusts the window to still
+      be there. But &ldquo;cached by default&rdquo; is not the same as
+      &ldquo;retained as long as the operation assumes.&rdquo; If the request
+      omits retention, the operation may be counting on a cache window it never
+      asked for &mdash; so the operating question is not &ldquo;is caching
+      on?&rdquo; but &ldquo;did the request actually ask for the reuse window
+      this workload depends on?&rdquo;
     </p>
 
     <figure class="article-figure" id="figure-retention-one-pager">
@@ -55,6 +62,44 @@
       </figcaption>
       <img src="../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="One-pager for prompt cache retention. It contrasts in-memory retention, the short default lifetime, with an explicit 24-hour window that keeps warm prefixes routable, and shows the 24h cell with a lower first-token-latency tail in this source run. Headline message: the retention window matters, so set it explicitly. Marked as the documented retention modes plus a sanitized measured aggregate, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
+
+    <section id="why-retention" class="article-section">
+      <h2>Why set the window instead of assuming it</h2>
+      <p>
+        The default-is-fine reflex assumes the cache window will outlast the
+        gap the workload leaves between reuses. Before accepting that, two
+        things are worth putting side by side. The first is what Microsoft
+        Learn documents: there are two retention policies,
+        <code>in_memory</code> and <code>24h</code>; in-memory entries are
+        typically cleared within 5 to 10 minutes of inactivity and always
+        removed within one hour of last use, while extended retention can keep
+        cached prefixes routable for up to 24 hours; for <code>gpt-5.4</code>
+        and older models an omitted value means <code>in_memory</code>, and
+        prompt-cache pricing is the same for both policies. The second is a
+        sparse sanitized public aggregate from this repository's source runs,
+        grouped by retention mode, included descriptively to show how
+        first-token latency and cache hit ratio actually moved under
+        <code>in_memory</code> versus <code>24h</code>.
+      </p>
+      <p>
+        The pairing is the part worth pausing on. Hit ratio alone can read as
+        reassuring while the retention choice surfaces somewhere else: in this
+        slice both modes held a high hit ratio (about 0.93 to 0.96), so reading
+        hit ratio by itself would suggest the retention mode barely mattered.
+        The first-token latency tail tells the other half of the story &mdash;
+        at cardinality&nbsp;1 the <code>in_memory</code> series sat near
+        106,000&nbsp;ms p95 while the <code>24h</code> series sat near
+        9,900&nbsp;ms, so the retention choice showed up in the latency tail,
+        not in hit ratio. That is why retention should be read with latency
+        beside cached-token share &mdash; and why it is a request policy and a
+        governance choice, not just a performance knob. The two retention
+        modes, their lifetimes, the <code>in_memory</code> default, the equal
+        pricing, and the in-region condition for extended retention are what
+        Microsoft Learn documents; the public latency-beside-hit-ratio slice is
+        source-run evidence this repository defends, not a universal latency
+        curve. The charts below make that pairing explicit.
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="Article summary">
       <section class="summary-tile">
