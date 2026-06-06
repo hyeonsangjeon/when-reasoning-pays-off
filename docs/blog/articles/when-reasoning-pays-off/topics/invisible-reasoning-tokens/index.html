@@ -56,8 +56,8 @@
         really does explain the spend, and the bigger bill is hiding in
         slightly longer replies nobody noticed. Or maybe a reasoning model
         breaks the intuition, and the cost has moved into hidden reasoning
-        tokens the user never reads. On this slice, only one of those can be
-        true.
+        tokens the user never reads. The chart can show which one carries the
+        change.
       </p>
       <p>
         So we decomposed it. We split each billed request into input, cached
@@ -66,7 +66,7 @@
         short-factual slice. The result settles the question: visible output
         moved only about 12.7 to 17.9 tokens across the effort ladder, while
         hidden reasoning moved about 3.7 to 311.5 tokens. Cost and latency grew
-        with the hidden channel, and the paired quality chart did not lift to
+        alongside the hidden channel, and the paired quality chart did not lift to
         match. The one-pager below states that in a single frame; the sections
         after it show the measured detail.
       </p>
@@ -77,7 +77,7 @@
         <strong>This topic at a glance.</strong> Each billed request splits into
         input, cached, visible output, and hidden reasoning &mdash; and on this
         slice it is the hidden reasoning channel that scales. The one-pager states
-        that message and marks the evidence boundary; the sections below add
+        the same message and marks the evidence boundary; the sections below add
         the measured detail.
         <a href="../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg">Open the invisible-reasoning-tokens one-pager SVG</a>.
       </figcaption>
@@ -115,15 +115,46 @@
 
     <section id="s1" class="article-section">
       <h2>The answer was short; the internal work was not</h2>
-      <p>The useful surprise in benchmark-01 is not that extra-high effort cost more. That part is expected. The useful surprise is how little of the increase was visible in the final answer. Minimal effort averaged 12.7 visible output tokens and 3.7 reasoning tokens. Extra-high effort averaged 17.9 visible output tokens and 311.5 reasoning tokens.</p><p>That means the text a reader sees is a poor proxy for the computation that was purchased. A short answer can hide a large reasoning budget, and a plausible answer can still be a bad economic trade if the paired quality chart does not move.</p>
+      <p>
+        The useful surprise in benchmark-01 is not that extra-high effort
+        cost more. That part is expected. The useful surprise is how little
+        of the increase was visible in the final answer. Minimal effort
+        averaged 12.7 visible output tokens and 3.7 reasoning tokens.
+        Extra-high effort averaged 17.9 visible output tokens and 311.5
+        reasoning tokens.
+      </p>
+      <p>
+        That means the text a reader sees is a poor proxy for the computation
+        that was purchased. A short answer can hide a large reasoning budget,
+        and a plausible answer can still be a bad economic trade if the paired
+        quality chart does not move.
+      </p>
     </section>
     <section id="s2" class="article-section">
       <h2>How to read the chart</h2>
-      <p>The bars are aggregate effort cells, not a histogram of individual requests. The X-axis is the reasoning-effort setting. The Y-axis is mean reasoning tokens per request. The small label under each bar gives mean visible output tokens for the same cell.</p><p>Read the chart from bottom to top: first ask whether visible output changed enough to explain the bill; then compare the hidden reasoning bar. In this slice, the explanation is not answer length. It is internal work.</p>
+      <p>
+        The bars are aggregate effort cells, not a histogram of individual
+        requests. The X-axis is the reasoning-effort setting. The Y-axis is
+        mean reasoning tokens per request. The small label under each bar
+        gives mean visible output tokens for the same cell.
+      </p>
+      <p>
+        Read the chart from bottom to top: first ask whether visible output
+        changed enough to explain the bill; then compare the hidden reasoning
+        bar. In this slice, the explanation is not answer length. It is
+        internal work.
+      </p>
     </section>
     <section id="s3" class="article-section">
       <h2>What the source charts add</h2>
-      <p>Token composition explains the mechanism, but it is not enough by itself. The cost chart shows the bill growing. The quality chart asks whether that bill bought a better answer. The latency chart shows the user-facing wait. Together they make the hidden surface legible: more internal tokens, more spend, more latency, and no matching quality lift in this short factual slice.</p>
+      <p>
+        Token composition explains the mechanism, but it is not enough by
+        itself. The cost chart shows the bill growing. The quality chart asks
+        whether that bill bought a better answer. The latency chart shows the
+        user-facing wait. Together they make the hidden surface legible: more
+        internal tokens, more spend, more latency, and no matching quality
+        lift in this short factual slice.
+      </p>
     </section>
     <section id="s4" class="article-section">
       <h2>What this means</h2>
