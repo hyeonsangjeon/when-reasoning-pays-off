@@ -34,13 +34,43 @@
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Topic essay · benchmark-02 multi-step work</p>
     <h1>Multi-step work: when reasoning earns its trial</h1>
-    <p class="lede">The second benchmark is the counterweight to the short-factual trap. Here, the task asks for more than recall. It asks the model to keep a small chain of constraints alive long enough to answer correctly. In that setting, reasoning effort has something useful to do.</p>
+    <p class="lede">After the short-factual slice, it is tempting to file reasoning effort under hidden spend — a dial that grows the bill without changing the answer. But teams also run tasks where the answer depends on holding several constraints in mind at once, and there the question reopens: does a stronger model or more reasoning effort change the answer, not just the cost? This benchmark puts that intuition to the test.</p>
+
+    <section class="article-section">
+      <h2>Why we tested this</h2>
+      <p>
+        The short-factual slice taught one lesson: when a task only needs
+        recall, extra reasoning mostly buys cost. But not every task is recall.
+        Plenty of real work asks the model to keep a small chain of constraints
+        alive — combine a few conditions, carry an intermediate result, and
+        only then answer. On that shape, "let it think more" stops looking like
+        an obvious waste and starts to look like it might earn its keep.
+      </p>
+      <p>
+        That gives us a clean hypothesis to check: if a task genuinely requires
+        holding multiple constraints together, maybe a stronger model or more
+        reasoning effort buys real quality rather than only a larger bill. The
+        intuition is reasonable — the experiment tests whether it holds on a
+        measured slice instead of in the abstract.
+      </p>
+      <p>
+        So we tested it. Benchmark-02 holds a multi-step slice fixed and walks
+        the same model and effort ladder — the GPT-4o baseline, then GPT-5.2 at
+        none, low, medium, high, and extra-high effort — reading mean judge
+        score next to cost and latency at each cell. The result is mixed and
+        worth stating plainly: GPT-5.2 lifted quality over the GPT-4o baseline,
+        but inside GPT-5.2 the highest effort settings were not automatically
+        the winner, and the cheapest top-scoring cell spent no reasoning tokens
+        at all. The one-pager below states that in a single frame, and the
+        sections after it show the measured detail.
+      </p>
+    </section>
 
     <figure class="article-figure" id="figure-multi-step-one-pager">
       <figcaption>
         <strong>This topic at a glance.</strong> On this multi-step slice the quality
         lift tracked the model upgrade (gpt-4o &rarr; gpt-5.2), not steps up the effort
-        ladder. The one-pager states that single message and marks the evidence
+        ladder. The one-pager states the same message and marks the evidence
         boundary; the sections below add the measured detail.
         <a href="../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">Open the multi-step one-pager SVG</a>.
       </figcaption>
@@ -59,7 +89,7 @@
       <a href="#s1">The quality movement changed the interpretation</a>
       <a href="#s2">How to read the chart</a>
       <a href="#s3">Why this benchmark was different</a>
-      <a href="#s4">The story to keep</a>
+      <a href="#s4">What this means</a>
       <a href="#table">Evidence table</a>
     </nav>
 
@@ -79,19 +109,23 @@
 
     <section id="s1" class="article-section">
       <h2>The quality movement changed the interpretation</h2>
-      <p>In benchmark-02, the baseline GPT-4o cell averaged a judge score of 1.5. GPT-5.2 at none, medium, high, and extra-high effort reached 2.0, and low effort reached 1.933333. The chart does not say “always raise effort.” It says the workload has enough structure for reasoning to matter.</p><p>The more important reading is the shape of the first successful cells. GPT-5.2 none averaged $0.000618 per request and reached 2.0. That makes the trial useful without turning the highest effort setting into the default.</p>
+      <p>In benchmark-02, the baseline GPT-4o cell averaged a judge score of 1.5. GPT-5.2 at none, medium, high, and extra-high effort reached 2.0, and low effort reached 1.93. The chart does not say “always raise effort.” It says the workload has enough structure for reasoning to matter.</p>
+      <p>The more important reading is the shape of the first successful cells. GPT-5.2 none averaged $0.000618 per request and reached 2.0. That makes the trial useful without turning the highest effort setting into the default.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>How to read the chart</h2>
-      <p>The X-axis is the model/effort cell. The Y-axis is mean judge score. The label below each bar is mean cost per request for the same cell. This paired view matters because a quality bar alone can tempt over-selection: if several cells reach the top of the rubric, the cheaper and faster one becomes more interesting.</p><p>This is not a frequency histogram. Each bar is a summarized experimental cell with its own sample count and standard deviation in the source table.</p>
+      <p>The X-axis is the model/effort cell. The Y-axis is mean judge score. The label below each bar is mean cost per request for the same cell. This paired view matters because a quality bar alone can tempt over-selection: if several cells reach the top of the rubric, the cheaper and faster one becomes more interesting.</p>
+      <p>This is not a frequency histogram. Each bar is a summarized experimental cell with its own sample count and standard deviation in the source table.</p>
     </section>
     <section id="s3" class="article-section">
       <h2>Why this benchmark was different</h2>
-      <p>The short-factual task mostly asked for brief answers. The multi-step task asked the model to preserve a small reasoning chain. That changed what “extra thinking” could buy. The reasoning budget was no longer just hidden spend; it was a path to fewer wrong answers.</p><p>Still, the evidence does not reward maximalism. Latency rises as effort rises, and extra-high effort averaged 3.3s. Once quality has reached the top of the rubric, the next question becomes whether a slower cell is saying anything new.</p>
+      <p>The short-factual task mostly asked for brief answers. The multi-step task asked the model to preserve a small reasoning chain. That changed what “extra thinking” could buy. The reasoning budget was no longer just hidden spend; it was a path to fewer wrong answers.</p>
+      <p>Still, the evidence does not reward maximalism. Latency rises as effort rises, and extra-high effort averaged 3.3s. Once quality has reached the top of the rubric, the next question becomes whether a slower cell is saying anything new.</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>The story to keep</h2>
-      <p>Reasoning pays when it changes the answer, not when it changes the aura of the answer. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p><p>The decision is therefore not “use more reasoning everywhere.” It is “route multi-step slices to the lowest effort level that clears the quality bar.”</p>
+      <h2>What this means</h2>
+      <p>Reasoning pays when it changes the answer, not when it changes the aura of the answer. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p>
+      <p>The decision is therefore not “use more reasoning everywhere.” It is “route multi-step slices to the lowest effort level that clears the quality bar.”</p>
     </section>
 
     <section id="table" class="article-section">
@@ -108,7 +142,7 @@
           <strong>How to read it:</strong> the step up is between models, not along the
           effort ladder &mdash; the gpt-4o baseline sits at 1.5 while every gpt-5.2 cell
           lands at or near 2.0 (none, medium, high, and extra-high reach 2.0; low is
-          1.933333), so on this slice the lift tracks the model upgrade rather than
+          1.93), so on this slice the lift tracks the model upgrade rather than
           higher effort.
           <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats, this one
           multi-step slice on a single Azure OpenAI tenant and region; error bars are
@@ -146,7 +180,7 @@
       <ul>
         <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The cost figures drift if list pricing moves.</li>
-        <li><strong>Tier 2 — benchmark-02 slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the per-effort quality figures — the 1.5 GPT-4o baseline, the 2.0 reached by GPT-5.2 none, medium, high, and extra-high, and the 1.933333 at GPT-5.2 low, where GPT-5.2 none spends no reasoning tokens yet is the cheapest top-scoring cell at $0.000618 — and the matching cost figures from $0.000618 to $0.002179 per request.</li>
+        <li><strong>Tier 2 — benchmark-02 slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the per-effort quality figures — the 1.5 GPT-4o baseline,         the 2.0 reached by GPT-5.2 none, medium, high, and extra-high, and the 1.93 at GPT-5.2 low, where GPT-5.2 none spends no reasoning tokens yet is the cheapest top-scoring cell at $0.000618 — and the matching cost figures from $0.000618 to $0.002179 per request.</li>
         <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> as paired-reading evidence that the quality lift on this slice carried a justified bill rather than only a taller one.</li>
         <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>
       </ul>
@@ -170,10 +204,10 @@
         <li>Re-measure when the workload shape changes; a lift on this slice does not transfer to other topics.</li>
       </ol>
       <p>
-        <strong>The practical rule: raise reasoning effort for multi-step work
-        only when the paired quality chart shows a measurable lift on this
-        workload shape — the bill is justified by the quality climb, not by the
-        spend alone.</strong>
+        <strong>The practical rule: for multi-step work, first pick the lowest
+        model/effort cell that clears the quality bar; raise reasoning effort
+        only when the paired quality chart moves on this workload shape — the
+        bill is justified by the quality climb, not by the spend alone.</strong>
       </p>
       <p>
         <a class="button-link" href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">Inspect the benchmark-02 quality chart</a>
