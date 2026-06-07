@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
+  <title id="title">推論トークンは回答よりも速く増えた</title>
+  <desc id="desc">benchmark-01：effort 別の平均隠れ推論トークン。見える出力は短いまま。</desc>
+  <rect width="980" height="560" fill="#f8fbff"/>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">推論トークンは回答よりも速く増えた</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-01：effort 別の平均隠れ推論トークン。見える出力は短いまま。</text>
+  <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
+  <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="155" y1="390.0" x2="910" y2="390.0" stroke="#e8f0f8"/>
+  <text x="148" y="394.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">0</text>
+  <line x1="155" y1="322.5" x2="910" y2="322.5" stroke="#e8f0f8"/>
+  <text x="148" y="326.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">85</text>
+  <line x1="155" y1="255.0" x2="910" y2="255.0" stroke="#e8f0f8"/>
+  <text x="148" y="259.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">170</text>
+  <line x1="155" y1="187.5" x2="910" y2="187.5" stroke="#e8f0f8"/>
+  <text x="148" y="191.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">255</text>
+  <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
+  <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">340</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">平均推論トークン</text>
+  <rect x="160.0" y="387.1" width="134.0" height="2.9" rx="8" fill="#3a86ff"/>
+  <text x="227.0" y="377.1" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">4</text>
+  <text x="227.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">minimal</text>
+  <text x="227.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 12.7</text>
+  <rect x="314.0" y="366.8" width="134.0" height="23.2" rx="8" fill="#06d6a0"/>
+  <text x="381.0" y="356.8" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">29</text>
+  <text x="381.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">low</text>
+  <text x="381.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 13.9</text>
+  <rect x="468.0" y="320.1" width="134.0" height="69.9" rx="8" fill="#8ecae6"/>
+  <text x="535.0" y="310.1" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">88</text>
+  <text x="535.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">medium</text>
+  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 14.2</text>
+  <rect x="622.0" y="242.7" width="134.0" height="147.3" rx="8" fill="#ffb703"/>
+  <text x="689.0" y="232.7" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">185</text>
+  <text x="689.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">high</text>
+  <text x="689.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 16.3</text>
+  <rect x="776.0" y="142.7" width="134.0" height="247.3" rx="8" fill="#fb8500"/>
+  <text x="843.0" y="132.7" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">311</text>
+  <text x="843.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">xhigh</text>
+  <text x="843.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 17.9</text>
+  <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">チャートの読み方</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">棒は集計した effort セルであり、頻度のヒストグラムではない。</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">各棒の下の小さなラベルは平均の見える出力トークン。</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出典：公開集計チャートデータ。記述的な根拠のみ。</text>
+</svg>
