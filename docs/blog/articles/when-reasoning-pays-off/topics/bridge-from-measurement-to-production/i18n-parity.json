@@ -1,0 +1,15 @@
+{
+  "required_locales": ["ko"],
+  "locales": {
+    "ko": "ko/index.html"
+  },
+  "sections": [
+    "why-bridge",
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "sources"
+  ],
+  "note": "Structural i18n parity per D-014: section-anchor (id) alignment, not literal translation. Japanese (ja) is an intentional, report-only gap for this essay (not in required_locales)."
+}

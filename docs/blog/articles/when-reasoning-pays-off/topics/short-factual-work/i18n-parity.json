@@ -1,0 +1,10 @@
+{
+  "required_locales": ["ko"],
+  "locales": {
+    "ko": "ko/index.html"
+  },
+  "sections": [
+    "next"
+  ],
+  "note": "Structural i18n parity per D-014: section-anchor (id) alignment, not literal translation. This intentionally short essay anchors only the shared 'next' section in canonical EN; Japanese (ja) is an intentional, report-only gap (not in required_locales)."
+}

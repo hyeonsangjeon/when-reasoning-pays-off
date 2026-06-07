@@ -1,0 +1,18 @@
+{
+  "required_locales": ["ko"],
+  "locales": {
+    "ko": "ko/index.html",
+    "ja": "ja/index.html"
+  },
+  "sections": [
+    "short-factual",
+    "reasoning-tokens",
+    "multi-step",
+    "tool-agent",
+    "ptu-payg",
+    "operations-next",
+    "sources",
+    "decision"
+  ],
+  "note": "Structural i18n parity per D-014: section-anchor (id) alignment across locales, not literal translation. Overview hub anchors; topic-specific deep dives carry their own manifests."
+}
