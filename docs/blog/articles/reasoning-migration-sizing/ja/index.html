@@ -33,7 +33,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ</p>
+    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ</p>
     <p class="article-kicker">運用エッセイ · GPT-4o から GPT-5.x へのサイジング</p>
     <h1>推論モデルへの移行を、モデル名だけでサイジングしてはいけない</h1>
     <p class="lede">
@@ -50,11 +50,11 @@
       </section>
       <section class="summary-tile">
         <h2>根拠</h2>
-        <p>Microsoft Learn は正規化 TPM の計算式を示し、OpenAI は推論トークンの会計方法を文書化している。</p>
+        <p>Microsoft Learn は正規化 TPM の計算式を示し、OpenAI は推論トークンの会計方法を文書化しています。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
-        <p>「5.x」というファミリーレベルの前提ではなく、実測したトークンの形からサイジングする。</p>
+        <p>「5.x」というファミリーレベルの前提ではなく、実測したトークンの形からサイジングします。</p>
       </section>
     </div>
 
@@ -68,7 +68,7 @@
     </nav>
 
     <p class="banner">
-      <strong>スコープに関する注記:</strong>
+      <strong>範囲に関する注記：</strong>
       以下のチャートは例示的なサイジング計算であり、普遍的なキャパシティの主張では
       ありません。判断の形を理解するために用いたうえで、同じ計算をあなた自身の
       トラフィックサンプルで実行してください。
@@ -169,12 +169,12 @@
       <p class="section-label">運用者チェックリスト · キャパシティを買う前に再測定する</p>
       <h2>移行を、名称変更ではなく測定として実行する</h2>
       <ol>
-        <li><strong>タスク構成を固定する。</strong> プロンプト・ツール・スキーマ・検索の配置・サンプル分布を、モデルセル間でバイト単位で安定させる。</li>
-        <li><strong>可視出力を測定する。</strong> 移行前後で可視出力トークンの平均と p95 を比較する。</li>
-        <li><strong>推論出力を測定する。</strong> <code>reasoning_tokens</code> を取得する。最終的な答えのテキストから推測しない。</li>
-        <li><strong>キャッシュ率を測定する。</strong> 特に ReAct やツールスキーマの変更後は、キャッシュキーのバケットごとに <code>cached_tokens / prompt_tokens</code> を記録する。</li>
-        <li><strong>上限を適正化する。</strong> 代表的な「可視 + 推論」のパーセンタイルから <code>max_output_tokens</code> を設定し、まれな長文の答えにはコールごとのオーバーライドを用いる。</li>
-        <li><strong>そのうえで初めて PTU をサイジングする。</strong> 現行のモデル表と実測したワークロードの形を用いて、正規化 TPM 計算式を適用する。</li>
+        <li><strong>タスク構成を固定してください。</strong> プロンプト・ツール・スキーマ・検索の配置・サンプル分布を、モデルセル間でバイト単位で安定させてください。</li>
+        <li><strong>可視出力を測定してください。</strong> 移行前後で可視出力トークンの平均と p95 を比較してください。</li>
+        <li><strong>推論出力を測定してください。</strong> <code>reasoning_tokens</code> を取得してください。最終的な答えのテキストから推測しないでください。</li>
+        <li><strong>キャッシュ率を測定してください。</strong> 特に ReAct やツールスキーマの変更後は、キャッシュキーのバケットごとに <code>cached_tokens / prompt_tokens</code> を記録してください。</li>
+        <li><strong>上限を適正化してください。</strong> 代表的な「可視 + 推論」のパーセンタイルから <code>max_output_tokens</code> を設定し、まれな長文の答えにはコールごとのオーバーライドを用いてください。</li>
+        <li><strong>そのうえで初めて PTU をサイジングしてください。</strong> 現行のモデル表と実測したワークロードの形を用いて、正規化 TPM 計算式を適用してください。</li>
       </ol>
     </section>
 
@@ -188,8 +188,8 @@
         <li><strong>公開リポジトリのコンテキスト:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU 対 PAYG 判断ランブック</a> と <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">可観測性スキーマ</a>。</li>
       </ul>
       <p>
-        実務上の原則は次のとおりです。GPT-4o のトラフィックを PTU 上の GPT-5.x へ
-        移す前に、出力・推論・キャッシュ・上限ポリシーを再測定する。モデル名だけでは、
+        実務上のルールは次のとおりです。GPT-4o のトラフィックを PTU 上の GPT-5.x へ
+        移す前に、出力・推論・キャッシュ・上限ポリシーを再測定してください。モデル名だけでは、
         ワークロードをサイジングするのに十分な情報ではありません。
       </p>
       <p><a class="button-link" href="../../">記事一覧へ戻る</a></p>

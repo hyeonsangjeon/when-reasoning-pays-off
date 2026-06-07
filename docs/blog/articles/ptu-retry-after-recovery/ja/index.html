@@ -33,7 +33,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ / 日本語訳</p>
+    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ / 日本語訳</p>
     <p class="article-kicker">運用エッセイ · PTU の回復と 429 ハンドリング</p>
     <h1>429 は単なるエラーではなく、回復シグナルである</h1>
     <p class="lede">
@@ -49,7 +49,7 @@
         <p>PTU 容量が「今はだめ」と返したとき、クライアントは次の手をどう判断すべきか?</p>
       </section>
       <section class="summary-tile">
-        <h2>証跡</h2>
+        <h2>根拠</h2>
         <p>Microsoft Learn がヘッダーの契約を定義し、公開集計の実行が、中央値だけの待機ではテールを取りこぼす理由を示します。</p>
       </section>
       <section class="summary-tile">
@@ -68,7 +68,7 @@
     </nav>
 
     <p class="banner">
-      <strong>スコープ注記:</strong>
+      <strong>範囲に関する注記：</strong>
       以下の測定値は本リポジトリの公開集計アーティファクトのみを記述しています。
       リトライラッパーの設計には有用ですが、Azure の普遍的な挙動を主張するものでは
       ありません。
@@ -111,7 +111,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">観測された証跡 · 公開集計のみ</p>
+      <p class="section-label">観測された根拠 · 公開集計のみ</p>
       <h2>中央値は小さく、テールはそうではなかった</h2>
       <figure class="article-figure">
         <figcaption>
@@ -213,16 +213,16 @@
     </section>
 
     <section id="sources" class="article-section decision-box">
-      <h2>出典と証跡の境界</h2>
+      <h2>出典と根拠の境界</h2>
       <ul>
         <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn PTU 本番運用ガイド</a>。</li>
         <li><strong>公式スピルオーバー挙動、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn スピルオーバートラフィック管理ガイド</a>。</li>
-        <li><strong>公開集計の証跡:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms パーセンタイル CSV</a> および <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 イベント CSV</a>。</li>
+        <li><strong>公開集計の根拠:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">retry-after-ms パーセンタイル CSV</a> および <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_events.csv">429 イベント CSV</a>。</li>
         <li><strong>公開リファレンス実装:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">ヘッダー駆動のアドミッションコントローラー</a>。</li>
       </ul>
       <p>
-        実用的なルール: PTU の回復のために当てずっぽうでポーリングしないこと。
-        ヘッダーを尊重し、判断をログに残し、遅延のトレードオフを明示します。
+        実務上のルール：PTU の回復のために当てずっぽうでポーリングしないでください。
+        ヘッダーを尊重し、判断をログに残し、遅延のトレードオフを明示してください。
       </p>
       <p><a class="button-link" href="../../">記事インデックスに戻る</a></p>
     </section>

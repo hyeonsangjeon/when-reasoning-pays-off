@@ -36,12 +36,13 @@
     <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
     <p class="article-kicker">トピック記事 · benchmark-02 多段タスク</p>
     <h1>多段タスク：推論が試す価値を稼ぐとき</h1>
-    <p class="lede">二つ目のベンチマークは、short-factual の罠に対する対の重りだ。ここでのタスクは、単なる想起では足りない。正しく答えるのに十分なあいだ、小さな制約の連なりを保ち続けることをモデルに求める。そういう設定でこそ、推論 effort には果たすべき有用な仕事が生まれる。</p>
+    <p class="lede">二つ目のベンチマークは、短い事実回答の罠に対する対の重りだ。ここでのタスクは、単なる想起では足りない。正しく答えるのに十分なあいだ、小さな制約の連なりを保ち続けることをモデルに求める。そういう設定でこそ、推論 effort には果たすべき有用な仕事が生まれる。</p>
 
     <div class="article-summary-grid" aria-label="トピックの要約">
       <section class="summary-tile"><h2>問い</h2><p>追加の推論が、ただ請求額を膨らませるのではなく品質の改善を買うのは、どんなときか。</p></section>
-      <section class="summary-tile"><h2>証拠</h2><p>benchmark-02 の品質・コスト・レイテンシ・トークン形状のチャート。</p></section>
+      <section class="summary-tile"><h2>根拠</h2><p>benchmark-02 の品質・コスト・レイテンシ・トークン形状のチャート。</p></section>
       <section class="summary-tile"><h2>わかったこと</h2><p>GPT-5.2 の low/none の領域は、最も高い effort 設定を使わずとも、GPT-4o のベースラインに対して目に見える品質の上積みを出した。</p></section>
+      <section class="summary-tile"><h2>判断</h2><p>多段のスライスは品質の基準を超える最も低い effort へ振り向け、対になる品質チャートが動くときにだけ effort を上げる。</p></section>
     </div>
 
     <nav class="article-outline" aria-label="トピックのセクション">
@@ -49,8 +50,8 @@
       <a href="#s1">品質の動きが解釈を変えた</a>
       <a href="#s2">チャートの読み方</a>
       <a href="#s3">このベンチマークが違っていた理由</a>
-      <a href="#s4">残しておきたい話</a>
-      <a href="#table">証拠の表</a>
+      <a href="#s4">押さえておきたい要点</a>
+      <a href="#table">根拠の表</a>
     </nav>
 
     <p class="banner">
@@ -63,48 +64,79 @@
         <figcaption>
           <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="Bar chart showing benchmark-02 mean judge score by model and effort with cost labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="棒グラフ：benchmark-02 のモデルと effort 別の平均評価スコア。コストのラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
       <h2>品質の動きが解釈を変えた</h2>
-      <p>benchmark-02 では、ベースラインの GPT-4o セルが judge score 平均 1.5 だった。GPT-5.2 は none・medium・high・extra-high effort で 2.0 に達し、low effort でも 1.933333 に届いた。チャートは「常に effort を上げよ」とは言っていない。このワークロードには、推論が効くだけの構造が備わっている、と言っているのだ。</p><p>より大事な読みは、最初に成功したセルの形状にある。GPT-5.2 none はリクエストあたり平均 $0.000618 で 2.0 に達した。これによって、最も高い effort 設定をデフォルトに祭り上げることなく、試行そのものが有用になる。</p>
+      <p>benchmark-02 では、ベースラインの GPT-4o セルが評価スコア平均 1.5 だった。GPT-5.2 は none・medium・high・extra-high effort で 2.0 に達し、low effort でも 1.933333 に届いた。チャートは「常に effort を上げよ」とは言っていない。このワークロードには、推論が効くだけの構造が備わっている、と言っているのだ。</p><p>より大事な読みは、最初に成功したセルの形状にある。GPT-5.2 none はリクエストあたり平均 $0.000618 で 2.0 に達した。これによって、最も高い effort 設定をデフォルトに祭り上げることなく、試行そのものが有用になる。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>チャートの読み方</h2>
-      <p>X 軸はモデル/effort のセル、Y 軸は平均 judge score。各棒の下のラベルは、同じセルのリクエストあたり平均コストだ。この対の見方が大事なのは、品質の棒だけを見ると過剰選択を誘いかねないからだ。もし複数のセルがルーブリックの頂点に達するなら、より安く速いほうが面白くなる。</p><p>これは度数のヒストグラムではない。各棒は、元データの表に独自のサンプル数と標準偏差を持つ、要約された実験セルである。</p>
+      <p>X 軸はモデル/effort のセル、Y 軸は平均評価スコア。各棒の下のラベルは、同じセルのリクエストあたり平均コストだ。この対の見方が大事なのは、品質の棒だけを見ると過剰選択を誘いかねないからだ。もし複数のセルがルーブリックの頂点に達するなら、より安く速いほうが面白くなる。</p><p>これは度数のヒストグラムではない。各棒は、元データの表に独自のサンプル数と標準偏差を持つ、要約された実験セルである。</p>
     </section>
     <section id="s3" class="article-section">
       <h2>このベンチマークが違っていた理由</h2>
-      <p>short-factual のタスクは、おおむね短い回答を求めるものだった。多段タスクは、小さな推論の連鎖を保ち続けることをモデルに求めた。それが「追加の思考」で買えるものを変えた。推論予算はもはや単なる隠れた支出ではなく、誤答を減らす経路になった。</p><p>とはいえ、証拠は最大化主義に報いてはいない。effort が上がればレイテンシも上がり、extra-high effort は平均 3.3s だった。品質がいったんルーブリックの頂点に達したら、次の問いは「より遅いセルは何か新しいことを語っているのか」になる。</p>
+      <p>短い事実回答のタスクは、おおむね短い回答を求めるものだった。多段タスクは、小さな推論の連鎖を保ち続けることをモデルに求めた。それが「追加の思考」で買えるものを変えた。推論予算はもはや単なる隠れた支出ではなく、誤答を減らす経路になった。</p><p>とはいえ、根拠は最大化主義に報いてはいない。effort が上がればレイテンシも上がり、extra-high effort は平均 3.3s だった。品質がいったんルーブリックの頂点に達したら、次の問いは「より遅いセルは何か新しいことを語っているのか」になる。</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>残しておきたい話</h2>
+      <h2>押さえておきたい要点</h2>
       <p>推論が報われるのは、それが回答を変えるときであって、回答の雰囲気を変えるときではない。試行がまず属すべき場所は多段タスクだ。タスクにはモデルが恩恵を受けるだけの内部構造があり、評価者はその差を見て取れる。</p><p>したがって判断は「どこでももっと推論を使え」ではない。「多段のスライスは、品質の基準を超える最も低い effort のレベルへ振り向けよ」だ。</p>
     </section>
 
     <section id="table" class="article-section">
-      <h2>証拠の表</h2>
+      <h2>根拠の表</h2>
       <table class="chart-table evidence-table">
-        <caption>benchmark-02 cost-quality evidence</caption>
-        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <caption>benchmark-02 のコストと品質の根拠</caption>
+        <thead><tr><th>根拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
         <tbody>
-          <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>超えるべき明確なベースライン。</td></tr>
-<tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>この公開スライスで最も安い最高得点セル。</td></tr>
-<tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>ベースラインは上回るが、ここでは明快な勝者ではない。</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>最高得点だが、請求はより大きくレイテンシは長い。</td></tr>
+          <tr><td>GPT-4o baseline</td><td>評価スコア 1.50</td><td>$0.000798/request</td><td>超えるべき明確なベースライン。</td></tr>
+<tr><td>GPT-5.2 none</td><td>評価スコア 2.00</td><td>$0.000618/request</td><td>この公開スライスで最も安い最高得点セル。</td></tr>
+<tr><td>GPT-5.2 low</td><td>評価スコア 1.93</td><td>$0.000859/request</td><td>ベースラインは上回るが、ここでは明快な勝者ではない。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>評価スコア 2.00</td><td>$0.002179/request</td><td>最高得点だが、請求はより大きくレイテンシは長い。</td></tr>
         </tbody>
       </table>
     </section>
 
+    <section id="sources" class="article-section">
+      <h2>出典と根拠の境界</h2>
+      <p>
+        上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、コストの主張はいずれも日付付きの価格スナップショットで算定している。品質の基準に届く最も低い effort で止めるというこの記事のルーティングの習慣は、記事自身の運用上の推論である。下の二つの Tier は、文書化された入力がどこで終わり、推論がどこから始まるのかを示す。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。accessed_date: 2026-05-19、source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けばコストの数値も変わる。</li>
+        <li><strong>Tier 2 — benchmark-02 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。effort 別の品質値——1.5 の GPT-4o ベースライン、GPT-5.2 の none・medium・high・extra-high が届いた 2.0、GPT-5.2 low の 1.93、そして推論トークンを使わないのにリクエストあたり $0.000618 で最も安い最高得点セルである GPT-5.2 none——と、リクエストあたり $0.000618 から $0.002179 の対応するコスト値の出典。</li>
+        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> と一緒に読むと、このスライスの品質の上積みが、ただ高いだけの請求ではなく正当化された請求を伴ったという根拠になる。</li>
+        <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
+      </ul>
+      <p>
+        このスライスが何を証明し、何を証明しないか：この多段のスライスでは、GPT-5.2 が GPT-4o のベースラインに対して測定可能な品質の上積みを出したことを示す。より高い推論 effort が常に品質を上げる、あるいは追加の請求を正当化することは証明しない——ここでは最も安い最高得点セルは推論トークンをまったく使わなかった——し、同じ上積みが短い事実回答、ツールエージェント、統合の作業で現れることも証明しない。各トピックはそれぞれの測定を持つ。
+      </p>
+    </section>
+
     <section class="article-section decision-box">
-      <h2>この証拠から言えること</h2>
-      <p>多段タスクは「推論がコストに見合うとき」という言葉が具体になる場所だ。評価者が動いたからこそ、支出には証拠の裏づけができた。</p>
+      <h2>この根拠から言えること</h2>
+      <p>多段タスクは「推論がコストに見合うとき」という言葉が具体になる場所だ。評価者が動いたからこそ、支出には根拠の裏づけができた。</p>
       <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+
+      <h2>実務上のルール</h2>
+      <ol>
+        <li>品質チャートは、品質の棒だけでなく、同じ多段セルのコストチャートと対にして読んでください。</li>
+        <li>品質の基準を超える最も低い effort のセルを選び、より高いセルはスコアが動くときだけ候補として扱ってください。</li>
+        <li>effort が上がると待ち時間も伸びるため、より高い effort へ引き上げる前にレイテンシを確認してください。</li>
+        <li>ワークロードの形が変わったら測定し直してください。このスライスの上積みは他のトピックには引き継がれない。</li>
+      </ol>
+      <p>
+        <strong>実務上のルール：多段の作業では、まず品質の基準を超える最も低いモデル／effort のセルを選び、このワークロードの形で対になる品質チャートが動くときにだけ推論 effort を上げてください。請求を正当化するのは品質の上積みであって、支出そのものではない。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 の品質チャートを開く</a>
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site"><p>MIT ライセンスの研究成果物 · 公開データはサニタイズ済みまたは集計済みのみです。</p></footer>
 </body>
 </html>
