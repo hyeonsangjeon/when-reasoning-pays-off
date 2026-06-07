@@ -81,11 +81,15 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>주제 안내 차트(모델링된 집계로 직접 작성).</strong> 이 도식은
-          차트 한 장 크기의 질문 하나 &mdash; 선택된 벤치마크 행들의 모델링된
-          PTU/PAYG 손익분기 RPM &mdash; 를 떼어 내 아래 원천 표와 짝지어 보여
-          줍니다. 이 막대는 측정된 용량이 아니라 계산된 손익분기 표시점이며,
-          모델링된 교차점 JSON은 출처 절에서 인용합니다.
+          <strong>주제 안내 차트(모델링된 집계로 직접 작성).</strong>
+          <strong>무엇을 읽나:</strong> 선택된 벤치마크 행들의 모델링된 PTU/PAYG
+          손익분기 RPM입니다. <strong>X축:</strong> 선택된 벤치마크 행,
+          <strong>Y축:</strong> 모델링된 손익분기 RPM이며(막대가 높을수록 모델링된
+          PTU 하한이 더 싸 보이기 전까지 PAYG가 더 높은 요청 속도까지 올라갈 수
+          있다는 뜻). <strong>측정이 아니라 계획용 안내로 읽기:</strong> 이 막대는
+          &mdash; benchmark-01의 약 149 rpm 표시점과 50 PTU 하한을 포함해 &mdash; 이
+          가격 스냅샷과 요청당 토큰 형태에서 계산된 값이며, 측정된 PTU 용량 결과가
+          아닙니다. 모델링된 교차점 JSON은 출처 절에서 인용합니다.
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="선택된 벤치마크 행들의 모델링된 PTU/PAYG 손익분기 RPM을 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
