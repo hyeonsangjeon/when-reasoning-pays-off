@@ -516,3 +516,17 @@ footer.site {
   flex: 0 1 auto;
   min-width: 0;
 }
+
+/* Self-contained, responsive SVG mini-charts (mobile-first). The viewBox
+   scales with the container width, so axis and series labels never wrap or
+   collide the way absolutely-positioned text can on narrow screens. */
+.mini-svg-chart {
+  background: linear-gradient(180deg, #f8fbff, #edf5fb);
+  border: 1px solid #dce6f0;
+  border-radius: 12px;
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-width: 560px;
+  width: 100%;
+}

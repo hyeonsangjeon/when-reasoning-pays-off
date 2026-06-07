@@ -181,11 +181,11 @@
     </section>
 
     <section id="chart" class="article-section">
-      <p class="section-label">예시 계산 · 동일한 가시 워크로드</p>
+      <p class="section-label">예시 계산 · 보이는 출력이 같은 워크로드</p>
       <h2>답을 바꿀 수 있는 숨은 출력</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>읽어야 할 차트:</strong> 입력 토큰 200개와 가시 출력 토큰
+          <strong>읽어야 할 차트:</strong> 입력 토큰 200개와 보이는 출력 토큰
           20개를 가진 1,000 RPM 예시입니다. 처음 세 막대는 공식 정규화 TPM
           공식과 모델 표를 사용합니다. 마지막 두 막대는 보이지 않는 출력을
           반드시 측정해야 하는 이유를 보이기 위해 60 토큰의 추론 가정을
@@ -205,20 +205,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>가시 기준선</td><td>gpt-4o</td><td>0%</td><td>출력 토큰 20개</td><td>115</td></tr>
-          <tr><td>가시 마이그레이션</td><td>gpt-5.2</td><td>0%</td><td>출력 토큰 20개</td><td>110</td></tr>
-          <tr><td>가시 마이그레이션 + 캐시</td><td>gpt-5.2</td><td>50%</td><td>출력 토큰 20개</td><td>80</td></tr>
-          <tr><td>추론 마이그레이션</td><td>gpt-5.2</td><td>0%</td><td>가시 20개 + 추론 60개 토큰</td><td>250</td></tr>
-          <tr><td>추론 마이그레이션 + 캐시</td><td>gpt-5.2</td><td>50%</td><td>가시 20개 + 추론 60개 토큰</td><td>220</td></tr>
+          <tr><td>보이는 출력 기준선</td><td>gpt-4o</td><td>0%</td><td>출력 토큰 20개</td><td>115</td></tr>
+          <tr><td>보이는 출력 마이그레이션</td><td>gpt-5.2</td><td>0%</td><td>출력 토큰 20개</td><td>110</td></tr>
+          <tr><td>보이는 출력 마이그레이션 + 캐시</td><td>gpt-5.2</td><td>50%</td><td>출력 토큰 20개</td><td>80</td></tr>
+          <tr><td>추론 마이그레이션</td><td>gpt-5.2</td><td>0%</td><td>보이는 20개 + 추론 60개 토큰</td><td>250</td></tr>
+          <tr><td>추론 마이그레이션 + 캐시</td><td>gpt-5.2</td><td>50%</td><td>보이는 20개 + 추론 60개 토큰</td><td>220</td></tr>
         </tbody>
       </table>
       <div class="chart-reading-note">
         <h3>이것이 의미하는 바</h3>
         <p>
-          가시 출력만을 다룬 행들은 GPT-5.x가 항상 GPT-4o보다 비효율적이라는
+          보이는 출력만 다룬 행들은 GPT-5.x가 항상 GPT-4o보다 비효율적이라는
           일괄적인 주장을 뒷받침하지 않습니다. 추론 행들은 함정을 보여줍니다.
           일단 숨은 추론 출력이 나타나면, 캐시와 응답 정책을 측정하고
-          조정하지 않는 한 동일한 가시 답변이 훨씬 더 많은 정규화 TPM을
+          조정하지 않는 한 동일한 보이는 답변이 훨씬 더 많은 정규화 TPM을
           필요로 할 수 있습니다.
         </p>
       </div>
@@ -229,10 +229,10 @@
       <h2>마이그레이션 실행: 이름 변경이 아니라 측정</h2>
       <ol>
         <li><strong>작업 구성을 고정하세요.</strong> prompt, 도구, 스키마, 검색 배치, 샘플 분포를 모델 셀 전반에서 바이트 단위로 안정되게 유지하세요.</li>
-        <li><strong>가시 출력을 측정하세요.</strong> 마이그레이션 전후의 평균 및 p95 가시 출력 토큰을 비교하세요.</li>
+        <li><strong>보이는 출력을 측정하세요.</strong> 마이그레이션 전후의 평균 및 p95 보이는 출력 토큰을 비교하세요.</li>
         <li><strong>추론 출력을 측정하세요.</strong> <code>reasoning_tokens</code>를 수집하세요. 최종 답변 텍스트로부터 추정하지 마세요.</li>
         <li><strong>캐시 적중률을 측정하세요.</strong> 캐시 키 버킷별로 <code>cached_tokens / prompt_tokens</code>를 기록하세요. 특히 ReAct나 도구 스키마 변경 이후에 그렇습니다.</li>
-        <li><strong>상한을 적정 크기로 맞추세요.</strong> 대표적인 가시 + 추론 백분위수를 기준으로 <code>max_output_tokens</code>를 설정한 다음, 드물게 발생하는 긴 답변에는 호출별 재정의를 사용하세요.</li>
+        <li><strong>상한을 적정 크기로 맞추세요.</strong> 대표적인 보이는 + 추론 백분위수를 기준으로 <code>max_output_tokens</code>를 설정한 다음, 드물게 발생하는 긴 답변에는 호출별 재정의를 사용하세요.</li>
         <li><strong>그런 다음에만 PTU를 사이징하세요.</strong> 현재 모델 표와 여러분이 측정한 워크로드 형태로 정규화 TPM 공식을 적용하세요.</li>
       </ol>
     </section>
