@@ -87,6 +87,7 @@
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>If the answer text stays short, where did the extra cost come from?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>benchmark-01 token composition, cost, and latency charts, read as one evidence chain.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>The visible answer length barely moved, but the hidden reasoning tokens grew along the reasoning-effort ladder.</p></section>
       <section class="summary-tile"><h2>Decision</h2><p>Track reasoning tokens in telemetry even when the visible answer stays short; treat the hidden-token budget as part of the bill the response never shows.</p></section>
     </div>
 
@@ -212,7 +213,7 @@
       <ul>
         <li><strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li><strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed_date: 2026-05-19; source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>; archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>. The hidden-token bill drifts if list pricing moves.</li>
-        <li><strong>Tier 2 — benchmark-01 slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the 3.7 to 311.5 reasoning-token shift, the 12.7 to 17.9 visible-output movement, the 1.88 to 1.78 quality score, and the 1.1s to 3.1s latency stretch.</li>
+        <li><strong>Tier 2 — benchmark-01 slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the 3.655172 to 311.474576 reasoning-token shift, the 12.672414 to 17.881356 visible-output movement, the 1.87931 to 1.779661 quality score, and the 1112.798745 ms to 3088.001225 ms latency stretch.</li>
         <li><strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> is the token-decomposition source. Read it with <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code> as paired-reading evidence that the hidden tokens carried the bill and the wait without a matching quality lift.</li>
         <li><strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-token-composition-benchmark-01-token_composition">benchmark-01 token composition chart</a> is the auditable form of the same artifacts.</li>
       </ul>
