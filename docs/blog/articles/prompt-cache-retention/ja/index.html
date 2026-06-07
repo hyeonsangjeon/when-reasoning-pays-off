@@ -33,7 +33,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ</p>
+    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ</p>
     <p class="article-kicker">運用エッセイ · プロンプトキャッシュ保持期間</p>
     <h1>保持期間は前提ではなく、リクエストのポリシーである</h1>
     <p class="lede">
@@ -50,11 +50,11 @@
       </section>
       <section class="summary-tile">
         <h2>根拠</h2>
-        <p>Microsoft Learn が保持モードを定義し、本リポジトリが断片的な公開レイテンシとヒット率の証跡を補足します。</p>
+        <p>Microsoft Learn が保持モードを定義し、本リポジトリが断片的な公開レイテンシとヒット率の根拠を補足します。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
-        <p>保持期間を明示し、プレフィックスを安定させ、レイテンシをキャッシュ済みトークンの比率と並べて読む。</p>
+        <p>保持期間を明示し、プレフィックスを安定させ、レイテンシをキャッシュ済みトークンの比率と並べて読みます。</p>
       </section>
     </div>
 
@@ -68,8 +68,8 @@
     </nav>
 
     <p class="banner">
-      <strong>範囲に関する注記:</strong>
-      以下の公開計測値は、ソース実行から得た断片的な証跡です。これらは運用上の
+      <strong>範囲に関する注記：</strong>
+      以下の公開計測値は、ソース実行から得た断片的な根拠です。これらは運用上の
       チェックリストを支えるものであり、普遍的なレイテンシの主張ではありません。
     </p>
 
@@ -110,10 +110,10 @@
           各グループは同じカーディナリティについて <code>in_memory</code> と
           <code>24h</code> を比較しています。
         </figcaption>
-        <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="TTFT p95 とキャッシュヒット率を比較するプロンプトキャッシュ保持期間の証跡チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/prompt-cache-retention-evidence.svg" alt="TTFT p95 とキャッシュヒット率を比較するプロンプトキャッシュ保持期間の根拠チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>公開された保持期間の証跡</caption>
+        <caption>公開された保持期間の根拠</caption>
         <thead>
           <tr>
             <th>保持</th>
@@ -135,7 +135,7 @@
         <p>
           この公開スライスでは、カーディナリティ 1 のセルが最初のトークンの
           レイテンシにおいて保持期間を可視化しました。それはソース実行から得た
-          証跡であり、普遍的な規則ではありません。長く通用する教訓はもっと単純で、
+          根拠であり、普遍的な規則ではありません。長く通用する教訓はもっと単純で、
           保持モード・ヒット率・レイテンシをまとめて読む、ということです。
         </p>
       </div>
@@ -178,22 +178,22 @@
         パフォーマンス上の判断であると同時にガバナンス上の判断にもなります。
       </p>
       <p>
-        実務上の原則は、保持期間を既定値の中に埋もれさせないことです。意図した値を
+        実務上のルールは、保持期間を既定値の中に埋もれさせないことです。意図した値を
         コードに明記し、キャッシュ済みトークンの比率とレイテンシを観測し、利用する
         サービングモードに対するデータ所在の要件を確認します。
       </p>
     </section>
 
     <section id="sources" class="article-section decision-box">
-      <h2>出典と証跡の範囲</h2>
+      <h2>出典と根拠の境界</h2>
       <ul>
         <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
         <li><strong>公開された集計済みの根拠:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーのバケッティング CSV</a>。</li>
         <li><strong>公開運用ガイド:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">プロンプトキャッシュキーのポリシー手順書</a>。</li>
       </ul>
       <p>
-        実務上の原則は次のとおりです。短い期間を過ぎてもキャッシュの再利用が重要なら、
-        <code>prompt_cache_retention</code> を明示し、観測されるレイテンシの形を検証する。
+        実務上のルールは次のとおりです。短い期間を過ぎてもキャッシュの再利用が重要なら、
+        <code>prompt_cache_retention</code> を明示し、観測されるレイテンシの形を検証してください。
       </p>
       <p><a class="button-link" href="../../">記事一覧へ戻る</a></p>
     </section>

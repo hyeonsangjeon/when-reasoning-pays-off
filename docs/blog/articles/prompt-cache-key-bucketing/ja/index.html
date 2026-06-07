@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>キャッシュキーはルーティングのヒント | when reasoning pays off</title>
-  <meta name="description" content="prompt_cache_key のバケット分割、キャッシュ可能なプレフィックス、そして疎な公開キャッシュヒット証跡に関する公開運用記事。">
+  <meta name="description" content="prompt_cache_key のバケット分割、キャッシュ可能なプレフィックス、そして疎な公開キャッシュヒットの根拠に関する公開運用記事。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -33,7 +33,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 運用エッセイ / 日本語訳</p>
+    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ / 日本語訳</p>
     <p class="article-kicker">運用エッセイ · プロンプトキャッシュとルーティングのヒント</p>
     <h1>キャッシュキーはラベルではなくルーティングのヒント</h1>
     <p class="lede">
@@ -49,7 +49,7 @@
         <p>共有プロンプトプレフィックスは、キャッシュキーのバケットをいくつ使うべきか?</p>
       </section>
       <section class="summary-tile">
-        <h2>証跡</h2>
+        <h2>根拠</h2>
         <p>Microsoft Learn がルーティングのヒントとおおよそのオーバーフロー地点を定義し、本リポジトリが疎な公開測定を追加します。</p>
       </section>
       <section class="summary-tile">
@@ -62,14 +62,14 @@
       <strong>問いから読む:</strong>
       <a href="#spec">公式の挙動</a>
       <a href="#formula">バケットの計算式</a>
-      <a href="#evidence">公開証跡</a>
+      <a href="#evidence">公開の根拠</a>
       <a href="#patterns">良いキーと悪いキー</a>
       <a href="#sources">出典</a>
     </nav>
 
     <p class="banner">
-      <strong>スコープに関する注記:</strong>
-      ここでの測定値は、疎なソース実行の証跡です。普遍的なキャッシュヒット曲線を
+      <strong>範囲に関する注記：</strong>
+      ここでの測定値は、疎なソース実行の根拠です。普遍的なキャッシュヒット曲線を
       主張するためではなく、運用チェックリストを形作るために使ってください。
     </p>
 
@@ -128,13 +128,13 @@
         </div>
         <div>
           <h3>なぜ一意ではだめか?</h3>
-          <p>呼び出しごとに一意のキーを使うと、再利用が蓄積されません。キャッシュには人が集まりません。</p>
+          <p>呼び出しごとに一意のキーを使うと、再利用が蓄積されません。キャッシュが再利用を積み上げる機会そのものがありません。</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">観測された証跡 · 疎な公開スライス</p>
+      <p class="section-label">観測された根拠 · 疎な公開スライス</p>
       <h2>ヒット率と遅延を一緒に測定する</h2>
       <figure class="article-figure">
         <figcaption>
@@ -142,10 +142,10 @@
           左パネルはキャッシュヒット率を示します。右パネルは最初のトークンまでの
           p95 時間を示します。X 軸は保持モードとバケットのカーディナリティです。
         </figcaption>
-        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="キャッシュヒット率と TTFT p95 を比較したプロンプトキャッシュキーバケット分割の証跡チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="キャッシュヒット率と TTFT p95 を比較したプロンプトキャッシュキーバケット分割の根拠チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>公開キャッシュキーバケット分割の証跡</caption>
+        <caption>公開キャッシュキーバケット分割の根拠</caption>
         <thead>
           <tr>
             <th>保持</th>
@@ -198,14 +198,14 @@
     </section>
 
     <section id="sources" class="article-section decision-box">
-      <h2>出典と証跡の境界</h2>
+      <h2>出典と根拠の境界</h2>
       <ul>
         <li><strong>公式仕様、アクセス日 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
-        <li><strong>公開集計証跡:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーバケット分割 CSV</a>。</li>
+        <li><strong>公開集計の根拠:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーバケット分割 CSV</a>。</li>
         <li><strong>公開運用者ガイド:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key ポリシー運用手順書</a>。</li>
       </ul>
       <p>
-        実用的なルール: キャッシュ可能なプレフィックスを安定させ、余裕をもってワークロード
+        実務上のルール：キャッシュ可能なプレフィックスを安定させ、余裕をもってワークロード
         バケットを選び、ヒット率の指標は約束ではなく運用上のシグナルとして扱うことです。
       </p>
       <p><a class="button-link" href="../../">記事一覧に戻る</a></p>

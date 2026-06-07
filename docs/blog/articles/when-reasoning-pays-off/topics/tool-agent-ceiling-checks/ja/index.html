@@ -40,8 +40,9 @@
 
     <div class="article-summary-grid" aria-label="トピックの要約">
       <section class="summary-tile"><h2>問い</h2><p>ツールエージェントの品質がすでに頂点近くにあるとき、追加の effort はなお何を買うのか。</p></section>
-      <section class="summary-tile"><h2>証拠</h2><p>benchmark-03 の品質・レイテンシ・コスト・スループットのチャート。</p></section>
+      <section class="summary-tile"><h2>根拠</h2><p>benchmark-03 の品質・レイテンシ・コスト・スループットのチャート。</p></section>
       <section class="summary-tile"><h2>わかったこと</h2><p>GPT-5.2 の複数セルが品質の天井近く、あるいは天井そのものに並ぶ。判別の決め手になるのはレイテンシとトークン形状だ。</p></section>
+      <section class="summary-tile"><h2>判断</h2><p>ツールエージェントの作業は品質の天井に届く最も低い effort へ振り向け、それより高い effort は既定の選択ではなく、正当化すべきコストとレイテンシとして扱う。</p></section>
     </div>
 
     <nav class="article-outline" aria-label="トピックのセクション">
@@ -49,8 +50,8 @@
       <a href="#s1">天井効果こそが要点</a>
       <a href="#s2">チャートの読み方</a>
       <a href="#s3">ツールが読みを変える理由</a>
-      <a href="#s4">残しておきたい話</a>
-      <a href="#table">証拠の表</a>
+      <a href="#s4">押さえておきたい要点</a>
+      <a href="#table">根拠の表</a>
     </nav>
 
     <p class="banner">
@@ -63,48 +64,80 @@
         <figcaption>
           <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="棒グラフ：benchmark-03 の effort 別レイテンシ。評価スコアのラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
       <h2>天井効果こそが要点</h2>
-      <p>benchmark-03 は単純な単調増加の物語を生まなかった。GPT-4o は judge score 平均 1.85。GPT-5.2 は none で平均 1.966667、low で 2.0、medium で平均 1.983333、high で平均 1.966667、extra-high で 2.0 に達した。ベースラインに対する品質の改善ではあるが、同時にこれは天井でもある。</p><p>いったん複数のセルが頂点近くに固まってしまえば、effort を上げることに自動的な意味はなくなる。次の証拠は、レイテンシ、トークン形状、そして集計スコアの内側に隠れた失敗モードから来る。</p>
+      <p>benchmark-03 は単純な単調増加の物語を生まなかった。GPT-4o は評価スコア平均 1.85。GPT-5.2 は none で平均 1.966667、low で 2.0、medium で平均 1.983333、high で平均 1.966667、extra-high で 2.0 に達した。ベースラインに対する品質の改善ではあるが、同時にこれは天井でもある。</p><p>いったん複数のセルが頂点近くに固まってしまえば、effort を上げることに自動的な意味はなくなる。次の根拠は、レイテンシ、トークン形状、そして集計スコアの内側に隠れた失敗モードから来る。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>チャートの読み方</h2>
-      <p>このチャートは、品質がすでに頂点近くに圧縮されているため、棒の高さにレイテンシを使っている。X 軸はモデル/effort のセル、Y 軸は平均レイテンシ（ミリ秒）。各棒の下のラベルは、対になる平均 judge score を示す。</p><p>このチャートは意図的にヒストグラムではない。要約されたセル同士の比較だ。二つのセルの品質が近いなら、短いほうの棒が「長く待つことでなお何か目に見えるものを買えているのか」を問いかける。</p>
+      <p>このチャートは、品質がすでに頂点近くに圧縮されているため、棒の高さにレイテンシを使っている。X 軸はモデル/effort のセル、Y 軸は平均レイテンシ（ミリ秒）。各棒の下のラベルは、対になる平均評価スコアを示す。</p><p>このチャートは意図的にヒストグラムではない。要約されたセル同士の比較だ。二つのセルの品質が近いなら、短いほうの棒が「長く待つことでなお何か目に見えるものを買えているのか」を問いかける。</p>
     </section>
     <section id="s3" class="article-section">
       <h2>ツールが読みを変える理由</h2>
       <p>ツールエージェントの作業には、ツールの選択、中間状態、回答の統合が含まれる。それが短い事実タスクよりも要求度を高くしている。同時に、集計の品質スコアが異なる種類の振る舞いを覆い隠しうる、ということでもある。あるセルは、ツールが大半を片づけたから通ったのかもしれないし、正しいツールを使いながら要約が下手で落ちたのかもしれない。</p><p>チャートは検査の必要をなくしはしない。どこを検査すべきかを教えてくれるのだ。このランでは、low effort が魅力的な領域である。ベースラインのレイテンシ近くにとどまりながら品質の天井に達したからだ。</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>残しておきたい話</h2>
+      <h2>押さえておきたい要点</h2>
       <p>ツールエージェントのベンチマークには二度の読みが要る。まず、推論が正しさを改善したかを問う。次に、品質が頂点近くに固まっているなら、どのセルがレイテンシとトークンの圧力を抑え込んでいるかを問う。二度目の読みは付け足しではない。結果をベンチマークの外で使えるものにするのは、まさにこの読みだ。</p>
     </section>
 
     <section id="table" class="article-section">
-      <h2>証拠の表</h2>
+      <h2>根拠の表</h2>
       <table class="chart-table evidence-table">
-        <caption>benchmark-03 quality-latency evidence</caption>
-        <thead><tr><th>証拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
+        <caption>benchmark-03 の品質とレイテンシの根拠</caption>
+        <thead><tr><th>根拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
         <tbody>
-          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s mean latency</td><td>強いベースライン。ただし天井ではない。</td></tr>
-<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s mean latency</td><td>ほぼ同じレイテンシで品質が上。</td></tr>
-<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s mean latency</td><td>わずかなレイテンシ増で天井スコア。</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s mean latency</td><td>同じく天井スコア。だが、より遅い。</td></tr>
+          <tr><td>GPT-4o baseline</td><td>評価スコア 1.85</td><td>平均レイテンシ 3.0s</td><td>強いベースライン。ただし天井ではない。</td></tr>
+<tr><td>GPT-5.2 none</td><td>評価スコア 1.97</td><td>平均レイテンシ 2.9s</td><td>ほぼ同じレイテンシで品質が上。</td></tr>
+<tr><td>GPT-5.2 low</td><td>評価スコア 2.00</td><td>平均レイテンシ 3.1s</td><td>わずかなレイテンシ増で天井スコア。</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>評価スコア 2.00</td><td>平均レイテンシ 3.8s</td><td>同じく天井スコア。だが、より遅い。</td></tr>
         </tbody>
       </table>
     </section>
 
+    <section id="sources" class="article-section">
+      <h2>出典と根拠の境界</h2>
+      <p>
+        上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、コストの主張はいずれも日付付きの価格スナップショットで算定している。品質の天井に届く最も低い effort で止めるというこの記事のルーティングの習慣は、記事自身の運用上の推論である。下の二つの Tier は、文書化された入力がどこで終わり、推論がどこから始まるのかを示す。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。accessed_date: 2026-05-19、source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けばコストの数値も変わる。</li>
+        <li><strong>Tier 2 — benchmark-03 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。天井効果の品質の棒——1.85 の GPT-4o ベースラインと、1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（extra-high）の範囲で揺れた GPT-5.2 の段——と、レイテンシが 2.9s から 3.8s へ伸びるなかでリクエストあたり $0.002762（none）から $0.003499（extra-high）へ単調に上がった対応するコスト値の出典。</li>
+        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> と一緒に読むと、推論トークンがリクエストあたり 0 から 52.15 へ増えても品質の棒は天井から動かなかったという根拠になる。</li>
+        <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
+      </ul>
+      <p>
+        このスライスが何を証明し、何を証明しないか：このツール利用エージェントのスライスでは、推論 effort を上げると品質が天井に当たり——GPT-5.2 のスコアは 1.97〜2.00 の帯を出なかった——一方でコストは effort の段階を通じて上がり続けたことを示す。同じ天井が短い事実回答、多段推論、統合の作業でも同じ effort 水準で現れることは証明しない。各トピックはそれぞれの測定を持つ。
+      </p>
+    </section>
+
     <section class="article-section decision-box">
-      <h2>この証拠から言えること</h2>
+      <h2>この根拠から言えること</h2>
       <p>ツールエージェントの作業で役に立つ一文は「effort を上げよ」ではない。「本当に必要なエージェントの振る舞いを保つ、最も低い effort を見つけよ」だ。</p>
       <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+
+      <h2>実務上のルール</h2>
+      <ol>
+        <li>品質チャートは、品質の棒だけでなく、同じ benchmark-03 セルのコストチャートとレイテンシチャートと対にして読んでください。</li>
+        <li>品質の基準——厳密な 2.00 でも、許容できる天井近くのスコアでも——を満たす最も低い effort のセルを見つけ、それを既定にしてください。</li>
+        <li>それより高い effort は、目に見えるスコアの動きで正当化すべきコストとレイテンシとして扱ってください。</li>
+        <li>信頼する前に集計を確認してください。通過したセルは、推論ではなくツールに頼っている可能性がある。</li>
+        <li>ワークロードの形が変わったら測定し直してください。この天井はツールエージェントの作業に限られる。</li>
+      </ol>
+      <p>
+        <strong>実務上のルール：このツールエージェントのスライスでは、品質が天井に達したら推論 effort を上げるのをやめてください。追加の effort が買ったのは、より高いスコアではなく、増えるコストとレイテンシである。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 の品質チャートを開く</a>
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site"><p>MIT ライセンスの研究成果物 · 公開データはサニタイズ済みまたは集計済みのみです。</p></footer>
 </body>
 </html>

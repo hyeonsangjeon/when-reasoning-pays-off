@@ -53,6 +53,10 @@
         <p>公開チャートデータは、コスト、評価スコア、トークン構成、レイテンシ、モデル化された予約容量の交点を比較します。</p>
       </section>
       <section class="summary-tile">
+        <h2>わかったこと</h2>
+        <p>短い事実回答の断面では、コストは約 7.6 倍に増えましたが、平均評価スコアは追随せず、約 1.88 から約 1.78 にとどまりました。評価者が動いた複数ステップの断面では、1.5 から 2.0 へ上がりました。</p>
+      </section>
+      <section class="summary-tile">
         <h2>判断</h2>
         <p>評価が動く場所でだけ effort を上げ、エビデンスダッシュボードは本文の背後にある監査証跡として残します。</p>
       </section>
@@ -91,7 +95,7 @@
 
     <section id="short-factual" class="article-section">
       <p class="section-label">トピック · 短い事実回答</p>
-      <h2>短い事実回答では、推論はしばしば割に合いません</h2>
+      <h2>短い事実回答：推論はしばしば割に合わない</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
           <strong>読むチャート:</strong> リクエストあたり平均コストを、同じ短い事実回答スライスの評価スコアチャートと並べて読みます。
@@ -145,7 +149,7 @@
 
     <section id="reasoning-tokens" class="article-section">
       <p class="section-label">トピック · 見えない課金面</p>
-      <h2>推論トークンが請求額の差を説明します</h2>
+      <h2>推論トークンが請求額の差を説明する</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
           <strong>読むチャート:</strong> effort レベル別のトークン構成 — キャッシュ入力、非キャッシュ入力、見える出力、推論トークンです。
@@ -186,7 +190,7 @@
 
     <section id="multi-step" class="article-section">
       <p class="section-label">トピック · 複数ステップ推論</p>
-      <h2>複数ステップの作業では、推論が割に合うことがあります</h2>
+      <h2>複数ステップの作業では、推論が割に合うことがある</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
           <strong>読むチャート:</strong> まず品質バーを読み、そのあと対応するコストバーを読みます。支出の理由は品質差です。
@@ -225,7 +229,7 @@
 
     <section id="tool-agent" class="article-section">
       <p class="section-label">トピック · ツール利用エージェント</p>
-      <h2>ツールエージェントには天井効果の確認が必要です</h2>
+      <h2>ツールエージェントには天井効果の確認が必要</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
           <strong>読むチャート:</strong> 品質とレイテンシを一緒に読みます。スコアがすでに評価基準の上限近くなら、次の制約はレイテンシです。
@@ -265,10 +269,10 @@
 
     <section id="ptu-payg" class="article-section">
       <p class="section-label">トピック · 容量計画</p>
-      <h2>PTU/PAYG の交点は計画モデルです</h2>
+      <h2>PTU/PAYG の交点は計画モデルである</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
-          <strong>読むチャート:</strong> 品質ガードレールとともに、モデル化された交点を読みます。これはサイジングの目安であり、測定された容量証拠ではありません。
+          <strong>読むチャート:</strong> 品質ガードレールとともに、モデル化された交点を読みます。これはサイジングの目安であり、測定された容量の根拠ではありません。
         </figcaption>
         <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="モデル化されたクロスオーバーチャート: X軸はリクエスト率、Y軸は時間あたりコストモデルです。点はモデル化された閾値です。">
           <div class="mini-axis-row"><span>Y: モデル化された時間あたりコスト</span><span>X: リクエスト率</span></div>
@@ -294,7 +298,7 @@
         <div>
           <h3>運用上の教訓</h3>
           <p>
-            この数値は容量証拠ではなく、計画しきい値として読んでください。PAYG では推論トークンを減らすと変動支出が減ります。
+            この数値は容量の根拠ではなく、計画しきい値として読んでください。PAYG では推論トークンを減らすと変動支出が減ります。
             PTU では、同じ削減が固定予約内でより多くのリクエストを処理する余地として現れる可能性があります。
           </p>
         </div>
@@ -304,10 +308,10 @@
 
     <section id="operations-next" class="article-section decision-box">
       <p class="section-label">運用エッセイ · プロダクションレイヤー</p>
-      <h2>運用エッセイは証拠の物語を次の層へつなぎます</h2>
+      <h2>運用エッセイは根拠の物語を次の層へつなぐ</h2>
       <p>
         この概要記事は、推論 effort がコストと品質をいつ変えるのかを説明します。
-        運用エッセイは、同じ証拠の読み方をもう一段運用に近いテーマへ移します: <code>retry-after-ms</code> による
+        運用エッセイは、同じ根拠の読み方をもう一段運用に近いテーマへ移します: <code>retry-after-ms</code> による
         429 回復、<code>prompt_cache_key</code> のバケット化、明示的なキャッシュ保持、
         GPT-4o から GPT-5.x へのサイジングです。
       </p>
@@ -321,6 +325,27 @@
         <a href="../../prompt-cache-retention/ja/">キャッシュ保持の記事を読む</a>
         <a href="../../reasoning-migration-sizing/ja/">移行サイジングの記事を読む</a>
         <a href="../../">すべての記事を見る</a>
+      </p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">出典 · 根拠の境界</p>
+      <h2>出典と根拠の境界</h2>
+      <p>
+        この概要は、五つの断面でコスト・品質・レイテンシ・トークン構成を一緒に読みます。上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、運用上の解釈はこの記事自身のものです。下の二つの Tier は、文書化された契約がどこで終わり、運用上の推論がどこから始まるのかを示します。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、N = 20 で p 値は主張しません。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定します。accessed_date: 2026-05-19、source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けば比率も変わります。</li>
+        <li><strong>Tier 1 — PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> によります。accessed_date: 2026-05-19、source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a>、archive_url: <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動します。</li>
+        <li><strong>Tier 2 — 短い事実回答の断面測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000663 から $0.005043 へのコスト上昇（7.6 倍の請求）、1.87931 から 1.779661 への平均評価スコアの移動、3.655172 から 311.474576 への推論トークンの変化の出典です。</li>
+        <li><strong>Tier 2 — 多段の断面測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高 effort 評価スコア 2.0 の出典です。</li>
+        <li><strong>Tier 2 — ツールエージェントの断面測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典です。</li>
+        <li><strong>Tier 2 — モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における 149 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読んでください。</li>
+        <li><strong>エビデンスダッシュボード：</strong> <a href="../../../charts/?lang=ja">エビデンスダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じアーティファクトを監査できる形です。</li>
+      </ul>
+      <p>
+        この概要が何を証明し、何を証明しないか：このベンチマークのサンプルで五つの断面の形を示しますが、別のワークロードの構成、別のテナント、別のリージョン、あるいは将来の価格スナップショットでも同じ形が保たれることは証明しません。各トピック記事は、その断面に固有の境界を併せて示します。
       </p>
     </section>
 
