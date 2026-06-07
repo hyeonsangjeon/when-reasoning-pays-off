@@ -56,7 +56,7 @@
 
     <p class="banner">
       <strong>対応する元チャートを開く：</strong>
-      <a href="../../../../../charts/?lang=en#chart-token-composition-benchmark-01-tokens">benchmark-01 トークン構成チャート</a>。
+      <a href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">benchmark-01 トークン構成チャート</a>。
     </p>
 
     <section class="article-section">
@@ -64,7 +64,7 @@
         <figcaption>
           <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="棒グラフ：benchmark-01 の effort 別の平均推論トークン。見える出力のラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.ja.svg" alt="棒グラフ：benchmark-01 の effort 別の平均推論トークン。見える出力のラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
@@ -106,7 +106,7 @@
       </p>
       <ul>
         <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。accessed_date: 2026-05-19、source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けば隠れたトークンの請求も変わる。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。アクセス日：2026-05-19、出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、アーカイブ：<a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けば隠れたトークンの請求も変わる。</li>
         <li><strong>Tier 2 — benchmark-01 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。推論トークンの 3.655172 から 311.474576 への変化、見える出力の 12.672414 から 17.881356 への移動、評価スコアの 1.87931 から 1.779661、レイテンシの 1112.798745 ms から 3088.001225 ms への伸びの出典。</li>
         <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> がトークン分解の出典。<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code> と一緒に読むと、隠れたトークンが品質の上積みを伴わずに請求と待ち時間を膨らませたという根拠になる。</li>
         <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">benchmark-01 トークン構成チャート</a>は、同じアーティファクトを監査できる形である。</li>

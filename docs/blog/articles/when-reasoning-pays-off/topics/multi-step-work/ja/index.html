@@ -56,7 +56,7 @@
 
     <p class="banner">
       <strong>対応する元チャートを開く：</strong>
-      <a href="../../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 品質チャート</a>。
+      <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 品質チャート</a>。
     </p>
 
     <section class="article-section">
@@ -64,7 +64,7 @@
         <figcaption>
           <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="棒グラフ：benchmark-02 のモデルと effort 別の平均評価スコア。コストのラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.ja.svg" alt="棒グラフ：benchmark-02 のモデルと effort 別の平均評価スコア。コストのラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
@@ -106,7 +106,7 @@
       </p>
       <ul>
         <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。accessed_date: 2026-05-19、source_url: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、archive_url: <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けばコストの数値も変わる。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。アクセス日：2026-05-19、出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、アーカイブ：<a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けばコストの数値も変わる。</li>
         <li><strong>Tier 2 — benchmark-02 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。effort 別の品質値——1.5 の GPT-4o ベースライン、GPT-5.2 の none・medium・high・extra-high が届いた 2.0、GPT-5.2 low の 1.93、そして推論トークンを使わないのにリクエストあたり $0.000618 で最も安い最高得点セルである GPT-5.2 none——と、リクエストあたり $0.000618 から $0.002179 の対応するコスト値の出典。</li>
         <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> と一緒に読むと、このスライスの品質の上積みが、ただ高いだけの請求ではなく正当化された請求を伴ったという根拠になる。</li>
         <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
