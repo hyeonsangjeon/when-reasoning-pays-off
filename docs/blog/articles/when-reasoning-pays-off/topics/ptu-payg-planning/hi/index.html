@@ -61,7 +61,10 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+          <strong>मार्गदर्शक chart (modeled aggregate से हाथ से बनाया)।</strong>
+          <strong>क्या पढ़ें:</strong> चुनी गई benchmark पंक्तियों के लिए modeled PTU/PAYG break-even RPM।
+          <strong>X-axis:</strong> चुनी गई benchmark पंक्तियाँ; <strong>Y-axis:</strong> modeled break-even RPM (ऊँची bar का मतलब है कि PAYG किसी ऊँचे request rate तक चढ़ सकता है, इससे पहले कि modeled PTU सीमा सस्ती दिखे)।
+          <strong>इसे माप नहीं, planning संकेत की तरह पढ़ें:</strong> ये bars &mdash; benchmark-01 के लगभग 149 rpm चिह्न और 50 PTU सीमा सहित &mdash; इस pricing snapshot और प्रति-request token shape पर निकाले गए हैं, कोई मापी गई PTU capacity का नतीजा नहीं। संबंधित मान नीचे दी गई source data table में हैं।
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="चुनी गई benchmark पंक्तियों के लिए modeled PTU/PAYG break-even RPM दिखाता bar chart।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>

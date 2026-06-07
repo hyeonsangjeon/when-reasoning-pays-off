@@ -61,7 +61,10 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+          <strong>导读图（依据公开聚合手工绘制）。</strong>
+          <strong>该读什么：</strong>按 effort 的平均延迟，每根柱子下方标注成对的平均评审分。
+          <strong>横轴：</strong>“模型／effort”格（gpt-4o 基线，随后是 gpt-5.2 的 none &rarr; extra-high）；<strong>纵轴：</strong>平均延迟。
+          <strong>把它当作“天花板效应”的诊断来读：</strong>评审质量已经贴在评分上限附近（约 1.97&ndash;2.00），所以柱高转而跟随延迟 &mdash; 它显示再加推理 effort 买到的是延迟、成本和内部推理 token，而不是更高的分数。与下方的源数据表配合阅读。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="Bar chart showing benchmark-03 latency by effort with judge score labels." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>

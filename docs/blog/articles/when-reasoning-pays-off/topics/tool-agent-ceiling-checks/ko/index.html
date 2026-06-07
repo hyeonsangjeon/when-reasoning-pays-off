@@ -112,11 +112,15 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>주제 안내 차트(공개 집계로 직접 작성).</strong> 이 도식은 차트 한
-          장 크기의 질문 하나 &mdash; 강도별 평균 지연 시간, 각 막대 아래에 짝지은
-          평균 평가 점수 표기 &mdash; 를 떼어 내 아래 원천 표와 짝지어 보여 줍니다.
-          공개 차트 데이터 파이프라인에서 렌더링한 원천 품질 차트는 더 아래에
-          이어집니다.
+          <strong>주제 안내 차트(공개 집계로 직접 작성).</strong>
+          <strong>무엇을 읽나:</strong> 강도별 평균 지연 시간이며, 각 막대 아래에
+          짝지은 평균 평가 점수를 표기합니다. <strong>X축:</strong> 모델/강도 셀
+          (gpt-4o 기준선, 이어 gpt-5.2 없음 &rarr; 매우 높음), <strong>Y축:</strong>
+          평균 지연 시간입니다. <strong>천장 효과 진단으로 읽기:</strong> 평가
+          품질은 이미 루브릭 꼭대기(약 1.97&ndash;2.00)에 고정되어 있어 막대는 대신
+          지연 시간을 따라갑니다 &mdash; 추가 추론 강도가 더 높은 점수가 아니라 지연
+          시간·비용·내부 추론 토큰을 사 온다는 것을 보여 줍니다. 공개 차트 데이터
+          파이프라인에서 렌더링한 원천 품질 차트는 더 아래에 이어집니다.
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="benchmark-03의 강도별 평균 지연 시간을 평가 점수 라벨과 함께 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>

@@ -61,7 +61,10 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+          <strong>मार्गदर्शक chart (सार्वजनिक aggregate से हाथ से बनाया)।</strong>
+          <strong>क्या पढ़ें:</strong> effort के अनुसार औसत latency, और हर bar के नीचे जुड़ा हुआ औसत judge score।
+          <strong>X-axis:</strong> model/effort cell (gpt-4o baseline, फिर gpt-5.2 none &rarr; extra-high); <strong>Y-axis:</strong> औसत latency।
+          <strong>इसे ‘छत वाले असर’ के निदान की तरह पढ़ें:</strong> judge quality पहले से ही rubric के शिखर (लगभग 1.97&ndash;2.00) पर टिकी है, इसलिए bars इसके बजाय latency का पीछा करती हैं &mdash; ये दिखाती हैं कि अतिरिक्त reasoning effort ऊँचे score के बजाय latency, cost और भीतरी reasoning tokens खरीदता है। नीचे दी गई source data table के साथ पढ़ें।
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="benchmark-03 में effort के अनुसार latency दिखाता bar chart, साथ में judge score के labels।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>

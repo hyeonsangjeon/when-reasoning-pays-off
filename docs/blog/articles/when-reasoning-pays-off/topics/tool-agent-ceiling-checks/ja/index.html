@@ -62,7 +62,10 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+          <strong>読み解きガイドのチャート（公開集計から手作業で作成）。</strong>
+          <strong>何を読むか：</strong>effort 別の平均レイテンシで、各棒の下に対になる平均評価スコアを付している。
+          <strong>X 軸：</strong>モデル/effort のセル（gpt-4o ベースライン、続いて gpt-5.2 の none &rarr; extra-high）、<strong>Y 軸：</strong>平均レイテンシ。
+          <strong>天井効果の診断として読む：</strong>評価品質はすでにルーブリックの頂点（約 1.97&ndash;2.00）に張り付いているため、棒は代わりにレイテンシを追う &mdash; 追加の推論 effort が、より高いスコアではなくレイテンシ・コスト・内部の推論トークンを買っていることを示す。下の元データの表と合わせて読む。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.ja.svg" alt="棒グラフ：benchmark-03 の effort 別レイテンシ。評価スコアのラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -106,7 +109,7 @@
       </p>
       <ul>
         <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。アクセス日：2026-05-19、出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>、アーカイブ：<a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/</a>。定価が動けばコストの数値も変わる。</li>
+        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けばコストの数値も変わる。</li>
         <li><strong>Tier 2 — benchmark-03 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。天井効果の品質の棒——1.85 の GPT-4o ベースラインと、1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（extra-high）の範囲で揺れた GPT-5.2 の段——と、レイテンシが 2.9s から 3.8s へ伸びるなかでリクエストあたり $0.002762（none）から $0.003499（extra-high）へ単調に上がった対応するコスト値の出典。</li>
         <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> と一緒に読むと、推論トークンがリクエストあたり 0 から 52.15 へ増えても品質の棒は天井から動かなかったという根拠になる。</li>
         <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
