@@ -37,10 +37,40 @@
     <p class="article-kicker">概览文章 · 推理强度、质量与支出</p>
     <h1>什么时候推理值得付费：同样的 token 单价，不同的账单</h1>
     <p class="lede">
-      推理模型即使使用同一张 token 单价表，也可能产生完全不同的账单。
-      缺失的关键是推理 token 预算：这些 token 在模型内部生成，像普通用量一样计费，
-      但不会出现在最终回复中。
+      团队打开一个推理模型，看到的还是那张和过去几乎一样的按 token 计价表，却注意到
+      一个新的控制项：推理强度旋钮。最自然的直觉就是把它调高——既然多想一点几乎是
+      免费的，何不到处都买更好的答案？可是，同一张价目表下，推理模型仍然可能产生
+      差别巨大的账单，因为强度花掉的是在模型内部生成、像普通用量一样计费、却从不
+      出现在回复里的 token。所以真正的问题不是“推理贵不贵”，而是“额外的强度在哪里
+      买来更好的答案，又在哪里只买来隐藏的计算”——本系列就用数据来检验它。
     </p>
+
+    <section class="article-section">
+      <h2>我们为什么要检验这个</h2>
+      <p>
+        这个情形很常见。一次迁移把团队带到推理模型面前，配置里露出一个推理强度旋钮，
+        而按 token 计价看上去没什么变化——于是把强度调高，读起来就像一份防错的廉价
+        保险。想到处都调高，是合理的直觉；缺的只是一个判断：多出来的思考究竟有没有
+        到达读者，还是只到达了账单。
+      </p>
+      <p>
+        由此就有了一个干净、可以一个切片一个切片去验证的假设：更高的推理强度到底是
+        真的买来更好的答案，还是主要买来隐藏 token、延迟和成本？听从直觉，就意味着
+        上线一个偏高的默认值，为可能永远不改变输出的思考付费；先做测量，才能让我们
+        只在配对的质量信号真的动了的地方调高强度——在没动的地方则保持低位。
+      </p>
+      <p>
+        于是我们做了检验。我们固定住提示词和工作负载切片，在每个切片上走同一条强度
+        阶梯——短事实回答、多步推理、用工具的代理、token 构成，以及延迟与成本——再
+        在测得的 token 形态之上叠加一层建模出来的 PTU/PAYG 规划面。结果像好的证据
+        应有的那样分化开来：在短事实工作上，额外的强度多半买来的是隐藏的推理 token，
+        而不是更好的答案；不可见 token 的视角解释了为什么可见输出几乎没变、账单却动了；
+        多步工作在评审者真的动起来时可以值回成本；工具代理的质量常常撞上天花板，再加
+        强度只增加延迟；而 PTU/PAYG 交叉点始终是一个建模出来的规划阈值，而不是测得的
+        容量结果。下面各节用各自的主题图把这些细节逐一展开，证据仪表盘则是每个数字
+        背后的审计轨迹。
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="文章摘要">
       <section class="summary-tile">
@@ -50,6 +80,10 @@
       <section class="summary-tile">
         <h2>证据</h2>
         <p>公开图表数据比较成本、评审分数、token 构成、延迟，以及建模得到的预留容量交叉点。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>发现</h2>
+        <p>在短事实切片上，成本涨到约 7.6 倍，平均评审分却没有上升——从约 1.88 移到约 1.78；而在多步切片上，则从 1.5 升到了 2.0。</p>
       </section>
       <section class="summary-tile">
         <h2>决策</h2>
@@ -295,6 +329,20 @@
     </section>
 
 
+    <section id="bridge" class="article-section">
+      <p class="section-label">桥接文章 · 介于证据层与运营层之间</p>
+      <h2>从测量到生产</h2>
+      <p>
+        证据文章回答的是一个测量问题：额外的推理 effort 在哪里换来质量，又在哪里
+        只换来隐藏的计算？运营文章回答的是另一个问题：一旦这个 effort 决策已经做出、
+        流量也已经在跑，这套部署又欠运营者什么？桥接文章解释了为什么叙述的声音会在
+        这两层之间发生变化，以及哪些习惯会一路延续下去。
+      </p>
+      <p>
+        <a class="button-link" href="../topics/bridge-from-measurement-to-production/zh-CN/">阅读桥接文章</a>
+      </p>
+    </section>
+
     <section id="operations-next" class="article-section decision-box">
       <p class="section-label">运营文章 · 生产层</p>
       <h2>接下来的问题是运营优化</h2>
@@ -316,14 +364,52 @@
       </p>
     </section>
 
-    <section id="decision" class="article-section decision-box">
-      <h2>实用规则</h2>
+    <section id="sources" class="article-section">
+      <p class="section-label">来源 · 证据边界</p>
+      <h2>来源与证据边界</h2>
       <p>
-        短事实任务默认使用较低推理强度。多步骤任务只有在评估结果足以证明成本合理时才提高强度。
-        工具代理任务在增加支出前先检查天花板效应。始终把证据仪表盘和文章一起阅读：仪表盘是证据线索，文章是决策框架。
+        这篇概览在五个切片上，把成本、质量、延迟和 token 构成放在一起读。上面每一条
+        数字主张都能追溯到本仓库里的公开产物；运维上的解读则是本文自己的判断。下面
+        两个 Tier 标明了：有文档记载的契约到哪里为止，运维推断又从哪里开始。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提，并不在 N = 20 下主张 p 值。</li>
+        <li><strong>Tier 1 — PAYG 定价快照：</strong>PAYG 成本主张（每个请求的平均 USD）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
+        <li><strong>Tier 1 — PTU 定价快照：</strong>PTU 建模交叉点与 50 PTU 下限取自本仓库的 <code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — 预置吞吐量上手</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。只要 PTU 时价或 PAYG 每 token 价格变动，交叉点就会移动。</li>
+        <li><strong>Tier 2 — 短事实切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是成本从 $0.000663 涨到 $0.005043（7.6 倍账单）、平均评审分从 1.87931 移到 1.779661、推理 token 从 3.655172 变到 311.474576 的来源。</li>
+        <li><strong>Tier 2 — 多步切片的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是非推理基线 1.5 分、以及每个请求 $0.00125 下高强度 2.0 分的来源。</li>
+        <li><strong>Tier 2 — 工具代理切片的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是工具代理一节中所引天花板效应质量柱的来源。</li>
+        <li><strong>Tier 2 — 建模交叉点：</strong>短事实 extra-high 行在 50 PTU 下限下的 149 rpm，是叠在测得 token 形态之上的规划计算，而不是测得的 PTU 吞吐量结果。请把它当作容量规划指引来读，而不是容量证据。</li>
+        <li><strong>证据仪表盘：</strong><a href="../../../charts/?lang=zh-CN">证据仪表盘</a>里逐篇的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
+      </ul>
+      <p>
+        这篇概览证明了什么、又没证明什么：它展示了这份基准样本上五个切片的形状；它并不
+        证明同样的形状会在不同的工作负载组合、不同的租户、不同的区域，或未来的定价快照下
+        依然成立。每篇按主题展开的文章，都会带上专属于自己切片的边界。
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>实用准则</h2>
+      <p>
+        <strong>实用准则：只在这种工作负载形态下评审者真的动了的地方才提高推理强度；
+        在把这笔花费投入生产之前，把每一条成本主张都与它配对的质量、延迟和 token 构成图
+        并排着读。</strong>
+      </p>
+      <p>
+        证据仪表盘是这条准则背后的审计轨迹；各篇按主题展开的文章，则承载着它在各自切片
+        上的版本。
       </p>
       <p>
         <a class="button-link" href="../../../charts/?lang=zh-CN">打开证据仪表盘</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>下一篇：</strong>
+        <a href="../topics/short-factual-work/zh-CN/">短事实回答：当额外推理买来的是成本，而不是质量</a>
+        —— 如果任务大多只要短事实回答，更高的推理强度能不能把质量改善到足以正当化那张账单？
       </p>
     </section>
   </main>

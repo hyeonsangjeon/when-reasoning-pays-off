@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>看不见的 reasoning tokens | when reasoning pays off</title>
-  <meta name="description" content="一篇专题随笔：当可见的回答依旧很短时，隐藏的 reasoning tokens 如何悄悄改变了账单。">
+  <title>不可见的推理 token | when reasoning pays off</title>
+  <meta name="description" content="一篇专题文章：当回答文本依旧很短时，多出来的成本到底从哪儿来——用 token 构成把账单拆开看。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <meta name="article:source-article-sha256" content="357a89b712a76c8572fc6bf16649db16fe37642e9d5ce08230f3e09d3c2ad6e5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -22,7 +22,7 @@
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="语言">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
@@ -33,78 +33,175 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
-    <p class="article-kicker">专题随笔 · 隐藏的计费面</p>
-    <h1>看不见的 reasoning tokens：账单里那段回答没有显示的部分</h1>
-    <p class="lede">如果只读回答，那次短问答（short-factual）的运行看上去平平无奇——大多数响应都很简短。但账单讲的是另一个故事：推理模型会在生成可见文字之前，先在模型内部消耗大量 token。这些内部 token 不会展示给用户，却实实在在地被计入了用量。</p>
+    <p class="breadcrumb"><a href="../../../../">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
+    <p class="article-kicker">专题文章 · 隐藏的计费面</p>
+    <h1>不可见的推理 token：那笔不出现在答案里的账单</h1>
+    <p class="lede">迁移到推理模型之后——或者有人把 effort 旋钮调高之后——回答有时看上去依旧很短、很平常。可见的文本里，丝毫没有"花得更多"的迹象。可财务和遥测对同一个工作负载，看到的却是一张更大的账单。一个很自然的问题就此写出来：既然回答没有变长，成本到底跑哪儿去了？</p>
 
-    <div class="article-summary-grid" aria-label="Topic summary">
-      <section class="summary-tile"><h2>问题</h2><p>既然回答文本一直很短，多出来的成本到底是从哪儿来的？</p></section>
-      <section class="summary-tile"><h2>证据</h2><p>把 benchmark-01 的 token 构成、成本与延迟三张图，当作同一条证据链来读。</p></section>
-      <section class="summary-tile"><h2>结论</h2><p>沿着 effort 阶梯往上走，可见回答的长度几乎没动，隐藏的 reasoning tokens 却一路上涨。</p></section>
+    <section class="article-section">
+      <h2>我们为什么要检验这个</h2>
+      <p>
+        有一个习惯几乎是普遍的：当团队琢磨一个请求的成本时，伸手去抓的是看得见的
+        东西——回答的长度。短回复感觉便宜，长回复感觉贵。在推理之前的大部分年代里，
+        这个直觉准得足够好用。
+      </p>
+      <p>
+        由此就有了一件干净、值得验证的事：也许可见的回答长度真的解释了支出，那张
+        更大的账单藏在某个没人注意到的、稍微长了一点的回复里；又或者，推理模型打破了
+        这个直觉，成本转移到了用户永远读不到的隐藏推理 token 上。到底是哪一边在承担
+        这次变化，图表能给出答案。
+      </p>
+      <p>
+        于是我们做了拆解。把每个计费请求拆成输入、缓存输入、可见输出、隐藏推理四块，
+        再把这个拆解放在同一个短事实回答切片里，挨着成本、质量、延迟一起读。结果把
+        问题敲定了：可见输出在整条 effort 阶梯上只动了约 12.7 到 17.9 个 token，而隐藏
+        推理却动了约 3.7 到 311.5 个 token。成本和延迟随那条隐藏通道一起上涨，而配对的
+        质量图并没有相称地跟着抬升。下面的单页概览把这条信息一锤定音，随后各节再补上
+        测得的细节。
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-invisible-one-pager">
+      <figcaption>
+        <strong>一眼看懂这个专题。</strong>每个计费请求都拆成输入、缓存、可见输出、
+        隐藏推理——而在这个切片上，真正按比例放大的，是隐藏推理那条通道。这张单页
+        概览把同一条信息一锤定音，并标明证据边界；随后各节再补上测得的细节。
+        <a href="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg">打开不可见推理 token 的单页概览 SVG</a>。
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg" alt="不可见推理 token 的单页概览。把每个计费请求拆成输入、缓存、可见输出、隐藏推理几条通道，显示按比例放大的是隐藏推理那部分。核心信息：推理 token 会计费却从不显示，所以账单在你读不到的那部分膨胀。来自 token 构成家族的测量聚合。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="专题要点">
+      <section class="summary-tile"><h2>问题</h2><p>如果回答文本依旧很短，多出来的成本到底从哪儿来？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>把 benchmark-01 的 token 构成、成本、延迟三张图，当作一条证据链来读。</p></section>
+      <section class="summary-tile"><h2>发现</h2><p>可见的回答长度几乎没变，隐藏的推理 token 却随着 effort 档位一路上升。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>哪怕回答依旧很短，也要用遥测追踪推理 token；把隐藏 token 预算当成回复不会展示的那部分账单来对待。</p></section>
     </div>
 
-    <nav class="article-outline" aria-label="Topic sections">
+    <nav class="article-outline" aria-label="专题章节">
       <strong>按线索阅读：</strong>
-      <a href="#s1">回答很短，内部的活儿一点不少</a>
+      <a href="#s1">回答很短，内部的活儿可不短</a>
       <a href="#s2">这张图该怎么读</a>
-      <a href="#s3">源图补上了什么</a>
-      <a href="#s4">值得记住的那句话</a>
+      <a href="#s3">源图各自补充了什么</a>
+      <a href="#s4">这意味着什么</a>
       <a href="#table">证据表</a>
     </nav>
 
     <p class="banner">
       <strong>打开对应的源图：</strong>
-      <a href="../../../../../charts/?lang=en#chart-token-composition-benchmark-01-tokens">benchmark-01 token 构成图</a>。
+      <a href="../../../../../charts/?lang=zh-CN#chart-token-composition-benchmark-01-token_composition">benchmark-01 token 构成图</a>。
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>要读的图：</strong>本专题从仪表盘里抽出一个“一张图能回答”的问题，并配上下方的源数据表。
+          <strong>专题导读图（由公开聚合手工组装）：</strong>这张示意图从仪表盘里抽出一个"一张图能回答"的问题——按 effort 划分的平均隐藏推理 token，每根柱子下方标注平均可见输出——并配上下方的源数据表。由公开图表数据管线渲染出来的源图，还在更下方。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-01 mean reasoning tokens by effort with visible output labels." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="柱状图：benchmark-01 按 effort 划分的平均推理 token，带可见输出标签。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>回答很短，内部的活儿一点不少</h2>
-      <p>benchmark-01 真正值得玩味的地方，并不是 extra-high effort 更贵——这本在意料之中。值得玩味的是：这部分增长，在最终回答里几乎看不出来。minimal effort 平均产出 12.7 个可见输出 token、3.7 个 reasoning tokens；extra-high effort 平均产出 17.9 个可见输出 token，却用掉了 311.5 个 reasoning tokens。</p><p>这意味着，读者看到的文字，并不能很好地代表你买下的那部分算力。一个简短的回答可能藏着一大笔推理预算；而一个看似合理的回答，如果配套的质量图没有动，仍然可能是一笔糟糕的经济账。</p>
+      <h2>回答很短，内部的活儿可不短</h2>
+      <p>在 benchmark-01 里，真正有用的意外，并不是 extra-high effort 的成本更高——那本就在预料之中。真正值得注意的是：这笔涨幅里，落到最终回答上的部分有多小。在 minimal effort 下，可见输出平均 12.7 个 token，推理 token 平均 3.7 个；在 extra-high effort 下，可见输出平均 17.9 个 token，推理 token 平均 311.5 个。</p><p>也就是说，读者看到的文本，并不是"买了多少计算量"的可靠代理指标。一个短回答可能盖住一笔很大的推理预算；而一个看上去挺像样的回答，只要配对的质量图没动，在经济上仍可能是一笔划不来的买卖。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
-      <p>每根柱子是按 effort 聚合的实验格，而不是单个请求的直方图。横轴是 reasoning-effort 档位，纵轴是每个请求的平均 reasoning tokens；柱子下方那行小字，给出同一格的平均可见输出 token。</p><p>从下往上读：先问可见输出有没有变化到足以解释账单；再去比对隐藏的 reasoning 柱。在这一片数据里，能解释账单的不是回答长度，而是内部的运算。</p>
+      <p>柱子是每个 effort 单元格的聚合值，而不是单个请求的直方图。X 轴是推理 effort 设置，Y 轴是每个请求的平均推理 token。每根柱子下方的小标签，是同一单元格的平均可见输出 token 数。</p><p>这张图最好从下往上读。先问：可见输出有没有变化到足以解释账单？再去和隐藏推理那根柱子对照。在这个切片上，解释因素不是回答的长度，而是内部的活儿。</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>源图补上了什么</h2>
-      <p>token 构成解释了机制，但单凭它还不够。成本图显示账单在上涨；质量图追问这笔账单有没有换来更好的回答；延迟图则反映用户那一端要等多久。把它们放在一起，隐藏的计费面才变得可读：在这一片短问答的切片里，内部 token 更多、花销更大、延迟更长，而质量却没有相应抬升。</p>
+      <h2>源图各自补充了什么</h2>
+      <p>token 构成解释了机制，但单凭它还不够。成本图显示账单在一路膨胀；质量图追问这笔账单有没有买来更好的回答；延迟图显示用户实际感受到的等待。三者凑齐，隐藏的那一面才读得出来——在这个短事实回答切片上，内部 token 增加了、支出增加了、延迟拉长了，却没有相称的质量上行。</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>值得记住的那句话</h2>
-      <p>这堂课不是说 reasoning tokens 不好——它们正是推理模型的意义所在。这堂课是说：它们需要有活儿可干。如果任务只需要一个简短的事实回答，内部推理就可能变成一处无声的预算漏点；如果任务需要多步推演，同样这些 token 也许恰恰是质量提升的来源。</p><p>这也正是综述随笔为什么始终把成本、质量、延迟和 token 构成放在一起看：账单并没有完全显示在回答里。</p>
+      <h2>这意味着什么</h2>
+      <p>教训不是"推理 token 不好"。它们正是推理模型的本质所在。教训在于：推理 token 需要有活儿可干。如果任务只要求短事实回答，内部推理就可能成为一笔悄无声息的预算泄漏；如果任务需要多步求解，同样这些 token 就可能正是挣来质量提升的那一部分。</p><p>这也正是综述文章为什么总把成本、质量、延迟、token 构成并排着摆：账单并不是全都明明白白地写在回答里。</p>
     </section>
 
     <section id="table" class="article-section">
       <h2>证据表</h2>
+      <figure class="article-figure" id="figure-invisible-tokens">
+        <figcaption>
+          <strong>源图——benchmark-01 的 token 构成。</strong>
+          <strong>X 轴：</strong>模型与 effort 阶梯——gpt-4o 基线，随后是 gpt-5.2 的
+          minimal、low、medium、high、extra-high。
+          <strong>Y 轴：</strong>每个请求的平均 token。
+          <strong>堆叠分段：</strong>每根柱子把一个 effort 单元格堆成输入（非缓存）、缓存
+          输入、可见输出、隐藏推理四段——这是聚合构成，不是频次直方图。
+          <strong>读法：</strong>输入和可见输出两段几乎不变，隐藏推理那段从 minimal effort
+          的约 3.7 个 token 增加到 extra-high 的约 311.5 个。总量在涨，读者看得见的部分却
+          依旧很短。
+          <strong>证据边界：</strong>每个单元格 N = 20、R = 3 次重复，取一个 Azure OpenAI
+          租户与区域下这一个短事实回答切片。它不展示多步、工具代理、综合类工作的 token
+          形态。
+          <strong>来源与仪表盘：</strong>分段值来自
+          <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>，
+          请在<a href="../../../../../charts/?lang=zh-CN#chart-token-composition-benchmark-01-token_composition">证据仪表盘</a>
+          （<a href="../../../../../data/chart-data/token-composition/benchmark-01/tokens.json">分发的图表数据</a>）里阅读。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/benchmark-01-tokens.png" alt="堆叠柱状图：benchmark-01 按模型与 effort 划分的每个请求平均 token。输入与可见输出两段几乎恒定，隐藏推理那段从 minimal 到 extra-high 陡增。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-01 hidden-token evidence</caption>
-        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <caption>benchmark-01 的隐藏 token 证据</caption>
+        <thead><tr><th>证据行</th><th>指标 A</th><th>指标 B</th><th>它补充了什么</th></tr></thead>
         <tbody>
-          <tr><td>Minimal effort</td><td>12.7 visible output tokens</td><td>3.7 reasoning tokens</td><td>回答简短，隐藏预算极小。</td></tr>
-<tr><td>Extra-high effort</td><td>17.9 visible output tokens</td><td>311.5 reasoning tokens</td><td>文本依旧很短，内部预算却大得多。</td></tr>
-<tr><td>Paired quality</td><td>1.87931 at minimal</td><td>1.779661 at extra-high</td><td>在这一片切片里，隐藏的运算没有换来质量提升。</td></tr>
-<tr><td>Latency</td><td>1.1s at minimal</td><td>3.1s at extra-high</td><td>这些隐藏的运算还把等待时间拉长了。</td></tr>
+          <tr><td>Minimal effort</td><td>可见输出 token 12.7</td><td>推理 token 3.7</td><td>短回答，极小的隐藏预算。</td></tr>
+          <tr><td>Extra-high effort</td><td>可见输出 token 17.9</td><td>推理 token 311.5</td><td>文本依旧很短，内部预算却大得多。</td></tr>
+          <tr><td>配对的质量</td><td>minimal 下 1.88</td><td>extra-high 下 1.78</td><td>在这个切片上，隐藏的活儿并没有买来质量上行。</td></tr>
+          <tr><td>延迟</td><td>minimal 下 1.1s</td><td>extra-high 下 3.1s</td><td>隐藏的活儿把等待时间也拉长了。</td></tr>
         </tbody>
       </table>
     </section>
 
-    <section class="article-section decision-box">
-      <h2>证据允许我们说什么</h2>
-      <p>哪怕在回答里看不见，reasoning-token 预算也应当在遥测数据里看得见。这正是本专题为整个系列补上的那条核心记账习惯。</p>
-      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    <section id="sources" class="article-section">
+      <h2>来源与证据边界</h2>
+      <p>
+        上面所有数字都能追溯到本仓库的公开产物，所有成本主张都按带日期的定价快照
+        算出。"把推理 token 预算用遥测显式呈现出来"这一记账习惯，是本文自己的运维
+        推断。下面两个 Tier 标明了：有文档记载的输入到哪里为止，推断又从哪里开始。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li><strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，隐藏 token 的账单也随之变化。</li>
+        <li><strong>Tier 2 — benchmark-01 切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是推理 token 从 3.655172 到 311.474576 的变化、可见输出从 12.672414 到 17.881356 的移动、评审分从 1.87931 到 1.779661、延迟从 1112.798745 ms 到 3088.001225 ms 拉长的来源。</li>
+        <li><strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> 是 token 拆解的来源。与 <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code> 一起读，就能佐证：隐藏 token 在没有质量上行的情况下，把账单和等待一并撑大了。</li>
+        <li><strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-token-composition-benchmark-01-token_composition">benchmark-01 token 构成图</a>，是审计同一批产物的可核查形态。</li>
+      </ul>
+      <p>
+        这个切片证明了什么、又没证明什么：它表明，在这个短事实回答切片上，可见输出
+        几乎没动，内部推理却随 effort 档位一路上升。它并不证明同样的隐藏 token 形态会
+        出现在多步、工具代理或综合类工作里。每个专题各有自己的测量。
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>这些证据允许我们说什么</h2>
+      <p>推理 token 预算，哪怕在回答里看不见，也应该在遥测里看得见。这就是本专题为整个系列补上的、最基本的一条记账习惯。</p>
+      <p><a class="button-link" href="../../../zh-CN/">回到综述文章</a></p>
+
+      <h2>实用准则</h2>
+      <ol>
+        <li>不要只记总 token，要把推理 token 按请求记录在可见输出旁边。</li>
+        <li>给隐藏 token 预算设置告警，因为短回答也可能背着很大的内部成本。</li>
+        <li>只有当这种工作负载形态下配对的质量图真的动了，才往更高的 effort 提。</li>
+      </ol>
+      <p>
+        <strong>实用准则：哪怕可见的回答依旧很短，也要用遥测测量推理 token。隐藏的 token 预算，正是回复不会展示的那部分账单。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=zh-CN#chart-token-composition-benchmark-01-token_composition">打开 token 构成图</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>下一篇：</strong>
+        <a href="../../multi-step-work/zh-CN/">多步任务：当推理终于值得一试</a>
+        &mdash; 多花的推理什么时候买来的是质量提升，而不只是一张更大的账单？
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site"><p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p></footer>
 </body>
 </html>
