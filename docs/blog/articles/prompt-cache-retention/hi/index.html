@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="8da03f69bf4b3c27b4571ae2c0db2f65e168e17adb059a3c669be37708bc0146">
+  <meta name="article:source-article-sha256" content="e886f399d3fc64cca70f67725d09f02205a053bcb180cd910a238f11bdafb58f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -276,7 +276,7 @@
         <code>gpt-5.4</code> से पहले का <code>in_memory</code> डिफ़ॉल्ट, दोनों नीतियों
         में एक-सा दाम, और डेटा-निवास व्यवहार यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>Azure OpenAI के साथ prompt caching</strong> — <code>in_memory</code>
+        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong> — <code>in_memory</code>
           और <code>24h</code> रिटेंशन-नीतियाँ, निष्क्रियता के 5–10 मिनट में in-memory की
           सफ़ाई व अंतिम उपयोग के 1 घंटे में हटना, 24 घंटे विस्तारित सीमा,
           <code>gpt-5.4</code> से पहले के मॉडलों में <code>in_memory</code> डिफ़ॉल्ट,
@@ -289,14 +289,14 @@
         और विरल सार्वजनिक hit-दर व पहले-टोकन latency स्लाइस Learn विनिर्देश नहीं, इस
         रिपॉज़िटरी का संचालन-अनुमान और स्रोत-रन सबूत हैं।</p>
       <ul>
-        <li><strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
           — prompt cache-key और रिटेंशन का संचालन-निर्देश। §4 प्रलेखित मॉडल-वार डिफ़ॉल्ट
           से <code>in_memory</code> डिफ़ॉल्ट की तालिका निकालता है और
           <code>prompt_cache_retention</code> स्पष्ट करना तय करता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
-        <li><strong>यह रिपॉज़िटरी, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
+        <li>[3] <strong>यह रिपॉज़िटरी, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
           — वह <code>ensure_explicit</code> helper जो प्रलेखित डिफ़ॉल्ट <code>in_memory</code>
           वाले मॉडलों पर मान छूटने पर अपवाद फेंकता है। Learn विनिर्देश नहीं, संचालन-अनुमान। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">स्रोत</a>।</li>
-        <li><strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[4] <strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — रिटेंशन की hit-दर और पहले-टोकन latency तालिका के पीछे का विरल सार्वजनिक
           समुच्चय। सार्वभौमिक latency नियम नहीं, स्रोत-रन सबूत। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>

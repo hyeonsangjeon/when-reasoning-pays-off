@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
+  <meta name="article:source-article-sha256" content="2b67be9d8a469b0f6fc5836708d6923bfebe64ac4cdf59473af98637ae315b3a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -236,19 +236,19 @@
         GPT-4.1 और बाद का output-टोकन भार, उपयोग से 100% cache-घटाव, और reasoning-token
         लेखांकन यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>किसी वर्कलोड के लिए PTU साइज़िंग तय करना</strong> — normalized TPM
+        <li>[1] <strong>किसी वर्कलोड के लिए PTU साइज़िंग तय करना</strong> — normalized TPM
           गणना (Input TPM = peak RPM × प्रॉम्प्ट-आकार, Output TPM = peak RPM ×
           response-आकार, Normalized TPM = input TPM × (1 − cache-दर) + output-से-input
           अनुपात × output TPM, PTU = normalized TPM ÷ प्रति-PTU Input TPM), मॉडल-वार
           प्रति-PTU Input TPM व output-से-input अनुपात मान, और यह कि cached टोकन उपयोग-गणना
           से 100% घटते हैं — परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn दस्तावेज़</a> (2026-06-05 को लिया गया) · <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">आर्काइव</a>।</li>
-        <li><strong>Foundry Models के लिए प्रोविज़न्ड throughput क्या है?</strong> — PTU
+        <li>[2] <strong>Foundry Models के लिए प्रोविज़न्ड throughput क्या है?</strong> — PTU
           उपयोग-मॉडल और यह कि request का आकार आरक्षित क्षमता को कैसे खपाता है — प्रलेखित
           करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">आर्काइव</a>।</li>
-        <li><strong>Azure OpenAI के साथ prompt caching</strong> — चूँकि cached प्रॉम्प्ट-टोकन
+        <li>[3] <strong>Azure OpenAI के साथ prompt caching</strong> — चूँकि cached प्रॉम्प्ट-टोकन
           उपयोग से घटते हैं, prefix-आकार बदलने पर साइज़िंग नतीजा हिलता है — यह प्रलेखित
           करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">आर्काइव</a>।</li>
-        <li><strong>OpenAI reasoning models guide</strong> — reasoning tokens को
+        <li>[4] <strong>OpenAI reasoning models guide</strong> — reasoning tokens को
           <code>output_tokens_details.reasoning_tokens</code> में रिपोर्ट होते न-दिखने
           वाले output-साइड टोकन के रूप में प्रलेखित करता है। स्रोत: <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">आर्काइव</a>।</li>
       </ul>
@@ -257,11 +257,11 @@
         reasoning-token व cached-token का मापन-अनुबंध इस रिपॉज़िटरी का संचालन-अनुमान है,
         Learn विनिर्देश नहीं।</p>
       <ul>
-        <li><strong>यह रिपॉज़िटरी, <code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+        <li>[5] <strong>यह रिपॉज़िटरी, <code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
           — <code>mean_max_output_tokens</code> दर्ज करता है और बड़े
           <code>max_output_tokens</code> को अंदाज़ का मान नहीं, जाँचने योग्य आरक्षित
           एडमिशन-भार मानता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">स्रोत</a>।</li>
-        <li><strong>यह रिपॉज़िटरी, <code>docs/14-observability-schema.md</code></strong>
+        <li>[6] <strong>यह रिपॉज़िटरी, <code>docs/14-observability-schema.md</code></strong>
           — वह PTU-रिकॉर्ड का प्रामाणिक अनुबंध जो <code>reasoning_tokens</code>,
           <code>cached_tokens</code>, <code>max_output_tokens_sent</code> को उनके मूल
           usage फ़ील्डों से मिलाता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">स्रोत</a>।</li>

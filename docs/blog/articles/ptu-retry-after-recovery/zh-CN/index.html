@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="34940ed968c8be83644964804fd4e90ccd6e0dfb19e6e41832d21b829e54e95c">
+  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -275,10 +275,10 @@
       <p><strong>Tier 1 — 服务契约（Microsoft Learn）。</strong>429 准入行为、两个重试头、
         漏桶利用率模型，以及 SDK 默认重试，都记录在这里。</p>
       <ul>
-        <li><strong>在生产环境中运行预置吞吐量部署</strong> — 定义了 100% 利用率下的立即 429、
+        <li>[1] <strong>在生产环境中运行预置吞吐量部署</strong> — 定义了 100% 利用率下的立即 429、
           <code>retry-after-ms</code> 与 <code>retry-after</code> 响应头、漏桶利用率模型，以及
           OpenAI SDK 默认的 429 重试（<code>max_retries</code>）。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">存档</a>。</li>
-        <li><strong>用溢出为预置部署管理流量</strong> — 定义了溢出：通过
+        <li>[2] <strong>用溢出为预置部署管理流量</strong> — 定义了溢出：通过
           <code>spilloverDeploymentName</code> 属性，以及标识溢出来源的 x-ms 响应头，把非 200
           （含 <code>429</code>）的超额请求重定向到标准部署。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">存档</a>。</li>
       </ul>
@@ -286,10 +286,10 @@
         一处、尊重头、为打散整个机群的同步而加抖动、只有在尊重等待反复重试仍不缓解时才向
         溢出重定向——是运维上的，而非 Learn 规范。</p>
       <ul>
-        <li><strong>本仓库，<code>docs/10-ptu-admission-controller.md</code></strong>
+        <li>[3] <strong>本仓库，<code>docs/10-ptu-admission-controller.md</code></strong>
           — 由头驱动的准入控制器笔记：重试归属唯一、尊重 <code>retry-after-ms</code>、默认
           抖动、等待超过上限就回退。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">来源</a>。</li>
-        <li><strong>本仓库，<code>batch_runner/ptu/admission_controller.py</code></strong>
+        <li>[4] <strong>本仓库，<code>batch_runner/ptu/admission_controller.py</code></strong>
           — 解析 <code>retry-after-ms</code>、回退到 <code>retry-after</code>、并拒绝重试二重
           所有的参考实现。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">来源</a>。</li>
       </ul>

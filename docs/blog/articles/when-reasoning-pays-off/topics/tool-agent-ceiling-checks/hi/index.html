@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="5e533722851bfe5157659f770d99ab202333376170d77fc6e12e35e2339e702c">
+  <meta name="article:source-article-sha256" content="3679a8a12f2a3a79f8ad48b7705541f042c924386d8b908a915728baa1bdd9bb">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -173,11 +173,11 @@
         कहाँ शुरू।
       </p>
       <ul>
-        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
-        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
-        <li><strong>Tier 2 — benchmark-03 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। सीलिंग-प्रभाव गुणवत्ता-बार — 1.85 GPT-4o baseline और 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), 2.00 (extra-high) की पट्टी में डोलता GPT-5.2 सोपान — और latency के 2.9s से 3.8s तक बढ़ते हुए प्रति-request $0.002762 (none) से $0.003499 (extra-high) तक एकदिश चढ़ती संगत लागत का स्रोत।</li>
-        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि reasoning tokens प्रति-request 0 से 52.15 तक बढ़ने पर भी गुणवत्ता-बार सीलिंग से नहीं हिले।</li>
-        <li><strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
+        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
+        <li>[3] <strong>Tier 2 — benchmark-03 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। सीलिंग-प्रभाव गुणवत्ता-बार — 1.85 GPT-4o baseline और 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), 2.00 (extra-high) की पट्टी में डोलता GPT-5.2 सोपान — और latency के 2.9s से 3.8s तक बढ़ते हुए प्रति-request $0.002762 (none) से $0.003499 (extra-high) तक एकदिश चढ़ती संगत लागत का स्रोत।</li>
+        <li>[4] <strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि reasoning tokens प्रति-request 0 से 52.15 तक बढ़ने पर भी गुणवत्ता-बार सीलिंग से नहीं हिले।</li>
+        <li>[5] <strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
       </ul>
       <p>
         यह स्लाइस क्या सिद्ध करती है और क्या नहीं: इस टूल-एजेंट स्लाइस में reasoning

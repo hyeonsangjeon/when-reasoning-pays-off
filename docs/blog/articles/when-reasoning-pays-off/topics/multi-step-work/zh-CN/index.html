@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="08d2f967faecb139706c268b82bad5bba6f93d492f7aaff43dc7d17b0b761653">
+  <meta name="article:source-article-sha256" content="9807de375a97a9fa67c3e0ca2ecbc791c18cdc511c6469b1e393ca4ebe3207aa">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -164,11 +164,11 @@
         下面两个 Tier 标明了：有文档记载的输入到哪里为止，推断又从哪里开始。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
-        <li><strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，成本数字也随之变化。</li>
-        <li><strong>Tier 2 — benchmark-02 切片的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是按 effort 划分的质量值——GPT-4o 基线 1.5，GPT-5.2 的 none、medium、high、extra-high 达到的 2.0，GPT-5.2 low 的 1.93，以及那个不用任何推理 token、却以每个请求 $0.000618 成为最便宜满分单元格的 GPT-5.2 none——和每个请求 $0.000618 到 $0.002179 对应成本值的来源。</li>
-        <li><strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。与 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> 一起读，就能佐证：这个切片上的质量上行，伴随的是被正当化的账单，而不是单纯变高的账单。</li>
-        <li><strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 质量与成本配对图</a>，是审计同一批产物的可核查形态。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，成本数字也随之变化。</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 切片的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是按 effort 划分的质量值——GPT-4o 基线 1.5，GPT-5.2 的 none、medium、high、extra-high 达到的 2.0，GPT-5.2 low 的 1.93，以及那个不用任何推理 token、却以每个请求 $0.000618 成为最便宜满分单元格的 GPT-5.2 none——和每个请求 $0.000618 到 $0.002179 对应成本值的来源。</li>
+        <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。与 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> 一起读，就能佐证：这个切片上的质量上行，伴随的是被正当化的账单，而不是单纯变高的账单。</li>
+        <li>[5] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 质量与成本配对图</a>，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
         这个切片证明了什么、又没证明什么：它表明，在这个多步切片上，GPT-5.2 相对 GPT-4o

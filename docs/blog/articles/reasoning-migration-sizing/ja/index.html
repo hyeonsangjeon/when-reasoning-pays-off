@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
+  <meta name="article:source-article-sha256" content="2b67be9d8a469b0f6fc5836708d6923bfebe64ac4cdf59473af98637ae315b3a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -242,19 +242,19 @@
         以降の出力トークンの重み付け、利用率からの 100% キャッシュ差し引き、そして
         推論トークンの会計が、ここに文書化されています。</p>
       <ul>
-        <li><strong>Determine PTU sizing for a workload</strong> — 正規化 TPM の計算
+        <li>[1] <strong>Determine PTU sizing for a workload</strong> — 正規化 TPM の計算
           （Input TPM = ピーク RPM × プロンプトサイズ、Output TPM = ピーク RPM ×
           応答サイズ、Normalized TPM = input TPM × (1 − キャッシュ率) + 出力対入力比 ×
           output TPM、PTU = normalized TPM ÷ PTU あたり Input TPM）、モデル別の PTU
           あたり Input TPM と出力対入力比の値、そしてキャッシュ済みトークンが利用率の
           計算から 100% 差し引かれることを定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn ドキュメント</a>（2026-06-05 アクセス）· <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">アーカイブ</a>。</li>
-        <li><strong>What is provisioned throughput for Foundry Models?</strong> — PTU の
+        <li>[2] <strong>What is provisioned throughput for Foundry Models?</strong> — PTU の
           利用率モデルと、リクエストの形が予約済み容量をどう消費するかを文書化して
           います。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">アーカイブ</a>。</li>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — キャッシュ済みプロンプト
+        <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — キャッシュ済みプロンプト
           トークンが利用率から差し引かれるため、プレフィックスの形の変化がサイジング
           結果を動かすことを文書化しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
-        <li><strong>OpenAI reasoning models guide</strong> — 推論トークンを、
+        <li>[4] <strong>OpenAI reasoning models guide</strong> — 推論トークンを、
           <code>output_tokens_details.reasoning_tokens</code> に報告される、表示されない
           出力側のトークンとして文書化しています。出典：<a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">アーカイブ</a>。</li>
       </ul>
@@ -263,11 +263,11 @@
         こと、そして推論トークンとキャッシュ済みトークンの測定契約は、本リポジトリの
         運用上の推論であって Learn の仕様ではありません。</p>
       <ul>
-        <li><strong>本リポジトリ、<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+        <li>[5] <strong>本リポジトリ、<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
           — <code>mean_max_output_tokens</code> を記録し、大きな
           <code>max_output_tokens</code> を、推測する値ではなく、検証すべき予約済み
           アドミッションの重みとして解釈します。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">出典</a>。</li>
-        <li><strong>本リポジトリ、<code>docs/14-observability-schema.md</code></strong>
+        <li>[6] <strong>本リポジトリ、<code>docs/14-observability-schema.md</code></strong>
           — <code>reasoning_tokens</code>、<code>cached_tokens</code>、
           <code>max_output_tokens_sent</code> をそれぞれの元の usage フィールドに
           対応づける、PTU レコードの正準的な契約。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">出典</a>。</li>

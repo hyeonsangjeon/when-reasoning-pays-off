@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
+  <meta name="article:source-article-sha256" content="2b67be9d8a469b0f6fc5836708d6923bfebe64ac4cdf59473af98637ae315b3a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -221,26 +221,26 @@
         规划公式、逐模型的每 PTU Input TPM 与输出对输入比、GPT-4.1 及以后的输出 token 权重、
         利用率里 100% 的缓存扣减，以及推理 token 的记账，都记录在这里。</p>
       <ul>
-        <li><strong>Determine PTU sizing for a workload</strong> — 定义了归一化 TPM 的计算
+        <li>[1] <strong>Determine PTU sizing for a workload</strong> — 定义了归一化 TPM 的计算
           （Input TPM = 峰值 RPM × 提示大小，Output TPM = 峰值 RPM × 响应大小，Normalized
           TPM = input TPM × (1 − 缓存率) + 输出对输入比 × output TPM，PTU = normalized TPM ÷
           每 PTU Input TPM）、逐模型的每 PTU Input TPM 与输出对输入比取值，以及缓存 token
           从利用率计算中 100% 扣减。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn 文档</a>（2026-06-05 访问）· <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">存档</a>。</li>
-        <li><strong>What is provisioned throughput for Foundry Models?</strong> — 记录了 PTU 的
+        <li>[2] <strong>What is provisioned throughput for Foundry Models?</strong> — 记录了 PTU 的
           利用率模型，以及请求形态如何消耗预留容量。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">存档</a>。</li>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — 记录了缓存的提示 token 会从
+        <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — 记录了缓存的提示 token 会从
           利用率里扣除，因此前缀形态的变化会改变容量规划结果。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
-        <li><strong>OpenAI reasoning models guide</strong> — 把推理 token 记录为不显示的、报告在
+        <li>[4] <strong>OpenAI reasoning models guide</strong> — 把推理 token 记录为不显示的、报告在
           <code>output_tokens_details.reasoning_tokens</code> 里的输出侧 token。来源：<a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">存档</a>。</li>
       </ul>
       <p><strong>Tier 2 — 运维推断（本仓库）。</strong>把过大的 <code>max_output_tokens</code>
         当成一个需要验证的 PTU 准入风险假设，以及对推理 token 与缓存 token 的测量约定，是本
         仓库的运维推断，而非 Learn 规范。</p>
       <ul>
-        <li><strong>本仓库，<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+        <li>[5] <strong>本仓库，<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
           — 记录 <code>mean_max_output_tokens</code>，并把较大的 <code>max_output_tokens</code>
           解释为一个需要验证的预留准入权重，而不是一个靠猜的值。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">来源</a>。</li>
-        <li><strong>本仓库，<code>docs/14-observability-schema.md</code></strong>
+        <li>[6] <strong>本仓库，<code>docs/14-observability-schema.md</code></strong>
           — PTU 记录的规范契约，把 <code>reasoning_tokens</code>、<code>cached_tokens</code>、
           <code>max_output_tokens_sent</code> 各自对应到原始的 usage 字段。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">来源</a>。</li>
       </ul>

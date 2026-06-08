@@ -303,29 +303,27 @@
         routing hint, and the approximate 15-requests-per-minute overflow point
         are documented here.</p>
       <ul>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — documents the
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — documents the
           1,024-token minimum and identical-prefix requirement, routing by a hash
           of the initial prefix, a cache match for every 128 additional identical
           tokens after the first 1,024, the single-character cache miss, the
           <code>prompt_cache_key</code> hint combined with the prefix hash to
           influence routing, and the approximate 15-requests-per-minute point
           above which requests for the same prefix and key overflow to extra
-          machines and cache effectiveness drops. accessed_date: 2026-06-04.
-          source_url: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.
-          archive_url: <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+          machines and cache effectiveness drops. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
       </ul>
       <p><strong>Tier 2 — operational inference (this repository).</strong> The
         bucket-count math and the public hit-ratio slice are repository
         operational inference and source-run evidence, not Learn specifications.</p>
       <ul>
-        <li><strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
           — the bucket-sizing runbook: the repository derives
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> from the
           documented approximate 15-RPM figure, while the
           <code>recommended_buckets</code> formula and its default
           10-RPM-per-bucket target are repository operational inference, not a
           Learn specification. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">source</a>.</li>
-        <li><strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[3] <strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — the sparse public aggregate slice behind the hit-ratio and
           first-token-latency table; source-run evidence, not a universal curve.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source</a>.</li>

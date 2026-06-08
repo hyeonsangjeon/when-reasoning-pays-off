@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="34940ed968c8be83644964804fd4e90ccd6e0dfb19e6e41832d21b829e54e95c">
+  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -310,8 +310,8 @@
         문서화되어 있습니다.
       </p>
       <ul>
-        <li><strong>Operate provisioned throughput deployments in production</strong> — 이용률 100%에서의 즉시 429, <code>retry-after-ms</code> 및 <code>retry-after</code> 응답 헤더, 누수 버킷 이용률 모델, 그리고 OpenAI SDK의 기본 429 재시도(<code>max_retries</code>)를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">아카이브</a>.</li>
-        <li><strong>Manage traffic with spillover for provisioned deployments</strong> — <code>spilloverDeploymentName</code> 속성과 <code>x-ms-spillover-from-deployment</code> 응답 헤더를 통해 비-200(<code>429</code> 포함) 초과분을 표준 배포로 우회하는 스필오버를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">아카이브</a>.</li>
+        <li>[1] <strong>Operate provisioned throughput deployments in production</strong> — 이용률 100%에서의 즉시 429, <code>retry-after-ms</code> 및 <code>retry-after</code> 응답 헤더, 누수 버킷 이용률 모델, 그리고 OpenAI SDK의 기본 429 재시도(<code>max_retries</code>)를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">아카이브</a>.</li>
+        <li>[2] <strong>Manage traffic with spillover for provisioned deployments</strong> — <code>spilloverDeploymentName</code> 속성과 <code>x-ms-spillover-from-deployment</code> 응답 헤더를 통해 비-200(<code>429</code> 포함) 초과분을 표준 배포로 우회하는 스필오버를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">아카이브</a>.</li>
       </ul>
       <p>
         <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 경험칙 — 단일 재시도
@@ -320,8 +320,8 @@
         운영적 판단입니다.
       </p>
       <ul>
-        <li><strong>이 저장소, <code>docs/10-ptu-admission-controller.md</code></strong> — 헤더 기반 입장 제어기 노트: 단일 재시도 소유자, <code>retry-after-ms</code> 존중, 기본 지터, 그리고 대기가 상한을 넘으면 폴백. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">출처</a>.</li>
-        <li><strong>이 저장소, <code>batch_runner/ptu/admission_controller.py</code></strong> — <code>retry-after-ms</code>를 파싱하고 <code>retry-after</code>로 폴백하며 이중 재시도 소유를 거부하는 참조 구현. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">출처</a>.</li>
+        <li>[3] <strong>이 저장소, <code>docs/10-ptu-admission-controller.md</code></strong> — 헤더 기반 입장 제어기 노트: 단일 재시도 소유자, <code>retry-after-ms</code> 존중, 기본 지터, 그리고 대기가 상한을 넘으면 폴백. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">출처</a>.</li>
+        <li>[4] <strong>이 저장소, <code>batch_runner/ptu/admission_controller.py</code></strong> — <code>retry-after-ms</code>를 파싱하고 <code>retry-after</code>로 폴백하며 이중 재시도 소유를 거부하는 참조 구현. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">출처</a>.</li>
       </ul>
       <p>
         <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일 기준

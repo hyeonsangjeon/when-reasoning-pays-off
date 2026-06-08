@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="08d2f967faecb139706c268b82bad5bba6f93d492f7aaff43dc7d17b0b761653">
+  <meta name="article:source-article-sha256" content="9807de375a97a9fa67c3e0ca2ecbc791c18cdc511c6469b1e393ca4ebe3207aa">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -166,11 +166,11 @@
         上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、コストの主張はいずれも日付付きの価格スナップショットで算定している。品質の基準に届く最も低い effort で止めるというこの記事のルーティングの習慣は、記事自身の運用上の推論である。下の二つの Tier は、文書化された入力がどこで終わり、推論がどこから始まるのかを示す。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けばコストの数値も変わる。</li>
-        <li><strong>Tier 2 — benchmark-02 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。effort 別の品質値——1.5 の GPT-4o ベースライン、GPT-5.2 の none・medium・high・extra-high が届いた 2.0、GPT-5.2 low の 1.93、そして推論トークンを使わないのにリクエストあたり $0.000618 で最も安い最高得点セルである GPT-5.2 none——と、リクエストあたり $0.000618 から $0.002179 の対応するコスト値の出典。</li>
-        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> と一緒に読むと、このスライスの品質の上積みが、ただ高いだけの請求ではなく正当化された請求を伴ったという根拠になる。</li>
-        <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
+        <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けばコストの数値も変わる。</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。effort 別の品質値——1.5 の GPT-4o ベースライン、GPT-5.2 の none・medium・high・extra-high が届いた 2.0、GPT-5.2 low の 1.93、そして推論トークンを使わないのにリクエストあたり $0.000618 で最も安い最高得点セルである GPT-5.2 none——と、リクエストあたり $0.000618 から $0.002179 の対応するコスト値の出典。</li>
+        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> と一緒に読むと、このスライスの品質の上積みが、ただ高いだけの請求ではなく正当化された請求を伴ったという根拠になる。</li>
+        <li>[5] <strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
       </ul>
       <p>
         このスライスが何を証明し、何を証明しないか：この多段のスライスでは、GPT-5.2 が GPT-4o のベースラインに対して測定可能な品質の上積みを出したことを示す。より高い推論 effort が常に品質を上げる、あるいは追加の請求を正当化することは証明しない——ここでは最も安い最高得点セルは推論トークンをまったく使わなかった——し、同じ上積みが短い事実回答、ツールエージェント、統合の作業で現れることも証明しない。各トピックはそれぞれの測定を持つ。

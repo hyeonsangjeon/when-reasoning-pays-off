@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="08d2f967faecb139706c268b82bad5bba6f93d492f7aaff43dc7d17b0b761653">
+  <meta name="article:source-article-sha256" content="9807de375a97a9fa67c3e0ca2ecbc791c18cdc511c6469b1e393ca4ebe3207aa">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -170,11 +170,11 @@
         कहाँ शुरू।
       </p>
       <ul>
-        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
-        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
-        <li><strong>Tier 2 — benchmark-02 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। effort-दर-effort गुणवत्ता-मान — 1.5 GPT-4o baseline, GPT-5.2 के none/medium/high/extra-high पर 2.0, GPT-5.2 low पर 1.93, और बिना reasoning token के प्रति-request $0.000618 पर सबसे सस्ती सर्वोच्च-स्कोर सेल GPT-5.2 none — और प्रति-request $0.000618 से $0.002179 तक संगत लागत-मानों का स्रोत।</li>
-        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि इस स्लाइस का गुणवत्ता-लाभ सिर्फ़ ऊँचे बिल के साथ नहीं, बल्कि जायज़ बिल के साथ आया।</li>
-        <li><strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
+        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। effort-दर-effort गुणवत्ता-मान — 1.5 GPT-4o baseline, GPT-5.2 के none/medium/high/extra-high पर 2.0, GPT-5.2 low पर 1.93, और बिना reasoning token के प्रति-request $0.000618 पर सबसे सस्ती सर्वोच्च-स्कोर सेल GPT-5.2 none — और प्रति-request $0.000618 से $0.002179 तक संगत लागत-मानों का स्रोत।</li>
+        <li>[4] <strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि इस स्लाइस का गुणवत्ता-लाभ सिर्फ़ ऊँचे बिल के साथ नहीं, बल्कि जायज़ बिल के साथ आया।</li>
+        <li>[5] <strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
       </ul>
       <p>
         यह स्लाइस क्या सिद्ध करती है और क्या नहीं: इस multi-step स्लाइस में GPT-5.2 ने

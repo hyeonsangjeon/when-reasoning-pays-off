@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="b2eb8e5e11700ac8b87e3661ee7d4633b387f75d003dc112067b6e2ff0c37aa3">
+  <meta name="article:source-article-sha256" content="29e90c5efa25e4051f89e57244ca800b3e81790f24df7470f04dbdaab232876f">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -129,12 +129,12 @@
         推导出来的计算，既不是测得的吞吐量，也不是 429 的发生，更不是饱和点。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。每请求成本输入沿用这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
-        <li><strong>Tier 1 — PAYG 价格快照：</strong>本仓库，<code>pricing/azure-openai-payg-2026-05.yaml</code>。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。这里每 1M token 的单价（gpt-5.2 input $1.75/1M、cached input $0.175/1M、output 与 reasoning $14.00/1M；gpt-4o input $2.50/1M、cached $1.25/1M、output $10.00/1M）决定了进入公式的每请求账单。</li>
-        <li><strong>Tier 1 — PTU 价格快照：</strong>本仓库，<code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 文档</a>（2026-05-19 访问，区域 eastus2）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。公式的 PTU 侧——每 PTU 小时 $2.00、50 PTU 的最小值（下限）、用于吞吐量系数的每 PTU Input TPM（gpt-4o 2,500、gpt-5.2 3,400）——都来自这份快照。PAYG 与 PTU 两侧的价格都进入盈亏平衡：一边是每请求的 PAYG 账单，另一边是固定的 $100/hour PTU 下限（50 × $2.00）。</li>
-        <li><strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐单元格 token 分布。</li>
-        <li><strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 149 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
-        <li><strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>，是审计同一批 JSON 产物的可核查形态。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。每请求成本输入沿用这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[2] <strong>Tier 1 — PAYG 价格快照：</strong>本仓库，<code>pricing/azure-openai-payg-2026-05.yaml</code>。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。这里每 1M token 的单价（gpt-5.2 input $1.75/1M、cached input $0.175/1M、output 与 reasoning $14.00/1M；gpt-4o input $2.50/1M、cached $1.25/1M、output $10.00/1M）决定了进入公式的每请求账单。</li>
+        <li>[3] <strong>Tier 1 — PTU 价格快照：</strong>本仓库，<code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 文档</a>（2026-05-19 访问，区域 eastus2）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。公式的 PTU 侧——每 PTU 小时 $2.00、50 PTU 的最小值（下限）、用于吞吐量系数的每 PTU Input TPM（gpt-4o 2,500、gpt-5.2 3,400）——都来自这份快照。PAYG 与 PTU 两侧的价格都进入盈亏平衡：一边是每请求的 PAYG 账单，另一边是固定的 $100/hour PTU 下限（50 × $2.00）。</li>
+        <li>[4] <strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐单元格 token 分布。</li>
+        <li>[5] <strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 149 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
+        <li>[6] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>，是审计同一批 JSON 产物的可核查形态。</li>
       </ul>
       <p>
         这个切片证明了什么、又没证明什么：它展示了在这份价格快照下，对持有 benchmark-01、

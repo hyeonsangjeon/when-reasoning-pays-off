@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="34940ed968c8be83644964804fd4e90ccd6e0dfb19e6e41832d21b829e54e95c">
+  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -300,11 +300,11 @@
       <p><strong>Tier 1 — सेवा अनुबंध (Microsoft Learn)।</strong> 429 एडमिशन-व्यवहार,
         दोनों retry-हेडर, leaky-bucket उपयोग-मॉडल, और SDK की डिफ़ॉल्ट retry यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>प्रोविज़न्ड throughput को प्रोडक्शन में चलाना</strong> —
+        <li>[1] <strong>प्रोविज़न्ड throughput को प्रोडक्शन में चलाना</strong> —
           100% उपयोग पर तुरंत 429, <code>retry-after-ms</code> व <code>retry-after</code>
           प्रतिक्रिया-हेडर, leaky-bucket उपयोग-मॉडल, और OpenAI SDK की डिफ़ॉल्ट 429 retry
           (<code>max_retries</code>) परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">आर्काइव</a>।</li>
-        <li><strong>प्रोविज़न्ड क्षमता के spillover से ट्रैफ़िक प्रबंधन</strong> —
+        <li>[2] <strong>प्रोविज़न्ड क्षमता के spillover से ट्रैफ़िक प्रबंधन</strong> —
           ग़ैर-200 (<code>429</code> समेत) अतिरिक्त को <code>spilloverDeploymentName</code>
           प्रॉपर्टी और spillover-स्रोत बताने वाले x-ms प्रतिक्रिया-हेडर के ज़रिए स्टैंडर्ड
           लक्ष्य पर मोड़ने वाली spillover परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">आर्काइव</a>।</li>
@@ -314,10 +314,10 @@
         इंतज़ार दोहराने पर भी न सुलझे तभी spillover पर मोड़ो — संचालन-स्तर के हैं, Learn
         विनिर्देश नहीं।</p>
       <ul>
-        <li><strong>यह रिपॉज़िटरी, <code>docs/10-ptu-admission-controller.md</code></strong>
+        <li>[3] <strong>यह रिपॉज़िटरी, <code>docs/10-ptu-admission-controller.md</code></strong>
           — हेडर-चालित एडमिशन-कंट्रोलर के नोट। retry का मालिक एक, <code>retry-after-ms</code>
           का आदर, डिफ़ॉल्ट jitter, इंतज़ार सीमा पार करे तो fallback। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">स्रोत</a>।</li>
-        <li><strong>यह रिपॉज़िटरी, <code>batch_runner/ptu/admission_controller.py</code></strong>
+        <li>[4] <strong>यह रिपॉज़िटरी, <code>batch_runner/ptu/admission_controller.py</code></strong>
           — <code>retry-after-ms</code> पार्स करता, <code>retry-after</code> पर fallback
           करता, और दोहरे retry-स्वामित्व को मना करता संदर्भ कार्यान्वयन। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">स्रोत</a>।</li>
       </ul>

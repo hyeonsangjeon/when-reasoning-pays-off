@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
+  <meta name="article:source-article-sha256" content="72f940c883a4941c85a7fccfb83d587d0e54a87c1a5df3c05ff3626d510ec20a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -302,7 +302,7 @@
         15개 요청의 오버플로 지점이 여기에 문서화되어 있습니다.
       </p>
       <ul>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — 1,024 토큰 최소
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 1,024 토큰 최소
           요건과 동일 프리픽스 요구, 초기 프리픽스 해시 기반 라우팅, 처음
           1,024개 이후 추가로 동일한 128개 토큰마다의 캐시 일치, 단 한 글자의
           캐시 미스, 프리픽스 해시와 결합되어 라우팅에 영향을 주는
@@ -316,12 +316,12 @@
         소스 실행 근거입니다.
       </p>
       <ul>
-        <li><strong>이 저장소, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>이 저장소, <code>docs/12-prompt-cache-key-policy.md</code></strong>
           — 버킷 크기 산정 런북: 문서화된 약 15-RPM 수치에서
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code>를
           도출하며, <code>recommended_buckets</code> 공식과 기본 버킷당 10-RPM
           목표는 Learn 사양이 아니라 이 저장소의 운영적 추론입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">출처</a>.</li>
-        <li><strong>이 저장소, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[3] <strong>이 저장소, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — 적중률과 첫 토큰 지연 표의 바탕이 된 희소한 공개 집계 단면으로,
           보편적 곡선이 아니라 소스 실행 근거입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">출처</a>.</li>
       </ul>

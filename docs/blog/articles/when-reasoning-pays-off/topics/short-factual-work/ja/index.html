@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <meta name="article:source-article-sha256" content="b8fa03dc025507152268b653398d99a07d2b13cc5433ef506bde207d4b9860d5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ja/">
   <link rel="alternate" hreflang="en" href="../">
@@ -354,11 +354,11 @@
         どこから始まるのかを示す。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコスト（minimal effort の $0.000663、extra-high effort の $0.005043、7.6 倍の請求）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比も変わる。</li>
-        <li><strong>Tier 2 — 短い事実回答スライスの測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。コストの上昇、1.87931 から 1.779661 への平均評価スコアの動き、1112.798745 ms から 3088.001225 ms へのレイテンシの伸び、0.984614 から 0.451798 へのスループット係数の出典。</li>
-        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）と <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。3.655172 から 311.474576 への推論トークンの推移と、12.672414 から 17.881356 トークンしか動かない見える出力の出典。</li>
-        <li><strong>エビデンスダッシュボード：</strong> <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-01-cost_per_request">エビデンスダッシュボード</a>のセルごとの表とレンダリングされた元チャートは、同じアーティファクトを監査できる形だ。</li>
+        <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコスト（minimal effort の $0.000663、extra-high effort の $0.005043、7.6 倍の請求）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比も変わる。</li>
+        <li>[3] <strong>Tier 2 — 短い事実回答スライスの測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。コストの上昇、1.87931 から 1.779661 への平均評価スコアの動き、1112.798745 ms から 3088.001225 ms へのレイテンシの伸び、0.984614 から 0.451798 へのスループット係数の出典。</li>
+        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）と <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。3.655172 から 311.474576 への推論トークンの推移と、12.672414 から 17.881356 トークンしか動かない見える出力の出典。</li>
+        <li>[5] <strong>エビデンスダッシュボード：</strong> <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-01-cost_per_request">エビデンスダッシュボード</a>のセルごとの表とレンダリングされた元チャートは、同じアーティファクトを監査できる形だ。</li>
       </ul>
       <p>
         このスライスが何を証明し、何を証明しないか：短い事実回答のこのワークロードの

@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <meta name="article:source-article-sha256" content="b8fa03dc025507152268b653398d99a07d2b13cc5433ef506bde207d4b9860d5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../zh-CN/">
   <link rel="alternate" hreflang="en" href="../">
@@ -337,11 +337,11 @@
         推断又从哪里开始。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
-        <li><strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本（minimal effort 的 $0.000663、extra-high effort 的 $0.005043、7.6 倍的账单）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
-        <li><strong>Tier 2 — 短事实回答切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是成本上行、平均评审分从 1.87931 到 1.779661 的移动、延迟从 1112.798745 ms 到 3088.001225 ms 的拉长，以及吞吐量系数从 0.984614 到 0.451798 的来源。</li>
-        <li><strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）与 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。它是推理 token 从 3.655172 到 311.474576、可见输出只从 12.672414 移到 17.881356 个 token 的来源。</li>
-        <li><strong>证据仪表盘：</strong><a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">证据仪表盘</a>里逐单元格的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本（minimal effort 的 $0.000663、extra-high effort 的 $0.005043、7.6 倍的账单）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
+        <li>[3] <strong>Tier 2 — 短事实回答切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是成本上行、平均评审分从 1.87931 到 1.779661 的移动、延迟从 1112.798745 ms 到 3088.001225 ms 的拉长，以及吞吐量系数从 0.984614 到 0.451798 的来源。</li>
+        <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）与 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。它是推理 token 从 3.655172 到 311.474576、可见输出只从 12.672414 移到 17.881356 个 token 的来源。</li>
+        <li>[5] <strong>证据仪表盘：</strong><a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">证据仪表盘</a>里逐单元格的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
         这个切片证明了什么、又没证明什么：它表明，在短事实回答这种工作负载
