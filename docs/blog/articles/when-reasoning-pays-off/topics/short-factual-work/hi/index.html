@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>छोटे तथ्यात्मक जवाब | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="छोटे तथ्यात्मक जवाबों में reasoning effort बढ़ाने पर गुणवत्ता साथ नहीं आती, सिर्फ़ लागत बढ़ती है — यह विषय-लेख वही डेटा से जाँचता है।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="./">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
+      <nav class="lang" aria-label="भाषा">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="./" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय-लेख · benchmark-01 छोटे तथ्यात्मक जवाब</p>
+    <h1>छोटे तथ्यात्मक जवाब: जब अतिरिक्त रीज़निंग गुणवत्ता नहीं, लागत ख़रीदती है</h1>
+    <p class="lede">
+      जब टीम ने अभी-अभी रीज़निंग मॉडल अपनाया हो, तब छोटे तथ्यात्मक सवाल effort
+      बढ़ाकर आज़माने की सबसे आसान जगह दिखते हैं। जवाब छोटा होता है, ग़लती तुरंत आँख
+      में आती है, और थोड़ा ज़्यादा सोचने देना सस्ते बीमे जैसा लगता है। इसलिए मन पहले
+      यहीं reasoning effort बढ़ाने का करता है। पर वह अंदाज़ा भेजने लायक़ नीति नहीं,
+      जाँचने लायक़ परिकल्पना है — और यह लेख उसे डेटा से जाँचता है।
+    </p>
+
+    <section class="article-section">
+      <h2>हमने यह क्यों जाँचा</h2>
+      <p>
+        हालात जाने-पहचाने हैं। माइग्रेशन टीम को रीज़निंग मॉडल पर ले आता है,
+        सेटिंग में reasoning effort का डायल आ जाता है, और छोटे तथ्यात्मक सवाल उसे
+        बढ़ाने की सबसे सुरक्षित जगह दिखते हैं। output छोटा है, ग़लती साफ़ है, और "थोड़ा
+        और सोचने दो" सस्ते बीमे जैसा सुनाई देता है — इसलिए डिफ़ॉल्ट यहीं बढ़ाना लगभग
+        मुफ़्त लगता है।
+      </p>
+      <p>
+        इससे जाँचने योग्य एक साफ़ परिकल्पना मिलती है। छोटे तथ्यात्मक जवाबों में, क्या
+        ऊँची reasoning effort सचमुच जवाब को ज़्यादा सुरक्षित बनाती है? अगर हाँ, तो वह
+        ऊँचा डिफ़ॉल्ट अपनी जगह कमा लेता है। अगर नहीं, तो टीम उस सोच का दाम चुका रही है
+        जो पाठक तक कभी पहुँचती ही नहीं।
+      </p>
+      <p>
+        इसलिए हमने जाँचा। वर्कलोड-आकार स्थिर रखा — वही छोटी तथ्यात्मक स्लाइस — effort
+        का सोपान एक-एक पायदान चला, और हर स्तर पर प्रति-request लागत, latency, दृश्य
+        जवाब-पाठ, छिपे reasoning tokens और judge स्कोर तुले। इस स्लाइस में नतीजे ऐसे
+        थे जो डिफ़ॉल्ट हिलाने लायक़ हैं। effort ने लागत, latency और छिपे टोकन ख़रीदे,
+        पर बेहतर जवाब नहीं। नीचे का एक-पृष्ठ सार इसे एक फ़्रेम में कह देता है, और आगे
+        के खंड मापा विवरण देते हैं।
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-short-factual-one-pager">
+      <figcaption>
+        <strong>एक नज़र में विषय।</strong> इस छोटी तथ्यात्मक स्लाइस में reasoning
+        effort का सोपान चढ़ने पर प्रति-request लागत क़रीब 7.6 गुना हुई, जबकि औसत judge
+        स्कोर सपाट रहा। एक-पृष्ठ सार वही संदेश कहता है और सबूत-सीमा दिखाता है। आगे के
+        खंड मापा विवरण जोड़ते हैं।
+        <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">छोटे तथ्यात्मक जवाब का एक-पृष्ठ सार SVG खोलें</a>।
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक जवाब का एक-पृष्ठ सार। reasoning effort के सोपान (minimal से extra-high) पर प्रति-request लागत क़रीब 7.6 गुना चढ़ती है जबकि judge गुणवत्ता सपाट रहती है। केंद्रीय संदेश: छोटे तथ्यात्मक जवाबों में effort-सोपान चढ़ने पर लागत बढ़ी पर judge गुणवत्ता सपाट रही। यह N=20, R=3 का मापा समुच्चय है, और लागत निरपेक्ष राशि नहीं अनुपात में दिखाई गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="विषय का सार">
+      <section class="summary-tile">
+        <h2>प्रश्न</h2>
+        <p>जब काम ज़्यादातर छोटे तथ्यात्मक जवाब माँगे, तो क्या ऊँची reasoning effort बिल जायज़ ठहराने भर गुणवत्ता सुधारती है?</p>
+      </section>
+      <section class="summary-tile">
+        <h2>सबूत</h2>
+        <p>benchmark-01 के लागत, गुणवत्ता, latency और टोकन-आकार चार्ट, सार्वजनिक डेटा तालिका के साथ जोड़ी बनाकर।</p>
+      </section>
+      <section class="summary-tile">
+        <h2>नतीजा</h2>
+        <p>इस स्लाइस में प्रति-request लागत क़रीब 7.6 गुना चढ़ी, पर औसत judge स्कोर नहीं चढ़ा — क़रीब 1.88 से क़रीब 1.78 तक हिला।</p>
+      </section>
+      <section class="summary-tile">
+        <h2>निर्णय</h2>
+        <p>जो पहले से सही जवाब देता है, उस सबसे नीचे effort को डिफ़ॉल्ट बनाएँ। तभी बढ़ाएँ जब मूल्यांकक इस वर्कलोड-आकार पर असली गुणवत्ता-लाभ दिखाए।</p>
+      </section>
+    </div>
+
+    <p class="banner">
+      <strong>संबंधित चार्ट-फ़ैमिली खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">benchmark-01 लागत चार्ट</a>
+      और <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-quality">साथ वाला गुणवत्ता चार्ट</a>।
+    </p>
+
+    <section class="article-section">
+      <h2>डेटा ने क्या दिखाया</h2>
+      <p>
+        परिकल्पना ने ऊँचे effort पर ज़्यादा सुरक्षित जवाब का वादा किया। डेटा ने वह नहीं
+        दिया। लागत-बार minimal effort के $0.000663 से extra-high effort के $0.005043
+        तक चढ़ता है, पर गुणवत्ता-बार साथ नहीं चढ़ता। औसत judge स्कोर minimal पर 1.88
+        और extra-high पर 1.78 है। latency भी क़रीब 1.1s से क़रीब 3.1s तक बढ़ती है।
+        क्षमता के लिहाज़ से भी यह मुफ़्त नहीं — टोकन-आकार का throughput-गुणक 0.98 से
+        0.45 तक गिरता है।
+      </p>
+      <p>
+        तो लागत-बार चढ़ा, गुणवत्ता-बार नहीं चढ़ा — यही पूरी कहानी चार्ट कहना चाहता है।
+        ऊँचा लागत-बार असली है, बढ़ा छिपा-टोकन बजट असली है, बस उसके मेल का गुणवत्ता-लाभ
+        ग़ायब है। इस वर्कलोड-आकार में ऊँचा effort डिफ़ॉल्ट नहीं, प्रयोगात्मक रहना चाहिए।
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>परिकल्पना ग़लत क्यों हो सकती है</h2>
+      <p>
+        सुरक्षित दिखता डिफ़ॉल्ट इसलिए उम्मीद तोड़ सकता है क्योंकि छोटे तथ्यात्मक जवाब
+        लंबी आंतरिक खोज शायद ही माँगते हैं। जब जवाब एक अकेला तथ्य हो, तो अड़चन अक्सर
+        खोज, स्थिर प्रॉम्प्ट, या बस वह सबसे नीचे effort होती है जो पहले से सही जवाब तक
+        पहुँचता है — अतिरिक्त सोच नहीं। उस बिंदु के पार और सोचने पर पाने को कुछ बचता
+        नहीं, और effort-सोपान सटीकता जोड़े बिना सिर्फ़ छिपे टोकन जोड़ता रहता है।
+      </p>
+      <p>
+        यही आकार इस स्लाइस में दिखता है। judge स्कोर effort के साथ नहीं चढ़ता। लागत,
+        latency और छिपी रीज़निंग सब बढ़ते हुए, यह 1.88 से 1.78 के बीच डोलता है। सोच
+        असली है, पर मॉडल के भीतर रहती है, पाठक तक कभी नहीं पहुँचती — इसीलिए यहाँ ऊँचा
+        डिफ़ॉल्ट वह लागत है जो जवाब कभी नहीं लौटाता।
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>चार्ट कैसे पढ़ें</h2>
+      <p>
+        बार समुच्चय बार-ग्राफ़ हैं, फ़्रीक्वेंसी हिस्टोग्राम नहीं। हर बार benchmark-01
+        की एक effort-सेल है, इसलिए तुलना इस बारे में है कि "वही वर्कलोड-आकार effort
+        बढ़ने के साथ कैसे बदलता है"।
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>X-अक्ष</h3>
+          <p>
+            बार रीज़निंग effort के स्तर बाएँ से दाएँ चलते हैं — baseline, minimal, low,
+            medium, high, extra-high। इसे ऑपरेटर की बदली जा सकने वाली नियंत्रण-घुंडी मानें।
+          </p>
+        </div>
+        <div>
+          <h3>Y-अक्ष</h3>
+          <p>
+            लागत चार्ट में बार-ऊँचाई प्रति-request औसत USD है। गुणवत्ता चार्ट में
+            बार-ऊँचाई औसत judge स्कोर है। इन्हें अलग नहीं, जोड़ी बनाकर पढ़ें।
+          </p>
+        </div>
+        <div>
+          <h3>बार और तालिका</h3>
+          <p>
+            हर बार एक समुच्चय सेल है। चार्ट के नीचे की तालिका सटीक मान, उपलब्ध हो तो
+            मानक विचलन, और नमूना-गिनती देती है। त्रुटि-बार विश्वास-अंतराल नहीं, मानक विचलन हैं।
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <figure class="article-figure" id="figure-short-factual-cost">
+      <figcaption>
+        <strong>मूल चार्ट — छोटे तथ्यात्मक जवाब की प्रति-request लागत (benchmark&nbsp;01)।</strong>
+        <strong>X-अक्ष:</strong> मॉडल और effort का सोपान — gpt-4o baseline, फिर
+        gpt-5.2 का minimal, low, medium, high, extra-high।
+        <strong>Y-अक्ष:</strong> PAYG पर प्रति-request औसत USD।
+        <strong>बार:</strong> हर बार एक effort-सेल की औसत लागत — फ़्रीक्वेंसी हिस्टोग्राम
+        नहीं, समुच्चय की तुलना — और खड़ी व्हिस्कर दोहराए मापनों पर &plusmn;1 मानक विचलन दिखाती हैं।
+        <strong>पढ़ने का तरीक़ा:</strong> लागत minimal effort के $0.000663 से extra-high के
+        $0.005043 तक — क़रीब 7.6x बिल — चढ़ती है, जबकि नीचे का साथ वाला judge स्कोर लगभग नहीं हिलता।
+        <strong>सबूत-सीमा:</strong> प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, यह एक छोटी
+        तथ्यात्मक स्लाइस, एक दिनांकित PAYG स्नैपशॉट पर एक ही Azure OpenAI टेनेंट और रीजन के
+        लिए मूल्यांकित। यह दूसरे वर्कलोड, रीजन या भावी मूल्य का प्रमाण नहीं।
+        <strong>स्रोत और डैशबोर्ड:</strong> बार-मान सार्वजनिक मिरर डेटा
+        <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>
+        से आते हैं; <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">एविडेंस डैशबोर्ड</a>
+        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">परोसा गया चार्ट-डेटा</a>) के बग़ल पढ़ें।
+      </figcaption>
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 की PAYG प्रति-request औसत लागत का बार चार्ट जो gpt-4o baseline और gpt-5.2 minimal से extra-high तक effort-सोपान पर चढ़ती है। मानक-विचलन व्हिस्कर के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
+    </figure>
+
+    <figure class="article-figure" id="figure-short-factual-quality">
+      <figcaption>
+        <strong>जोड़ी मूल चार्ट — छोटे तथ्यात्मक जवाब का judge स्कोर (benchmark&nbsp;01)।</strong>
+        <strong>X-अक्ष:</strong> वही मॉडल और effort का सोपान।
+        <strong>Y-अक्ष:</strong> 0–2 रूब्रिक पर औसत judge स्कोर (गुणवत्ता-गार्डरेल)।
+        <strong>बार:</strong> हर बार एक effort-सेल का औसत स्कोर — फ़्रीक्वेंसी हिस्टोग्राम
+        नहीं, समुच्चय की तुलना — और व्हिस्कर &plusmn;1 मानक विचलन दिखाते हैं।
+        <strong>पढ़ने का तरीक़ा:</strong> गुणवत्ता-बार ऊपर वाले लागत-बार के साथ नहीं चढ़ते —
+        gpt-4o baseline 1.88, gpt-5.2 minimal 1.88, low 1.77, medium 1.73, high 1.88,
+        extra-high 1.78 — इसलिए इस स्लाइस में ऊँचा लागत-बार जो ख़रीदता है वह छिपी गणना है,
+        बेहतर जवाब नहीं।
+        <strong>सबूत-सीमा:</strong> प्रति सेल N = 20, R = 3 दोहराव। त्रुटि-बार विश्वास-अंतराल
+        नहीं, मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।
+        <strong>स्रोत और डैशबोर्ड:</strong> बार-मान
+        <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json</code>
+        से आते हैं; <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-quality">एविडेंस डैशबोर्ड</a>
+        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/quality.json">परोसा गया चार्ट-डेटा</a>) में
+        लागत-चार्ट के साथ जोड़ी बनाकर पढ़ें।
+      </figcaption>
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark-01 का औसत judge स्कोर effort-सोपान पर लगभग 1.7–1.9 के बीच सपाट रहता है जबकि लागत चढ़ती है — ऐसा बार चार्ट। मानक-विचलन व्हिस्कर के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
+    </figure>
+
+    <section class="article-section">
+      <h2>हर मूल चार्ट क्या सँभालता है</h2>
+      <p>
+        हर मूल चार्ट फ़ैसले के अलग हिस्से का जवाब देता है। लागत-चार्ट कहता है कि वह
+        सेटिंग क्या माँगती है। गुणवत्ता-चार्ट कहता है कि उस ख़र्च ने बेहतर जवाब ख़रीदा
+        या नहीं। latency और टोकन-संरचना संचालन-दुष्प्रभाव समझाते हैं। throughput-दृष्टि
+        वही टोकन-आकार योजना-दबाव में अनुवाद करती है।
+      </p>
+      <table class="chart-table evidence-table">
+        <caption>benchmark-01 के मूल चार्टों से क्या पढ़ा जा सकता है</caption>
+        <thead>
+          <tr>
+            <th>मूल चार्ट</th>
+            <th>पढ़ने का तरीक़ा</th>
+            <th>देखा गया पैटर्न</th>
+            <th>फ़ैसले के लिए अर्थ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>प्रति-request लागत</td>
+            <td>X-अक्ष effort स्तर, Y-अक्ष प्रति-request औसत USD।</td>
+            <td>minimal effort पर $0.000663, extra-high effort पर $0.005043।</td>
+            <td>गुणवत्ता सहीपन सिद्ध करे उससे पहले बिल चढ़ जाता है।</td>
+          </tr>
+          <tr>
+            <td>गुणवत्ता-गार्डरेल</td>
+            <td>X-अक्ष वही effort-सोपान, Y-अक्ष औसत judge स्कोर।</td>
+            <td>minimal effort पर 1.88, extra-high effort पर 1.78।</td>
+            <td>ऊँची-लागत सेलें पदोन्नति का मानक पार नहीं करतीं।</td>
+          </tr>
+          <tr>
+            <td>Latency</td>
+            <td>X-अक्ष effort स्तर, Y-अक्ष औसत response latency।</td>
+            <td>minimal effort पर क़रीब 1.1s, extra-high effort पर क़रीब 3.1s।</td>
+            <td>उपयोगकर्ता मेल के गुणवत्ता-लाभ के बिना ज़्यादा देर रुकता है।</td>
+          </tr>
+          <tr>
+            <td>टोकन-संरचना</td>
+            <td>X-अक्ष effort स्तर, Y-अक्ष प्रति-request औसत टोकन।</td>
+            <td>reasoning tokens 3.655172 से 311.474576 तक चढ़ते हैं, दृश्य output सिर्फ़ क़रीब 12.7 से 17.9 टोकन बदलता है।</td>
+            <td>जवाब-पाठ बिल की अधिकांश वृद्धि छिपा देता है।</td>
+          </tr>
+          <tr>
+            <td>टोकन-आकार throughput</td>
+            <td>X-अक्ष effort स्तर, Y-अक्ष baseline-सापेक्ष throughput-गुणक।</td>
+            <td>गुणक minimal effort के 0.98 से extra-high effort के 0.45 तक हिलता है।</td>
+            <td>वही ट्रैफ़िक-आकार ज़्यादा क्षमता-गुंजाइश माँगता है।</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section">
+      <h2>क्या हुआ</h2>
+      <p>
+        लागत-वक्र तेज़ी से चढ़ा। minimal effort प्रति-request औसत $0.000663,
+        extra-high effort प्रति-request औसत $0.005043 — यानी 7.6 गुना बिल। साथ वाली
+        गुणवत्ता की हलचल ने उस ख़र्च को जायज़ नहीं ठहराया। औसत judge स्कोर 1.88 से 1.78
+        तक हिला।
+      </p>
+      <p>
+        यह "रीज़निंग बुरी है" वाला सार्वभौमिक दावा नहीं। यह वर्कलोड-आकार के बारे में
+        दावा है। इस स्लाइस में जुड़ी आंतरिक गणना ने मेल का जवाब-गुणवत्ता-लाभ नहीं ख़रीदा।
+        डैशबोर्ड लागत और गुणवत्ता को साथ रखता है, इसलिए वह बेमेल दिखता है।
+      </p>
+      <p>
+        असली जाल यह है कि output फिर भी ठीक-ठाक दिख सकता है। अगर समीक्षक कुछ ही जवाब
+        निकाले, तो extra-high effort ज़्यादा सुरक्षित लग सकता है क्योंकि मॉडल ज़्यादा
+        मेहनत से सोचता दिखता है। चार्ट उस अंदाज़े को नीति बनने से रोकता है — ऊँची लागत,
+        धीमी latency और बड़ा छिपा-टोकन बिल स्वीकार करने से पहले मापा गुणवत्ता-अंतर माँगता है।
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>मापते हुए हमने क्या सीखा</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>"और सोचो" डिफ़ॉल्ट नहीं</h3>
+          <p>
+            effort एक उपचार है। इसे स्लाइस पर लगाएँ, मापें, और तभी पदोन्नत करें जब
+            मूल्यांकक हिले। इसे वैश्विक डिफ़ॉल्ट बनाएँ तो प्रोडक्शन-ट्रैफ़िक आने तक यह
+            बिल छिपाए रखता है।
+          </p>
+        </div>
+        <div>
+          <h3>लागत को गुणवत्ता के साथ जोड़ी में देखें</h3>
+          <p>
+            सिर्फ़-लागत चार्ट बदलाव साफ़ पर अधूरा दिखा सकता है। सिर्फ़-गुणवत्ता चार्ट
+            आर्थिक लागत छिपा सकता है। काम का नज़रिया जोड़ी है: क्या ख़रीदा, और क्या
+            उसने जवाब सुधारा।
+          </p>
+        </div>
+        <div>
+          <h3>छोटे तथ्यात्मक काम को नीची-effort baseline चाहिए</h3>
+          <p>
+            स्वीकार्य सबसे नीचे effort स्तर वही baseline है जिसे पार करना है। अगर ऊँचा
+            स्तर गुणवत्ता में उसे न लाँघे, तो ऑपरेटर सस्ती सेटिंग रखे और अनुकूलन का समय
+            कहीं और लगाए।
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="article-section">
+      <h2>निर्णय कब दोबारा देखें</h2>
+      <p>
+        इस नतीजे को हमेशा के लिए फ़्रीज़ न करें। जब काम छोटे याद-दिलाने से संयोजन में
+        बदले, जब मूल्यांकन-रूब्रिक बहु-चरणीय औचित्य को इनाम देने लगे, जब प्रॉम्प्ट
+        tool-output ढोने लगें, या जब नया मॉडल लागत-गुणवत्ता आकार बदल दे — दोबारा जाँचें।
+        सबक़ "रीज़निंग कभी मत इस्तेमाल करो" नहीं है। यह है: "जोड़ी सबूत के बिना effort
+        पदोन्नत मत करो।"
+      </p>
+      <p>
+        उपयोगी अनुवर्ती जाँच वही X-अक्ष रखते हुए वर्कलोड-स्लाइस बदलती है। छोटे तथ्यात्मक,
+        multi-step, टूल-एजेंट और संयोजन काम — हर एक को अपनी effort-सेटिंग कमानी चाहिए।
+        वही रूटिंग-नीति वह जगह है जहाँ रीज़निंग आमतौर पर वसूल होती है।
+      </p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <h2>स्रोत और सबूत-सीमा</h2>
+      <p>
+        ऊपर का हर मान इस रिपॉज़िटरी की किसी सार्वजनिक कलाकृति तक जाता है, और हर
+        लागत-संख्या एक दिनांकित मूल्य-स्नैपशॉट पर गणित है। ऊँचा effort इस स्लाइस में
+        प्रयोगात्मक रहना चाहिए — यह संचालन-व्याख्या इस लेख की अपनी है। नीचे की दो
+        श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ ख़त्म होता है और अनुमान कहाँ शुरू।
+      </p>
+      <ul>
+        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (minimal effort का $0.000663, extra-high effort का $0.005043, 7.6x बिल) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट। सूची-मूल्य हिलने पर अनुपात भी बदलेंगे।</li>
+        <li><strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। लागत-चढ़ाई, 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, 1112.798745 ms से 3088.001225 ms की latency वृद्धि, और 0.984614 से 0.451798 के throughput-गुणक का स्रोत।</li>
+        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। reasoning tokens की 3.655172 से 311.474576 तक चाल और सिर्फ़ 12.672414 से 17.881356 टोकन हिलते दृश्य output का स्रोत।</li>
+        <li><strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">एविडेंस डैशबोर्ड</a> की प्रति-सेल तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
+      </ul>
+      <p>
+        यह स्लाइस क्या सिद्ध करती है और क्या नहीं: छोटे तथ्यात्मक जवाब के इस वर्कलोड-आकार
+        में, एक टेनेंट, एक रीजन, इस मूल्य-स्नैपशॉट पर, effort-सोपान ने लागत और छिपे टोकन
+        ख़रीदे, मेल का गुणवत्ता-लाभ नहीं — यह दिखाती है। यह सिद्ध नहीं करती कि वही आकार
+        संयोजन, multi-step या टूल-इस्तेमाल काम में, या किसी भावी मूल्य-स्नैपशॉट पर टिकेगा।
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>व्यावहारिक नियम</h2>
+      <p>
+        <strong>व्यावहारिक नियम: छोटे तथ्यात्मक जवाबों को उस सबसे नीचे effort पर रखें
+        जो पहले से सही जवाब देता है, और इस वर्कलोड-आकार पर गुणवत्ता-गेट हिलने के बाद ही
+        ऊँचे effort तक बढ़ें — साथ वाले लागत, latency और टोकन-संरचना चार्ट के बग़ल
+        पढ़कर।</strong>
+      </p>
+      <p>
+        एविडेंस डैशबोर्ड उस नियम के पीछे का ऑडिट-ट्रेल है।
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">मूल चार्ट देखें</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>आगे:</strong>
+        <a href="../../invisible-reasoning-tokens/hi/">अदृश्य reasoning tokens: जवाब में न दिखने वाला एक और बिल</a>
+        &mdash; अगर जवाब-पाठ छोटा ही रहा, तो अतिरिक्त लागत कहाँ से आई?
+      </p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p>
+  </footer>
+</body>
+</html>

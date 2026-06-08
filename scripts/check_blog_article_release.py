@@ -28,7 +28,7 @@ EXPECTED_STATUS = {
     "ko": "translated",
     "ja": "translated",
     "zh-CN": "translated",
-    "hi": "untranslated_fallback_to_en",
+    "hi": "translated",
 }
 
 PUBLIC_SUFFIXES = {".html", ".md", ".json"}

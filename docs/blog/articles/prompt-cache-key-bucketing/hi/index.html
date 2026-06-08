@@ -4,114 +4,162 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>कैश कीज़ रूटिंग संकेत हैं | when reasoning pays off</title>
-  <meta name="description" content="prompt_cache_key बकेटिंग, कैश-योग्य प्रीफ़िक्स, और विरल सार्वजनिक कैश-हिट प्रमाण पर एक सार्वजनिक संचालन लेख।">
+  <meta name="description" content="prompt_cache_key एक लेबल नहीं, एक रूटिंग-संकेत है — साझा prefix को कितनी bucket में बाँटें, इस पर सार्वजनिक संचालन-लेख।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2f84fcdf1cdf391719ab6ac2e09568e97d214211947740cc240f72079a22d727">
+  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="../ja/">
   <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
-  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="hi" href="./">
   <link rel="alternate" hreflang="x-default" href="../">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../hi/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="भाषा">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
         <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
-        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+        <a href="./" data-locale="hi" aria-current="true">हिन्दी</a>
       </nav>
     </div>
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">लेख</a> / संचालन निबंध</p>
-    <p class="article-kicker">संचालन निबंध · प्रॉम्प्ट कैशिंग और रूटिंग संकेत</p>
-    <h1>कैश कीज़ रूटिंग संकेत हैं, लेबल नहीं</h1>
+    <p class="breadcrumb"><a href="../../">लेख सूची</a> / संचालन-लेख / हिन्दी रूपांतर</p>
+    <p class="article-kicker">संचालन-लेख · prompt cache और रूटिंग-संकेत</p>
+    <h1>कैश की लेबल नहीं, रूटिंग का संकेत है</h1>
     <p class="lede">
-      <code>prompt_cache_key</code> को हानिरहित मेटाडेटा समझना आसान है।
-      यह उससे कहीं अधिक संचालनात्मक है: इसे प्रॉम्प्ट प्रीफ़िक्स हैश के साथ
-      जोड़कर यह प्रभावित किया जाता है कि मेल खाने वाला कार्य कहाँ रूट होगा।
-      एक अच्छी की पुनः उपयोग को एकत्र करती है; एक बुरी की उसे खंडित कर देती है।
+      जब टीम <code>prompt_cache_key</code> जोड़ती है, तो मन करता है इसे बाक़ी लेबलों
+      जैसा ही बरतें। सहज प्रतिक्रिया यह होती है कि इसमें वह सब ठूँसें जो कॉल को
+      अद्वितीय टैग करे — <code>request_id</code>, उपयोगकर्ता का प्रश्न-पाठ,
+      टाइमस्टैम्प, या टेनेंट-वार/उपयोगकर्ता-वार कोई काफ़ी बारीक धुरी। पर यह फ़ील्ड
+      लेबल से ज़्यादा संचालन से जुड़ा है, क्योंकि यह प्रॉम्प्ट के prefix-hash के साथ
+      मिलकर तय करता है कि मेल खाता काम कहाँ रूट होगा। इसलिए की को अद्वितीय बनाने की
+      सहज इच्छा सीधे उस संचालन-सवाल से टकराती है जो यह लेख पूछता है — क्या ज़्यादा
+      अद्वितीय की पुनः-उपयोग को इकट्ठा करती है, या साझा prefix जो cache-स्थानिकता
+      कमाना चाहती थी उसे टुकड़े-टुकड़े कर देती है?
     </p>
 
-    <div class="article-summary-grid" aria-label="लेख सारांश">
+    <figure class="article-figure" id="figure-keybucket-one-pager">
+      <figcaption>
+        <strong>एक नज़र में यह लेख।</strong> cache-योग्य prefix और
+        <code>prompt_cache_key</code> दोहराते काम को एक मशीन पर रूट करते हैं। और
+        Microsoft Learn एक मार्गदर्शी आँकड़ा प्रलेखित करता है — प्रति bucket प्रति
+        मिनट क़रीब 15 request — जिससे ऊपर जाने पर cache की प्रभावशीलता घट सकती है।
+        एक-पृष्ठ सार वही एक संदेश ढोता है — हर bucket को प्रलेखित सीमा के नीचे साइज़
+        करो — और सीमा दिखाता है। सीमा आधिकारिक विनिर्देश है, और उसके बग़ल का hit-दर व
+        latency आकार PAYG पर मापा सैनिटाइज़्ड सार्वजनिक समुच्चय है, सिर्फ़ वर्णनात्मक।
+        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">cache-key बकेटिंग का एक-पृष्ठ सार SVG खोलें</a>।
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="prompt cache-key बकेटिंग का एक-पृष्ठ सार। एक prefix+key bucket एक मशीन पर रूट होती है, प्रति bucket प्रति मिनट क़रीब 15 request प्रलेखित overflow-बिंदु है, और स्रोत-रनों में cache hit-दर ऊँची व लगभग सपाट रही जबकि in-memory TTFT सुधरा। इसलिए hit-दर latency के बग़ल पढ़ें। केंद्रीय संदेश: हर bucket को प्रलेखित सीमा के नीचे रखें। सीमा आधिकारिक विनिर्देश, आकार सैनिटाइज़्ड मापा समुच्चय, सिर्फ़ वर्णनात्मक।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section id="why-bucket" class="article-section">
+      <h2>की को अंदाज़ क्यों नहीं, साइज़ क्यों करें</h2>
+      <p>
+        अद्वितीय-की वाली सहज इच्छा मानती है कि विशिष्टता मुफ़्त है — बारीक की तो
+        सिर्फ़ requests अलग करने में मदद करेगी। इसे मानने से पहले दो चीज़ें साथ रखना
+        फ़ायदेमंद है। पहली, जो Microsoft Learn प्रलेखित करता है: prompt cache को
+        cache-योग्य बनने के लिए एक-सा शुरुआती prefix चाहिए, और
+        <code>prompt_cache_key</code> prefix-hash के साथ मिलकर तय करता है कि दोहराता
+        काम कहाँ उतरेगा। वही दस्तावेज़ एक मार्गदर्शी आँकड़ा देता है — एक prefix+key
+        जोड़ी पर प्रति मिनट क़रीब 15 request — जिससे ऊपर ट्रैफ़िक अतिरिक्त मशीनों पर
+        छलकता है और cache-प्रभावशीलता घट सकती है। दूसरी, इस रिपॉज़िटरी के स्रोत-रनों
+        का एक विरल सैनिटाइज़्ड सार्वजनिक समुच्चय, जो वर्णनात्मक रूप से दिखाता है कि
+        एक ही prefix को ज़्यादा bucket में बाँटने पर cache hit-दर और पहले-टोकन की
+        latency असल में कैसे हिलीं।
+      </p>
+      <p>
+        रुककर देखने लायक़ हिस्सा वह जोड़ी है। सिर्फ़ hit-दर देखें तो भरोसा होता है,
+        पर उसके नीचे अनुभव हिल रहा है। इस स्लाइस में bucket-कार्डिनैलिटी बढ़ने पर भी
+        hit-दर ऊँची और लगभग सपाट रही (क़रीब 0.93–0.96), इसलिए अकेले उसे पढ़ें तो
+        बँटवारा शून्य-लागत दिखता है। पहले-टोकन latency की टेल बाक़ी आधी कहानी कहती है —
+        एक गरम bucket बहुत बड़ा p95 ढोती थी, और ट्रैफ़िक ज़्यादा bucket में फैलते ही
+        वह तेज़ी से गिरा। इसलिए संचालन-सवाल "cache hit हुआ क्या" नहीं, बल्कि "हर bucket
+        इतनी साइज़ की है कि कोई एक bucket ज़रूरत से ज़्यादा गरम हुए बिना prefix
+        स्थानिकता बनाए रखे" है। prefix-hash से रूटिंग और प्रति-मिनट क़रीब 15 request
+        का overflow-बिंदु Microsoft Learn प्रलेखित करता है। bucket-गिनती की गणना और
+        latency के बग़ल रखी सार्वजनिक hit-दर स्लाइस इस रिपॉज़िटरी का समर्थित
+        संचालन-अनुमान और स्रोत-रन सबूत हैं, सार्वभौमिक cache-hit वक्र नहीं। नीचे का
+        चार्ट वह जोड़ी स्पष्ट करता है।
+      </p>
+    </section>
+
+    <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>एक साझा प्रॉम्प्ट प्रीफ़िक्स को कितने कैश-की बकेट उपयोग करने चाहिए?</p>
+        <p>साझा प्रॉम्प्ट prefix को कितनी cache-key bucket इस्तेमाल करनी चाहिए?</p>
       </section>
       <section class="summary-tile">
-        <h2>प्रमाण</h2>
-        <p>Microsoft Learn रूटिंग संकेत और अनुमानित ओवरफ़्लो बिंदु को परिभाषित करता है; यह रिपॉज़िटरी विरल सार्वजनिक मापन जोड़ती है।</p>
+        <h2>सबूत</h2>
+        <p>Microsoft Learn रूटिंग-संकेत और मोटे overflow-बिंदु को परिभाषित करता है, और यह रिपॉज़िटरी विरल सार्वजनिक मापन जोड़ती है।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>कार्यभार के अनुसार बकेट बनाएँ, प्रति-बकेट दर को जोखिम क्षेत्र से नीचे रखें, और हिट दर तथा फ़र्स्ट-टोकन लेटेंसी की निगरानी करें।</p>
+        <p>वर्कलोड-वार bucket बाँटें, प्रति-bucket दर को जोखिम-क्षेत्र से नीचे रखें, और hit-दर व पहले-टोकन की देरी पर नज़र रखें।</p>
       </section>
     </div>
 
-    <nav class="article-outline" aria-label="लेख अनुभाग">
-      <strong>प्रश्न के अनुसार पढ़ें:</strong>
+    <nav class="article-outline" aria-label="लेख के खंड">
+      <strong>प्रश्न से पढ़ें:</strong>
       <a href="#spec">आधिकारिक व्यवहार</a>
-      <a href="#formula">बकेट सूत्र</a>
-      <a href="#evidence">सार्वजनिक प्रमाण</a>
-      <a href="#patterns">अच्छी और बुरी कीज़</a>
+      <a href="#formula">bucket का सूत्र</a>
+      <a href="#evidence">सार्वजनिक सबूत</a>
+      <a href="#patterns">अच्छी और बुरी की</a>
       <a href="#sources">स्रोत</a>
     </nav>
 
     <p class="banner">
-      <strong>दायरा नोट:</strong>
-      यहाँ के मापन विरल स्रोत-रन प्रमाण हैं। इनका उपयोग एक संचालन चेकलिस्ट
-      को आकार देने के लिए करें, न कि किसी सार्वभौमिक कैश-हिट वक्र का दावा करने के लिए।
+      <strong>दायरे पर टिप्पणी:</strong>
+      यहाँ के मापन विरल स्रोत-रनों के सबूत हैं। इन्हें सार्वभौमिक cache-hit वक्र का
+      दावा करने के लिए नहीं, बल्कि एक संचालन-चेकलिस्ट गढ़ने के लिए इस्तेमाल करें।
     </p>
 
     <section id="spec" class="article-section">
       <p class="section-label">आधिकारिक व्यवहार · की क्या बदलती है</p>
-      <h2>कैश एक समान प्रीफ़िक्स से शुरू होता है</h2>
+      <h2>cache एक-से prefix से शुरू होती है</h2>
       <p>
-        Microsoft Learn कहता है कि प्रॉम्प्ट कैशिंग के लिए कम से कम 1,024 इनपुट
-        टोकन चाहिए और पहले 1,024 टोकन समान होने चाहिए। प्रारंभिक प्रीफ़िक्स को
-        रूटिंग के लिए हैश किया जाता है, और पहले 1,024 टोकन के बाद, अतिरिक्त कैश
-        मैच 128-टोकन चरणों में होते हैं। पहले 1,024 टोकन के भीतर एक भी अक्षर का
-        अंतर कैश हिट को मिस में बदल सकता है।
+        Microsoft Learn के अनुसार prompt cache को कम-से-कम 1,024 input टोकन चाहिए, और
+        पहले 1,024 टोकन एक-से होने चाहिए। शुरुआती prefix रूटिंग के लिए hash होता है,
+        और पहले 1,024 टोकन के बाद हर 128 टोकन पर अतिरिक्त cache-मेल बनता है। पहले 1,024
+        टोकन में एक अक्षर का भी फ़र्क़ cache-hit को miss में बदल सकता है।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>पहले प्रीफ़िक्स</h3>
-          <p>दोहराए जाने वाले निर्देश, स्कीमा, टूल और उदाहरण पहले रखें। यदि प्रीफ़िक्स बदलता है तो बाद का पुनः उपयोग कम उपयोगी होता है।</p>
+          <h3>पहले prefix</h3>
+          <p>दोहराते निर्देश, schema, tools और उदाहरण आगे रखें। prefix बदलने पर पीछे का पुनः-उपयोग कम काम का रह जाता है।</p>
         </div>
         <div>
           <h3>फिर की</h3>
-          <p><code>prompt_cache_key</code> को प्रीफ़िक्स हैश के साथ जोड़कर दोहराए जाने वाले कार्य की रूटिंग को प्रभावित किया जाता है।</p>
+          <p><code>prompt_cache_key</code> prefix-hash के साथ मिलकर दोहराते काम की रूटिंग पर असर डालती है।</p>
         </div>
         <div>
-          <h3>गारंटी कभी नहीं</h3>
-          <p>की पुनः उपयोग की संभावना सुधारती है; यह हिट का वादा नहीं करती। इसे एक संचालन संकेत मानें।</p>
+          <h3>कोई गारंटी नहीं</h3>
+          <p>की पुनः-उपयोग की संभावना बढ़ाती है, hit का वादा नहीं करती। इसे एक संचालन-संकेत मानें।</p>
         </div>
       </div>
     </section>
 
     <section id="formula" class="article-section">
-      <p class="section-label">आकार निर्धारण · बकेट को जोखिम क्षेत्र से नीचे रखें</p>
-      <h2>एक बकेट बहुत गर्म हो सकता है; बहुत सारे बकेट बहुत ठंडे हो सकते हैं</h2>
+      <p class="section-label">साइज़िंग · bucket को जोखिम-क्षेत्र से नीचे रखें</p>
+      <h2>एक bucket बहुत गरम, बहुत ज़्यादा bucket बहुत ठंडी</h2>
       <p>
-        Microsoft Learn एक अनुमानित ओवरफ़्लो बिंदु का वर्णन करता है: जब वही
-        प्रीफ़िक्स और <code>prompt_cache_key</code> संयोजन लगभग 15 अनुरोध प्रति
-        मिनट से अधिक हो जाता है, तो कुछ अनुरोध अतिरिक्त मशीनों पर रूट हो सकते हैं
-        और कैश प्रभावशीलता घट सकती है। व्यावहारिक आकार-निर्धारण नियम यह है कि एक
-        साझा प्रीफ़िक्स को पर्याप्त स्थिर बकेट में विभाजित करें ताकि प्रत्येक बकेट
-        अतिरिक्त गुंजाइश के साथ उस जोखिम क्षेत्र से नीचे रहे।
+        Microsoft Learn एक मोटा overflow-बिंदु समझाता है। एक ही prefix और
+        <code>prompt_cache_key</code> जोड़ी प्रति मिनट क़रीब 15 request पार करे, तो कुछ
+        requests अतिरिक्त मशीनों पर रूट होते हैं और cache-प्रभावशीलता घट सकती है।
+        व्यावहारिक साइज़िंग-नियम यह है कि साझा prefix को इतनी स्थिर bucket में बाँटो कि
+        हर bucket गुंजाइश के साथ उस जोखिम-क्षेत्र से नीचे रहे।
       </p>
       <div class="chart-reading-note">
-        <h3>बकेट-गणना नियम</h3>
+        <h3>bucket-गिनती का नियम</h3>
         <p>
           <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
@@ -120,40 +168,78 @@
       </div>
       <div class="evidence-grid">
         <div>
-          <h3>हल किया गया उदाहरण</h3>
-          <p>1.4 TPS पर, सामान्य प्रीफ़िक्स 84 RPM देखता है। 15-RPM न्यूनतम 6 बकेट देता है; 10-RPM लक्ष्य 9 देता है।</p>
+          <h3>गणना उदाहरण</h3>
+          <p>1.4 TPS पर साझा prefix 84 RPM बनता है। 15-RPM न्यूनतम पर 6 bucket, 10-RPM लक्ष्य पर 9 bucket।</p>
         </div>
         <div>
           <h3>एक क्यों नहीं?</h3>
-          <p>एक अकेला गर्म बकेट स्थानीय कैश पथ को ओवरफ़्लो कर सकता है, भले ही दिखने वाला प्रॉम्प्ट स्थिर लगे।</p>
+          <p>एक गरम bucket, दिखता प्रॉम्प्ट स्थिर रहने पर भी, स्थानीय cache-रास्ते को छलका सकती है।</p>
         </div>
         <div>
           <h3>अद्वितीय क्यों नहीं?</h3>
-          <p>प्रति कॉल एक अद्वितीय की पुनः उपयोग को संचित होने से रोकती है। कैश को कभी भीड़ नहीं मिलती।</p>
+          <p>हर कॉल पर अद्वितीय की रखें तो पुनः-उपयोग जमता ही नहीं। cache को पुनः-उपयोग चढ़ाने का मौक़ा ही नहीं मिलता।</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">अवलोकित प्रमाण · विरल सार्वजनिक स्लाइस</p>
-      <h2>हिट दर और लेटेंसी को एक साथ मापें</h2>
+      <p class="section-label">देखा गया सबूत · विरल सार्वजनिक स्लाइस</p>
+      <h2>hit-दर और देरी साथ मापें</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>पढ़ने योग्य चार्ट:</strong> सार्वजनिक समग्र कैश-की स्लाइस।
-          बायाँ पैनल कैश हिट अनुपात दिखाता है। दायाँ पैनल फ़र्स्ट टोकन तक के
-          p95 समय को दिखाता है। X-अक्ष रिटेंशन मोड और बकेट कार्डिनैलिटी है।
+          <strong>पढ़ने का चार्ट:</strong> सार्वजनिक समुच्चय cache-key स्लाइस। बायाँ
+          पैनल cache hit-दर दिखाता है। दायाँ पैनल पहले-टोकन तक p95 समय दिखाता है।
+          X-अक्ष रिटेंशन-मोड और bucket-कार्डिनैलिटी है।
         </figcaption>
-        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="कैश हिट अनुपात और TTFT p95 की तुलना करने वाला प्रॉम्प्ट कैश की बकेटिंग प्रमाण चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="cache hit-दर और TTFT p95 की तुलना करता prompt cache-key बकेटिंग सबूत-चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-keybucket-hit-ratio">
+        <figcaption>
+          <strong>मूल चार्ट — cache hit-दर बनाम cache-key कार्डिनैलिटी।</strong>
+          <strong>X-अक्ष:</strong> log2 पैमाने पर bucket-कार्डिनैलिटी (1, फिर एक ही
+          prefix पर 8 bucket)। <strong>Y-अक्ष:</strong> स्थिर-अवस्था cache hit-दर, 0–1।
+          <strong>रेखाएँ:</strong> दो रिटेंशन शृंखलाएँ — <code>in_memory</code> और
+          <code>24h</code>, हर एक N&nbsp;=&nbsp;960 रिकॉर्ड। यह दो-शृंखला रेखा-ग्राफ़ है,
+          फ़्रीक्वेंसी हिस्टोग्राम नहीं। <strong>पढ़ने का तरीक़ा:</strong> इस कम
+          प्रति-bucket दर वाली स्लाइस में कार्डिनैलिटी बढ़ने पर भी hit-दर ऊँची और लगभग
+          सपाट रही (क़रीब 0.93–0.96)। इसलिए prefix को ज़्यादा bucket में बाँटना अपने-आप
+          यहाँ hit-दर नहीं गिराया — बँटवारे की लागत इस पैनल में नहीं, अगले पैनल की latency
+          टेल में दिखी। <strong>सबूत-सीमा:</strong> एक टेनेंट और रीजन पर PAYG gpt-5.2 पर
+          मापा विरल सैनिटाइज़्ड सार्वजनिक समुच्चय (PTU नहीं)। वर्णनात्मक, सार्वभौमिक
+          cache-hit वक्र नहीं। <strong>स्रोत:</strong> मान इस रिपॉज़िटरी के
+          <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
+          से आते हैं (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत CSV</a>)।
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="bucket-कार्डिनैलिटी (log2 अक्ष, 1 और 8 bucket) के सापेक्ष स्थिर-अवस्था cache hit-दर का रेखा-ग्राफ़। in_memory और 24h रिटेंशन की दो लगभग सपाट रेखाएँ दोनों ऊँची, क़रीब 0.93–0.96 पर, यह दिखाते हुए कि इस स्लाइस में कार्डिनैलिटी बढ़ने पर भी hit-दर लगभग स्थिर रही।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-keybucket-ttft">
+        <figcaption>
+          <strong>जोड़ी मूल चार्ट — पहले-टोकन latency p95 बनाम cache-key कार्डिनैलिटी।</strong>
+          <strong>X-अक्ष:</strong> वही log2 bucket-कार्डिनैलिटी अक्ष (1, फिर 8)।
+          <strong>Y-अक्ष:</strong> स्थिर-अवस्था पहले-टोकन तक p95 समय (मिलीसेकंड)।
+          <strong>रेखाएँ:</strong> वही दो रिटेंशन शृंखलाएँ, हर एक N&nbsp;=&nbsp;960।
+          <strong>पढ़ने का तरीक़ा:</strong> कार्डिनैलिटी 1 की एकल गरम <code>in_memory</code>
+          bucket बहुत बड़ा p95 (क़रीब 106,000&nbsp;ms) ढोती थी, और ट्रैफ़िक 8 bucket में
+          फैलते ही तेज़ी से गिरा (क़रीब 16,600&nbsp;ms)। जबकि <code>24h</code> शृंखला
+          शुरू से अंत तक नीची रही — इसलिए इस स्लाइस में bucket-बँटवारे की लागत latency टेल
+          में उतरी, और इसी वजह से hit-दर को अकेले नहीं, पहले-टोकन latency के बग़ल पढ़ना
+          चाहिए। <strong>सबूत-सीमा:</strong> PAYG gpt-5.2 पर वही विरल सैनिटाइज़्ड सार्वजनिक
+          समुच्चय (PTU नहीं)। वर्णनात्मक, latency की गारंटी नहीं।
+          <strong>स्रोत:</strong>
+          <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
+          (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">स्रोत CSV</a>)।
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="bucket-कार्डिनैलिटी (log2 अक्ष) के सापेक्ष स्थिर-अवस्था पहले-टोकन तक p95 समय का रेखा-ग्राफ़। in_memory रेखा एकल bucket पर क़रीब 1,06,000 मिलीसेकंड से बहुत ऊँची शुरू होकर 8 bucket पर क़रीब 16,000 तक तेज़ी से गिरती है, जबकि 24h रेखा नीची रहती है, क़रीब 10,000–15,000 मिलीसेकंड के आसपास लगभग सपाट।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>सार्वजनिक कैश-की बकेटिंग प्रमाण</caption>
+        <caption>सार्वजनिक cache-key बकेटिंग सबूत</caption>
         <thead>
           <tr>
             <th>रिटेंशन</th>
             <th>कार्डिनैलिटी</th>
-            <th>हिट अनुपात</th>
+            <th>hit-दर</th>
             <th>TTFT p95</th>
-            <th>प्रति-बकेट RPM</th>
+            <th>प्रति-bucket RPM</th>
           </tr>
         </thead>
         <tbody>
@@ -166,57 +252,89 @@
       <div class="chart-reading-note">
         <h3>यह क्या सिद्ध करता है और क्या नहीं</h3>
         <p>
-          सार्वजनिक स्लाइस किसी सार्वभौमिक सीमा वक्र को सिद्ध नहीं करती। यह यह
-          अवश्य दिखाती है कि संचालकों को केवल हिट अनुपात पर क्यों नहीं देखना
-          चाहिए: रिटेंशन मोड, बकेट दर, और फ़र्स्ट-टोकन लेटेंसी सभी उपयोगकर्ता
-          अनुभव को बदलते हैं।
+          यह सार्वजनिक स्लाइस कोई सार्वभौमिक थ्रेशोल्ड-वक्र सिद्ध नहीं करती। पर यह
+          बताती है कि ऑपरेटर को अकेले hit-दर क्यों नहीं देखनी चाहिए। रिटेंशन-मोड,
+          प्रति-bucket दर और पहले-टोकन की देरी — सभी उपयोगकर्ता-अनुभव को मोड़ते हैं।
         </p>
       </div>
     </section>
 
     <section id="patterns" class="article-section">
-      <p class="section-label">की डिज़ाइन · स्थिर कार्यभार बकेट</p>
-      <h2>कॉल के अनुसार नहीं, कार्यभार के अनुसार बकेट बनाएँ</h2>
+      <p class="section-label">की डिज़ाइन · स्थिर वर्कलोड bucket</p>
+      <h2>कॉल-वार नहीं, वर्कलोड-वार bucket बाँटें</h2>
       <p>
-        एक अच्छी की समान कार्यभार के लिए नियतात्मक होनी चाहिए। एक बुरी की में
-        प्रति-कॉल एन्ट्रॉपी होती है। यदि कोई टाइमस्टैम्प, UUID, यादृच्छिक प्रत्यय,
-        या अद्वितीय कॉल टोकन की में प्रवेश करता है, तो कैश-की स्थान फट जाता है
-        और प्रीफ़िक्स पुनः उपयोग नहीं बना पाता।
+        अच्छी की एक ही वर्कलोड के लिए नियतात्मक होनी चाहिए। बुरी की हर कॉल की
+        एंट्रॉपी समेटती है। टाइमस्टैम्प, UUID, यादृच्छिक suffix, या अद्वितीय कॉल-टोकन
+        की में जाएँ तो cache-key स्थान फट जाता है और prefix पुनः-उपयोग जमा नहीं कर पाता।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>अच्छा</h3>
-          <p><code>tenant:flow:locale:schema</code> समान एजेंट, स्कीमा, लोकेल, और कार्य आकार को एक साथ रखता है।</p>
+          <h3>अच्छा उदाहरण</h3>
+          <p><code>tenant:flow:locale:schema</code> एक ही एजेंट, schema, locale और कार्य-आकार को एक साथ रखता है।</p>
         </div>
         <div>
-          <h3>बुरा</h3>
-          <p>अद्वितीय आईडी, टाइमस्टैम्प, यादृच्छिक UUID, और कच्चे उपयोगकर्ता प्रश्न प्रति कॉल एक बकेट बनाते हैं।</p>
+          <h3>बुरा उदाहरण</h3>
+          <p>अद्वितीय ID, टाइमस्टैम्प, यादृच्छिक UUID, या कच्चा उपयोगकर्ता-प्रश्न हर कॉल पर एक bucket बना देते हैं।</p>
         </div>
         <div>
           <h3>निगरानी</h3>
-          <p>प्रति-बकेट RPM, कैश्ड-टोकन हिस्सा, और फ़र्स्ट-टोकन लेटेंसी को ट्रैक करें। ट्रैफ़िक आकार बदलने पर पुनः आकार दें।</p>
+          <p>प्रति-bucket RPM, cached टोकन का अनुपात और पहले-टोकन की देरी ट्रैक करें। ट्रैफ़िक-आकार बदलने पर दोबारा साइज़ करें।</p>
         </div>
       </div>
     </section>
 
-    <section id="sources" class="article-section decision-box">
-      <h2>स्रोत और प्रमाण सीमा</h2>
+    <section id="sources" class="article-section">
+      <h2>स्रोत और सबूत-सीमा</h2>
+      <p><strong>Tier 1 — सेवा अनुबंध (Microsoft Learn)।</strong> prompt cache के
+        prefix-नियम, prefix-hash से रूटिंग, 128-टोकन मेल-चरण, एक-अक्षर miss,
+        <code>prompt_cache_key</code> रूटिंग-संकेत, और प्रति-मिनट क़रीब 15 request का
+        overflow-बिंदु यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>आधिकारिक स्पेसिफ़िकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn प्रॉम्प्ट कैशिंग गाइड</a>।</li>
-        <li><strong>सार्वजनिक समग्र प्रमाण:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">कैश-की बकेटिंग CSV</a>।</li>
-        <li><strong>सार्वजनिक संचालक गाइड:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key पॉलिसी रनबुक</a>।</li>
+        <li><strong>Azure OpenAI के साथ prompt caching</strong> — 1,024 टोकन की
+          न्यूनतम शर्त और एक-से prefix की माँग, शुरुआती prefix की hash से रूटिंग, पहले
+          1,024 टोकन के बाद हर एक-से 128 टोकन पर cache-मेल, एक-अक्षर cache-miss,
+          prefix-hash से जुड़कर रूटिंग पर असर डालता <code>prompt_cache_key</code> संकेत,
+          और वह प्रति-मिनट क़रीब 15 request बिंदु जहाँ एक ही prefix+key के requests
+          अतिरिक्त मशीनों पर छलककर cache-दक्षता गिराते हैं — परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">आर्काइव</a>।</li>
+      </ul>
+      <p><strong>Tier 2 — संचालन-अनुमान (यह रिपॉज़िटरी)।</strong> bucket-गिनती की गणना
+        और सार्वजनिक hit-दर स्लाइस Learn विनिर्देश नहीं, बल्कि इस रिपॉज़िटरी का
+        संचालन-अनुमान और स्रोत-रन सबूत हैं।</p>
+      <ul>
+        <li><strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+          — bucket-साइज़िंग का संचालन-निर्देश। प्रलेखित क़रीब 15-RPM से
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> निकलता है, जबकि
+          <code>recommended_buckets</code> सूत्र और डिफ़ॉल्ट प्रति-bucket 10-RPM लक्ष्य
+          Learn विनिर्देश नहीं, इस रिपॉज़िटरी का संचालन-अनुमान है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
+        <li><strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+          — hit-दर और पहले-टोकन latency की तालिका के पीछे का विरल सार्वजनिक समुच्चय।
+          सार्वभौमिक वक्र नहीं, स्रोत-रन सबूत। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>
       <p>
-        व्यावहारिक नियम: कैश-योग्य प्रीफ़िक्स को स्थिर रखें, अतिरिक्त गुंजाइश के
-        साथ कार्यभार बकेट चुनें, और हिट-दर मेट्रिक को एक वादे के बजाय एक संचालन
-        संकेत के रूप में मानें।
+        <strong>यह विषय क्या सिद्ध करता है और क्या नहीं।</strong> पहुँच-तिथि पर
+        Microsoft Learn जो prompt cache अनुबंध स्पष्ट करता है — 1,024 टोकन prefix-नियम,
+        prefix-hash से रूटिंग, <code>prompt_cache_key</code> संकेत, प्रति-मिनट क़रीब 15
+        request overflow-बिंदु — और इस रिपॉज़िटरी का साइज़िंग-नियम कि साझा prefix को
+        इतनी स्थिर bucket में बाँटो कि हर bucket गुंजाइश के साथ उस बिंदु के नीचे रहे —
+        को यह प्रलेखित करता है। bucket-गिनती सूत्र और सार्वजनिक hit-दर स्लाइस संचालन-अनुमान
+        और स्रोत-रन सबूत हैं, गारंटीशुदा cache-hit वक्र नहीं। यह सिद्ध नहीं करता कि कोई
+        सार्वभौमिक थ्रेशोल्ड हर मॉडल, रीजन और ट्रैफ़िक-आकार में एक-सा रहेगा।
       </p>
-      <p><a class="button-link" href="../../">लेख सूचकांक पर वापस जाएँ</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>व्यावहारिक नियम</h2>
+      <p><strong>व्यावहारिक नियम: cache-योग्य prefix को स्थिर रखें, वर्कलोड-वार bucket
+        ऐसे बाँटें कि हर <code>prefix + prompt_cache_key</code> प्रलेखित प्रति-मिनट
+        क़रीब 15 request overflow-बिंदु के नीचे गुंजाइश के साथ रहे, और cache hit-दर को
+        किसी एक पर भरोसा किए बिना पहले-टोकन latency के बग़ल पढ़ें।</strong></p>
+      <p>अगला लेख "की कैसे बाँटें" से हटकर "cache को कितनी देर ज़िंदा रहना चाहिए" पर जाता है।</p>
+      <p><a class="button-link" href="../../prompt-cache-retention/hi/">जब छोटी इंतज़ार-खिड़की से आगे cache पुनः-उपयोग चाहिए, तो request को क्या स्पष्ट करना चाहिए</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-लाइसेंस प्राप्त शोध आर्टिफैक्ट · प्रकाशित डेटा केवल सैनिटाइज़ या समग्र है।</p>
+    <p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p>
   </footer>
 </body>
 </html>

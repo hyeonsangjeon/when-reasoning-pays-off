@@ -3,108 +3,218 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi-step work | when reasoning pays off</title>
-  <meta name="description" content="एक विषय निबंध: multi-step काम reasoning effort को क्यों जायज़ ठहरा सकता है, जब quality का अंतर साफ़ दिखता है।">
+  <title>Multi-step काम | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="जब गुणवत्ता-अंतर साफ़ दिखे, तब multi-step काम रीज़निंग effort को जायज़ ठहरा सकता है — यह विषय-लेख वही शर्त खोलता है।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="fa569e15f07e4d1d0c8b0b37e991306b7bf1fa88e5d07098986cdd18dc02cd06">
+  <meta name="article:source-article-sha256" content="08d2f967faecb139706c268b82bad5bba6f93d492f7aaff43dc7d17b0b761653">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="../ja/">
   <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
-  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="hi" href="./">
   <link rel="alternate" hreflang="x-default" href="../">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="भाषा">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
         <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
-        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+        <a href="./" data-locale="hi" aria-current="true">हिन्दी</a>
       </nav>
     </div>
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">लेख</a> / <a href="../../../">When reasoning pays off</a> / विषय विवरण</p>
-    <p class="article-kicker">विषय निबंध · benchmark-02 multi-step काम</p>
-    <h1>Multi-step काम: जब reasoning अपनी आज़माइश कमाता है</h1>
-    <p class="lede">दूसरा benchmark short-factual जाल का प्रतिभार है। यहाँ task सिर्फ़ याद करने से ज़्यादा माँगता है। यह model से कहता है कि वह बाधाओं की एक छोटी श्रृंखला को इतनी देर तक संभाले रखे कि सही जवाब दे सके। ऐसे माहौल में reasoning effort के पास करने को कुछ उपयोगी होता है।</p>
+    <p class="breadcrumb"><a href="../../../../">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय-लेख · benchmark-02 multi-step काम</p>
+    <h1>Multi-step काम: जब रीज़निंग आज़माने का दाम कमाती है</h1>
+    <p class="lede">छोटे तथ्यात्मक स्लाइस के बाद मन करता है कि reasoning effort को "छिपा ख़र्च" मान लिया जाए — एक डायल जो जवाब बदले बिना सिर्फ़ बिल फुलाता है। पर टीमें ऐसे काम भी चलाती हैं जहाँ जवाब इस पर टिका होता है कि कई शर्तें एक साथ दिमाग़ में बनी रहें। वहाँ सवाल फिर खुल जाता है: क्या ज़्यादा मज़बूत मॉडल या ज़्यादा reasoning effort सिर्फ़ लागत नहीं, बल्कि जवाब बदलती है? यह बेंचमार्क उसी अंदाज़े को जाँच पर रखता है।</p>
 
-    <div class="article-summary-grid" aria-label="Topic summary">
-      <section class="summary-tile"><h2>सवाल</h2><p>अतिरिक्त reasoning कब quality में सुधार खरीदता है, न कि सिर्फ़ बड़ा बिल?</p></section>
-      <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-02 की quality, cost, latency और token-shape charts।</p></section>
-      <section class="summary-tile"><h2>निष्कर्ष</h2><p>GPT-5.2 के low/none क्षेत्र ने GPT-4o baseline पर साफ़ दिखने वाला quality लाभ दिया, बिना सबसे ऊँची effort settings की ज़रूरत के।</p></section>
+    <section class="article-section">
+      <h2>हमने यह क्यों जाँचा</h2>
+      <p>
+        छोटे तथ्यात्मक स्लाइस ने एक सबक़ सिखाया: जब काम सिर्फ़ याद-दिलाना माँगता है,
+        तो अतिरिक्त रीज़निंग ज़्यादातर लागत ख़रीदती है। पर हर काम याद-दिलाना नहीं
+        होता। असल काम का बड़ा हिस्सा मॉडल से माँगता है कि छोटी शर्तों की शृंखला
+        ज़िंदा रहे — कुछ शर्तें जोड़ो, बीच के नतीजे ढोओ, फिर जवाब दो। उस आकार में
+        "और सोचने दो" साफ़ बर्बादी नहीं दिखती, बल्कि वसूल होने लायक़ लगने लगती है।
+      </p>
+      <p>
+        इससे जाँचने योग्य एक साफ़ परिकल्पना मिलती है। अगर काम सचमुच कई शर्तें एक साथ
+        बनाए रखना माँगता है, तो ज़्यादा मज़बूत मॉडल या ज़्यादा reasoning effort सिर्फ़
+        बड़ा बिल नहीं, बल्कि असली गुणवत्ता ख़रीद सकती है। अंदाज़ा तर्कसंगत है — प्रयोग
+        जाँचता है कि यह अमूर्त बात नहीं, बल्कि मापे गए स्लाइस पर भी टिकती है या नहीं।
+      </p>
+      <p>
+        इसलिए हमने जाँचा। benchmark-02 multi-step स्लाइस को स्थिर रखता है, वही मॉडल और
+        effort का सोपान चलता है — GPT-4o baseline, फिर GPT-5.2 का none, low, medium,
+        high, extra-high — और हर सेल में लागत व latency के बग़ल में औसत judge स्कोर
+        पढ़ता है। नतीजे मिले-जुले हैं और इन्हें सीधे कहना चाहिए। GPT-5.2 ने GPT-4o
+        baseline से ऊपर गुणवत्ता उठाई, पर GPT-5.2 के भीतर सबसे ऊँचा effort अपने-आप
+        विजेता नहीं था, और सबसे सस्ती सर्वोच्च-स्कोर सेल ने एक भी reasoning token नहीं
+        ख़र्च किया। नीचे का एक-पृष्ठ सार इसे एक फ़्रेम में कह देता है, और आगे के खंड
+        मापा विवरण देते हैं।
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-multi-step-one-pager">
+      <figcaption>
+        <strong>एक नज़र में विषय।</strong> इस multi-step स्लाइस में गुणवत्ता-लाभ
+        effort-सोपान के पायदान पर नहीं, बल्कि मॉडल-अपग्रेड (gpt-4o &rarr; gpt-5.2) के
+        साथ हिला। एक-पृष्ठ सार वही संदेश कहता है और सबूत-सीमा दिखाता है। आगे के खंड
+        मापा विवरण जोड़ते हैं।
+        <a href="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">Multi-step काम का एक-पृष्ठ सार SVG खोलें</a>।
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="Multi-step काम का एक-पृष्ठ सार। मॉडल के भीतर effort-सोपान लगभग सपाट है, जबकि gpt-4o से gpt-5.2 के मॉडल-अपग्रेड से स्पष्ट गुणवत्ता-लाभ दिखता है। केंद्रीय संदेश: multi-step काम में गुणवत्ता-लाभ effort-सोपान चढ़ने से नहीं, मॉडल-अपग्रेड से आया। यह मापा समुच्चय है जो effort-दर-effort गुणवत्ता-सेल को मॉडल के भीतर और मॉडलों के बीच तुलता है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="विषय का सार">
+      <section class="summary-tile"><h2>प्रश्न</h2><p>अतिरिक्त रीज़निंग कब सिर्फ़ बिल नहीं फुलाती, बल्कि गुणवत्ता-सुधार ख़रीदती है?</p></section>
+      <section class="summary-tile"><h2>सबूत</h2><p>benchmark-02 के गुणवत्ता, लागत, latency और टोकन-आकार चार्ट।</p></section>
+      <section class="summary-tile"><h2>नतीजा</h2><p>GPT-5.2 का low/none क्षेत्र, सबसे ऊँचे effort के बिना भी, GPT-4o baseline पर दिखने लायक़ गुणवत्ता-लाभ दे गया।</p></section>
+      <section class="summary-tile"><h2>निर्णय</h2><p>multi-step स्लाइस को गुणवत्ता-मानक पार करने वाले सबसे नीचे effort पर भेजें, और effort तभी बढ़ाएँ जब साथ वाला गुणवत्ता-चार्ट हिले।</p></section>
     </div>
 
-    <nav class="article-outline" aria-label="Topic sections">
-      <strong>विषय-सूत्र के अनुसार पढ़ें:</strong>
-      <a href="#s1">quality की हलचल ने व्याख्या बदल दी</a>
-      <a href="#s2">chart को कैसे पढ़ें</a>
-      <a href="#s3">यह benchmark अलग क्यों था</a>
-      <a href="#s4">याद रखने लायक कहानी</a>
-      <a href="#table">साक्ष्य तालिका</a>
+    <nav class="article-outline" aria-label="विषय के खंड">
+      <strong>तर्क-क्रम से पढ़ें:</strong>
+      <a href="#s1">गुणवत्ता की हलचल ने व्याख्या बदली</a>
+      <a href="#s2">चार्ट कैसे पढ़ें</a>
+      <a href="#s3">यह बेंचमार्क अलग क्यों था</a>
+      <a href="#s4">याद रखने योग्य बिंदु</a>
+      <a href="#table">सबूत की तालिका</a>
     </nav>
 
     <p class="banner">
-      <strong>संबंधित source chart खोलें:</strong>
-      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 quality chart</a>।
+      <strong>संबंधित मूल चार्ट खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 गुणवत्ता चार्ट</a>।
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>पढ़ने योग्य chart:</strong> यह विषय dashboard में से एक chart-भर का सवाल निकालकर उसे नीचे दी गई source table के साथ जोड़ता है।
+          <strong>विषय-गाइड चार्ट (सार्वजनिक समुच्चय से हाथ से बनाया)।</strong> यह संकल्पनात्मक चित्र एक चार्ट जितना सवाल काटता है — मॉडल और effort-दर-effort औसत judge स्कोर, हर बार के नीचे प्रति-request औसत लागत के साथ — और इसे नीचे की मूल-डेटा तालिका से जोड़ता है। सार्वजनिक चार्ट-डेटा पाइपलाइन से रेंडर हुआ मूल चार्ट और नीचे आता है।
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="benchmark-02 में model और effort के अनुसार औसत judge score दिखाता bar chart, साथ में cost के labels।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.svg" alt="बार चार्ट: benchmark-02 के मॉडल और effort-दर-effort औसत judge स्कोर, लागत लेबल के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>quality की हलचल ने व्याख्या बदल दी</h2>
-      <p>benchmark-02 में baseline GPT-4o cell का औसत judge score 1.5 रहा। GPT-5.2 ने none, medium, high और extra-high effort पर 2.0 छुआ, और low effort पर 1.933333 तक पहुँचा। chart यह नहीं कहती कि “हमेशा effort बढ़ाओ।” यह कहती है कि इस workload में इतनी संरचना है कि reasoning मायने रखे।</p><p>ज़्यादा अहम पढ़ाई पहली सफल cells की बनावट है। GPT-5.2 none ने प्रति request औसतन $0.000618 पर 2.0 छुआ। इससे आज़माइश उपयोगी बन जाती है, बिना सबसे ऊँची effort setting को डिफ़ॉल्ट बनाए।</p>
+      <h2>गुणवत्ता की हलचल ने व्याख्या बदली</h2>
+      <p>benchmark-02 में baseline GPT-4o सेल का judge स्कोर औसतन 1.5 था। GPT-5.2 ने none, medium, high, extra-high effort पर 2.0 छुआ और low effort पर 1.93 तक पहुँचा। चार्ट यह नहीं कह रहा कि "हमेशा effort बढ़ाओ"। यह कह रहा है कि इस वर्कलोड में इतनी संरचना है कि मॉडल और effort का चुनाव आज़माने लायक़ है।</p><p>ज़्यादा अहम पठन पहली सफल सेल के आकार में है। GPT-5.2 none ने प्रति-request औसत $0.000618 पर 2.0 छुआ। इससे सबसे ऊँचे effort को डिफ़ॉल्ट बनाए बिना, आज़माना अपने-आप उपयोगी हो जाता है।</p>
     </section>
     <section id="s2" class="article-section">
-      <h2>chart को कैसे पढ़ें</h2>
-      <p>X-axis पर model/effort cell है। Y-axis पर औसत judge score है। हर bar के नीचे का label उसी cell के लिए प्रति request औसत cost है। यह जोड़ी वाली दृष्टि इसलिए मायने रखती है क्योंकि अकेली quality bar over-selection की ओर बहका सकती है: अगर कई cells rubric के शिखर तक पहुँचती हैं, तो सस्ती और तेज़ वाली ज़्यादा दिलचस्प हो जाती है।</p><p>यह frequency histogram नहीं है। हर bar अपने sample count और standard deviation के साथ एक सारांशित प्रयोग-cell है, जो source table में दर्ज है।</p>
+      <h2>चार्ट कैसे पढ़ें</h2>
+      <p>X-अक्ष मॉडल/effort सेल है, Y-अक्ष औसत judge स्कोर। हर बार के नीचे का लेबल उसी सेल की प्रति-request औसत लागत है। यह जोड़ी से देखना इसलिए ज़रूरी है क्योंकि सिर्फ़ गुणवत्ता-बार देखना ज़रूरत से ज़्यादा चुनाव की ओर खींच सकता है। अगर कई सेलें रूब्रिक के शीर्ष पर पहुँचती हैं, तो जो सस्ती और तेज़ है वही दिलचस्प हो जाती है।</p><p>यह फ़्रीक्वेंसी हिस्टोग्राम नहीं है। हर बार एक सारांशित प्रयोग-सेल है, जिसकी मूल तालिका में अपनी नमूना-गिनती और मानक विचलन हैं।</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>यह benchmark अलग क्यों था</h2>
-      <p>short-factual task ज़्यादातर संक्षिप्त जवाब ही माँगता था। multi-step task ने model से एक छोटी reasoning श्रृंखला को बनाए रखने को कहा। इससे “अतिरिक्त सोच” क्या खरीद सकती है, यह बदल गया। reasoning budget अब सिर्फ़ छिपा खर्च नहीं था; यह कम ग़लत जवाबों तक का रास्ता था।</p><p>फिर भी, साक्ष्य अधिकतमवाद को इनाम नहीं देता। effort बढ़ने के साथ latency बढ़ती है, और extra-high effort का औसत 3.3s रहा। एक बार quality rubric के शिखर तक पहुँच जाए, तो अगला सवाल यह बनता है कि क्या कोई धीमी cell कुछ नया कह रही है।</p>
+      <h2>यह बेंचमार्क अलग क्यों था</h2>
+      <p>छोटे तथ्यात्मक काम ने ज़्यादातर छोटे जवाब माँगे। multi-step काम ने मॉडल से माँगा कि छोटी रीज़निंग-शृंखला बनी रहे। इसने वह बदल दिया जो "अतिरिक्त सोच" से ख़रीदा जा सकता है। मॉडल और effort का चुनाव अब सिर्फ़ अतिरिक्त ख़र्च के बदले नहीं, बल्कि कम ग़लत जवाबों के बदले पढ़ा जाने लगा।</p><p>फिर भी सबूत अधिकतमवाद को इनाम नहीं देता। effort बढ़ने पर latency भी बढ़ती है, और extra-high effort औसतन 3.3s था। गुणवत्ता एक बार रूब्रिक के शीर्ष पर पहुँच जाए, तो अगला सवाल यह बनता है कि "क्या धीमी सेल कुछ नया बता रही है"।</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>याद रखने लायक कहानी</h2>
-      <p>reasoning तब भुगतान चुकाता है जब वह जवाब बदलता है, न कि जब वह जवाब की आभा बदलता है। आज़माइश की पहली जगह multi-step काम ही है: task में इतनी भीतरी संरचना होती है कि model को फ़ायदा हो, और मूल्यांकनकर्ता अंतर देख सके।</p><p>इसलिए निर्णय यह नहीं है कि “हर जगह ज़्यादा reasoning लगाओ।” यह है कि “multi-step slices को उस सबसे निचले effort स्तर पर भेजो जो quality bar पार कर ले।”</p>
+      <h2>याद रखने योग्य बिंदु</h2>
+      <p>रीज़निंग तब वसूल होती है जब वह जवाब बदलती है, जवाब का अंदाज़ नहीं। आज़माना सबसे पहले multi-step काम का हक़ है। काम में इतनी आंतरिक संरचना है कि मॉडल को लाभ मिलता है और मूल्यांकक वह अंतर पकड़ लेता है।</p><p>इसलिए निर्णय "हर जगह और रीज़निंग करो" नहीं है। यह है: "multi-step स्लाइस को गुणवत्ता-मानक पार करने वाले सबसे नीचे effort स्तर पर भेजो।"</p>
     </section>
 
     <section id="table" class="article-section">
-      <h2>साक्ष्य तालिका</h2>
+      <h2>सबूत की तालिका</h2>
+      <figure class="article-figure" id="figure-multi-step-quality">
+        <figcaption>
+          <strong>मूल चार्ट — benchmark-02 की judge गुणवत्ता।</strong>
+          <strong>X-अक्ष:</strong> मॉडल और effort का सोपान — gpt-4o baseline, फिर
+          gpt-5.2 का none, low, medium, high, extra-high।
+          <strong>Y-अक्ष:</strong> 0–2 रूब्रिक पर औसत judge स्कोर।
+          <strong>बार:</strong> हर बार एक सेल का औसत स्कोर — फ़्रीक्वेंसी हिस्टोग्राम
+          नहीं, समुच्चय की तुलना — और व्हिस्कर &plusmn;1 मानक विचलन दिखाते हैं।
+          <strong>पढ़ने का तरीक़ा:</strong> पायदान मॉडलों के बीच है, effort-सोपान के
+          साथ नहीं — gpt-4o baseline 1.5 पर है जबकि gpt-5.2 की हर सेल 2.0 या उसके पास
+          उतरती है (none, medium, high, extra-high पर 2.0, low पर 1.93)। इसलिए इस
+          स्लाइस में लाभ ऊँचे effort के नहीं, मॉडल-अपग्रेड के साथ है।
+          <strong>सबूत-सीमा:</strong> प्रति सेल N = 20, R = 3 दोहराव, एक ही Azure
+          OpenAI टेनेंट और रीजन पर यह एक multi-step स्लाइस। त्रुटि-बार विश्वास-अंतराल
+          नहीं, मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।
+          <strong>स्रोत और डैशबोर्ड:</strong> बार-मान
+          <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json</code>
+          से आते हैं; <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">एविडेंस डैशबोर्ड</a>
+          (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-02/quality.json">परोसा गया चार्ट-डेटा</a>) में
+          लागत-चार्ट के साथ जोड़ी बनाकर पढ़ें।
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark-02 के मॉडल और effort-दर-effort औसत judge स्कोर का बार चार्ट। gpt-4o baseline क़रीब 1.5, gpt-5.2 की effort सेलें सब 2.0 या उसके पास। मानक-विचलन व्हिस्कर के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-02 cost-quality के साक्ष्य</caption>
-        <thead><tr><th>साक्ष्य पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ता है</th></tr></thead>
+        <caption>benchmark-02 की लागत और गुणवत्ता का सबूत</caption>
+        <thead><tr><th>सबूत-पंक्ति</th><th>मीट्रिक A</th><th>मीट्रिक B</th><th>क्या जुड़ता है</th></tr></thead>
         <tbody>
-          <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>हराने के लिए एक साफ़ baseline।</td></tr>
-<tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>इस सार्वजनिक slice में सबसे सस्ती शीर्ष-स्कोर cell।</td></tr>
-<tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>baseline से ऊपर, पर यहाँ साफ़ विजेता नहीं।</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>शीर्ष स्कोर, पर बड़ा बिल और लंबी latency।</td></tr>
+          <tr><td>GPT-4o baseline</td><td>judge स्कोर 1.50</td><td>$0.000798/request</td><td>पार करने योग्य स्पष्ट baseline।</td></tr>
+<tr><td>GPT-5.2 none</td><td>judge स्कोर 2.00</td><td>$0.000618/request</td><td>इस सार्वजनिक स्लाइस की सबसे सस्ती सर्वोच्च-स्कोर सेल।</td></tr>
+<tr><td>GPT-5.2 low</td><td>judge स्कोर 1.93</td><td>$0.000859/request</td><td>baseline से ऊपर, पर यहाँ स्पष्ट विजेता नहीं।</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>judge स्कोर 2.00</td><td>$0.002179/request</td><td>सर्वोच्च स्कोर, पर बिल बड़ा और latency लंबी।</td></tr>
         </tbody>
       </table>
     </section>
 
-    <section class="article-section decision-box">
-      <h2>साक्ष्य हमें क्या कहने देता है</h2>
-      <p>multi-step काम वही जगह है जहाँ “when reasoning pays off” वाक्यांश ठोस बनता है: मूल्यांकनकर्ता हिला, इसलिए खर्च के पीछे साक्ष्य था।</p>
-      <p><a class="button-link" href="../../../">overview निबंध पर वापस जाएँ</a></p>
+    <section id="sources" class="article-section">
+      <h2>स्रोत और सबूत-सीमा</h2>
+      <p>
+        ऊपर का हर मान इस रिपॉज़िटरी की किसी सार्वजनिक कलाकृति तक जाता है, और हर
+        लागत-दावा एक दिनांकित मूल्य-स्नैपशॉट पर गणित है। गुणवत्ता-मानक छूने वाले सबसे
+        नीचे effort पर रुकने की इस लेख की रूटिंग-आदत इसकी अपनी संचालन-व्याख्या है।
+        नीचे की दो श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ ख़त्म होता है और अनुमान
+        कहाँ शुरू।
+      </p>
+      <ul>
+        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
+        <li><strong>Tier 2 — benchmark-02 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। effort-दर-effort गुणवत्ता-मान — 1.5 GPT-4o baseline, GPT-5.2 के none/medium/high/extra-high पर 2.0, GPT-5.2 low पर 1.93, और बिना reasoning token के प्रति-request $0.000618 पर सबसे सस्ती सर्वोच्च-स्कोर सेल GPT-5.2 none — और प्रति-request $0.000618 से $0.002179 तक संगत लागत-मानों का स्रोत।</li>
+        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि इस स्लाइस का गुणवत्ता-लाभ सिर्फ़ ऊँचे बिल के साथ नहीं, बल्कि जायज़ बिल के साथ आया।</li>
+        <li><strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
+      </ul>
+      <p>
+        यह स्लाइस क्या सिद्ध करती है और क्या नहीं: इस multi-step स्लाइस में GPT-5.2 ने
+        GPT-4o baseline पर मापने-योग्य गुणवत्ता-लाभ दिया, यह दिखाती है। यह सिद्ध नहीं
+        करती कि ऊँचा reasoning effort हमेशा गुणवत्ता बढ़ाता है या अतिरिक्त बिल जायज़
+        ठहराता है — यहाँ सबसे सस्ती सर्वोच्च-स्कोर सेल ने एक भी reasoning token नहीं
+        ख़र्च किया — और न ही कि वही लाभ छोटे तथ्यात्मक, टूल-एजेंट या इंटीग्रेशन काम में
+        दिखेगा। हर विषय का अपना मापन है।
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>इस सबूत से क्या कहा जा सकता है</h2>
+      <p>इस स्लाइस में multi-step काम ने GPT-4o baseline के 1.5 से GPT-5.2 के 2.0 तक मापने-योग्य गुणवत्ता-लाभ दिखाया, और वह लाभ effort-सोपान से नहीं, मॉडल-अपग्रेड से आया। यह सीरीज़ में यह आधार-बिंदु जोड़ता है कि "रीज़निंग तभी वसूल होती है जब जवाब सचमुच बदले"।</p>
+      <p><a class="button-link" href="../../../hi/">सिंहावलोकन लेख पर लौटें</a></p>
+
+      <h2>व्यावहारिक नियम</h2>
+      <ol>
+        <li>उसी multi-step सेल के गुणवत्ता-चार्ट को लागत-चार्ट से जोड़ी बनाकर पढ़ें। सिर्फ़ गुणवत्ता-बार न देखें।</li>
+        <li>गुणवत्ता-मानक पार करने वाली सबसे नीचे effort सेल चुनें। ऊँची सेलों को तभी उम्मीदवार मानें जब स्कोर हिले।</li>
+        <li>ऊँचे effort तक बढ़ाने से पहले latency जाँचें। effort बढ़ने पर प्रतीक्षा भी बढ़ती है।</li>
+        <li>वर्कलोड-आकार बदलने पर दोबारा मापें। इस स्लाइस का लाभ दूसरे विषयों तक नहीं जाता।</li>
+      </ol>
+      <p>
+        <strong>व्यावहारिक नियम: multi-step काम में पहले गुणवत्ता-मानक पार करने वाली सबसे नीचे मॉडल/effort सेल चुनें, और reasoning effort तभी बढ़ाएँ जब इस वर्कलोड-आकार पर साथ वाला गुणवत्ता-चार्ट हिले। बिल को जायज़ गुणवत्ता-लाभ ठहराता है, ख़र्च अपने-आप नहीं।</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 गुणवत्ता चार्ट खोलें</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>आगे:</strong>
+        <a href="../../tool-agent-ceiling-checks/hi/">टूल-एजेंट: गुणवत्ता शीर्ष छूने के बाद बोलना latency शुरू करती है</a>
+        &mdash; टूल-इस्तेमाल वाले काम में अतिरिक्त रीज़निंग जब सीलिंग से टकराती है, तो चार्ट पहले क्या दिखाता है?
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p></footer>
+  <footer class="site"><p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p></footer>
 </body>
 </html>
