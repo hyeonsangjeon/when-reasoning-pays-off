@@ -3,111 +3,221 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tool-agent ceiling checks | when reasoning pays off</title>
-  <meta name="description" content="एक विषय निबंध: जब quality score rubric के शिखर के पास पहुँच जाए, तब tool-agent quality और latency को एक साथ कैसे पढ़ें।">
+  <title>Tool-agent सीलिंग-जाँच | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="जब टूल-एजेंट की गुणवत्ता पहले से शीर्ष के पास हो, तब अतिरिक्त effort स्कोर नहीं, latency और लागत ख़रीदती है — यह विषय-लेख वही जाँच दिखाता है।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="3c2aee9f1c499d5f04a6d00f0948b791b1c117fbdd2cb2e71fc04ad86f395576">
+  <meta name="article:source-article-sha256" content="5e533722851bfe5157659f770d99ab202333376170d77fc6e12e35e2339e702c">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="../ja/">
   <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
-  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="hi" href="./">
   <link rel="alternate" hreflang="x-default" href="../">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../../../hi/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="भाषा">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
         <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
-        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+        <a href="./" data-locale="hi" aria-current="true">हिन्दी</a>
       </nav>
     </div>
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">लेख</a> / <a href="../../../">When reasoning pays off</a> / विषय विवरण</p>
-    <p class="article-kicker">विषय निबंध · benchmark-03 tool-agent काम</p>
-    <h1>Tool-agent काम: quality के शिखर पर पहुँचते ही latency बोलने लगती है</h1>
-    <p class="lede">Tool-agent tasks को ज़रूरत से ज़्यादा रोमांटिक बना देना आसान है। इनमें tools होते हैं, branching होती है, और यह एहसास होता है कि model असली काम कर रहा है। benchmark-03 quality को latency के साथ जोड़कर इस रोमांस को क़ाबू में रखता है। नतीजा “ज़्यादा effort बेहतर है” से कहीं ज़्यादा सूक्ष्म है।</p>
+    <p class="breadcrumb"><a href="../../../../">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
+    <p class="article-kicker">विषय-लेख · benchmark-03 टूल-एजेंट</p>
+    <h1>टूल-एजेंट: गुणवत्ता शीर्ष छूने के बाद बोलना latency शुरू करती है</h1>
+    <p class="lede">जब टीम टूल-इस्तेमाल करता एजेंट बनाती है और वह ग़लतियाँ निकालने लगता है, तो पहली सहज प्रतिक्रिया अक्सर एक ही होती है: इसे और सोचने दो। वह प्रतिक्रिया तर्कसंगत है — टूल-काम में योजना, टूल-चुनाव, बीच की स्थिति और जवाब का संयोजन उलझे होते हैं, इसलिए ज़्यादा रीज़निंग असरदार लगती है। पर एक और संभावना है: अगर टूल-रास्ता काफ़ी अच्छा है और रूब्रिक पहले से शीर्ष के पास है, तो अतिरिक्त रीज़निंग स्कोर को सपाट छोड़कर सिर्फ़ latency और लागत जोड़ सकती है। benchmark-03 जाँचता है कि टूल-एजेंट स्लाइस में कौन-सा पठन सही है।</p>
 
-    <div class="article-summary-grid" aria-label="Topic summary">
-      <section class="summary-tile"><h2>सवाल</h2><p>जब tool-agent quality पहले से ही शिखर के पास हो, तब अतिरिक्त effort आख़िर क्या खरीदता है?</p></section>
-      <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-03 की quality, latency, cost और throughput charts।</p></section>
-      <section class="summary-tile"><h2>निष्कर्ष</h2><p>कई GPT-5.2 cells quality की छत के पास या उस पर बैठी हैं; latency और token shape ही असली विभेदक बन जाते हैं।</p></section>
+    <section class="article-section">
+      <h2>हमने यह क्यों जाँचा</h2>
+      <p>
+        हालात जाने-पहचाने हैं। टीम टूल-इस्तेमाल करता एजेंट भेजती है, कुछ केसों में
+        उसे चूकते देखती है, और reasoning effort के डायल की ओर हाथ बढ़ाती है। तर्क ठीक
+        है। एजेंट का काम शुद्ध याद-दिलाना नहीं है — उसे योजना बनानी होती है, सही टूल
+        चुनना होता है, बीच की स्थिति ढोनी होती है, और फिर जवाब जोड़ना होता है। इतनी
+        संरचना वाले काम में "और सोचने दो" पहली खींचने लायक़ लीवर लगती है।
+      </p>
+      <p>
+        पर वहाँ जाँचने योग्य दो विरोधी पठन बचे रहते हैं। हो सकता है अतिरिक्त रीज़निंग
+        सचमुच टूल-योजना सुधारे और जवाब ऊपर उठाए। या फिर हो सकता है टूल-रास्ता और
+        रूब्रिक मिलकर एक सीलिंग बना दें — एजेंट जैसे ही जवाब तक काफ़ी अच्छा रास्ता पा
+        ले, ज़्यादा रीज़निंग स्कोर को शीर्ष के पास चिपका छोड़कर सिर्फ़ latency और लागत
+        जोड़े। benchmark-03 जाँचता है कि कौन-सा पठन अमूर्त नहीं, मापे गए स्लाइस पर टिकता है।
+      </p>
+      <p>
+        इसलिए हमने जाँचा। benchmark-03 टूल-एजेंट स्लाइस को स्थिर रखता है, वही मॉडल और
+        effort का सोपान चलता है — GPT-4o baseline, फिर GPT-5.2 का none, low, medium,
+        high, extra-high — और हर सेल में latency, लागत व टोकन-आकार के बग़ल में औसत
+        judge स्कोर पढ़ता है। नतीजे सीधे कहने लायक़ हैं। GPT-5.2 ने GPT-4o baseline से
+        ऊपर गुणवत्ता उठाई, पर GPT-5.2 के भीतर गुणवत्ता-सेलें एक सीलिंग (क़रीब 1.97–2.00)
+        की ओर जम गईं, जबकि लागत, latency और reasoning tokens चढ़ते रहे। नीचे का
+        एक-पृष्ठ सार इसे एक फ़्रेम में कह देता है, और आगे के खंड मापा विवरण देते हैं।
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-tool-agent-one-pager">
+      <figcaption>
+        <strong>एक नज़र में विषय।</strong> सीलिंग छू चुकी इस टूल/एजेंट स्लाइस में judge
+        स्कोर शीर्ष से टकराकर सपाट हो जाता है। इसलिए ज़्यादा reasoning effort जो
+        ख़रीदती है वह ऊँचा स्कोर नहीं, लागत और latency है। एक-पृष्ठ सार वही संदेश कहता
+        है और सबूत-सीमा दिखाता है। आगे के खंड मापा विवरण जोड़ते हैं।
+        <a href="../../../../../../assets/when-reasoning-pays-off-tool-agent-ceiling-checks.svg">टूल-एजेंट सीलिंग का एक-पृष्ठ सार SVG खोलें</a>।
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-tool-agent-ceiling-checks.svg" alt="टूल और एजेंट सीलिंग-जाँच का एक-पृष्ठ सार। judge स्कोर काम की सीलिंग तक चढ़ता है, फिर पूरे effort-सोपान में सपाट रहता है। केंद्रीय संदेश: सीलिंग छू चुके टूल या एजेंट काम में स्कोर शीर्ष से टकरा जाता है और ज़्यादा reasoning effort उसे ऊपर नहीं उठा सकती, इसलिए बजट वहाँ लगाएँ जहाँ सीलिंग असर नहीं डाल रही। यह एक ही टेनेंट और रीजन पर मापा समुच्चय है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="विषय का सार">
+      <section class="summary-tile"><h2>प्रश्न</h2><p>टूल-एजेंट की गुणवत्ता पहले से शीर्ष के पास हो, तो अतिरिक्त effort फिर भी क्या ख़रीदती है?</p></section>
+      <section class="summary-tile"><h2>सबूत</h2><p>benchmark-03 के गुणवत्ता, लागत, latency और टोकन-संरचना चार्ट।</p></section>
+      <section class="summary-tile"><h2>नतीजा</h2><p>GPT-5.2 की गुणवत्ता पूरे effort-सोपान में 1.97–2.00 की सीलिंग पर रही, जबकि लागत प्रति-request $0.002762 से $0.003499 और latency 2.9s से 3.8s तक चढ़ी।</p></section>
+      <section class="summary-tile"><h2>निर्णय</h2><p>टूल-एजेंट काम को गुणवत्ता-सीलिंग छूने वाले सबसे नीचे effort पर भेजें, और उससे ऊँचे effort को डिफ़ॉल्ट नहीं, बल्कि जायज़ ठहराने योग्य लागत व latency मानें।</p></section>
     </div>
 
-    <nav class="article-outline" aria-label="Topic sections">
-      <strong>विषय-सूत्र के अनुसार पढ़ें:</strong>
-      <a href="#s1">छत वाला असर ही मुद्दा है</a>
-      <a href="#s2">chart को कैसे पढ़ें</a>
-      <a href="#s3">tools पढ़ाई क्यों बदल देते हैं</a>
-      <a href="#s4">याद रखने लायक कहानी</a>
-      <a href="#table">साक्ष्य तालिका</a>
+    <nav class="article-outline" aria-label="विषय के खंड">
+      <strong>तर्क-क्रम से पढ़ें:</strong>
+      <a href="#s1">सीलिंग-प्रभाव ही मुख्य बात है</a>
+      <a href="#s2">चार्ट कैसे पढ़ें</a>
+      <a href="#s3">टूल पठन क्यों बदलते हैं</a>
+      <a href="#s4">याद रखने योग्य बिंदु</a>
+      <a href="#table">सबूत की तालिका</a>
     </nav>
 
     <p class="banner">
-      <strong>संबंधित source chart खोलें:</strong>
-      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 latency chart</a>।
+      <strong>संबंधित मूल चार्ट खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-latency">benchmark-03 latency चार्ट</a>।
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>मार्गदर्शक chart (सार्वजनिक aggregate से हाथ से बनाया)।</strong>
-          <strong>क्या पढ़ें:</strong> effort के अनुसार औसत latency, और हर bar के नीचे जुड़ा हुआ औसत judge score।
-          <strong>X-axis:</strong> model/effort cell (gpt-4o baseline, फिर gpt-5.2 none &rarr; extra-high); <strong>Y-axis:</strong> औसत latency।
-          <strong>इसे ‘छत वाले असर’ के निदान की तरह पढ़ें:</strong> judge quality पहले से ही rubric के शिखर (लगभग 1.97&ndash;2.00) पर टिकी है, इसलिए bars इसके बजाय latency का पीछा करती हैं &mdash; ये दिखाती हैं कि अतिरिक्त reasoning effort ऊँचे score के बजाय latency, cost और भीतरी reasoning tokens खरीदता है। नीचे दी गई source data table के साथ पढ़ें।
+          <strong>पठन-गाइड चार्ट (सार्वजनिक समुच्चय से हाथ से बनाया)।</strong>
+          <strong>क्या पढ़ें:</strong> effort-दर-effort औसत latency, हर बार के नीचे साथ वाला औसत judge स्कोर।
+          <strong>X-अक्ष:</strong> मॉडल/effort सेल (gpt-4o baseline, फिर gpt-5.2 का none &rarr; extra-high), <strong>Y-अक्ष:</strong> औसत latency।
+          <strong>सीलिंग-प्रभाव की जाँच के रूप में पढ़ें:</strong> judge गुणवत्ता पहले से रूब्रिक-शीर्ष (क़रीब 1.97&ndash;2.00) पर चिपकी है, इसलिए बार बदले में latency का पीछा करते हैं — यह दिखाते हुए कि अतिरिक्त reasoning effort ऊँचा स्कोर नहीं, बल्कि latency, लागत और आंतरिक reasoning tokens ख़रीद रही है। सार्वजनिक चार्ट-डेटा पाइपलाइन से रेंडर हुआ मूल गुणवत्ता-चार्ट और नीचे आता है।
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="benchmark-03 में effort के अनुसार latency दिखाता bar chart, साथ में judge score के labels।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.svg" alt="बार चार्ट: benchmark-03 के effort-दर-effort latency, judge स्कोर लेबल के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>छत वाला असर ही मुद्दा है</h2>
-      <p>benchmark-03 ने कोई सीधी-सरल एकदिशीय कहानी नहीं दी। GPT-4o का औसत judge score 1.85 रहा। GPT-5.2 none का औसत 1.966667, low ने 2.0 छुआ, medium का औसत 1.983333, high का औसत 1.966667, और extra-high ने 2.0 छुआ। यह baseline पर quality सुधार है, पर यह एक छत भी है।</p><p>एक बार जब कई cells शिखर के पास सिमट जाएँ, तो effort बढ़ाना अपने-आप अर्थपूर्ण नहीं रह जाता। अगला साक्ष्य latency, token shape, और समुच्चय score के भीतर छिपे failure modes से आता है।</p>
+      <h2>सीलिंग-प्रभाव ही मुख्य बात है</h2>
+      <p>benchmark-03 ने सीधी एकदिश-वृद्धि की कहानी नहीं दी। GPT-4o का judge स्कोर औसतन 1.85 था। GPT-5.2 ने none पर औसत 1.97, low पर 2.0, medium पर औसत 1.98, high पर औसत 1.97 और extra-high पर 2.0 छुआ। यह baseline से गुणवत्ता-सुधार है, पर साथ ही एक सीलिंग भी।</p><p>जैसे ही कई सेलें शीर्ष के पास जम जाती हैं, effort बढ़ाने में अपने-आप कोई अर्थ नहीं रहता। अगला सबूत latency, टोकन-आकार और समुच्चय-स्कोर के भीतर छिपे विफलता-तरीक़ों से आता है।</p>
     </section>
     <section id="s2" class="article-section">
-      <h2>chart को कैसे पढ़ें</h2>
-      <p>यह chart bar की ऊँचाई के रूप में latency का इस्तेमाल करती है, क्योंकि quality पहले ही शिखर के पास सिमट चुकी है। X-axis पर model/effort cell है। Y-axis पर milliseconds में औसत latency है। हर bar के नीचे का label उससे जुड़ा औसत judge score देता है।</p><p>यह chart जानबूझकर histogram नहीं है। यह सारांशित cells की तुलना है: अगर दो cells की quality एक जैसी हो, तो छोटी bar पूछती है कि क्या लंबा इंतज़ार अब भी कुछ दिखने लायक खरीद रहा है।</p>
+      <h2>चार्ट कैसे पढ़ें</h2>
+      <p>यह चार्ट बार-ऊँचाई के लिए latency इस्तेमाल करता है, क्योंकि गुणवत्ता पहले से शीर्ष के पास सिमट चुकी है। X-अक्ष मॉडल/effort सेल है, Y-अक्ष औसत latency (मिलीसेकंड)। हर बार के नीचे का लेबल साथ वाला औसत judge स्कोर दिखाता है।</p><p>यह चार्ट जानबूझकर हिस्टोग्राम नहीं है। यह सारांशित सेलों की आपसी तुलना है। अगर दो सेलों की गुणवत्ता पास-पास है, तो छोटा बार पूछता है कि "लंबा इंतज़ार करके भी कुछ दिखने लायक़ ख़रीदा जा रहा है क्या"।</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>tools पढ़ाई क्यों बदल देते हैं</h2>
-      <p>Tool-agent काम में tool चुनाव, बीच की अवस्था (intermediate state) और जवाब का संश्लेषण शामिल है। इससे task short factual काम से ज़्यादा माँग वाला बन जाता है। इसका यह भी मतलब है कि समुच्चय quality score अलग-अलग तरह के व्यवहार छिपा सकता है: कोई cell इसलिए पास हो सकती है क्योंकि tool ने ज़्यादातर काम किया, या इसलिए फ़ेल कि model ने सही tool इस्तेमाल किया पर सारांश ख़राब किया।</p><p>charts निरीक्षण की ज़रूरत ख़त्म नहीं करतीं। वे बताती हैं कि कहाँ निरीक्षण करना है। इस run में low effort आकर्षक क्षेत्र है, क्योंकि वह quality की छत तक पहुँचा और baseline latency के पास ही रहा।</p>
+      <h2>टूल पठन क्यों बदलते हैं</h2>
+      <p>टूल-एजेंट काम में टूल-चुनाव, बीच की स्थिति और जवाब का संयोजन शामिल हैं। यही उसे छोटे तथ्यात्मक काम से ज़्यादा माँग वाला बनाता है। साथ ही इसका अर्थ यह भी है कि समुच्चय गुणवत्ता-स्कोर अलग तरह के व्यवहार ढक सकता है। कोई सेल इसलिए पास हुई हो कि टूल ने अधिकांश काम निपटा दिया, या सही टूल इस्तेमाल करके भी ख़राब सारांश से गिर गई हो।</p><p>चार्ट जाँच की ज़रूरत मिटाता नहीं — यह बताता है कि कहाँ जाँचना है। इस रन में आकर्षक क्षेत्र इस पर तय होता है कि मानक कहाँ रखा है। अगर सख़्त 2.00 चाहिए, तो पहले वहाँ पहुँचने वाली सेल low है। अगर शीर्ष-पास स्कोर पहले से रूब्रिक पूरा करता है, तो baseline के पास latency पर पूरा करने वाली सेल none है। दोनों हाल में चाल वही है — मानक पूरा करने वाली सबसे नीचे सेल ढूँढो, और ऊँचे effort तक बढ़ने से पहले लागत व latency पढ़ो।</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>याद रखने लायक कहानी</h2>
-      <p>Tool-agent benchmarks को दो बार पढ़ना पड़ता है। पहले पूछें कि क्या reasoning ने सटीकता सुधारी। फिर, अगर quality शिखर के पास सिमटी हो, तो पूछें कि कौन-सी cell latency और token दबाव को क़ाबू में रखती है। यह दूसरी पढ़ाई कोई बाद की सोच नहीं है; यही वह तरीका है जिससे नतीजा benchmark के बाहर इस्तेमाल लायक बनता है।</p>
+      <h2>याद रखने योग्य बिंदु</h2>
+      <p>टूल-एजेंट बेंचमार्क को दो बार पढ़ना पड़ता है। पहले पूछो कि क्या रीज़निंग ने सहीपन सुधारा। फिर, अगर गुणवत्ता शीर्ष के पास जम गई है, तो पूछो कि कौन-सी सेल latency और टोकन के दबाव को क़ाबू में रखती है। दूसरा पठन जोड़ नहीं है — यही पठन नतीजे को बेंचमार्क के बाहर इस्तेमाल लायक़ बनाता है।</p>
     </section>
 
     <section id="table" class="article-section">
-      <h2>साक्ष्य तालिका</h2>
+      <h2>सबूत की तालिका</h2>
+      <figure class="article-figure" id="figure-tool-agent-quality">
+        <figcaption>
+          <strong>मूल चार्ट — benchmark-03 की judge गुणवत्ता।</strong>
+          <strong>X-अक्ष:</strong> मॉडल और effort का सोपान — gpt-4o baseline, फिर
+          gpt-5.2 का none, low, medium, high, extra-high।
+          <strong>Y-अक्ष:</strong> 0–2 रूब्रिक पर औसत judge स्कोर।
+          <strong>बार:</strong> हर बार एक सेल का औसत स्कोर — फ़्रीक्वेंसी हिस्टोग्राम
+          नहीं, समुच्चय की तुलना — और व्हिस्कर &plusmn;1 मानक विचलन दिखाते हैं।
+          <strong>पढ़ने का तरीक़ा:</strong> यही वह सीलिंग है जिसकी बात लेख करता है —
+          gpt-4o baseline 1.85 पर है और gpt-5.2 की हर सेल संकरी 1.97–2.00 पट्टी में
+          जमती है (none 1.97, low 2.00, medium 1.98, high 1.97, extra-high 2.00)।
+          इसलिए इस स्लाइस में effort बढ़ाने पर भी स्कोर शीर्ष से नहीं हटता।
+          <strong>सबूत-सीमा:</strong> प्रति सेल N = 20, R = 3 दोहराव, एक ही Azure
+          OpenAI टेनेंट और रीजन पर यह एक टूल-एजेंट स्लाइस। त्रुटि-बार विश्वास-अंतराल
+          नहीं, मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।
+          <strong>स्रोत और डैशबोर्ड:</strong> बार-मान
+          <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/quality.json</code>
+          से आते हैं; <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">एविडेंस डैशबोर्ड</a>
+          (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-03/quality.json">परोसा गया चार्ट-डेटा</a>) में
+          latency और लागत चार्ट के बग़ल में पढ़ें।
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/benchmark-03-quality.png" alt="benchmark-03 के मॉडल और effort-दर-effort औसत judge स्कोर का बार चार्ट। gpt-4o baseline क़रीब 1.85, gpt-5.2 की effort सेलें सब क़रीब 1.97–2.00 की संकरी पट्टी में जमी। मानक-विचलन व्हिस्कर के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-03 quality-latency के साक्ष्य</caption>
-        <thead><tr><th>साक्ष्य पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ता है</th></tr></thead>
+        <caption>benchmark-03 की गुणवत्ता और latency का सबूत</caption>
+        <thead><tr><th>सबूत-पंक्ति</th><th>मीट्रिक A</th><th>मीट्रिक B</th><th>क्या जुड़ता है</th></tr></thead>
         <tbody>
-          <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s औसत latency</td><td>मज़बूत baseline, पर छत नहीं।</td></tr>
-<tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s औसत latency</td><td>लगभग उतनी ही latency पर बेहतर quality।</td></tr>
-<tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s औसत latency</td><td>छत वाला score, latency में मामूली बढ़ोतरी।</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s औसत latency</td><td>फिर वही छत वाला score, पर ज़्यादा धीमा।</td></tr>
+          <tr><td>GPT-4o baseline</td><td>judge स्कोर 1.85</td><td>औसत latency 3.0s</td><td>मज़बूत baseline, पर सीलिंग नहीं।</td></tr>
+<tr><td>GPT-5.2 none</td><td>judge स्कोर 1.97</td><td>औसत latency 2.9s</td><td>लगभग वही latency पर गुणवत्ता ऊपर।</td></tr>
+<tr><td>GPT-5.2 low</td><td>judge स्कोर 2.00</td><td>औसत latency 3.1s</td><td>थोड़ी latency-वृद्धि पर सीलिंग स्कोर।</td></tr>
+<tr><td>GPT-5.2 extra-high</td><td>judge स्कोर 2.00</td><td>औसत latency 3.8s</td><td>वही सीलिंग स्कोर, पर ज़्यादा धीमा।</td></tr>
         </tbody>
       </table>
     </section>
 
-    <section class="article-section decision-box">
-      <h2>साक्ष्य हमें क्या कहने देता है</h2>
-      <p>tool-agent काम के लिए काम का वाक्य “effort बढ़ाओ” नहीं है। यह है “वह सबसे निचला effort ढूँढो जो उस agent व्यवहार को बनाए रखे जिसकी आपको असल में ज़रूरत है।”</p>
-      <p><a class="button-link" href="../../../">overview निबंध पर वापस जाएँ</a></p>
+    <section id="sources" class="article-section">
+      <h2>स्रोत और सबूत-सीमा</h2>
+      <p>
+        ऊपर का हर मान इस रिपॉज़िटरी की किसी सार्वजनिक कलाकृति तक जाता है, और हर
+        लागत-दावा एक दिनांकित मूल्य-स्नैपशॉट पर गणित है। गुणवत्ता-सीलिंग छूने वाले सबसे
+        नीचे effort पर रुकने की इस लेख की रूटिंग-आदत इसकी अपनी संचालन-व्याख्या है।
+        नीचे की दो श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ ख़त्म होता है और अनुमान
+        कहाँ शुरू।
+      </p>
+      <ul>
+        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
+        <li><strong>Tier 2 — benchmark-03 स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। सीलिंग-प्रभाव गुणवत्ता-बार — 1.85 GPT-4o baseline और 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), 2.00 (extra-high) की पट्टी में डोलता GPT-5.2 सोपान — और latency के 2.9s से 3.8s तक बढ़ते हुए प्रति-request $0.002762 (none) से $0.003499 (extra-high) तक एकदिश चढ़ती संगत लागत का स्रोत।</li>
+        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> के साथ पढ़ने पर सबूत बनता है कि reasoning tokens प्रति-request 0 से 52.15 तक बढ़ने पर भी गुणवत्ता-बार सीलिंग से नहीं हिले।</li>
+        <li><strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 गुणवत्ता–लागत जोड़ी चार्ट</a> उन्हीं कलाकृतियों का ऑडिट-योग्य रूप है।</li>
+      </ul>
+      <p>
+        यह स्लाइस क्या सिद्ध करती है और क्या नहीं: इस टूल-एजेंट स्लाइस में reasoning
+        effort बढ़ाने पर गुणवत्ता सीलिंग से टकराई — GPT-5.2 का स्कोर 1.97–2.00 पट्टी
+        से बाहर नहीं गया — जबकि लागत effort के सोपान भर चढ़ती रही, यह दिखाती है। यह
+        सिद्ध नहीं करती कि वही सीलिंग छोटे तथ्यात्मक, multi-step या इंटीग्रेशन काम में
+        उसी effort स्तर पर दिखेगी। हर विषय का अपना मापन है।
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>इस सबूत से क्या कहा जा सकता है</h2>
+      <p>टूल-एजेंट काम में काम का वाक्य "effort बढ़ाओ" नहीं है। यह है: "सचमुच ज़रूरी एजेंट-व्यवहार बनाए रखने वाला सबसे नीचे effort ढूँढो।"</p>
+      <p><a class="button-link" href="../../../hi/">सिंहावलोकन लेख पर लौटें</a></p>
+
+      <h2>व्यावहारिक नियम</h2>
+      <ol>
+        <li>गुणवत्ता-चार्ट को सिर्फ़ गुणवत्ता-बार से नहीं, उसी benchmark-03 सेल के लागत-चार्ट और latency-चार्ट से जोड़ी बनाकर पढ़ें।</li>
+        <li>गुणवत्ता-मानक — सख़्त 2.00 हो या स्वीकार्य शीर्ष-पास स्कोर — पूरा करने वाली सबसे नीचे effort सेल ढूँढें और उसे डिफ़ॉल्ट बनाएँ।</li>
+        <li>उससे ऊँचे effort को दृश्य स्कोर-हलचल से जायज़ ठहराने योग्य लागत व latency मानें।</li>
+        <li>भरोसा करने से पहले समुच्चय जाँचें। पास हुई सेल रीज़निंग नहीं, टूल पर टिकी हो सकती है।</li>
+        <li>वर्कलोड-आकार बदलने पर दोबारा मापें। यह सीलिंग टूल-एजेंट काम तक सीमित है।</li>
+      </ol>
+      <p>
+        <strong>व्यावहारिक नियम: इस टूल-एजेंट स्लाइस में गुणवत्ता सीलिंग छू ले तो reasoning effort बढ़ाना बंद करें। अतिरिक्त effort ने जो ख़रीदा वह ऊँचा स्कोर नहीं, बढ़ती लागत और latency है।</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 गुणवत्ता चार्ट खोलें</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>आगे:</strong>
+        <a href="../../ptu-payg-planning/hi/">PTU/PAYG क्रॉसओवर: क्षमता का नतीजा नहीं, योजना की रेखा</a>
+        &mdash; वर्कलोड साइज़ करने के बाद प्रोविज़न्ड throughput कब PAYG से ऊपर निकलता है?
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p></footer>
+  <footer class="site"><p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p></footer>
 </body>
 </html>

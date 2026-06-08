@@ -3,7 +3,8 @@
   "locales": {
     "ko": "ko/index.html",
     "ja": "ja/index.html",
-    "zh-CN": "zh-CN/index.html"
+    "zh-CN": "zh-CN/index.html",
+    "hi": "hi/index.html"
   },
   "sections": [
     "s1",

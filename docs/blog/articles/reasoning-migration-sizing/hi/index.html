@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>माइग्रेशन साइज़िंग एक मापन है | when reasoning pays off</title>
-  <meta name="description" content="GPT-4o वर्कलोड को GPT-5.x पर ले जाते समय आउटपुट वज़न, reasoning टोकन, कैश दर और max_output_tokens को फिर से मापने पर एक सार्वजनिक ऑपरेशन्स लेख।">
+  <meta name="description" content="रीज़निंग मॉडल पर माइग्रेशन को सिर्फ़ मॉडल-नाम से साइज़ न करें — PTU साइज़िंग टोकन-आकार से चलती है, इस पर सार्वजनिक संचालन-लेख।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
   <link rel="alternate" hreflang="ko" href="../ko/">
   <link rel="alternate" hreflang="ja" href="../ja/">
   <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
-  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="hi" href="./">
   <link rel="alternate" hreflang="x-default" href="../">
 </head>
 <body>
@@ -27,61 +27,113 @@
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
         <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
-        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+        <a href="./" data-locale="hi" aria-current="true">हिन्दी</a>
       </nav>
     </div>
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / ऑपरेशन्स निबंध</p>
-    <p class="article-kicker">ऑपरेशन्स निबंध · GPT-4o से GPT-5.x साइज़िंग</p>
-    <h1>किसी reasoning माइग्रेशन को केवल मॉडल के नाम से दोबारा साइज़ न करें</h1>
+    <p class="breadcrumb"><a href="../../">लेख सूची</a> / संचालन-लेख / हिन्दी रूपांतर</p>
+    <p class="article-kicker">संचालन-लेख · GPT-4o से GPT-5.x साइज़िंग</p>
+    <h1>रीज़निंग मॉडल पर माइग्रेशन को सिर्फ़ मॉडल-नाम से साइज़ न करें</h1>
     <p class="lede">
-      किसी वर्कलोड को <code>gpt-4o</code> से किसी GPT-5.x reasoning मॉडल पर ले
-      जाना कोई एक-संख्या वाला माइग्रेशन नहीं है। सही सवाल यह नहीं है कि “क्या नया
-      मॉडल भारी है?” बल्कि यह है कि “अनुरोध की बनावट, आउटपुट मिश्रण, छिपे हुए
-      reasoning टोकन, कैश हिट दर और प्रतिक्रिया की अधिकतम सीमा में क्या बदला?”
+      एक टीम <code>gpt-4o</code> ट्रैफ़िक को GPT-5.x रीज़निंग मॉडल पर ले जाने की
+      योजना बनाती है और नई तैनाती के लिए PTU संख्या चाहती है। सहज रूप से जो पहले से
+      चल रहा है उसे दोबारा इस्तेमाल करने का मन करता है — पुराने <code>gpt-4o</code>
+      का PTU आकार ज्यों-का-त्यों उठा लो, या उस पर फ़ैमिली-स्तर का "5.x" गुणक लगा दो।
+      मान्यता यह है कि मॉडल-नाम री-साइज़ के लिए काफ़ी जानकारी ढोता है। पर PTU
+      साइज़िंग को मॉडल-नाम नहीं, टोकन का आकार चलाता है — प्रॉम्प्ट-आकार, दृश्य output,
+      छिपे reasoning tokens, cache-दर और response-सीमा सब नतीजा हिलाते हैं। इसलिए
+      सिर्फ़ नाम से साइज़ करने की सहज इच्छा सीधे उस संचालन-सवाल से टकराती है जो यह लेख
+      पूछता है — क्या मॉडल-नाम काफ़ी है, या पहले request का आकार दोबारा मापना ज़रूरी है?
     </p>
 
-    <div class="article-summary-grid" aria-label="लेख सारांश">
+    <figure class="article-figure" id="figure-migration-one-pager">
+      <figcaption>
+        <strong>एक नज़र में यह लेख।</strong> माइग्रेशन साइज़िंग मॉडल-नाम का हवाला नहीं,
+        एक मॉडल-की-गई गणना है। अनुशंसित PTU = ceil(माँग &divide; घनत्व &divide; लक्ष्य
+        उपयोग), और अत्यधिक response-सीमा (<code>max_output_tokens</code>) को यह
+        रिपॉज़िटरी — प्रलेखित प्लैटफ़ॉर्म-व्यवहार नहीं, बल्कि जाँचने योग्य एडमिशन-जोखिम
+        की परिकल्पना मानती है, यह देखने को कि क्या वह वर्कलोड के आरक्षित PTU पर हावी हो
+        सकती है। एक-पृष्ठ सार वही एक संदेश ढोता है और सीमा सीधे दिखाता है। यह पिन-किए
+        मूल्य-स्नैपशॉट के साथ मॉडल-किए वर्कलोड पर एक संश्लेषित गणना-उदाहरण है, मापी गई
+        क्षमता नहीं।
+        <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">माइग्रेशन साइज़िंग का एक-पृष्ठ सार SVG खोलें</a>।
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="रीज़निंग माइग्रेशन साइज़िंग का एक-पृष्ठ सार। माँग TPM से, प्रॉम्प्ट+max_output आरक्षण होकर, घनत्व और लक्ष्य उपयोग से भाग देकर, अनुशंसित PTU सीमा तक की साइज़िंग-शृंखला, और अत्यधिक response-सीमा (max_output_tokens) को प्रलेखित प्लैटफ़ॉर्म-व्यवहार नहीं बल्कि जाँचने योग्य साइज़िंग-जोखिम के रूप में दिखाता है। केंद्रीय संदेश: माइग्रेशन साइज़िंग एक मॉडल-की-गई गणना है। मापी गई क्षमता नहीं, एक संश्लेषित गणना-उदाहरण।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section id="why-remeasure" class="article-section">
+      <h2>पुराना आकार दोबारा क्यों न लें, फिर से क्यों मापें</h2>
+      <p>
+        पुनः-उपयोग वाली सहज इच्छा मानती है कि मॉडल-नाम आकार ढोता है — चलते
+        <code>gpt-4o</code> के आँकड़े को फ़ैमिली-गुणक से स्केल करो तो वह GPT-5.x में भी
+        फ़िट हो जाएगा। इसे मानने से पहले दो चीज़ें साथ रखना फ़ायदेमंद है। पहली, जो
+        दस्तावेज़ तय करते हैं: Microsoft Learn peak RPM, औसत प्रॉम्प्ट व output टोकन,
+        cache-दर, मॉडल के output-से-input अनुपात, और प्रति-PTU Input TPM से ट्रैफ़िक को
+        normalized TPM में बदलता है और cached प्रॉम्प्ट-टोकन को उपयोग से घटा देता है।
+        OpenAI reasoning tokens को न-दिखने वाले output-साइड टोकन के रूप में प्रलेखित करता
+        है, जो <code>output_tokens_details.reasoning_tokens</code> में रिपोर्ट होते हैं।
+        दूसरी, इस रिपॉज़िटरी का एक उदाहरणात्मक गणना, जो उसी प्रलेखित सूत्र को एक कॉल-आकार
+        के उदाहरण पर चलाकर आकार हिलाने वाले कारक साथ-साथ दिखाती है — किसी तैनाती का मापन नहीं।
+      </p>
+      <p>
+        रुककर देखने लायक़ हिस्सा वह जोड़ी है। सिर्फ़ दृश्य output से पढ़ें तो माइग्रेशन
+        आसान दिखता है — वही प्रॉम्प्ट और वही दृश्य जवाब नए मॉडल पर लगभग उसी स्तर पर, या
+        थोड़ा हल्का भी, साइज़ होते हैं। पर दृश्य जवाब request का सब कुछ नहीं। छिपा रीज़निंग
+        output आते ही वही जवाब कहीं ज़्यादा normalized TPM माँग सकता है। और इस रिपॉज़िटरी
+        की कार्य-परिकल्पना — प्रलेखित प्लैटफ़ॉर्म-व्यवहार नहीं, बल्कि जाँचने योग्य
+        एडमिशन-जोखिम — यह है कि अत्यधिक <code>max_output_tokens</code> सीमा, उन टोकनों के
+        सचमुच बनने या न बनने से परे, एडमिशन-भार आरक्षित कर सकती है। इसलिए संचालन-सवाल "नया
+        मॉडल भारी है क्या" नहीं, बल्कि "मापी गई request का आकार — दृश्य output, रीज़निंग
+        output, cache-दर, response-सीमा — असल में क्या आरक्षित करता है" है। normalized TPM
+        का सूत्र, मॉडल-वार तालिकाएँ, cache-घटाव और reasoning-token लेखांकन Microsoft Learn
+        और OpenAI प्रलेखित करते हैं। अत्यधिक <code>max_output_tokens</code> को जाँचने योग्य
+        PTU एडमिशन-जोखिम मानना इस रिपॉज़िटरी का समर्थित संचालन-अनुमान है। आगे का चार्ट
+        पिन-किए मूल्य-स्नैपशॉट के साथ मॉडल-किए वर्कलोड पर एक संश्लेषित गणना-उदाहरण है — न
+        मापी क्षमता, न चालू PTU throughput, न SLA। नीचे का उदाहरण-चार्ट आकार हिलाने वाले
+        कारक स्पष्ट करता है।
+      </p>
+    </section>
+
+    <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>किसी GPT-4o वर्कलोड को PTU पर GPT-5.x के लिए साइज़ करने से पहले क्या-क्या फिर से मापा जाना चाहिए?</p>
+        <p>GPT-4o वर्कलोड को PTU पर GPT-5.x के लिए साइज़ करने से पहले क्या दोबारा मापें?</p>
       </section>
       <section class="summary-tile">
-        <h2>साक्ष्य</h2>
-        <p>Microsoft Learn normalized-TPM का सूत्र देता है; OpenAI reasoning-टोकन की गणना का दस्तावेज़ीकरण करता है।</p>
+        <h2>सबूत</h2>
+        <p>Microsoft Learn normalized TPM का सूत्र देता है, और OpenAI reasoning tokens का लेखांकन-तरीक़ा प्रलेखित करता है।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>“5.x” के बारे में फैमिली-स्तरीय धारणाओं से नहीं, बल्कि मापी गई टोकन बनावट से साइज़ करें।</p>
+        <p>"5.x" फ़ैमिली-स्तर की मान्यता से नहीं, असल में मापे गए टोकन-आकार से साइज़ करें।</p>
       </section>
     </div>
 
-    <nav class="article-outline" aria-label="लेख अनुभाग">
-      <strong>प्रश्न के अनुसार पढ़ें:</strong>
+    <nav class="article-outline" aria-label="लेख के खंड">
+      <strong>प्रश्न से पढ़ें:</strong>
       <a href="#formula">साइज़िंग सूत्र</a>
-      <a href="#drivers">चार चालक</a>
-      <a href="#chart">उदाहरणात्मक चार्ट</a>
+      <a href="#drivers">4 कारक</a>
+      <a href="#chart">उदाहरण चार्ट</a>
       <a href="#checklist">माइग्रेशन चेकलिस्ट</a>
       <a href="#sources">स्रोत</a>
     </nav>
 
     <p class="banner">
-      <strong>दायरे का नोट:</strong>
-      नीचे दिया गया चार्ट एक उदाहरणात्मक साइज़िंग गणना है, कोई सार्वभौमिक क्षमता
-      दावा नहीं। इसका उपयोग निर्णय की बनावट समझने के लिए करें, फिर वही गणना अपने
-      ट्रैफ़िक नमूने पर चलाएँ।
+      <strong>दायरे पर टिप्पणी:</strong>
+      नीचे का चार्ट एक उदाहरणात्मक साइज़िंग-गणना है, सार्वभौमिक क्षमता का दावा नहीं।
+      फ़ैसले के आकार को समझने के लिए इसे इस्तेमाल करें, फिर वही गणना अपने ट्रैफ़िक-नमूने
+      पर चलाएँ।
     </p>
 
     <section id="formula" class="article-section">
       <p class="section-label">आधिकारिक व्यवहार · normalized TPM</p>
-      <h2>साइज़िंग सूत्र टोकन की बनावट के बारे में है</h2>
+      <h2>साइज़िंग सूत्र टोकन के आकार के बारे में है</h2>
       <p>
-        Microsoft Learn ट्रैफ़िक को normalized TPM में बदलकर PTU माँग का आकार
-        तय करता है। इनपुट हैं: पीक RPM, औसत prompt टोकन, औसत उत्पन्न आउटपुट
-        टोकन, कैश दर, मॉडल का आउटपुट-से-इनपुट अनुपात, और मॉडल का Input TPM
-        प्रति PTU मान।
+        Microsoft Learn ट्रैफ़िक को normalized TPM में बदलकर PTU माँग साइज़ करता है।
+        इनपुट होते हैं: peak RPM, औसत प्रॉम्प्ट-टोकन, औसत उत्पन्न output-टोकन, cache-दर,
+        मॉडल का output-से-input अनुपात, और मॉडल का प्रति-PTU Input TPM मान।
       </p>
       <div class="decision-box">
         <p><strong>सूत्र:</strong></p>
@@ -93,48 +145,46 @@
         </p>
       </div>
       <p>
-        यही सूत्र बताता है कि फैमिली-स्तरीय शॉर्टकट क्यों भ्रामक हो सकता है। किसी
-        मॉडल का आउटपुट अनुपात भारी हो सकता है और फिर भी उसका Input TPM प्रति PTU
-        पिछले मॉडल से अधिक हो सकता है। उत्तर आपके वर्कलोड की वास्तविक prompt,
-        आउटपुट और कैश प्रोफ़ाइल पर निर्भर करता है।
+        यही सूत्र फ़ैमिली-स्तर के शॉर्टकट को भ्रामक बनाता है। कोई मॉडल output-अनुपात में
+        ज़्यादा भारी होकर भी पिछले मॉडल से ऊँचा प्रति-PTU Input TPM रख सकता है। जवाब आपके
+        वर्कलोड के असल प्रॉम्प्ट, output और cache प्रोफ़ाइल पर निर्भर करता है।
       </p>
     </section>
 
     <section id="drivers" class="article-section">
-      <p class="section-label">परिचालन दृष्टिकोण · माइग्रेशन में क्या बदलता है</p>
-      <h2>चार चालक तय करते हैं कि माइग्रेशन फिट बैठता है या नहीं</h2>
+      <p class="section-label">संचालन-दृष्टि · माइग्रेशन में क्या बदलता है</p>
+      <h2>माइग्रेशन फ़िट होगा या नहीं, यह 4 कारक तय करते हैं</h2>
       <div class="evidence-grid">
         <div>
-          <h3>1. आउटपुट वज़न</h3>
-          <p>GPT-4.1 और उसके बाद के लिए, Microsoft Learn कहता है कि उपयोग के लिए आउटपुट टोकन एक मॉडल-विशिष्ट इनपुट-टोकन वज़न रखते हैं।</p>
+          <h3>1. output का भार</h3>
+          <p>GPT-4.1 और बाद के लिए Microsoft Learn कहता है कि उपयोग में output-टोकन का मॉडल-विशिष्ट input-टोकन भार होता है।</p>
         </div>
         <div>
-          <h3>2. छिपा हुआ reasoning</h3>
-          <p>OpenAI reasoning टोकन को अदृश्य आउटपुट-पक्ष टोकन के रूप में दस्तावेज़ित करता है। इन्हें <code>output_tokens_details.reasoning_tokens</code> से मापें।</p>
+          <h3>2. छिपी रीज़निंग</h3>
+          <p>OpenAI reasoning tokens को न-दिखने वाले output-साइड टोकन के रूप में प्रलेखित करता है। इन्हें <code>output_tokens_details.reasoning_tokens</code> से मापें।</p>
         </div>
         <div>
-          <h3>3. कैश दर</h3>
-          <p>Microsoft Learn कहता है कि कैश किए गए prompt टोकन PTU उपयोग से घटा दिए जाते हैं। इसलिए prefix-बनावट में बदलाव साइज़िंग परिणाम को हिला सकता है।</p>
+          <h3>3. cache-दर</h3>
+          <p>Microsoft Learn कहता है कि cached प्रॉम्प्ट-टोकन PTU उपयोग से घटते हैं। इसलिए prefix-आकार बदलने पर साइज़िंग नतीजा हिल सकता है।</p>
         </div>
         <div>
-          <h3>4. प्रतिक्रिया सीमा</h3>
-          <p><code>max_output_tokens</code> रिकॉर्ड करें। यह रिपॉज़िटरी बहुत बड़ी सीमाओं को परखने योग्य PTU प्रवेश-जोखिम परिकल्पना मानती है, अनुमान लगाने योग्य मान नहीं।</p>
+          <h3>4. response-सीमा</h3>
+          <p><code>max_output_tokens</code> दर्ज करें। यह रिपॉज़िटरी अत्यधिक सीमा को अंदाज़ का मान नहीं, जाँचने योग्य PTU एडमिशन-जोखिम की परिकल्पना मानती है।</p>
         </div>
       </div>
     </section>
 
     <section id="chart" class="article-section">
-      <p class="section-label">उदाहरणात्मक गणना · समान दृश्यमान वर्कलोड</p>
-      <h2>छिपा हुआ आउटपुट उत्तर बदल सकता है</h2>
+      <p class="section-label">उदाहरणात्मक गणना · वही दृश्य वर्कलोड</p>
+      <h2>छिपा output जवाब बदल सकता है</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>पढ़ने योग्य चार्ट:</strong> 200 इनपुट टोकन और 20 दृश्यमान
-          आउटपुट टोकन के साथ एक 1,000 RPM उदाहरण। पहले तीन बार आधिकारिक
-          normalized-TPM सूत्र और मॉडल तालिका का उपयोग करते हैं। अंतिम दो बार
-          एक 60-टोकन reasoning धारणा जोड़ते हैं ताकि यह दिखाया जा सके कि अदृश्य
-          आउटपुट को क्यों मापा जाना चाहिए।
+          <strong>पढ़ने का चार्ट:</strong> 200 input टोकन और 20 दृश्य output टोकन वाला
+          1,000 RPM का उदाहरण। पहले 3 बार आधिकारिक normalized TPM सूत्र और मॉडल-तालिका
+          इस्तेमाल करते हैं। आख़िरी 2 बार 60 टोकन रीज़निंग को परिकल्पना के रूप में जोड़ते
+          हैं, यह दिखाने को कि न-दिखने वाला output क्यों मापना ज़रूरी है।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="GPT-4o और GPT-5.2 माइग्रेशन चालकों की तुलना करता उदाहरणात्मक PTU साइज़िंग चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="GPT-4o और GPT-5.2 के माइग्रेशन कारकों की तुलना करता उदाहरणात्मक PTU साइज़िंग चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
         <caption>उदाहरणात्मक साइज़िंग पंक्तियाँ</caption>
@@ -142,64 +192,106 @@
           <tr>
             <th>पंक्ति</th>
             <th>मॉडल</th>
-            <th>कैश दर</th>
-            <th>उत्पन्न आउटपुट धारणा</th>
-            <th>पूर्णांकित PTUs</th>
+            <th>cache-दर</th>
+            <th>उत्पन्न output मान्यता</th>
+            <th>गोल किया PTU</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>दृश्यमान आधार रेखा</td><td>gpt-4o</td><td>0%</td><td>20 आउटपुट टोकन</td><td>112</td></tr>
-          <tr><td>दृश्यमान माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 आउटपुट टोकन</td><td>110</td></tr>
-          <tr><td>दृश्यमान माइग्रेशन + कैश</td><td>gpt-5.2</td><td>50%</td><td>20 आउटपुट टोकन</td><td>80</td></tr>
-          <tr><td>reasoning माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 दृश्यमान + 60 reasoning टोकन</td><td>250</td></tr>
-          <tr><td>reasoning माइग्रेशन + कैश</td><td>gpt-5.2</td><td>50%</td><td>20 दृश्यमान + 60 reasoning टोकन</td><td>220</td></tr>
+          <tr><td>दृश्य baseline</td><td>gpt-4o</td><td>0%</td><td>20 output टोकन</td><td>115</td></tr>
+          <tr><td>दृश्य माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 output टोकन</td><td>110</td></tr>
+          <tr><td>दृश्य माइग्रेशन + cache</td><td>gpt-5.2</td><td>50%</td><td>20 output टोकन</td><td>80</td></tr>
+          <tr><td>रीज़निंग माइग्रेशन</td><td>gpt-5.2</td><td>0%</td><td>20 दृश्य + 60 रीज़निंग टोकन</td><td>250</td></tr>
+          <tr><td>रीज़निंग माइग्रेशन + cache</td><td>gpt-5.2</td><td>50%</td><td>20 दृश्य + 60 रीज़निंग टोकन</td><td>220</td></tr>
         </tbody>
       </table>
       <div class="chart-reading-note">
-        <h3>इसका क्या अर्थ है</h3>
+        <h3>इसका अर्थ क्या है</h3>
         <p>
-          केवल-दृश्यमान पंक्तियाँ इस सर्वव्यापी दावे का समर्थन नहीं करतीं कि
-          GPT-5.x हमेशा GPT-4o से कम कुशल है। reasoning पंक्तियाँ जाल दिखाती हैं:
-          जैसे ही छिपा हुआ reasoning आउटपुट प्रकट होता है, वही दृश्यमान उत्तर
-          बहुत अधिक normalized TPM माँग सकता है—जब तक कि कैश और प्रतिक्रिया नीति
-          को मापा और ट्यून न किया जाए।
+          सिर्फ़-दृश्य पंक्तियाँ यह एकतरफ़ा दावा नहीं ठहरातीं कि GPT-5.x हमेशा GPT-4o से
+          कम कुशल है। रीज़निंग पंक्तियाँ जाल दिखाती हैं। छिपा रीज़निंग output आते ही, जब
+          तक cache और response-नीति मापकर समायोजित न हों, वही दृश्य जवाब कहीं ज़्यादा
+          normalized TPM माँग सकता है।
         </p>
       </div>
     </section>
 
     <section id="checklist" class="article-section">
-      <p class="section-label">ऑपरेटर चेकलिस्ट · क्षमता खरीदने से पहले फिर से मापें</p>
-      <h2>माइग्रेशन को एक मापन की तरह चलाएँ, नाम बदलने की तरह नहीं</h2>
+      <p class="section-label">ऑपरेटर चेकलिस्ट · क्षमता ख़रीदने से पहले दोबारा मापें</p>
+      <h2>माइग्रेशन को नाम-बदलना नहीं, मापन की तरह चलाएँ</h2>
       <ol>
-        <li><strong>टास्क मिश्रण को स्थिर रखें।</strong> मॉडल सेल के बीच prompt, टूल, स्कीमा, रिट्रीवल स्थान और नमूना वितरण को बाइट-स्थिर रखें।</li>
-        <li><strong>दृश्यमान आउटपुट मापें।</strong> माइग्रेशन से पहले और बाद में माध्य व p95 दृश्यमान आउटपुट टोकन की तुलना करें।</li>
-        <li><strong>reasoning आउटपुट मापें।</strong> <code>reasoning_tokens</code> कैप्चर करें; इसे अंतिम उत्तर टेक्स्ट से अनुमानित न करें।</li>
-        <li><strong>कैश दर मापें।</strong> प्रति cache-key बकेट <code>cached_tokens / prompt_tokens</code> रिकॉर्ड करें, खासकर ReAct या tool-स्कीमा बदलावों के बाद।</li>
-        <li><strong>सीमा को सही-आकार दें।</strong> <code>max_output_tokens</code> को एक प्रतिनिधि दृश्यमान-साथ-reasoning प्रतिशतक से सेट करें, फिर दुर्लभ लंबे उत्तरों के लिए प्रति-कॉल ओवरराइड का उपयोग करें।</li>
-        <li><strong>तभी PTU साइज़ करें।</strong> normalized-TPM सूत्र को वर्तमान मॉडल तालिका और अपनी मापी गई वर्कलोड बनावट के साथ लागू करें।</li>
+        <li><strong>कार्य-संरचना स्थिर करें।</strong> प्रॉम्प्ट, tools, schema, search-व्यवस्था और नमूना-वितरण को मॉडल-सेलों के बीच बाइट-दर-बाइट स्थिर रखें।</li>
+        <li><strong>दृश्य output मापें।</strong> माइग्रेशन से पहले और बाद दृश्य output टोकन के औसत और p95 की तुलना करें।</li>
+        <li><strong>रीज़निंग output मापें।</strong> <code>reasoning_tokens</code> लें। अंतिम जवाब-पाठ से अंदाज़ न लगाएँ।</li>
+        <li><strong>cache-दर मापें।</strong> ख़ासकर ReAct या tool-schema बदलने के बाद, हर cache-key bucket के लिए <code>cached_tokens / prompt_tokens</code> दर्ज करें।</li>
+        <li><strong>सीमा सही करें।</strong> प्रतिनिधि "दृश्य + रीज़निंग" पर्सेंटाइल से <code>max_output_tokens</code> सेट करें, और दुर्लभ लंबे जवाबों के लिए प्रति-कॉल override इस्तेमाल करें।</li>
+        <li><strong>तभी PTU साइज़ करें।</strong> मौजूदा मॉडल-तालिका और असल मापे वर्कलोड-आकार से normalized TPM सूत्र लगाएँ।</li>
       </ol>
     </section>
 
-    <section id="sources" class="article-section decision-box">
-      <h2>स्रोत और साक्ष्य की सीमा</h2>
+    <section id="sources" class="article-section">
+      <h2>स्रोत और सबूत-सीमा</h2>
+      <p><strong>Tier 1 — सेवा अनुबंध (Microsoft Learn और OpenAI)।</strong> normalized
+        TPM साइज़िंग सूत्र, मॉडल-वार प्रति-PTU Input TPM और output-से-input अनुपात,
+        GPT-4.1 और बाद का output-टोकन भार, उपयोग से 100% cache-घटाव, और reasoning-token
+        लेखांकन यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU साइज़िंग गाइड</a>।</li>
-        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn provisioned throughput अवधारणाएँ</a>।</li>
-        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn prompt caching गाइड</a>।</li>
-        <li><strong>आधिकारिक स्पेसिफिकेशन, 2026-06-04 को एक्सेस किया गया:</strong> <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI reasoning मॉडल गाइड</a>।</li>
-        <li><strong>सार्वजनिक रिपॉज़िटरी संदर्भ:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU vs PAYG decision runbook</a> और <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">observability schema</a>।</li>
+        <li><strong>किसी वर्कलोड के लिए PTU साइज़िंग तय करना</strong> — normalized TPM
+          गणना (Input TPM = peak RPM × प्रॉम्प्ट-आकार, Output TPM = peak RPM ×
+          response-आकार, Normalized TPM = input TPM × (1 − cache-दर) + output-से-input
+          अनुपात × output TPM, PTU = normalized TPM ÷ प्रति-PTU Input TPM), मॉडल-वार
+          प्रति-PTU Input TPM व output-से-input अनुपात मान, और यह कि cached टोकन उपयोग-गणना
+          से 100% घटते हैं — परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn दस्तावेज़</a> (2026-06-05 को लिया गया) · <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">आर्काइव</a>।</li>
+        <li><strong>Foundry Models के लिए प्रोविज़न्ड throughput क्या है?</strong> — PTU
+          उपयोग-मॉडल और यह कि request का आकार आरक्षित क्षमता को कैसे खपाता है — प्रलेखित
+          करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">आर्काइव</a>।</li>
+        <li><strong>Azure OpenAI के साथ prompt caching</strong> — चूँकि cached प्रॉम्प्ट-टोकन
+          उपयोग से घटते हैं, prefix-आकार बदलने पर साइज़िंग नतीजा हिलता है — यह प्रलेखित
+          करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">आर्काइव</a>।</li>
+        <li><strong>OpenAI reasoning models guide</strong> — reasoning tokens को
+          <code>output_tokens_details.reasoning_tokens</code> में रिपोर्ट होते न-दिखने
+          वाले output-साइड टोकन के रूप में प्रलेखित करता है। स्रोत: <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI दस्तावेज़</a> (2026-06-04 को लिया गया) · <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">आर्काइव</a>।</li>
+      </ul>
+      <p><strong>Tier 2 — संचालन-अनुमान (यह रिपॉज़िटरी)।</strong> अत्यधिक
+        <code>max_output_tokens</code> को PTU एडमिशन-जोखिम की परिकल्पना मानना, और
+        reasoning-token व cached-token का मापन-अनुबंध इस रिपॉज़िटरी का संचालन-अनुमान है,
+        Learn विनिर्देश नहीं।</p>
+      <ul>
+        <li><strong>यह रिपॉज़िटरी, <code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+          — <code>mean_max_output_tokens</code> दर्ज करता है और बड़े
+          <code>max_output_tokens</code> को अंदाज़ का मान नहीं, जाँचने योग्य आरक्षित
+          एडमिशन-भार मानता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">स्रोत</a>।</li>
+        <li><strong>यह रिपॉज़िटरी, <code>docs/14-observability-schema.md</code></strong>
+          — वह PTU-रिकॉर्ड का प्रामाणिक अनुबंध जो <code>reasoning_tokens</code>,
+          <code>cached_tokens</code>, <code>max_output_tokens_sent</code> को उनके मूल
+          usage फ़ील्डों से मिलाता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">स्रोत</a>।</li>
       </ul>
       <p>
-        व्यावहारिक नियम: GPT-4o ट्रैफ़िक को PTU पर GPT-5.x की ओर ले जाने से पहले,
-        आउटपुट, reasoning, कैश और सीमा नीति को फिर से मापें। वर्कलोड को साइज़
-        करने के लिए मॉडल का नाम पर्याप्त जानकारी नहीं है।
+        <strong>यह विषय क्या सिद्ध करता है और क्या नहीं।</strong> पहुँच-तिथि पर
+        Microsoft Learn जो PTU साइज़िंग अनुबंध स्पष्ट करता है — normalized TPM सूत्र,
+        मॉडल-वार प्रति-PTU Input TPM व output-से-input अनुपात, GPT-4.1 और बाद का
+        output-टोकन भार, 100% cache-घटाव — और OpenAI का reasoning-token लेखांकन, और इस
+        रिपॉज़िटरी का नियम — साइज़िंग से पहले output, रीज़निंग, cache और सीमा दोबारा मापो —
+        को यह प्रलेखित करता है। उदाहरण-चार्ट प्रलेखित सूत्र को एक कॉल-आकार के उदाहरण पर
+        लगाता है। यह गणना-उदाहरण है, क्षमता की गारंटी नहीं, और सिद्ध नहीं करता कि कोई ख़ास
+        GPT-5.x वर्कलोड हर रीजन, मॉडल-संस्करण और ट्रैफ़िक-आकार में GPT-4o पूर्ववर्ती से
+        भारी या हल्का है।
       </p>
-      <p><a class="button-link" href="../">लेख सूचकांक पर वापस जाएँ</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>व्यावहारिक नियम</h2>
+      <p><strong>व्यावहारिक नियम: GPT-4o ट्रैफ़िक को PTU पर GPT-5.x में ले जाने से पहले
+        output, रीज़निंग, cache और <code>max_output_tokens</code> सीमा-नीति दोबारा मापें,
+        और तभी normalized TPM सूत्र से साइज़ करें। मॉडल-नाम अकेला वर्कलोड साइज़ करने को
+        काफ़ी जानकारी नहीं है।</strong></p>
+      <p>यह लेख संचालन-चाप बंद करता है। लूप उस कार्यप्रणाली पर लौटता है जिसने तय किया कि कौन-सा सबूत सार्वजनिक होने लायक़ मज़बूत था।</p>
+      <p><a class="button-link" href="../../when-reasoning-pays-off/hi/">कौन-सा सबूत सार्वजनिक होने लायक़ मज़बूत है, यह लैब ने कैसे तय किया</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-लाइसेंस प्राप्त शोध कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समेकित है।</p>
+    <p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p>
   </footer>
 </body>
 </html>
