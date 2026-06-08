@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>迁移容量评估是一项测量工作 | when reasoning pays off</title>
-  <meta name="description" content="一篇面向公众的运营文章，讲述在将 GPT-4o 工作负载迁移到 GPT-5.x 时，如何重新测量输出权重、推理 token、缓存命中率以及 max_output_tokens。">
+  <title>推理迁移的容量规划 | when reasoning pays off</title>
+  <meta name="description" content="一篇关于把 GPT-4o 工作负载迁到 PTU 上的 GPT-5.x 时，按归一化 TPM 与实测 token 形态做容量规划的公开运维文章。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -33,53 +33,96 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">Articles</a> / 运营随笔</p>
-    <p class="article-kicker">运营随笔 · 从 GPT-4o 到 GPT-5.x 的容量评估</p>
-    <h1>不要仅凭模型名称来重新评估推理迁移的容量</h1>
+    <p class="breadcrumb"><a href="../../">文章列表</a> / 运维随笔 / 简体中文译文</p>
+    <p class="article-kicker">运维随笔 · 从 GPT-4o 到 GPT-5.x 的容量规划</p>
+    <h1>迁到推理模型，不能只凭模型名做容量规划</h1>
     <p class="lede">
-      把一个工作负载从 <code>gpt-4o</code> 迁移到 GPT-5.x 推理模型，
-      并不是一次只看一个数字的迁移。真正该问的问题不是“新模型是不是
-      更重？”，而是“请求形态、输出构成、隐藏的推理 token、缓存命中率
-      以及响应上限分别发生了什么变化？”
+      某个团队计划把 <code>gpt-4o</code> 的流量迁到 GPT-5.x 的推理模型上，需要为新部署算出
+      PTU 数量。出于本能，人们想复用已经管用的东西——要么把旧 <code>gpt-4o</code> 的 PTU
+      规模直接搬过来，要么给它套一个家族级的"5.x"乘数。这背后的假设是：模型名携带了足以
+      做容量规划的信息。但驱动 PTU 容量规划的不是模型名，而是 token 的形态——提示大小、
+      可见输出、隐藏的推理 token、缓存命中率、响应上限，都会改变结果。所以"只凭名字做
+      容量规划"的本能，正面撞上本文要问的运维问题——模型名够不够，还是必须先把请求的形态
+      重新测一遍？
     </p>
 
-    <div class="article-summary-grid" aria-label="文章摘要">
+    <figure class="article-figure" id="figure-migration-one-pager">
+      <figcaption>
+        <strong>一眼看懂本文。</strong>迁移的容量规划是一次建模计算，而不是查一下模型名。
+        推荐 PTU = ceil(需求 &divide; 密度 &divide; 目标利用率)，而过大的响应上限
+        （<code>max_output_tokens</code>）在本仓库里被当成一个需要验证的准入风险假设——而不是
+        有文档记载的平台行为——以确认它会不会主导一个工作负载所预留的 PTU。这张单页概览
+        传达的就是这一条信息，并如实标明边界：这是一份在建模工作负载上、配着固定价格快照的
+        合成计算示例，而不是测得的容量。
+        <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">打开迁移容量规划的单页概览 SVG</a>。
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="推理迁移容量规划的单页概览。沿着从需求 TPM、经提示＋max_output 预留、除以密度与目标利用率、直到推荐 PTU 上限的容量链，并把过大的响应上限（max_output_tokens）标为一个需要验证的容量规划风险，而不是有文档记载的平台行为。核心信息：迁移的容量规划是一次建模计算。标明这是合成计算示例，而不是测得的容量。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section id="why-remeasure" class="article-section">
+      <h2>为什么要重新测量，而不是复用旧规模</h2>
+      <p>
+        复用的反射假设模型名携带了规模——只要把管用的 <code>gpt-4o</code> 数值乘上一个家族
+        乘数，对 GPT-5.x 仍然合身。在接受这个假设之前，值得把两件事并排放一下。第一件是文档
+        规定的：Microsoft Learn 把流量换算成归一化 TPM，输入是峰值 RPM、平均提示与输出 token、
+        缓存率、模型的输出对输入比，以及每 PTU 的 Input TPM，并把缓存的提示 token 从利用率里
+        扣掉。OpenAI 把推理 token 记录为不显示的输出侧 token，报告在
+        <code>output_tokens_details.reasoning_tokens</code> 里。第二件是本仓库的示例计算：把那条
+        有文档记载的公式跑在一个调用形态的示例上，并排展示驱动规模的各个因素——它不是对任何
+        部署的测量。
+      </p>
+      <p>
+        值得停下来的，正是那个"成对"的部分。只看可见输出，迁移显得很好对付——同样的提示、
+        同样的可见答案，在新模型上大体同档，甚至可能略微更轻。但可见的答案不是请求的全部。
+        一旦隐藏的推理输出出现，同样的答案就可能需要多得多的归一化 TPM。而本仓库的工作假设
+        ——这是一个需要验证的准入风险，而不是有文档记载的平台行为——是：过大的
+        <code>max_output_tokens</code> 上限，无论那些 token 是否真的被生成，都可能预留下准入
+        权重。所以运维上的问题不是"新模型重不重"，而是"我测得的请求形态——可见输出、推理
+        输出、缓存率、响应上限——实际预留了什么"。归一化 TPM 公式、逐模型的表、缓存扣减、
+        推理 token 的记账，是 Microsoft Learn 与 OpenAI 记录的；把过大的
+        <code>max_output_tokens</code> 当成一个需要验证的 PTU 准入风险，则是本仓库愿意为之背书的
+        运维推断。下面的图，是一份在建模工作负载上、配着固定价格快照的合成计算示例——不是测得的
+        容量，不是在线 PTU 吞吐量，也不是 SLA。下面的示例图把驱动规模的因素明示出来。
+      </p>
+    </section>
+
+    <div class="article-summary-grid" aria-label="文章要点">
       <section class="summary-tile">
         <h2>问题</h2>
-        <p>在按 PTU 为 GPT-5.x 评估一个 GPT-4o 工作负载的容量之前，必须重新测量哪些指标？</p>
+        <p>在为 PTU 上的 GPT-5.x 给 GPT-4o 工作负载做容量规划之前，应该重新测量什么？</p>
       </section>
       <section class="summary-tile">
         <h2>证据</h2>
-        <p>Microsoft Learn 给出了归一化 TPM 的公式；OpenAI 记录了推理 token 的计量方式。</p>
+        <p>Microsoft Learn 给出归一化 TPM 公式，OpenAI 记录了推理 token 的记账方式。</p>
       </section>
       <section class="summary-tile">
         <h2>决策</h2>
-        <p>依据实测的 token 形态来评估容量，而不是依据对“5.x”这一家族层面的笼统假设。</p>
+        <p>从实测的 token 形态做容量规划，而不是从"5.x"这种家族级的假设。</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="文章章节">
       <strong>按问题阅读：</strong>
-      <a href="#formula">容量评估公式</a>
-      <a href="#drivers">四个驱动因素</a>
-      <a href="#chart">示意图表</a>
+      <a href="#formula">容量规划公式</a>
+      <a href="#drivers">四个因素</a>
+      <a href="#chart">示例图</a>
       <a href="#checklist">迁移清单</a>
       <a href="#sources">来源</a>
     </nav>
 
     <p class="banner">
-      <strong>适用范围说明：</strong>
-      下方图表是一次示意性的容量评估计算，并非普适的容量结论。
-      请用它来理解决策的形态，然后用你自己的流量样本运行同样的计算。
+      <strong>范围说明：</strong>
+      下面的图是一份示例性的容量规划计算，而不是关于容量的通用论断。请用它来理解判断的
+      形状，然后用你自己的流量样本去跑同一套计算。
     </p>
 
     <section id="formula" class="article-section">
       <p class="section-label">官方行为 · 归一化 TPM</p>
-      <h2>容量评估公式关乎 token 形态</h2>
+      <h2>容量规划公式，讲的是 token 的形态</h2>
       <p>
-        Microsoft Learn 通过把流量换算为归一化 TPM 来评估 PTU 需求。
-        输入项包括峰值 RPM、平均 prompt token、平均生成的 output token、
-        缓存率、模型的输出对输入比率，以及模型每 PTU 的 Input TPM 值。
+        Microsoft Learn 通过把流量换算成归一化 TPM 来给 PTU 需求做容量规划。输入是峰值 RPM、
+        平均提示 token、平均生成输出 token、缓存率、模型的输出对输入比，以及模型每 PTU 的
+        Input TPM 值。
       </p>
       <div class="decision-box">
         <p><strong>公式：</strong></p>
@@ -91,109 +134,139 @@
         </p>
       </div>
       <p>
-        正是这条公式说明了为什么家族层面的捷径会产生误导。一个模型可能
-        具有更重的输出比率，但每 PTU 的 Input TPM 仍然高于上一代模型。
-        答案取决于你的工作负载实际的 prompt、输出和缓存特征。
+        正因为有这条公式，家族级的捷径才会误导人。某个模型即便输出比更重，也可能拥有比前一个
+        模型更高的每 PTU Input TPM。答案取决于你工作负载实际的提示、输出、缓存画像。
       </p>
     </section>
 
     <section id="drivers" class="article-section">
-      <p class="section-label">运营视角 · 迁移中会变化的因素</p>
-      <h2>四个驱动因素决定迁移是否合适</h2>
+      <p class="section-label">运维视角 · 迁移中会变化的因素</p>
+      <h2>决定迁移是否合身的，是四个因素</h2>
       <div class="evidence-grid">
         <div>
           <h3>1. 输出权重</h3>
-          <p>对于 GPT-4.1 及更新的模型，Microsoft Learn 指出 output token 在利用率计算中带有特定于模型的 input-token 权重。</p>
+          <p>对于 GPT-4.1 及以后，Microsoft Learn 表示输出 token 在利用率里带有模型特有的输入 token 权重。</p>
         </div>
         <div>
           <h3>2. 隐藏的推理</h3>
-          <p>OpenAI 将推理 token 记录为不可见的输出侧 token。请从 <code>output_tokens_details.reasoning_tokens</code> 测量它们。</p>
+          <p>OpenAI 把推理 token 记录为不显示的输出侧 token。请从 <code>output_tokens_details.reasoning_tokens</code> 测量。</p>
         </div>
         <div>
           <h3>3. 缓存率</h3>
-          <p>Microsoft Learn 指出，缓存的 prompt token 会从 PTU 利用率中扣除。因此前缀形态的变化可能会改变容量评估结果。</p>
+          <p>Microsoft Learn 表示，缓存的提示 token 会从 PTU 利用率里扣除。因此前缀形态的变化会改变容量规划结果。</p>
         </div>
         <div>
           <h3>4. 响应上限</h3>
-          <p>记录 <code>max_output_tokens</code>。本仓库把过大的上限视为一个需要验证的 PTU 准入风险假设，而不是一个可以靠猜测得出的值。</p>
+          <p>请记录 <code>max_output_tokens</code>。本仓库把过大的上限当成一个需要验证的 PTU 准入风险假设，而不是一个靠猜的值。</p>
         </div>
       </div>
     </section>
 
     <section id="chart" class="article-section">
-      <p class="section-label">示意性计算 · 相同的可见工作负载</p>
+      <p class="section-label">示例性计算 · 相同的可见工作负载</p>
       <h2>隐藏的输出可能改变答案</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>图表解读：</strong>一个 1,000 RPM 的示例，包含 200 个 input
-          token 和 20 个可见 output token。前三根柱子使用官方的归一化 TPM
-          公式和模型表。最后两根柱子加入了 60 个推理 token 的假设，以说明
-          为什么必须测量不可见的输出。
+          <strong>要读的图：</strong>一个 1,000 RPM、200 个输入 token、20 个可见输出 token 的
+          示例。前 3 根柱子使用官方的归一化 TPM 公式与模型表；后 2 根柱子加入 60 个推理
+          token 作为假设，说明为什么必须测量不可见的输出。
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="对比 GPT-4o 与 GPT-5.2 迁移驱动因素的示意性 PTU 容量评估图表。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.svg" alt="对比 GPT-4o 与 GPT-5.2 迁移因素的示例性 PTU 容量规划图。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>示意性容量评估行</caption>
+        <caption>示例性的容量规划行</caption>
         <thead>
           <tr>
             <th>行</th>
             <th>模型</th>
             <th>缓存率</th>
             <th>生成输出假设</th>
-            <th>四舍五入后的 PTU</th>
+            <th>取整后的 PTU</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>可见基线</td><td>gpt-4o</td><td>0%</td><td>20 个 output token</td><td>112</td></tr>
-          <tr><td>可见迁移</td><td>gpt-5.2</td><td>0%</td><td>20 个 output token</td><td>110</td></tr>
-          <tr><td>可见迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 个 output token</td><td>80</td></tr>
-          <tr><td>推理迁移</td><td>gpt-5.2</td><td>0%</td><td>20 个可见 + 60 个推理 token</td><td>250</td></tr>
-          <tr><td>推理迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 个可见 + 60 个推理 token</td><td>220</td></tr>
+          <tr><td>可见基线</td><td>gpt-4o</td><td>0%</td><td>20 个输出 token</td><td>115</td></tr>
+          <tr><td>可见迁移</td><td>gpt-5.2</td><td>0%</td><td>20 个输出 token</td><td>110</td></tr>
+          <tr><td>可见迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 个输出 token</td><td>80</td></tr>
+          <tr><td>推理迁移</td><td>gpt-5.2</td><td>0%</td><td>20 可见 + 60 推理 token</td><td>250</td></tr>
+          <tr><td>推理迁移 + 缓存</td><td>gpt-5.2</td><td>50%</td><td>20 可见 + 60 推理 token</td><td>220</td></tr>
         </tbody>
       </table>
       <div class="chart-reading-note">
         <h3>这意味着什么</h3>
         <p>
-          仅看可见输出的那几行，并不能支撑“GPT-5.x 总是比 GPT-4o 效率更低”
-          这样的笼统结论。推理那几行揭示了陷阱：一旦出现隐藏的推理输出，
-          除非对缓存和响应策略进行测量与调优，否则相同的可见答案可能需要
-          多得多的归一化 TPM。
+          只看可见输出的几行，并不支持"GPT-5.x 总是比 GPT-4o 效率更低"这种一刀切的主张。
+          真正的陷阱在推理那几行：一旦隐藏的推理输出出现，除非你测量并调好缓存与响应策略，
+          否则同样的可见答案可能需要多得多的归一化 TPM。
         </p>
       </div>
     </section>
 
     <section id="checklist" class="article-section">
-      <p class="section-label">运营者清单 · 在购买容量前先重新测量</p>
-      <h2>把迁移当作一次测量，而不是一次改名</h2>
+      <p class="section-label">运维者清单 · 在购买容量前先重新测量</p>
+      <h2>把迁移当成一次测量来做，而不是一次改名</h2>
       <ol>
-        <li><strong>固定任务组合。</strong>在各个模型单元之间，保持 prompt、工具、schema、检索位置以及样本分布在字节级别上稳定一致。</li>
-        <li><strong>测量可见输出。</strong>对比迁移前后可见 output token 的均值和 p95。</li>
-        <li><strong>测量推理输出。</strong>采集 <code>reasoning_tokens</code>；不要从最终答案文本去推断它。</li>
-        <li><strong>测量缓存率。</strong>按 cache-key 分桶记录 <code>cached_tokens / prompt_tokens</code>，尤其是在 ReAct 或工具 schema 发生变化之后。</li>
-        <li><strong>合理设定上限。</strong>根据一个有代表性的“可见加推理”百分位来设置 <code>max_output_tokens</code>，再对罕见的长答案使用逐次调用的覆盖值。</li>
-        <li><strong>最后才评估 PTU。</strong>用当前的模型表和你实测的工作负载形态来套用归一化 TPM 公式。</li>
+        <li><strong>固定任务构成。</strong>让提示、工具、模式、检索摆放、样本分布在各模型单元格之间逐字节稳定。</li>
+        <li><strong>测量可见输出。</strong>比较迁移前后可见输出 token 的均值与 p95。</li>
+        <li><strong>测量推理输出。</strong>取 <code>reasoning_tokens</code>，不要从最终答案文本去猜。</li>
+        <li><strong>测量缓存率。</strong>尤其在 ReAct 或工具模式变更之后，按缓存键分桶记录 <code>cached_tokens / prompt_tokens</code>。</li>
+        <li><strong>把上限调到合适。</strong>从有代表性的"可见 + 推理"分位数设定 <code>max_output_tokens</code>，对罕见的长答案用按调用的覆盖。</li>
+        <li><strong>然后才做 PTU 容量规划。</strong>用当前的模型表和实测的工作负载形态，套用归一化 TPM 公式。</li>
       </ol>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>来源与证据边界</h2>
+      <p><strong>Tier 1 — 服务契约（Microsoft Learn 与 OpenAI）。</strong>归一化 TPM 的容量
+        规划公式、逐模型的每 PTU Input TPM 与输出对输入比、GPT-4.1 及以后的输出 token 权重、
+        利用率里 100% 的缓存扣减，以及推理 token 的记账，都记录在这里。</p>
       <ul>
-        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU 容量评估指南</a>。</li>
-        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 预置吞吐量概念</a>。</li>
-        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 提示缓存指南</a>。</li>
-        <li><strong>官方规范，访问于 2026-06-04：</strong><a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 推理模型指南</a>。</li>
-        <li><strong>公开仓库背景：</strong><a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU 与 PAYG 决策手册</a>，以及<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">可观测性 schema</a>。</li>
+        <li><strong>Determine PTU sizing for a workload</strong> — 定义了归一化 TPM 的计算
+          （Input TPM = 峰值 RPM × 提示大小，Output TPM = 峰值 RPM × 响应大小，Normalized
+          TPM = input TPM × (1 − 缓存率) + 输出对输入比 × output TPM，PTU = normalized TPM ÷
+          每 PTU Input TPM）、逐模型的每 PTU Input TPM 与输出对输入比取值，以及缓存 token
+          从利用率计算中 100% 扣减。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn 文档</a>（2026-06-05 访问）· <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">存档</a>。</li>
+        <li><strong>What is provisioned throughput for Foundry Models?</strong> — 记录了 PTU 的
+          利用率模型，以及请求形态如何消耗预留容量。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">存档</a>。</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> — 记录了缓存的提示 token 会从
+          利用率里扣除，因此前缀形态的变化会改变容量规划结果。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
+        <li><strong>OpenAI reasoning models guide</strong> — 把推理 token 记录为不显示的、报告在
+          <code>output_tokens_details.reasoning_tokens</code> 里的输出侧 token。来源：<a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">存档</a>。</li>
+      </ul>
+      <p><strong>Tier 2 — 运维推断（本仓库）。</strong>把过大的 <code>max_output_tokens</code>
+        当成一个需要验证的 PTU 准入风险假设，以及对推理 token 与缓存 token 的测量约定，是本
+        仓库的运维推断，而非 Learn 规范。</p>
+      <ul>
+        <li><strong>本仓库，<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+          — 记录 <code>mean_max_output_tokens</code>，并把较大的 <code>max_output_tokens</code>
+          解释为一个需要验证的预留准入权重，而不是一个靠猜的值。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">来源</a>。</li>
+        <li><strong>本仓库，<code>docs/14-observability-schema.md</code></strong>
+          — PTU 记录的规范契约，把 <code>reasoning_tokens</code>、<code>cached_tokens</code>、
+          <code>max_output_tokens_sent</code> 各自对应到原始的 usage 字段。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">来源</a>。</li>
       </ul>
       <p>
-        实用法则：在把 GPT-4o 流量按 PTU 迁移到 GPT-5.x 之前，先重新测量
-        输出、推理、缓存和上限策略。仅凭模型名称，并不足以为工作负载评估容量。
+        <strong>本文证明了什么、又没证明什么。</strong>它记录了截至访问日期 Microsoft Learn
+        明示的 PTU 容量规划契约——归一化 TPM 公式、逐模型的每 PTU Input TPM 与输出对输入比、
+        GPT-4.1 及以后的输出 token 权重、100% 的缓存扣减——以及 OpenAI 的推理 token 记账，还有
+        本仓库的经验法则——在做容量规划之前，把输出、推理、缓存、上限都重新测一遍。示例图是把
+        有文档记载的公式套在一个调用形态示例上的结果。它是计算示例，而不是容量保证，也不证明
+        某个具体的 GPT-5.x 工作负载在所有区域、模型版本、流量形态下，比它的 GPT-4o 前任更重
+        还是更轻。
       </p>
-      <p><a class="button-link" href="../">返回文章索引</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>实用准则</h2>
+      <p><strong>实用准则：在把 GPT-4o 流量迁到 PTU 上的 GPT-5.x 之前，先把输出、推理、缓存、
+        <code>max_output_tokens</code> 上限策略重新测一遍，然后再用归一化 TPM 公式做容量规划。
+        因为单凭模型名，并不足以为一个工作负载做容量规划。</strong></p>
+      <p>本文合上了这条运维之弧。循环回到方法论——回到当初是如何判断哪些证据足够强、强到值得公开。</p>
+      <p><a class="button-link" href="../../when-reasoning-pays-off/zh-CN/">实验室是如何判断哪些证据强到足以公开的</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 许可的研究产物 · 已发布数据均经过脱敏或仅为聚合形式。</p>
+    <p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p>
   </footer>
 </body>
 </html>

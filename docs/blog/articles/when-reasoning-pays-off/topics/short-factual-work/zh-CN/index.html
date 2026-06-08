@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>短事实回答 | when reasoning pays off</title>
+  <meta name="description" content="一篇专题文章：用数据检验为什么在短事实回答里，调高推理 effort 买来的是成本而非质量。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="../zh-CN/">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
+    <p class="article-kicker">专题文章 · benchmark-01 短事实回答</p>
+    <h1>短事实回答：当额外推理买来的是成本，而不是质量</h1>
+    <p class="lede">
+      团队刚引入推理模型时，短事实问题看上去是最顺手的"先调一下 effort"
+      的地方。答案很短，错了一眼就能看出来，让模型多想一点像是一份廉价的
+      保险。所以人们最想先在这里把推理 effort 调高。可这种直觉是一个值得
+      检验的假设，而不是一条值得直接上线的策略——本文就用数据来检验它。
+    </p>
+
+    <section class="article-section">
+      <h2>我们为什么要检验这个</h2>
+      <p>
+        情形很常见：迁移让团队走到推理模型面前，配置里冒出一个推理 effort
+        的旋钮，而短事实问题看上去正是把它调高最安全的地方。输出很短，错误
+        很显眼，"让它多想一点"听起来像一份廉价的保险——于是把默认值在这里
+        调高，几乎让人觉得是免费的。
+      </p>
+      <p>
+        由此就有了一个干净、值得验证的假设：在短事实回答里，更高的推理
+        effort 真的会让答案更稳妥吗？如果会，那么这个偏高的默认值就挣得了
+        自己的位置；如果不会，团队就是在为一段永远到不了读者面前的思考
+        付费。
+      </p>
+      <p>
+        于是我们做了检验。把工作负载的形状固定下来——同一个短事实回答的
+        切片——沿着 effort 阶梯一档一档地走，在每一档上比较每个请求的成本、
+        延迟、可见的回答文本、隐藏的推理 token，以及评审分。在这个切片上，
+        结果属于那种应当让你重新考虑默认值的类型：effort 买来了成本、延迟和
+        隐藏 token，却没有买来更好的答案。下面的单页概览把这条信息一锤定音，
+        随后各节再补上测量到的细节。
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-short-factual-one-pager">
+      <figcaption>
+        <strong>一眼看懂这个专题。</strong>在这个短事实回答的切片上，沿着推理
+        effort 阶梯往上爬，每个请求的成本涨到了约 7.6 倍，而平均评审分却几乎
+        没动。这张单页概览把这条信息一锤定音，并标明证据边界；随后各节再补上
+        测量到的细节。
+        <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">打开短事实回答的单页概览 SVG</a>。
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="短事实回答的单页概览。显示沿推理 effort 阶梯（从 minimal 到 extra-high），每个请求的成本上涨约 7.6 倍，而评审质量保持平稳。核心信息：在短事实回答里，沿 effort 阶梯往上爬，成本增加了，但评审质量持平。基于 N=20、R=3 的测量聚合，并标明成本以倍率而非绝对金额呈现。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="专题要点">
+      <section class="summary-tile">
+        <h2>问题</h2>
+        <p>当大部分任务都只要短事实回答时，更高的推理 effort 能不能把质量改善到足以正当化那张账单？</p>
+      </section>
+      <section class="summary-tile">
+        <h2>证据</h2>
+        <p>benchmark-01 的成本、质量、延迟与 token 形态四张图，并配上公开数据表。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>发现</h2>
+        <p>在这个切片上，每个请求的成本涨到了约 7.6 倍，平均评审分却没有上升——而是从约 1.88 移到了约 1.78。</p>
+      </section>
+      <section class="summary-tile">
+        <h2>结论</h2>
+        <p>把已经能答对的最低 effort 设为默认。只有当评审者在这种工作负载形态上真正显示出质量的上行时，才往上调。</p>
+      </section>
+    </div>
+
+    <p class="banner">
+      <strong>打开对应的图表家族：</strong>
+      <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">benchmark-01 成本图</a>
+      与<a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-quality">配对的质量图</a>。
+    </p>
+
+    <section class="article-section">
+      <h2>数据显示了什么</h2>
+      <p>
+        假设预言：更高的 effort 会带来更稳妥的答案。数据没有兑现这一点。
+        成本柱从 minimal effort 的 $0.000663 涨到 extra-high effort 的
+        $0.005043，但质量柱并没有跟着涨。平均评审分在 minimal effort 是
+        1.88，在 extra-high effort 是 1.78。延迟也从约 1.1s 拉长到约 3.1s。
+        在容量上同样不是免费的：token 形态的吞吐量系数从 0.98 跌到 0.45。
+      </p>
+      <p>
+        于是成本柱涨了，质量柱没涨——这就是这张图想讲的全部故事。变高的
+        成本柱是真的，多出来的隐藏 token 预算也是真的，唯独缺了对应的质量
+        上行。在这种工作负载形态下，更高的 effort 不该成为默认，而应该保留
+        在"实验性"的位置上。
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>这个假设为什么会落空</h2>
+      <p>
+        看上去稳妥的默认值之所以会让人失望，是因为短事实回答很少需要漫长的
+        内部探索。当答案就是一个单一事实时，瓶颈往往在检索、稳定的提示词，
+        或者干脆是那个已经能答对的最低 effort 设置，而不在额外的斟酌。越过
+        那个点之后，再多想也没有什么可找的了，effort 阶梯只会继续往上堆隐藏
+        token，却不再增加准确度。
+      </p>
+      <p>
+        这正是这个切片呈现出的形状。评审分并没有随 effort 上升。在成本、延迟
+        和隐藏推理一起增加的同时，它在 1.88 与 1.78 之间漂移。思考是真实
+        发生的，却停留在模型内部，永远到不了读者面前——也正因如此，在这里
+        偏高的默认值，是一笔答案永远不会回报的成本。
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>这张图该怎么读</h2>
+      <p>
+        这些柱子是聚合柱状图，而不是频次直方图。每根柱子代表 benchmark-01 的
+        一个 effort 单元格，所以这是在比较"同一种工作负载形态，随着 effort
+        上升会如何变化"。
+      </p>
+      <div class="evidence-grid">
+        <div>
+          <h3>X 轴</h3>
+          <p>
+            柱子沿推理 effort 档位从左到右排开——baseline、minimal、low、
+            medium、high、extra-high。把它当成运维者可以拨动的那个控制旋钮。
+          </p>
+        </div>
+        <div>
+          <h3>Y 轴</h3>
+          <p>
+            在成本图里，柱高表示每个请求的平均 USD；在质量图里，柱高表示平均
+            评审分。两者要成对地读，而不是分开看。
+          </p>
+        </div>
+        <div>
+          <h3>柱子与表格</h3>
+          <p>
+            每根柱子都是一个聚合单元格。图下方的表给出精确值、可得时的标准差，
+            以及样本数。误差棒是标准差，不是置信区间。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <figure class="article-figure" id="figure-short-factual-cost">
+      <figcaption>
+        <strong>源图——短事实回答每个请求的成本（benchmark&nbsp;01）。</strong>
+        <strong>X 轴：</strong>模型与 effort 阶梯——gpt-4o 基线，随后是 gpt-5.2 的
+        minimal、low、medium、high、extra-high。
+        <strong>Y 轴：</strong>按量付费（PAYG）下每个请求的平均 USD。
+        <strong>柱子：</strong>每根柱子是一个 effort 单元格的平均成本——这是聚合
+        比较，不是频次直方图——竖直的须线表示跨重复测量的 &plusmn;1 标准差。
+        <strong>读法：</strong>成本从 minimal effort 的 $0.000663 涨到 extra-high 的
+        $0.005043——约 7.6 倍的账单——而下方配对的评审分几乎纹丝不动。
+        <strong>证据边界：</strong>每个单元格 N = 20 个人工编写样本、R = 3 次重复，
+        只取这一个短事实回答切片，按单一日期的 PAYG 快照，对一个 Azure OpenAI
+        租户与区域定价。它不是对其他工作负载、区域或未来价格的证明。
+        <strong>来源与仪表盘：</strong>柱值来自公开镜像的数据
+        <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>，
+        请与<a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">证据仪表盘</a>
+        （<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">分发的图表数据</a>）并排阅读。
+      </figcaption>
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="柱状图：benchmark-01 按量付费下每个请求的平均成本，沿 gpt-4o 基线与 gpt-5.2 minimal 到 extra-high 的 effort 阶梯上升，带标准差须线。" style="width:100%;height:auto;display:block;border-radius:12px;">
+    </figure>
+
+    <figure class="article-figure" id="figure-short-factual-quality">
+      <figcaption>
+        <strong>配对源图——短事实回答的评审分（benchmark&nbsp;01）。</strong>
+        <strong>X 轴：</strong>同样的模型与 effort 阶梯。
+        <strong>Y 轴：</strong>0&ndash;2 评分标准下的平均评审分（质量护栏）。
+        <strong>柱子：</strong>每根柱子是一个 effort 单元格的平均分——这是聚合比较，
+        不是频次直方图——须线表示 &plusmn;1 标准差。
+        <strong>读法：</strong>质量柱并没有跟着上方的成本柱一起涨——gpt-4o 基线
+        1.88、gpt-5.2 minimal 1.88、low 1.77、medium 1.73、high 1.88、extra-high
+        1.78——所以在这个切片上，变高的成本柱买到的是隐藏的计算，而不是更好的
+        答案。
+        <strong>证据边界：</strong>每个单元格 N = 20、R = 3 次重复。误差棒是标准差，
+        不是置信区间；在 N = 20 下不主张 p 值。
+        <strong>来源与仪表盘：</strong>柱值来自
+        <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json</code>，
+        请在<a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-quality">证据仪表盘</a>
+        （<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/quality.json">分发的图表数据</a>）里
+        与成本图配对阅读。
+      </figcaption>
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="柱状图：benchmark-01 的平均评审分沿 effort 阶梯大致在约 1.7–1.9 之间保持平稳，而成本在上升，带标准差须线。" style="width:100%;height:auto;display:block;border-radius:12px;">
+    </figure>
+
+    <section class="article-section">
+      <h2>每张源图各自贡献了什么</h2>
+      <p>
+        每张源图回答决策中不同的一部分。成本图说明这个设置需要付出什么；质量图
+        说明这笔花费有没有买来更好的答案；延迟与 token 构成解释了运维上的副作用；
+        吞吐量视角则把同一种 token 形态翻译成容量规划上的压力。
+      </p>
+      <table class="chart-table evidence-table">
+        <caption>从 benchmark-01 的源图能读出什么</caption>
+        <thead>
+          <tr>
+            <th>源图</th>
+            <th>读法</th>
+            <th>观测到的模式</th>
+            <th>对决策的含义</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>每个请求的成本</td>
+            <td>X 轴是 effort 档位，Y 轴是每个请求的平均 USD。</td>
+            <td>minimal effort 下 $0.000663，extra-high effort 下 $0.005043。</td>
+            <td>账单在质量证明其正确之前就先涨了。</td>
+          </tr>
+          <tr>
+            <td>质量护栏</td>
+            <td>X 轴是同一条 effort 阶梯，Y 轴是平均评审分。</td>
+            <td>minimal effort 下 1.88，extra-high effort 下 1.78。</td>
+            <td>高成本单元格并没有越过升级的门槛。</td>
+          </tr>
+          <tr>
+            <td>延迟</td>
+            <td>X 轴是 effort 档位，Y 轴是平均响应延迟。</td>
+            <td>minimal effort 下约 1.1s，extra-high effort 下约 3.1s。</td>
+            <td>用户等得更久，却没有换来相称的质量回报。</td>
+          </tr>
+          <tr>
+            <td>token 构成</td>
+            <td>X 轴是 effort 档位，Y 轴是每个请求的平均 token。</td>
+            <td>推理 token 从 3.655172 涨到 311.474576，可见输出只从约 12.7 变到 17.9 个 token。</td>
+            <td>回答文本把账单的大半涨幅都藏了起来。</td>
+          </tr>
+          <tr>
+            <td>token 形态的吞吐量</td>
+            <td>X 轴是 effort 档位，Y 轴是相对基线的吞吐量系数。</td>
+            <td>系数从 minimal effort 的 0.98 移到 extra-high effort 的 0.45。</td>
+            <td>同样形态的流量需要更多容量余量来承接。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="article-section">
+      <h2>发生了什么</h2>
+      <p>
+        成本曲线陡然上扬。minimal effort 平均每个请求 $0.000663，extra-high
+        effort 平均每个请求 $0.005043，也就是 7.6 倍的账单。配对的质量变化
+        并没有正当化这笔花费：平均评审分从 1.88 移到了 1.78。
+      </p>
+      <p>
+        这不是"推理不好"的普遍主张，而是关于工作负载形态的主张。在这个切片
+        上，多出来的内部计算并没有买来相称的回答质量上行。仪表盘把成本与质量
+        并排放着，于是这种不匹配看得见。
+      </p>
+      <p>
+        最要命的陷阱在于：输出看上去仍然挺像样。如果评审者只抽看几个答案，
+        extra-high effort 会让人觉得模型想得更卖力，因而感觉更稳妥。这张图正是
+        要拦住这种直觉变成策略：在接受更高的成本、更慢的延迟、更大的隐藏
+        token 账单之前，先要拿出测量出来的质量差异。
+      </p>
+    </section>
+
+    <section class="article-section">
+      <h2>做基准测试时我们学到的</h2>
+      <div class="evidence-grid">
+        <div>
+          <h3>"多想一点"不是默认</h3>
+          <p>
+            effort 是一种处置：把它施加到某个切片上，测量它，只有当评审者真的
+            动了，才提拔它。把它当成全局默认值，就会把账单一直藏到生产流量
+            到来为止。
+          </p>
+        </div>
+        <div>
+          <h3>成本要和质量成对看</h3>
+          <p>
+            只看成本的图会让变化显得明显却不完整；只看质量的图又会把经济成本
+            藏起来。真正有用的视角是成对的：买到了什么，它有没有改善答案。
+          </p>
+        </div>
+        <div>
+          <h3>短事实回答需要一条低 effort 基线</h3>
+          <p>
+            可接受的最低 effort 档位，就是要去超越的那条基线。如果更高的档位
+            在质量上没能超过它，运维者就该保持更便宜的设置，把优化时间花到
+            别处。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="article-section">
+      <h2>什么时候该重新审视这个决定</h2>
+      <p>
+        不要把这个结论永久冻结。当任务从简单回忆变成综合，当评分标准开始奖励
+        多步论证，当提示词开始携带工具的输出，或者当一个新模型改变了成本与
+        质量的形状时——就重新检验。教训不是"永远别用推理"，而是"没有配对的
+        证据，就别提拔 effort"。
+      </p>
+      <p>
+        一个有用的复测，是保持同一条 X 轴、换掉工作负载切片。短事实回答、多步、
+        工具代理、综合类任务，各自都应当挣得属于自己的 effort 设置。正是这条
+        路由策略，才是推理通常真正值回成本的地方。
+      </p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <h2>来源与证据边界</h2>
+      <p>
+        上面所有数字都能追溯到本仓库的公开产物，所有成本数字都按带日期的定价
+        快照算出。"在这个切片上更高的 effort 应保留为实验性"这一运维解读，
+        是本文自己的判断。下面两个 Tier 标明了：有文档记载的输入到哪里为止，
+        推断又从哪里开始。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li><strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本（minimal effort 的 $0.000663、extra-high effort 的 $0.005043、7.6 倍的账单）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
+        <li><strong>Tier 2 — 短事实回答切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是成本上行、平均评审分从 1.87931 到 1.779661 的移动、延迟从 1112.798745 ms 到 3088.001225 ms 的拉长，以及吞吐量系数从 0.984614 到 0.451798 的来源。</li>
+        <li><strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）与 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。它是推理 token 从 3.655172 到 311.474576、可见输出只从 12.672414 移到 17.881356 个 token 的来源。</li>
+        <li><strong>证据仪表盘：</strong><a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">证据仪表盘</a>里逐单元格的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
+      </ul>
+      <p>
+        这个切片证明了什么、又没证明什么：它表明，在短事实回答这种工作负载
+        形态下，在一个租户、一个区域、这份定价快照之下，effort 阶梯买来了
+        成本和隐藏 token，却没买来相称的质量上行。它并不证明同样的形状会在
+        综合、多步、用工具的工作中成立，也不证明它会在未来的定价快照下成立。
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>实用准则</h2>
+      <p>
+        <strong>实用准则：短事实回答应保持在已经能答对的最低 effort 上，
+        只有当质量门槛在这种工作负载形态上真的动了之后，才往更高的 effort
+        提——而且要与配对的成本、延迟、token 构成图并排着读。</strong>
+      </p>
+      <p>
+        证据仪表盘，就是这条准则背后的审计轨迹。
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-01-cost_per_request">去核查源图</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>下一篇：</strong>
+        <a href="../../invisible-reasoning-tokens/zh-CN/">不可见的推理 token：那笔不出现在答案里的账单</a>
+        &mdash; 如果回答文本依旧很短，多出来的成本到底从哪儿来？
+      </p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p>
+  </footer>
+</body>
+</html>

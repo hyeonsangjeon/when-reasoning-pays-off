@@ -2,7 +2,8 @@
   "required_locales": ["ko"],
   "locales": {
     "ko": "ko/index.html",
-    "ja": "ja/index.html"
+    "ja": "ja/index.html",
+    "zh-CN": "zh-CN/index.html"
   },
   "sections": [
     "formula",

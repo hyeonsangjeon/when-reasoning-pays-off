@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PTU/PAYG 规划 | when reasoning pays off</title>
-  <meta name="description" content="一篇专题随笔：把 PTU/PAYG 交叉点图当作规划模型来读，而不是直接的容量测量结果。">
+  <title>PTU/PAYG 交叉点 | when reasoning pays off</title>
+  <meta name="description" content="一篇专题文章：PTU/PAYG 交叉点是一条建模出来的规划线，而不是测得的容量结果——它能说什么，又不能主张什么。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0f722594147c0c2d7f0c875d8adfbb756b0e7e949547eaf35fd9a97d14dc7b28">
+  <meta name="article:source-article-sha256" content="b2eb8e5e11700ac8b87e3661ee7d4633b387f75d003dc112067b6e2ff0c37aa3">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -22,7 +22,7 @@
   <header class="site">
     <div class="bar">
       <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
-      <nav class="lang" aria-label="Language">
+      <nav class="lang" aria-label="语言">
         <a href="../" data-locale="en">English</a>
         <a href="../ko/" data-locale="ko">한국어</a>
         <a href="../ja/" data-locale="ja">日本語</a>
@@ -33,81 +33,146 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">Articles</a> / <a href="../../../">When reasoning pays off</a> / Topic detail</p>
-    <p class="article-kicker">专题随笔 · PTU/PAYG 规划模型</p>
-    <h1>PTU/PAYG 交叉点：一条规划线，而非容量结论</h1>
-    <p class="lede">这张交叉点图之所以有用，恰恰是因为它有边界。它把公开的成本与 token 形态快照，转化成一个规划问题：在多大的请求速率下，固定的 PTU 花销才会比 PAYG 更划算——针对的是这份被测出来的工作负载形态。它并不能证明一个在线运行的 PTU 资源在压力下会如何表现。</p>
+    <p class="breadcrumb"><a href="../../../../">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
+    <p class="article-kicker">专题文章 · PTU/PAYG 规划模型</p>
+    <h1>PTU/PAYG 交叉点：一条规划线，而不是容量结果</h1>
+    <p class="lede">哪些模型与 effort 单元格值得用，我们已经测完了。现在流量团队递来下个季度的预测，抛出一个左右账单的问题：在这个预计的请求速率下，是继续按量付费（PAYG），还是预留预置吞吐量（PTU）？人们很想画一条交叉线，然后把它当成答案。本文把这条线当成它真正的样子——一个建模出来的、只看价格的盈亏平衡点，而不是对一个在线 PTU 部署在负载下表现的测量；它告诉你的，是什么时候值得去跑一次容量实验。</p>
 
-    <div class="article-summary-grid" aria-label="Topic summary">
-      <section class="summary-tile"><h2>问题</h2><p>一条被建模出来的 PTU/PAYG 交叉点能告诉我们什么，又绝不能宣称什么？</p></section>
-      <section class="summary-tile"><h2>证据</h2><p>公开的交叉点 JSON、定价快照，以及 token 形态的吞吐系数。</p></section>
-      <section class="summary-tile"><h2>结论</h2><p>交叉点是一个决策提示，而不是饱和、429 起点或在线容量的直接证据。</p></section>
+    <figure class="article-figure" id="figure-ptu-payg-one-pager">
+      <figcaption>
+        <strong>一眼看懂这个专题（是建模，不是测量）。</strong>PTU 与 PAYG 在一个盈亏平衡的
+        请求速率上相交，这是一个计算出来的交叉点。低于它，PAYG 更便宜；高于它，已承诺的
+        PTU 块更便宜。这张单页概览把同一条信息一锤定音，并标明建模出来的边界；随后各节
+        再补上计算和它的局限。
+        <a href="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">打开 PTU/PAYG 的单页概览 SVG</a>。
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU 对 PAYG 的规划单页概览。显示一条上升的 PAYG 成本线，在一个盈亏平衡的请求速率上与一条平的已承诺 PTU 成本线相交。核心信息：PTU 对 PAYG 是一个在盈亏平衡请求速率上相交的建模交叉点，低于它 PAYG 更便宜，高于它 PTU 更便宜。明确标注为建模而非测量：交叉点是一次计算，而不是在线容量结果。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section class="article-section" id="why-modeled">
+      <h2>我们为什么要建模这个</h2>
+      <p>这条交叉线有两种读法，彼此把人往相反方向拉。第一种是当成判决来读：线指向 PTU，那就预留 PTU。第二种是当成规划的触发来读：线在说，这个工作负载下 PTU 大概率更便宜，所以这是一个值得去跑容量实验的部署。我们建模交叉点，是为了第二种读法。</p>
+      <p>之所以这么做，是因为这条线只回答一个很窄的价格问题：在一份价格快照下，对一种测得的每请求 token 形态而言，固定的 PTU 下限在哪里开始比 PAYG 的账单更便宜。它对以下这些一概不说：部署能不能扛住那股流量、429 限流从哪里开始、负载下提示词缓存如何表现、p95 延迟会是什么样。把这个价格答案误当成容量答案，正是本文想要拦住的错误。</p>
+      <p>所以这次计算有意把两类输入组合在一起：一边是带日期的 PAYG 与 PTU 价格快照，另一边是从基准测试里测得的每请求成本与 token 形态。正是这种组合，让输出成了一个规划模型——扎根于真实测量，却只限于价格——而不是一个在线容量结果。</p>
+    </section>
+
+    <div class="article-summary-grid" aria-label="专题要点">
+      <section class="summary-tile"><h2>问题</h2><p>建模出来的 PTU/PAYG 交叉点能说什么，又绝不该主张什么？</p></section>
+      <section class="summary-tile"><h2>证据</h2><p>一次盈亏平衡计算：把两份带日期的价格快照——<code>pricing/azure-openai-payg-2026-05.yaml</code> 与 <code>pricing/azure-openai-ptu-2026-05.yaml</code>——和 benchmark-01、-02、-03 测得的每请求成本与 token 形态吞吐量系数组合起来。输出是交叉点图表数据里的 <code>modeled_break_even_rpm</code> 系列，而不是测得的吞吐量。</p></section>
+      <section class="summary-tile"><h2>发现</h2><p>在这份价格快照下，建模出来的盈亏平衡点落在由每请求账单与 token 形态决定的位置：benchmark-01 extra-high 约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm——都按每 PTU 小时 $2.00 的 50 PTU 下限来缩放。这些是随价格快照和每请求 token 构成一起变动的计算值，而不是测得的饱和点。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>把交叉点当成一条规划线来读：它告诉你，在这种工作负载形态下，什么时候值得去跑一次容量实验，而不是判定某个具体部署一定需要 PTU。价格、token 构成、区域一变，就重新推导。</p></section>
     </div>
 
-    <nav class="article-outline" aria-label="Topic sections">
+    <nav class="article-outline" aria-label="专题章节">
       <strong>按线索阅读：</strong>
-      <a href="#s1">这个模型回答的是一个很窄的问题</a>
+      <a href="#s1">模型回答的是一个很窄的问题</a>
       <a href="#s2">这张图该怎么读</a>
-      <a href="#s3">为什么这个区分很重要</a>
-      <a href="#s4">值得记住的那句话</a>
+      <a href="#s3">这个区分为什么重要</a>
+      <a href="#s4">这意味着什么</a>
       <a href="#table">证据表</a>
     </nav>
 
     <p class="banner">
       <strong>打开对应的源图：</strong>
-      <a href="../../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-crossover">PTU/PAYG 交叉点系列图</a>。
+      <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>。
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>导读图（依据建模聚合手工绘制）。</strong>
-          <strong>该读什么：</strong>选定基准行的、被建模出来的 PTU/PAYG 盈亏平衡 RPM。
-          <strong>横轴：</strong>选定的基准行；<strong>纵轴：</strong>被建模的盈亏平衡 RPM（柱子越高，意味着 PAYG 可以爬到更高的请求速率，才会让被建模的 PTU 下限显得更便宜）。
-          <strong>把它当作规划提示来读，而不是测量：</strong>这些柱子 &mdash; 包括 benchmark-01 约 149 rpm 的标记和 50 PTU 下限 &mdash; 是在这份定价快照与每请求 token 形态下算出来的，而不是被测出来的 PTU 容量结论。下方的源数据表给出对应数值。
+          <strong>导读图（由建模聚合手工制作）：</strong>
+          <strong>读什么：</strong>选定基准行的建模 PTU/PAYG 盈亏平衡 RPM。
+          <strong>X 轴：</strong>选定的基准行，<strong>Y 轴：</strong>建模盈亏平衡 RPM（柱子越高，意味着在建模 PTU 下限开始显得更便宜之前，PAYG 能伸展到越高的请求速率）。
+          <strong>当作规划线索而非测量来读：</strong>这些柱子——包括 benchmark-01 约 149 rpm 的标记和 50 PTU 下限——是在这份价格快照和每请求 token 形态下算出来的，而不是测得的 PTU 容量结果。建模交叉点的 JSON 在来源一节里引用。
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="Bar chart showing modeled PTU/PAYG break-even RPM for selected benchmark rows." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.svg" alt="柱状图：选定基准行的建模 PTU/PAYG 盈亏平衡 RPM。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>这个模型回答的是一个很窄的问题</h2>
-      <p>交叉点计算把每个请求的平均成本、token 形态的吞吐系数、一份公开定价快照，以及 50 PTU 的下限组合在一起，输出一个被建模出来的盈亏平衡 RPM。举例来说，benchmark-01 extra-high effort 落在约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm。</p><p>这些数字之所以有用，是因为它们揭示了工作负载形态如何改变规划这场对话。它们不是在线压测的测量值——它们不会告诉你 429 从哪里开始、缓存在接近饱和时如何表现，也不会告诉你某套具体服务配置在 p95 延迟下会怎样。</p>
+      <h2>模型回答的是一个很窄的问题</h2>
+      <p>交叉点计算把每请求平均成本、token 形态的吞吐量系数、公开价格快照，以及 50 PTU 下限组合起来，输出的是建模盈亏平衡 RPM。例如，benchmark-01 extra-high effort 落在约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm。</p><p>这些数字之所以有用，是因为它们揭示了工作负载形态如何改变规划层面的对话。它们不是在线负载的测量：429 从哪里开始、接近饱和时缓存如何表现、某个具体配置在 p95 延迟上会怎样——这些它都不说。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
-      <p>横轴是一组选定的基准行，纵轴是被建模出来的盈亏平衡 RPM。柱子越高，意味着 PAYG 可以爬到更高的请求速率，才会让被建模的 PTU 下限显得更便宜；柱子越矮，意味着这份工作负载更早触及建模出的交叉点。</p><p>这些柱子并不是一条连续的容量曲线。它们是从公开聚合数据和一份定价快照推导出来的规划标记。</p>
+      <p>X 轴是一组选定的基准行，Y 轴是建模盈亏平衡 RPM。柱子越高，意味着在建模 PTU 下限开始显得更便宜之前，PAYG 能伸展到越高的请求速率；柱子越低，那个工作负载就越早抵达模型上的交叉点。</p><p>这些柱子不是连续的容量曲线，而是从公开聚合数据和价格快照里推导出来的规划标记。</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>为什么这个区分很重要</h2>
-      <p>少了这个区分，一张交叉点图很容易被误读成一种承诺。人们很容易说：交叉点在 149 rpm 的那一行“需要 PTU”，而交叉点在 2,680 rpm 的那一行“不需要 PTU”。但证据要比这谨慎得多。这张图说的是：在建模假设之下，经济账长什么样。一个在线系统仍然需要延迟、缓存、重试和饱和方面的证据。</p><p>这份谨慎并不是软弱，它正是让这张图可用的原因：它告诉团队何时该去跑一次容量实验，而不是替你预言那次实验会发现什么。</p>
+      <h2>这个区分为什么重要</h2>
+      <p>没有这个区分，交叉点图就可能被误读成承诺。人们会想说：交叉点在 149 rpm 的行"需要 PTU"，交叉点在 2,680 rpm 的行"不需要 PTU"。但证据要谨慎得多：图说的是，在建模前提下经济性看上去如何。一个在线系统，仍然需要延迟、缓存、重试、饱和方面的证据。</p><p>这份谨慎不是软弱。正是它让这张图变得可用：图告诉团队什么时候该去跑一次容量实验，而不告诉你那次实验会发现什么。</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>值得记住的那句话</h2>
-      <p>PAYG 和 PTU 回答的是不同的问题。PAYG 问的是每个已完成的请求要花多少钱；PTU 问的是固定容量在可接受的质量与延迟水平下能扛住多少。交叉点这条线把这两个世界连了起来，却没有把它们塌缩成同一个测量。</p><p>所以在本项目里，这条线被明确标注为一个被建模出来的假设。它该摆在那些被测量出来的图旁边，而不是凌驾其上。</p>
+      <h2>这意味着什么</h2>
+      <p>PAYG 和 PTU 回答的是不同的问题。PAYG 问的是：每个完成的请求要花多少钱。PTU 问的是：在可接受的质量和延迟下，固定容量能扛住什么。交叉线把这两个世界连起来，却不会把它们折叠进同一次测量。</p><p>所以在这个项目里，我们把这条线明确标注为一个建模出来的假设：它属于测得的图表旁边，而不是图表之上。</p>
     </section>
 
     <section id="table" class="article-section">
       <h2>证据表</h2>
       <table class="chart-table evidence-table">
-        <caption>selected crossover examples</caption>
-        <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
+        <caption>选定的交叉点示例</caption>
+        <thead><tr><th>证据行</th><th>指标 A</th><th>指标 B</th><th>它补充了什么</th></tr></thead>
         <tbody>
-          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>因为单个请求的账单很高，交叉点来得早。</td></tr>
-<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>因为被测请求很便宜，交叉点来得晚。</td></tr>
-<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>居中情形：代理工作负载的 token 形态更大。</td></tr>
-<tr><td>Evidence boundary</td><td>Modeled economics</td><td>not live capacity</td><td>用它来决定接下来该测什么。</td></tr>
+          <tr><td>benchmark-01 extra-high</td><td>建模 149 rpm</td><td>50 PTU 下限</td><td>每请求账单偏高，因此交叉点来得早。</td></tr>
+          <tr><td>benchmark-02 none</td><td>建模 2,680 rpm</td><td>50 PTU 下限</td><td>测得的请求便宜，因此交叉点来得晚。</td></tr>
+          <tr><td>benchmark-03 low</td><td>建模 564 rpm</td><td>50 PTU 下限</td><td>居中的情形：代理工作负载的 token 形态更大。</td></tr>
+          <tr><td>证据边界</td><td>建模出来的经济性</td><td>不是在线容量</td><td>用来决定下一步该试什么。</td></tr>
         </tbody>
       </table>
     </section>
 
-    <section class="article-section decision-box">
-      <h2>证据允许我们说什么</h2>
-      <p>交叉点在保持谦逊时最有价值：它把证据转化成一个规划问题，而把在线容量留给在线测量。</p>
-      <p><a class="button-link" href="../../../">回到综述随笔</a></p>
+    <section id="sources" class="article-section">
+      <h2>来源与证据边界</h2>
+      <p>
+        上面所有盈亏平衡数字都是计算，而不是测量。它们把测得的每请求成本与 token
+        形态，套在两份带日期的价格快照上算出。下面两个 Tier 标明了：有文档记载的输入
+        到哪里为止，建模出来的输出又从哪里开始。带 50 PTU 下限的 149 rpm 交叉点是一个
+        推导出来的计算，既不是测得的吞吐量，也不是 429 的发生，更不是饱和点。
+      </p>
+      <ul>
+        <li><strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。每请求成本输入沿用这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li><strong>Tier 1 — PAYG 价格快照：</strong>本仓库，<code>pricing/azure-openai-payg-2026-05.yaml</code>。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。这里每 1M token 的单价（gpt-5.2 input $1.75/1M、cached input $0.175/1M、output 与 reasoning $14.00/1M；gpt-4o input $2.50/1M、cached $1.25/1M、output $10.00/1M）决定了进入公式的每请求账单。</li>
+        <li><strong>Tier 1 — PTU 价格快照：</strong>本仓库，<code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 文档</a>（2026-05-19 访问，区域 eastus2）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。公式的 PTU 侧——每 PTU 小时 $2.00、50 PTU 的最小值（下限）、用于吞吐量系数的每 PTU Input TPM（gpt-4o 2,500、gpt-5.2 3,400）——都来自这份快照。PAYG 与 PTU 两侧的价格都进入盈亏平衡：一边是每请求的 PAYG 账单，另一边是固定的 $100/hour PTU 下限（50 × $2.00）。</li>
+        <li><strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐单元格 token 分布。</li>
+        <li><strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 149 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
+        <li><strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>，是审计同一批 JSON 产物的可核查形态。</li>
+      </ul>
+      <p>
+        这个切片证明了什么、又没证明什么：它展示了在这份价格快照下，对持有 benchmark-01、
+        -02、-03 测得 token 分布的工作负载而言，这个建模盈亏平衡点落在哪里。它并不证明同样的
+        交叉点会在别的价格快照、别的工作负载形态、别的缓存命中率、别的推理构成或别的部署区域
+        下成立。这是一项规划辅助，既不是 SLA，也不是关于在线容量的论断。
+      </p>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>这些证据允许我们说什么</h2>
+      <p>交叉点之所以有价值，正是因为它保持谦逊：在这份价格快照下、对这套 token 分布，它把证据变成一个规划问题，而把在线容量交还给在线测量。</p>
+      <p><a class="button-link" href="../../../zh-CN/">回到综述文章</a></p>
+
+      <h2>实用准则</h2>
+      <ol>
+        <li>把盈亏平衡 RPM 当成从带日期的 PAYG 与 PTU 快照推导出来的、只看价格的计算；任一快照一动，就重新推导。</li>
+        <li>对齐到你正在规划的那个切片的测得 token 形态，而不是通用工作负载。</li>
+        <li>把偏低的交叉点当成去跑容量实验的触发，而不是某个部署一定需要 PTU 的证明。</li>
+        <li>在敲定 PTU 之前，先考虑图上看不见的非价格因素——延迟目标、准入并发数、突发承受力。</li>
+      </ol>
+      <p>
+        <strong>实用准则：交叉点展示的只是这份快照和 token 形态下、只看价格的盈亏平衡点。选 PTU 还是 PAYG，要把它和它无法建模的非价格因素——延迟、准入、突发——配对着判断。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">打开交叉点图</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>下一篇：</strong>
+        <a href="../../bridge-from-measurement-to-production/zh-CN/">从测量到生产</a>
+        &mdash; 证据层的习惯什么时候需要变成运维层的习惯？又有哪些东西会在两者之间延续下来？
+      </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site"><p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p></footer>
 </body>
 </html>
