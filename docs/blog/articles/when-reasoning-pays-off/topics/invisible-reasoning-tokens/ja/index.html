@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="fbae7a92b05214f24ed4b4e66c0b6067212df53435c1d5b4a4d09d0c80f6a04b">
+  <meta name="article:source-article-sha256" content="357a89b712a76c8572fc6bf16649db16fe37642e9d5ce08230f3e09d3c2ad6e5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -33,10 +33,48 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../ja/">推論がコストに見合うとき</a> / トピック詳細</p>
     <p class="article-kicker">トピック記事 · 隠れた請求の面</p>
     <h1>見えない推論トークン：回答には現れない、もう一つの請求</h1>
-    <p class="lede">短い事実回答のランは、回答だけを眺めるとごく普通に見えた。応答の多くは短い。だが請求額はまったく別の話を語っていた。推論モデルは、目に見えるテキストを出力する前に、モデルの内側でトークンを費やせるからだ。その内部トークンはユーザーには表示されないが、計測される利用量の一部として確かに存在している。</p>
+    <p class="lede">推論への移行のあと——あるいは誰かが effort のダイヤルを上げたあと——回答は依然として短く、ありふれて見えることがある。見えるテキストには、より多く費やしているという気配はどこにもない。それでも、同じワークロードに対して財務とテレメトリはより大きな請求を見ている。自然な問いがおのずと書ける。回答が長くなっていないなら、コストはどこへ行ったのか。</p>
+
+    <section class="article-section">
+      <h2>なぜこれを検証したか</h2>
+      <p>
+        習慣はほとんど普遍的だ。チームがリクエストのコストを考えるとき、手を
+        伸ばすのは目に見えるもの——回答の長さ——だ。短い返答は安く感じられ、
+        長い返答は高く感じられる。推論以前の時代の大半では、その直感は役に立つ
+        ほどには当たっていた。
+      </p>
+      <p>
+        そこから、確かめるべききれいなことが手に入る。見える回答の長さが本当に
+        支出を説明していて、より大きな請求は誰も気づかなかったわずかに長い返答に
+        隠れているのかもしれない。あるいは、推論モデルがその直感を壊し、コストは
+        ユーザーが決して読まない隠れた推論トークンへ移ったのかもしれない。
+        どちらが変化を担っているかは、チャートが示せる。
+      </p>
+      <p>
+        そこで分解した。請求された各リクエストを入力、キャッシュされた入力、
+        見える出力、隠れた推論に分け、その分解を同じ短い事実回答の断面で
+        コスト・品質・レイテンシの隣に読んだ。結果は問いを片づける。見える出力は
+        effort のはしご全体でわずか約 12.7 から 17.9 トークンしか動かなかったのに
+        対し、隠れた推論は約 3.7 から 311.5 トークン動いた。コストとレイテンシは
+        隠れたチャネルとともに伸び、対になる品質チャートはそれに見合って上がら
+        なかった。下の1枚要約はそれを一つの枠で言い切り、続く各節が計測された
+        詳細を示す。
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-invisible-one-pager">
+      <figcaption>
+        <strong>ひと目で見るトピック。</strong> 請求された各リクエストは、入力・
+        キャッシュ・見える出力・隠れた推論に分かれる——そしてこの断面でスケール
+        するのは隠れた推論のチャネルだ。1枚要約は同じメッセージを言い切り、根拠の
+        境界を示す。続く各節が計測された詳細を加える。
+        <a href="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg">見えない推論トークンの1枚要約 SVG を開く</a>。
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg" alt="見えない推論トークンの1枚要約。請求された各リクエストが、入力・キャッシュ・見える出力・隠れた推論のチャネルに分解され、スケールするのは隠れた推論の部分であることを示す。中心メッセージ：推論トークンは請求されるのに決して表示されないので、請求は読めない部分で膨らむ。トークン構成ファミリーからの計測された集計であることを示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
 
     <div class="article-summary-grid" aria-label="トピックの要約">
       <section class="summary-tile"><h2>問い</h2><p>回答テキストが短いままなら、追加のコストはどこから来たのか。</p></section>
@@ -62,7 +100,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>読むべきチャート：</strong> このトピックはダッシュボードからチャート一枚ぶんの問いを切り出し、下の元データの表と組み合わせている。
+          <strong>トピックガイドのチャート（公開集計から手作業で組んだもの）。</strong> この概念図は、チャート一枚ぶんの問い——effort 別の平均隠れ推論トークンで、各棒の下に平均見える出力を併記——を切り出し、下の元データの表と組み合わせる。公開チャートデータのパイプラインからレンダリングされた元チャートは、さらに下に続く。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.ja.svg" alt="棒グラフ：benchmark-01 の effort 別の平均推論トークン。見える出力のラベル付き。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -87,13 +125,35 @@
 
     <section id="table" class="article-section">
       <h2>根拠の表</h2>
+      <figure class="article-figure" id="figure-invisible-tokens">
+        <figcaption>
+          <strong>元チャート——benchmark-01 のトークン構成。</strong>
+          <strong>X 軸：</strong> モデルと effort のはしご——gpt-4o ベースライン、続いて
+          gpt-5.2 の minimal、low、medium、high、extra-high。
+          <strong>Y 軸：</strong> リクエストあたりの平均トークン。
+          <strong>積み上げセグメント：</strong> 各棒は一つの effort セルを、入力（非
+          キャッシュ）・キャッシュ入力・見える出力・隠れた推論に積み上げたもの——
+          度数のヒストグラムではなく集計の構成。
+          <strong>読み方：</strong> 入力と見える出力のセグメントはほとんど変わらず、
+          隠れた推論のセグメントは minimal effort の約 3.7 トークンから extra-high の
+          約 311.5 へ増える。合計は上るのに、読者が見える部分は短いままだ。
+          <strong>根拠の境界：</strong> セルあたり N = 20、R = 3 回の反復、一つの Azure
+          OpenAI テナントとリージョンでのこの一つの短い事実回答の断面。多段、
+          ツールエージェント、統合の作業のトークンの形は示さない。
+          <strong>出典とダッシュボード：</strong> セグメントの値は
+          <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>
+          から来ており、<a href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">エビデンスダッシュボード</a>
+          （<a href="../../../../../data/chart-data/token-composition/benchmark-01/tokens.json">配信されるチャートデータ</a>）で読む。
+        </figcaption>
+        <img class="wide-chart" src="../../../../../../assets/benchmark-01-tokens.png" alt="benchmark-01 のモデルと effort 別のリクエストあたり平均トークンの積み上げ棒グラフ。入力と見える出力のセグメントはほぼ一定で、隠れた推論のセグメントは minimal から extra-high へ急に増える。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
         <caption>benchmark-01 の隠れたトークンの根拠</caption>
         <thead><tr><th>根拠の行</th><th>指標 A</th><th>指標 B</th><th>付け加わること</th></tr></thead>
         <tbody>
           <tr><td>Minimal effort</td><td>見える出力トークン 12.7</td><td>推論トークン 3.7</td><td>短い回答、ごく小さな隠れ予算。</td></tr>
 <tr><td>Extra-high effort</td><td>見える出力トークン 17.9</td><td>推論トークン 311.5</td><td>テキストは依然短いのに、内部予算ははるかに大きい。</td></tr>
-<tr><td>対の品質</td><td>minimal で 1.87931</td><td>extra-high で 1.779661</td><td>このスライスでは、隠れた作業は品質の上積みを買わなかった。</td></tr>
+<tr><td>対の品質</td><td>minimal で 1.88</td><td>extra-high で 1.78</td><td>このスライスでは、隠れた作業は品質の上積みを買わなかった。</td></tr>
 <tr><td>レイテンシ</td><td>minimal で 1.1s</td><td>extra-high で 3.1s</td><td>隠れた作業は待ち時間も引き伸ばした。</td></tr>
         </tbody>
       </table>
@@ -116,10 +176,10 @@
       </p>
     </section>
 
-    <section class="article-section decision-box">
+    <section id="decision" class="article-section decision-box">
       <h2>この根拠から言えること</h2>
       <p>推論トークンの予算は、回答のなかでは見えなくても、テレメトリのなかでは見えているべきだ。これがこのトピックがシリーズに加える、会計上の基本的な習慣である。</p>
-      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+      <p><a class="button-link" href="../../../ja/">概要記事に戻る</a></p>
 
       <h2>実務上のルール</h2>
       <ol>
@@ -132,6 +192,14 @@
       </p>
       <p>
         <a class="button-link" href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">トークン構成チャートを開く</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>次：</strong>
+        <a href="../../multi-step-work/ja/">多段タスク：推論が試す価値を稼ぐとき</a>
+        &mdash; 追加の推論が、より大きな請求だけでなく品質の改善を買うのは、どんなときか。
       </p>
     </section>
   </main>
