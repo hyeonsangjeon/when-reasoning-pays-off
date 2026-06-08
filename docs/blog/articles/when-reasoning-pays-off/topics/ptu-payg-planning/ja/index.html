@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0f722594147c0c2d7f0c875d8adfbb756b0e7e949547eaf35fd9a97d14dc7b28">
+  <meta name="article:source-article-sha256" content="b2eb8e5e11700ac8b87e3661ee7d4633b387f75d003dc112067b6e2ff0c37aa3">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -33,15 +33,34 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../">推論がコストに見合うとき</a> / トピック詳細</p>
+    <p class="breadcrumb"><a href="../../../../">記事一覧</a> / <a href="../../../ja/">推論がコストに見合うとき</a> / トピック詳細</p>
     <p class="article-kicker">トピック記事 · PTU/PAYG プランニングモデル</p>
     <h1>PTU/PAYG クロスオーバー：容量の結果ではなく、プランニングの線</h1>
-    <p class="lede">クロスオーバーチャートが有用なのは、まさにそれが限定的だからだ。これは公開されたコストとトークン形状のスナップショットを、一つのプランニングの問いに変える。すなわち、この計測されたワークロード形状において、固定の PTU 支出が PAYG より安く見え始めるのはどのリクエストレートか、という問いだ。稼働中の PTU ターゲットが負荷下でどう振る舞うかを証明するものではない。</p>
+    <p class="lede">どのモデルと effort のセルが使う価値があるかは、すでに測定し終えた。いまトラフィックチームが次の四半期の予測を手渡し、請求を左右する問いを投げかける。この見込みのリクエストレートで、従量課金（PAYG）にとどまるのか、それともプロビジョニングされたスループット（PTU）を予約するのか。一本のクロスオーバーの線を引いて、それを答えとして扱いたくなる。本記事はその線を、実際にそうであるもの——モデル化された価格だけの損益分岐で、稼働中の PTU デプロイが負荷下でどう振る舞うかの測定ではなく、容量実験を走らせる価値がいつあるかを告げるもの——として扱う。</p>
+
+    <figure class="article-figure" id="figure-ptu-payg-one-pager">
+      <figcaption>
+        <strong>ひと目で見るトピック（測定ではなくモデル化）。</strong> PTU と PAYG は、
+        損益分岐のリクエストレートで交わる計算上のクロスオーバーだ。それより下では
+        PAYG が安く、それより上ではコミットした PTU ブロックが安い。1枚要約は同じ
+        メッセージを言い切り、モデル化された境界を示す。続く各節が計算とその限界を
+        加える。
+        <a href="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">PTU/PAYG の1枚要約 SVG を開く</a>。
+      </figcaption>
+      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU 対 PAYG のプランニングの1枚要約。上昇する PAYG のコスト線が、平らなコミット PTU のコスト線と損益分岐のリクエストレートで交わることを示す。中心メッセージ：PTU 対 PAYG は損益分岐のリクエストレートで交わるモデル化されたクロスオーバーで、それより下では PAYG、それより上では PTU が安い。測定ではなくモデル化と明示：クロスオーバーは計算であって、稼働中の容量の結果ではない。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section class="article-section" id="why-modeled">
+      <h2>なぜこれをモデル化したか</h2>
+      <p>クロスオーバーの線の扱い方は二つあり、互いに反対方向へ引っ張る。一つ目は判定として読むこと。線が PTU を指しているのだから PTU を予約する、という読みだ。二つ目はプランニングのきっかけとして読むこと。線は、このワークロードでは PTU のほうが安い見込みがある、と言っている。だから、ここは容量実験を走らせる価値のあるデプロイだ、という読みだ。私たちは二つ目の読みのためにクロスオーバーをモデル化した。</p>
+      <p>そうした理由は、線が狭い価格の問いにしか答えないからだ。一つの価格スナップショットで、一つの測定されたリクエストあたりトークン形状について、固定の PTU 下限が PAYG の請求より安くなるのはどこか。線は、デプロイがそのトラフィックを運べるか、429 のスロットリングがどこで始まるか、負荷下でプロンプトキャッシュがどう振る舞うか、p95 レイテンシがどう見えるかについては何も言わない。その価格の答えを容量の答えと取り違えることこそ、本記事が防ごうとしている誤りだ。</p>
+      <p>だから計算は意図的に二種類の入力を組み合わせる。一方には日付付きの PAYG と PTU の価格スナップショット、もう一方にはベンチマークから測定されたリクエストあたりコストとトークン形状。この組み合わせこそが、出力を——実際の測定に根ざしながら価格に限定された——稼働中の容量結果ではなくプランニングのモデルにする。</p>
+    </section>
 
     <div class="article-summary-grid" aria-label="トピックの要約">
       <section class="summary-tile"><h2>問い</h2><p>モデル化された PTU/PAYG クロスオーバーは何を語れて、何を主張してはならないのか。</p></section>
-      <section class="summary-tile"><h2>根拠</h2><p>公開のクロスオーバー JSON、価格スナップショット、トークン形状のスループット係数。</p></section>
-      <section class="summary-tile"><h2>わかったこと</h2><p>クロスオーバーは意思決定のきっかけだ。飽和、429 の発生、稼働中の容量の直接的な根拠ではない。</p></section>
+      <section class="summary-tile"><h2>根拠</h2><p>二つの日付付き価格スナップショット——<code>pricing/azure-openai-payg-2026-05.yaml</code> と <code>pricing/azure-openai-ptu-2026-05.yaml</code>——を、benchmark-01・-02・-03 の測定されたリクエストあたりコストとトークン形状のスループット係数と組み合わせた損益分岐の計算。出力はクロスオーバーのチャートデータにある <code>modeled_break_even_rpm</code> の系列であって、測定されたスループットではない。</p></section>
+      <section class="summary-tile"><h2>わかったこと</h2><p>この価格スナップショットでは、モデル化された損益分岐は、リクエストあたりの請求とトークン形状が定める場所に着地する。benchmark-01 extra-high はおよそ 149 rpm、benchmark-02 none はおよそ 2,680 rpm、benchmark-03 low はおよそ 564 rpm——いずれも PTU 時間あたり $2.00 の 50 PTU 下限でスケールする。これらは価格スナップショットとリクエストあたりのトークン構成とともに動く計算値であって、測定された飽和点ではない。</p></section>
       <section class="summary-tile"><h2>判断</h2><p>クロスオーバーは、このワークロード形状で容量実験を走らせる価値がいつ生じるかを告げるプランニングの線として読む。特定のデプロイに PTU が必要だという判定ではない。価格・トークン構成・リージョンが変われば導出し直す。</p></section>
     </div>
 
@@ -120,10 +139,10 @@
       </p>
     </section>
 
-    <section class="article-section decision-box">
+    <section id="decision" class="article-section decision-box">
       <h2>この根拠から言えること</h2>
-      <p>クロスオーバーが価値を持つのは、それが謙虚にとどまるときだ。根拠をプランニングの問いに変え、稼働中の容量は稼働中の計測に委ねる。</p>
-      <p><a class="button-link" href="../../../">概要記事に戻る</a></p>
+      <p>クロスオーバーが価値を持つのは、それが謙虚にとどまるときだ。この価格スナップショットで、このトークン分布について、根拠をプランニングの問いに変え、稼働中の容量は稼働中の計測に委ねる。</p>
+      <p><a class="button-link" href="../../../ja/">概要記事に戻る</a></p>
 
       <h2>実務上のルール</h2>
       <ol>
@@ -137,6 +156,14 @@
       </p>
       <p>
         <a class="button-link" href="../../../../../charts/?lang=ja#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">クロスオーバーチャートを開く</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>次：</strong>
+        <a href="../../bridge-from-measurement-to-production/ja/">測定から本番へ</a>
+        &mdash; 根拠の習慣が運用の習慣になるのはいつか。そして、その二つのあいだで何が引き継がれるのか。
       </p>
     </section>
   </main>

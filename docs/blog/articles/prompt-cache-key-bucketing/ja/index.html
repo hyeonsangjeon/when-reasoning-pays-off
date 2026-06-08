@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2f84fcdf1cdf391719ab6ac2e09568e97d214211947740cc240f72079a22d727">
+  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -37,11 +37,64 @@
     <p class="article-kicker">運用エッセイ · プロンプトキャッシュとルーティングのヒント</p>
     <h1>キャッシュキーはラベルではなくルーティングのヒント</h1>
     <p class="lede">
-      <code>prompt_cache_key</code> は、害のないメタデータと勘違いしやすいものです。
-      しかし実態はもっと運用に関わるもので、プロンプトのプレフィックスハッシュと
-      組み合わされ、一致する処理がどこにルーティングされるかに影響します。良いキーは
-      再利用を集約し、悪いキーは再利用を断片化させます。
+      チームが <code>prompt_cache_key</code> を配線すると、ほかのラベルと同じように
+      扱いたくなります。自然な反射は、呼び出しを一意にタグ付けするもの——
+      <code>request_id</code>、ユーザーの質問テキスト、タイムスタンプ、あるいは
+      テナント単位やユーザー単位の十分に細かい軸——を詰め込むことです。しかしこの
+      フィールドはラベルよりも運用に関わります。プロンプトのプレフィックスハッシュと
+      組み合わされ、一致する処理がどこにルーティングされるかに影響するからです。
+      だからキーを特異にしたい本能は、本記事が問う運用上の問いに真正面からぶつかります
+      ——より一意なキーは再利用を集めるのか、それとも共有プレフィックスが稼ごうとした
+      キャッシュの局所性を断片化させるのか。
     </p>
+
+    <figure class="article-figure" id="figure-keybucket-one-pager">
+      <figcaption>
+        <strong>ひと目で見るこの記事。</strong> キャッシュ可能なプレフィックスと
+        <code>prompt_cache_key</code> は、繰り返しの処理を一つのマシンへルーティング
+        します。そして Microsoft Learn は、バケットあたり 1 分あたり約 15 リクエスト
+        という目安を文書化しており、それを超えるとキャッシュの有効性が下がりうると
+        しています。1枚要約はその一つのメッセージ——文書化された上限の下にとどまる
+        ようにバケットをサイジングする——を運び、境界を示します。上限は公式仕様で
+        あり、その隣のヒット率とレイテンシの形は、従量課金で測定したサニタイズ済みの
+        公開集計を記述的に示したものです。
+        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">キャッシュキーのバケット分割の1枚要約 SVG を開く</a>。
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="プロンプトキャッシュキーのバケット分割の1枚要約。一つのプレフィックス＋キーのバケットが一つのマシンへルーティングされること、バケットあたり 1 分あたり約 15 リクエストが文書化されたオーバーフロー地点であること、そしてソース実行のキャッシュヒット率は高くおおむね横ばいのままインメモリの TTFT が改善したことを示す。だからヒット率はレイテンシの隣で読む。中心メッセージ：各バケットを文書化された上限の下に保つ。上限は公式仕様、形はサニタイズ済みの測定された集計で、記述的のみであることを示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section id="why-bucket" class="article-section">
+      <h2>なぜキーを推測ではなくサイジングするのか</h2>
+      <p>
+        一意キーの反射は、特異性はタダだと仮定します——細かいキーはリクエストを区別
+        する助けにしかならない、と。それを受け入れる前に、二つのことを並べておく価値が
+        あります。一つ目は Microsoft Learn が文書化していることです。プロンプト
+        キャッシュはキャッシュの対象になるために同一の早期プレフィックスを必要とし、
+        <code>prompt_cache_key</code> はプレフィックスのハッシュと組み合わされて、
+        繰り返しの処理がどこに着地するかを誘導します。同じドキュメントは、ある目安——
+        一つのプレフィックス＋キーの組み合わせで 1 分あたり約 15 リクエスト——を示し、
+        それを超えるとトラフィックが追加のマシンへあふれ、キャッシュの有効性が下がり
+        うるとしています。二つ目は、本リポジトリのソース実行から取った疎なサニタイズ
+        済みの公開集計で、同じプレフィックスをより多くのバケットに分けたときにキャッシュ
+        ヒット率と初回トークンのレイテンシが実際にどう動いたかを記述的に示すために
+        含めています。
+      </p>
+      <p>
+        立ち止まる価値があるのは、その対の部分です。ヒット率だけを見ると安心材料に
+        読めますが、その下では体験が動いています。この断面では、バケットのカーディナ
+        リティが上がってもヒット率は高くおおむね横ばいのままだったので、それだけを
+        読めば分割はコストゼロに見えてしまいます。初回トークンのレイテンシの裾が、
+        もう半分の物語を語ります——一つの熱いバケットが非常に大きな p95 を抱え、
+        トラフィックがより多くのバケットに広がると急に下がりました。だから運用上の
+        問いは「キャッシュはヒットしたか」ではなく、「各バケットは、一つのバケットが
+        熱くなりすぎることなくプレフィックスが局所性を保てるサイズか」です。プレフィックス
+        ハッシュによるルーティングと約 15 リクエスト毎分のおおよそのオーバーフロー
+        地点は Microsoft Learn が文書化しているものです。バケット数の計算と、レイテンシの
+        隣に置いた公開のヒット率の断面は、本リポジトリが擁護する運用上の推論とソース
+        実行の根拠であって、普遍的なキャッシュヒット曲線ではありません。下のチャートが
+        その対を明示します。
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="記事の要約">
       <section class="summary-tile">
@@ -144,6 +197,45 @@
         </figcaption>
         <img src="../../../../assets/prompt-cache-key-bucketing-evidence.ja.svg" alt="キャッシュヒット率と TTFT p95 を比較したプロンプトキャッシュキーバケット分割の根拠チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
+      <figure class="article-figure" id="figure-keybucket-hit-ratio">
+        <figcaption>
+          <strong>元チャート——キャッシュヒット率対キャッシュキーのカーディナリティ。</strong>
+          <strong>X 軸：</strong> log2 スケールのバケットのカーディナリティ（1、続いて同じ
+          プレフィックスにわたる 8 バケット）。 <strong>Y 軸：</strong> 定常状態のキャッシュ
+          ヒット率、0〜1。 <strong>線：</strong> 二つの保持系列——<code>in_memory</code> と
+          <code>24h</code>、それぞれ N&nbsp;=&nbsp;960 レコード。これは二系列の折れ線グラフ
+          であって、度数のヒストグラムではありません。 <strong>読み方：</strong> この
+          バケットあたりレートの低い断面では、カーディナリティが上がってもヒット率は
+          高くおおむね横ばい（約 0.93〜0.96）でした。だからプレフィックスをより多くの
+          バケットに分けること自体が、ここでヒット率を崩したわけではありません——
+          断片化のコストは、このパネルではなく次のパネルのレイテンシの裾に現れました。
+          <strong>根拠の境界：</strong> 一つのテナントとリージョンで従量課金の gpt-5.2 で
+          測定した、疎なサニタイズ済みの公開集計（PTU ではありません）。記述的であり、
+          普遍的なキャッシュヒット曲線ではありません。 <strong>出典：</strong> 値は本
+          リポジトリの <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
+          から来ています（<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">ソース CSV</a>）。
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="バケットのカーディナリティ（log2 軸、1 と 8 バケット）に対する定常状態のキャッシュヒット率の折れ線グラフ。in_memory と 24h の保持の二本のほぼ横ばいの線がいずれも高く、おおむね 0.93〜0.96 にあり、この断面ではカーディナリティが増えてもヒット率がほぼ一定だったことを示す。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
+      <figure class="article-figure" id="figure-keybucket-ttft">
+        <figcaption>
+          <strong>対になる元チャート——初回トークンのレイテンシ p95 対キャッシュキーのカーディナリティ。</strong>
+          <strong>X 軸：</strong> 同じ log2 のバケットカーディナリティ軸（1、続いて 8）。
+          <strong>Y 軸：</strong> 定常状態の初回トークンまでの p95 時間（ミリ秒）。
+          <strong>線：</strong> 同じ二つの保持系列、それぞれ N&nbsp;=&nbsp;960。
+          <strong>読み方：</strong> カーディナリティ 1 の単一の熱い <code>in_memory</code>
+          バケットは非常に大きな p95（約 106,000&nbsp;ms）を抱え、トラフィックが 8 バケットに
+          広がると急に下がりました（約 16,600&nbsp;ms）。一方 <code>24h</code> 系列は終始
+          低いままでした——だからこの断面ではバケット分割のコストはレイテンシの裾に着地し、
+          それゆえヒット率は単独ではなく初回トークンのレイテンシの隣で読む必要があります。
+          <strong>根拠の境界：</strong> 従量課金の gpt-5.2 での同じ疎なサニタイズ済み公開
+          集計（PTU ではありません）。記述的であり、レイテンシの保証ではありません。
+          <strong>出典：</strong>
+          <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
+          （<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">ソース CSV</a>）。
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="バケットのカーディナリティ（log2 軸）に対する定常状態の初回トークンまでの p95 時間の折れ線グラフ。in_memory の線は単一バケットで約 10 万 6 千ミリ秒と非常に高く始まり、8 バケットで約 1 万 6 千へ急に下がる。一方 24h の線は低いままで、約 1 万〜1 万 5 千ミリ秒付近でおおむね横ばい。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <table class="chart-table evidence-table">
         <caption>公開キャッシュキーバケット分割の根拠</caption>
         <thead>
@@ -197,18 +289,58 @@
       </div>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>出典と根拠の境界</h2>
+      <p><strong>Tier 1 — サービス契約（Microsoft Learn）。</strong> プロンプト
+        キャッシュのプレフィックス規則、プレフィックスハッシュによるルーティング、
+        128 トークン単位の一致ステップ、1 文字のミス、<code>prompt_cache_key</code> の
+        ルーティングヒント、そして 1 分あたり約 15 リクエストのオーバーフロー地点が、
+        ここに文書化されています。</p>
       <ul>
-        <li><strong>公式仕様、アクセス日 2026-06-04:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
-        <li><strong>公開集計の根拠:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">キャッシュキーバケット分割 CSV</a>。</li>
-        <li><strong>公開運用者ガイド:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">prompt-cache-key ポリシー運用手順書</a>。</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> — 1,024 トークンの
+          最小要件と同一プレフィックスの要求、初期プレフィックスのハッシュによる
+          ルーティング、最初の 1,024 トークン以降の追加で同一な 128 トークンごとの
+          キャッシュ一致、1 文字のキャッシュミス、プレフィックスハッシュと結合して
+          ルーティングに影響する <code>prompt_cache_key</code> ヒント、そして同じ
+          プレフィックスとキーのリクエストが追加のマシンへあふれてキャッシュ効率が
+          下がる 1 分あたり約 15 リクエスト地点を定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
+      </ul>
+      <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> バケット数の
+        計算と公開のヒット率の断面は、Learn の仕様ではなく、本リポジトリの運用上の
+        推論でありソース実行の根拠です。</p>
+      <ul>
+        <li><strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
+          — バケットサイジングの運用手順書。文書化された約 15-RPM の数値から
+          <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> を導きます。
+          一方、<code>recommended_buckets</code> の式と既定のバケットあたり 10-RPM の
+          目標は、Learn の仕様ではなく本リポジトリの運用上の推論です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">出典</a>。</li>
+        <li><strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+          — ヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の断面。
+          普遍的な曲線ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
       </ul>
       <p>
-        実務上のルール：キャッシュ可能なプレフィックスを安定させ、余裕をもってワークロード
-        バケットを選び、ヒット率の指標は約束ではなく運用上のシグナルとして扱うことです。
+        <strong>このトピックが証明するものとしないもの。</strong> アクセス日時点で
+        Microsoft Learn が明示するプロンプトキャッシュの契約——1,024 トークンの
+        プレフィックス規則、プレフィックスハッシュによるルーティング、
+        <code>prompt_cache_key</code> ヒント、1 分あたり約 15 リクエストのオーバー
+        フロー地点——と、共有プレフィックスを、各バケットが余裕をもってその地点の
+        下にとどまるだけの安定したバケットに分割する、という本リポジトリのサイジングの
+        経験則を文書化します。バケット数の式と公開のヒット率の断面は運用上の推論と
+        ソース実行の根拠であって、保証されたキャッシュヒット曲線ではありません。
+        すべてのモデル・リージョン・トラフィック形状で同一に成り立つ普遍的なしきい値は
+        証明しません。
       </p>
-      <p><a class="button-link" href="../../">記事一覧に戻る</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>実務上のルール</h2>
+      <p><strong>実務上のルール：キャッシュ可能なプレフィックスを安定させ、各
+        <code>prefix + prompt_cache_key</code> が文書化された 1 分あたり約 15 リクエストの
+        オーバーフロー地点の下に余裕をもってとどまるようにワークロード単位でバケットを
+        分け、キャッシュヒット率はどちらか一方だけを信じず初回トークンのレイテンシの
+        隣で読んでください。</strong></p>
+      <p>次の記事は、キーをどうバケット分割するかから、キャッシュがどれだけ生き延びるべきかへと移ります。</p>
+      <p><a class="button-link" href="../../prompt-cache-retention/ja/">短い待機ウィンドウを越えてキャッシュの再利用を生かす必要があるとき、リクエストは何を明示すべきか</a></p>
     </section>
   </main>
 

@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>移行のサイジングは測定である | when reasoning pays off</title>
+  <title>モデル名だけでサイジングしない | when reasoning pays off</title>
   <meta name="description" content="GPT-4o のワークロードを GPT-5.x へ移行する際に、出力の重み・推論トークン・キャッシュ率・max_output_tokens を再測定することを扱う公開運用記事。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="f0bb5c9279d77787641e8ef0e02fd623d1e1ebb4a119a2ce19de8bab478711d8">
+  <meta name="article:source-article-sha256" content="26d29e428e916a5453c5ef6132f21d680378756a163b8bf4daf75abfef193344">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -33,15 +33,72 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ</p>
+    <p class="breadcrumb"><a href="../../">記事一覧</a> / 運用エッセイ / 日本語訳</p>
     <p class="article-kicker">運用エッセイ · GPT-4o から GPT-5.x へのサイジング</p>
     <h1>推論モデルへの移行を、モデル名だけでサイジングしてはいけない</h1>
     <p class="lede">
-      ワークロードを <code>gpt-4o</code> から GPT-5.x の推論モデルへ移すことは、
-      ひとつの数字で済む移行ではありません。問うべきは「新しいモデルは
-      重いのか？」ではなく、「リクエストの形・出力の構成・隠れた推論トークン・
-      キャッシュヒット率・応答上限のうち、何が変わったのか？」です。
+      あるチームが <code>gpt-4o</code> のトラフィックを GPT-5.x の推論モデルへ
+      移そうと計画し、新しいデプロイのための PTU 数を必要とします。反射的に、
+      すでにうまくいっているものを再利用したくなります——古い <code>gpt-4o</code> の
+      PTU サイズをそのまま持ち越すか、それにファミリーレベルの「5.x」の乗数を当てるか。
+      モデル名がリサイズに十分な情報を運ぶ、という仮定です。しかし PTU の
+      サイジングを駆動するのはモデル名ではなくトークンの形です——プロンプトの
+      サイズ、可視出力、隠れた推論トークン、キャッシュヒット率、応答上限がすべて
+      結果を動かします。だから名前だけでサイジングしたい本能は、本記事が問う運用上の
+      問いに真正面からぶつかります——モデル名で十分なのか、それともまずリクエストの
+      形を測り直さなければならないのか。
     </p>
+
+    <figure class="article-figure" id="figure-migration-one-pager">
+      <figcaption>
+        <strong>ひと目で見るこの記事。</strong> 移行のサイジングは、モデル名の参照では
+        なくモデル化された計算です。推奨 PTU = ceil(需要 &divide; 密度 &divide;
+        目標利用率) で、過大な応答上限（<code>max_output_tokens</code>）は本リポジトリ
+        では——文書化されたプラットフォームの挙動ではなく——検証すべきアドミッション
+        リスクの仮説として扱い、それがワークロードの予約する PTU を支配しうるかを
+        確かめます。1枚要約はその一つのメッセージを運び、境界を率直に示します。これは
+        ピン留めした価格スナップショットを伴うモデル化されたワークロード上の合成された
+        計算例であって、測定された容量ではありません。
+        <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">移行サイジングの1枚要約 SVG を開く</a>。
+      </figcaption>
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="推論移行のサイジングの1枚要約。需要 TPM から、プロンプト＋max_output の予約を経て、密度と目標利用率で割り、推奨 PTU の上限へと至るサイジングの連鎖をたどり、過大な応答上限（max_output_tokens）を、文書化されたプラットフォームの挙動ではなく検証すべきサイジングのリスクとして示す。中心メッセージ：移行のサイジングはモデル化された計算である。測定された容量ではなく合成された計算例であると明示する。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <section id="why-remeasure" class="article-section">
+      <h2>なぜ古いサイズを再利用せず、測り直すのか</h2>
+      <p>
+        再利用の反射は、モデル名がサイズを運ぶと仮定します——うまくいっている
+        <code>gpt-4o</code> の数値を、ファミリーの乗数でスケールすれば、GPT-5.x にも
+        なお収まる、と。それを受け入れる前に、二つのことを並べておく価値があります。
+        一つ目はドキュメントが規定していることです。Microsoft Learn は、ピーク RPM、
+        平均プロンプトと出力トークン、キャッシュ率、モデルの出力対入力比、そして PTU
+        あたり Input TPM から、トラフィックを正規化 TPM に変換し、キャッシュ済み
+        プロンプトトークンを利用率から差し引きます。OpenAI は推論トークンを、
+        <code>output_tokens_details.reasoning_tokens</code> に報告される、表示されない
+        出力側のトークンとして文書化しています。二つ目は本リポジトリの例示的な計算で、
+        その文書化された式を一つの呼び出しの形の例に走らせ、サイズを動かす要因を
+        並べて見せます——どのデプロイの測定でもありません。
+      </p>
+      <p>
+        立ち止まる価値があるのは、その対の部分です。可視出力だけで読むと、移行は
+        扱いやすく見えます——同じプロンプトと同じ可視の答えは、新しいモデルでおおむね
+        同じ水準か、わずかに軽くサイジングされることさえあります。しかし可視の答えは
+        リクエストのすべてではありません。隠れた推論出力が現れると、同じ答えがはるかに
+        多くの正規化 TPM を必要としうるのです。そして本リポジトリの作業仮説——文書化
+        されたプラットフォームの挙動ではなく、検証すべきアドミッションリスク——は、
+        過大な <code>max_output_tokens</code> の上限が、それらのトークンが実際に生成
+        されるかどうかにかかわらず、アドミッションの重みを予約しうる、というものです。
+        だから運用上の問いは「新しいモデルは重いか」ではなく、「測定したリクエストの
+        形——可視出力、推論出力、キャッシュ率、応答上限——は実際に何を予約するのか」
+        です。正規化 TPM の式、モデル別の表、キャッシュの差し引き、推論トークンの会計は
+        Microsoft Learn と OpenAI が文書化しているものです。過大な
+        <code>max_output_tokens</code> を検証すべき PTU のアドミッションリスクとして
+        扱うのは、本リポジトリが擁護する運用上の推論です。続くチャートは、ピン留め
+        した価格スナップショットを伴うモデル化されたワークロード上の合成された計算例
+        です——測定された容量でも、稼働中の PTU スループットでも、SLA でもありません。
+        下の例示チャートがサイズを動かす要因を明示します。
+      </p>
+    </section>
 
     <div class="article-summary-grid" aria-label="記事の要約">
       <section class="summary-tile">
@@ -147,7 +204,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>可視ベースライン</td><td>gpt-4o</td><td>0%</td><td>20 出力トークン</td><td>112</td></tr>
+          <tr><td>可視ベースライン</td><td>gpt-4o</td><td>0%</td><td>20 出力トークン</td><td>115</td></tr>
           <tr><td>可視移行</td><td>gpt-5.2</td><td>0%</td><td>20 出力トークン</td><td>110</td></tr>
           <tr><td>可視移行 + キャッシュ</td><td>gpt-5.2</td><td>50%</td><td>20 出力トークン</td><td>80</td></tr>
           <tr><td>推論移行</td><td>gpt-5.2</td><td>0%</td><td>20 可視 + 60 推論トークン</td><td>250</td></tr>
@@ -178,21 +235,64 @@
       </ol>
     </section>
 
-    <section id="sources" class="article-section decision-box">
+    <section id="sources" class="article-section">
       <h2>出典と根拠の境界</h2>
+      <p><strong>Tier 1 — サービス契約（Microsoft Learn と OpenAI）。</strong> 正規化
+        TPM のサイジング式、モデル別の PTU あたり Input TPM と出力対入力比、GPT-4.1
+        以降の出力トークンの重み付け、利用率からの 100% キャッシュ差し引き、そして
+        推論トークンの会計が、ここに文書化されています。</p>
       <ul>
-        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn PTU サイジングガイド</a>。</li>
-        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn プロビジョニングされたスループットの概念</a>。</li>
-        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn プロンプトキャッシュガイド</a>。</li>
-        <li><strong>公式仕様、2026-06-04 アクセス:</strong> <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 推論モデルガイド</a>。</li>
-        <li><strong>公開リポジトリのコンテキスト:</strong> <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">PTU 対 PAYG 判断ランブック</a> と <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">可観測性スキーマ</a>。</li>
+        <li><strong>Determine PTU sizing for a workload</strong> — 正規化 TPM の計算
+          （Input TPM = ピーク RPM × プロンプトサイズ、Output TPM = ピーク RPM ×
+          応答サイズ、Normalized TPM = input TPM × (1 − キャッシュ率) + 出力対入力比 ×
+          output TPM、PTU = normalized TPM ÷ PTU あたり Input TPM）、モデル別の PTU
+          あたり Input TPM と出力対入力比の値、そしてキャッシュ済みトークンが利用率の
+          計算から 100% 差し引かれることを定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">Microsoft Learn ドキュメント</a>（2026-06-05 アクセス）· <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">アーカイブ</a>。</li>
+        <li><strong>What is provisioned throughput for Foundry Models?</strong> — PTU の
+          利用率モデルと、リクエストの形が予約済み容量をどう消費するかを文書化して
+          います。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">アーカイブ</a>。</li>
+        <li><strong>Prompt caching with Azure OpenAI</strong> — キャッシュ済みプロンプト
+          トークンが利用率から差し引かれるため、プレフィックスの形の変化がサイジング
+          結果を動かすことを文書化しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
+        <li><strong>OpenAI reasoning models guide</strong> — 推論トークンを、
+          <code>output_tokens_details.reasoning_tokens</code> に報告される、表示されない
+          出力側のトークンとして文書化しています。出典：<a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">アーカイブ</a>。</li>
+      </ul>
+      <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> 過大な
+        <code>max_output_tokens</code> を PTU のアドミッションリスクの仮説として扱う
+        こと、そして推論トークンとキャッシュ済みトークンの測定契約は、本リポジトリの
+        運用上の推論であって Learn の仕様ではありません。</p>
+      <ul>
+        <li><strong>本リポジトリ、<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
+          — <code>mean_max_output_tokens</code> を記録し、大きな
+          <code>max_output_tokens</code> を、推測する値ではなく、検証すべき予約済み
+          アドミッションの重みとして解釈します。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">出典</a>。</li>
+        <li><strong>本リポジトリ、<code>docs/14-observability-schema.md</code></strong>
+          — <code>reasoning_tokens</code>、<code>cached_tokens</code>、
+          <code>max_output_tokens_sent</code> をそれぞれの元の usage フィールドに
+          対応づける、PTU レコードの正準的な契約。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">出典</a>。</li>
       </ul>
       <p>
-        実務上のルールは次のとおりです。GPT-4o のトラフィックを PTU 上の GPT-5.x へ
-        移す前に、出力・推論・キャッシュ・上限ポリシーを再測定してください。モデル名だけでは、
-        ワークロードをサイジングするのに十分な情報ではありません。
+        <strong>このトピックが証明するものとしないもの。</strong> アクセス日時点で
+        Microsoft Learn が明示する PTU サイジングの契約——正規化 TPM の式、モデル別の
+        PTU あたり Input TPM と出力対入力比、GPT-4.1 以降の出力トークンの重み付け、
+        100% のキャッシュ差し引き——と、OpenAI の推論トークンの会計、そして本リポジトリの
+        経験則——サイジングの前に出力・推論・キャッシュ・上限を測り直す——を文書化します。
+        例示チャートは文書化された式を一つの呼び出しの形の例に適用したものです。これは
+        計算例であって容量の保証ではなく、特定の GPT-5.x のワークロードがすべての
+        リージョン・モデルバージョン・トラフィック形状にわたって GPT-4o の前任より重いか
+        軽いかを証明するものではありません。
       </p>
-      <p><a class="button-link" href="../../">記事一覧へ戻る</a></p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>実務上のルール</h2>
+      <p><strong>実務上のルール：GPT-4o のトラフィックを PTU 上の GPT-5.x へ移す前に、
+        出力・推論・キャッシュ・<code>max_output_tokens</code> の上限ポリシーを測り直し、
+        そのうえで正規化 TPM の式でサイジングしてください。モデル名だけでは、ワークロードを
+        サイジングするのに十分な情報ではないからです。</strong></p>
+      <p>本記事は運用の弧を閉じます。ループは、そもそもどの根拠が公開に足るほど強かったかを判断した方法論へと戻ります。</p>
+      <p><a class="button-link" href="../../when-reasoning-pays-off/ja/">どの根拠が公開に足るほど強いかを、ラボはどう判断したのか</a></p>
     </section>
   </main>
 
