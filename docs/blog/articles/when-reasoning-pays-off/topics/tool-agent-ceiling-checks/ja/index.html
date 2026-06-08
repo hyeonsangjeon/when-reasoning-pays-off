@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="5e533722851bfe5157659f770d99ab202333376170d77fc6e12e35e2339e702c">
+  <meta name="article:source-article-sha256" content="3679a8a12f2a3a79f8ad48b7705541f042c924386d8b908a915728baa1bdd9bb">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -172,11 +172,11 @@
         上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、コストの主張はいずれも日付付きの価格スナップショットで算定している。品質の天井に届く最も低い effort で止めるというこの記事のルーティングの習慣は、記事自身の運用上の推論である。下の二つの Tier は、文書化された入力がどこで終わり、推論がどこから始まるのかを示す。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けばコストの数値も変わる。</li>
-        <li><strong>Tier 2 — benchmark-03 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。天井効果の品質の棒——1.85 の GPT-4o ベースラインと、1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（extra-high）の範囲で揺れた GPT-5.2 の段——と、レイテンシが 2.9s から 3.8s へ伸びるなかでリクエストあたり $0.002762（none）から $0.003499（extra-high）へ単調に上がった対応するコスト値の出典。</li>
-        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> と一緒に読むと、推論トークンがリクエストあたり 0 から 52.15 へ増えても品質の棒は天井から動かなかったという根拠になる。</li>
-        <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
+        <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けばコストの数値も変わる。</li>
+        <li>[3] <strong>Tier 2 — benchmark-03 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。天井効果の品質の棒——1.85 の GPT-4o ベースラインと、1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（extra-high）の範囲で揺れた GPT-5.2 の段——と、レイテンシが 2.9s から 3.8s へ伸びるなかでリクエストあたり $0.002762（none）から $0.003499（extra-high）へ単調に上がった対応するコスト値の出典。</li>
+        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。<code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> と一緒に読むと、推論トークンがリクエストあたり 0 から 52.15 へ増えても品質の棒は天井から動かなかったという根拠になる。</li>
+        <li>[5] <strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 の品質とコストの対チャート</a>は、同じアーティファクトを監査できる形である。</li>
       </ul>
       <p>
         このスライスが何を証明し、何を証明しないか：このツール利用エージェントのスライスでは、推論 effort を上げると品質が天井に当たり——GPT-5.2 のスコアは 1.97〜2.00 の帯を出なかった——一方でコストは effort の段階を通じて上がり続けたことを示す。同じ天井が短い事実回答、多段推論、統合の作業でも同じ effort 水準で現れることは証明しない。各トピックはそれぞれの測定を持つ。

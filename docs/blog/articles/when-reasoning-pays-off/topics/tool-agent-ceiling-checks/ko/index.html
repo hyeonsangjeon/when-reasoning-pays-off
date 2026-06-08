@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="5e533722851bfe5157659f770d99ab202333376170d77fc6e12e35e2339e702c">
+  <meta name="article:source-article-sha256" content="3679a8a12f2a3a79f8ad48b7705541f042c924386d8b908a915728baa1bdd9bb">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ko/">
   <link rel="alternate" hreflang="en" href="../">
@@ -194,11 +194,11 @@
         시작되는 경계를 표시합니다.
       </p>
       <ul>
-        <li><strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.</li>
-        <li><strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 요청당 비용 관점은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 비용 수치도 달라집니다.</li>
-        <li><strong>Tier 2 &mdash; benchmark-03 단면 측정:</strong> 이 저장소, <code>benchmarks/03-tool-using-agent/analysis.json</code>. 천장 효과를 보여 주는 품질 막대의 출처입니다 &mdash; GPT-4o 기준선 1.85, 그리고 1.966667(없음)·2.0(낮음)·1.983333(중간)·1.966667(높음)·2.0(매우 높음) 사이에서 천장 띠 안을 오간 GPT-5.2 사다리 &mdash; 그리고 지연 시간이 2901.991854 ms(없음)에서 3770.198794 ms(매우 높음)로 오르는 동안 요청당 $0.002762(없음)에서 $0.003499(매우 높음)로 단조 증가한 비용 수치입니다.</li>
-        <li><strong>Tier 2 &mdash; 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>을 <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code>과 함께 읽으면, 추론 토큰이 요청당 0에서 52.15로 올랐는데도 품질 막대가 천장에서 움직이지 않았다는 함께 읽기 근거가 됩니다.</li>
-        <li><strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 품질·비용 짝 차트</a>는 같은 산출물을 감사할 수 있는 형태입니다.</li>
+        <li>[1] <strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.</li>
+        <li>[2] <strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 요청당 비용 관점은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 비용 수치도 달라집니다.</li>
+        <li>[3] <strong>Tier 2 &mdash; benchmark-03 단면 측정:</strong> 이 저장소, <code>benchmarks/03-tool-using-agent/analysis.json</code>. 천장 효과를 보여 주는 품질 막대의 출처입니다 &mdash; GPT-4o 기준선 1.85, 그리고 1.966667(없음)·2.0(낮음)·1.983333(중간)·1.966667(높음)·2.0(매우 높음) 사이에서 천장 띠 안을 오간 GPT-5.2 사다리 &mdash; 그리고 지연 시간이 2901.991854 ms(없음)에서 3770.198794 ms(매우 높음)로 오르는 동안 요청당 $0.002762(없음)에서 $0.003499(매우 높음)로 단조 증가한 비용 수치입니다.</li>
+        <li>[4] <strong>Tier 2 &mdash; 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>을 <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code>과 함께 읽으면, 추론 토큰이 요청당 0에서 52.15로 올랐는데도 품질 막대가 천장에서 움직이지 않았다는 함께 읽기 근거가 됩니다.</li>
+        <li>[5] <strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 품질·비용 짝 차트</a>는 같은 산출물을 감사할 수 있는 형태입니다.</li>
       </ul>
       <p>
         이 단면이 증명하는 것과 증명하지 못하는 것: 이 도구 에이전트 단면에서는

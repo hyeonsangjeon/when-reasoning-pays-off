@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="24d7600784cea1ae3108904cd256062084d5c86158ca7f6393ee609ad1ff82f7">
+  <meta name="article:source-article-sha256" content="6b749c050e5360b129a26a59559a191b766eb511c93ba18cbb5f80c91805e72f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -378,14 +378,14 @@
         この概要は、五つの断面でコスト・品質・レイテンシ・トークン構成を一緒に読みます。上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、運用上の解釈はこの記事自身のものです。下の二つの Tier は、文書化された契約がどこで終わり、運用上の推論がどこから始まるのかを示します。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、N = 20 で p 値は主張しません。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定します。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比率も変わります。</li>
-        <li><strong>Tier 1 — PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> によります。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動します。</li>
-        <li><strong>Tier 2 — 短い事実回答の断面測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000663 から $0.005043 へのコスト上昇（7.6 倍の請求）、1.87931 から 1.779661 への平均評価スコアの移動、3.655172 から 311.474576 への推論トークンの変化の出典です。</li>
-        <li><strong>Tier 2 — 多段の断面測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高 effort 評価スコア 2.0 の出典です。</li>
-        <li><strong>Tier 2 — ツールエージェントの断面測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典です。</li>
-        <li><strong>Tier 2 — モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における 149 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読んでください。</li>
-        <li><strong>エビデンスダッシュボード：</strong> <a href="../../../charts/?lang=ja">エビデンスダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じアーティファクトを監査できる形です。</li>
+        <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、N = 20 で p 値は主張しません。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定します。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比率も変わります。</li>
+        <li>[3] <strong>Tier 1 — PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> によります。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動します。</li>
+        <li>[4] <strong>Tier 2 — 短い事実回答の断面測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000663 から $0.005043 へのコスト上昇（7.6 倍の請求）、1.87931 から 1.779661 への平均評価スコアの移動、3.655172 から 311.474576 への推論トークンの変化の出典です。</li>
+        <li>[5] <strong>Tier 2 — 多段の断面測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高 effort 評価スコア 2.0 の出典です。</li>
+        <li>[6] <strong>Tier 2 — ツールエージェントの断面測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典です。</li>
+        <li>[7] <strong>Tier 2 — モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における 149 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読んでください。</li>
+        <li>[8] <strong>エビデンスダッシュボード：</strong> <a href="../../../charts/?lang=ja">エビデンスダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じアーティファクトを監査できる形です。</li>
       </ul>
       <p>
         この概要が何を証明し、何を証明しないか：このベンチマークのサンプルで五つの断面の形を示しますが、別のワークロードの構成、別のテナント、別のリージョン、あるいは将来の価格スナップショットでも同じ形が保たれることは証明しません。各トピック記事は、その断面に固有の境界を併せて示します。

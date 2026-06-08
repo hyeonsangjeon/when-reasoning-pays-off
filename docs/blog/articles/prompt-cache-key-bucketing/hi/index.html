@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
+  <meta name="article:source-article-sha256" content="72f940c883a4941c85a7fccfb83d587d0e54a87c1a5df3c05ff3626d510ec20a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -290,7 +290,7 @@
         <code>prompt_cache_key</code> रूटिंग-संकेत, और प्रति-मिनट क़रीब 15 request का
         overflow-बिंदु यहाँ प्रलेखित हैं।</p>
       <ul>
-        <li><strong>Azure OpenAI के साथ prompt caching</strong> — 1,024 टोकन की
+        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong> — 1,024 टोकन की
           न्यूनतम शर्त और एक-से prefix की माँग, शुरुआती prefix की hash से रूटिंग, पहले
           1,024 टोकन के बाद हर एक-से 128 टोकन पर cache-मेल, एक-अक्षर cache-miss,
           prefix-hash से जुड़कर रूटिंग पर असर डालता <code>prompt_cache_key</code> संकेत,
@@ -301,12 +301,12 @@
         और सार्वजनिक hit-दर स्लाइस Learn विनिर्देश नहीं, बल्कि इस रिपॉज़िटरी का
         संचालन-अनुमान और स्रोत-रन सबूत हैं।</p>
       <ul>
-        <li><strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
           — bucket-साइज़िंग का संचालन-निर्देश। प्रलेखित क़रीब 15-RPM से
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> निकलता है, जबकि
           <code>recommended_buckets</code> सूत्र और डिफ़ॉल्ट प्रति-bucket 10-RPM लक्ष्य
           Learn विनिर्देश नहीं, इस रिपॉज़िटरी का संचालन-अनुमान है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
-        <li><strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[3] <strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — hit-दर और पहले-टोकन latency की तालिका के पीछे का विरल सार्वजनिक समुच्चय।
           सार्वभौमिक वक्र नहीं, स्रोत-रन सबूत। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>

@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <meta name="article:source-article-sha256" content="b8fa03dc025507152268b653398d99a07d2b13cc5433ef506bde207d4b9860d5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -343,11 +343,11 @@
         श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ ख़त्म होता है और अनुमान कहाँ शुरू।
       </p>
       <ul>
-        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
-        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (minimal effort का $0.000663, extra-high effort का $0.005043, 7.6x बिल) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट। सूची-मूल्य हिलने पर अनुपात भी बदलेंगे।</li>
-        <li><strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। लागत-चढ़ाई, 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, 1112.798745 ms से 3088.001225 ms की latency वृद्धि, और 0.984614 से 0.451798 के throughput-गुणक का स्रोत।</li>
-        <li><strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। reasoning tokens की 3.655172 से 311.474576 तक चाल और सिर्फ़ 12.672414 से 17.881356 टोकन हिलते दृश्य output का स्रोत।</li>
-        <li><strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">एविडेंस डैशबोर्ड</a> की प्रति-सेल तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
+        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
+        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (minimal effort का $0.000663, extra-high effort का $0.005043, 7.6x बिल) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट। सूची-मूल्य हिलने पर अनुपात भी बदलेंगे।</li>
+        <li>[3] <strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। लागत-चढ़ाई, 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, 1112.798745 ms से 3088.001225 ms की latency वृद्धि, और 0.984614 से 0.451798 के throughput-गुणक का स्रोत।</li>
+        <li>[4] <strong>Tier 2 — रेंडर किया चार्ट-डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। reasoning tokens की 3.655172 से 311.474576 तक चाल और सिर्फ़ 12.672414 से 17.881356 टोकन हिलते दृश्य output का स्रोत।</li>
+        <li>[5] <strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">एविडेंस डैशबोर्ड</a> की प्रति-सेल तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
       </ul>
       <p>
         यह स्लाइस क्या सिद्ध करती है और क्या नहीं: छोटे तथ्यात्मक जवाब के इस वर्कलोड-आकार

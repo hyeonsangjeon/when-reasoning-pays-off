@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="357a89b712a76c8572fc6bf16649db16fe37642e9d5ce08230f3e09d3c2ad6e5">
+  <meta name="article:source-article-sha256" content="9c2fddc1cb9b0bcb8563eae091101795d1b6baa11638eecdad725639084f865a">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -165,11 +165,11 @@
         上記の数値はすべて本リポジトリの公開アーティファクトにたどれ、コストの主張はいずれも日付付きの価格スナップショットで算定している。推論トークンの予算をテレメトリで見えるようにするというこの記事の会計上の習慣は、記事自身の運用上の推論である。下の二つの Tier は、文書化された入力がどこで終わり、推論がどこから始まるのかを示す。
       </p>
       <ul>
-        <li><strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
-        <li><strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば隠れたトークンの請求も変わる。</li>
-        <li><strong>Tier 2 — benchmark-01 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。推論トークンの 3.655172 から 311.474576 への変化、見える出力の 12.672414 から 17.881356 への移動、評価スコアの 1.87931 から 1.779661、レイテンシの 1112.798745 ms から 3088.001225 ms への伸びの出典。</li>
-        <li><strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> がトークン分解の出典。<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code> と一緒に読むと、隠れたトークンが品質の上積みを伴わずに請求と待ち時間を膨らませたという根拠になる。</li>
-        <li><strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">benchmark-01 トークン構成チャート</a>は、同じアーティファクトを監査できる形である。</li>
+        <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 のオーサリング済みサンプル、R = 3 回の反復、公開集計スライスのみ。チャート読解の本文はこの凍結された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しない。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコストは本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> で算定している。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば隠れたトークンの請求も変わる。</li>
+        <li>[3] <strong>Tier 2 — benchmark-01 スライスの測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。推論トークンの 3.655172 から 311.474576 への変化、見える出力の 12.672414 から 17.881356 への移動、評価スコアの 1.87931 から 1.779661、レイテンシの 1112.798745 ms から 3088.001225 ms への伸びの出典。</li>
+        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> がトークン分解の出典。<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code> と一緒に読むと、隠れたトークンが品質の上積みを伴わずに請求と待ち時間を膨らませたという根拠になる。</li>
+        <li>[5] <strong>エビデンスダッシュボード：</strong> レンダリングされた <a href="../../../../../charts/?lang=ja#chart-token-composition-benchmark-01-token_composition">benchmark-01 トークン構成チャート</a>は、同じアーティファクトを監査できる形である。</li>
       </ul>
       <p>
         このスライスが何を証明し、何を証明しないか：この短い事実回答のスライスでは、見える出力がほとんど動かないまま、内部の推論が effort の段階を上がるほど増えたことを示す。同じ隠れたトークンの形が多段、ツールエージェント、統合の作業でも現れることは証明しない。各トピックはそれぞれの測定を持つ。

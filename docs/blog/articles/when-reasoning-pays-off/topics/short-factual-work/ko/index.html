@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="13eb2ed592ceb5290036a46f6d58c3add507914099e2359d259e66dc8f0af3af">
+  <meta name="article:source-article-sha256" content="b8fa03dc025507152268b653398d99a07d2b13cc5433ef506bde207d4b9860d5">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ko/">
   <link rel="alternate" hreflang="en" href="../">
@@ -362,11 +362,11 @@
         표시합니다.
       </p>
       <ul>
-        <li><strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값을 주장하지 않습니다.</li>
-        <li><strong>Tier 1 — PAYG 가격 스냅샷:</strong> 요청당 비용 수치(최소 강도 $0.000663, 매우 높은 강도 $0.005043, 7.6배 청구서)는 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 비율도 달라집니다.</li>
-        <li><strong>Tier 2 — 짧은 사실형 단면 측정:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>. 비용 상승, 1.87931에서 1.779661로의 평균 평가 점수 이동, 1112.798745 ms에서 3088.001225 ms로의 지연 시간 확대, 0.984614에서 0.451798로의 처리량 계수의 출처입니다.</li>
-        <li><strong>Tier 2 — 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>)와 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. 보이는 출력이 12.672414에서 17.881356 토큰으로만 바뀌는 동안 추론 토큰이 3.655172에서 311.474576으로 이동한 값의 출처입니다.</li>
-        <li><strong>근거 대시보드:</strong> <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-01-cost_per_request">근거 대시보드</a>의 셀별 표와 렌더링된 원천 차트는 같은 산출물을 감사할 수 있는 형태입니다.</li>
+        <li>[1] <strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 단면만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값을 주장하지 않습니다.</li>
+        <li>[2] <strong>Tier 1 — PAYG 가격 스냅샷:</strong> 요청당 비용 수치(최소 강도 $0.000663, 매우 높은 강도 $0.005043, 7.6배 청구서)는 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 비율도 달라집니다.</li>
+        <li>[3] <strong>Tier 2 — 짧은 사실형 단면 측정:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>. 비용 상승, 1.87931에서 1.779661로의 평균 평가 점수 이동, 1112.798745 ms에서 3088.001225 ms로의 지연 시간 확대, 0.984614에서 0.451798로의 처리량 계수의 출처입니다.</li>
+        <li>[4] <strong>Tier 2 — 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>)와 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. 보이는 출력이 12.672414에서 17.881356 토큰으로만 바뀌는 동안 추론 토큰이 3.655172에서 311.474576으로 이동한 값의 출처입니다.</li>
+        <li>[5] <strong>근거 대시보드:</strong> <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-01-cost_per_request">근거 대시보드</a>의 셀별 표와 렌더링된 원천 차트는 같은 산출물을 감사할 수 있는 형태입니다.</li>
       </ul>
       <p>
         이 단면이 증명하는 것과 증명하지 못하는 것: 이 짧은 사실형 워크로드

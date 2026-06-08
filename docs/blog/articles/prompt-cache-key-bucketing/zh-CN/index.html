@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
+  <meta name="article:source-article-sha256" content="72f940c883a4941c85a7fccfb83d587d0e54a87c1a5df3c05ff3626d510ec20a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -273,7 +273,7 @@
         按前缀哈希路由、128-token 步长的匹配、单字符的未命中、<code>prompt_cache_key</code>
         的路由提示，以及每分钟约 15 个请求的溢出点，都记录在这里。</p>
       <ul>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — 定义了 1,024 token 的最小
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 定义了 1,024 token 的最小
           要求和相同前缀的要求、初始前缀按哈希路由、前 1,024 token 之后每 128 token 一次的
           相同前缀缓存匹配、单字符的缓存未命中、与前缀哈希结合并影响路由的
           <code>prompt_cache_key</code> 提示，以及相同前缀与键的请求溢出到额外机器、缓存
@@ -282,12 +282,12 @@
       <p><strong>Tier 2 — 运维推断（本仓库）。</strong>分桶数量的计算和公开命中率切片，
         不是 Learn 的规范，而是本仓库的运维推断与源运行证据。</p>
       <ul>
-        <li><strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
           — 分桶容量规划的运维手册。它从有文档记载的约 15-RPM 数值推导出
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code>；而
           <code>recommended_buckets</code> 公式与默认每桶 10-RPM 的目标，则是本仓库的运维
           推断，而非 Learn 规范。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">来源</a>。</li>
-        <li><strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[3] <strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — 命中率与首 token 延迟表背后那一份稀疏的公开聚合切片。它是源运行证据，
           不是通用曲线。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">来源</a>。</li>
       </ul>

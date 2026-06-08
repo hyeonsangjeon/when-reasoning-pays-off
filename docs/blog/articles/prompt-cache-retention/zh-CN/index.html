@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="8da03f69bf4b3c27b4571ae2c0db2f65e168e17adb059a3c669be37708bc0146">
+  <meta name="article:source-article-sha256" content="e886f399d3fc64cca70f67725d09f02205a053bcb180cd910a238f11bdafb58f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -255,7 +255,7 @@
         与删除窗口、24 小时扩展留存上限、<code>gpt-5.4</code> 之前的 <code>in_memory</code>
         默认、两种策略相同的价格，以及数据驻留行为，都记录在这里。</p>
       <ul>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — 记录了 <code>in_memory</code>
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 记录了 <code>in_memory</code>
           与 <code>24h</code> 留存策略、非活动后 5～10 分钟内的内存清除与最后一次使用后 1
           小时内的删除、24 小时扩展留存上限、<code>gpt-5.4</code> 之前模型的 <code>in_memory</code>
           默认、两种留存策略相同的提示缓存价格，以及"只有在 Regional Standard 或 Regional
@@ -265,13 +265,13 @@
         省略该值时失败关闭的留存策略助手，以及稀疏的公开命中率与首 token 延迟切片，不是
         Learn 规范，而是本仓库的运维推断与源运行证据。</p>
       <ul>
-        <li><strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
           — 提示缓存键与留存的运维手册。§4 从有文档记载的逐模型默认推导出
           <code>in_memory</code> 默认表，并规定显式声明 <code>prompt_cache_retention</code>。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">来源</a>。</li>
-        <li><strong>本仓库，<code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
+        <li>[3] <strong>本仓库，<code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
           — 对有文档记载默认是 <code>in_memory</code> 的模型，在省略该值时抛出异常的
           <code>ensure_explicit</code> 助手。它是运维推断，而非 Learn 规范。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">来源</a>。</li>
-        <li><strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[4] <strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — 留存命中率与首 token 延迟表背后那一份稀疏的公开聚合切片。它是源运行证据，
           不是通用的延迟规则。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">来源</a>。</li>
       </ul>

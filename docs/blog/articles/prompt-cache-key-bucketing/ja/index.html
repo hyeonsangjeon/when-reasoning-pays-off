@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="35802ba5fac257b8edbc7e20a4ee6cfac079feffd4a308d617b7813fcf17429f">
+  <meta name="article:source-article-sha256" content="72f940c883a4941c85a7fccfb83d587d0e54a87c1a5df3c05ff3626d510ec20a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -297,7 +297,7 @@
         ルーティングヒント、そして 1 分あたり約 15 リクエストのオーバーフロー地点が、
         ここに文書化されています。</p>
       <ul>
-        <li><strong>Prompt caching with Azure OpenAI</strong> — 1,024 トークンの
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 1,024 トークンの
           最小要件と同一プレフィックスの要求、初期プレフィックスのハッシュによる
           ルーティング、最初の 1,024 トークン以降の追加で同一な 128 トークンごとの
           キャッシュ一致、1 文字のキャッシュミス、プレフィックスハッシュと結合して
@@ -309,12 +309,12 @@
         計算と公開のヒット率の断面は、Learn の仕様ではなく、本リポジトリの運用上の
         推論でありソース実行の根拠です。</p>
       <ul>
-        <li><strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
+        <li>[2] <strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
           — バケットサイジングの運用手順書。文書化された約 15-RPM の数値から
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> を導きます。
           一方、<code>recommended_buckets</code> の式と既定のバケットあたり 10-RPM の
           目標は、Learn の仕様ではなく本リポジトリの運用上の推論です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">出典</a>。</li>
-        <li><strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+        <li>[3] <strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — ヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の断面。
           普遍的な曲線ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
       </ul>

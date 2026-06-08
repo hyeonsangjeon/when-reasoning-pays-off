@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="34940ed968c8be83644964804fd4e90ccd6e0dfb19e6e41832d21b829e54e95c">
+  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -305,11 +305,11 @@
         挙動、両方のリトライヘッダー、漏れバケツの利用率モデル、そして SDK の既定
         リトライが、ここに文書化されています。</p>
       <ul>
-        <li><strong>プロビジョニング済みスループットのデプロイを本番で運用する</strong> —
+        <li>[1] <strong>プロビジョニング済みスループットのデプロイを本番で運用する</strong> —
           利用率 100% での即時 429、<code>retry-after-ms</code> と <code>retry-after</code>
           レスポンスヘッダー、漏れバケツの利用率モデル、そして OpenAI SDK の既定の 429
           リトライ（<code>max_retries</code>）を定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">アーカイブ</a>。</li>
-        <li><strong>プロビジョニング済みデプロイのスピルオーバーでトラフィックを管理する</strong> —
+        <li>[2] <strong>プロビジョニング済みデプロイのスピルオーバーでトラフィックを管理する</strong> —
           非 200（<code>429</code> を含む）の超過を、<code>spilloverDeploymentName</code>
           プロパティと、スピルオーバー元のデプロイを示す x-ms レスポンスヘッダー
           経由で標準デプロイへリダイレクトするスピルオーバーを定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">アーカイブ</a>。</li>
@@ -319,11 +319,11 @@
         を加える、尊重した待機を繰り返しても解消しないときだけスピルオーバーへリダイレクト
         する——は、運用上のものであって Learn の仕様ではありません。</p>
       <ul>
-        <li><strong>本リポジトリ、<code>docs/10-ptu-admission-controller.md</code></strong>
+        <li>[3] <strong>本リポジトリ、<code>docs/10-ptu-admission-controller.md</code></strong>
           — ヘッダー駆動のアドミッションコントローラーのノート。リトライのオーナーを
           一つに、<code>retry-after-ms</code> を尊重、既定のジッター、待機が上限を超えたら
           フォールバック。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">出典</a>。</li>
-        <li><strong>本リポジトリ、<code>batch_runner/ptu/admission_controller.py</code></strong>
+        <li>[4] <strong>本リポジトリ、<code>batch_runner/ptu/admission_controller.py</code></strong>
           — <code>retry-after-ms</code> をパースし、<code>retry-after</code> に
           フォールバックし、二重のリトライ所有権を拒否するリファレンス実装。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">出典</a>。</li>
       </ul>

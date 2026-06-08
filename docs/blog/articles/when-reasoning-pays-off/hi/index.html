@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="24d7600784cea1ae3108904cd256062084d5c86158ca7f6393ee609ad1ff82f7">
+  <meta name="article:source-article-sha256" content="6b749c050e5360b129a26a59559a191b766eb511c93ba18cbb5f80c91805e72f">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -423,14 +423,14 @@
         बताती हैं कि प्रलेखित अनुबंध कहाँ ख़त्म होता है और संचालन-अनुमान कहाँ शुरू।
       </p>
       <ul>
-        <li><strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है और N = 20 पर p-मान का दावा नहीं करता।</li>
-        <li><strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> PAYG लागत-दावे (प्रति-request औसत USD) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> के विरुद्ध गणित होते हैं — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर अनुपात भी खिसकेंगे।</li>
-        <li><strong>Tier 1 — PTU मूल्य स्नैपशॉट:</strong> PTU मॉडल-किया-गया क्रॉसओवर और 50 PTU न्यूनतम इस रिपॉज़िटरी की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU प्रति-घंटा दर या PAYG प्रति-टोकन दाम हिलने पर क्रॉसओवर खिसकता है।</li>
-        <li><strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000663 से $0.005043 की लागत-चढ़ाई (7.6x बिल), 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, और 3.655172 से 311.474576 की reasoning-token शिफ़्ट का स्रोत।</li>
-        <li><strong>Tier 2 — multi-step स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge स्कोर का स्रोत।</li>
-        <li><strong>Tier 2 — टूल-एजेंट स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। टूल-एजेंट खंड में संदर्भित सीलिंग-प्रभाव गुणवत्ता-बार का स्रोत।</li>
-        <li><strong>Tier 2 — मॉडल-किया-गया क्रॉसओवर:</strong> छोटी तथ्यात्मक extra-high पंक्ति के लिए 50 PTU न्यूनतम पर 149 rpm मापे गए टोकन-आकार के ऊपर एक योजना-गणना है, मापी गई PTU throughput का नतीजा नहीं। इसे क्षमता-सबूत नहीं, साइज़िंग-मार्गदर्शन की तरह पढ़ें।</li>
-        <li><strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../charts/?lang=hi">एविडेंस डैशबोर्ड</a> की प्रति-लेख तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
+        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है और N = 20 पर p-मान का दावा नहीं करता।</li>
+        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> PAYG लागत-दावे (प्रति-request औसत USD) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> के विरुद्ध गणित होते हैं — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर अनुपात भी खिसकेंगे।</li>
+        <li>[3] <strong>Tier 1 — PTU मूल्य स्नैपशॉट:</strong> PTU मॉडल-किया-गया क्रॉसओवर और 50 PTU न्यूनतम इस रिपॉज़िटरी की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU प्रति-घंटा दर या PAYG प्रति-टोकन दाम हिलने पर क्रॉसओवर खिसकता है।</li>
+        <li>[4] <strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000663 से $0.005043 की लागत-चढ़ाई (7.6x बिल), 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, और 3.655172 से 311.474576 की reasoning-token शिफ़्ट का स्रोत।</li>
+        <li>[5] <strong>Tier 2 — multi-step स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge स्कोर का स्रोत।</li>
+        <li>[6] <strong>Tier 2 — टूल-एजेंट स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। टूल-एजेंट खंड में संदर्भित सीलिंग-प्रभाव गुणवत्ता-बार का स्रोत।</li>
+        <li>[7] <strong>Tier 2 — मॉडल-किया-गया क्रॉसओवर:</strong> छोटी तथ्यात्मक extra-high पंक्ति के लिए 50 PTU न्यूनतम पर 149 rpm मापे गए टोकन-आकार के ऊपर एक योजना-गणना है, मापी गई PTU throughput का नतीजा नहीं। इसे क्षमता-सबूत नहीं, साइज़िंग-मार्गदर्शन की तरह पढ़ें।</li>
+        <li>[8] <strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../charts/?lang=hi">एविडेंस डैशबोर्ड</a> की प्रति-लेख तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
       </ul>
       <p>
         यह सिंहावलोकन क्या सिद्ध करता है और क्या नहीं: यह इस बेंचमार्क नमूने पर पाँच
