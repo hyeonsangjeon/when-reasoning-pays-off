@@ -14,15 +14,15 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-06-04">
-  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
+  <meta name="i18n:last-translated-at" content="2026-06-09">
+  <meta name="i18n:source-content-sha256" content="a5fc85677b139864a34ef699e3aac3cdaf79becaee37f753ff70d82871cd4a34">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="./">when reasoning pays off</a>
       <nav class="site-links" aria-label="サイト">
-        <a href="../blog/articles/">記事</a>
+        <a href="../blog/articles/ja/">記事</a>
         <a href="../blog/articles/when-reasoning-pays-off/ja/">概要記事</a>
         <a href="../blog/charts/?lang=ja">チャート</a>
       </nav>
@@ -42,14 +42,53 @@
   <main>
     <h1>同じトークン単価、異なる請求額</h1>
     <p class="lede">
-      ワークロードを非推論モデルから推論モデルへ移行すると、トークン単価が
-      似ていても請求額が増えることがよくあります。推論モデルは、応答には
-      現れないものの課金される内部の「思考」トークンに対して料金を請求する
-      ためです。本プロジェクトは、代表的な少数のタスクにおいて、その追加
-      トークンがコストに見合う場合と見合わない場合を測定します。
+      あるチームがワークロードを推論モデルへ移行し、以前と同じに見える
+      トークン単価を確認したところ、新しいダイヤルに気づきます。推論強度です。
+      それを上げるのはほとんど無料のように感じられます &mdash; であれば、
+      あらゆる場面でより良い回答を買わない理由があるでしょうか？ ところが、
+      目に見える出力はほとんど変わらないのに請求額は上がります。理由は隠れた
+      「思考」トークンです。推論モデルはこれを生成して課金しますが、応答には
+      決して表示しません。本プロジェクトは、代表的な少数のタスクにおいて、その
+      追加トークンがいつコストに見合い、いつ請求額だけを膨らませるのかを
+      測定します。
     </p>
 
-    <h2>結論を先に</h2>
+    <nav class="article-outline" aria-label="ここから始める">
+      <span class="section-label">ここから始める</span>
+      <a href="../blog/articles/ja/">記事ハブ</a>
+      <a href="../blog/articles/when-reasoning-pays-off/ja/">概要記事</a>
+      <a href="../blog/charts/?lang=ja">根拠ダッシュボード</a>
+    </nav>
+
+    <h2>なぜチームが気にするのか</h2>
+    <p>
+      モデル移行のあと、エンジニアに届く問いは率直です。なぜコストが動いたのか、
+      なぜレイテンシが変わったのか、なぜスロットリングが増えたのか。推論強度は
+      この 3 つすべての土台にあります。既定値を高くしておくと、読者には決して
+      届かない内部計算にトークンを静かに消費します &mdash; 従量課金では実際の
+      コストとして、プロビジョニング容量では貴重な余力として。強度が実際に回答を
+      変える地点を知ることが、自信のあるロールアウトと請求書での予想外の事態を
+      分ける違いです。
+    </p>
+
+    <h2>何を測定したか</h2>
+    <p>
+      プロンプトとワークロードの区分を固定したまま、同じ推論強度のはしごを各
+      区分に適用しました &mdash; 短い事実回答、構造化データから自然言語への
+      変換、多段階の推論、ツールを使うエージェント &mdash; そしてすべての
+      呼び出しで使用量の完全な内訳を記録しました。入力・キャッシュ・推論・出力
+      トークンに加え、品質シグナルとレイテンシも収集しています。その測定された
+      トークン構成の上に、同じワークロードが従量課金（PAYG）とプロビジョニング
+      されたスループット（PTU）でそれぞれどのように課金されるかという、モデル化
+      された視点を重ねました。
+    </p>
+
+    <h2>根拠が示したこと</h2>
+    <p>
+      結果は、良い根拠がそうあるべきように分かれました &mdash; ある場所では
+      強度が見合い、ある場所では隠れた計算だけを買いました。4 つの教訓が区分
+      全体にわたって当てはまります。
+    </p>
     <div class="cards">
       <div class="card">
         <h3>推論トークンは必ず測定する</h3>
@@ -59,7 +98,7 @@
       <div class="card">
         <h3>すべてのタスクに推論が必要なわけではない</h3>
         <p>短い事実回答、構造化データから自然言語への変換、単純な分類では、
-           多くの場合メリットがありません。</p>
+           品質が伴って上がらないままコストだけが増える場合が多くありました。</p>
       </div>
       <div class="card">
         <h3>推論強度が主要なコストレバー</h3>
@@ -87,12 +126,33 @@
       方法論、意思決定ツール、サニタイズ済みの結果の抜粋のみを公開します。
     </div>
 
-    <h2>さらに読む</h2>
-    <p>
-      完全な方法論、意思決定フレームワーク、運用ガイドは GitHub リポジトリの
-      ドキュメントにあります:
-      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>。
-    </p>
+    <h2>次に読むもの</h2>
+    <div class="article-summary-grid">
+      <article class="summary-tile">
+        <h2>概要記事を読む</h2>
+        <p>案内付きの物語：強度がどこで支出を無駄にし、どこで試す価値を得るのか、
+           そしてなぜ隠れたトークンを明示的に予算化すべきか。
+           <a href="../blog/articles/when-reasoning-pays-off/ja/">読み始める →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>記事ハブを見る</h2>
+        <p>読みの全体の流れ &mdash; 根拠トピック、ブリッジ記事、そして復旧・
+           キャッシュ・サイジングに関する運用ノート。
+           <a href="../blog/articles/ja/">ハブを開く →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>根拠ダッシュボードを調べる</h2>
+        <p>監査証跡：すべての主張の背後にある管理されたテーブルとレンダリング
+           されたソースチャート。
+           <a href="../blog/charts/?lang=ja">ダッシュボードを開く →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>完全な方法論を読む</h2>
+        <p>意思決定フレームワークと運用ガイドはリポジトリのドキュメントに
+           あります。
+           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub で見る →</a></p>
+      </article>
+    </div>
 
     <section class="glossary" aria-labelledby="glossary-heading">
       <h2 id="glossary-heading">用語集</h2>

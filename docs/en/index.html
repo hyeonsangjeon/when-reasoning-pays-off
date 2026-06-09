@@ -14,8 +14,8 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-06-03">
-  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
+  <meta name="i18n:last-translated-at" content="2026-06-09">
+  <meta name="i18n:source-content-sha256" content="a5fc85677b139864a34ef699e3aac3cdaf79becaee37f753ff70d82871cd4a34">
 </head>
 <body>
   <header class="site">
@@ -42,15 +42,52 @@
   <main>
     <h1>Same token price, different bill</h1>
     <p class="lede">
-      When teams move a workload from a non-reasoning model to a reasoning
-      model, the bill often goes up even though the per-token prices look
-      similar. The reason: reasoning models charge for internal "thinking"
-      tokens that are billed but never appear in the response. This project
-      measures, on a small set of representative tasks, when those extra
-      tokens are worth the cost — and when they are not.
+      A team migrates a workload onto a reasoning model, sees a familiar
+      per-token price, and finds a new dial: reasoning effort. Turning it up
+      feels almost free — so why not buy better answers everywhere? Then the
+      bill climbs, even though the visible output barely changed. The reason is
+      hidden "thinking" tokens: a reasoning model generates and bills them, but
+      never shows them in the response. This project measures, on a small set
+      of representative tasks, when those extra tokens earn their cost — and
+      when they only inflate the bill.
     </p>
 
-    <h2>The short answer</h2>
+    <nav class="article-outline" aria-label="Start here">
+      <span class="section-label">Start here</span>
+      <a href="../blog/articles/">Articles hub</a>
+      <a href="../blog/articles/when-reasoning-pays-off/">Overview essay</a>
+      <a href="../blog/charts/?lang=en">Evidence dashboard</a>
+    </nav>
+
+    <h2>Why teams care</h2>
+    <p>
+      After a model migration, the questions that reach an engineer are blunt:
+      why did cost move, why did latency change, why are we seeing more
+      throttling? Reasoning effort sits underneath all three. Left high by
+      default, it quietly spends tokens on internal computation that never
+      reaches the reader — real money on pay-as-you-go, and scarce headroom on
+      provisioned capacity. Knowing where effort actually changes the answer is
+      the difference between a confident rollout and a surprise on the invoice.
+    </p>
+
+    <h2>What we tested</h2>
+    <p>
+      We held the prompts and workload slices fixed and walked the same
+      reasoning-effort ladder across each one — short factual answers,
+      structured-to-natural-language synthesis, multi-step reasoning, and
+      tool-using agents — capturing the full usage breakdown on every call:
+      input, cached, reasoning, and output tokens, alongside a quality signal
+      and latency. On top of that measured token shape we layered a modeled
+      view of how the same workload would price under pay-as-you-go versus
+      provisioned throughput.
+    </p>
+
+    <h2>What the evidence showed</h2>
+    <p>
+      The results split the way good evidence should — effort paid for itself
+      in some places and only bought hidden computation in others. Four
+      takeaways carry across the slices.
+    </p>
     <div class="cards">
       <div class="card">
         <h3>Always measure reasoning tokens</h3>
@@ -60,7 +97,8 @@
       <div class="card">
         <h3>Not every task needs reasoning</h3>
         <p>Short factual answers, structured-to-natural-language synthesis, and
-           simple classification often do not benefit.</p>
+           simple classification often saw cost rise without a matching quality
+           gain.</p>
       </div>
       <div class="card">
         <h3>Effort is the primary cost lever</h3>
@@ -88,12 +126,32 @@
       methodology, decision tools, and sanitized result slices only.
     </div>
 
-    <h2>Read more</h2>
-    <p>
-      The full methodology, decision framework, and operator guidance live in
-      the repository documentation on GitHub:
-      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
-    </p>
+    <h2>Where to go next</h2>
+    <div class="article-summary-grid">
+      <article class="summary-tile">
+        <h2>Read the overview essay</h2>
+        <p>The guided story: where effort wastes spend, where it earns a trial,
+           and why hidden tokens must be budgeted explicitly.
+           <a href="../blog/articles/when-reasoning-pays-off/">Start reading →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>Browse the articles hub</h2>
+        <p>The full reading arc — evidence topics, the bridge essay, and the
+           operations notes on recovery, caching, and sizing.
+           <a href="../blog/articles/">Open the hub →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>Inspect the evidence dashboard</h2>
+        <p>The audit trail: governed tables and rendered source charts behind
+           every claim. <a href="../blog/charts/?lang=en">Open the dashboard →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>Read the full methodology</h2>
+        <p>The decision framework and operator guidance live in the repository
+           documentation on
+           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub →</a></p>
+      </article>
+    </div>
 
     <section class="glossary" aria-labelledby="glossary-heading">
       <h2 id="glossary-heading">Glossary</h2>
