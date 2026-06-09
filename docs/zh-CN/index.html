@@ -14,15 +14,15 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-06-04">
-  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
+  <meta name="i18n:last-translated-at" content="2026-06-09">
+  <meta name="i18n:source-content-sha256" content="a5fc85677b139864a34ef699e3aac3cdaf79becaee37f753ff70d82871cd4a34">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="./">when reasoning pays off</a>
       <nav class="site-links" aria-label="站点">
-        <a href="../blog/articles/">文章</a>
+        <a href="../blog/articles/zh-CN/">文章</a>
         <a href="../blog/articles/when-reasoning-pays-off/zh-CN/">概览文章</a>
         <a href="../blog/charts/?lang=zh-CN">图表</a>
       </nav>
@@ -42,13 +42,45 @@
   <main>
     <h1>相同的 Token 单价，不同的账单</h1>
     <p class="lede">
-      当团队把工作负载从非推理模型迁移到推理模型时，即使每个 Token 的单价
-      看起来相近，账单往往也会上升。原因在于：推理模型会对那些被计费但不会
-      出现在响应中的内部“思考”Token 收费。本项目在一组有代表性的少量任务上，
-      测量这些额外 Token 何时物有所值、何时并不值得。
+      某个团队把工作负载迁移到推理模型，看到与以往相同的 Token 单价，却发现了
+      一个新的旋钮：推理强度。把它调高几乎感觉是免费的 &mdash; 那为什么不在
+      所有地方都买更好的答案呢？然而，可见的输出几乎没变，账单却上去了。原因是
+      隐藏的“思考”Token：推理模型会生成并对其计费，但从不在响应中展示。本项目
+      在一组有代表性的少量任务上，测量这些额外 Token 何时物有所值、何时只会让
+      账单膨胀。
     </p>
 
-    <h2>简要结论</h2>
+    <nav class="article-outline" aria-label="从这里开始">
+      <span class="section-label">从这里开始</span>
+      <a href="../blog/articles/zh-CN/">文章中心</a>
+      <a href="../blog/articles/when-reasoning-pays-off/zh-CN/">概览文章</a>
+      <a href="../blog/charts/?lang=zh-CN">证据看板</a>
+    </nav>
+
+    <h2>团队为何关心</h2>
+    <p>
+      模型迁移之后，落到工程师面前的问题很直接：成本为什么变了，延迟为什么变了，
+      为什么限流变多了？推理强度正处于这三者之下。若默认保持高档，它会悄悄把
+      Token 花在永远到不了读者面前的内部计算上 &mdash; 在即用即付下是真金白银，
+      在预配容量下是宝贵的余量。知道强度究竟在哪里真正改变答案，正是一次有把握的
+      上线与账单上意外之间的区别。
+    </p>
+
+    <h2>我们测了什么</h2>
+    <p>
+      我们固定提示词与工作负载切片，对每个切片应用相同的推理强度阶梯 &mdash;
+      简短的事实性回答、从结构化数据到自然语言的转换、多步推理，以及使用工具的
+      智能体 &mdash; 并在每次调用时记录完整的用量明细：输入、缓存、推理与输出
+      Token，外加质量信号和延迟。在这一实测的 Token 构成之上，我们叠加了一层
+      建模视角：同一工作负载在即用即付（PAYG）与预配吞吐量（PTU）下分别如何
+      计费。
+    </p>
+
+    <h2>证据揭示了什么</h2>
+    <p>
+      结果像好的证据应有的那样分化了 &mdash; 有些地方强度物有所值，有些地方
+      只买到了隐藏的计算。四条要点贯穿各个切片。
+    </p>
     <div class="cards">
       <div class="card">
         <h3>务必测量推理 Token</h3>
@@ -57,8 +89,8 @@
       </div>
       <div class="card">
         <h3>并非每个任务都需要推理</h3>
-        <p>简短的事实性回答、从结构化数据到自然语言的转换，以及简单分类，
-           通常并不会因此受益。</p>
+        <p>在简短的事实性回答、从结构化数据到自然语言的转换以及简单分类中，
+           成本上升却往往没有相应的质量提升。</p>
       </div>
       <div class="card">
         <h3>推理强度是主要的成本杠杆</h3>
@@ -84,11 +116,30 @@
       本仓库仅发布可复现的基准测试、方法论、决策工具以及脱敏后的结果切片。
     </div>
 
-    <h2>延伸阅读</h2>
-    <p>
-      完整的方法论、决策框架和运维指南位于 GitHub 仓库文档中：
-      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>。
-    </p>
+    <h2>接下来读什么</h2>
+    <div class="article-summary-grid">
+      <article class="summary-tile">
+        <h2>阅读概览文章</h2>
+        <p>有引导的故事：强度在哪里浪费支出、在哪里值得一试，以及为什么必须把
+           隐藏 Token 明确纳入预算。
+           <a href="../blog/articles/when-reasoning-pays-off/zh-CN/">开始阅读 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>浏览文章中心</h2>
+        <p>完整的阅读脉络 &mdash; 证据主题、衔接文章，以及关于恢复、缓存与容量
+           规划的运维笔记。<a href="../blog/articles/zh-CN/">打开中心 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>查看证据看板</h2>
+        <p>审计线索：每条论断背后受治理的表格与渲染的源图表。
+           <a href="../blog/charts/?lang=zh-CN">打开看板 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>阅读完整方法论</h2>
+        <p>决策框架与运维指南位于仓库文档中。
+           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 上查看 →</a></p>
+      </article>
+    </div>
 
     <section class="glossary" aria-labelledby="glossary-heading">
       <h2 id="glossary-heading">术语表</h2>

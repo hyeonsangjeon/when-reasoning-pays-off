@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>文章 | when reasoning pays off</title>
+  <meta name="description" content="把推理强度的图表数据快照转化为运维决策的公开文章。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <meta name="article:source-locale" content="en">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="./">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../zh-CN/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="文章导航">
+        <a href="../../../zh-CN/">首页</a>
+        <a href="../when-reasoning-pays-off/zh-CN/">概览文章</a>
+        <a href="../../charts/?lang=zh-CN">证据看板</a>
+      </nav>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="./" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <p class="article-kicker">博客 / 证据笔记</p>
+    <h1>文章</h1>
+    <p class="lede">
+      证据看板是审计线索，文章是决策故事。每篇文章都从一个问题开始，指明用来
+      回答它的图表，并以一条面向运维者的要点收尾。你可以按顺序阅读，也可以直接
+      跳到你需要的那一层。
+    </p>
+
+    <nav class="article-outline" aria-label="阅读路径">
+      <span class="section-label">阅读路径</span>
+      <a href="#overview">1 · 概览</a>
+      <a href="#topics">2 · 证据主题</a>
+      <a href="#bridge">3 · 衔接</a>
+      <a href="#operations">4 · 运维</a>
+      <a href="../../charts/?lang=zh-CN">证据看板</a>
+    </nav>
+
+    <p>
+      这条脉络从论断走向实践。<strong>概览</strong>文章给出单一信息与证据
+      边界。<strong>证据主题</strong>逐一展开每个实测切片。<strong>衔接</strong>
+      文章标出语气从测量转向生产的位置。<strong>运维</strong>文章把同样的测量
+      习惯带入日常运行 — 恢复、缓存路由、保留与迁移容量规划。在这一切之下，
+      <a href="../../charts/?lang=zh-CN">证据看板</a>保存着每条论断所依据的
+      受治理表格与源图表。
+    </p>
+
+    <section id="overview" class="series-hero">
+      <h2>概览文章：相同的 Token 单价，不同的账单</h2>
+      <p>
+        对公开图表数据快照的引导式阅读：推理强度在哪里浪费支出、在哪里值得
+        一试，以及为什么必须把隐藏的推理 Token 明确纳入预算。
+      </p>
+      <p><a class="button-link" href="../when-reasoning-pays-off/zh-CN/">阅读概览文章</a></p>
+    </section>
+
+    <h2 id="topics">概览文章中的主题</h2>
+    <div class="cards topic-cards">
+      <article class="card">
+        <h3>简短的事实性工作</h3>
+        <p>成本上升却没有相应的质量提升。</p>
+        <p><a href="../when-reasoning-pays-off/topics/short-factual-work/zh-CN/">阅读此主题</a></p>
+      </article>
+      <article class="card">
+        <h3>不可见的推理 Token</h3>
+        <p>即使输出看起来相似，内部 Token 也能解释账单为何变化。</p>
+        <p><a href="../when-reasoning-pays-off/topics/invisible-reasoning-tokens/zh-CN/">阅读此主题</a></p>
+      </article>
+      <article class="card">
+        <h3>多步工作</h3>
+        <p>当评估者移动得足够多时，推理可能物有所值。</p>
+        <p><a href="../when-reasoning-pays-off/topics/multi-step-work/zh-CN/">阅读此主题</a></p>
+      </article>
+      <article class="card">
+        <h3>工具型智能体的上限检查</h3>
+        <p>智能体工作负载需要把质量和延迟放在一起看。</p>
+        <p><a href="../when-reasoning-pays-off/topics/tool-agent-ceiling-checks/zh-CN/">阅读此主题</a></p>
+      </article>
+      <article class="card">
+        <h3>PTU/PAYG 规划</h3>
+        <p>建模得到的交叉点是规划指引，而非直接的容量证据。</p>
+        <p><a href="../when-reasoning-pays-off/topics/ptu-payg-planning/zh-CN/">阅读此主题</a></p>
+      </article>
+      <article class="card">
+        <h3>证据看板</h3>
+        <p>查看文字背后受治理的表格与渲染的源图表。</p>
+        <p><a href="../../charts/?lang=zh-CN">打开证据看板</a></p>
+      </article>
+    </div>
+
+    <h2 id="bridge">衔接文章</h2>
+    <p class="muted-note">
+      有一篇文章位于证据层与运维层之间，说明语气为何转变，以及哪些习惯会一路
+      延续。
+    </p>
+    <div class="cards topic-cards">
+      <article class="card">
+        <h3>从测量到生产</h3>
+        <p>证据层的测量习惯如何延续到生产运维，又有什么保持不变。</p>
+        <p><a href="../when-reasoning-pays-off/topics/bridge-from-measurement-to-production/zh-CN/">阅读衔接文章</a></p>
+      </article>
+    </div>
+
+    <h2 id="operations">运维文章</h2>
+    <p class="muted-note">
+      这些文章再向生产运维靠近一层：恢复、缓存路由、保留与迁移容量规划。
+    </p>
+    <div class="cards topic-cards">
+      <article class="card">
+        <h3>用 <code>retry-after-ms</code> 从 429 恢复</h3>
+        <p>为什么 PTU 恢复应当遵循服务返回的头部，而不是健康检查轮询。</p>
+        <p><a href="../ptu-retry-after-recovery/zh-CN/">阅读本文</a></p>
+      </article>
+      <article class="card">
+        <h3><code>prompt_cache_key</code> 分桶</h3>
+        <p>缓存键是路由亲和性控制；按工作负载分桶，而不是按请求 ID。</p>
+        <p><a href="../prompt-cache-key-bucketing/zh-CN/">阅读本文</a></p>
+      </article>
+      <article class="card">
+        <h3>显式缓存保留</h3>
+        <p>当操作假定更长的缓存窗口时，把保留作为一项显式的请求策略。</p>
+        <p><a href="../prompt-cache-retention/zh-CN/">阅读本文</a></p>
+      </article>
+      <article class="card">
+        <h3>推理模型迁移容量规划</h3>
+        <p>通过输出权重、推理 Token、缓存形状和最大 Token 策略来解释 PTU 需求。</p>
+        <p><a href="../reasoning-migration-sizing/zh-CN/">阅读本文</a></p>
+      </article>
+    </div>
+
+  </main>
+
+  <footer class="site">
+    <p>MIT 许可的研究成果 · 公开数据仅为脱敏或聚合形式。</p>
+  </footer>
+</body>
+</html>

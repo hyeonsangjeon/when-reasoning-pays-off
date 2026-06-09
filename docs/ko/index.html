@@ -14,15 +14,15 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-06-03">
-  <meta name="i18n:source-content-sha256" content="3014a72d57a8aa16d0b2141c39eaa3a75043a30377f4d7777c0fe58843456d94">
+  <meta name="i18n:last-translated-at" content="2026-06-09">
+  <meta name="i18n:source-content-sha256" content="a5fc85677b139864a34ef699e3aac3cdaf79becaee37f753ff70d82871cd4a34">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="./">when reasoning pays off</a>
       <nav class="site-links" aria-label="사이트">
-        <a href="../blog/articles/">글</a>
+        <a href="../blog/articles/ko/">글</a>
         <a href="../blog/articles/when-reasoning-pays-off/ko/">개요 글</a>
         <a href="../blog/charts/?lang=ko">차트</a>
       </nav>
@@ -42,14 +42,51 @@
   <main>
     <h1>같은 토큰 단가, 다른 청구서</h1>
     <p class="lede">
-      워크로드를 비추론 모델에서 추론 모델로 옮기면, 토큰 단가는 비슷해
-      보여도 청구서는 종종 늘어납니다. 이유는 추론 모델이 응답에는 나타나지
-      않지만 과금되는 내부 "사고" 토큰에 대해 비용을 청구하기 때문입니다. 이
-      프로젝트는 대표적인 소규모 작업 집합에서 그 추가 토큰이 비용만큼의
-      값을 하는 경우와 그렇지 않은 경우를 측정합니다.
+      어떤 팀이 워크로드를 추론 모델로 옮기고, 예전과 똑같아 보이는 토큰
+      단가를 확인하고는 새로운 조절값 하나를 발견합니다. 바로 추론 강도입니다.
+      그것을 올리는 일은 거의 공짜처럼 느껴집니다 &mdash; 그렇다면 어디서나 더
+      나은 답을 사지 않을 이유가 있을까요? 그런데 눈에 보이는 출력은 거의
+      그대로인데 청구서는 올라갑니다. 이유는 숨은 "사고" 토큰입니다. 추론
+      모델은 이 토큰을 생성하고 과금하지만 응답에는 결코 보여 주지 않습니다.
+      이 프로젝트는 대표적인 소규모 작업 집합에서 그 추가 토큰이 언제
+      비용만큼의 값을 하는지, 그리고 언제 청구서만 부풀리는지를 측정합니다.
     </p>
 
-    <h2>핵심 요약</h2>
+    <nav class="article-outline" aria-label="여기서 시작하세요">
+      <span class="section-label">여기서 시작하세요</span>
+      <a href="../blog/articles/ko/">아티클 허브</a>
+      <a href="../blog/articles/when-reasoning-pays-off/ko/">개요 글</a>
+      <a href="../blog/charts/?lang=ko">근거 대시보드</a>
+    </nav>
+
+    <h2>팀이 신경 쓰는 이유</h2>
+    <p>
+      모델 마이그레이션 이후 엔지니어에게 닥치는 질문은 직설적입니다. 왜
+      비용이 움직였는가, 왜 지연이 바뀌었는가, 왜 스로틀링이 늘었는가? 추론
+      강도가 이 세 가지 모두의 밑에 깔려 있습니다. 기본값을 높게 두면 독자에게
+      결코 닿지 않는 내부 연산에 토큰을 조용히 소비합니다 &mdash; 종량제에서는
+      실제 비용으로, 프로비저닝 용량에서는 귀한 여유 용량으로 말이죠. 강도가
+      실제로 답을 바꾸는 지점을 아는 것이, 자신 있는 롤아웃과 청구서에서의
+      뜻밖의 사태를 가르는 차이입니다.
+    </p>
+
+    <h2>무엇을 측정했는가</h2>
+    <p>
+      프롬프트와 워크로드 구간을 고정한 채 동일한 추론 강도 사다리를 각 구간에
+      적용했습니다 &mdash; 짧은 사실 응답, 구조화 데이터의 자연어 변환, 다단계
+      추론, 도구를 사용하는 에이전트 &mdash; 그리고 모든 호출에서 전체 사용량
+      분해를 기록했습니다. 입력, 캐시, 추론, 출력 토큰과 함께 품질 신호와 지연을
+      담았습니다. 그 측정된 토큰 구성 위에, 동일한 워크로드가 종량제(PAYG)와
+      프로비저닝 처리량(PTU)에서 각각 어떻게 과금되는지에 대한 모델링 관점을
+      더했습니다.
+    </p>
+
+    <h2>근거가 보여 준 것</h2>
+    <p>
+      결과는 좋은 근거가 그래야 하듯 갈렸습니다 &mdash; 어떤 곳에서는 강도가
+      제값을 했고, 어떤 곳에서는 숨은 연산만 샀습니다. 네 가지 교훈이 구간
+      전반에 걸쳐 적용됩니다.
+    </p>
     <div class="cards">
       <div class="card">
         <h3>추론 토큰은 반드시 측정하세요</h3>
@@ -58,12 +95,12 @@
       </div>
       <div class="card">
         <h3>모든 작업에 추론이 필요한 것은 아닙니다</h3>
-        <p>짧은 사실 응답, 구조화 데이터의 자연어 변환, 단순 분류는 추론의
-           이점을 거의 받지 못하는 경우가 많습니다.</p>
+        <p>짧은 사실 응답, 구조화 데이터의 자연어 변환, 단순 분류에서는 품질이
+           함께 오르지 않은 채 비용만 늘어나는 경우가 많았습니다.</p>
       </div>
       <div class="card">
         <h3>추론 강도가 주요 비용 레버입니다</h3>
-        <p>추론 강도 노브를 가장 낮은 수준으로 기본 설정하고, 품질 평가가
+        <p>추론 강도 조절값을 가장 낮은 수준으로 기본 설정하고, 품질 평가가
            정당화할 때만 올리세요.</p>
       </div>
       <div class="card">
@@ -87,12 +124,30 @@
       정제된 결과 일부만을 공개합니다.
     </div>
 
-    <h2>더 읽어보기</h2>
-    <p>
-      전체 방법론, 의사결정 프레임워크, 운영 가이드는 GitHub 저장소 문서에
-      있습니다:
-      <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">github.com/hyeonsangjeon/when-reasoning-pays-off</a>.
-    </p>
+    <h2>다음으로 읽을거리</h2>
+    <div class="article-summary-grid">
+      <article class="summary-tile">
+        <h2>개요 글 읽기</h2>
+        <p>안내가 있는 이야기: 강도가 어디서 지출을 낭비하고, 어디서 시도할
+           가치를 얻는지, 그리고 왜 숨은 토큰을 명시적으로 예산에 넣어야 하는지.
+           <a href="../blog/articles/when-reasoning-pays-off/ko/">읽기 시작 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>아티클 허브 둘러보기</h2>
+        <p>전체 읽기 흐름 &mdash; 근거 토픽, 브리지 글, 그리고 복구·캐싱·사이징에
+           대한 운영 노트. <a href="../blog/articles/ko/">허브 열기 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>근거 대시보드 살펴보기</h2>
+        <p>검증 기록: 모든 주장 뒤에 있는 정리된 테이블과 렌더링된 소스 차트.
+           <a href="../blog/charts/?lang=ko">대시보드 열기 →</a></p>
+      </article>
+      <article class="summary-tile">
+        <h2>전체 방법론 읽기</h2>
+        <p>의사결정 프레임워크와 운영 가이드는 저장소 문서에 있습니다.
+           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 보기 →</a></p>
+      </article>
+    </div>
 
     <section class="glossary" aria-labelledby="glossary-heading">
       <h2 id="glossary-heading">용어집</h2>
