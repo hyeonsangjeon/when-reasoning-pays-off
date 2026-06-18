@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
   <title id="title">रीज़निंग माइग्रेशन साइज़िंग के कारक</title>
-  <desc id="desc">1000 RPM workload के लिए एक उदाहरणात्मक PTU साइज़िंग चार्ट, दिखाता है कि output भार, cache दर और छिपे reasoning tokens कैसे पूर्णांकित PTU अनुमान बदलते हैं।</desc>
+  <desc id="desc">1000 RPM वर्कलोड के लिए एक उदाहरणात्मक PTU साइज़िंग चार्ट, दिखाता है कि output भार, cache दर और छिपे reasoning tokens कैसे पूर्णांकित PTU अनुमान बदलते हैं।</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">माइग्रेशन साइज़िंग एक workload-आकार गणना है</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">माइग्रेशन साइज़िंग एक वर्कलोड-आकार गणना है</text>
   <text x="32" y="68" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">उदाहरणात्मक गणना: 1,000 RPM, 200 input tokens, 20 दृश्य output tokens। रीज़निंग स्थिति में 60 छिपे reasoning tokens जुड़ते हैं।</text>
 
   <rect x="32" y="95" width="916" height="330" rx="16" fill="#fff" stroke="#dce6f0"/>

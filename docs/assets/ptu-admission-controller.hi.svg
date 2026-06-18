@@ -14,7 +14,7 @@
   <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
         font-size="24" font-weight="700">हेडर-चालित एडमिशन</text>
   <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="15">retry-after-ms का स्पष्ट आदर करें &#8212; और लॉग करें कि client ने क्यों sleep किया।</text>
+        font-size="15">retry-after-ms का स्पष्ट आदर करें &#8212; और लॉग करें कि क्लाइंट ने क्यों sleep किया।</text>
 
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
     <rect x="40" y="150" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
