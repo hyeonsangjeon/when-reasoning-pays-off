@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
+  <title id="title">추론 모델 마이그레이션 사이징 요인</title>
+  <desc id="desc">1000 RPM 워크로드를 예로 든 PTU 사이징 차트로, 출력 가중치·캐시 비율·숨은 추론 토큰이 반올림된 PTU 추정치를 어떻게 바꾸는지 보여 줍니다.</desc>
+  <rect width="980" height="560" fill="#f8fbff"/>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">마이그레이션 사이징은 워크로드 형태 계산입니다</text>
+  <text x="32" y="68" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">예시 계산: 1,000 RPM, 입력 200 토큰, 보이는 출력 20 토큰. 추론 사례에는 숨은 추론 토큰 60개를 더합니다.</text>
+
+  <rect x="32" y="95" width="916" height="330" rx="16" fill="#fff" stroke="#dce6f0"/>
+  <line x1="175" y1="365" x2="900" y2="365" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="175" y1="125" x2="175" y2="365" stroke="#9fb3c8" stroke-width="2"/>
+
+  <g font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c" text-anchor="end">
+    <line x1="170" y1="365" x2="900" y2="365" stroke="#e8f0f8"/><text x="165" y="369">0</text>
+    <line x1="170" y1="317" x2="900" y2="317" stroke="#e8f0f8"/><text x="165" y="321">50</text>
+    <line x1="170" y1="269" x2="900" y2="269" stroke="#e8f0f8"/><text x="165" y="273">100</text>
+    <line x1="170" y1="221" x2="900" y2="221" stroke="#e8f0f8"/><text x="165" y="225">150</text>
+    <line x1="170" y1="173" x2="900" y2="173" stroke="#e8f0f8"/><text x="165" y="177">200</text>
+    <line x1="170" y1="125" x2="900" y2="125" stroke="#e8f0f8"/><text x="165" y="129">250</text>
+  </g>
+  <text x="88" y="212" transform="rotate(-90 88 212)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">반올림 PTU</text>
+
+  <g font-family="Segoe UI, system-ui, sans-serif">
+    <rect x="230" y="254.6" width="90" height="110.4" rx="8" fill="#3a86ff"/>
+    <text x="275" y="244" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">115</text>
+    <text x="275" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-4o</text>
+    <text x="275" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 분량만</text>
+
+    <rect x="370" y="259.4" width="90" height="105.6" rx="8" fill="#06d6a0"/>
+    <text x="415" y="249" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">110</text>
+    <text x="415" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="415" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 분량만</text>
+
+    <rect x="510" y="288.2" width="90" height="76.8" rx="8" fill="#8ecae6"/>
+    <text x="555" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">80</text>
+    <text x="555" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="555" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">캐시 50%</text>
+
+    <rect x="650" y="125" width="90" height="240" rx="8" fill="#ffb703"/>
+    <text x="695" y="115" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">250</text>
+    <text x="695" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="695" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">+ 추론</text>
+
+    <rect x="790" y="153.8" width="90" height="211.2" rx="8" fill="#fb8500"/>
+    <text x="835" y="143" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">220</text>
+    <text x="835" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="835" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">추론 + 캐시</text>
+  </g>
+
+  <rect x="32" y="452" width="916" height="76" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
+  <text x="58" y="502" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">앞의 세 막대는 Microsoft Learn의 공식과 모델 표를 따릅니다.</text>
+  <text x="58" y="520" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">마지막 두 막대는 60토큰 추론 가정을 더해, 숨은 출력을 측정해야 하는 이유를 보여 줍니다.</text>
+  <text x="58" y="542" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공식 사이징 산식 + 공개 예시 계산. 보편적 용량 주장이 아닙니다.</text>
+</svg>

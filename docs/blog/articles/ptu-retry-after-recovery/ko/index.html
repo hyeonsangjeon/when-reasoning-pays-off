@@ -257,7 +257,7 @@
           이벤트를 방출하고, 이중 재시도 소유를 거부하는 작은 헤더 기반 입장
           제어기가 포함되어 있습니다.
         </figcaption>
-        <img src="../../../../assets/ptu-admission-controller.svg" alt="PTU 입장 제어기 흐름: 429 관측, retry-after-ms 파싱, 대기 또는 우회, 그다음 재개." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/ptu-admission-controller.ko.svg" alt="PTU 입장 제어기 흐름: 429 관측, retry-after-ms 파싱, 대기 또는 우회, 그다음 재개." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <div class="evidence-grid">
         <div>
@@ -310,8 +310,8 @@
         문서화되어 있습니다.
       </p>
       <ul>
-        <li>[1] <strong>Operate provisioned throughput deployments in production</strong> — 이용률 100%에서의 즉시 429, <code>retry-after-ms</code> 및 <code>retry-after</code> 응답 헤더, 누수 버킷 이용률 모델, 그리고 OpenAI SDK의 기본 429 재시도(<code>max_retries</code>)를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">아카이브</a>.</li>
-        <li>[2] <strong>Manage traffic with spillover for provisioned deployments</strong> — <code>spilloverDeploymentName</code> 속성과 <code>x-ms-spillover-from-deployment</code> 응답 헤더를 통해 비-200(<code>429</code> 포함) 초과분을 표준 배포로 우회하는 스필오버를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">아카이브</a>.</li>
+        <li>[1] <strong>프로비저닝된 처리량 배포를 프로덕션에서 운영하기</strong> — 이용률 100%에서의 즉시 429, <code>retry-after-ms</code> 및 <code>retry-after</code> 응답 헤더, 누수 버킷 이용률 모델, 그리고 OpenAI SDK의 기본 429 재시도(<code>max_retries</code>)를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">아카이브</a>.</li>
+        <li>[2] <strong>프로비저닝된 배포의 스필오버로 트래픽 관리하기</strong> — <code>spilloverDeploymentName</code> 속성과 <code>x-ms-spillover-from-deployment</code> 응답 헤더를 통해 비-200(<code>429</code> 포함) 초과분을 표준 배포로 우회하는 스필오버를 정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">아카이브</a>.</li>
       </ul>
       <p>
         <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 경험칙 — 단일 재시도

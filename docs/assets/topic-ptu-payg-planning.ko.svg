@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
+  <title id="title">교차점은 계획선이며, 측정된 용량이 아니다</title>
+  <desc id="desc">공개 가격 스냅샷과 50 PTU 하한에서 모델링한 PAYG/PTU 손익분기 RPM.</desc>
+  <rect width="980" height="560" fill="#f8fbff"/>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">교차점은 계획선이며, 측정된 용량이 아니다</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">공개 가격 스냅샷과 50 PTU 하한에서 모델링한 PAYG/PTU 손익분기 RPM.</text>
+  <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
+  <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="155" y1="390.0" x2="910" y2="390.0" stroke="#e8f0f8"/>
+  <text x="148" y="394.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">0</text>
+  <line x1="155" y1="322.5" x2="910" y2="322.5" stroke="#e8f0f8"/>
+  <text x="148" y="326.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">750</text>
+  <line x1="155" y1="255.0" x2="910" y2="255.0" stroke="#e8f0f8"/>
+  <text x="148" y="259.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">1500</text>
+  <line x1="155" y1="187.5" x2="910" y2="187.5" stroke="#e8f0f8"/>
+  <text x="148" y="191.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">2250</text>
+  <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
+  <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">3000</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">모델링된 손익분기 RPM</text>
+  <rect x="160.0" y="376.6" width="236.7" height="13.4" rx="8" fill="#fb8500"/>
+  <text x="278.3" y="366.6" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">149</text>
+  <text x="278.3" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b01 xhigh</text>
+  <text x="278.3" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">비용 $0.005043</text>
+  <rect x="416.7" y="148.8" width="236.7" height="241.2" rx="8" fill="#06d6a0"/>
+  <text x="535.0" y="138.8" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2680</text>
+  <text x="535.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b02 none</text>
+  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">비용 $0.000618</text>
+  <rect x="673.3" y="339.2" width="236.7" height="50.8" rx="8" fill="#3a86ff"/>
+  <text x="791.7" y="329.2" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">564</text>
+  <text x="791.7" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b03 low</text>
+  <text x="791.7" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">비용 $0.002773</text>
+  <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">X축 셀은 선택된 예시이며, 연속적인 실험이 아닙니다.</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">모델링된 선으로 질문을 세운 뒤, 실제 트래픽으로 검증하세요.</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공개 집계 차트 데이터. 서술적 근거일 뿐입니다.</text>
+</svg>
