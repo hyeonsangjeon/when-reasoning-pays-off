@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
+  <title id="title">推理迁移容量规划的驱动因素</title>
+  <desc id="desc">针对 1000 RPM 工作负载的示例性 PTU 容量规划图，展示输出加权、缓存率与隐藏推理 token 如何改变取整后的 PTU 估计。</desc>
+  <rect width="980" height="560" fill="#f8fbff"/>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">迁移容量规划是一次工作负载形态计算</text>
+  <text x="32" y="68" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">示例计算：1,000 RPM，输入 200 token，可见输出 20 token。推理情形再加 60 个隐藏推理 token。</text>
+
+  <rect x="32" y="95" width="916" height="330" rx="16" fill="#fff" stroke="#dce6f0"/>
+  <line x1="175" y1="365" x2="900" y2="365" stroke="#9fb3c8" stroke-width="2"/>
+  <line x1="175" y1="125" x2="175" y2="365" stroke="#9fb3c8" stroke-width="2"/>
+
+  <g font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c" text-anchor="end">
+    <line x1="170" y1="365" x2="900" y2="365" stroke="#e8f0f8"/><text x="165" y="369">0</text>
+    <line x1="170" y1="317" x2="900" y2="317" stroke="#e8f0f8"/><text x="165" y="321">50</text>
+    <line x1="170" y1="269" x2="900" y2="269" stroke="#e8f0f8"/><text x="165" y="273">100</text>
+    <line x1="170" y1="221" x2="900" y2="221" stroke="#e8f0f8"/><text x="165" y="225">150</text>
+    <line x1="170" y1="173" x2="900" y2="173" stroke="#e8f0f8"/><text x="165" y="177">200</text>
+    <line x1="170" y1="125" x2="900" y2="125" stroke="#e8f0f8"/><text x="165" y="129">250</text>
+  </g>
+  <text x="88" y="212" transform="rotate(-90 88 212)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">取整后 PTU</text>
+
+  <g font-family="Segoe UI, system-ui, sans-serif">
+    <rect x="230" y="254.6" width="90" height="110.4" rx="8" fill="#3a86ff"/>
+    <text x="275" y="244" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">115</text>
+    <text x="275" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-4o</text>
+    <text x="275" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">仅可见</text>
+
+    <rect x="370" y="259.4" width="90" height="105.6" rx="8" fill="#06d6a0"/>
+    <text x="415" y="249" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">110</text>
+    <text x="415" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="415" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">仅可见</text>
+
+    <rect x="510" y="288.2" width="90" height="76.8" rx="8" fill="#8ecae6"/>
+    <text x="555" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">80</text>
+    <text x="555" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="555" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">50% 缓存</text>
+
+    <rect x="650" y="125" width="90" height="240" rx="8" fill="#ffb703"/>
+    <text x="695" y="115" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">250</text>
+    <text x="695" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="695" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">+ 推理</text>
+
+    <rect x="790" y="153.8" width="90" height="211.2" rx="8" fill="#fb8500"/>
+    <text x="835" y="143" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">220</text>
+    <text x="835" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
+    <text x="835" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">推理 + 缓存</text>
+  </g>
+
+  <rect x="32" y="452" width="916" height="76" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">如何读图</text>
+  <text x="58" y="502" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">前三根柱子遵循 Microsoft Learn 的公式与模型表。</text>
+  <text x="58" y="520" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">最后两根加入 60 token 的推理假设，说明为何必须测量隐藏输出。</text>
+  <text x="58" y="542" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">来源：官方容量规划公式 + 公开示例计算；并非通用容量主张。</text>
+</svg>
