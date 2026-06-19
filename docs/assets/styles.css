@@ -530,3 +530,54 @@ footer.site {
   max-width: 560px;
   width: 100%;
 }
+
+/* --- Interaction affordances: hover lift, keyboard focus rings, motion guard --- */
+:where(a, button, .card, .button-link, .chart-card, .summary-tile) {
+  transition: transform 160ms ease, box-shadow 160ms ease,
+    border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 28px rgba(13, 27, 42, 0.12);
+}
+
+.button-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(58, 134, 255, 0.32);
+}
+.button-link:active { transform: translateY(0); }
+
+.chart-card:hover {
+  border-color: #bcd6f2;
+  box-shadow: 0 10px 24px rgba(13, 27, 42, 0.08);
+}
+
+nav.site-links a:hover { color: var(--accent); }
+
+footer.site .site-links { margin-bottom: 0.75rem; }
+footer.site .site-links a { color: var(--accent); }
+footer.site .site-links a:hover { color: #1554b7; }
+
+a:focus-visible,
+button:focus-visible,
+.card:focus-visible,
+.button-link:focus-visible,
+nav.site-links a:focus-visible,
+nav.lang a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(a, button, .card, .button-link, .chart-card, .summary-tile) {
+    transition: none;
+  }
+  .card:hover,
+  .button-link:hover,
+  .button-link:active {
+    transform: none;
+  }
+}

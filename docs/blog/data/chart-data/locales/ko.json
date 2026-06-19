@@ -11,6 +11,12 @@
     "error": "차트 데이터를 사용할 수 없습니다.",
     "fallbackBadge": "영어 라벨 표시 중"
   },
+  "nav": {
+    "home": "홈",
+    "articles": "글",
+    "overview": "개요 글",
+    "github": "GitHub"
+  },
   "families": {
     "cost-curves-effort": {
       "title": "추론 노력별 비용, 품질, 지연시간, 처리량",

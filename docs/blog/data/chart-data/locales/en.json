@@ -11,6 +11,12 @@
     "error": "Chart data is unavailable.",
     "fallbackBadge": "Showing English labels"
   },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles",
+    "overview": "Overview",
+    "github": "GitHub"
+  },
   "families": {
     "cost-curves-effort": {
       "title": "Reasoning effort cost, quality, latency, and throughput",
