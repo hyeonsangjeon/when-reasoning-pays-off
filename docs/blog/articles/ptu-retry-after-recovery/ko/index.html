@@ -37,7 +37,7 @@
     <p class="article-kicker">운영 에세이 · PTU 복구와 429 처리</p>
     <h1>429: 단순한 오류가 아닌 복구 신호</h1>
     <p class="lede">
-      트래픽이 몰려 PTU 배포가 100% 사용률에 도달하면 호출이 429로 되돌아오기
+      트래픽이 몰려 PTU 배포가 100% 사용률에 도달하면 호출이 429로 돌아오기
       시작합니다. 반사적으로 세 가지 동작 중 하나에 손이 갑니다. 용량이 비어
       보일 때까지 헬스 체크 폴링 루프를 돌리거나, 고정된 타이머로 무작정
       재시도하거나, 곧장 모든 요청을 다른 대상으로 돌리는 것입니다. 세 가지
@@ -51,7 +51,7 @@
     <figure class="article-figure" id="figure-ptu-retry-one-pager">
       <figcaption>
         <strong>한눈에 보는 이 글.</strong> 포화 상태의 PTU 대상이 429를
-        반환하면, 문서화된 <code>retry-after-ms</code> 헤더가 입장 계약입니다.
+        반환하면, 문서화된 <code>retry-after-ms</code> 헤더가 재시도 기준이 됩니다.
         헤더를 존중하고, 지터를 더하며, 관측된 긴 꼬리를 예산에 반영합니다. 이
         한 장 요약은 그 단 하나의 메시지를 담고 근거 경계를 표시합니다. 헤더는
         Microsoft Learn의 계약이고, 그 옆의 짧은 중앙값·긴 꼬리 형태는 이
@@ -82,7 +82,7 @@
         것보다 훨씬 오래 기다리게 됩니다. 하지만 꼬리는 무시할 수 없었습니다.
         일부 대기는 17,000&nbsp;ms 가까이 늘어났습니다(전체 p99 &asymp;
         16,921&nbsp;ms). 이 짧은 중앙값·긴 꼬리 형태가 운영에서 중요한
-        사실입니다 &mdash; 헤더는 고정된 리셋 시계가 아니라 입장 제어 신호로
+        사실입니다 &mdash; 헤더는 고정된 리셋 시계가 아니라 수용 제어 신호로
         다루어야 합니다. 곧바로 반환되는 429와 <code>retry-after-ms</code> 계약은
         Microsoft Learn이 문서화하는 내용이고, 하나의 지연 예산 상한이 언제
         기다림을 멈추고 우회할지를 결정해야 한다는 것은 이 저장소가 옹호하는
@@ -97,7 +97,7 @@
       </section>
       <section class="summary-tile">
         <h2>근거</h2>
-        <p>Microsoft Learn의 프로비저닝된 처리량·스필오버 문서와, 이 저장소의 PTU 입장 제어기 운영 노트입니다.</p>
+        <p>Microsoft Learn의 프로비저닝된 처리량·스필오버 문서와, 이 저장소의 PTU 수용 제어기 운영 노트입니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
@@ -116,8 +116,8 @@
 
     <p class="banner">
       <strong>범위 안내:</strong>
-      이 글은 접근일 기준 Microsoft Learn이 문서화하는 PTU 429 입장 계약과, 이
-      저장소가 옹호하는 소수의 운영 경험칙을 진술합니다. 특정 배포를 측정한
+      이 글은 접근일 기준 Microsoft Learn이 문서화하는 PTU 429 수용 규칙과, 이
+      저장소가 옹호하는 소수의 운영 경험칙을 정리합니다. 특정 배포를 측정한
       것이 아니라 재시도 래퍼를 위한 런북입니다. 여기에 제시하는 하나의 관측된
       <code>retry-after-ms</code> 분포는 이 저장소의 원천 실행에서 나온 정제된
       공개 집계이며, 권고된 대기가 일정하지 않았음을 보여주기 위해 서술용으로
@@ -126,7 +126,7 @@
 
     <section id="spec" class="article-section">
       <p class="section-label">공식 사양 · 서비스가 알려주는 것</p>
-      <h2>헤더 = 공식 입장 신호</h2>
+      <h2>헤더가 공식 수용 신호입니다</h2>
       <p>
         Microsoft Learn은 PTU 고이용률 처리를 <code>retry-after-ms</code> 및
         <code>retry-after</code> 응답 헤더를 동반하는 즉시 429 경로로
@@ -153,8 +153,8 @@
           <h3>운영적 추론</h3>
           <p>
             헤더가 이미 언제 다시 시도해야 할지 알려준다면, 헬스 체크 폴링은
-            대개 더 약한 신호에 더해 추가 트래픽과 더 시끄러운 텔레메트리를
-            만들 뿐입니다.
+            대개 더 약한 신호에 더해 추가 트래픽과 잡음만 많은 텔레메트리를
+            늘릴 뿐입니다.
           </p>
         </div>
       </div>
@@ -162,7 +162,7 @@
 
     <section id="evidence" class="article-section">
       <p class="section-label">서비스 동작 · 대기가 일정하지 않은 이유</p>
-      <h2>대기 시간: 고정 쿨다운이 아니라 입장 제어</h2>
+      <h2>대기 시간: 고정 쿨다운이 아니라 수용 제어</h2>
       <p>
         Microsoft Learn은 PTU 이용률을 누수 버킷(leaky bucket) 알고리즘의
         변형으로 설명합니다. 각 요청은 추정 컴퓨팅 비용 — 프롬프트 토큰 수에서
@@ -194,8 +194,8 @@
           권고된 대기 대부분이 짧았습니다(전체 p50&nbsp;≈&nbsp;43&nbsp;ms) —
           그다음 약 17,000&nbsp;ms까지 이어지는 긴 꼬리로 평탄해지므로, 일부
           대기는 매우 길었습니다(전체 p99&nbsp;≈&nbsp;16,921&nbsp;ms). 이 짧은
-          중앙값·긴 꼬리 형태가 아래 운영 패턴이 대기를 지연 예산까지만 두고
-          그다음 우회하거나 실패하는 이유입니다. <strong>근거 경계:</strong>
+          중앙값·긴 꼬리 형태 때문에 아래 운영 패턴은 대기를 지연 예산까지만 허용하고
+          그다음 우회하거나 실패합니다. <strong>근거 경계:</strong>
           이는 이 저장소의 원천 실행에서 나온 429 이벤트를 정제한 하나의 공개
           집계이며, 서술용으로만 제시합니다. 서비스 수준 보장이나 리셋 모델이
           아니며, 특정 배포·리전·향후 API 버전에 대한 측정도 아닙니다.
@@ -254,7 +254,7 @@
         <figcaption>
           <strong>참조 구현:</strong> 공개 저장소에는 <code>retry-after-ms</code>를
           파싱하고, <code>retry-after</code>로 폴백하며, 안전한 스로틀
-          이벤트를 방출하고, 이중 재시도 소유를 거부하는 작은 헤더 기반 입장
+          이벤트를 발행하고, 이중 재시도 소유를 거부하는 작은 헤더 기반 수용
           제어기가 포함되어 있습니다.
         </figcaption>
         <img src="../../../../assets/ptu-admission-controller.ko.svg" alt="PTU 입장 제어기 흐름: 429 관측, retry-after-ms 파싱, 대기 또는 우회, 그다음 재개." style="width:100%;height:auto;display:block;border-radius:12px;">
@@ -305,7 +305,7 @@
     <section id="sources" class="article-section">
       <h2>출처와 근거 경계</h2>
       <p>
-        <strong>Tier 1 — 서비스 계약(Microsoft Learn).</strong> 429 입장 동작,
+        <strong>Tier 1 — 서비스 계약(Microsoft Learn).</strong> 429 수용 동작,
         두 재시도 헤더, 누수 버킷 이용률 모델, SDK의 기본 재시도가 여기에
         문서화되어 있습니다.
       </p>
@@ -320,12 +320,12 @@
         운영적 판단입니다.
       </p>
       <ul>
-        <li>[3] <strong>이 저장소, <code>docs/10-ptu-admission-controller.md</code></strong> — 헤더 기반 입장 제어기 노트: 단일 재시도 소유자, <code>retry-after-ms</code> 존중, 기본 지터, 그리고 대기가 상한을 넘으면 폴백. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">출처</a>.</li>
+        <li>[3] <strong>이 저장소, <code>docs/10-ptu-admission-controller.md</code></strong> — 헤더 기반 수용 제어기 노트: 단일 재시도 소유자, <code>retry-after-ms</code> 존중, 기본 지터, 그리고 대기가 상한을 넘으면 폴백. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">출처</a>.</li>
         <li>[4] <strong>이 저장소, <code>batch_runner/ptu/admission_controller.py</code></strong> — <code>retry-after-ms</code>를 파싱하고 <code>retry-after</code>로 폴백하며 이중 재시도 소유를 거부하는 참조 구현. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">출처</a>.</li>
       </ul>
       <p>
         <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일 기준
-        Microsoft Learn이 명시하는 PTU 입장 계약 — 이용률 100%에서의 즉시 429,
+        Microsoft Learn이 명시하는 PTU 수용 규칙 — 이용률 100%에서의 즉시 429,
         <code>retry-after-ms</code> 및 <code>retry-after</code> 헤더, 스필오버
         우회 경로 — 과, 이 저장소가 옹호하는 소수의 운영 경험칙 — 헤더 존중,
         플릿의 동기화를 푸는 지터 추가, 존중한 대기가 거듭 풀리지 않을 때에만
@@ -338,7 +338,7 @@
     <section class="article-section decision-box">
       <h2>실무 규칙</h2>
       <p><strong>실무 규칙: PTU 배포가 429를 반환하면 <code>retry-after-ms</code>를
-        입장 계약으로 다룹니다 — 헤더를 존중하고, 플릿의 동기화를 풀기 위해
+        재시도 기준으로 다룹니다 — 헤더를 존중하고, 플릿의 동기화를 풀기 위해
         지터를 더하며, 존중한 대기가 거듭 풀리지 않을 때에만 스필오버 배포로
         우회합니다.</strong></p>
       <p>다음 글은 언제 재시도할지에서, 같은 프롬프트가 반복될 때 캐시 키가 실제로 무엇을 결정하는지로 넘어갑니다.</p>

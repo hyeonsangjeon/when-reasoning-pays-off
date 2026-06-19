@@ -33,7 +33,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../ko/">Articles</a> / 운영 에세이</p>
+    <p class="breadcrumb"><a href="../../ko/">글 목록</a> / 운영 에세이</p>
     <p class="article-kicker">운영 에세이 · GPT-4o에서 GPT-5.x로의 사이징</p>
     <h1>추론 마이그레이션 사이징: 모델 이름이 아니라 측정</h1>
     <p class="lede">
@@ -51,8 +51,8 @@
 
     <figure class="article-figure" id="figure-migration-one-pager">
       <figcaption>
-        <strong>이 글 한눈에 보기.</strong> 마이그레이션 사이징은 모델 이름
-        조회가 아니라 모델링된 산술입니다. 권장 PTU = ceil(수요 &divide; 밀도
+        <strong>이 글 한눈에 보기.</strong> 마이그레이션 사이징은 모델 이름만 보고
+        정하는 일이 아니라 모델링된 산술입니다. 권장 PTU = ceil(수요 &divide; 밀도
         &divide; 목표 사용률)이며, 과도하게 큰 응답 상한(<code>max_output_tokens</code>)이
         워크로드가 확보하는 PTU를 좌우할 수 있는지는, 이 저장소에서 문서화된
         플랫폼 동작이 아니라 검증해야 할 수용 위험 가설로 다룹니다. 이 한 장
@@ -65,7 +65,7 @@
     </figure>
 
     <section id="why-remeasure" class="article-section">
-      <h2>옛 사이즈 재사용 대신 다시 측정하는 이유</h2>
+      <h2>기존 크기를 그대로 쓰지 않고 다시 측정하는 이유</h2>
       <p>
         재사용 반사 동작은 모델 이름이 곧 사이즈를 담고 있다고 &mdash; 잘
         돌아가는 <code>gpt-4o</code> 숫자에 제품군 배수를 곱하면 GPT-5.x에도
@@ -76,7 +76,7 @@
         프롬프트 토큰을 사용률에서 차감합니다. OpenAI는 추론 토큰을
         <code>output_tokens_details.reasoning_tokens</code>에 보고되는, 보이지
         않는 출력 측 토큰으로 문서화합니다. 둘째는 이 저장소의 예시용 계산으로,
-        그 문서화된 공식을 하나의 예시 호출 형태에 돌려 사이징 동인들을 나란히
+        그 문서화된 공식을 하나의 예시 호출 형태에 적용해 사이징 동인들을 나란히
         보여 줍니다 &mdash; 어떤 배포를 측정한 것이 아닙니다.
       </p>
       <p>
@@ -85,7 +85,7 @@
         보이는 답변은 더 새 모델에서 비슷한 수준으로, 심지어 약간 더 가볍게
         사이징될 수도 있습니다. 하지만 보이는 답변이 요청의 전부는 아닙니다. 숨은
         추론 출력이 나타나는 순간 같은 답변이 훨씬 더 많은 정규화 TPM을 필요로 할
-        수 있고, 이 저장소의 작업 가설은 &mdash; 문서화된 플랫폼 동작이 아니라
+        수 있고, 이 저장소의 가설은 &mdash; 문서화된 플랫폼 동작이 아니라
         검증해야 할 수용 위험으로 &mdash; 과도하게 큰 <code>max_output_tokens</code>
         상한이 그 토큰이 실제로 생성되든 아니든 수용 가중치를 예약할 수 있다는
         것입니다. 그래서 운영의 질문은 “새 모델이 더 무거운가?”가 아니라 “측정된
@@ -136,7 +136,7 @@
       <h2>사이징 공식의 핵심: 토큰 형태</h2>
       <p>
         Microsoft Learn은 트래픽을 정규화 TPM으로 변환하여 PTU 수요를
-        산정합니다. 입력값은 피크 RPM, 평균 prompt 토큰, 평균 생성 출력
+        산정합니다. 입력값은 피크 RPM, 평균 프롬프트 토큰, 평균 생성 출력
         토큰, 캐시 적중률, 모델의 출력 대 입력 비율, 그리고 모델의 PTU당
         Input TPM 값입니다.
       </p>
@@ -152,7 +152,7 @@
       <p>
         이 공식이 바로 제품군 수준의 지름길이 오해를 부르는 이유입니다.
         어떤 모델은 출력 비율이 더 무거우면서도 이전 모델보다 PTU당 Input
-        TPM이 더 높을 수 있습니다. 답은 여러분 워크로드의 실제 prompt,
+        TPM이 더 높을 수 있습니다. 답은 여러분 워크로드의 실제 프롬프트,
         출력, 캐시 프로필에 달려 있습니다.
       </p>
     </section>
@@ -171,7 +171,7 @@
         </div>
         <div>
           <h3>3. 캐시 적중률</h3>
-          <p>Microsoft Learn은 캐시된 prompt 토큰이 PTU 사용률에서 차감된다고 설명합니다. 따라서 프리픽스 형태의 변화가 사이징 결과를 움직일 수 있습니다.</p>
+          <p>Microsoft Learn은 캐시된 프롬프트 토큰이 PTU 사용률에서 차감된다고 설명합니다. 따라서 프리픽스 형태의 변화가 사이징 결과를 움직일 수 있습니다.</p>
         </div>
         <div>
           <h3>4. 응답 상한</h3>
@@ -228,10 +228,10 @@
       <p class="section-label">운영자 체크리스트 · 용량 구매 전에 다시 측정</p>
       <h2>마이그레이션 실행: 이름 변경이 아니라 측정</h2>
       <ol>
-        <li><strong>작업 구성을 고정하세요.</strong> prompt, 도구, 스키마, 검색 배치, 샘플 분포를 모델 셀 전반에서 바이트 단위로 안정되게 유지하세요.</li>
+        <li><strong>작업 구성을 고정하세요.</strong> 프롬프트, 도구, 스키마, 검색 배치, 샘플 분포를 모든 모델 조합에서 바이트 단위로 안정되게 유지하세요.</li>
         <li><strong>보이는 출력을 측정하세요.</strong> 마이그레이션 전후의 평균 및 p95 보이는 출력 토큰을 비교하세요.</li>
         <li><strong>추론 출력을 측정하세요.</strong> <code>reasoning_tokens</code>를 수집하세요. 최종 답변 텍스트로부터 추정하지 마세요.</li>
-        <li><strong>캐시 적중률을 측정하세요.</strong> 캐시 키 버킷별로 <code>cached_tokens / prompt_tokens</code>를 기록하세요. 특히 ReAct나 도구 스키마 변경 이후에 그렇습니다.</li>
+        <li><strong>캐시 적중률을 측정하세요.</strong> 캐시 키 버킷별로 <code>cached_tokens / prompt_tokens</code>를 기록하세요. 특히 ReAct나 도구 스키마가 바뀐 뒤에는 더 그렇습니다.</li>
         <li><strong>상한을 적정 크기로 맞추세요.</strong> 대표적인 보이는 + 추론 백분위수를 기준으로 <code>max_output_tokens</code>를 설정한 다음, 드물게 발생하는 긴 답변에는 호출별 재정의를 사용하세요.</li>
         <li><strong>그런 다음에만 PTU를 사이징하세요.</strong> 현재 모델 표와 여러분이 측정한 워크로드 형태로 정규화 TPM 공식을 적용하세요.</li>
       </ol>
@@ -247,7 +247,7 @@
       </p>
       <ul>
         <li>[1] <strong>Determine PTU sizing for a workload</strong> — 정규화 TPM
-          계산(Input TPM = 피크 RPM × prompt 크기; Output TPM = 피크 RPM × 응답
+          계산(Input TPM = 피크 RPM × 프롬프트 크기; Output TPM = 피크 RPM × 응답
           크기; 정규화 TPM = input TPM × (1 − 캐시 적중률) + 출력 대 입력 비율 ×
           output TPM; PTU = 정규화 TPM ÷ PTU당 Input TPM), 모델별 PTU당 Input
           TPM과 출력 대 입력 비율 값, 그리고 캐시된 토큰이 사용률 계산에서 100%
@@ -255,7 +255,7 @@
         <li>[2] <strong>What is provisioned throughput for Foundry Models?</strong> —
           PTU 사용률 모델과 요청 형태가 예약된 용량을 어떻게 소비하는지를
           문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">아카이브</a>.</li>
-        <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — 캐시된 prompt
+        <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — 캐시된 프롬프트
           토큰이 사용률에서 차감되므로, 프리픽스 형태의 변화가 사이징 결과를
           움직인다는 점을 문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
         <li>[4] <strong>OpenAI reasoning models guide</strong> — 추론 토큰을
@@ -299,7 +299,7 @@
         않으므로, GPT-4o 트래픽을 PTU의 GPT-5.x로 옮기기 전에 출력, 추론, 캐시,
         그리고 <code>max_output_tokens</code> 상한 정책을 다시 측정한 다음 정규화
         TPM 공식으로 사이징합니다.</strong></p>
-      <p>이 글로 운영 에세이 묶음이 마무리되고, 흐름은 애초에 어떤 근거가 공개할 만큼 강했는지를 결정한 방법론으로 돌아갑니다.</p>
+      <p>이 글로 운영 에세이 묶음이 마무리됩니다. 이제 흐름은 애초에 어떤 근거가 공개할 만큼 강했는지를 가른 방법론으로 돌아갑니다.</p>
       <p><a class="button-link" href="../../when-reasoning-pays-off/ko/">어떤 근거가 공개할 만큼 강한지 어떻게 판단했나요?</a></p>
     </section>
   </main>
