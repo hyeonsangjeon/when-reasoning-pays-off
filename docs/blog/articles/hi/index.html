@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>लेख | when reasoning pays off</title>
-  <meta name="description" content="रीज़निंग-एफर्ट चार्ट-डेटा स्नैपशॉट को ऑपरेटर निर्णयों में बदलने वाले सार्वजनिक लेख।">
+  <meta name="description" content="सार्वजनिक लेख, जो reasoning-effort chart-data snapshot को operator फ़ैसलों में बदलते हैं।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -40,14 +40,14 @@
     <p class="article-kicker">ब्लॉग / साक्ष्य नोट्स</p>
     <h1>लेख</h1>
     <p class="lede">
-      साक्ष्य डैशबोर्ड ऑडिट-निशान है; लेख निर्णय की कहानी हैं। हर निबंध एक
-      प्रश्न से शुरू होता है, उसका उत्तर देने में उपयोग किए गए चार्ट का नाम लेता
-      है, और एक ऑपरेटर-सीख के साथ समाप्त होता है। इन्हें क्रम से पढ़ें या जिस
-      परत की ज़रूरत हो, सीधे वहाँ जाएँ।
+      साक्ष्य डैशबोर्ड audit trail है; ये लेख बताते हैं कि उससे फ़ैसले कैसे
+      निकलते हैं। हर निबंध एक सवाल से शुरू होता है, उसे समझाने वाले chart का
+      नाम बताता है, और आखिर में operator के लिए साफ़ सीख देता है। इन्हें क्रम
+      से पढ़ें, या सीधे उसी layer पर जाएँ जिसकी आपको ज़रूरत है।
     </p>
 
     <nav class="article-outline" aria-label="पठन-क्रम">
-      <span class="section-label">पठन-क्रम</span>
+      <span class="section-label">पढ़ने का क्रम</span>
       <a href="#overview">1 · अवलोकन</a>
       <a href="#topics">2 · साक्ष्य विषय</a>
       <a href="#bridge">3 · सेतु</a>
@@ -56,22 +56,23 @@
     </nav>
 
     <p>
-      यह क्रम दावे से अभ्यास तक चलता है। <strong>अवलोकन</strong> निबंध एकमात्र
-      संदेश और साक्ष्य की सीमा बताता है। <strong>साक्ष्य विषय</strong> मापे गए
-      हर स्लाइस को एक-एक करके खोलते हैं। <strong>सेतु</strong> निबंध उस बिंदु को
-      चिह्नित करता है जहाँ स्वर माप से प्रोडक्शन की ओर बदलता है।
-      <strong>परिचालन</strong> निबंध उसी मापने की आदत को रोज़मर्रा के संचालन में
-      ले जाते हैं — रिकवरी, कैश राउटिंग, रिटेंशन, और माइग्रेशन साइज़िंग। इन सबके
-      नीचे, <a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> उन शासित
-      तालिकाओं और स्रोत चार्टों को रखता है जिनसे हर दावा निकाला गया है।
+      यह क्रम दावे से practical इस्तेमाल तक जाता है। <strong>अवलोकन</strong>
+      निबंध मुख्य बात और साक्ष्य की सीमा तय करता है।
+      <strong>साक्ष्य विषय</strong> मापे गए हर हिस्से को एक-एक करके खोलते हैं।
+      <strong>सेतु</strong> निबंध दिखाता है कि कहाँ भाषा measurement से
+      production की तरफ़ मुड़ती है। <strong>परिचालन</strong> निबंध recovery,
+      cache routing, retention, और migration sizing जैसे रोज़मर्रा के कामों में
+      measurement की यही आदत ले जाते हैं। इनके नीचे
+      <a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> में वे governed
+      tables और source charts हैं, जिन पर हर दावा टिका है।
     </p>
 
     <section id="overview" class="series-hero">
-      <h2>अवलोकन निबंध: वही टोकन मूल्य, अलग बिल</h2>
+      <h2>अवलोकन निबंध: वही token price, अलग bill</h2>
       <p>
-        सार्वजनिक चार्ट-डेटा स्नैपशॉट का निर्देशित पठन: रीज़निंग एफर्ट कहाँ खर्च
-        बर्बाद करता है, कहाँ आज़माने लायक है, और छिपे रीज़निंग टोकन को स्पष्ट रूप
-        से बजट में क्यों रखना चाहिए।
+        public chart-data snapshot को साथ लेकर पढ़ने वाला मार्गदर्शक: कहाँ
+        reasoning effort सिर्फ़ खर्च बढ़ाता है, कहाँ उसे आज़माना बनता है, और
+        hidden reasoning tokens को budget में साफ़-साफ़ क्यों गिनना चाहिए।
       </p>
       <p><a class="button-link" href="../when-reasoning-pays-off/hi/">अवलोकन निबंध पढ़ें</a></p>
     </section>
@@ -79,74 +80,74 @@
     <h2 id="topics">अवलोकन निबंध के भीतर के विषय</h2>
     <div class="cards topic-cards">
       <article class="card">
-        <h3>छोटा तथ्यात्मक कार्य</h3>
-        <p>लागत बढ़ती है पर उसके साथ गुणवत्ता नहीं बढ़ती।</p>
+        <h3>छोटा तथ्य-आधारित काम</h3>
+        <p>cost बढ़ती है, लेकिन quality में उसके बराबर सुधार नहीं मिलता।</p>
         <p><a href="../when-reasoning-pays-off/topics/short-factual-work/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>अदृश्य रीज़निंग टोकन</h3>
-        <p>आउटपुट एक जैसा दिखने पर भी बिल क्यों बदलता है, यह आंतरिक टोकन समझाते हैं।</p>
+        <p>output लगभग वैसा ही दिखे, तब भी bill क्यों बदलता है, यह internal tokens समझाते हैं।</p>
         <p><a href="../when-reasoning-pays-off/topics/invisible-reasoning-tokens/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
-        <h3>बहु-चरणीय कार्य</h3>
-        <p>जब मूल्यांकनकर्ता पर्याप्त रूप से हिलता है, तब रीज़निंग अपनी कीमत वसूल सकती है।</p>
+        <h3>कई चरणों वाला काम</h3>
+        <p>जब evaluator में काफ़ी बदलाव दिखे, तब reasoning effort वाजिब ठहर सकता है।</p>
         <p><a href="../when-reasoning-pays-off/topics/multi-step-work/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
-        <h3>टूल-एजेंट सीमा-जाँच</h3>
-        <p>एजेंट वर्कलोड में गुणवत्ता और लेटेंसी को एक साथ पढ़ना होता है।</p>
+        <h3>टूल-एजेंट ceiling जाँच</h3>
+        <p>agent workloads में quality और latency को साथ देखकर समझना पड़ता है।</p>
         <p><a href="../when-reasoning-pays-off/topics/tool-agent-ceiling-checks/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>PTU/PAYG योजना</h3>
-        <p>मॉडल-आधारित क्रॉसओवर सीधा क्षमता-साक्ष्य नहीं, बल्कि योजना-मार्गदर्शन है।</p>
+        <p>modeled crossover सीधे capacity का साक्ष्य नहीं, बल्कि planning के लिए मार्गदर्शन है।</p>
         <p><a href="../when-reasoning-pays-off/topics/ptu-payg-planning/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>साक्ष्य डैशबोर्ड</h3>
-        <p>गद्य के पीछे की शासित तालिकाओं और रेंडर किए गए स्रोत चार्ट देखें।</p>
+        <p>इन लेखों के पीछे की governed tables और rendered source charts देखें।</p>
         <p><a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड खोलें</a></p>
       </article>
     </div>
 
     <h2 id="bridge">सेतु निबंध</h2>
     <p class="muted-note">
-      एक निबंध साक्ष्य और परिचालन परतों के बीच बैठता है, यह बताते हुए कि स्वर
-      क्यों बदलता है और कौन-सी आदतें आगे चलती हैं।
+      एक निबंध साक्ष्य और परिचालन के बीच की कड़ी है। वही बताता है कि भाषा क्यों
+      बदलती है और कौन-सी आदतें आगे भी साथ रहती हैं।
     </p>
     <div class="cards topic-cards">
       <article class="card">
-        <h3>माप से प्रोडक्शन तक</h3>
-        <p>साक्ष्य-परत की मापने की आदत प्रोडक्शन परिचालन तक कैसे पहुँचती है, और क्या वैसा ही रहता है।</p>
+        <h3>measurement से production तक</h3>
+        <p>साक्ष्य स्तर पर measurement की जो आदत बनती है, वह production operations तक कैसे पहुँचती है, और क्या-क्या वैसा ही रहता है।</p>
         <p><a href="../when-reasoning-pays-off/topics/bridge-from-measurement-to-production/hi/">सेतु निबंध पढ़ें</a></p>
       </article>
     </div>
 
     <h2 id="operations">परिचालन निबंध</h2>
     <p class="muted-note">
-      ये निबंध एक परत और प्रोडक्शन परिचालन के करीब जाते हैं: रिकवरी, कैश राउटिंग,
-      रिटेंशन, और माइग्रेशन साइज़िंग।
+      ये निबंध production operations के एक स्तर और करीब जाते हैं: recovery,
+      cache routing, retention, और migration sizing।
     </p>
     <div class="cards topic-cards">
       <article class="card">
         <h3><code>retry-after-ms</code> के साथ 429 रिकवरी</h3>
-        <p>PTU रिकवरी को हेल्थ-चेक पोलिंग के बजाय सेवा-हेडर का पालन क्यों करना चाहिए।</p>
+        <p>PTU recovery में health-check polling के बजाय service header का सहारा क्यों लेना चाहिए।</p>
         <p><a href="../ptu-retry-after-recovery/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
         <h3><code>prompt_cache_key</code> बकेटिंग</h3>
-        <p>कैश कुंजियाँ राउटिंग-एफ़िनिटी नियंत्रण हैं; अनुरोध ID के बजाय वर्कलोड के अनुसार बकेट करें।</p>
+        <p>cache keys routing-affinity control हैं; bucket request ID से नहीं, workload के हिसाब से बनाइए।</p>
         <p><a href="../prompt-cache-key-bucketing/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
-        <h3>स्पष्ट कैश रिटेंशन</h3>
-        <p>जब संचालन लंबे कैश-विंडो की अपेक्षा करता है, तब रिटेंशन को एक स्पष्ट अनुरोध-नीति बनाएँ।</p>
+        <h3>स्पष्ट cache retention</h3>
+        <p>जब operation लंबे cache window पर निर्भर हो, तब retention को request policy में साफ़-साफ़ लिखना चाहिए।</p>
         <p><a href="../prompt-cache-retention/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
-        <h3>रीज़निंग-मॉडल माइग्रेशन साइज़िंग</h3>
-        <p>आउटपुट भारांकन, रीज़निंग टोकन, कैश-स्वरूप और अधिकतम-टोकन नीति के ज़रिए PTU माँग समझाएँ।</p>
+        <h3>reasoning-model migration sizing</h3>
+        <p>output weighting, reasoning tokens, cache shape, और max-token policy के ज़रिए PTU demand को समझाइए।</p>
         <p><a href="../reasoning-migration-sizing/hi/">यह लेख पढ़ें</a></p>
       </article>
     </div>
@@ -154,7 +155,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT-लाइसेंस प्राप्त शोध सामग्री · प्रकाशित डेटा केवल सैनिटाइज़्ड या समेकित रूप में।</p>
+    <p>MIT-licensed शोध सामग्री · प्रकाशित data केवल sanitized या aggregate रूप में दिया गया है।</p>
   </footer>
 </body>
 </html>
