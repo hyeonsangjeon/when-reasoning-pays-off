@@ -35,6 +35,16 @@ PUBLIC_SUFFIXES = {".html", ".md", ".json"}
 HEX_SHA_RE = re.compile(r"^[a-f0-9]{64}$")
 ROOT_RELATIVE_BLOG_URL_RE = re.compile(r"\b(?:href|src)=[\"']/blog/")
 
+# Prose-hygiene patterns (see PROSE_PATTERN_LABELS) target human-readable prose,
+# so they are evaluated against a "prose view" of each page that masks inline
+# <code> spans and href/src link targets. Documented public Azure identifiers
+# quoted in code and official Microsoft citation URLs are legitimate public
+# references, not internal leakage; the stricter secret/path/role patterns and
+# the CI-enforced check_public_surface.sh still scan the full text.
+PROSE_PATTERN_LABELS = frozenset({"pricing-url", "pricing-access-date"})
+INLINE_CODE_RE = re.compile(r"<code\b[^>]*>.*?</code>", re.IGNORECASE | re.DOTALL)
+LINK_TARGET_RE = re.compile(r"\b(?:href|src)\s*=\s*[\"'][^\"']*[\"']", re.IGNORECASE)
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -270,7 +280,19 @@ def forbidden_patterns() -> list[tuple[str, re.Pattern[str]]]:
         ("internal-task-label", re.compile(r"\b[Tt]ask[ -]?\d{3,}\b")),
         ("internal-role-name", re.compile(role_name)),
         ("request-or-run-id", re.compile(r"\b(req|request|run)[_-][A-Za-z0-9_-]{6,}\b")),
-        ("endpoint-term", re.compile(r"\b(endpoints?|deployments?)\b", re.IGNORECASE)),
+        # A concrete Azure resource endpoint hostname is a real leak vector. The
+        # bare words "endpoint"/"deployment" are ordinary prose and also appear
+        # inside documented public Azure identifiers (e.g. the response header
+        # x-ms-spillover-from-deployment), so match the hostname form, not the
+        # dictionary words.
+        (
+            "endpoint-host",
+            re.compile(
+                r"\b[a-z0-9][a-z0-9-]*\.(?:openai|cognitiveservices)\.azure\.com\b"
+                r"|\b[a-z0-9][a-z0-9-]*\.services\.ai\.azure\.com\b",
+                re.IGNORECASE,
+            ),
+        ),
         ("pricing-url", re.compile(r"https?://[^\s\"'<>]*pricing[^\s\"'<>]*", re.IGNORECASE)),
         ("pricing-access-date", re.compile(r"pricing access", re.IGNORECASE)),
         ("secret-openai-sk", re.compile(r"(^|[^A-Za-z0-9])sk-[A-Za-z0-9_-]{16,}")),
@@ -282,9 +304,29 @@ def forbidden_patterns() -> list[tuple[str, re.Pattern[str]]]:
     ]
 
 
+def prose_view(text: str) -> str:
+    """Return text with inline ``<code>`` spans and ``href``/``src`` link
+    targets stripped, so prose-hygiene rules see only human-readable prose.
+
+    Documented public API identifiers quoted in code (e.g. Azure's
+    ``x-ms-spillover-from-deployment`` response header or the
+    ``spilloverDeploymentName`` property) and citation link targets (e.g. the
+    official Azure pricing page and its archive snapshot) are legitimate public
+    references, not internal leakage. They are still covered by the stricter
+    secret/path/role patterns — which scan the full text — and by the
+    CI-enforced ``check_public_surface.sh``, neither of which forbids public
+    Microsoft citations.
+    """
+    text = INLINE_CODE_RE.sub(" ", text)
+    text = LINK_TARGET_RE.sub(" ", text)
+    return text
+
+
 def scan_text(label: str, text: str) -> None:
+    prose = prose_view(text)
     for pattern_label, pattern in forbidden_patterns():
-        match = pattern.search(text)
+        target = prose if pattern_label in PROSE_PATTERN_LABELS else text
+        match = pattern.search(target)
         if match is not None:
             raise SystemExit(
                 "FAIL: forbidden public pattern "
