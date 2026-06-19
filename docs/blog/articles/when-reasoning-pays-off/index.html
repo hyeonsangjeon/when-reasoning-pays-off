@@ -408,16 +408,37 @@
           score is already near the top of the rubric, latency becomes the next
           constraint.
         </figcaption>
-        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="Ceiling-effect bar chart: X-axis is effort setting; Y-axis is quality score near the rubric ceiling.">
-          <div class="mini-axis-row"><span>Y: quality score</span><span>Flat top: ceiling effect</span></div>
-          <div class="ceiling-plot">
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
-          </div>
-          <div class="mini-x-axis">X: effort setting</div>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
+          <title id="ceil-svg-title">Tool-agent quality ceiling effect</title>
+          <desc id="ceil-svg-desc">Quality score already sits flat near the rubric ceiling, so raising effort further leaves the score unchanged while only latency, cost, and internal tokens grow.</desc>
+          <defs>
+            <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#06d6a0"/>
+              <stop offset="1" stop-color="#048a67"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">Tool agent: quality ceiling effect</text>
+          <line x1="52" y1="34" x2="52" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="52" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">quality score</text>
+          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">effort setting</text>
+          <line x1="52" y1="54" x2="244" y2="54" stroke="#048a67" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">rubric ceiling</text>
+          <rect x="64" y="118" width="34" height="58" rx="5" fill="url(#ceilFill)"/>
+          <rect x="110" y="80" width="34" height="96" rx="5" fill="url(#ceilFill)"/>
+          <rect x="156" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <rect x="202" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <text x="81" y="191" text-anchor="middle" font-size="11" fill="#31475e">Low</text>
+          <text x="127" y="191" text-anchor="middle" font-size="11" fill="#31475e">Medium</text>
+          <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">High</text>
+          <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">Extra-high</text>
+          <rect x="250" y="58" width="104" height="100" rx="9" fill="#f3fbf8" stroke="#cdeee3"/>
+          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">Raise effort</text>
+          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">score → flat</text>
+          <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#b4540a">latency ↑</text>
+          <text x="302" y="136" text-anchor="middle" font-size="11.5" fill="#b4540a">cost ↑</text>
+          <text x="302" y="154" text-anchor="middle" font-size="11.5" fill="#b4540a">internal tokens ↑</text>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>
@@ -456,12 +477,31 @@
           <strong>Chart to read:</strong> modeled crossover against the paired
           quality guardrail. This is sizing guidance, not measured capacity.
         </figcaption>
-        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="Modeled crossover chart: X-axis is request rate; Y-axis is hourly cost model. The point marks the modeled crossover threshold.">
-          <div class="mini-axis-row"><span>Y: modeled hourly cost</span><span>X: request rate</span></div>
-          <b class="crossover-label payg">PAYG curve</b>
-          <b class="crossover-label ptu">PTU floor</b>
-          <i class="crossover-point"></i><b class="crossover-label point">Crossover</b>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 214" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ptupayg-svg-title ptupayg-svg-desc">
+          <title id="ptupayg-svg-title">Modeled PTU/PAYG crossover</title>
+          <desc id="ptupayg-svg-desc">Where the blue PAYG variable-cost curve meets the orange PTU fixed floor is the modeled planning threshold. It is not measured PTU capacity.</desc>
+          <defs>
+            <linearGradient id="paygStroke" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#3a86ff"/>
+              <stop offset="1" stop-color="#1554b7"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">Modeled PTU/PAYG crossover</text>
+          <line x1="58" y1="34" x2="58" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="58" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">modeled hourly cost</text>
+          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">request rate (per minute)</text>
+          <line x1="58" y1="96" x2="340" y2="96" stroke="#f4a300" stroke-width="4" stroke-linecap="round"/>
+          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU fixed floor (flat hourly)</text>
+          <path d="M58 170 Q160 150 340 46" fill="none" stroke="url(#paygStroke)" stroke-width="4" stroke-linecap="round"/>
+          <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG variable cost</text>
+          <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
+          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">planning threshold</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured · modeled</text>
+          <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
+          <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>

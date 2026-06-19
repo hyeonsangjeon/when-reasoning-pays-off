@@ -257,16 +257,37 @@
         <figcaption>
           <strong>要读的图:</strong> 同时读质量和延迟。如果分数已经接近评分标准上限，下一个约束往往是延迟。
         </figcaption>
-        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="天花板效应柱状图：X轴是强度设置；Y轴是接近评分上限的质量分数。">
-          <div class="mini-axis-row"><span>Y：质量分数</span><span>平顶：天花板效应</span></div>
-          <div class="ceiling-plot">
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
-          </div>
-          <div class="mini-x-axis">X：强度设置</div>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
+          <title id="ceil-svg-title">工具智能体质量天花板效应</title>
+          <desc id="ceil-svg-desc">质量分数已经在评分上限（天花板）附近变平，再提高强度也不会改变分数，只会增加延迟、成本和内部 token。</desc>
+          <defs>
+            <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#06d6a0"/>
+              <stop offset="1" stop-color="#048a67"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">工具智能体：质量天花板效应</text>
+          <line x1="52" y1="34" x2="52" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="52" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">质量分数</text>
+          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">强度设置</text>
+          <line x1="52" y1="54" x2="244" y2="54" stroke="#048a67" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">评分上限（天花板）</text>
+          <rect x="64" y="118" width="34" height="58" rx="5" fill="url(#ceilFill)"/>
+          <rect x="110" y="80" width="34" height="96" rx="5" fill="url(#ceilFill)"/>
+          <rect x="156" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <rect x="202" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <text x="81" y="191" text-anchor="middle" font-size="11" fill="#31475e">Low</text>
+          <text x="127" y="191" text-anchor="middle" font-size="11" fill="#31475e">Medium</text>
+          <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">High</text>
+          <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">Extra-high</text>
+          <rect x="250" y="58" width="104" height="100" rx="9" fill="#f3fbf8" stroke="#cdeee3"/>
+          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">再提高强度</text>
+          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">分数 → 不变</text>
+          <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#b4540a">延迟 ↑</text>
+          <text x="302" y="136" text-anchor="middle" font-size="11.5" fill="#b4540a">成本 ↑</text>
+          <text x="302" y="154" text-anchor="middle" font-size="11.5" fill="#b4540a">内部 token ↑</text>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>
@@ -297,12 +318,31 @@
         <figcaption>
           <strong>要读的图:</strong> 将建模得到的交叉点与配对的质量护栏一起阅读。这是规模规划参考，不是实测容量证据。
         </figcaption>
-        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="建模交叉点图：X轴是请求率；Y轴是小时成本模型。圆点表示建模交叉阈值。">
-          <div class="mini-axis-row"><span>Y：建模小时成本</span><span>X：请求率</span></div>
-          <b class="crossover-label payg">PAYG 曲线</b>
-          <b class="crossover-label ptu">PTU 下限</b>
-          <i class="crossover-point"></i><b class="crossover-label point">交叉点</b>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 214" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ptupayg-svg-title ptupayg-svg-desc">
+          <title id="ptupayg-svg-title">建模的 PTU/PAYG 交叉点</title>
+          <desc id="ptupayg-svg-desc">蓝色 PAYG 变动成本曲线与橙色 PTU 固定下限相交之处，就是建模的规划阈值。它不是实测 PTU 容量。</desc>
+          <defs>
+            <linearGradient id="paygStroke" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#3a86ff"/>
+              <stop offset="1" stop-color="#1554b7"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">建模的 PTU/PAYG 交叉点</text>
+          <line x1="58" y1="34" x2="58" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="58" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">建模小时成本</text>
+          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">请求率（每分钟）</text>
+          <line x1="58" y1="96" x2="340" y2="96" stroke="#f4a300" stroke-width="4" stroke-linecap="round"/>
+          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU 固定下限（每小时定额）</text>
+          <path d="M58 170 Q160 150 340 46" fill="none" stroke="url(#paygStroke)" stroke-width="4" stroke-linecap="round"/>
+          <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG 变动成本</text>
+          <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
+          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">规划阈值</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">非实测 · 建模值</text>
+          <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
+          <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>

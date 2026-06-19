@@ -295,16 +295,37 @@
         <figcaption>
           <strong>पढ़ने का चार्ट:</strong> गुणवत्ता और latency साथ-साथ। अगर स्कोर पहले से रूब्रिक के शीर्ष के पास है, तो अगली बाधा latency बन जाती है।
         </figcaption>
-        <div class="ceiling-mini-chart labeled-ceiling-chart" role="img" aria-label="सीलिंग-प्रभाव बार चार्ट: X-अक्ष effort सेटिंग; Y-अक्ष रूब्रिक-शीर्ष के पास गुणवत्ता स्कोर।">
-          <div class="mini-axis-row"><span>Y: गुणवत्ता स्कोर</span><span>सपाट शीर्ष: सीलिंग-प्रभाव</span></div>
-          <div class="ceiling-plot">
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill"></i><b class="ceiling-label">Low</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill high"></i><b class="ceiling-label">Medium</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">High</b></div>
-            <div class="ceiling-bar-wrap"><i class="ceiling-fill flat"></i><b class="ceiling-label">Extra-high</b></div>
-          </div>
-          <div class="mini-x-axis">X: effort सेटिंग</div>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
+          <title id="ceil-svg-title">टूल-एजेंट गुणवत्ता सीलिंग-प्रभाव</title>
+          <desc id="ceil-svg-desc">गुणवत्ता स्कोर पहले से रूब्रिक सीलिंग के पास सपाट है, इसलिए effort और बढ़ाने पर स्कोर वही रहता है और सिर्फ़ latency, लागत व आंतरिक टोकन बढ़ते हैं।</desc>
+          <defs>
+            <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#06d6a0"/>
+              <stop offset="1" stop-color="#048a67"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">टूल-एजेंट: गुणवत्ता सीलिंग-प्रभाव</text>
+          <line x1="52" y1="34" x2="52" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="52" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">गुणवत्ता स्कोर</text>
+          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">effort सेटिंग</text>
+          <line x1="52" y1="54" x2="244" y2="54" stroke="#048a67" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">रूब्रिक सीलिंग</text>
+          <rect x="64" y="118" width="34" height="58" rx="5" fill="url(#ceilFill)"/>
+          <rect x="110" y="80" width="34" height="96" rx="5" fill="url(#ceilFill)"/>
+          <rect x="156" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <rect x="202" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
+          <text x="81" y="191" text-anchor="middle" font-size="11" fill="#31475e">Low</text>
+          <text x="127" y="191" text-anchor="middle" font-size="11" fill="#31475e">Medium</text>
+          <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">High</text>
+          <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">Extra-high</text>
+          <rect x="250" y="58" width="104" height="100" rx="9" fill="#f3fbf8" stroke="#cdeee3"/>
+          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">effort और बढ़ाएँ</text>
+          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">स्कोर → वही</text>
+          <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#b4540a">latency ↑</text>
+          <text x="302" y="136" text-anchor="middle" font-size="11.5" fill="#b4540a">लागत ↑</text>
+          <text x="302" y="154" text-anchor="middle" font-size="11.5" fill="#b4540a">आंतरिक टोकन ↑</text>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>
@@ -340,12 +361,31 @@
         <figcaption>
           <strong>पढ़ने का चार्ट:</strong> गुणवत्ता-गार्डरेल के साथ मॉडल-किया-गया क्रॉसओवर। यह साइज़िंग-मार्गदर्शन है, मापी गई क्षमता का सबूत नहीं।
         </figcaption>
-        <div class="crossover-mini-chart labeled-crossover-chart" role="img" aria-label="मॉडल-किया-गया क्रॉसओवर चार्ट: X-अक्ष request दर; Y-अक्ष प्रति-घंटा लागत-मॉडल। बिंदु मॉडल-की-गई क्रॉसओवर सीमा है।">
-          <div class="mini-axis-row"><span>Y: मॉडल-की-गई प्रति-घंटा लागत</span><span>X: request दर</span></div>
-          <b class="crossover-label payg">PAYG वक्र</b>
-          <b class="crossover-label ptu">PTU न्यूनतम</b>
-          <i class="crossover-point"></i><b class="crossover-label point">क्रॉसओवर</b>
-        </div>
+        <svg class="mini-svg-chart" viewBox="0 0 360 214" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ptupayg-svg-title ptupayg-svg-desc">
+          <title id="ptupayg-svg-title">मॉडल-किया-गया PTU/PAYG क्रॉसओवर</title>
+          <desc id="ptupayg-svg-desc">जहाँ नीला PAYG वेरिएबल-लागत वक्र नारंगी PTU फ़िक्स्ड न्यूनतम से मिलता है, वही मॉडल-किया-गया प्लानिंग थ्रेशोल्ड है। यह मापी गई PTU क्षमता नहीं है।</desc>
+          <defs>
+            <linearGradient id="paygStroke" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#3a86ff"/>
+              <stop offset="1" stop-color="#1554b7"/>
+            </linearGradient>
+          </defs>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">मॉडल-किया-गया PTU/PAYG क्रॉसओवर</text>
+          <line x1="58" y1="34" x2="58" y2="180" stroke="#9fb3c8" stroke-width="2"/>
+          <line x1="58" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
+          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">मॉडल-की-गई प्रति-घंटा लागत</text>
+          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">request दर (प्रति-मिनट)</text>
+          <line x1="58" y1="96" x2="340" y2="96" stroke="#f4a300" stroke-width="4" stroke-linecap="round"/>
+          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU फ़िक्स्ड न्यूनतम (प्रति-घंटा फ़्लैट)</text>
+          <path d="M58 170 Q160 150 340 46" fill="none" stroke="url(#paygStroke)" stroke-width="4" stroke-linecap="round"/>
+          <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG वेरिएबल लागत</text>
+          <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
+          <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
+          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">प्लानिंग थ्रेशोल्ड</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">मापा नहीं · मॉडल-मान</text>
+          <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
+          <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
+        </svg>
       </figure>
       <div class="evidence-grid">
         <div>
