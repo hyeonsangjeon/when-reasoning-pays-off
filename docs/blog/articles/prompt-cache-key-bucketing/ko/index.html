@@ -66,7 +66,7 @@
     <section id="why-bucket" class="article-section">
       <h2>추측 대신 키 크기를 잡는 이유</h2>
       <p>
-        고유 키 반사 동작은 구체성이 공짜라고 &mdash; 더 촘촘한 키는 요청을
+        고유 키를 넣고 싶어지는 반사적 선택은 구체성이 공짜라고 &mdash; 더 촘촘한 키는 요청을
         구분하는 데 도움만 줄 뿐이라고 &mdash; 전제합니다. 그 전제를 받아들이기
         전에 두 가지를 나란히 놓아 볼 만합니다. 첫째는 Microsoft Learn이
         문서화하는 내용입니다. 프롬프트 캐싱은 캐시 적격 조건으로 동일한 앞부분
@@ -81,7 +81,7 @@
       </p>
       <p>
         잠시 멈춰 볼 부분은 그 짝짓기입니다. 적중률만 보면 그 아래에서 사용자
-        경험이 바뀌는 동안에도 안심되게 읽힐 수 있습니다. 이 단면에서는 버킷
+        경험이 바뀌는 동안에도 안심되게 읽힐 수 있습니다. 이 구간에서는 버킷
         수가 늘어나는 동안에도 적중률이 높고 거의 평평하게 유지되어, 그 값만
         읽으면 쪼개기에 비용이 들지 않은 것처럼 보입니다. 나머지 절반의 이야기는
         첫 토큰 지연의 꼬리가 들려줍니다 &mdash; 뜨거운 버킷 하나가 매우 큰
@@ -90,7 +90,7 @@
         버킷이, 한 버킷만 너무 뜨거워지지 않으면서 프리픽스가 지역성을 유지하도록
         크기가 잡혀 있는가?”입니다. 프리픽스 해시 라우팅과 분당 약 15개 요청이라는
         대략적 오버플로 지점은 Microsoft Learn이 문서화하는 내용이고, 버킷 수
-        계산과 적중률을 지연과 나란히 둔 공개 단면은 보편적인 캐시 적중 곡선이
+        계산과 적중률·지연을 함께 보여 주는 공개 자료는 보편적인 캐시 적중 곡선이
         아니라 이 저장소가 옹호하는 운영적 추론이자 원천 실행 근거입니다. 아래
         차트가 그 짝짓기를 명시적으로 보여 줍니다.
       </p>
@@ -189,11 +189,11 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">관측된 근거 · 희소한 공개 단면</p>
+      <p class="section-label">관측된 근거 · 희소한 공개 자료</p>
       <h2>적중률과 지연을 함께 읽기</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>읽어야 할 차트:</strong> 공개 집계 캐시 키 단면.
+          <strong>읽어야 할 차트:</strong> 공개 집계 캐시 키 자료입니다.
           왼쪽 패널은 캐시 적중률을 보여줍니다. 오른쪽 패널은 첫 토큰까지의
           p95 시간을 보여줍니다. X축은 보존 모드와 버킷 카디널리티입니다.
         </figcaption>
@@ -207,7 +207,7 @@
           정상 상태 캐시 적중률입니다. <strong>선:</strong> 두 보존 계열 —
           <code>in_memory</code>와 <code>24h</code> — 이며 각각 N&nbsp;=&nbsp;960
           레코드로, 빈도 히스토그램이 아니라 두 계열 선 차트입니다.
-          <strong>읽는 법:</strong> 버킷별 비율이 낮은 이 단면에서는
+          <strong>읽는 법:</strong> 버킷별 비율이 낮은 이 구간에서는
           카디널리티가 올라가도 적중률이 높고 거의 평탄하게(약 0.93~0.96)
           유지되었습니다. 즉 프리픽스를 더 많은 버킷으로 나누는 것만으로는
           여기서 적중률이 무너지지 않았습니다 — 조각화 비용은 이 패널이 아니라
@@ -218,7 +218,7 @@
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           에서 가져옵니다 (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">원천 CSV</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="log2 축에서 1개와 8개 버킷의 정상 상태 캐시 적중률을 버킷 카디널리티에 대해 그린 선 차트입니다. in_memory와 24h 보존의 거의 평탄한 두 선이 모두 약 0.93에서 0.96 사이로 높게 위치하며, 이 단면에서 카디널리티가 늘어도 적중률이 거의 일정하게 유지되었음을 나타냅니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="log2 축에서 1개와 8개 버킷의 정상 상태 캐시 적중률을 버킷 카디널리티에 대해 그린 선 차트입니다. in_memory와 24h 보존의 거의 평탄한 두 선이 모두 약 0.93에서 0.96 사이로 높게 위치하며, 이 구간에서 카디널리티가 늘어도 적중률이 거의 일정하게 유지되었음을 나타냅니다." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
@@ -230,7 +230,7 @@
           단일 핫 <code>in_memory</code> 버킷은 매우 큰 p95(약 106,000&nbsp;ms)를
           기록했고, 트래픽이 8개 버킷으로 분산되자 가파르게
           떨어졌습니다(약 16,600&nbsp;ms). 반면 <code>24h</code> 계열은 내내 더
-          낮게 유지되었습니다 — 즉 이 단면에서는 버킷팅 비용이 지연 꼬리에
+          낮게 유지되었습니다 — 즉 이 구간에서는 버킷팅 비용이 지연 꼬리에
           실렸고, 그래서 적중률은 단독이 아니라 첫 토큰 지연과 함께 읽어야
           합니다. <strong>근거 경계:</strong> 동일한 희소·정제 공개 집계로
           PAYG gpt-5.2(PTU 아님)이며, 지연 보장이 아니라 서술적 자료입니다.
@@ -261,7 +261,7 @@
       <div class="chart-reading-note">
         <h3>이것이 증명하는 것과 증명하지 못하는 것</h3>
         <p>
-          이 공개 단면은 보편적인 임계 곡선을 증명하지 않습니다. 다만
+          이 공개 자료는 보편적인 임계 곡선을 증명하지 않습니다. 다만
           운영자가 적중률만 봐서는 안 되는 이유를 보여줍니다. 보존 모드,
           버킷 비율, 첫 토큰 지연이 모두 사용자 경험을 움직입니다.
         </p>
@@ -312,7 +312,7 @@
       </ul>
       <p>
         <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 버킷 개수 계산과
-        공개 적중률 단면은 Learn 사양이 아니라 이 저장소의 운영적 추론이자
+        공개 적중률 자료는 Learn 사양이 아니라 이 저장소의 운영적 추론이자
         소스 실행 근거입니다.
       </p>
       <ul>
@@ -322,7 +322,7 @@
           도출하며, <code>recommended_buckets</code> 공식과 기본 버킷당 10-RPM
           목표는 Learn 사양이 아니라 이 저장소의 운영적 추론입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">출처</a>.</li>
         <li>[3] <strong>이 저장소, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 적중률과 첫 토큰 지연 표의 바탕이 된 희소한 공개 집계 단면으로,
+          — 적중률과 첫 토큰 지연 표의 바탕이 된 희소한 공개 집계 자료로,
           보편적 곡선이 아니라 소스 실행 근거입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">출처</a>.</li>
       </ul>
       <p>
@@ -332,7 +332,7 @@
         분당 약 15개 요청의 오버플로 지점 — 과, 공유 프리픽스를 각 버킷이
         여유를 두고 그 지점 아래에 머물도록 충분히 안정적인 버킷으로 나누는
         이 저장소의 크기 산정 경험칙을 문서화합니다. 버킷 개수 공식과 공개
-        적중률 단면은 운영적 추론이자 소스 실행 근거이며, 보장된 캐시 적중
+        적중률 자료는 운영적 추론이자 소스 실행 근거이며, 보장된 캐시 적중
         곡선이 아닙니다. 모든 모델·리전·트래픽 형태에서 동일하게 성립하는
         보편적 임계값은 증명하지 못합니다.
       </p>

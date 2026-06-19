@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PTU/PAYG योजना | रीज़निंग कब वसूल होती है</title>
-  <meta name="description" content="PTU/PAYG क्रॉसओवर क्षमता का नतीजा नहीं, एक मॉडल-की-गई मूल्य-रेखा है — यह विषय-लेख बताता है कि वह क्या कह सकती है और क्या नहीं।">
+  <title>PTU/PAYG planning | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="यह विषय-लेख समझाता है कि PTU/PAYG क्रॉसओवर को capacity के नतीजे की तरह नहीं, बल्कि planning के लिए बने price-only मॉडल की तरह कैसे पढ़ना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -34,147 +34,149 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
-    <p class="article-kicker">विषय-लेख · PTU/PAYG योजना-मॉडल</p>
-    <h1>PTU/PAYG क्रॉसओवर: क्षमता का नतीजा नहीं, योजना की रेखा</h1>
-    <p class="lede">कौन-सी मॉडल और effort सेल इस्तेमाल लायक़ है, यह हम पहले ही माप चुके हैं। अब ट्रैफ़िक-टीम अगली तिमाही का पूर्वानुमान थमाती है और बिल को मोड़ने वाला सवाल फेंकती है: इस अनुमानित request-दर पर PAYG (pay-as-you-go) पर रहें या प्रोविज़न्ड throughput (PTU) आरक्षित करें? मन करता है कि एक क्रॉसओवर-रेखा खींचकर उसे ही जवाब मान लें। यह लेख उस रेखा को वही मानता है जो वह सचमुच है — एक मॉडल-किया-गया, सिर्फ़-मूल्य का लाभ-हानि बिंदु, जो बताता है कि क्षमता-प्रयोग चलाना कब फ़ायदेमंद है — न कि यह कि चालू PTU सेवा भार में कैसे बरतेगी।</p>
+    <p class="article-kicker">विषय-लेख · PTU/PAYG planning मॉडल</p>
+    <h1>PTU/PAYG क्रॉसओवर: capacity का नतीजा नहीं, planning की रेखा</h1>
+    <p class="lede">कौन-से model और effort configuration इस्तेमाल करने लायक हैं, यह हम पहले ही माप चुके हैं। अब traffic team अगली तिमाही का forecast देती है और वही सवाल पूछती है जो बिल तय करेगा: इस expected request rate पर PAYG (pay-as-you-go) पर रहें या provisioned throughput (PTU) reserve करें? ऐसे में एक crossover line खींचकर उसे ही जवाब मान लेने का मन करता है। यह लेख उस line को उसी रूप में देखता है जैसी वह वास्तव में है — price-only modeled break-even, जो सिर्फ़ इतना बताता है कि capacity experiment कब चलाना चाहिए; यह नहीं कि live PTU setup load पर कैसे behave करेगा।</p>
 
     <figure class="article-figure" id="figure-ptu-payg-one-pager">
       <figcaption>
-        <strong>एक नज़र में विषय (मापन नहीं, मॉडल)।</strong> PTU और PAYG एक गणित-किए-गए
-        क्रॉसओवर पर मिलते हैं — लाभ-हानि request-दर पर। उससे नीचे PAYG सस्ता, उससे ऊपर
-        प्रतिबद्ध PTU ब्लॉक सस्ता। एक-पृष्ठ सार वही संदेश कहता है और मॉडल-की-गई सीमा
-        दिखाता है। आगे के खंड गणना और उसकी हदें जोड़ते हैं।
-        <a href="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">PTU/PAYG का एक-पृष्ठ सार SVG खोलें</a>।
+        <strong>एक नज़र में यह विषय (modeled, measured नहीं)।</strong> PTU और PAYG का
+        crossover break-even request rate पर निकाला गया हिसाब है। उसके नीचे PAYG सस्ता
+        पड़ता है, उसके ऊपर committed PTU block। यह one-pager वही बात कहता है और modeled
+        boundary दिखाता है। नीचे के section calculation और उसकी limits समझाते हैं।
+        <a href="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">PTU/PAYG का one-pager SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU बनाम PAYG योजना का एक-पृष्ठ सार। चढ़ती PAYG लागत-रेखा सपाट प्रतिबद्ध PTU लागत-रेखा से लाभ-हानि request-दर पर मिलती है। केंद्रीय संदेश: PTU बनाम PAYG लाभ-हानि request-दर पर मिलने वाला मॉडल-किया-गया क्रॉसओवर है, उससे नीचे PAYG और उससे ऊपर PTU सस्ता। मापन नहीं, मॉडल स्पष्ट: क्रॉसओवर एक गणना है, चालू क्षमता का नतीजा नहीं।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU बनाम PAYG planning का one-pager। इसमें ऊपर जाती PAYG cost line एक सपाट committed PTU cost line को break-even request rate पर काटती है। मुख्य संदेश: PTU बनाम PAYG एक modeled crossover है, जो break-even request rate पर मिलता है; उसके नीचे PAYG सस्ता है और उसके ऊपर PTU। साफ़ लेबल किया गया है कि यह measured नहीं, modeled है: crossover गणना से निकला है, live capacity result नहीं।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section class="article-section" id="why-modeled">
-      <h2>हमने इसे मॉडल क्यों किया</h2>
-      <p>क्रॉसओवर-रेखा को दो तरह से बरता जा सकता है, और दोनों उलटी दिशा में खींचते हैं। पहला — इसे फ़ैसले की तरह पढ़ना: रेखा PTU की ओर इशारा कर रही है, इसलिए PTU आरक्षित कर लो। दूसरा — इसे योजना की चिंगारी की तरह पढ़ना: रेखा कह रही है कि इस वर्कलोड पर PTU सस्ता रहने की संभावना है, इसलिए यह वह जगह है जहाँ क्षमता-प्रयोग चलाना फ़ायदेमंद है। हमने क्रॉसओवर को इसी दूसरे पठन के लिए मॉडल किया।</p>
-      <p>ऐसा इसलिए, क्योंकि रेखा सिर्फ़ एक संकरे मूल्य-सवाल का जवाब देती है: एक मूल्य-स्नैपशॉट पर, एक मापे गए प्रति-request टोकन-आकार के लिए, तय PTU न्यूनतम कहाँ PAYG बिल से सस्ता पड़ता है। रेखा यह नहीं बताती कि सेवा वह ट्रैफ़िक ढो पाएगी, 429 थ्रॉटलिंग कहाँ शुरू होगी, भार में prompt cache कैसे बरतेगा, या p95 latency कैसी दिखेगी। उस मूल्य-जवाब को क्षमता-जवाब समझ बैठना ही वह भूल है जिसे यह लेख रोकना चाहता है।</p>
-      <p>इसलिए गणना जानबूझकर दो तरह के इनपुट जोड़ती है: एक ओर दिनांकित PAYG और PTU मूल्य-स्नैपशॉट, दूसरी ओर बेंचमार्क से मापी गई प्रति-request लागत और टोकन-आकार। यही जोड़ आउटपुट को — असली मापन में जड़ें रखते हुए भी मूल्य तक सीमित — एक योजना-मॉडल बनाती है, चालू क्षमता का नतीजा नहीं।</p>
+      <h2>हमने इसे model क्यों किया</h2>
+      <p>किसी crossover line को दो तरह से देखा जा सकता है, और दोनों अलग दिशाओं में ले जाते हैं। पहला तरीका यह है कि इसे अंतिम फ़ैसला मान लिया जाए: line PTU की ओर इशारा कर रही है, इसलिए PTU reserve कर लो। दूसरा तरीका यह है कि इसे planning trigger माना जाए: line बता रही है कि इस workload पर PTU शायद सस्ता पड़े, इसलिए इसी setup पर capacity experiment चलाना चाहिए। हमने crossover को इसी दूसरे तरीके से देखने के लिए model किया।</p>
+      <p>ऐसा इसलिए, क्योंकि यह line सिर्फ़ एक सीमित price question का जवाब देती है। किसी एक pricing snapshot पर, किसी एक measured token-per-request shape के लिए, fixed PTU floor कहाँ PAYG bill से सस्ता पड़ता है? यह नहीं बताती कि setup वह traffic संभाल पाएगा या नहीं, 429 throttling कहाँ शुरू होगी, load पर prompt cache कैसे behave करेगा, या p95 latency कैसी दिखेगी। इसी price answer को capacity answer समझ लेना वह गलती है जिसे यह लेख रोकना चाहता है।</p>
+      <p>इसी वजह से calculation जानबूझकर दो तरह के input जोड़ती है: एक तरफ़ dated PAYG और PTU pricing snapshots, और दूसरी तरफ़ benchmarks से मिली measured per-request cost और token shape। यही मेल इस output को planning model बनाता है — असली measurements पर आधारित, लेकिन दायरे में सिर्फ़ price तक सीमित — live capacity result नहीं।</p>
     </section>
 
     <div class="article-summary-grid" aria-label="विषय का सार">
-      <section class="summary-tile"><h2>प्रश्न</h2><p>मॉडल-किया-गया PTU/PAYG क्रॉसओवर क्या कह सकता है और क्या दावा नहीं करना चाहिए?</p></section>
-      <section class="summary-tile"><h2>सबूत</h2><p>दो दिनांकित मूल्य-स्नैपशॉट — <code>pricing/azure-openai-payg-2026-05.yaml</code> और <code>pricing/azure-openai-ptu-2026-05.yaml</code> — को benchmark-01/-02/-03 की मापी गई प्रति-request लागत और टोकन-आकार के throughput-गुणक से जोड़ती लाभ-हानि गणना। आउटपुट क्रॉसओवर चार्ट-डेटा में <code>modeled_break_even_rpm</code> शृंखला है, मापी गई throughput नहीं।</p></section>
-      <section class="summary-tile"><h2>नतीजा</h2><p>इस मूल्य-स्नैपशॉट पर मॉडल-किया-गया लाभ-हानि वहीं उतरता है जहाँ प्रति-request बिल और टोकन-आकार तय करते हैं। benchmark-01 extra-high क़रीब 149 rpm, benchmark-02 none क़रीब 2,680 rpm, benchmark-03 low क़रीब 564 rpm — सब $2.00 प्रति-PTU-घंटा वाले 50 PTU न्यूनतम के साथ स्केल करते हुए। ये मूल्य-स्नैपशॉट और प्रति-request टोकन-संरचना के साथ हिलने वाले गणित-मान हैं, मापे गए संतृप्ति-बिंदु नहीं।</p></section>
-      <section class="summary-tile"><h2>निर्णय</h2><p>क्रॉसओवर को इस वर्कलोड-आकार पर क्षमता-प्रयोग चलाने का समय बताने वाली योजना-रेखा की तरह पढ़ें, किसी ख़ास सेवा को PTU चाहिए ऐसा फ़ैसला नहीं। मूल्य, टोकन-संरचना या रीजन बदलने पर दोबारा निकालें।</p></section>
+      <section class="summary-tile"><h2>प्रश्न</h2><p>Modeled PTU/PAYG क्रॉसओवर हमें क्या बता सकता है, और उसे क्या दावा नहीं करना चाहिए?</p></section>
+      <section class="summary-tile"><h2>सबूत</h2><p>दो dated pricing snapshots — <code>pricing/azure-openai-payg-2026-05.yaml</code> और <code>pricing/azure-openai-ptu-2026-05.yaml</code> — को benchmark-01, -02, और -03 की measured per-request cost और token-shape throughput factor के साथ जोड़ने वाली break-even calculation। इसका output crossover chart data में <code>modeled_break_even_rpm</code> series है, measured throughput नहीं।</p></section>
+      <section class="summary-tile"><h2>निष्कर्ष</h2><p>इस pricing snapshot पर modeled break-even वहीं आता है जहाँ per-request bill और token shape उसे ले जाते हैं: benchmark-01 extra-high करीब 149 rpm, benchmark-02 none करीब 2,680 rpm, benchmark-03 low करीब 564 rpm — और यह सब $2.00/PTU-hour वाले 50 PTU floor के हिसाब से scale होता है। ये calculated figures हैं जो pricing snapshot और token-per-request mix बदलने पर बदल जाते हैं; ये measured saturation points नहीं हैं।</p></section>
+      <section class="summary-tile"><h2>फ़ैसला</h2><p>क्रॉसओवर को planning line की तरह पढ़ें, जो टीम को बताती है कि इस workload shape पर capacity experiment कब चलाना चाहिए — इसे इस बात का फ़ैसला न मानें कि किसी setup को PTU चाहिए। pricing, token mix, या region बदलते ही इसे फिर से निकालें।</p></section>
     </div>
 
     <nav class="article-outline" aria-label="विषय के खंड">
       <strong>तर्क-क्रम से पढ़ें:</strong>
-      <a href="#s1">मॉडल संकरे सवाल का जवाब देता है</a>
-      <a href="#s2">चार्ट कैसे पढ़ें</a>
-      <a href="#s3">यह भेद क्यों मायने रखता है</a>
-      <a href="#s4">याद रखने योग्य बिंदु</a>
+      <a href="#s1">मॉडल किस सीमित सवाल का जवाब देता है</a>
+      <a href="#s2">चार्ट को कैसे पढ़ें</a>
+      <a href="#s3">यह भेद क्यों ज़रूरी है</a>
+      <a href="#s4">इसका मतलब क्या है</a>
       <a href="#table">सबूत की तालिका</a>
     </nav>
 
     <p class="banner">
-      <strong>संबंधित मूल चार्ट खोलें:</strong>
-      <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG क्रॉसओवर चार्ट-समूह</a>।
+      <strong>संबंधित source chart खोलें:</strong>
+      <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a>।
     </p>
 
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>पठन-गाइड चार्ट (मॉडल-किए समुच्चय से हाथ से बनाया)।</strong>
-          <strong>क्या पढ़ें:</strong> चुनी बेंचमार्क-पंक्तियों का मॉडल-किया-गया PTU/PAYG लाभ-हानि RPM।
-          <strong>X-अक्ष:</strong> चुनी बेंचमार्क-पंक्तियाँ, <strong>Y-अक्ष:</strong> मॉडल-किया-गया लाभ-हानि RPM (ऊँचा बार यानी मॉडल-किया-गया PTU न्यूनतम सस्ता दिखने से पहले PAYG ऊँची request-दर तक खिंच सकता है)।
-          <strong>मापन नहीं, योजना-संकेत की तरह पढ़ें:</strong> ये बार — benchmark-01 का क़रीब 149 rpm निशान और 50 PTU न्यूनतम समेत — इस मूल्य-स्नैपशॉट और प्रति-request टोकन-आकार पर गणित-किए मान हैं, मापी गई PTU क्षमता का नतीजा नहीं। मॉडल-किए क्रॉसओवर का JSON स्रोत-खंड में उद्धृत है।
+          <strong>विषय-गाइड चार्ट (modeled aggregate से हाथ से बनाया गया)।</strong>
+          <strong>क्या देखें:</strong> चुनी हुई benchmark rows का modeled PTU/PAYG break-even RPM।
+          <strong>X-axis:</strong> चुनी हुई benchmark rows, <strong>Y-axis:</strong> modeled break-even RPM (ऊँचा bar मतलब modeled PTU floor सस्ता दिखने से पहले PAYG ज्यादा request rate तक जा सकता है)।
+          <strong>इसे measurement नहीं, planning guidance की तरह पढ़ें:</strong> ये bars — benchmark-01 का करीब 149 rpm marker और 50 PTU floor सहित — इस pricing snapshot और token-per-request shape पर निकाले गए हिसाब हैं, measured PTU capacity result नहीं। modeled crossover JSON का हवाला sources section में दिया गया है।
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.hi.svg" alt="बार चार्ट: चुनी बेंचमार्क-पंक्तियों का मॉडल-किया-गया PTU/PAYG लाभ-हानि RPM।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.hi.svg" alt="Bar chart, जिसमें चुनी हुई benchmark rows के लिए modeled PTU/PAYG break-even RPM दिखाया गया है।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>मॉडल संकरे सवाल का जवाब देता है</h2>
-      <p>क्रॉसओवर-गणना प्रति-request औसत लागत, टोकन-आकार के throughput-गुणक, सार्वजनिक मूल्य-स्नैपशॉट और 50 PTU न्यूनतम को जोड़ती है। आउटपुट एक मॉडल-किया-गया लाभ-हानि RPM है। मसलन benchmark-01 extra-high effort क़रीब 149 rpm, benchmark-02 none क़रीब 2,680 rpm, और benchmark-03 low क़रीब 564 rpm पर उतरते हैं।</p><p>ये आँकड़े इसलिए उपयोगी हैं क्योंकि ये दिखाते हैं कि वर्कलोड-आकार योजना-बातचीत को कैसे बदलता है। ये चालू भार के मापन नहीं हैं। 429 कहाँ शुरू होगी, संतृप्ति के पास cache कैसे बरतेगा, कोई ख़ास कॉन्फ़िगरेशन p95 latency में क्या करेगा — ये बातें वे नहीं कहते।</p>
+      <h2>मॉडल किस सीमित सवाल का जवाब देता है</h2>
+      <p>यह crossover calculation mean cost per request, token-shape throughput factor, public pricing snapshot, और 50 PTU floor को जोड़ती है। इसका output modeled break-even RPM होता है। उदाहरण के लिए benchmark-01 extra-high effort करीब 149 rpm पर आता है, benchmark-02 none करीब 2,680 rpm पर, और benchmark-03 low करीब 564 rpm पर।</p><p>ये संख्याएँ इसलिए काम की हैं क्योंकि ये दिखाती हैं कि workload shape planning की बातचीत को कैसे बदल देता है। लेकिन ये live-load measurements नहीं हैं। ये नहीं बतातीं कि 429 कहाँ शुरू होगा, saturation के पास cache कैसे behave करेगा, या कोई खास serving setup p95 latency पर क्या करेगा।</p>
     </section>
     <section id="s2" class="article-section">
-      <h2>चार्ट कैसे पढ़ें</h2>
-      <p>X-अक्ष चुनी बेंचमार्क-पंक्तियों की एक शृंखला है, Y-अक्ष मॉडल-किया-गया लाभ-हानि RPM। ऊँचा बार यानी मॉडल-किया-गया PTU न्यूनतम सस्ता दिखने से पहले PAYG ऊँची request-दर तक खिंच सकता है। नीचा बार यानी वह वर्कलोड मॉडल पर क्रॉसओवर तक जल्दी पहुँचता है।</p><p>ये बार सतत क्षमता-वक्र नहीं हैं। ये सार्वजनिक समुच्चय-डेटा और मूल्य-स्नैपशॉट से निकाले योजना-निशान हैं।</p>
+      <h2>चार्ट को कैसे पढ़ें</h2>
+      <p>X-axis पर चुनी हुई benchmark rows हैं। Y-axis पर modeled break-even RPM है। ऊँचा bar मतलब modeled PTU floor सस्ता दिखने से पहले PAYG ज्यादा request rate तक जा सकता है। नीचा bar मतलब यह workload modeled crossover तक जल्दी पहुँचता है।</p><p>ये bars कोई continuous capacity curve नहीं हैं। ये public aggregate data और pricing snapshot से निकले planning markers हैं।</p>
     </section>
     <section id="s3" class="article-section">
-      <h2>यह भेद क्यों मायने रखता है</h2>
-      <p>इस भेद के बिना क्रॉसओवर-चार्ट वादे की तरह ग़लत पढ़ा जा सकता है। 149 rpm क्रॉसओवर वाली पंक्ति को "PTU चाहिए" और 2,680 rpm वाली को "PTU नहीं चाहिए" कहने का मन करता है। पर सबूत ज़्यादा सतर्क है। चार्ट बताता है कि मॉडल-की-गई मान्यताओं के तहत अर्थशास्त्र कैसा दिखता है। चालू सिस्टम को फिर भी latency, cache, retry और संतृप्ति का सबूत चाहिए।</p><p>वह सतर्कता कमज़ोरी नहीं। यही चार्ट को इस्तेमाल लायक़ बनाती है। चार्ट टीम को बताता है कि क्षमता-प्रयोग कब चलाना है। वह प्रयोग क्या पाएगा, यह नहीं बताता।</p>
+      <h2>यह भेद क्यों ज़रूरी है</h2>
+      <p>यह भेद साफ़ न रहे तो crossover chart को वादे की तरह ग़लत पढ़ा जा सकता है। 149 rpm crossover वाली row को देखकर “इसे PTU चाहिए” कहना आसान है, और 2,680 rpm वाली row को देखकर “इसे PTU नहीं चाहिए” भी। लेकिन सबूत इससे ज़्यादा सावधान है। चार्ट सिर्फ़ इतना बताता है कि modeled assumptions के तहत economics कैसा दिखता है। live system के लिए फिर भी latency, cache, retry, और saturation का अलग evidence चाहिए।</p><p>यह सावधानी कमज़ोरी नहीं है। यही बात चार्ट को उपयोगी बनाती है: यह टीम को बताता है कि capacity experiment कब चलाना है, यह नहीं कि उस experiment में क्या निकलेगा।</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>याद रखने योग्य बिंदु</h2>
-      <p>PAYG और PTU अलग सवालों के जवाब देते हैं। PAYG पूछता है कि हर पूरा हुआ request कितने का पड़ता है। PTU पूछता है कि स्वीकार्य गुणवत्ता और latency के तहत तय क्षमता क्या ढो सकती है। क्रॉसओवर-रेखा इन दो दुनियाओं को जोड़ती है, पर उन्हें एक ही मापन में नहीं समेटती।</p><p>इसलिए इस परियोजना में हम उस रेखा को एक मॉडल-की-गई परिकल्पना के रूप में स्पष्ट रखते हैं। रेखा मापे गए चार्ट के ऊपर नहीं, उसके बग़ल में रहती है।</p>
+      <h2>इसका मतलब क्या है</h2>
+      <p>PAYG और PTU अलग सवालों के जवाब देते हैं। PAYG पूछता है कि हर completed request की cost कितनी है। PTU पूछता है कि acceptable quality और latency पर fixed capacity कितना traffic उठा सकती है। crossover line इन दोनों दुनियाओं को जोड़ती है, लेकिन उन्हें एक ही measurement में नहीं बदल देती।</p><p>इसीलिए इस project में इस line को modeled hypothesis के रूप में लेबल किया गया है। इसकी जगह measured charts के साथ है, उनके ऊपर नहीं।</p>
     </section>
 
     <section id="table" class="article-section">
       <h2>सबूत की तालिका</h2>
       <table class="chart-table evidence-table">
-        <caption>चुने क्रॉसओवर उदाहरण</caption>
-        <thead><tr><th>सबूत-पंक्ति</th><th>मीट्रिक A</th><th>मीट्रिक B</th><th>क्या जुड़ता है</th></tr></thead>
+        <caption>चुने हुए crossover उदाहरण</caption>
+        <thead><tr><th>सबूत-पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ती है</th></tr></thead>
         <tbody>
-          <tr><td>benchmark-01 extra-high</td><td>मॉडल 149 rpm</td><td>50 PTU न्यूनतम</td><td>प्रति-request बिल ऊँचा, इसलिए जल्दी क्रॉसओवर।</td></tr>
-<tr><td>benchmark-02 none</td><td>मॉडल 2,680 rpm</td><td>50 PTU न्यूनतम</td><td>मापा request सस्ता, इसलिए देर से क्रॉसओवर।</td></tr>
-<tr><td>benchmark-03 low</td><td>मॉडल 564 rpm</td><td>50 PTU न्यूनतम</td><td>बीच का केस। एजेंट वर्कलोड का टोकन-आकार बड़ा।</td></tr>
-<tr><td>सबूत-सीमा</td><td>मॉडल-किया अर्थशास्त्र</td><td>चालू क्षमता नहीं</td><td>आगे क्या आज़माना है, यह तय करने के लिए इस्तेमाल करें।</td></tr>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>Per-request bill ऊँचा है, इसलिए crossover जल्दी आता है।</td></tr>
+<tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>Measured per-request cost कम है, इसलिए crossover देर से आता है।</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>बीच का मामला: agent workload का token shape बड़ा है।</td></tr>
+<tr><td>सबूत की सीमा</td><td>Modeled economics</td><td>live capacity नहीं</td><td>इसका उपयोग यह तय करने के लिए करें कि अगला test क्या होना चाहिए।</td></tr>
         </tbody>
       </table>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और सबूत-सीमा</h2>
+      <h2>स्रोत और सबूत की सीमा</h2>
       <p>
-        ऊपर के सारे लाभ-हानि आँकड़े मापन नहीं, गणना हैं। मापी गई प्रति-request लागत और
-        टोकन-आकार को दो दिनांकित मूल्य-स्नैपशॉट पर लगाकर निकाले गए हैं। नीचे की दो
-        श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ ख़त्म होता है और मॉडल-किया आउटपुट
-        कहाँ शुरू। 50 PTU न्यूनतम पर 149 rpm क्रॉसओवर एक निकाली गई गणना है — न मापी गई
-        throughput, न 429 की शुरुआत, न संतृप्ति-बिंदु।
+        ऊपर दिए गए हर break-even figure measurement नहीं, calculation हैं। इन्हें
+        measured per-request cost और token shape को दो dated pricing snapshots के सामने
+        रखकर निकाला गया है। नीचे के दो tier यह दिखाते हैं कि documented inputs कहाँ
+        खत्म होते हैं और modeled output कहाँ शुरू होता है। 50 PTU floor पर 149 rpm
+        crossover साधारण arithmetic से निकला है — यह measured throughput, 429 onset,
+        या saturation point नहीं है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। प्रति-request लागत-इनपुट इसी स्थिर रुख़ को ढोते हैं; त्रुटि-बार मानक विचलन हैं, और N = 20 पर p-मान का दावा नहीं।</li>
-        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> यह रिपॉज़िटरी, <code>pricing/azure-openai-payg-2026-05.yaml</code> — Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट। यहाँ प्रति-1M-टोकन दाम (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output और reasoning $14.00/1M, gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) सूत्र में जाने वाले प्रति-request बिल को तय करते हैं।</li>
-        <li>[3] <strong>Tier 1 — PTU मूल्य स्नैपशॉट:</strong> यह रिपॉज़िटरी, <code>pricing/azure-openai-ptu-2026-05.yaml</code>। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया, रीजन eastus2) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। सूत्र का PTU पक्ष — $2.00 प्रति-PTU-घंटा, 50 PTU न्यूनतम (फ़्लोर), throughput-गुणक में इस्तेमाल प्रति-PTU Input TPM (gpt-4o 2,500, gpt-5.2 3,400) — इसी स्नैपशॉट से है। लाभ-हानि में PAYG और PTU दोनों के दाम जाते हैं: एक ओर प्रति-request PAYG बिल, दूसरी ओर तय $100/घंटा PTU फ़्लोर (50 × $2.00)।</li>
-        <li>[4] <strong>Tier 2 — मापे गए प्रति-request इनपुट:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, <code>benchmarks/03-tool-using-agent/analysis.json</code>। ये प्रति-request औसत लागत और gpt-4o baseline के सापेक्ष throughput-लाभ गुणक बनने वाली प्रति-सेल टोकन-वितरण देते हैं।</li>
-        <li>[5] <strong>Tier 2 — मॉडल-किया क्रॉसओवर आउटपुट (मापन नहीं, गणना):</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>। चार्ट जो <code>modeled_break_even_rpm</code> शृंखला खींचता है वह <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> से गणित है। benchmark-01 extra-high का 149 rpm, 50 PTU न्यूनतम और $2.00 प्रति-PTU-घंटा — सब गणित-किए या उद्धृत इनपुट हैं, मापी गई throughput नहीं, मॉडल-किए मान हैं।</li>
-        <li>[6] <strong>एविडेंस डैशबोर्ड:</strong> रेंडर हुए <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG क्रॉसओवर चार्ट-समूह</a> उन्हीं JSON कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
+        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर combination पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate data का मापा गया यह हिस्सा। per-request cost inputs इसी frozen stance को मानते हैं; error bars standard deviation हैं, confidence intervals नहीं, और N = 20 पर किसी p-value का दावा नहीं किया गया है।</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> यह repository, <code>pricing/azure-openai-payg-2026-05.yaml</code> — Azure OpenAI के सार्वजनिक pricing page का 2026-05-19 पर लिया गया frozen snapshot। यहाँ दिए गए per-1M-token rates (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output और reasoning $14.00/1M, gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) वही per-request bill तय करते हैं जो formula में जाता है।</li>
+        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> यह repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया, रीजन eastus2) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। formula का PTU पक्ष — $2.00 प्रति-PTU-घंटा, 50 PTU minimum (floor), और throughput factor के लिए इस्तेमाल होने वाला प्रति-PTU Input TPM (gpt-4o 2,500, gpt-5.2 3,400) — इसी snapshot से आता है। break-even में PAYG और PTU दोनों के दाम शामिल हैं: एक तरफ़ per-request PAYG bill, दूसरी तरफ़ fixed $100/hour PTU floor (50 × $2.00)।</li>
+        <li>[4] <strong>Tier 2 — measured per-request inputs:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, <code>benchmarks/03-tool-using-agent/analysis.json</code>। ये mean cost per request और हर combination का token-per-request distribution देते हैं, जो gpt-4o baseline के मुकाबले throughput-gain factor में बदलता है।</li>
+        <li>[5] <strong>Tier 2 — modeled crossover output (measurement नहीं, calculation):</strong> यह repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>। चार्ट में दिखने वाली <code>modeled_break_even_rpm</code> series <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> से निकाली जाती है। benchmark-01 extra-high का 149 rpm, 50 PTU floor, और $2.00 PTU-hour rate — ये सब calculated या quoted inputs हैं; इन्हें MODELED के रूप में लेबल किया गया है, measured throughput के रूप में नहीं।</li>
+        <li>[6] <strong>Evidence dashboard:</strong> रेंडर किया गया <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a> इन्हीं JSON artifacts का auditable रूप है।</li>
       </ul>
       <p>
-        यह स्लाइस क्या सिद्ध करती है और क्या नहीं: यह मॉडल-किया लाभ-हानि इस मूल्य-स्नैपशॉट
-        पर, benchmark-01/-02/-03 के मापे टोकन-वितरण वाले वर्कलोड के लिए कहाँ बैठता है, यह
-        दिखाती है। यह सिद्ध नहीं करती कि वही क्रॉसओवर किसी और मूल्य-स्नैपशॉट, वर्कलोड-आकार,
-        cache-hit दर, रीज़निंग-संरचना या किसी और रीजन में टिकेगा। यह योजना-सहायता है — न SLA,
-        न चालू क्षमता का कोई कथन।
+        मापा गया यह हिस्सा क्या साबित करता है और क्या नहीं: यह दिखाता है कि modeled
+        break-even इस pricing snapshot पर, benchmark-01, -02, और -03 के measured
+        token-per-request distribution वाले workload के लिए कहाँ बैठता है। यह साबित
+        नहीं करता कि यही crossover किसी दूसरे pricing snapshot, workload shape,
+        cache-hit ratio, reasoning mix, या किसी दूसरे region में भी वैसा ही रहेगा।
+        यह planning aid है — न SLA, न live capacity के बारे में कोई दावा।
       </p>
     </section>
 
     <section id="decision" class="article-section decision-box">
-      <h2>इस सबूत से क्या कहा जा सकता है</h2>
-      <p>क्रॉसओवर तभी मूल्यवान है जब वह विनम्र रहे। इस मूल्य-स्नैपशॉट पर, इस टोकन-वितरण के लिए, यह सबूत को योजना-सवाल में बदलता है, और चालू क्षमता को चालू मापन पर छोड़ देता है।</p>
+      <h2>यह सबूत हमें क्या कहने देता है</h2>
+      <p>यह crossover तभी सबसे काम का है जब इसे उसकी सही सीमा में रखा जाए: इस pricing snapshot और इस token distribution पर यह evidence को planning question में बदलता है, और live capacity का जवाब live measurement पर छोड़ देता है।</p>
       <p><a class="button-link" href="../../../hi/">सिंहावलोकन लेख पर लौटें</a></p>
 
       <h2>व्यावहारिक नियम</h2>
       <ol>
-        <li>लाभ-हानि RPM को दिनांकित PAYG और PTU स्नैपशॉट से निकाली सिर्फ़-मूल्य गणना मानें, और किसी भी स्नैपशॉट के हिलने पर दोबारा निकालें।</li>
-        <li>सामान्य वर्कलोड के बजाय उस स्लाइस के मापे टोकन-आकार से मेल बैठाएँ जिसकी आप योजना बना रहे हैं।</li>
-        <li>नीचे क्रॉसओवर को सेवा को PTU चाहिए, इसका प्रमाण न मानें — क्षमता-प्रयोग चलाने की चिंगारी मानें।</li>
-        <li>PTU पक्का करने से पहले चार्ट में न दिखने वाले ग़ैर-मूल्य कारक — latency लक्ष्य, एडमिशन समवर्तीता, बर्स्ट सहनशीलता — सोचें।</li>
+        <li>Break-even RPM को dated PAYG और PTU snapshots से निकली price-only arithmetic मानें; इनमें से कोई भी snapshot बदलते ही इसे फिर से निकालें।</li>
+        <li>इसे generic workload से नहीं, उस केस के measured token shape से मिलाएँ जिसकी आप planning कर रहे हैं।</li>
+        <li>कम crossover को इस बात का सबूत न मानें कि setup को PTU चाहिए; इसे capacity experiment चलाने का trigger मानें।</li>
+        <li>PTU commit करने से पहले उन non-price factors को भी तौलें जिन्हें chart नहीं देख सकता: latency targets, admission concurrency, और burst tolerance।</li>
       </ol>
       <p>
-        <strong>व्यावहारिक नियम: क्रॉसओवर सिर्फ़ इस स्नैपशॉट और टोकन-आकार पर सिर्फ़-मूल्य लाभ-हानि दिखाता है। PTU या PAYG का फ़ैसला उन ग़ैर-मूल्य कारकों — latency, एडमिशन, बर्स्ट — के साथ जोड़ी बनाकर लें जिन्हें यह मॉडल नहीं कर सकता।</strong>
+        <strong>व्यावहारिक नियम: crossover सिर्फ़ इस snapshot और token shape पर price-only break-even दिखाता है। PTU बनाम PAYG का फ़ैसला करते समय इसे उन non-price factors के साथ जोड़कर देखें जिन्हें यह model नहीं कर सकता: latency, admission, और burst।</strong>
       </p>
       <p>
-        <a class="button-link" href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">क्रॉसओवर चार्ट खोलें</a>
+        <a class="button-link" href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">crossover chart देखें</a>
       </p>
     </section>
 
     <section id="next" class="article-section">
       <p>
         <strong>आगे:</strong>
-        <a href="../../bridge-from-measurement-to-production/hi/">मापन से प्रोडक्शन तक</a>
-        &mdash; सबूत की आदतें संचालन की आदतें कब बनती हैं, और उन दोनों के बीच क्या साथ जाता है?
+        <a href="../../bridge-from-measurement-to-production/hi/">measurement से production तक</a>
+        &mdash; evidence की आदत operations की आदत कब बनती है, और दोनों के बीच क्या साथ चलता है?
       </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p></footer>
+  <footer class="site"><p>MIT-licensed research artifact · प्रकाशित data सिर्फ़ sanitized या aggregate रूप में है।</p></footer>
 </body>
 </html>

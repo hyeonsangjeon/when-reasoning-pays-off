@@ -31,6 +31,20 @@
     return SUPPORTED.indexOf(lang) === -1 ? "en" : lang;
   }
 
+  function applyNavHrefs(locale) {
+    var suffix = locale === "en" ? "" : locale + "/";
+    var hrefs = {
+      "nav-home": "../../" + locale + "/",
+      "nav-articles": "../articles/" + suffix,
+      "nav-overview": "../articles/when-reasoning-pays-off/" + suffix
+    };
+    Object.keys(hrefs).forEach(function (cls) {
+      document.querySelectorAll(".site-links ." + cls).forEach(function (node) {
+        node.setAttribute("href", hrefs[cls]);
+      });
+    });
+  }
+
   function fetchJson(path) {
     return fetch(path, { credentials: "same-origin" }).then(function (res) {
       if (!res.ok) throw new Error("fetch failed");
@@ -232,6 +246,7 @@
       document.querySelectorAll("[data-i18n]").forEach(function (node) {
         node.textContent = t(node.getAttribute("data-i18n"));
       });
+      applyNavHrefs(locale);
       return fetchJson(DATA_ROOT + "public_chart_candidates.json");
     }).then(function (manifest) {
       return Promise.all(manifest.candidates.map(function (candidate) {

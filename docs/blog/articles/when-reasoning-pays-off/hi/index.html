@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>रीज़निंग कब वसूल होती है | वही टोकन दाम, अलग बिल</title>
-  <meta name="description" content="चार्ट-आधारित लेख: रीज़निंग effort कब बेहतर जवाब खरीदती है और कब सिर्फ़ छिपी हुई गणना — और ऑपरेटर इस सबूत को कैसे पढ़ें।">
+  <title>रीज़निंग कब काम आती है | वही token price, अलग bill</title>
+  <meta name="description" content="चार्ट-आधारित सार्वजनिक लेख: reasoning effort कब अपनी लागत वसूल करती है, कब नहीं, और operators को इस evidence को कैसे पढ़ना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -34,56 +34,56 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख सूची</a> / सिंहावलोकन लेख / हिन्दी रूपांतर</p>
-    <p class="article-kicker">सिंहावलोकन लेख · रीज़निंग effort, गुणवत्ता और ख़र्च</p>
-    <h1>रीज़निंग कब वसूल होती है: वही टोकन दाम, अलग बिल</h1>
+    <p class="article-kicker">सिंहावलोकन लेख · reasoning effort, quality और spend</p>
+    <h1>रीज़निंग कब काम आती है: वही token price, अलग bill</h1>
     <p class="lede">
-      एक टीम रीज़निंग मॉडल चालू करती है, देखती है कि प्रति-टोकन दाम पुराने जैसा ही
-      है, और एक नया नियंत्रण पाती है — reasoning-effort का डायल। स्वाभाविक मन यही
-      कहता है कि इसे बढ़ा दो: अगर थोड़ा और सोचना लगभग मुफ़्त है, तो हर जगह बेहतर
-      जवाब क्यों न ख़रीदें? पर वही दाम-पर्ची लेकर भी रीज़निंग मॉडल बहुत अलग बिल बना
-      सकता है, क्योंकि effort उन टोकनों को ख़र्च करती है जो मॉडल के भीतर बनते हैं,
-      usage की तरह बिल होते हैं, और जवाब में कभी दिखते नहीं। तो असली सवाल यह नहीं कि
-      &ldquo;रीज़निंग महँगी है क्या?&rdquo;, बल्कि &ldquo;अतिरिक्त effort कहाँ बेहतर
-      जवाब ख़रीदती है और कहाँ सिर्फ़ छिपी हुई गणना?&rdquo; — और यह सीरीज़ इसी को
-      डेटा से जाँचती है।
+      एक टीम reasoning model चालू करती है, देखती है कि per-token price पुरानी तरह ही
+      दिख रहा है, और reasoning effort बदलने का नया विकल्प सामने आता है। सबसे पहले
+      reasoning effort बढ़ाने का मन करता है: अगर थोड़ा और सोचना लगभग मुफ़्त लगे, तो
+      हर जगह जवाब बेहतर क्यों न हों? लेकिन वही price card रखते हुए भी reasoning model
+      बहुत अलग bill बना सकता है, क्योंकि effort मॉडल के भीतर बनने वाले token खर्च
+      करता है। इनका bill usage की तरह लगता है, लेकिन ये response में दिखते नहीं।
+      इसलिए असली सवाल &ldquo;reasoning महँगी है क्या?&rdquo; नहीं, बल्कि
+      &ldquo;extra effort कहाँ जवाब सचमुच बेहतर करता है, और कहाँ सिर्फ़ hidden
+      computation बढ़ती है?&rdquo; है — और यह series उसी को data से जाँचती है।
     </p>
 
     <section class="article-section" aria-label="हमने यह क्यों जाँचा">
       <p class="section-label">हमने यह क्यों जाँचा · पहले मापो, फिर बढ़ाओ</p>
       <h2>हमने यह क्यों जाँचा</h2>
       <p>
-        हालात जाने-पहचाने हैं। एक माइग्रेशन टीम को रीज़निंग मॉडल पर ले आता है,
-        कॉन्फ़िगरेशन में reasoning-effort का डायल खुल जाता है, और प्रति-टोकन दाम
-        अपरिवर्तित दिखता है — इसलिए effort बढ़ाना ग़लत जवाबों के विरुद्ध सस्ते बीमे
-        जैसा लगता है। हर जगह इसे ऊँचा रखने का मन समझ आता है; जो गायब है वह यह कि
-        अतिरिक्त सोच कभी पाठक तक पहुँचती भी है या सिर्फ़ बिल तक।
+        स्थिति जानी-पहचानी है। किसी migration के बाद टीम reasoning model पर आ जाती
+        है, configuration में reasoning effort बदलने का विकल्प दिखता है, और
+        per-token price वैसी ही लगती है। ऐसे में effort बढ़ाना गलत जवाबों के खिलाफ़
+        सस्ता बीमा जैसा लगता है। हर जगह इसे बढ़ाने का मन होना स्वाभाविक है; कमी बस
+        इस बात की है कि यह अतिरिक्त सोच कभी पाठक तक पहुँचती भी है या सिर्फ़ bill तक।
       </p>
       <p>
-        इससे हमें एक साफ़ परिकल्पना मिलती है, एक-एक स्लाइस पर जाँचने योग्य: क्या
-        ज़्यादा reasoning effort सचमुच बेहतर जवाब ख़रीदती है, या ज़्यादातर छिपे
-        टोकन, latency और लागत? मन पर भरोसा करना यानी ऊँचा डिफ़ॉल्ट भेजना और उस सोच
-        का दाम चुकाना जो शायद आउटपुट कभी न बदले। पहले मापना यानी effort सिर्फ़ वहाँ
-        बढ़ाना जहाँ साथ चलने वाला गुणवत्ता-संकेत हिलता है — और जहाँ नहीं हिलता वहाँ
-        उसे नीचा रखना।
+        इससे एक सीधी परिकल्पना बनती है, जिसे हर case पर जाँचा जा सकता है: क्या
+        ज़्यादा reasoning effort सचमुच जवाब बेहतर करती है, या ज़्यादातर hidden token,
+        latency और cost ही बढ़ाती है? सिर्फ़ अंदाज़े पर चलना मतलब ऊँचा default भेजना
+        और ऐसी सोच का bill भरना जो शायद output बदले ही नहीं। पहले मापने का मतलब है
+        effort सिर्फ़ वहीं बढ़ाना जहाँ साथ वाला quality signal सच में हिलता है — और
+        जहाँ नहीं हिलता, वहाँ इसे low रखना।
       </p>
     </section>
 
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>अतिरिक्त reasoning effort कब मापने-योग्य गुणवत्ता ख़रीदती है, और कब सिर्फ़ छिपी गणना?</p>
+        <p>extra reasoning effort कब मापने लायक quality देती है, और कब सिर्फ़ hidden computation बढ़ाती है?</p>
       </section>
       <section class="summary-tile">
         <h2>सबूत</h2>
-        <p>सार्वजनिक चार्ट-डेटा स्लाइसें लागत, judge स्कोर, टोकन-संरचना, latency और मॉडल-किए-गए आरक्षित-क्षमता क्रॉसओवर की तुलना करती हैं।</p>
+        <p>सार्वजनिक chart-data वाले अलग-अलग cases में cost, judge score, token composition, latency और modeled reserved-capacity crossover की तुलना की गई है।</p>
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
-        <p>छोटे तथ्यात्मक जवाबों की स्लाइस में लागत क़रीब 7.6x चढ़ी पर औसत judge स्कोर साथ नहीं आया — सिर्फ़ क़रीब 1.88 से क़रीब 1.78 तक हिला; multi-step स्लाइस में, जहाँ मूल्यांकक हिला, यह 1.5 से 2.0 तक बढ़ा।</p>
+        <p>छोटे factual काम वाले case में cost क़रीब 7.6x बढ़ी, लेकिन औसत judge score ने साथ नहीं दिया — वह सिर्फ़ क़रीब 1.88 से क़रीब 1.78 तक बदला; multi-step case में, जहाँ evaluator सच में हिला, यह 1.5 से 2.0 तक गया।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>effort सिर्फ़ वहाँ बढ़ाएँ जहाँ मूल्यांकक हिलता है; एविडेंस डैशबोर्ड को गद्य के पीछे का ऑडिट-ट्रेल बनाए रखें।</p>
+        <p>effort सिर्फ़ वहीं बढ़ाएँ जहाँ evaluator हिलता है; evidence dashboard को इस लेख के पीछे का audit trail बनाए रखें।</p>
       </section>
     </div>
 
@@ -93,29 +93,29 @@
       <div class="article-summary-grid">
         <section class="summary-tile">
           <h2>सिंहावलोकन · प्रश्न</h2>
-          <p>यह लेख प्रश्न को ढाँचा देता है: अतिरिक्त reasoning effort कब अपनी लागत वसूल करती है?</p>
+          <p>यह लेख सवाल तय करता है: extra reasoning effort कब अपनी लागत वसूल करती है?</p>
           <p><a href="./">आप यहाँ हैं</a></p>
         </section>
         <section class="summary-tile">
-          <h2>सबूत · पाँच स्लाइसें</h2>
-          <p>पाँच विषय-लेख प्रत्येक एक वर्कलोड-स्लाइस पर लागत, गुणवत्ता, latency और टोकन-आकार मापते हैं।</p>
+          <h2>सबूत · पाँच cases</h2>
+          <p>पाँच topic essays में हर एक workload case पर cost, quality, latency और token shape को मापा गया है।</p>
           <p><a href="../topics/short-factual-work/hi/">सबूत परत से शुरू करें</a></p>
         </section>
         <section class="summary-tile">
           <h2>पुल · मापन → प्रोडक्शन</h2>
-          <p>एक लेख बताता है कि स्वर क्यों बदलता है और कौन-सी सबूत-आदतें संचालन तक साथ जाती हैं।</p>
+          <p>एक लेख बताता है कि लेखन का स्वर क्यों बदलता है और evidence की कौन-सी आदतें operations तक साथ जाती हैं।</p>
           <p><a href="../topics/bridge-from-measurement-to-production/hi/">पुल-लेख पढ़ें</a></p>
         </section>
         <section class="summary-tile">
           <h2>संचालन · प्रोडक्शन नीति</h2>
-          <p>चार लेख वही ऑडिट-अनुशासन रिकवरी, cache रूटिंग, रिटेंशन और माइग्रेशन साइज़िंग पर लागू करते हैं।</p>
+          <p>चार लेख वही audit discipline recovery, cache routing, retention और migration sizing पर लागू करते हैं।</p>
           <p><a href="../../ptu-retry-after-recovery/hi/">संचालन परत से शुरू करें</a></p>
         </section>
       </div>
     </section>
 
     <nav class="article-outline" aria-label="इस सिंहावलोकन के विषय">
-      <strong>विषय के अनुसार पढ़ें:</strong>
+      <strong>इस overview के विषय:</strong>
       <a href="#short-factual">छोटे तथ्यात्मक जवाब</a>
       <a href="#reasoning-tokens">अदृश्य टोकन</a>
       <a href="#multi-step">Multi-step</a>
@@ -125,36 +125,36 @@
 
     <p class="banner">
       <strong>डेटा परिशिष्ट:</strong>
-      पूरी तालिकाएँ और रेंडर किए गए मूल चार्ट
-      <a href="../../../charts/?lang=hi">एविडेंस डैशबोर्ड</a> में देखे जा सकते हैं।
-      यह लेख समझाता है कि हर चार्ट क्यों है और उसे कैसे इस्तेमाल करें।
+      पूरी तालिकाएँ और rendered source charts
+      <a href="../../../charts/?lang=hi">evidence dashboard</a> में देखे जा सकते हैं।
+      यह लेख बताता है कि हर chart क्यों है और उसे कैसे पढ़ना है।
     </p>
 
     <section class="article-section chart-reading-guide">
       <p class="section-label">पढ़ने की परिपाटी · बार, अक्ष और तालिका</p>
       <h2>इस लेख के चार्ट कैसे पढ़ें</h2>
       <p>
-        इस लेख के छोटे बार-चित्र पूरे मूल चार्ट तक पहुँचने के दिशा-सूचक हैं। ये
-        फ़्रीक्वेंसी हिस्टोग्राम नहीं हैं। हर बार एक effort-सेल का समुच्चय मापन है:
-        baseline, minimal, low, medium, high, या extra-high।
+        इस लेख के छोटे bar-figures पूरे source charts तक पहुँचने के संकेत हैं। ये
+        frequency histogram नहीं हैं। हर bar एक effort configuration का aggregate
+        measurement है: baseline, minimal, low, medium, high, या extra-high।
       </p>
       <div class="evidence-grid">
-        <div><h3>X-अक्ष</h3><p>X-अक्ष ऑपरेटर का effort-सोपान है। बाएँ से दाएँ बढ़ना यानी मॉडल को ज़्यादा आंतरिक रीज़निंग करने देना।</p></div>
-        <div><h3>Y-अक्ष</h3><p>Y-अक्ष चार्ट-दर-चार्ट बदलता है: लागत के लिए प्रति-request USD, गुणवत्ता के लिए judge स्कोर, latency के लिए मिलीसेकंड, संरचना के लिए टोकन-गिनती, और क्रॉसओवर-योजना के लिए मॉडल-की-गई प्रति-मिनट request।</p></div>
-        <div><h3>बार</h3><p>ऊँचा हमेशा बेहतर नहीं। ऊँचा गुणवत्ता-बार अच्छा हो सकता है; पर ऊँचा लागत, latency या reasoning-token बार एक अदला-बदली है जिसके साथ मेल खाता गुणवत्ता-लाभ चाहिए।</p></div>
-        <div><h3>मूल तालिका</h3><p>सटीक मान, मानक विचलन और नमूना-गिनती के लिए डैशबोर्ड तालिका देखें। गद्य सिर्फ़ निर्णय-योग्य आकार निकालता है।</p></div>
+        <div><h3>X-अक्ष</h3><p>X-अक्ष operator के effort के स्तर दिखाता है। बाएँ से दाएँ जाने का मतलब है मॉडल को ज़्यादा internal reasoning करने देना।</p></div>
+        <div><h3>Y-अक्ष</h3><p>Y-अक्ष chart के हिसाब से बदलता है: cost के लिए प्रति-request USD, quality के लिए judge score, latency के लिए millisecond, composition के लिए token count, और crossover planning के लिए modeled requests per minute।</p></div>
+        <div><h3>बार</h3><p>ऊँचा bar हमेशा बेहतर नहीं होता। quality का bar ऊँचा हो तो अच्छा हो सकता है; लेकिन cost, latency या reasoning-token bar ऊँचा हो तो उसके साथ quality में साफ़ फ़ायदा भी दिखना चाहिए।</p></div>
+        <div><h3>मूल तालिका</h3><p>सटीक value, standard deviation और sample count के लिए dashboard table देखें। यह गद्य सिर्फ़ वही आकार निकालता है जिस पर decision लिया जा सके।</p></div>
       </div>
     </section>
 
     <section id="short-factual" class="article-section">
       <p class="section-label">विषय · छोटे तथ्यात्मक जवाब</p>
-      <h2>छोटे तथ्यात्मक काम में रीज़निंग अक्सर वसूल नहीं होती</h2>
+      <h2>छोटे factual काम में reasoning अक्सर फ़ायदा नहीं देती</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> प्रति-request औसत लागत, उसी छोटे तथ्यात्मक स्लाइस के judge-स्कोर चार्ट के साथ मिलाकर।
+          <strong>पढ़ने का चार्ट:</strong> प्रति-request औसत cost, उसी छोटे factual case के judge-score chart के साथ।
         </figcaption>
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="बार चार्ट: X-अक्ष रीज़निंग effort; Y-अक्ष मिलाए गए मूल चार्ट के अनुसार लागत या judge स्कोर।">
-          <div class="mini-axis-row"><span>Y: लागत / judge स्कोर</span><span>हर बार: एक effort-सेल</span></div>
+          <div class="mini-axis-row"><span>Y: cost / judge score</span><span>हर bar: एक effort configuration</span></div>
           <div class="mini-plot">
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
@@ -169,148 +169,147 @@
       <div class="chart-reading-note">
         <h3>इस बार-चार्ट को कैसे पढ़ें</h3>
         <p>
-          X-अक्ष रीज़निंग effort है। लागत चार्ट का Y-अक्ष प्रति-request औसत USD है;
-          साथ वाले गुणवत्ता चार्ट का Y-अक्ष औसत judge स्कोर है। इसलिए बार का आकार एक
-          सीधा सवाल पूछता है: क्या ज़्यादा ख़र्च ने ज़्यादा स्कोर ख़रीदा, या सिर्फ़
-          बिल ऊँचा किया?
+          X-अक्ष reasoning effort है। cost chart का Y-अक्ष प्रति-request औसत USD है;
+          साथ वाले quality chart का Y-अक्ष औसत judge score है। इसलिए bar का आकार एक
+          सीधा सवाल पूछता है: क्या ज़्यादा spend से score बढ़ा, या सिर्फ़ bill बड़ा हुआ?
         </p>
       </div>
       <div class="evidence-grid">
         <div>
           <h3>यह चार्ट क्यों है</h3>
           <p>
-            यह सबसे सीधा माइग्रेशन-जाल जाँचता है: टीम reasoning effort पूरे सिस्टम
-            में बढ़ा देती है, फिर पूछती है कि बिल क्यों हिला जबकि काम ज़्यादातर छोटे
-            तथ्यात्मक जवाबों का था।
+            यह migration का सबसे सीधा trap जाँचता है: टीम reasoning effort पूरे
+            सिस्टम में बढ़ा देती है, फिर पूछती है कि bill क्यों बढ़ा जबकि काम
+            ज़्यादातर छोटे factual जवाबों का था।
           </p>
         </div>
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे तथ्यात्मक स्लाइस में minimal effort का औसत प्रति-request क़रीब
-            $0.000663 था। Extra-high effort का औसत क़रीब $0.005043 — यानी 7.6x बिल —
-            जबकि औसत judge स्कोर सिर्फ़ क़रीब 1.87931 से 1.779661 तक हिला।
+            छोटे factual case में minimal effort का औसत प्रति-request क़रीब
+            $0.000663 था। Extra-high effort का औसत क़रीब $0.005043 — यानी 7.6x bill —
+            जबकि औसत judge score सिर्फ़ क़रीब 1.87931 से 1.779661 तक बदला।
           </p>
         </div>
         <div>
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
-            effort बिना बेहतर जवाब ख़रीदे और छिपी गणना बढ़ा सकती है। छोटे तथ्यात्मक
-            काम में सबसे नीचे effort से शुरू करें और तभी बढ़ाएँ जब कोई गुणवत्ता-गेट
-            असली लाभ दिखाए।
+            छोटे factual काम में ज़्यादा effort लगाने से score नहीं बढ़ता, सिर्फ़
+            hidden computation बढ़ सकती है। ऐसे काम में सबसे low effort से शुरू करें
+            और तभी बढ़ाएँ जब कोई quality gate साफ़ लाभ दिखाए।
           </p>
         </div>
       </div>
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">विषय · अदृश्य बिलिंग-सतह</p>
-      <h2>reasoning tokens बिल का अंतर समझाते हैं</h2>
+      <p class="section-label">विषय · छिपी billing surface</p>
+      <h2>bill का फ़र्क़ reasoning tokens से समझ आता है</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> effort-स्तर के अनुसार टोकन-संरचना — cached input, non-cached input, दृश्य output, और reasoning tokens।
+          <strong>पढ़ने का चार्ट:</strong> effort के स्तर के हिसाब से token composition — cached input, non-cached input, visible output और reasoning tokens।
         </figcaption>
         <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="स्टैक्ड टोकन-संरचना: X-अक्ष टोकन-घटक; Y-अक्ष प्रति-request औसत टोकन।">
-          <div class="mini-axis-row"><span>Y: औसत टोकन/request</span><span>X: टोकन-घटक</span></div>
+          <div class="mini-axis-row"><span>Y: औसत token/request</span><span>X: token component</span></div>
           <div class="stack-track">
             <div class="stack-segment stack-input"><b class="segment-label">Input टोकन</b></div>
             <div class="stack-segment stack-output"><b class="segment-label">दृश्य output</b></div>
             <div class="stack-segment stack-reason"><b class="segment-label">Reasoning टोकन</b></div>
           </div>
-          <div class="mini-legend">प्रगति-बार का अर्थ: दृश्य output छोटा रहे तब भी छिपी रीज़निंग बिल पर हावी हो सकती है।</div>
+          <div class="mini-legend">इस progress bar का मतलब है: visible output छोटा रहे, तब भी hidden reasoning bill पर हावी हो सकती है।</div>
         </div>
       </figure>
       <div class="evidence-grid">
         <div>
           <h3>यह चार्ट क्यों है</h3>
           <p>
-            दृश्य जवाब लगभग अपरिवर्तित दिख सकता है जबकि मॉडल ने उसे बनाने में कई
-            आंतरिक reasoning tokens ख़र्च किए हों। सिर्फ़ output-लंबाई का चार्ट उस
-            बिल-योग्य काम को चूक जाता।
+            visible response लगभग वही दिख सकता है, जबकि मॉडल उसे बनाने में बहुत
+            सारे internal reasoning tokens खर्च कर चुका हो। सिर्फ़ output length का
+            chart उस billable work को पकड़ ही नहीं पाएगा।
           </p>
         </div>
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे तथ्यात्मक स्लाइस में minimal effort का औसत प्रति-request क़रीब
+            छोटे factual case में minimal effort का औसत प्रति-request क़रीब
             3.655172 reasoning tokens था। Extra-high effort का औसत क़रीब 311.474576
-            reasoning tokens — एक अदृश्य उछाल जो जवाब-पाठ कभी नहीं दिखाता।
+            reasoning tokens — यह उछाल answer text में कभी दिखता ही नहीं।
           </p>
         </div>
         <div>
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
-            जवाब-पाठ यह अंतर नहीं बताता। प्रोडक्शन बजट को usage-विभाजन चाहिए: input,
-            cached input, output और reasoning tokens।
+            answer text यह फ़र्क़ नहीं बताता। production budget के लिए usage breakdown
+            चाहिए: input, cached input, output और reasoning tokens।
           </p>
         </div>
       </div>
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">विषय · multi-step रीज़निंग</p>
-      <h2>Multi-step काम में रीज़निंग वसूल हो सकती है</h2>
+      <p class="section-label">विषय · multi-step reasoning</p>
+      <h2>Multi-step काम में reasoning फ़ायदा दे सकती है</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> पहले गुणवत्ता-बार, फिर साथ वाले लागत-बार। ख़र्च की वजह गुणवत्ता-अंतर है।
+          <strong>पढ़ने का चार्ट:</strong> पहले quality bars देखें, फिर साथ वाले cost bars। spend का औचित्य quality delta से तय होता है।
         </figcaption>
         <div class="mini-compare labeled-dot-chart" role="img" aria-label="तुलना चार्ट: X-अक्ष baseline बनाम high effort; Y-अक्ष औसत judge स्कोर।">
-          <div class="mini-axis-row"><span>Y: औसत judge स्कोर</span><span>बिंदु-आकार: गुणवत्ता स्तर</span></div>
+          <div class="mini-axis-row"><span>Y: औसत judge score</span><span>dot का आकार: quality level</span></div>
           <div class="dot-plot">
             <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">Baseline</b></div>
             <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">High effort</b></div>
           </div>
-          <div class="mini-x-axis">X: तुलना-सेल</div>
+          <div class="mini-x-axis">X: तुलना वाला configuration</div>
         </div>
       </figure>
       <div class="evidence-grid">
         <div>
           <h3>यह चार्ट क्यों है</h3>
           <p>
-            यह विरोधी-उदाहरण है: एक वर्कलोड जहाँ बीच की रीज़निंग भार उठाती है और ऊँचे
-            effort वाली सेल आज़माने लायक़ है।
+            यह contrast वाला case है: ऐसा workload जहाँ intermediate reasoning
+            सचमुच काम करती है और ऊँचे effort वाला configuration आज़माने लायक़ है।
           </p>
         </div>
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            multi-step स्लाइस में non-reasoning baseline ने 1.5 स्कोर किया। High
-            effort ने प्रति-request $0.00125 पर 2.0 स्कोर किया।
+            multi-step case में non-reasoning baseline ने 1.5 score किया। High
+            effort ने प्रति-request $0.00125 पर 2.0 score किया।
           </p>
         </div>
         <div>
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
-            रीज़निंग तभी अपना दाम वसूलती है जब मूल्यांकक इतना हिले कि मायने रखे। पहले
-            गुणवत्ता पढ़ें, फिर तय करें कि सीमांत ख़र्च जायज़ है या नहीं।
+            reasoning तभी काम आती है जब evaluator इतना हिले कि फ़र्क़ पड़े। पहले
+            quality देखें, फिर तय करें कि marginal spend जायज़ है या नहीं।
           </p>
         </div>
       </div>
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">विषय · टूल-इस्तेमाल करते एजेंट</p>
-      <h2>टूल-एजेंट काम में सीलिंग-जाँच ज़रूरी है</h2>
+      <p class="section-label">विषय · tool-using agents</p>
+      <h2>Tool-agent काम में ceiling जाँचना ज़रूरी है</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> गुणवत्ता और latency साथ-साथ। अगर स्कोर पहले से रूब्रिक के शीर्ष के पास है, तो अगली बाधा latency बन जाती है।
+          <strong>पढ़ने का चार्ट:</strong> quality और latency को साथ देखें। अगर score पहले से rubric के top के पास है, तो quality के ceiling पर पहुँचने के बाद असली फ़र्क़ latency का होता है।
         </figcaption>
         <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
-          <title id="ceil-svg-title">टूल-एजेंट गुणवत्ता सीलिंग-प्रभाव</title>
-          <desc id="ceil-svg-desc">गुणवत्ता स्कोर पहले से रूब्रिक सीलिंग के पास सपाट है, इसलिए effort और बढ़ाने पर स्कोर वही रहता है और सिर्फ़ latency, लागत व आंतरिक टोकन बढ़ते हैं।</desc>
+          <title id="ceil-svg-title">Tool-agent quality ceiling effect</title>
+          <desc id="ceil-svg-desc">Quality score पहले से rubric ceiling के पास सपाट है। effort और बढ़ाने पर score नहीं बदलता; सिर्फ़ latency, cost और internal tokens बढ़ते हैं।</desc>
           <defs>
             <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#06d6a0"/>
               <stop offset="1" stop-color="#048a67"/>
             </linearGradient>
           </defs>
-          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">टूल-एजेंट: गुणवत्ता सीलिंग-प्रभाव</text>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">Tool agent: quality ceiling effect</text>
           <line x1="52" y1="34" x2="52" y2="180" stroke="#9fb3c8" stroke-width="2"/>
           <line x1="52" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
-          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">गुणवत्ता स्कोर</text>
-          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">effort सेटिंग</text>
+          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">quality score</text>
+          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">effort setting</text>
           <line x1="52" y1="54" x2="244" y2="54" stroke="#048a67" stroke-width="2" stroke-dasharray="5 4"/>
-          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">रूब्रिक सीलिंग</text>
+          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">rubric ceiling</text>
           <rect x="64" y="118" width="34" height="58" rx="5" fill="url(#ceilFill)"/>
           <rect x="110" y="80" width="34" height="96" rx="5" fill="url(#ceilFill)"/>
           <rect x="156" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
@@ -320,8 +319,8 @@
           <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">High</text>
           <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">Extra-high</text>
           <rect x="250" y="58" width="104" height="100" rx="9" fill="#f3fbf8" stroke="#cdeee3"/>
-          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">effort और बढ़ाएँ</text>
-          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">स्कोर → वही</text>
+          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">effort बढ़ाएँ</text>
+          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">score → flat</text>
           <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#b4540a">latency ↑</text>
           <text x="302" y="136" text-anchor="middle" font-size="11.5" fill="#b4540a">लागत ↑</text>
           <text x="302" y="154" text-anchor="middle" font-size="11.5" fill="#b4540a">आंतरिक टोकन ↑</text>
@@ -331,24 +330,25 @@
         <div>
           <h3>यह चार्ट क्यों है</h3>
           <p>
-            टूल-एजेंट ऐसे लग सकते हैं मानो उन्हें और सोच चाहिए, पर कभी-कभी काम का
-            कठिन हिस्सा टूल-कॉल पहले ही उठा लेता है।
+            tool agents को देखकर लग सकता है कि उन्हें और सोच चाहिए, लेकिन कई बार
+            काम का कठिन हिस्सा tool call पहले ही संभाल लेता है।
           </p>
         </div>
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            अगर चार्ट पहले से सीलिंग-प्रभाव दिखा रहा है, तो effort बढ़ाना बेहतर जवाब
-            के बजाय ज़्यादातर आंतरिक टोकन और latency बढ़ा सकता है। बार ऐसे सपाट हों,
-            तो सीमित करने वाला कारक अब रीज़निंग-गुणवत्ता नहीं है।
+            यह tool-agent case है। जब judge score पहले ही rubric के top
+            के पास पहुँच जाता है, तो effort के स्तर ऊपर ले जाने से ज़्यादातर internal
+            tokens और latency बढ़ते हैं, score नहीं। bar ऐसे flatten हो जाएँ, तो
+            limiting factor अब reasoning quality नहीं रहता।
           </p>
         </div>
         <div>
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
-            effort को डिफ़ॉल्ट नहीं, एक नियंत्रित प्रयोग मानें। एजेंटिक काम में पहले
-            जाँचें कि सीमित करने वाला कारक रीज़निंग-गुणवत्ता है, टूल-चुनाव, टूल-latency,
-            या ऑर्केस्ट्रेशन।
+            effort को default नहीं, controlled experiment की तरह लें। agentic
+            workloads में पहले जाँचें कि limiting factor reasoning quality है,
+            tool choice, tool latency, या orchestration।
           </p>
         </div>
       </div>
@@ -356,33 +356,33 @@
 
     <section id="ptu-payg" class="article-section">
       <p class="section-label">विषय · क्षमता-योजना</p>
-      <h2>PTU/PAYG क्रॉसओवर एक योजना-मॉडल है</h2>
+      <h2>PTU/PAYG crossover एक planning model है</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> गुणवत्ता-गार्डरेल के साथ मॉडल-किया-गया क्रॉसओवर। यह साइज़िंग-मार्गदर्शन है, मापी गई क्षमता का सबूत नहीं।
+          <strong>पढ़ने का चार्ट:</strong> paired quality guardrail के साथ modeled crossover। यह sizing guidance है, measured capacity evidence नहीं।
         </figcaption>
         <svg class="mini-svg-chart" viewBox="0 0 360 214" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ptupayg-svg-title ptupayg-svg-desc">
-          <title id="ptupayg-svg-title">मॉडल-किया-गया PTU/PAYG क्रॉसओवर</title>
-          <desc id="ptupayg-svg-desc">जहाँ नीला PAYG वेरिएबल-लागत वक्र नारंगी PTU फ़िक्स्ड न्यूनतम से मिलता है, वही मॉडल-किया-गया प्लानिंग थ्रेशोल्ड है। यह मापी गई PTU क्षमता नहीं है।</desc>
+          <title id="ptupayg-svg-title">Modeled PTU/PAYG crossover</title>
+          <desc id="ptupayg-svg-desc">जहाँ नीला PAYG variable-cost curve नारंगी PTU fixed floor से मिलता है, वही modeled planning threshold है। यह measured PTU capacity नहीं है।</desc>
           <defs>
             <linearGradient id="paygStroke" x1="0" y1="1" x2="1" y2="0">
               <stop offset="0" stop-color="#3a86ff"/>
               <stop offset="1" stop-color="#1554b7"/>
             </linearGradient>
           </defs>
-          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">मॉडल-किया-गया PTU/PAYG क्रॉसओवर</text>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">Modeled PTU/PAYG crossover</text>
           <line x1="58" y1="34" x2="58" y2="180" stroke="#9fb3c8" stroke-width="2"/>
           <line x1="58" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
-          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">मॉडल-की-गई प्रति-घंटा लागत</text>
-          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">request दर (प्रति-मिनट)</text>
+          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">modeled hourly cost</text>
+          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">request rate (per minute)</text>
           <line x1="58" y1="96" x2="340" y2="96" stroke="#f4a300" stroke-width="4" stroke-linecap="round"/>
-          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU फ़िक्स्ड न्यूनतम (प्रति-घंटा फ़्लैट)</text>
+          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU fixed floor (flat hourly)</text>
           <path d="M58 170 Q160 150 340 46" fill="none" stroke="url(#paygStroke)" stroke-width="4" stroke-linecap="round"/>
-          <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG वेरिएबल लागत</text>
+          <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG variable cost</text>
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
-          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">प्लानिंग थ्रेशोल्ड</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">मापा नहीं · मॉडल-मान</text>
+          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">planning threshold</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured · modeled</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
@@ -391,23 +391,23 @@
         <div>
           <h3>यह चार्ट क्यों है</h3>
           <p>
-            PAYG और आरक्षित-क्षमता के निर्णय अलग सवालों के जवाब देते हैं। यह चार्ट
-            reasoning-समेत टोकन-आकार को एक योजना-सीमा में बदलता है।
+            PAYG और reserved-capacity के फ़ैसले अलग सवालों के जवाब देते हैं। यह chart
+            reasoning सहित token shape को planning threshold में बदलता है।
           </p>
         </div>
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे तथ्यात्मक xhigh पंक्ति के लिए PTU/PAYG क्रॉसओवर 50 PTU न्यूनतम के साथ
-            149 rpm पर एक मॉडल-की-गई परिकल्पना है। यह मापी गई PTU throughput नहीं है।
+            छोटे factual xhigh row के लिए PTU/PAYG crossover 50 PTU floor के साथ
+            149 rpm पर एक modeled hypothesis है। यह measured PTU throughput नहीं है।
           </p>
         </div>
         <div>
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
-            उस संख्या को क्षमता-सबूत नहीं, योजना-सीमा की तरह पढ़ें। PAYG पर reasoning
-            tokens घटाना परिवर्ती ख़र्च घटाता है। PTU पर वही कटौती तय आरक्षण के भीतर और
-            requests के लिए जगह की तरह दिख सकती है।
+            उस संख्या को capacity evidence नहीं, planning threshold की तरह पढ़ें।
+            PAYG पर reasoning tokens घटाने से variable spend घटता है। PTU पर वही
+            कटौती fixed reservation के भीतर ज़्यादा requests की जगह बन सकती है।
           </p>
         </div>
       </div>
@@ -418,10 +418,11 @@
       <p class="section-label">पुल-लेख · सबूत और संचालन परतों के बीच</p>
       <h2>मापन से प्रोडक्शन तक</h2>
       <p>
-        सबूत-लेखों ने एक मापन-प्रश्न का जवाब दिया: अतिरिक्त reasoning effort कहाँ
-        गुणवत्ता ख़रीदती है और कहाँ सिर्फ़ छिपी गणना? संचालन-लेख एक अलग सवाल का जवाब
-        देते हैं: जब वह effort-निर्णय हो चुका है और ट्रैफ़िक बह रहा है, तो यह तैनात
-        सेवा ऑपरेटर को बदले में क्या देती है? पुल-लेख समझाता है कि दोनों परतों के बीच
+        evidence essays ने एक measurement सवाल का जवाब दिया: extra reasoning effort
+        कहाँ quality बेहतर करती है और कहाँ सिर्फ़ hidden computation बढ़ाती है?
+        operations essays एक अलग सवाल लेते हैं: जब effort का फ़ैसला हो चुका हो और
+        traffic चल रहा हो, तब production system को operator के लिए क्या भरोसेमंद
+        व्यवहार देना चाहिए? यह bridge essay समझाता है कि दोनों layers के बीच लेखन का
         स्वर क्यों बदलता है, और कौन-सी आदतें साथ चलती हैं।
       </p>
       <p>
@@ -433,16 +434,16 @@
       <p class="section-label">संचालन-लेख · प्रोडक्शन परत</p>
       <h2>संचालन-लेख सबूत की कहानी को आगे ले जाते हैं</h2>
       <p>
-        यह सिंहावलोकन समझाता है कि reasoning effort कब लागत और गुणवत्ता बदलती है।
-        संचालन-लेख वही पढ़ने का तरीक़ा प्रोडक्शन-जैसे सवालों पर ले जाते हैं:
+        यह overview बताता है कि reasoning effort कब cost और quality बदलती है।
+        operations essays वही evidence-first आदत production वाले सवालों पर ले जाते हैं:
         <code>retry-after-ms</code> के साथ 429 रिकवरी, <code>prompt_cache_key</code>
         बकेटिंग, स्पष्ट cache रिटेंशन, और GPT-4o से GPT-5.x साइज़िंग।
       </p>
       <p>
-        वे बेंचमार्क-कहानी से अलग रहते हैं ताकि हर हिस्सा अपनी सबूत-सीमा साफ़ रखे:
-        जहाँ इस रिपॉज़िटरी के पास मापा डेटा है वहाँ मापा डेटा, जहाँ व्यवहार
-        प्रलेखित है वहाँ आधिकारिक उद्धरण, और जहाँ लेख कोई संचालन-अनुमान लगा रहा है
-        वहाँ स्पष्ट लेबल।
+        इन्हें benchmark कहानी से अलग रखा गया है ताकि हर हिस्सा अपनी evidence boundary
+        साफ़ रख सके: जहाँ इस repository के पास measured data है वहाँ वही, जहाँ
+        behavior documented है वहाँ official citations, और जहाँ लेख operational
+        inference कर रहा है वहाँ साफ़ label।
       </p>
       <p>
         <a class="button-link" href="../../ptu-retry-after-recovery/hi/">429 रिकवरी लेख पढ़ें</a>
@@ -457,40 +458,41 @@
       <p class="section-label">स्रोत · सबूत-सीमा</p>
       <h2>स्रोत और सबूत-सीमा</h2>
       <p>
-        यह सिंहावलोकन पाँच स्लाइसों पर लागत, गुणवत्ता, latency और टोकन-संरचना को
-        साथ पढ़ता है। ऊपर का हर संख्यात्मक दावा इस रिपॉज़िटरी की किसी सार्वजनिक
-        कलाकृति तक जाता है; संचालन-व्याख्या इस लेख की अपनी है। नीचे की दो श्रेणियाँ
-        बताती हैं कि प्रलेखित अनुबंध कहाँ ख़त्म होता है और संचालन-अनुमान कहाँ शुरू।
+        यह overview पाँच cases में cost, quality, latency और token composition को
+        साथ पढ़ता है। ऊपर का हर numeric claim इस repository के किसी public artifact
+        तक जाता है; operational interpretation इस लेख की अपनी है। नीचे की दो tiers
+        बताती हैं कि documented contract कहाँ ख़त्म होता है और operational inference
+        कहाँ शुरू होती है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। प्रति सेल N = 20 लिखित नमूने, R = 3 दोहराव, केवल सार्वजनिक समुच्चय स्लाइस। चार्ट-पठन का गद्य इसी स्थिर रुख़ को मानता है और N = 20 पर p-मान का दावा नहीं करता।</li>
-        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> PAYG लागत-दावे (प्रति-request औसत USD) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> के विरुद्ध गणित होते हैं — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर अनुपात भी खिसकेंगे।</li>
-        <li>[3] <strong>Tier 1 — PTU मूल्य स्नैपशॉट:</strong> PTU मॉडल-किया-गया क्रॉसओवर और 50 PTU न्यूनतम इस रिपॉज़िटरी की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU प्रति-घंटा दर या PAYG प्रति-टोकन दाम हिलने पर क्रॉसओवर खिसकता है।</li>
-        <li>[4] <strong>Tier 2 — छोटी तथ्यात्मक स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000663 से $0.005043 की लागत-चढ़ाई (7.6x बिल), 1.87931 से 1.779661 की औसत judge-स्कोर हलचल, और 3.655172 से 311.474576 की reasoning-token शिफ़्ट का स्रोत।</li>
-        <li>[5] <strong>Tier 2 — multi-step स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge स्कोर का स्रोत।</li>
-        <li>[6] <strong>Tier 2 — टूल-एजेंट स्लाइस मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/03-tool-using-agent/analysis.json</code>। टूल-एजेंट खंड में संदर्भित सीलिंग-प्रभाव गुणवत्ता-बार का स्रोत।</li>
-        <li>[7] <strong>Tier 2 — मॉडल-किया-गया क्रॉसओवर:</strong> छोटी तथ्यात्मक extra-high पंक्ति के लिए 50 PTU न्यूनतम पर 149 rpm मापे गए टोकन-आकार के ऊपर एक योजना-गणना है, मापी गई PTU throughput का नतीजा नहीं। इसे क्षमता-सबूत नहीं, साइज़िंग-मार्गदर्शन की तरह पढ़ें।</li>
-        <li>[8] <strong>एविडेंस डैशबोर्ड:</strong> <a href="../../../charts/?lang=hi">एविडेंस डैशबोर्ड</a> की प्रति-लेख तालिकाएँ और रेंडर किए मूल चार्ट उन्हीं कलाकृतियों का ऑडिट-योग्य रूप हैं।</li>
+        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate case। chart-reading prose इसी fixed stance को मानता है और N = 20 पर p-value का दावा नहीं करता।</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (प्रति-request औसत USD) इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> के आधार पर निकाले गए हैं। यह 2026-05-19 को लिया गया snapshot है। list pricing बदलने पर ratios भी बदलेंगे।</li>
+        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover और 50 PTU floor इस repository की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU hourly rate या PAYG per-token price बदलने पर crossover भी बदलता है।</li>
+        <li>[4] <strong>Tier 2 — short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000663 से $0.005043 की cost climb (7.6x bill), 1.87931 से 1.779661 की mean judge-score movement, और 3.655172 से 311.474576 की reasoning-token shift का स्रोत।</li>
+        <li>[5] <strong>Tier 2 — multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
+        <li>[6] <strong>Tier 2 — tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
+        <li>[7] <strong>Tier 2 — modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर 149 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
+        <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">evidence dashboard</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
       </ul>
       <p>
-        यह सिंहावलोकन क्या सिद्ध करता है और क्या नहीं: यह इस बेंचमार्क नमूने पर पाँच
-        स्लाइसों का आकार दिखाता है; यह सिद्ध नहीं करता कि वही आकार किसी और वर्कलोड-मिश्रण,
-        किसी और टेनेंट, किसी और रीजन, या किसी भावी मूल्य-स्नैपशॉट पर भी क़ायम रहेगा।
-        हर विषय-लेख अपनी स्लाइस की सीमा साथ रखता है।
+        यह overview क्या साबित करता है और क्या नहीं: यह इस benchmark sample पर पाँच
+        cases का shape दिखाता है; यह साबित नहीं करता कि यही shape किसी दूसरे workload
+        mix, किसी दूसरे tenant, किसी दूसरे region, या किसी future pricing snapshot पर
+        भी बनी रहेगी। हर topic essay अपने case की boundary साथ रखता है।
       </p>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>व्यावहारिक नियम</h2>
       <p>
-        <strong>व्यावहारिक नियम: reasoning effort सिर्फ़ वहाँ बढ़ाएँ जहाँ इस
-        वर्कलोड-आकार पर मूल्यांकक हिलता है, और किसी भी लागत-दावे को प्रोडक्शन में ख़र्च
-        प्रतिबद्ध करने से पहले उसके साथ वाले गुणवत्ता, latency और टोकन-संरचना चार्ट के
-        बग़ल में पढ़ें।</strong>
+        <strong>व्यावहारिक नियम: reasoning effort सिर्फ़ वहीं बढ़ाएँ जहाँ इस
+        workload shape पर evaluator हिलता है, और किसी भी cost claim को production में
+        commit करने से पहले उसके paired quality, latency और token-composition chart के
+        साथ पढ़ें।</strong>
       </p>
       <p>
-        एविडेंस डैशबोर्ड उस नियम के पीछे का ऑडिट-ट्रेल है; विषय-लेख उसका प्रति-स्लाइस
-        रूप रखते हैं।
+        evidence dashboard उस नियम के पीछे का audit trail है; topic essays उसका
+        per-case रूप दिखाते हैं।
       </p>
       <p>
         <a class="button-link" href="../../../charts/?lang=hi">एविडेंस डैशबोर्ड खोलें</a>
@@ -500,15 +502,15 @@
     <section id="next" class="article-section">
       <p>
         <strong>आगे:</strong>
-        <a href="../topics/short-factual-work/hi/">छोटे तथ्यात्मक काम: जब अतिरिक्त रीज़निंग लागत ख़रीदती है, गुणवत्ता नहीं</a>
-        &mdash; अगर काम ज़्यादातर छोटे तथ्यात्मक जवाब माँगता है, तो क्या ऊँची reasoning
-        effort बिल जायज़ ठहराने भर गुणवत्ता सुधारती है?
+        <a href="../topics/short-factual-work/hi/">छोटे factual काम: जब extra reasoning से cost बढ़ती है, quality नहीं</a>
+        &mdash; अगर काम ज़्यादातर छोटे factual जवाब माँगता है, तो क्या ऊँची reasoning
+        effort quality में इतना सुधार करती है कि bill सही ठहरे?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-लाइसेंस्ड शोध-कलाकृति · प्रकाशित डेटा केवल सैनिटाइज़्ड या समुच्चय रूप में है।</p>
+    <p>MIT-licensed research artifact · प्रकाशित data सिर्फ़ sanitized या aggregate रूप में है।</p>
   </footer>
 </body>
 </html>

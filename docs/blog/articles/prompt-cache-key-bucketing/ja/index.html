@@ -81,7 +81,7 @@
       </p>
       <p>
         立ち止まる価値があるのは、その対の部分です。ヒット率だけを見ると安心材料に
-        読めますが、その下では体験が動いています。この断面では、バケットのカーディナ
+        読めますが、その下では体験が動いています。この測定区間では、バケットのカーディナ
         リティが上がってもヒット率は高くおおむね横ばいのままだったので、それだけを
         読めば分割はコストゼロに見えてしまいます。初回トークンのレイテンシの裾が、
         もう半分の物語を語ります——一つの熱いバケットが非常に大きな p95 を抱え、
@@ -90,7 +90,7 @@
         熱くなりすぎることなくプレフィックスが局所性を保てるサイズか」です。プレフィックス
         ハッシュによるルーティングと約 15 リクエスト毎分のおおよそのオーバーフロー
         地点は Microsoft Learn が文書化しているものです。バケット数の計算と、レイテンシの
-        隣に置いた公開のヒット率の断面は、本リポジトリが擁護する運用上の推論とソース
+        隣に置いた公開のヒット率の測定データは、本リポジトリが擁護する運用上の推論とソース
         実行の根拠であって、普遍的なキャッシュヒット曲線ではありません。下のチャートが
         その対を明示します。
       </p>
@@ -187,11 +187,11 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">観測された根拠 · 疎な公開スライス</p>
+      <p class="section-label">観測された根拠 · 疎な公開測定区間</p>
       <h2>ヒット率と遅延を一緒に測定する</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>読むべきチャート:</strong> 公開された集計キャッシュキースライス。
+          <strong>読むべきチャート:</strong> 公開された集計キャッシュキーの測定区間。
           左パネルはキャッシュヒット率を示します。右パネルは最初のトークンまでの
           p95 時間を示します。X 軸は保持モードとバケットのカーディナリティです。
         </figcaption>
@@ -205,7 +205,7 @@
           ヒット率、0〜1。 <strong>線：</strong> 二つの保持系列——<code>in_memory</code> と
           <code>24h</code>、それぞれ N&nbsp;=&nbsp;960 レコード。これは二系列の折れ線グラフ
           であって、度数のヒストグラムではありません。 <strong>読み方：</strong> この
-          バケットあたりレートの低い断面では、カーディナリティが上がってもヒット率は
+          バケットあたりレートの低い測定区間では、カーディナリティが上がってもヒット率は
           高くおおむね横ばい（約 0.93〜0.96）でした。だからプレフィックスをより多くの
           バケットに分けること自体が、ここでヒット率を崩したわけではありません——
           断片化のコストは、このパネルではなく次のパネルのレイテンシの裾に現れました。
@@ -215,7 +215,7 @@
           リポジトリの <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           から来ています（<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">ソース CSV</a>）。
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="バケットのカーディナリティ（log2 軸、1 と 8 バケット）に対する定常状態のキャッシュヒット率の折れ線グラフ。in_memory と 24h の保持の二本のほぼ横ばいの線がいずれも高く、おおむね 0.93〜0.96 にあり、この断面ではカーディナリティが増えてもヒット率がほぼ一定だったことを示す。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="バケットのカーディナリティ（log2 軸、1 と 8 バケット）に対する定常状態のキャッシュヒット率の折れ線グラフ。in_memory と 24h の保持の二本のほぼ横ばいの線がいずれも高く、おおむね 0.93〜0.96 にあり、この測定区間ではカーディナリティが増えてもヒット率がほぼ一定だったことを示す。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
@@ -226,7 +226,7 @@
           <strong>読み方：</strong> カーディナリティ 1 の単一の熱い <code>in_memory</code>
           バケットは非常に大きな p95（約 106,000&nbsp;ms）を抱え、トラフィックが 8 バケットに
           広がると急に下がりました（約 16,600&nbsp;ms）。一方 <code>24h</code> 系列は終始
-          低いままでした——だからこの断面ではバケット分割のコストはレイテンシの裾に着地し、
+          低いままでした——だからこの測定区間ではバケット分割のコストはレイテンシの裾に着地し、
           それゆえヒット率は単独ではなく初回トークンのレイテンシの隣で読む必要があります。
           <strong>根拠の境界：</strong> 従量課金の gpt-5.2 での同じ疎なサニタイズ済み公開
           集計（PTU ではありません）。記述的であり、レイテンシの保証ではありません。
@@ -257,7 +257,7 @@
       <div class="chart-reading-note">
         <h3>これが証明するものとしないもの</h3>
         <p>
-          この公開スライスは、普遍的なしきい値曲線を証明するものではありません。ただし、
+          この測定区間の観測は、普遍的なしきい値曲線を証明するものではありません。ただし、
           運用者がヒット率だけを見るべきでない理由は示しています。保持モード、バケット
           レート、最初のトークンまでの遅延は、いずれもユーザー体験を左右します。
         </p>
@@ -306,7 +306,7 @@
           下がる 1 分あたり約 15 リクエスト地点を定義しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
       </ul>
       <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> バケット数の
-        計算と公開のヒット率の断面は、Learn の仕様ではなく、本リポジトリの運用上の
+        計算と公開のヒット率の測定データは、Learn の仕様ではなく、本リポジトリの運用上の
         推論でありソース実行の根拠です。</p>
       <ul>
         <li>[2] <strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
@@ -315,7 +315,7 @@
           一方、<code>recommended_buckets</code> の式と既定のバケットあたり 10-RPM の
           目標は、Learn の仕様ではなく本リポジトリの運用上の推論です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">出典</a>。</li>
         <li>[3] <strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — ヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の断面。
+          — ヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の測定区間。
           普遍的な曲線ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
       </ul>
       <p>
@@ -325,7 +325,7 @@
         <code>prompt_cache_key</code> ヒント、1 分あたり約 15 リクエストのオーバー
         フロー地点——と、共有プレフィックスを、各バケットが余裕をもってその地点の
         下にとどまるだけの安定したバケットに分割する、という本リポジトリのサイジングの
-        経験則を文書化します。バケット数の式と公開のヒット率の断面は運用上の推論と
+        経験則を文書化します。バケット数の式と公開のヒット率の測定データは運用上の推論と
         ソース実行の根拠であって、保証されたキャッシュヒット曲線ではありません。
         すべてのモデル・リージョン・トラフィック形状で同一に成り立つ普遍的なしきい値は
         証明しません。

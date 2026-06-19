@@ -70,12 +70,12 @@
       </p>
       <p>
         值得停下来的，正是那个"成对"的部分。只看命中率会让人安心，但底下的体验在动。
-        在这个切片里，桶的基数上升了，命中率却保持高位、大体持平，所以单看它，会以为
+        在这类场景里，桶的基数上升了，命中率却保持高位、大体持平，所以单看它，会以为
         分桶零成本。首 token 延迟的长尾，讲了另一半故事——一个过热的桶背着非常大的
         p95，而当流量铺到更多桶上时，p95 又骤然下降。所以运维上的问题不是"缓存有没有
         命中"，而是"每个桶的大小，能不能让前缀保住局部性、同时又不让某一个桶过热"。
         前缀哈希路由和每分钟约 15 个请求的大致溢出点，是 Microsoft Learn 记录的；分桶
-        数量的计算，以及挨着延迟摆放的公开命中率切片，则是本仓库愿意为之背书的运维
+        数量的计算，以及挨着延迟摆放的公开命中率测量，则是本仓库愿意为之背书的运维
         推断与源运行证据，而不是一条通用的缓存命中曲线。下面的图把这一对明示出来。
       </p>
     </section>
@@ -170,11 +170,11 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">观测证据 · 稀疏的公开切片</p>
+      <p class="section-label">观测证据 · 稀疏的公开测量</p>
       <h2>把命中率和延迟一起测</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>要读的图：</strong>公开的聚合缓存键切片。左面板是缓存命中率；右面板是
+          <strong>要读的图：</strong>公开聚合的缓存键测量。左面板是缓存命中率；右面板是
           首 token 的 p95 时间。X 轴是保留模式与桶的基数。
         </figcaption>
         <img src="../../../../assets/prompt-cache-key-bucketing-evidence.zh-CN.svg" alt="对比缓存命中率与 TTFT p95 的提示缓存键分桶证据图。" style="width:100%;height:auto;display:block;border-radius:12px;">
@@ -186,7 +186,7 @@
           <strong>Y 轴：</strong>稳态缓存命中率，0&ndash;1。
           <strong>线：</strong>两条保留序列——<code>in_memory</code> 与 <code>24h</code>，各 N&nbsp;=&nbsp;960
           条记录。这是双序列折线图，不是频次直方图。
-          <strong>读法：</strong>在这个每桶速率较低的切片上，基数上升时命中率保持高位、
+          <strong>读法：</strong>在这个每桶速率较低的场景里，基数上升时命中率保持高位、
           大体持平（约 0.93&ndash;0.96）。所以把前缀拆进更多桶，本身并没有在这里压垮命中率
           ——碎片化的代价不在这一面板，而出现在下一面板的延迟长尾里。
           <strong>证据边界：</strong>在一个租户与区域、用按量付费的 gpt-5.2 测得的稀疏、
@@ -195,7 +195,7 @@
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           （<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">源 CSV</a>）。
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="稳态缓存命中率对桶基数（log2 轴，1 与 8 桶）的折线图。in_memory 与 24h 两条几乎持平的线都很高，大体在 0.93～0.96，说明这个切片上基数增加时命中率几乎不变。" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="稳态缓存命中率对桶基数（log2 轴，1 与 8 桶）的折线图。in_memory 与 24h 两条几乎持平的线都很高，大体在 0.93～0.96，说明这组测量里基数增加时命中率几乎不变。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
@@ -205,7 +205,7 @@
           <strong>线：</strong>同样两条保留序列，各 N&nbsp;=&nbsp;960。
           <strong>读法：</strong>基数为 1 的单个过热 <code>in_memory</code> 桶背着非常大的
           p95（约 106,000&nbsp;ms），当流量铺到 8 个桶时骤然下降（约 16,600&nbsp;ms）；而
-          <code>24h</code> 序列自始至终都偏低——所以在这个切片上，分桶的代价落在延迟
+          <code>24h</code> 序列自始至终都偏低——所以在这组测量里，分桶的代价落在延迟
           长尾里，因此命中率必须挨着首 token 延迟读，而不能单看。
           <strong>证据边界：</strong>按量付费 gpt-5.2 下同一批稀疏、经脱敏的公开聚合
           （不是 PTU）。仅作描述，不是延迟保证。
@@ -236,7 +236,7 @@
       <div class="chart-reading-note">
         <h3>这能证明什么，又不能证明什么</h3>
         <p>
-          这个公开切片并不能证明一条通用的阈值曲线。但它确实
+          这组公开测量并不能证明一条通用的阈值曲线。但它确实
           说明了为什么运维者不应只看命中率：保留模式、
           分桶速率和首字延迟都会改变用户体验。
         </p>
@@ -279,7 +279,7 @@
           <code>prompt_cache_key</code> 提示，以及相同前缀与键的请求溢出到额外机器、缓存
           有效性下降的每分钟约 15 个请求临界点。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
       </ul>
-      <p><strong>Tier 2 — 运维推断（本仓库）。</strong>分桶数量的计算和公开命中率切片，
+      <p><strong>Tier 2 — 运维推断（本仓库）。</strong>分桶数量的计算和公开命中率测量，
         不是 Learn 的规范，而是本仓库的运维推断与源运行证据。</p>
       <ul>
         <li>[2] <strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
@@ -288,14 +288,14 @@
           <code>recommended_buckets</code> 公式与默认每桶 10-RPM 的目标，则是本仓库的运维
           推断，而非 Learn 规范。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">来源</a>。</li>
         <li>[3] <strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 命中率与首 token 延迟表背后那一份稀疏的公开聚合切片。它是源运行证据，
+          — 命中率与首 token 延迟表背后那一份稀疏的公开聚合测量。它是源运行证据，
           不是通用曲线。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">来源</a>。</li>
       </ul>
       <p>
         <strong>本文证明了什么、又没证明什么。</strong>它记录了截至访问日期 Microsoft Learn
         明示的提示缓存契约——1,024 token 的前缀规则、按前缀哈希路由、<code>prompt_cache_key</code>
         提示、每分钟约 15 个请求的溢出点——以及本仓库的容量规划经验法则：把共享前缀拆成
-        足够多的稳定桶，让每个桶都留有余量地停在那个点之下。分桶数量公式和公开命中率切片
+        足够多的稳定桶，让每个桶都留有余量地停在那个点之下。分桶数量公式和公开命中率测量
         是运维推断与源运行证据，而不是被保证的缓存命中曲线。它不证明存在一个在所有模型、
         区域、流量形态下都一致成立的通用阈值。
       </p>

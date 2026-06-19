@@ -223,10 +223,10 @@
     </section>
 
     <section id="checklist" class="article-section">
-      <p class="section-label">運用者チェックリスト · キャパシティを買う前に再測定する</p>
+      <p class="section-label">運用者チェックリスト · 容量を確保する前に再測定する</p>
       <h2>移行を、名称変更ではなく測定として実行する</h2>
       <ol>
-        <li><strong>タスク構成を固定してください。</strong> プロンプト・ツール・スキーマ・検索の配置・サンプル分布を、モデルセル間でバイト単位で安定させてください。</li>
+        <li><strong>タスク構成を固定してください。</strong> プロンプト・ツール・スキーマ・検索の配置・サンプル分布を、各モデル設定間でバイト単位で安定させてください。</li>
         <li><strong>可視出力を測定してください。</strong> 移行前後で可視出力トークンの平均と p95 を比較してください。</li>
         <li><strong>推論出力を測定してください。</strong> <code>reasoning_tokens</code> を取得してください。最終的な答えのテキストから推測しないでください。</li>
         <li><strong>キャッシュ率を測定してください。</strong> 特に ReAct やツールスキーマの変更後は、キャッシュキーのバケットごとに <code>cached_tokens / prompt_tokens</code> を記録してください。</li>

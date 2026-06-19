@@ -60,7 +60,7 @@
         公開集計を記述的に示したものです。
         <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">キャッシュ保持期間の1枚要約 SVG を開く</a>。
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="プロンプトキャッシュ保持期間の1枚要約。インメモリ保持（短い既定の寿命）と、ウォームなプレフィックスをルーティング可能に保つ明示的な 24 時間ウィンドウを対比し、このソース実行では 24h セルの初回トークンレイテンシの裾が低いことを示す。中心メッセージ：保持ウィンドウは重要なので、明示的に設定する。文書化された保持モードと、サニタイズ済みの測定された集計を示し、記述的のみであることを示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="プロンプトキャッシュ保持期間の1枚要約。インメモリ保持（短い既定の寿命）と、ウォームなプレフィックスをルーティング可能に保つ明示的な 24 時間ウィンドウを対比し、このソース実行では 24h モードの初回トークンレイテンシの裾が低いことを示す。中心メッセージ：保持ウィンドウは重要なので、明示的に設定する。文書化された保持モードと、サニタイズ済みの測定された集計を示し、記述的のみであることを示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-retention" class="article-section">
@@ -81,17 +81,17 @@
       </p>
       <p>
         立ち止まる価値があるのは、その対の部分です。ヒット率だけを見ると安心材料に
-        読めますが、保持の選択は別のところに現れます。この断面では両モードとも高い
+        読めますが、保持の選択は別のところに現れます。この測定区間では両モードとも高い
         ヒット率（約 0.93〜0.96）を保ったので、ヒット率だけを読めば保持モードはほとんど
         効かないように見えてしまいます。初回トークンのレイテンシの裾が、もう半分の物語を
         語ります——カーディナリティ 1 で <code>in_memory</code> 系列は約 106,000 ms の
         p95 にあり、<code>24h</code> 系列は約 9,900 ms にありました。だから保持の選択は
         ヒット率ではなくレイテンシの裾に現れました。だからこそ保持期間は、キャッシュ済み
-        トークンの比率の隣でレイテンシとともに読むべきであり、単なる性能のつまみではなく
+        トークンの比率の隣でレイテンシとともに読むべきであり、単なる性能調整の設定ではなく
         リクエストのポリシーでありガバナンスの選択なのです。二つの保持モード、その寿命、
         <code>in_memory</code> の既定、同一の価格、拡張保持のリージョン内条件は
         Microsoft Learn が文書化しているものです。レイテンシをヒット率の隣に置いた公開の
-        断面は、本リポジトリが擁護するソース実行の根拠であって、普遍的なレイテンシ曲線
+        測定データは、本リポジトリが擁護するソース実行の根拠であって、普遍的なレイテンシ曲線
         ではありません。下のチャートがその対を明示します。
       </p>
     </section>
@@ -153,12 +153,12 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">観測された根拠 · 断片的な公開スライス</p>
+      <p class="section-label">観測された根拠 · 断片的な公開測定区間</p>
       <h2>レイテンシが保持期間の選択を可視化した</h2>
       <figure class="article-figure">
         <figcaption>
           <strong>読み取るチャート:</strong> 公開された集計済みキャッシュキーの
-          スライスを、保持モードでグループ化したものです。左パネルは最初のトークン
+          測定区間を、保持モードでグループ化したものです。左パネルは最初のトークン
           までの時間の p95 を示します。右パネルはキャッシュヒット率を示します。
           各グループは同じカーディナリティについて <code>in_memory</code> と
           <code>24h</code> を比較しています。
@@ -174,7 +174,7 @@
           <code>24h</code>、それぞれ N&nbsp;=&nbsp;960 レコード。二系列の折れ線グラフであって、
           度数のヒストグラムではありません。 <strong>読み方：</strong> カーディナリティ 1 で
           <code>in_memory</code> 系列は約 106,000&nbsp;ms の p95 にあり、<code>24h</code>
-          系列は約 9,900&nbsp;ms にありました——このセルでは保持の選択がレイテンシの裾に
+          系列は約 9,900&nbsp;ms にありました——この設定では保持の選択がレイテンシの裾に
           見えました——そしてトラフィックが 8 バケットに広がると二つの系列は近づきました。
           <strong>根拠の境界：</strong> 従量課金の gpt-5.2 での一つの疎なサニタイズ済み公開
           集計（PTU ではありません）。ソース実行の根拠であり、普遍的なレイテンシ規則では
@@ -190,7 +190,7 @@
           <strong>X 軸：</strong> 同じ log2 のバケットカーディナリティ軸（1、続いて 8）。
           <strong>Y 軸：</strong> 定常状態のキャッシュヒット率、0〜1。
           <strong>線：</strong> 同じ <code>in_memory</code> と <code>24h</code> 系列、
-          それぞれ N&nbsp;=&nbsp;960。 <strong>読み方：</strong> この断面では両系列とも
+          それぞれ N&nbsp;=&nbsp;960。 <strong>読み方：</strong> この測定区間では両系列とも
           高いまま（約 0.93〜0.96）で、カーディナリティ 1 では <code>24h</code> 系列が
           わずかに高くなりました。ここでのより大きな保持の差は、ヒット率ではなく上の
           レイテンシのパネルに現れました——だからこそ保持期間は、キャッシュ済みトークンの
@@ -223,7 +223,7 @@
       <div class="chart-reading-note">
         <h3>これが示すこと、示さないこと</h3>
         <p>
-          この公開スライスでは、カーディナリティ 1 のセルが最初のトークンの
+          この測定区間では、カーディナリティ 1 の設定が最初のトークンの
           レイテンシにおいて保持期間を可視化しました。それはソース実行から得た
           根拠であり、普遍的な規則ではありません。長く通用する教訓はもっと単純で、
           保持モード・ヒット率・レイテンシをまとめて読む、ということです。
@@ -291,7 +291,7 @@
       </ul>
       <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> <code>in_memory</code>
         既定のモデルで値が省略されたときに安全側へ倒す保持ポリシーのヘルパーと、疎な
-        公開のヒット率と初回トークンレイテンシの断面は、Learn の仕様ではなく本リポジトリの
+        公開のヒット率と初回トークンレイテンシの測定データは、Learn の仕様ではなく本リポジトリの
         運用上の推論でありソース実行の根拠です。</p>
       <ul>
         <li>[2] <strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
@@ -304,7 +304,7 @@
           推論です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">出典</a>。</li>
         <li>[4] <strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
           — 保持期間のヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の
-          断面。普遍的なレイテンシ規則ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
+          測定区間。普遍的なレイテンシ規則ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
       </ul>
       <p>
         <strong>このトピックが証明するものとしないもの。</strong> アクセス日時点で
@@ -313,7 +313,7 @@
         拡張上限、<code>gpt-5.4</code> 以前の <code>in_memory</code> 既定、両ポリシーで
         同一の価格、拡張保持のリージョン内条件——と、<code>prompt_cache_retention</code> を
         明示し、<code>in_memory</code> 既定のモデルで省略されたら安全側へ倒す、という本
-        リポジトリの経験則を文書化します。単一の公開断面は、カーディナリティ 1 で保持
+        リポジトリの経験則を文書化します。単一の測定区間の観測では、カーディナリティ 1 で保持
         期間が初回トークンレイテンシに可視化されたことを示しました。それはソース実行の
         根拠であって、すべてのモデル・リージョン・トラフィック形状にわたる普遍的な
         レイテンシ曲線の証明ではありません。
