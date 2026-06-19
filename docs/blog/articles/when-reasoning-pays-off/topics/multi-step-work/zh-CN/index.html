@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>多步任务 | when reasoning pays off</title>
-  <meta name="description" content="一篇专题文章：当质量差距清晰可见时，多步任务为什么能让推理 effort 值回票价。">
+  <meta name="description" content="一篇专题文章：当质量差距清晰可见时，多步任务为什么能让各档推理强度值回票价。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -36,36 +36,36 @@
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
     <p class="article-kicker">专题文章 · benchmark-02 多步任务</p>
     <h1>多步任务：当推理终于值得一试</h1>
-    <p class="lede">读完短事实回答的切片后，你大概会忍不住把推理 effort 归到"隐藏支出"那一类——一个不改变答案、只让账单变大的旋钮。但团队也会跑那种"答案取决于能不能把一串约束同时记在脑子里"的任务。在这里，问题又重新打开了：更强的模型、更多的推理 effort，改变的只是成本，还是连答案也一起改变？这个基准就把这种直觉拿去检验。</p>
+    <p class="lede">读完短事实回答那组测量后，你大概会忍不住把推理强度归到"隐藏支出"那一类——不改变答案、只让账单变大的设置项。但团队也会跑那种"答案取决于能不能把一串约束同时记在脑子里"的任务。在这里，问题又重新打开了：更强的模型、更高的推理强度，改变的只是成本，还是连答案也一起改变？这个基准就把这种直觉拿去检验。</p>
 
     <section class="article-section">
       <h2>我们为什么要检验这个</h2>
       <p>
-        短事实回答的切片给了一个教训：当任务只要求回忆时，额外的推理多半买来的是
+        短事实回答那组测量给了一个教训：当任务只要求回忆时，再调高强度多半只会增加
         成本。可不是所有任务都只是回忆。现实里很多工作要求模型把一串小约束一直
         "记在心里"——把几个条件组合起来，带着中途结果，然后才作答。在这种形态下，
         "让它多想一点"就不再像明摆着的浪费，反而开始像能回本的事。
       </p>
       <p>
         由此就有了一个干净、值得验证的假设：如果任务真的需要把多个约束一起保持住，
-        那么更强的模型、更多的推理 effort，也许买来的就不只是更大的账单，而是实打实的
-        质量。这个直觉是讲得通的——实验要检验的，是它能不能在一个测量出来的切片上、
+        那么更强的模型、更高的推理强度，也许带来的就不只是更大的账单，而是实打实的
+        质量。这个直觉是讲得通的——实验要检验的，是它能不能在一组测得的多步任务上、
         而不是在抽象层面成立。
       </p>
       <p>
-        于是我们做了检验。benchmark-02 固定住多步切片，走同一条模型与 effort 阶梯——
+        于是我们做了检验。benchmark-02 固定住这组多步任务，测试同一套模型与各档推理强度——
         GPT-4o 基线，随后是 GPT-5.2 的 none、low、medium、high、extra-high——并在每个
-        单元格上把平均评审分挨着成本和延迟一起读。结果是混合的，值得如实说出来：
+        配置上把平均评审分挨着成本和延迟一起读。结果是混合的，值得如实说出来：
         GPT-5.2 把质量推到了 GPT-4o 基线之上，但在 GPT-5.2 内部，最高的 effort 设置
-        并不自动是赢家，而最便宜的最高分单元格根本没有用任何推理 token。下面的单页
+        并不自动是赢家，而最便宜的最高分配置根本没有用任何推理 token。下面的单页
         概览把这条信息一锤定音，随后各节再补上测得的细节。
       </p>
     </section>
 
     <figure class="article-figure" id="figure-multi-step-one-pager">
       <figcaption>
-        <strong>一眼看懂这个专题。</strong>在这个多步切片上，质量的上行是沿着模型升级
-        （gpt-4o &rarr; gpt-5.2）发生的，而不是沿着 effort 阶梯的档位。这张单页概览把同一条
+        <strong>一眼看懂这个专题。</strong>在这组多步任务里，质量的上行是沿着模型升级
+        （gpt-4o &rarr; gpt-5.2）发生的，而不是沿着各档推理强度。这张单页概览把同一条
         信息一锤定音，并标明证据边界；随后各节再补上测得的细节。
         <a href="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">打开多步任务的单页概览 SVG</a>。
       </figcaption>
@@ -73,10 +73,10 @@
     </figure>
 
     <div class="article-summary-grid" aria-label="专题要点">
-      <section class="summary-tile"><h2>问题</h2><p>什么时候多花的推理是买来质量提升，而不只是换来一张更大的账单？</p></section>
+      <section class="summary-tile"><h2>问题</h2><p>什么时候多花的推理带来的是质量提升，而不只是换来一张更大的账单？</p></section>
       <section class="summary-tile"><h2>证据</h2><p>benchmark-02 的质量、成本、延迟与 token 形态四张图。</p></section>
       <section class="summary-tile"><h2>发现</h2><p>GPT-5.2 的 low/none 区间相对 GPT-4o 基线带来了可见的质量提升，而且并不需要用上最高的 effort 设置。</p></section>
-      <section class="summary-tile"><h2>结论</h2><p>把多步切片路由到能跨过质量门槛的最低 effort 档；只有当配对的质量图真的动了，才往上调。</p></section>
+      <section class="summary-tile"><h2>结论</h2><p>把多步任务路由到能跨过质量门槛的最低推理强度档；只有当配对的质量图真的动了，才往上调。</p></section>
     </div>
 
     <nav class="article-outline" aria-label="专题章节">
@@ -96,7 +96,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>专题导读图（由公开聚合手工组装）：</strong>本专题从仪表盘里抽出一个"一张图能回答"的问题——按模型与 effort 划分的平均评审分，每根柱子下方标注每个请求的平均成本——并配上下方的源数据表。由公开图表数据管线渲染出来的源图，还在更下方。
+          <strong>专题导读图（由公开聚合手工组装）：</strong>本专题从仪表盘里抽出一个"一张图能回答"的问题——按模型与推理强度划分的平均评审分，每根柱子下方标注每个请求的平均成本——并配上下方的源数据表。由公开图表数据管线渲染出来的源图，还在更下方。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.zh-CN.svg" alt="柱状图：benchmark-02 按模型与 effort 划分的平均评审分，带成本标签。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -104,19 +104,19 @@
 
     <section id="s1" class="article-section">
       <h2>质量动了，解读也就变了</h2>
-      <p>在 benchmark-02 里，基线 GPT-4o 单元格的平均评审分是 1.5。GPT-5.2 在 none、medium、high、extra-high 各档都达到了 2.0，low 档达到 1.93。这张图并没有说"总是该加 effort"，它说的是：这个工作负载具备足够的结构，让模型与 effort 的选择值得一试。</p><p>更要紧的，是去看最早"达标"的那几个单元格的形态。GPT-5.2 none 平均每个请求 $0.000618，就已经摸到了 2.0。这让"试一试"本身变得有用，而不必把最高 effort 档默认当成起点。</p>
+      <p>在 benchmark-02 里，基线 GPT-4o 配置的平均评审分是 1.5。GPT-5.2 在 none、medium、high、extra-high 各档都达到了 2.0，low 档达到 1.93。这张图并没有说"总是该加大推理强度"，它说的是：这个工作负载具备足够的结构，让模型与推理强度的选择值得一试。</p><p>更要紧的，是去看最早"达标"的那几个配置的形态。GPT-5.2 none 平均每个请求 $0.000618，就已经摸到了 2.0。这让"试一试"本身变得有用，而不必把最高推理强度档默认当成起点。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
-      <p>横轴是"模型／effort"单元格，纵轴是平均评审分，每根柱子下方的标签是同一单元格每个请求的平均成本。这种成对视图之所以重要，是因为只看质量柱容易诱使人过度选择：如果好几个单元格都摸到了评分上限，那么更便宜、更快的那个反而更值得关注。</p><p>这不是频次直方图。每根柱子都是一个被汇总过的实验单元格，在源表里有各自的样本数和标准差。</p>
+      <p>横轴是"模型／推理强度"这个配置，纵轴是平均评审分，每根柱子下方的标签是同一配置每个请求的平均成本。这种成对视图之所以重要，是因为只看质量柱容易诱使人过度选择：如果好几个配置都摸到了评分上限，那么更便宜、更快的那个反而更值得关注。</p><p>这不是频次直方图。每根柱子都是一个被汇总过的实验配置，在源表里有各自的样本数和标准差。</p>
     </section>
     <section id="s3" class="article-section">
       <h2>这个基准为什么不一样</h2>
-      <p>短事实任务大多只要简短回答；多步任务则要求模型维持住一小条推理链。这就改变了"多想一会儿"能买到什么——推理预算不再只是隐藏的花销，而成了通往"少答错"的一条路径。</p><p>不过证据并不奖励"越多越好"。延迟随 effort 上升，extra-high effort 平均要 3.3s。一旦质量已经触顶，下一个问题就变成：更慢的那个单元格，是不是还在告诉我们什么新东西。</p>
+      <p>短事实任务大多只要简短回答；多步任务则要求模型维持住一小条推理链。这就改变了"多想一会儿"能带来什么——推理预算不再只是隐藏的花销，而成了通往"少答错"的一条路径。</p><p>不过证据并不奖励"越多越好"。延迟随推理强度上升，extra-high effort 平均要 3.3s。一旦质量已经触顶，下一个问题就变成：更慢的那个配置，是不是还在告诉我们什么新东西。</p>
     </section>
     <section id="s4" class="article-section">
       <h2>这意味着什么</h2>
-      <p>推理之所以值回票价，是因为它改变了答案本身，而不是改变了答案的"气场"。多步任务正是"试一试"最该先落地的地方：任务有足够的内部结构让模型获益，评审者也能看出区别。</p><p>所以结论不是"到处都用更多推理"，而是"把多步切片路由到能跨过质量门槛的最低 effort 档"。</p>
+      <p>推理之所以值回票价，是因为它改变了答案本身，而不是改变了答案的"气场"。多步任务正是"试一试"最该先落地的地方：任务有足够的内部结构让模型获益，评审者也能看出区别。</p><p>所以结论不是"到处都用更多推理"，而是"把多步任务路由到能跨过质量门槛的最低推理强度档"。</p>
     </section>
 
     <section id="table" class="article-section">
@@ -124,17 +124,17 @@
       <figure class="article-figure" id="figure-multi-step-quality">
         <figcaption>
           <strong>源图——benchmark-02 的评审质量。</strong>
-          <strong>X 轴：</strong>模型与 effort 阶梯——gpt-4o 基线，随后是 gpt-5.2 的
+          <strong>X 轴：</strong>模型与各档推理强度——gpt-4o 基线，随后是 gpt-5.2 的
           none、low、medium、high、extra-high。
           <strong>Y 轴：</strong>0&ndash;2 评分标准下的平均评审分。
-          <strong>柱子：</strong>每根柱子是一个单元格的平均分——这是聚合比较，不是频次
+          <strong>柱子：</strong>每根柱子是一个配置的平均分——这是聚合比较，不是频次
           直方图——须线表示 &plusmn;1 标准差。
           <strong>读法：</strong>台阶落在模型之间，而不在 effort 阶梯上——gpt-4o 基线在
-          1.5，而 gpt-5.2 的各单元格全都落在 2.0 或其附近（none、medium、high、extra-high
-          为 2.0，low 为 1.93）。所以在这个切片上，上行是沿着模型升级、而不是沿着更高的
-          effort 发生的。
-          <strong>证据边界：</strong>每个单元格 N = 20、R = 3 次重复，取一个 Azure OpenAI
-          租户与区域下这一个多步切片。误差棒是标准差，不是置信区间；在 N = 20 下不主张
+          1.5，而 gpt-5.2 的各配置全都落在 2.0 或其附近（none、medium、high、extra-high
+          为 2.0，low 为 1.93）。所以在这组任务里，上行是沿着模型升级、而不是沿着更高的
+          推理强度发生的。
+          <strong>证据边界：</strong>每个组合 N = 20、R = 3 次重复，取一个 Azure OpenAI
+          租户与区域下这组多步任务。误差棒是标准差，不是置信区间；在 N = 20 下不主张
           p 值。
           <strong>来源与仪表盘：</strong>柱值来自
           <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json</code>，
@@ -149,7 +149,7 @@
         <thead><tr><th>证据行</th><th>指标 A</th><th>指标 B</th><th>它补充了什么</th></tr></thead>
         <tbody>
           <tr><td>GPT-4o baseline</td><td>评审分 1.50</td><td>$0.000798/request</td><td>一个清晰的、要去超越的基线。</td></tr>
-          <tr><td>GPT-5.2 none</td><td>评审分 2.00</td><td>$0.000618/request</td><td>这一公开切片里最便宜的满分单元格。</td></tr>
+          <tr><td>GPT-5.2 none</td><td>评审分 2.00</td><td>$0.000618/request</td><td>这一公开测量里最便宜的满分配置。</td></tr>
           <tr><td>GPT-5.2 low</td><td>评审分 1.93</td><td>$0.000859/request</td><td>仍高于基线，但在这里并非干净利落的赢家。</td></tr>
           <tr><td>GPT-5.2 extra-high</td><td>评审分 2.00</td><td>$0.002179/request</td><td>同样满分，却伴随更大的账单和更长的延迟。</td></tr>
         </tbody>
@@ -160,39 +160,39 @@
       <h2>来源与证据边界</h2>
       <p>
         上面所有数字都能追溯到本仓库的公开产物，所有成本主张都按带日期的定价快照
-        算出。"停在能跨过质量门槛的最低 effort"这一路由习惯，是本文自己的运维推断。
+        算出。"停在能跨过质量门槛的最低推理强度"这一路由习惯，是本文自己的运维推断。
         下面两个 Tier 标明了：有文档记载的输入到哪里为止，推断又从哪里开始。
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
         <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，成本数字也随之变化。</li>
-        <li>[3] <strong>Tier 2 — benchmark-02 切片的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是按 effort 划分的质量值——GPT-4o 基线 1.5，GPT-5.2 的 none、medium、high、extra-high 达到的 2.0，GPT-5.2 low 的 1.93，以及那个不用任何推理 token、却以每个请求 $0.000618 成为最便宜满分单元格的 GPT-5.2 none——和每个请求 $0.000618 到 $0.002179 对应成本值的来源。</li>
-        <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。与 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> 一起读，就能佐证：这个切片上的质量上行，伴随的是被正当化的账单，而不是单纯变高的账单。</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 这组多步任务的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是按推理强度划分的质量值——GPT-4o 基线 1.5，GPT-5.2 的 none、medium、high、extra-high 达到的 2.0，GPT-5.2 low 的 1.93，以及那个不用任何推理 token、却以每个请求 $0.000618 成为最便宜满分配置的 GPT-5.2 none——和每个请求 $0.000618 到 $0.002179 对应成本值的来源。</li>
+        <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。与 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> 一起读，就能佐证：这组多步任务里的质量上行，伴随的是被正当化的账单，而不是单纯变高的账单。</li>
         <li>[5] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 质量与成本配对图</a>，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
-        这个切片证明了什么、又没证明什么：它表明，在这个多步切片上，GPT-5.2 相对 GPT-4o
-        基线带来了可测量的质量上行。它并不证明更高的推理 effort 总能提高质量、或总能
-        正当化额外的账单——在这里，最便宜的满分单元格根本没用推理 token——也不证明
+        这组测量证明了什么、又没证明什么：它表明，在这组多步任务里，GPT-5.2 相对 GPT-4o
+        基线带来了可测量的质量上行。它并不证明更高的推理强度总能提高质量、或总能
+        正当化额外的账单——在这里，最便宜的满分配置根本没用推理 token——也不证明
         同样的上行会出现在短事实回答、工具代理或综合类工作里。每个专题各有自己的测量。
       </p>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>这些证据允许我们说什么</h2>
-      <p>在这个切片上，多步任务从 GPT-4o 基线的 1.5 升到了 GPT-5.2 的 2.0，展示出可测量的质量上行，而这个上行来自模型升级，而不是 effort 阶梯。它为本系列加上一个基准点："推理正是在答案真的改变时，才值回成本。"</p>
+      <p>在这组任务里，多步任务从 GPT-4o 基线的 1.5 升到了 GPT-5.2 的 2.0，展示出可测量的质量上行，而这个上行来自模型升级，而不是各档推理强度。它为本系列加上一个基准点："推理正是在答案真的改变时，才值回成本。"</p>
       <p><a class="button-link" href="../../../zh-CN/">回到综述文章</a></p>
 
       <h2>实用准则</h2>
       <ol>
-        <li>把同一个多步单元格的质量图与成本图配对着读，不要只看质量柱。</li>
-        <li>选那个能跨过质量门槛的最低 effort 单元格；更高的单元格只在评分真的动了时才作为候选。</li>
-        <li>往更高的 effort 提之前，先看延迟：effort 上去了，等待时间也会拉长。</li>
-        <li>工作负载形态一变，就重新测量：这个切片上的上行不会自动延续到别的专题。</li>
+        <li>把同一组多步任务的质量图与成本图配对着读，不要只看质量柱。</li>
+        <li>选那个能跨过质量门槛的最低推理强度配置；更高的配置只在评分真的动了时才作为候选。</li>
+        <li>往更高的推理强度提之前，先看延迟：强度上去了，等待时间也会拉长。</li>
+        <li>工作负载形态一变，就重新测量：这组任务里的上行不会自动延续到别的专题。</li>
       </ol>
       <p>
-        <strong>实用准则：在多步工作里，先选那个能跨过质量门槛的最低 模型／effort 单元格，
-        只有当这种工作负载形态下配对的质量图真的动了，才提高推理 effort。正当化账单的是
+        <strong>实用准则：在多步工作里，先选那个能跨过质量门槛的最低模型／推理强度配置，
+        只有当这种工作负载形态下配对的质量图真的动了，才提高推理强度。正当化账单的是
         质量的上行，而不是花费本身。</strong>
       </p>
       <p>
@@ -203,7 +203,7 @@
     <section id="next" class="article-section">
       <p>
         <strong>下一篇：</strong>
-        <a href="../../tool-agent-ceiling-checks/zh-CN/">工具代理：当质量触顶之后，开口说话的是延迟</a>
+        <a href="../../tool-agent-ceiling-checks/zh-CN/">工具代理：质量触顶之后，真正的变量就变成了延迟</a>
         &mdash; 在用工具的工作里，当额外推理撞上天花板时，图表最先显示的是什么？
       </p>
     </section>

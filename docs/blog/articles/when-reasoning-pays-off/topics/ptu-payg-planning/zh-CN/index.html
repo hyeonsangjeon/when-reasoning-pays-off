@@ -36,7 +36,7 @@
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
     <p class="article-kicker">专题文章 · PTU/PAYG 规划模型</p>
     <h1>PTU/PAYG 交叉点：一条规划线，而不是容量结果</h1>
-    <p class="lede">哪些模型与 effort 单元格值得用，我们已经测完了。现在流量团队递来下个季度的预测，抛出一个左右账单的问题：在这个预计的请求速率下，是继续按量付费（PAYG），还是预留预置吞吐量（PTU）？人们很想画一条交叉线，然后把它当成答案。本文把这条线当成它真正的样子——一个建模出来的、只看价格的盈亏平衡点，而不是对一个在线 PTU 部署在负载下表现的测量；它告诉你的，是什么时候值得去跑一次容量实验。</p>
+    <p class="lede">哪些模型和推理强度配置值得用，我们已经测完了。现在流量团队递来下个季度的预测，抛出一个左右账单的问题：在这个预计的请求速率下，是继续按量付费（PAYG），还是预留预置吞吐量（PTU）？人们很想画一条交叉线，然后把它当成答案。本文把这条线当成它真正的样子——一个建模出来的、只看价格的盈亏平衡点，而不是对一个在线 PTU 部署在负载下表现的测量；它告诉你的，是什么时候值得去跑一次容量实验。</p>
 
     <figure class="article-figure" id="figure-ptu-payg-one-pager">
       <figcaption>
@@ -51,7 +51,7 @@
 
     <section class="article-section" id="why-modeled">
       <h2>我们为什么要建模这个</h2>
-      <p>这条交叉线有两种读法，彼此把人往相反方向拉。第一种是当成判决来读：线指向 PTU，那就预留 PTU。第二种是当成规划的触发来读：线在说，这个工作负载下 PTU 大概率更便宜，所以这是一个值得去跑容量实验的部署。我们建模交叉点，是为了第二种读法。</p>
+      <p>这条交叉线有两种解读，而且会把判断带向不同方向。第一种是把它当成判决：线指向 PTU，那就预留 PTU。第二种是把它当成规划触发：线在说，这个工作负载下 PTU 大概率更便宜，所以值得去跑一次容量实验。我们建模交叉点，就是为了第二种解读。</p>
       <p>之所以这么做，是因为这条线只回答一个很窄的价格问题：在一份价格快照下，对一种测得的每请求 token 形态而言，固定的 PTU 下限在哪里开始比 PAYG 的账单更便宜。它对以下这些一概不说：部署能不能扛住那股流量、429 限流从哪里开始、负载下提示词缓存如何表现、p95 延迟会是什么样。把这个价格答案误当成容量答案，正是本文想要拦住的错误。</p>
       <p>所以这次计算有意把两类输入组合在一起：一边是带日期的 PAYG 与 PTU 价格快照，另一边是从基准测试里测得的每请求成本与 token 形态。正是这种组合，让输出成了一个规划模型——扎根于真实测量，却只限于价格——而不是一个在线容量结果。</p>
     </section>
@@ -129,15 +129,15 @@
         推导出来的计算，既不是测得的吞吐量，也不是 429 的发生，更不是饱和点。
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。每请求成本输入沿用这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。每请求成本输入沿用这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
         <li>[2] <strong>Tier 1 — PAYG 价格快照：</strong>本仓库，<code>pricing/azure-openai-payg-2026-05.yaml</code>。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。这里每 1M token 的单价（gpt-5.2 input $1.75/1M、cached input $0.175/1M、output 与 reasoning $14.00/1M；gpt-4o input $2.50/1M、cached $1.25/1M、output $10.00/1M）决定了进入公式的每请求账单。</li>
         <li>[3] <strong>Tier 1 — PTU 价格快照：</strong>本仓库，<code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 文档</a>（2026-05-19 访问，区域 eastus2）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。公式的 PTU 侧——每 PTU 小时 $2.00、50 PTU 的最小值（下限）、用于吞吐量系数的每 PTU Input TPM（gpt-4o 2,500、gpt-5.2 3,400）——都来自这份快照。PAYG 与 PTU 两侧的价格都进入盈亏平衡：一边是每请求的 PAYG 账单，另一边是固定的 $100/hour PTU 下限（50 × $2.00）。</li>
-        <li>[4] <strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐单元格 token 分布。</li>
+        <li>[4] <strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐配置 token 分布。</li>
         <li>[5] <strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 149 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
         <li>[6] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>，是审计同一批 JSON 产物的可核查形态。</li>
       </ul>
       <p>
-        这个切片证明了什么、又没证明什么：它展示了在这份价格快照下，对持有 benchmark-01、
+        这组测量证明了什么、又没证明什么：它展示了在这份价格快照下，对持有 benchmark-01、
         -02、-03 测得 token 分布的工作负载而言，这个建模盈亏平衡点落在哪里。它并不证明同样的
         交叉点会在别的价格快照、别的工作负载形态、别的缓存命中率、别的推理构成或别的部署区域
         下成立。这是一项规划辅助，既不是 SLA，也不是关于在线容量的论断。
@@ -152,7 +152,7 @@
       <h2>实用准则</h2>
       <ol>
         <li>把盈亏平衡 RPM 当成从带日期的 PAYG 与 PTU 快照推导出来的、只看价格的计算；任一快照一动，就重新推导。</li>
-        <li>对齐到你正在规划的那个切片的测得 token 形态，而不是通用工作负载。</li>
+        <li>对齐到你正在规划的那类任务的测得 token 形态，而不是通用工作负载。</li>
         <li>把偏低的交叉点当成去跑容量实验的触发，而不是某个部署一定需要 PTU 的证明。</li>
         <li>在敲定 PTU 之前，先考虑图上看不见的非价格因素——延迟目标、准入并发数、突发承受力。</li>
       </ol>

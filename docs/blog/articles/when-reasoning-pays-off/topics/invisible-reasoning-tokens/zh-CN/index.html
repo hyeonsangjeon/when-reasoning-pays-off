@@ -36,7 +36,7 @@
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
     <p class="article-kicker">专题文章 · 隐藏的计费面</p>
     <h1>不可见的推理 token：那笔不出现在答案里的账单</h1>
-    <p class="lede">迁移到推理模型之后——或者有人把 effort 旋钮调高之后——回答有时看上去依旧很短、很平常。可见的文本里，丝毫没有"花得更多"的迹象。可财务和遥测对同一个工作负载，看到的却是一张更大的账单。一个很自然的问题就此写出来：既然回答没有变长，成本到底跑哪儿去了？</p>
+    <p class="lede">迁移到推理模型之后——或者有人先把推理强度调高之后——回答有时看上去依旧很短、很平常。可见的文本里，丝毫没有"花得更多"的迹象。可财务和遥测对同一个工作负载，看到的却是一张更大的账单。一个很自然的问题就此写出来：既然回答没有变长，成本到底跑哪儿去了？</p>
 
     <section class="article-section">
       <h2>我们为什么要检验这个</h2>
@@ -53,8 +53,8 @@
       </p>
       <p>
         于是我们做了拆解。把每个计费请求拆成输入、缓存输入、可见输出、隐藏推理四块，
-        再把这个拆解放在同一个短事实回答切片里，挨着成本、质量、延迟一起读。结果把
-        问题敲定了：可见输出在整条 effort 阶梯上只动了约 12.7 到 17.9 个 token，而隐藏
+        再把这个拆解放在同一组短事实回答任务里，挨着成本、质量、延迟一起读。结果把
+        问题敲定了：可见输出在各档推理强度上只动了约 12.7 到 17.9 个 token，而隐藏
         推理却动了约 3.7 到 311.5 个 token。成本和延迟随那条隐藏通道一起上涨，而配对的
         质量图并没有相称地跟着抬升。下面的单页概览把这条信息一锤定音，随后各节再补上
         测得的细节。
@@ -64,7 +64,7 @@
     <figure class="article-figure" id="figure-invisible-one-pager">
       <figcaption>
         <strong>一眼看懂这个专题。</strong>每个计费请求都拆成输入、缓存、可见输出、
-        隐藏推理——而在这个切片上，真正按比例放大的，是隐藏推理那条通道。这张单页
+        隐藏推理——而在这类任务里，真正按比例放大的，是隐藏推理那条通道。这张单页
         概览把同一条信息一锤定音，并标明证据边界；随后各节再补上测得的细节。
         <a href="../../../../../../assets/when-reasoning-pays-off-invisible-reasoning-tokens.svg">打开不可见推理 token 的单页概览 SVG</a>。
       </figcaption>
@@ -74,7 +74,7 @@
     <div class="article-summary-grid" aria-label="专题要点">
       <section class="summary-tile"><h2>问题</h2><p>如果回答文本依旧很短，多出来的成本到底从哪儿来？</p></section>
       <section class="summary-tile"><h2>证据</h2><p>把 benchmark-01 的 token 构成、成本、延迟三张图，当作一条证据链来读。</p></section>
-      <section class="summary-tile"><h2>发现</h2><p>可见的回答长度几乎没变，隐藏的推理 token 却随着 effort 档位一路上升。</p></section>
+      <section class="summary-tile"><h2>发现</h2><p>可见的回答长度几乎没变，隐藏的推理 token 却随着各档推理强度一路上升。</p></section>
       <section class="summary-tile"><h2>结论</h2><p>哪怕回答依旧很短，也要用遥测追踪推理 token；把隐藏 token 预算当成回复不会展示的那部分账单来对待。</p></section>
     </div>
 
@@ -95,7 +95,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>专题导读图（由公开聚合手工组装）：</strong>这张示意图从仪表盘里抽出一个"一张图能回答"的问题——按 effort 划分的平均隐藏推理 token，每根柱子下方标注平均可见输出——并配上下方的源数据表。由公开图表数据管线渲染出来的源图，还在更下方。
+          <strong>专题导读图（由公开聚合手工组装）：</strong>这张示意图从仪表盘里抽出一个"一张图能回答"的问题——按推理强度划分的平均隐藏推理 token，每根柱子下方标注平均可见输出——并配上下方的源数据表。由公开图表数据管线渲染出来的源图，还在更下方。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.zh-CN.svg" alt="柱状图：benchmark-01 按 effort 划分的平均推理 token，带可见输出标签。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -103,15 +103,15 @@
 
     <section id="s1" class="article-section">
       <h2>回答很短，内部的活儿可不短</h2>
-      <p>在 benchmark-01 里，真正有用的意外，并不是 extra-high effort 的成本更高——那本就在预料之中。真正值得注意的是：这笔涨幅里，落到最终回答上的部分有多小。在 minimal effort 下，可见输出平均 12.7 个 token，推理 token 平均 3.7 个；在 extra-high effort 下，可见输出平均 17.9 个 token，推理 token 平均 311.5 个。</p><p>也就是说，读者看到的文本，并不是"买了多少计算量"的可靠代理指标。一个短回答可能盖住一笔很大的推理预算；而一个看上去挺像样的回答，只要配对的质量图没动，在经济上仍可能是一笔划不来的买卖。</p>
+      <p>在 benchmark-01 里，真正有用的意外，并不是 extra-high effort 的成本更高——那本就在预料之中。真正值得注意的是：这笔涨幅里，落到最终回答上的部分有多小。在 minimal effort 下，可见输出平均 12.7 个 token，推理 token 平均 3.7 个；在 extra-high effort 下，可见输出平均 17.9 个 token，推理 token 平均 311.5 个。</p><p>也就是说，读者看到的文本，并不是"用了多少计算量"的可靠代理指标。一个短回答可能盖住一笔很大的推理预算；而一个看上去挺像样的回答，只要配对的质量图没动，在经济上仍可能是一笔划不来的买卖。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
-      <p>柱子是每个 effort 单元格的聚合值，而不是单个请求的直方图。X 轴是推理 effort 设置，Y 轴是每个请求的平均推理 token。每根柱子下方的小标签，是同一单元格的平均可见输出 token 数。</p><p>这张图最好从下往上读。先问：可见输出有没有变化到足以解释账单？再去和隐藏推理那根柱子对照。在这个切片上，解释因素不是回答的长度，而是内部的活儿。</p>
+      <p>柱子代表各档推理强度的聚合值，而不是单个请求的直方图。X 轴是推理强度设置，Y 轴是每个请求的平均推理 token。每根柱子下方的小标签，是同一配置的平均可见输出 token 数。</p><p>这张图最好从下往上读。先问：可见输出有没有变化到足以解释账单？再去和隐藏推理那根柱子对照。在这类任务里，解释因素不是回答的长度，而是内部的活儿。</p>
     </section>
     <section id="s3" class="article-section">
       <h2>源图各自补充了什么</h2>
-      <p>token 构成解释了机制，但单凭它还不够。成本图显示账单在一路膨胀；质量图追问这笔账单有没有买来更好的回答；延迟图显示用户实际感受到的等待。三者凑齐，隐藏的那一面才读得出来——在这个短事实回答切片上，内部 token 增加了、支出增加了、延迟拉长了，却没有相称的质量上行。</p>
+      <p>token 构成解释了机制，但单凭它还不够。成本图显示账单在一路膨胀；质量图追问这笔账单有没有换来更好的回答；延迟图显示用户实际感受到的等待。三者凑齐，隐藏的那一面才读得出来——在这组短事实回答任务里，内部 token 增加了、支出增加了、延迟拉长了，却没有相称的质量上行。</p>
     </section>
     <section id="s4" class="article-section">
       <h2>这意味着什么</h2>
@@ -123,16 +123,16 @@
       <figure class="article-figure" id="figure-invisible-tokens">
         <figcaption>
           <strong>源图——benchmark-01 的 token 构成。</strong>
-          <strong>X 轴：</strong>模型与 effort 阶梯——gpt-4o 基线，随后是 gpt-5.2 的
+          <strong>X 轴：</strong>模型与各档推理强度——gpt-4o 基线，随后是 gpt-5.2 的
           minimal、low、medium、high、extra-high。
           <strong>Y 轴：</strong>每个请求的平均 token。
-          <strong>堆叠分段：</strong>每根柱子把一个 effort 单元格堆成输入（非缓存）、缓存
+          <strong>堆叠分段：</strong>每根柱子把一个配置堆成输入（非缓存）、缓存
           输入、可见输出、隐藏推理四段——这是聚合构成，不是频次直方图。
           <strong>读法：</strong>输入和可见输出两段几乎不变，隐藏推理那段从 minimal effort
           的约 3.7 个 token 增加到 extra-high 的约 311.5 个。总量在涨，读者看得见的部分却
           依旧很短。
-          <strong>证据边界：</strong>每个单元格 N = 20、R = 3 次重复，取一个 Azure OpenAI
-          租户与区域下这一个短事实回答切片。它不展示多步、工具代理、综合类工作的 token
+          <strong>证据边界：</strong>每个组合 N = 20、R = 3 次重复，取一个 Azure OpenAI
+          租户与区域下这组短事实回答任务。它不展示多步、工具代理、综合类工作的 token
           形态。
           <strong>来源与仪表盘：</strong>分段值来自
           <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>，
@@ -147,7 +147,7 @@
         <tbody>
           <tr><td>Minimal effort</td><td>可见输出 token 12.7</td><td>推理 token 3.7</td><td>短回答，极小的隐藏预算。</td></tr>
           <tr><td>Extra-high effort</td><td>可见输出 token 17.9</td><td>推理 token 311.5</td><td>文本依旧很短，内部预算却大得多。</td></tr>
-          <tr><td>配对的质量</td><td>minimal 下 1.88</td><td>extra-high 下 1.78</td><td>在这个切片上，隐藏的活儿并没有买来质量上行。</td></tr>
+          <tr><td>配对的质量</td><td>minimal 下 1.88</td><td>extra-high 下 1.78</td><td>在这类任务里，隐藏的活儿并没有带来质量上行。</td></tr>
           <tr><td>延迟</td><td>minimal 下 1.1s</td><td>extra-high 下 3.1s</td><td>隐藏的活儿把等待时间也拉长了。</td></tr>
         </tbody>
       </table>
@@ -161,15 +161,15 @@
         推断。下面两个 Tier 标明了：有文档记载的输入到哪里为止，推断又从哪里开始。
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个单元格 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合切片。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
         <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，隐藏 token 的账单也随之变化。</li>
-        <li>[3] <strong>Tier 2 — benchmark-01 切片的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是推理 token 从 3.655172 到 311.474576 的变化、可见输出从 12.672414 到 17.881356 的移动、评审分从 1.87931 到 1.779661、延迟从 1112.798745 ms 到 3088.001225 ms 拉长的来源。</li>
+        <li>[3] <strong>Tier 2 — benchmark-01 这组任务的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是推理 token 从 3.655172 到 311.474576 的变化、可见输出从 12.672414 到 17.881356 的移动、评审分从 1.87931 到 1.779661、延迟从 1112.798745 ms 到 3088.001225 ms 拉长的来源。</li>
         <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> 是 token 拆解的来源。与 <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code> 一起读，就能佐证：隐藏 token 在没有质量上行的情况下，把账单和等待一并撑大了。</li>
         <li>[5] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-token-composition-benchmark-01-token_composition">benchmark-01 token 构成图</a>，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
-        这个切片证明了什么、又没证明什么：它表明，在这个短事实回答切片上，可见输出
-        几乎没动，内部推理却随 effort 档位一路上升。它并不证明同样的隐藏 token 形态会
+        这组测量证明了什么、又没证明什么：它表明，在这类短事实回答任务里，可见输出
+        几乎没动，内部推理却随推理强度档位一路上升。它并不证明同样的隐藏 token 形态会
         出现在多步、工具代理或综合类工作里。每个专题各有自己的测量。
       </p>
     </section>
@@ -197,7 +197,7 @@
       <p>
         <strong>下一篇：</strong>
         <a href="../../multi-step-work/zh-CN/">多步任务：当推理终于值得一试</a>
-        &mdash; 多花的推理什么时候买来的是质量提升，而不只是一张更大的账单？
+        &mdash; 多花的推理什么时候带来的是质量提升，而不只是一张更大的账单？
       </p>
     </section>
   </main>
