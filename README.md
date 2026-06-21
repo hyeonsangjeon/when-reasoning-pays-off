@@ -20,25 +20,32 @@ Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-p
 
 ## TL;DR — what the measurements say
 
-On a non-reasoning task, paying for more reasoning effort bought **7.6× the
-cost** and essentially **no extra quality** — the spend went almost entirely
-to hidden reasoning tokens. On a genuinely hard task, the same dial *did* lift
-quality. The job is telling the two apart with data instead of instinct.
+**Reasoning models genuinely earn their price on hard work.** On a multi-step
+task, turning the effort dial up measurably lifted answer quality (**1.5 →
+2.0**) — exactly what you hope for when you reach for a reasoning model. The
+catch is matching the dial to the job. On an everyday, non-reasoning task, that
+same extra effort bought **7.6× the cost for essentially no quality gain**,
+because the money flowed into hidden "thinking" tokens the task never needed.
+So the honest answer is *it depends on the task* — and this repo measures
+exactly where that line falls, so you spend effort only where it pays back.
 
-| 💸 Cost climbs steeply with effort… | 🎯 …but quality barely moves |
+*The two charts below are the everyday-task case (benchmark 01) — the one where
+extra effort does **not** pay. On harder tasks the quality line climbs instead.*
+
+| 💸 Cost climbs steeply with effort… | 🎯 …but on easy tasks, quality stays flat |
 | --- | --- |
 | ![Benchmark 01 cost per request rises about 7.6x from minimal to extra-high reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality score stays roughly flat across every reasoning effort level](docs/assets/benchmark-01-quality.png) |
 
-- **More effort mostly buys hidden tokens, not better answers.** On short
-  factual work, cost climbed **7.6×** (minimal → extra-high) while the mean
-  judge score stayed flat (**1.88 → 1.78**) and billed reasoning tokens
+- **On genuinely hard work, effort pays.** On a multi-step reasoning task, the
+  same effort ladder lifted quality from **1.5 → 2.0** — the upside that makes
+  reasoning models worth reaching for.
+- **On easy work, more effort mostly buys hidden tokens, not better answers.**
+  On short factual work, cost climbed **7.6×** (minimal → extra-high) while the
+  mean judge score stayed flat (**1.88 → 1.78**) and billed reasoning tokens
   exploded from **~4 to ~311** per request.
-- **Where the task is actually hard, effort pays.** On multi-step reasoning,
-  the same effort ladder lifted quality from **1.5 → 2.0** — so the answer is
-  "it depends on the task," and this repo measures which is which.
-- **The right setting is almost never `high` / `xhigh`.** Across all three
-  benchmarks, every tier above mid-range added cost and latency without
-  lifting measured quality.
+- **The sweet spot is rarely `high` / `xhigh`.** Across all three benchmarks,
+  pushing past the mid-range added cost and latency without lifting measured
+  quality.
 - **Switching model can beat switching effort.** A low gpt-5.2 tier beat the
   gpt-4o baseline by **11–42 %** on cost-per-correct-answer, depending on the
   task shape.
