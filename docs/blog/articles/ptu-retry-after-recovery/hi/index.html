@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
+  <meta name="article:source-article-sha256" content="6e398654d67d88f62682b1c5830b7a46f8de975886f2a03ca145b357ff42d6c7">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -160,6 +160,12 @@
           </p>
         </div>
       </div>
+      <figure class="article-figure" id="figure-429-admission">
+        <figcaption>
+          <strong>429 दीवार नहीं, संकेत क्यों है:</strong> अनुरोधों का वही एक बर्स्ट, दो अलग नतीजे। लिमिटर के बिना बर्स्ट सीधे API से टकराता है और API 503 लौटाकर लोड छोड़ देता है। टोकन-बकेट लिमिटर के साथ, सीमा के भीतर के अनुरोध स्वस्थ API तक पहुँचते हैं जबकि सीमा से ऊपर के अनुरोधों को 429 वापस कॉल करने वाले को लौटा दिया जाता है &mdash; यही वह एडमिशन (admission) संकेत है जिसकी बात यह लेख करता है। कितनी देर रुकना है, यह उसके बाद हेडर बताता है। <em>यह अवधारणात्मक चित्रण है, मापा गया डेटा नहीं।</em>
+        </figcaption>
+        <img src="../../../../assets/429-rate-limit.gif" alt="रेट-लिमिटिंग समझाने वाला एनिमेशन। अनुरोधों का वही बर्स्ट दो बार दिखाया गया है। लिमिटर के बिना बर्स्ट सीधे API से टकराता है और API 503 लौटाकर लोड छोड़ता है। टोकन-बकेट लिमिटर के साथ, सीमा के भीतर के अनुरोध स्वस्थ API तक पहुँचते हैं जबकि सीमा से ऊपर के अनुरोध 429 के रूप में कॉल करने वाले को लौटते हैं, इसलिए API स्वस्थ रहता है। यह अवधारणात्मक चित्रण है, मापा गया डेटा नहीं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
     </section>
 
     <section id="evidence" class="article-section">
