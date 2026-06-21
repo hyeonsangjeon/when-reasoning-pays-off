@@ -22,6 +22,8 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 ### L2. Spillover policy — native vs proactive custom router
 
+![Same burst of requests, two outcomes: without a rate limiter the burst hits the API directly and it sheds load as 503; with a token-bucket limiter, over-limit requests are rejected immediately with 429 while within-limit requests pass, so the API stays healthy.](assets/429-rate-limit.svg)
+
 **Mechanism.** Azure-native spillover (`spilloverDeploymentName`) is reactive and PTU-scoped: it activates when the primary returns 429 and requires a PTU primary plus a configured target. Custom client-side routers can be proactive (route before the primary throttles) but pay for that with extra primary 429s when the heuristic mis-fires.
 
 **Action.** Default to native spillover when the deployment topology supports it (PTU primary, sibling target, `spilloverDeploymentName` set). Build a proactive custom router only when native is unavailable or the workload's saturation signal demonstrably leads the 429.
