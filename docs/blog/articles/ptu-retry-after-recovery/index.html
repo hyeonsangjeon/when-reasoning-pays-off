@@ -161,6 +161,12 @@
           </p>
         </div>
       </div>
+      <figure class="article-figure" id="figure-429-admission">
+        <figcaption>
+          <strong>Why a 429 is a signal, not a wall:</strong> the same burst of requests, two outcomes. Without a limiter the burst hits the API directly and it sheds load as 503. With a token-bucket limiter, within-limit requests reach a healthy API while over-limit requests get a 429 handed back to the caller &mdash; the admission signal this article is about. The header then says how long to wait. <em>Conceptual illustration, not measured data.</em>
+        </figcaption>
+        <img src="../../../assets/429-rate-limit.gif" alt="A rate-limiting explainer animation. A burst of requests is shown twice. Without a limiter the burst hits the API directly and the API sheds load by returning 503. With a token-bucket limiter, within-limit requests reach a healthy API while over-limit requests get a 429 returned to the caller, so the API stays healthy. Conceptual illustration, not measured data." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
     </section>
 
     <section id="evidence" class="article-section">

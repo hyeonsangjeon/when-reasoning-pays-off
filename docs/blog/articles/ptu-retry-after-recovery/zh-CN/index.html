@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
+  <meta name="article:source-article-sha256" content="6e398654d67d88f62682b1c5830b7a46f8de975886f2a03ca145b357ff42d6c7">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -141,6 +141,12 @@
           </p>
         </div>
       </div>
+      <figure class="article-figure" id="figure-429-admission">
+        <figcaption>
+          <strong>为什么 429 是信号而不是墙：</strong>同一波突发请求，两种结局。没有限流器时，突发直接冲击 API，API 以 503 卸载流量。有了令牌桶限流器，限额之内的请求抵达健康的 API，超出限额的请求则把 429 返回给调用方&mdash; 正是本文所讲的准入（admission）信号。至于要等多久，随后由响应头给出。<em>概念示意，并非实测数据。</em>
+        </figcaption>
+        <img src="../../../../assets/429-rate-limit.gif" alt="限流说明动画。同一波突发请求展示两次。没有限流器时，突发直接冲击 API，API 通过返回 503 来卸载流量。有了令牌桶限流器，限额之内的请求抵达健康的 API，超出限额的请求把 429 返回给调用方，因此 API 保持健康。概念示意，并非实测数据。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
     </section>
 
     <section id="evidence" class="article-section">

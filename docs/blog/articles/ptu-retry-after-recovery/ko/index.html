@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="c058bfa7131360698b39d92dcc99c3c492747541fb2ba789f88d45a85974eb98">
+  <meta name="article:source-article-sha256" content="6e398654d67d88f62682b1c5830b7a46f8de975886f2a03ca145b357ff42d6c7">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -158,6 +158,12 @@
           </p>
         </div>
       </div>
+      <figure class="article-figure" id="figure-429-admission">
+        <figcaption>
+          <strong>429가 벽이 아니라 신호인 이유:</strong> 같은 요청 폭주가 두 갈래로 갈립니다. 리미터가 없으면 폭주가 API를 그대로 덮쳐 503으로 부하를 흘려보냅니다. 토큰 버킷 리미터가 있으면 한도 안의 요청은 건강한 API에 닿고, 한도를 넘은 요청은 호출자에게 429를 돌려줍니다 &mdash; 이 글이 말하는 바로 그 입장 제어(admission) 신호입니다. 얼마나 기다릴지는 그다음 헤더가 알려줍니다. <em>측정값이 아닌 개념 설명용 그림입니다.</em>
+        </figcaption>
+        <img src="../../../../assets/429-rate-limit.gif" alt="레이트 리미팅을 설명하는 애니메이션. 같은 요청 폭주를 두 번 보여줍니다. 리미터가 없으면 폭주가 API를 직접 때려 API가 503을 돌려주며 부하를 흘려보냅니다. 토큰 버킷 리미터가 있으면 한도 안의 요청은 건강한 API에 닿고, 한도를 넘은 요청은 호출자에게 429로 돌아오므로 API가 건강하게 유지됩니다. 측정값이 아닌 개념 설명용 그림입니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
     </section>
 
     <section id="evidence" class="article-section">

@@ -215,6 +215,10 @@ measured magnitudes.
 
 ## Operator levers (L1–L5)
 
+![A rate-limiting explainer: the same burst of requests, two outcomes. Without a limiter the burst hits the API directly and it sheds load as 503; with a token-bucket limiter, within-limit requests reach the API while over-limit requests get a 429 returned to the caller, so the API stays healthy.](docs/assets/429-rate-limit.gif)
+
+<sub>*The same burst of requests, two outcomes: without a limiter the API sheds load as 503; with a token-bucket limiter, over-limit requests get a **429 returned to the caller** so the API stays healthy. **L2** below is where you choose that spillover behavior.*</sub>
+
 If you operate a live deployment, [`docs/09-operator-guide-one-page.md`](docs/09-operator-guide-one-page.md)
 is the one-page reference. The five levers, in plain English:
 
