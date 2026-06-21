@@ -1,7 +1,9 @@
 # when-reasoning-pays-off
 
-*Same token price, different bill. A practical guide to deciding when
-reasoning models earn their cost.*
+*Same token price, different bill — a **measured** guide to when reasoning
+models earn their cost, and when they just bill for thinking nobody reads.*
+
+[![CI](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml) [![Live evidence dashboard](https://img.shields.io/badge/live-evidence%20dashboard-2563eb?logo=github&logoColor=white)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) [![Docs: 5 languages](https://img.shields.io/badge/docs-EN%20%C2%B7%20KO%20%C2%B7%20JA%20%C2%B7%20ZH%20%C2%B7%20HI-0ea5e9)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/hyeonsangjeon/when-reasoning-pays-off)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/commits/main) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Star this repo](https://img.shields.io/github/stars/hyeonsangjeon/when-reasoning-pays-off?style=social)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/stargazers)
 
 ![Same token price, different bill: a reasoning workload pays the same per-token price but bills extra hidden reasoning tokens, so its total bill is taller.](docs/assets/hero.svg)
 
@@ -15,6 +17,56 @@ reasoning models earn their cost.*
 📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English, Korean, Japanese, and Simplified Chinese; Hindi fallback in progress).
 
 Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
+
+## TL;DR — what the measurements say
+
+On a non-reasoning task, paying for more reasoning effort bought **7.6× the
+cost** and essentially **no extra quality** — the spend went almost entirely
+to hidden reasoning tokens. On a genuinely hard task, the same dial *did* lift
+quality. The job is telling the two apart with data instead of instinct.
+
+| 💸 Cost climbs steeply with effort… | 🎯 …but quality barely moves |
+| --- | --- |
+| ![Benchmark 01 cost per request rises about 7.6x from minimal to extra-high reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality score stays roughly flat across every reasoning effort level](docs/assets/benchmark-01-quality.png) |
+
+- **More effort mostly buys hidden tokens, not better answers.** On short
+  factual work, cost climbed **7.6×** (minimal → extra-high) while the mean
+  judge score stayed flat (**1.88 → 1.78**) and billed reasoning tokens
+  exploded from **~4 to ~311** per request.
+- **Where the task is actually hard, effort pays.** On multi-step reasoning,
+  the same effort ladder lifted quality from **1.5 → 2.0** — so the answer is
+  "it depends on the task," and this repo measures which is which.
+- **The right setting is almost never `high` / `xhigh`.** Across all three
+  benchmarks, every tier above mid-range added cost and latency without
+  lifting measured quality.
+- **Switching model can beat switching effort.** A low gpt-5.2 tier beat the
+  gpt-4o baseline by **11–42 %** on cost-per-correct-answer, depending on the
+  task shape.
+
+<sub>Measured over **3 benchmarks × N=20 samples × R=3 repeats = 1080 cells**,
+byte-identical prompts, single Azure OpenAI tenant. Every number is re-cited
+from a per-benchmark `analysis.md`, never re-derived — see the
+[evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en)
+and [`results/summary.md`](results/summary.md).</sub>
+
+## Try it in 30 seconds
+
+| You want to… | Do this | Azure needed? |
+| --- | --- | :---: |
+| **See the evidence** | [Open the live dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) — interactive cost / quality / latency / crossover charts | ❌ |
+| **Read the story** | [Overview essay →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/) in English · 한국어 · 日本語 · 简体中文 · हिन्दी | ❌ |
+| **Run the test suite** | `pip install -e ".[dev]" && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |
+| **Reproduce the numbers** | [Reproducing these measurements ↓](#reproducing-these-measurements) | ✅ |
+
+> If this saved you a migration post-mortem, a ⭐ helps other teams find it.
+
+## Contents
+
+- [What this repo is](#what-this-repo-is) · [Terms you will see](#terms-you-will-see)
+- [The question](#the-question) · [Short answer](#short-answer) · [Which customer are you?](#which-customer-are-you)
+- [What's here](#whats-here) — [docs](#documentation), [code and data](#code-and-data)
+- [Operator levers (L1–L5)](#operator-levers-l1l5) · [Methodology](#methodology-summary) · [Reproducing](#reproducing-these-measurements)
+- [Data publication policy](#data-publication-policy) · [Contributing, governance, security](#contributing-governance-security)
 
 ## What this repo is
 
@@ -173,46 +225,40 @@ Full mechanism, evidence, and Azure docs links for each lever are in
 ## Methodology summary
 
 Three benchmark task types representative of common use cases. For each, we
-sweep `reasoning_effort` across four levels and run multiple repeats per
-(sample, effort) combination. We capture the full `response.usage` object —
-input, cached, reasoning, and output tokens separately — and pair token
-measurements with a quality evaluation.
+sweep `reasoning_effort` across its full ladder of tiers and run multiple
+repeats per (sample, effort) combination. We capture the full `response.usage`
+object — input, cached, reasoning, and output tokens separately — and pair
+token measurements with a quality evaluation.
 
 Detailed methodology: [`docs/05-methodology.md`](docs/05-methodology.md).
 
 ## Reproducing these measurements
 
-Requires Azure OpenAI access with a GPT-5.2 deployment.
+**No Azure account needed to explore the results.** Open the
+[live dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en),
+read [`results/summary.md`](results/summary.md), or run the unit-test suite
+locally:
 
 ```bash
 git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
 cd when-reasoning-pays-off
 
-# Set up Python env
-python3.11 -m venv .venv
-source .venv/bin/activate
+python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
-# Authenticate to Azure (Entra ID, one-time)
-az login
-
-# Configure endpoint and deployment names
-cp .env.example .env
-# Edit .env with your Azure OpenAI endpoint and deployment names.
-
-# Run a benchmark
-python scripts/run_benchmark.py experiments/exp001_short-factual_baseline.yaml
+# No credentials required for the test suite:
+pytest -q -m "not adaptive_calibration" batch-runner/tests/
 ```
 
-This repo uses **Entra ID authentication** — no API keys in `.env`. Run
-`az login` once before any script; the cached token is auto-refreshed by
+**To re-run the benchmarks themselves** you need Azure OpenAI access with a
+GPT-5.2 deployment. This repo uses **Entra ID authentication** — no API keys in
+`.env`; run `az login` once and the cached token is auto-refreshed by
 `DefaultAzureCredential`.
 
-You do not need Azure credentials to run the `batch-runner/tests/` unit-test
-suite:
-
 ```bash
-pytest -q -m "not adaptive_calibration" batch-runner/tests/
+az login                       # one-time
+cp .env.example .env           # then edit the endpoint + deployment names
+python scripts/run_benchmark.py experiments/exp001_short-factual_baseline.yaml
 ```
 
 ## Status

@@ -279,7 +279,18 @@ def forbidden_patterns() -> list[tuple[str, re.Pattern[str]]]:
         ("prompt-path-ref", re.compile(prompt_dir)),
         ("internal-task-label", re.compile(r"\b[Tt]ask[ -]?\d{3,}\b")),
         ("internal-role-name", re.compile(role_name)),
-        ("request-or-run-id", re.compile(r"\b(req|request|run)[_-][A-Za-z0-9_-]{6,}\b")),
+        # Leaked request/run IDs are opaque tokens (e.g. ``req_8f3e2d1c4b``,
+        # ``run_a1b2c3d4``) and in practice always carry digits. The bare
+        # ``run_`` prefix also begins ordinary public identifiers — notably the
+        # documented ``scripts/run_benchmark.py`` entry point cited in the
+        # README — so require an ID-shaped token (at least one digit) rather than
+        # matching dictionary words like ``run_benchmark`` or ``run_report``.
+        # The stricter secret patterns and CI-enforced check_public_surface.sh
+        # still scan the full text for real credentials.
+        (
+            "request-or-run-id",
+            re.compile(r"\b(req|request|run)[_-](?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]{6,}\b"),
+        ),
         # A concrete Azure resource endpoint hostname is a real leak vector. The
         # bare words "endpoint"/"deployment" are ordinary prose and also appear
         # inside documented public Azure identifiers (e.g. the response header
