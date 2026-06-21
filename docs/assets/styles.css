@@ -118,10 +118,25 @@ main h2 { font-size: 1.25rem; margin-top: 2rem; }
   border: 1px solid #dce6f0;
   border-radius: 10px;
   padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .card h3 { margin: 0 0 0.4rem; font-size: 1.05rem; }
 .card p { margin: 0; color: #4a5d70; font-size: 0.95rem; }
+/* Pin the call-to-action link to the bottom so cards in a grid align. */
+.card > p:last-child { margin-top: auto; padding-top: 0.6rem; }
+.card > p:last-child > a {
+  font-weight: 650;
+  text-decoration: none;
+}
+.card > p:last-child > a:hover { text-decoration: underline; }
+.card > p:last-child > a::after {
+  content: " \2192";
+  display: inline-block;
+  transition: transform 160ms ease;
+}
+.card:hover > p:last-child > a::after { transform: translateX(3px); }
 
 .banner {
   background: #fff4d6;
@@ -580,4 +595,55 @@ nav.lang a:focus-visible {
   .button-link:active {
     transform: none;
   }
+  .card:hover > p:last-child > a::after { transform: none; }
+}
+
+/* --- Typographic polish: inline code, text selection, anchored scrolling --- */
+code, kbd, samp {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro",
+    Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+:not(pre) > code {
+  background: #eef3f8;
+  border: 1px solid #d8e2ee;
+  border-radius: 6px;
+  padding: 0.08em 0.36em;
+  color: #1b3a5b;
+  overflow-wrap: break-word;
+}
+h1 code, h2 code, h3 code, .card h3 code {
+  font-size: 0.86em;
+  padding: 0.04em 0.3em;
+}
+kbd {
+  background: #102a43;
+  border: 1px solid #1f3a56;
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  color: #e0fbfc;
+  padding: 0.05em 0.4em;
+}
+
+::selection { background: rgba(58, 134, 255, 0.22); color: inherit; }
+
+/* Readable underlines for in-prose links (leave nav/buttons untouched). */
+main p a,
+.lede a,
+.breadcrumb a,
+.article-figure figcaption a,
+footer.site a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
+}
+
+html { scroll-behavior: smooth; }
+:target,
+.article-section,
+.chart-card,
+[id] > h2,
+[id] > h3 { scroll-margin-top: 1.1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
