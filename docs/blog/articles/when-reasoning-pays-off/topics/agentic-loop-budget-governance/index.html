@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agentic loop &amp; budget governance | when reasoning pays off</title>
+  <meta name="description" content="An operator-pattern topic: once a task becomes a tool loop, per-call effort tuning stops biting. Bound the loop with thresholds, a fail-closed breaker, eval-gated escalation, and per-step cost traceability.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="canonical_topic">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="Article navigation">
+        <a href="../../../../../en/">Home</a>
+        <a href="../../../">Articles</a>
+        <a href="../../">Overview essay</a>
+        <a href="../../../../charts/?lang=en">Evidence dashboard</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
+    <p class="article-kicker">Operator pattern · loop &amp; budget governance (L6) · design, not a new measurement</p>
+    <h1>Agentic loops: after the ceiling check says stop, who actually stops the loop?</h1>
+    <p class="lede">The companion topic ends on a clean note: once tool-agent quality is pinned against its ceiling, more reasoning effort buys latency and cost, not score — so route to the lowest effort that reaches the cap. That advice is exactly right for one call. But a real agent is rarely one call. It plans, calls a tool, reads the result, reasons again, and loops. The moment the task becomes a loop, cost stops being a number you can read off a pricing page and becomes an <em>integral over steps</em> — and the per-call effort dial, the one lever everyone reaches for first, no longer reaches the thing that is actually spending your money. This topic is the other half of the ceiling check: not "is this call worth more effort," but "when does the loop stop, and who decided."</p>
+
+    <section class="article-section">
+      <h2>Why this pattern exists</h2>
+      <p>
+        Here is the shape of the afternoon that creates this topic. Your agent
+        passes every demo. Then one ordinary support ticket sends it into a loop
+        — search, re-read, call another tool, think a little harder, try again —
+        and forty tool calls later it answers. The answer is <em>correct</em>. It
+        also cost forty times what you budgeted for that task, and nobody noticed
+        until the monthly invoice. Nothing failed: no exception, no 500, no
+        alert. That is what makes a runaway loop dangerous. It looks like a
+        working agent right up until you read the bill.
+      </p>
+      <p>
+        When that agent underperforms, the instinct is the familiar one — let it
+        loop a little longer, let it think a little harder. The companion ceiling
+        check already showed where "think harder" stops paying on a single call.
+        This topic is about the part the per-call levers cannot touch: the number
+        of calls. If you operate a workload like this, you have probably already
+        reached for the per-call dials and found they do not quite bite.
+      </p>
+      <ul>
+        <li><code>reasoning_effort</code> (lever <strong>L4</strong>) bounds the reasoning tokens of <em>one</em> call. It says nothing about how many calls the loop makes.</li>
+        <li><code>max_output_tokens</code> (lever <strong>L5</strong>) bounds the output of <em>one</em> call. It does not bound the cumulative spend across iterations.</li>
+        <li>Prompt-cache stability (lever <strong>L3</strong>) lowers the input cost of one prefix. In a loop the transcript grows every step, so the cacheable fraction shrinks exactly when the bill is largest.</li>
+      </ul>
+      <p>
+        None of that makes the per-call levers wrong; they are still the right
+        first move on any single call. They simply operate one layer below the
+        loop. The capability question — can the model loop, can it hold a million
+        tokens — was never the hard one. The hard one is governing the loop:
+        thresholds, intervention, evals, traceability, and ownership.
+      </p>
+    </section>
+
+    <aside class="article-section banner" aria-label="Evidence boundary">
+      <p>
+        <strong>Read this as design, not a new measurement.</strong> This topic
+        is a <strong>Tier&nbsp;2 operator pattern</strong>: it introduces no new
+        measured magnitudes. The one measured anchor it leans on is the
+        benchmark-03 ceiling from the companion topic (a real, published result),
+        and every loop control it describes is lifted from a guard this
+        repository's own measurement runner <em>already</em> implements — because
+        a benchmark batch is itself an unbounded-cost loop that must not run away.
+        How often production loops actually run away, and the distribution of
+        their step counts, is <strong>not measured here</strong>; that honesty is
+        kept explicit in the sources section below. The canonical write-up is
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — agentic loop budget governance</a>.
+      </p>
+    </aside>
+
+    <div class="article-summary-grid" aria-label="Topic summary">
+      <section class="summary-tile"><h2>Question</h2><p>When a task is a loop of model calls, what bounds the cumulative cost — and who owns that bound?</p></section>
+      <section class="summary-tile"><h2>Pattern</h2><p>Operator lever L6: a step cap and cost ceiling, a fail-closed breaker, eval-gated escalation, and per-step cost traceability.</p></section>
+      <section class="summary-tile"><h2>Companion evidence</h2><p>Measured: benchmark-03's 1.97–2.00 quality ceiling while cost rose $0.002762 → $0.003499 and latency 2.9s → 3.8s — the per-step finding the loop must respect.</p></section>
+      <section class="summary-tile"><h2>Decision</h2><p>Bound the loop before you run it, make the breaker fail closed, and treat every ceiling as committed, reviewed policy — not a constant someone can bump in a hotfix.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Topic sections">
+      <strong>Read by surface:</strong>
+      <a href="#s1">Thresholds</a>
+      <a href="#s2">Intervention</a>
+      <a href="#s3">Evals</a>
+      <a href="#s4">Traceability</a>
+      <a href="#s5">Governance</a>
+      <a href="#boundary">Sources &amp; evidence boundary</a>
+    </nav>
+
+    <p class="banner">
+      <strong>Companion topic:</strong>
+      <a href="../tool-agent-ceiling-checks/">Tool-agent ceiling checks</a>
+      is the detection half — it shows where a single call stops improving. This
+      topic is the intervention half — what stops the loop once it keeps spending
+      anyway.
+    </p>
+
+    <section class="article-section">
+      <h2>The runaway cost is an integral, not a number</h2>
+      <p>
+        A loop surprises you because its bill is a sum over steps, not a figure
+        you can price in advance:
+      </p>
+      <pre class="code-block"><code>total_cost ≈ Σ_step ( input_tokens_step    × input_rate
+                    + reasoning_tokens_step × output_rate
+                    + output_tokens_step    × output_rate )</code></pre>
+      <p>
+        Three things make that sum grow faster than anyone expects. First, the
+        iteration count is unbounded: with no hard cap, a loop that fails to
+        converge — a flaky tool, an ambiguous sub-goal, a "keep refining until
+        it's right" instruction — just keeps issuing billable calls, and nothing
+        in the model stops it. Second, the context grows every step: each
+        iteration re-sends the prior transcript plus the new tool output as the
+        next input, so the late steps are the most expensive ones, and a single
+        byte change in the prefix flushes the cache so they bill at full input
+        rate. Third, effort is multiplied inside the loop: a high
+        <code>reasoning_effort</code> default multiplies the per-step reasoning
+        tokens by the step count, which is the most expensive place to be wrong.
+      </p>
+      <p>
+        The per-call levers each attack one term of that sum. What they cannot do
+        is bound the <em>number of terms</em> or the <em>running total</em>. That
+        is the gap a loop opens, and the five surfaces below are how you close it.
+      </p>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>Thresholds — a step cap and a cumulative cost ceiling</h2>
+      <p><em>You hit this the first time one task quietly costs 40× its neighbors.</em></p>
+      <p>
+        <strong>Mechanism.</strong> A loop needs two bounds a single call never
+        does: a maximum iteration count, and a cumulative token/cost ceiling for
+        the whole task. Either one alone leaks. A step cap still allows an
+        expensive runaway if each step is huge; a cost ceiling alone still allows
+        an endless cheap spin.
+      </p>
+      <p>
+        <strong>Action.</strong> Declare, per task class, a <code>max_iterations</code>
+        step cap and a <code>hard_ceiling_usd</code> cumulative ceiling. Derive
+        the ceiling from the p99 of a representative sample — step count and
+        per-task cost — not from a round number that feels safe. Set both
+        conservatively and raise them only with evidence.
+      </p>
+      <p>
+        <strong>In-repo evidence.</strong> <code>scripts/run_benchmark.py</code>
+        already does exactly this: a pre-run estimate
+        (<code>estimate_experiment_cost_usd</code>) gated by
+        <code>MAX_COST_PER_BENCHMARK_USD</code>, a mid-run
+        <code>hard_ceiling_usd</code> tracked by the <code>BudgetTracker</code>
+        dataclass, and a tool-loop <code>max_iterations</code> cap
+        (<code>agent.max_tool_iterations</code>). <code>docs/05-methodology.md</code>
+        §6 "Budget guards" treats this as methodology, not hygiene: "a silent
+        budget overrun is also a silent change in experiment scope." The same
+        sentence holds in production — a silent loop overrun is a silent change
+        in what the task was allowed to cost.
+      </p>
+    </section>
+
+    <section id="s2" class="article-section">
+      <h2>Intervention — a circuit-breaker that fails closed</h2>
+      <p><em>You meet this the first time a loop spins all night instead of erroring out.</em></p>
+      <p>
+        <strong>Mechanism.</strong> When a threshold is crossed mid-loop, the
+        loop has to stop deterministically and visibly — return a best-effort
+        partial answer plus a typed "budget exceeded" signal — never silently
+        keep going, and never silently truncate. That choice is the whole
+        difference between a bounded cost and a runaway.
+      </p>
+      <p>
+        <strong>Action.</strong> Build a circuit-breaker that aborts the loop on
+        any of: the step cap is reached, cumulative cost reaches
+        <code>hard_ceiling_usd</code>, or a no-progress detector fires — for
+        example, the same tool call repeating. On abort, emit a typed terminal
+        record with the termination reason, then make one final answer-only call
+        so the caller still gets something usable. Fail closed: when in doubt,
+        the default is <em>stop</em>, not <em>continue</em>.
+      </p>
+      <p>
+        <strong>In-repo evidence.</strong> The runner raises a typed
+        <code>BudgetExceededError</code> ("Raised when pre-run estimate or running
+        total breaches a budget guard"), and <code>BudgetTracker.is_halted</code>
+        enforces a halt before the next call once the total crosses the ceiling;
+        the process exits with a dedicated <code>EXIT_BUDGET</code> code. The tool
+        loop is a clean model of the same idea: on
+        <code>iterations &gt;= max_iterations</code> it fires one final call
+        without <code>tools=</code> so the model is forced to emit a final answer,
+        records <code>tool_loop_terminated="iteration_cap"</code>, and appends the
+        recovery leg to the trajectory. That is a fail-closed breaker that leaves
+        a reason behind — lift it into production as-is.
+      </p>
+    </section>
+
+    <section id="s3" class="article-section">
+      <h2>Evals — escalate only where it pays</h2>
+      <p><em>This one arrives the day "just let it think harder" stops helping but keeps billing.</em></p>
+      <p>
+        <strong>Mechanism.</strong> The repo's central result is that effort above
+        the mid-range buys cost, not quality. On benchmark-03, quality held to a
+        ceiling near 1.97–2.00 across the whole effort ladder while per-request
+        cost rose from $0.002762 to $0.003499 and latency from 2.9s to 3.8s. In a
+        loop the same finding governs the <em>continuation</em> decision: another
+        step, or a higher effort on the next call, should have to earn its place.
+      </p>
+      <p>
+        <strong>Action.</strong> Gate escalation — one more iteration, or a higher
+        <code>reasoning_effort</code> on the next call — behind a cheap eval: a
+        rubric score, a self-consistency or confidence signal, an explicit stop
+        check. Default to stop, and make the eval argue for continuing. That turns
+        an open-ended "loop until done" into a bounded "loop until the eval stops
+        paying," which is just the single-call routing decision in loop form.
+      </p>
+      <p>
+        <strong>In-repo evidence.</strong> <code>scripts/run_judge.py</code> is the
+        rubric judge already scoring quality in every benchmark; the same shape is
+        the natural continuation gate. The 1.97–2.00 ceiling
+        (<code>results/summary.md</code> §3;
+        <code>benchmarks/03-tool-using-agent/analysis.md</code>) is the measured
+        evidence that an un-gated "think harder, loop again" default keeps
+        spending well past the point of return.
+      </p>
+    </section>
+
+    <section id="s4" class="article-section">
+      <h2>Traceability — attribute cost per loop, per step</h2>
+      <p><em>This shows up the first time you face a $40 task and can't say which step caused it.</em></p>
+      <p>
+        <strong>Mechanism.</strong> You cannot govern what you cannot attribute. A
+        single end-of-task number hides which step ran away and why. Governance
+        needs per-step records keyed to a stable loop id, each carrying the step's
+        usage, the running cumulative cost, and the budget headroom left.
+      </p>
+      <p>
+        <strong>Action.</strong> Extend the per-request capture in
+        <code>docs/14-observability-schema.md</code> with loop-scoped fields: a
+        stable <code>loop_id</code> / task id, a monotonic <code>step_index</code>,
+        the per-step <code>usage</code> block (already captured —
+        <code>reasoning_tokens</code>, <code>cached_tokens</code>, …), a
+        <code>cumulative_cost_usd</code>, and a <code>budget_remaining_usd</code>.
+        Emit one JSONL row per step; the loop's bill is the sum, and the row where
+        <code>budget_remaining_usd</code> first goes non-positive is your
+        intervention point. Alarm on the <em>distribution</em> of
+        <code>step_index</code> at termination, not just its mean — the tail is
+        where the runaways live.
+      </p>
+      <p>
+        <strong>Scope note (honest boundary).</strong> Those loop-scoped fields are
+        the <em>next increment</em>, not something already shipped. They slot onto
+        the existing <code>PTURequestRecord</code> — which already carries
+        <code>request_idx</code> and the full <code>usage</code> block — and
+        <code>schemas/ptu_request_record.schema.json</code>. The runner today
+        already sums the per-iteration <code>usage</code> objects into one
+        cell-level dict and records a per-iteration trajectory; loop traceability
+        is that roll-up made first-class — keep the per-step rows, don't only keep
+        the sum.
+      </p>
+    </section>
+
+    <section id="s5" class="article-section">
+      <h2>Governance — the budget is an owned contract</h2>
+      <p><em>And this one lands when someone bumps a ceiling in a hotfix and the bill moves with no paper trail.</em></p>
+      <p>
+        <strong>Mechanism.</strong> Step caps and cost ceilings are policy, not
+        magic numbers. They have to be owned, version-controlled, and changed
+        through review — like any other contract that decides what the system is
+        allowed to do. A ceiling raise is a scope change, and it should feel like
+        one.
+      </p>
+      <p>
+        <strong>Action.</strong> Declare per-task-class budget policy in committed
+        config, not in constants scattered across services. Review every ceiling
+        change; track the overrun rate — how often the breaker fires — as a
+        first-class SLO; and give a ceiling raise the same ceremony as a
+        methodology change. The release-governance discipline in
+        <code>docs/16-release-tiers-and-redaction-policy.md</code> is the same
+        shape applied to published data; this applies it to spend.
+      </p>
+      <p>
+        <strong>In-repo evidence.</strong> <code>GOVERNANCE.md</code> is the
+        owned-contract change-control model budget policy follows, and the "silent
+        overrun = silent scope change" rule from <code>docs/05</code> §6 is the
+        sentence that makes a ceiling change reviewable rather than routine.
+      </p>
+    </section>
+
+    <section id="boundary" class="article-section">
+      <h2>Sources and evidence boundary</h2>
+      <p>
+        Two things are happening in this topic, and they live in different tiers.
+        The measured anchor — the benchmark-03 ceiling — is a published result you
+        can audit. The loop-governance pattern is operational design: it reuses
+        primitives that already exist in this repository, but the runaway behavior
+        it guards against is not itself measured here. The tiers below mark where
+        the documented input ends and the design inference begins.
+      </p>
+      <ul>
+        <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> §6 "Budget guards." The pre-run estimate plus mid-run hard-ceiling abort this pattern generalizes; the rule "a silent budget overrun is also a silent change in experiment scope" is the governance stance carried into §5.</li>
+        <li>[2] <strong>Tier 2 — measured companion (benchmark-03):</strong> this repository, <code>results/summary.md</code> §3 and <code>benchmarks/03-tool-using-agent/analysis.md</code>. Source of the measured ceiling — quality inside 1.97–2.00 across the effort ladder while per-request cost climbed $0.002762 → $0.003499 and latency 2.9s → 3.8s. This is the per-step finding the loop's escalation gate must respect.</li>
+        <li>[3] <strong>Operator pattern (design, not a measured tier):</strong> the loop controls are lifted from <code>scripts/run_benchmark.py</code> — <code>BudgetTracker</code> / <code>hard_ceiling_usd</code>, <code>BudgetExceededError</code>, <code>EXIT_BUDGET</code>, <code>estimate_experiment_cost_usd</code> gated by <code>MAX_COST_PER_BENCHMARK_USD</code>, <code>agent.max_tool_iterations</code>, and <code>tool_loop_terminated="iteration_cap"</code> — and the rubric gate from <code>scripts/run_judge.py</code>. The canonical write-up is <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a>, introduced as operator lever <strong>L6</strong> in <code>docs/09-operator-guide-one-page.md</code>.</li>
+        <li>[4] <strong>Proposed next increment (unbuilt):</strong> the loop-scoped fields in §4 — <code>loop_id</code>, <code>step_index</code>, <code>cumulative_cost_usd</code>, <code>budget_remaining_usd</code> — extend <code>docs/14-observability-schema.md</code> and <code>schemas/ptu_request_record.schema.json</code>. They are design only; nothing in this topic claims they are shipped.</li>
+        <li>[5] <strong>Evidence dashboard:</strong> the measured companion is auditable as the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality and cost chart</a>.</li>
+      </ul>
+      <p>
+        What this topic does and does not establish: it shows how to bound a loop
+        using guards that already run in this repository, and it respects a
+        measured ceiling when deciding whether to continue. It does <em>not</em>
+        measure how often loops run away, the distribution of step counts by task
+        shape, or the long-context cost-scaling curve — <code>docs/04</code> §4
+        already records that no benchmark here measures long-output / long-context
+        workloads. Treat those as honest gaps a future runaway-characterization
+        benchmark would close, not as quiet claims.
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>What the pattern lets us say</h2>
+      <p>For loop work, the useful sentence is not "let it think harder" or "let it loop longer." It is "bound the loop before you run it, and make the bound something you own."</p>
+      <p><a class="button-link" href="../../">Back to the overview essay</a></p>
+
+      <h2>The practical rule</h2>
+      <ol>
+        <li>Give every multi-call task two bounds, not one: a <code>max_iterations</code> step cap <em>and</em> a <code>hard_ceiling_usd</code> cumulative ceiling, both sized from a representative p99.</li>
+        <li>Make the breaker fail closed — on cap, ceiling, or no-progress, stop, record a typed reason, and return a best-effort partial answer.</li>
+        <li>Gate every escalation behind a cheap eval, and respect the measured ceiling: above the mid-range, effort bought cost, not score.</li>
+        <li>Keep per-step rows, not just the end-of-task sum, so you can name the step that ran away.</li>
+        <li>Hold the budget as committed, reviewed policy; track the overrun rate as an SLO and give a ceiling raise the ceremony of a scope change.</li>
+      </ol>
+      <p>
+        <strong>The practical rule: L1–L5 bound each call; L6 bounds the loop.
+        Decide when to stop before the loop runs, and make that decision
+        something you own rather than something the model reaches by default.</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../tool-agent-ceiling-checks/">Read the companion ceiling check</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>Next:</strong>
+        <a href="../ptu-payg-planning/">PTU/PAYG crossover: a planning line, not a capacity result</a>
+        &mdash; Once you've bounded the loop and sized the workload, when does
+        provisioned throughput beat pay-as-you-go?
+      </p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+</body>
+</html>

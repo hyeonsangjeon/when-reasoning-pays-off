@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>智能体循环与预算治理 | when reasoning pays off</title>
+  <meta name="description" content="一个运营模式主题：一旦任务变成工具循环，按调用调节推理强度就不再真正起作用。用阈值、失败即关闭的断路器、由评估把关的升级，以及逐步成本可追踪性来约束循环。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="8e41112f14bcf0e907d50a36b7e41abf8c823db09ac88d92909d1552a87627df">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="../zh-CN/">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="文章导航">
+        <a href="../../../../../../zh-CN/">首页</a>
+        <a href="../../../../zh-CN/">文章</a>
+        <a href="../../../zh-CN/">总览文章</a>
+        <a href="../../../../../charts/?lang=zh-CN">证据仪表板</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../zh-CN/">文章</a> / <a href="../../../zh-CN/">推理何时值得</a> / 主题详情</p>
+    <p class="article-kicker">运营模式 · 循环与预算治理 (L6) · 设计，不是新的测量</p>
+    <h1>智能体循环：当上限检查说该停之后，究竟由谁真正停下循环？</h1>
+    <p class="lede">配套主题以一个清晰结论收尾：一旦工具智能体的质量已经贴近上限，更多推理强度买到的是延迟和成本，而不是分数——所以应路由到刚好达到上限的最低强度。对单次调用来说，这条建议完全正确。但真实智能体很少只有一次调用。它会规划、调用工具、读取结果、再次推理，然后进入循环。任务变成循环的那一刻，成本就不再是能从价格页上读出的数字，而成为<em>跨步骤的积分</em>；而大家最先伸手去调的按调用强度旋钮，也不再触及真正花钱的地方。这个主题是上限检查的另一半：不是“这次调用值得更多强度吗”，而是“循环何时停止，又是谁做了这个决定”。</p>
+
+    <section class="article-section">
+      <h2>为什么需要这个模式</h2>
+      <p>
+        这个主题来自这样一个下午。你的智能体通过了每一次演示。然后，一个普通的支持工单把它送进了循环
+        ——搜索、重读、再调用一个工具、再多想一点、再试一次——
+        40 次工具调用之后，它给出了答案。答案是<em>正确的</em>。
+        但它也花掉了你为这类任务预留预算的40 倍，而在月度账单到来之前，没有人注意到。
+        没有任何东西“失败”：没有异常，没有 500，也没有告警。
+        这正是失控循环危险的地方。直到你读到账单之前，它看起来都像一个运行良好的智能体。
+      </p>
+      <p>
+        当这个智能体表现不佳时，本能反应很熟悉——让它多循环一会儿，让它多想一点。
+        配套的上限检查已经说明，在单次调用里，“多想一点”会在什么地方不再带来回报。
+        本文讨论的是按调用杠杆碰不到的部分：调用的<em>次数</em>。
+        如果你运营过这样的工作负载，你大概已经试过按调用的旋钮，也发现它们并不真正咬合。
+      </p>
+      <ul>
+        <li><code>reasoning_effort</code>（杠杆 <strong>L4</strong>）约束的是<em>一次</em>调用的推理 token。它并不说明循环会发起多少次调用。</li>
+        <li><code>max_output_tokens</code>（杠杆 <strong>L5</strong>）约束的是<em>一次</em>调用的输出。它不能约束跨迭代的累计支出。</li>
+        <li>提示缓存稳定性（杠杆 <strong>L3</strong>）降低的是一个前缀的输入成本。在循环里，转录记录每一步都在增长，所以正当账单最大时，可缓存比例反而缩小。</li>
+      </ul>
+      <p>
+        这些都不意味着按调用杠杆是错的；对任何单次调用来说，它们仍然是正确的第一步。
+        只是它们工作在循环之下的一层。能力问题——模型能不能循环、能不能持有一百万 token——从来不是最难的问题。
+        难的是治理循环：阈值、干预、评估、可追踪性，以及所有权。
+      </p>
+    </section>
+
+    <aside class="article-section banner" aria-label="证据边界">
+      <p>
+        <strong>请把本文读作设计，而不是新的测量。</strong> 这个主题是一个
+        <strong>Tier&nbsp;2 运营模式</strong>：它没有引入新的实测量。
+        它依赖的唯一实测锚点，是配套主题中的 benchmark-03 上限（一个真实、已发布的结果）；
+        它描述的每一种循环控制，都来自本仓库自己的测量运行器<em>已经</em>实现的防护——
+        因为一批基准测试本身也是一个成本无上界的循环，不能让它失控。
+        生产循环实际有多常失控，以及它们的步骤数分布如何，<strong>本文没有测量</strong>；
+        这一点会在下面的来源部分明确保留。规范性说明见
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — 智能体循环预算治理</a>。
+      </p>
+    </aside>
+
+    <div class="article-summary-grid" aria-label="主题摘要">
+      <section class="summary-tile"><h2>问题</h2><p>当一个任务是模型调用的循环时，什么约束累计成本——又是谁拥有这条边界？</p></section>
+      <section class="summary-tile"><h2>模式</h2><p>运营杠杆 L6：步骤上限与成本上限，失败即关闭的断路器，由评估把关的升级，以及逐步成本可追踪性。</p></section>
+      <section class="summary-tile"><h2>配套证据</h2><p>实测：benchmark-03 的质量上限为 1.97–2.00，同时成本从 $0.002762 升至 $0.003499，延迟从 2.9秒 升至 3.8秒——这是循环必须尊重的逐步发现。</p></section>
+      <section class="summary-tile"><h2>决定</h2><p>在运行之前先约束循环，让断路器失败即关闭，并把每一个上限都当作已提交、经审查的政策——而不是某个人能在热修复里随手调高的常量。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="主题章节">
+      <strong>按关注面阅读：</strong>
+      <a href="#s1">阈值</a>
+      <a href="#s2">干预</a>
+      <a href="#s3">评估</a>
+      <a href="#s4">可追踪性</a>
+      <a href="#s5">治理</a>
+      <a href="#boundary">来源与证据边界</a>
+    </nav>
+
+    <p class="banner">
+      <strong>配套主题：</strong>
+      <a href="../../tool-agent-ceiling-checks/zh-CN/">工具智能体上限检查</a>
+      是检测的一半——它展示单次调用在何处停止改善。本文是干预的一半——当循环无论如何还在继续花钱时，什么会让它停下。
+    </p>
+
+    <section class="article-section">
+      <h2>失控成本是积分，不是一个数字</h2>
+      <p>
+        循环之所以会让你意外，是因为它的账单是步骤之和，而不是一个可以预先定价的数值：
+      </p>
+      <pre class="code-block"><code>total_cost ≈ Σ_step ( input_tokens_step    × input_rate
+                    + reasoning_tokens_step × output_rate
+                    + output_tokens_step    × output_rate )</code></pre>
+      <p>
+        有三件事会让这个总和增长得比任何人预期都快。第一，迭代次数没有上界：
+        没有硬性上限时，一个无法收敛的循环——不稳定的工具、含糊的子目标、一条“继续打磨直到正确”的指令——
+        会不断发起可计费调用，而模型内部并没有东西会阻止它。第二，上下文每一步都在增长：
+        每次迭代都会把先前转录记录加上新的工具输出作为下一次输入重新发送，
+        所以后面的步骤最贵；前缀中哪怕一个字节发生变化，也会冲掉缓存，使这些步骤按完整输入费率计费。
+        第三，强度在循环内部被放大：较高的 <code>reasoning_effort</code> 默认值会把每步推理 token 乘以步骤数，
+        这是最昂贵的出错位置。
+      </p>
+      <p>
+        每个按调用杠杆都只攻击这个总和中的一项。它们不能做的是约束<em>项数</em>或<em>运行中的总额</em>。
+        这就是循环打开的缺口；下面五个关注面说明如何把它关上。
+      </p>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>阈值——步骤上限与累计成本上限</h2>
+      <p><em>当你第一次发现一个任务悄悄花掉相邻任务 40× 的成本时，就会遇到它。</em></p>
+      <p>
+        <strong>机制。</strong> 循环需要两条单次调用从不需要的边界：最大迭代次数，以及整个任务的累计 token/成本上限。
+        只有其中一条都会漏。只有步骤上限时，如果每一步都很大，仍会允许昂贵的失控；
+        只有成本上限时，仍会允许便宜但无止境的空转。
+      </p>
+      <p>
+        <strong>行动。</strong> 按任务类别声明一个 <code>max_iterations</code> 步骤上限和一个 <code>hard_ceiling_usd</code> 累计上限。
+        上限应来自代表性样本的 p99——步骤数和每任务成本——而不是一个感觉安全的整数。
+        两者都保守设置，并且只在有证据时提高。
+      </p>
+      <p>
+        <strong>仓库内证据。</strong> <code>scripts/run_benchmark.py</code>
+        已经正是这样做的：预运行估算
+        (<code>estimate_experiment_cost_usd</code>) 由
+        <code>MAX_COST_PER_BENCHMARK_USD</code> 把关；运行中的
+        <code>hard_ceiling_usd</code> 由 <code>BudgetTracker</code>
+        数据类跟踪；并设置工具循环的
+        <code>max_iterations</code> 上限 (<code>agent.max_tool_iterations</code>)。
+        <code>docs/05-methodology.md</code> §6 “预算防护” 把这视为方法论，而不是卫生习惯：
+        “无声的预算超支，也是实验范围的无声改变。” 同一句话在生产中同样成立——无声的循环超支，
+        就是任务被允许花费的成本发生了无声改变。
+      </p>
+    </section>
+
+    <section id="s2" class="article-section">
+      <h2>干预——失败即关闭的断路器</h2>
+      <p><em>当你第一次看到循环没有报错，而是整晚空转时，就会遇到它。</em></p>
+      <p>
+        <strong>机制。</strong> 当阈值在循环中途被越过时，循环必须以确定且可见的方式停止——
+        返回一个尽力而为的部分答案，并附带一个有类型的“预算超出”信号——绝不能静默继续，也绝不能静默截断。
+        这个选择就是受限成本与失控之间的全部差别。
+      </p>
+      <p>
+        <strong>行动。</strong> 构建一个断路器，在以下任一情况发生时中止循环：达到步骤上限，累计成本达到
+        <code>hard_ceiling_usd</code>，或无进展检测器触发——例如重复同一个工具调用。
+        中止时，发出一条带有终止原因的有类型终端记录，然后再做一次仅回答的最终调用，
+        让调用方仍能得到可用的东西。失败即关闭：有疑问时，默认是<em>停止</em>，不是<em>继续</em>。
+      </p>
+      <p>
+        <strong>仓库内证据。</strong> 运行器会抛出有类型的
+        <code>BudgetExceededError</code>（“当预运行估算或运行中总额突破预算防护时抛出”），并且 <code>BudgetTracker.is_halted</code>
+        会在总额越过上限后、下一次调用之前强制停止；进程以专用的 <code>EXIT_BUDGET</code> 代码退出。
+        工具循环是同一思想的干净模型：当 <code>iterations &gt;= max_iterations</code> 时，
+        它会在没有 <code>tools=</code> 的情况下发起一次最终调用，迫使模型给出最终答案，
+        记录 <code>tool_loop_terminated="iteration_cap"</code>，并把恢复段追加到轨迹中。
+        这就是一个会留下原因的失败即关闭断路器——可以照原样提升到生产中。
+      </p>
+    </section>
+
+    <section id="s3" class="article-section">
+      <h2>评估——只在有回报的地方升级</h2>
+      <p><em>当“就让它多想一点”不再有帮助却仍在计费的那一天，你就会遇到它。</em></p>
+      <p>
+        <strong>机制。</strong> 本仓库的核心结果是，中档以上的强度买到的是成本，而不是质量。
+        在 benchmark-03 上，质量在整个强度阶梯上都贴近 1.97–2.00 的上限，而每请求成本从
+        $0.002762 升至 $0.003499，延迟从 2.9秒 升至 3.8秒。在循环里，同一个发现治理的是<em>继续</em>决策：
+        再走一步，或在下一次调用上使用更高强度，都必须证明自己值得。
+      </p>
+      <p>
+        <strong>行动。</strong> 把升级——再迭代一次，或在下一次调用上提高
+        <code>reasoning_effort</code>——放在廉价评估之后：一个评分量表分数、一个自一致性或置信度信号、一个明确的停止检查。
+        默认停止，并让评估来论证为什么应该继续。这样，开放式的“循环直到完成”就变成了有边界的
+        “循环直到评估不再支付回报”；这只是把单次调用的路由决策改写成循环形式。
+      </p>
+      <p>
+        <strong>仓库内证据。</strong> <code>scripts/run_judge.py</code> 是已经在每个基准中为质量打分的评分量表裁判；
+        同样的形状天然适合作为继续门。1.97–2.00 上限
+        (<code>results/summary.md</code> §3;
+        <code>benchmarks/03-tool-using-agent/analysis.md</code>) 是一条实测证据：
+        没有门控的“更努力思考、再循环一次”默认策略，会在回报点之后很久仍继续花钱。
+      </p>
+    </section>
+
+    <section id="s4" class="article-section">
+      <h2>可追踪性——按循环、按步骤归因成本</h2>
+      <p><em>当你第一次面对一个 $40 任务，却说不出是哪一步造成的时，就会看到它。</em></p>
+      <p>
+        <strong>机制。</strong> 不能归因的东西，就无法治理。一个任务结束时的单一数字会掩盖是哪一步失控以及为什么。
+        治理需要以稳定循环 id 为键的逐步记录，每条记录都携带该步骤的用量、运行中的累计成本，以及剩余预算余量。
+      </p>
+      <p>
+        <strong>行动。</strong> 用循环范围字段扩展 <code>docs/14-observability-schema.md</code> 中的按请求捕获：
+        一个稳定的 <code>loop_id</code> / 任务 id，一个单调递增的 <code>step_index</code>，
+        每步的 <code>usage</code> 块（已捕获——<code>reasoning_tokens</code>、<code>cached_tokens</code>、…），
+        一个 <code>cumulative_cost_usd</code>，以及一个 <code>budget_remaining_usd</code>。
+        每一步发出一行 JSONL；循环账单就是这些行的总和，而 <code>budget_remaining_usd</code>
+        第一次变为非正的那一行，就是你的干预点。对终止时 <code>step_index</code> 的<em>分布</em>告警，而不只是均值——尾部才是失控发生的地方。
+      </p>
+      <p>
+        <strong>范围说明（诚实边界）。</strong> 这些循环范围字段是<em>下一个增量</em>，不是已经交付的东西。
+        它们会接到既有的 <code>PTURequestRecord</code>——其中已经携带
+        <code>request_idx</code> 和完整的 <code>usage</code> 块——以及
+        <code>schemas/ptu_request_record.schema.json</code> 上。今天的运行器已经把逐迭代
+        <code>usage</code> 对象汇总成一个单元级字典，并记录逐迭代轨迹；
+        循环可追踪性就是把这个汇总提升为一等对象——保留逐步行，不要只保留总和。
+      </p>
+    </section>
+
+    <section id="s5" class="article-section">
+      <h2>治理——预算是一份有所有者的契约</h2>
+      <p><em>而当有人在热修复里调高上限，账单也随之变化却没有任何书面痕迹时，你会遇到这一点。</em></p>
+      <p>
+        <strong>机制。</strong> 步骤上限和成本上限是政策，不是魔法数字。
+        它们必须像任何其他决定系统被允许做什么的契约一样，被拥有、纳入版本控制，并通过审查来变更。
+        提高上限就是范围变更，也应该让人感受到这一点。
+      </p>
+      <p>
+        <strong>行动。</strong> 在已提交的配置中声明每类任务的预算政策，而不是把常量散落在各个服务里。
+        审查每一次上限变更；把超支率——断路器触发的频率——作为一等 SLO 跟踪；
+        并赋予上限提高与方法论变更同等的仪式。
+        <code>docs/16-release-tiers-and-redaction-policy.md</code> 中的发布治理纪律，是应用于已发布数据的同一形状；这里把它应用到支出上。
+      </p>
+      <p>
+        <strong>仓库内证据。</strong> <code>GOVERNANCE.md</code> 是预算政策所遵循的有所有者契约变更控制模型，
+        而 <code>docs/05</code> §6 中“无声超支 = 无声范围变更”的规则，
+        让上限变更成为需要审查的事项，而不是例行操作。
+      </p>
+    </section>
+
+    <section id="boundary" class="article-section">
+      <h2>来源与证据边界</h2>
+      <p>
+        这个主题中发生了两件事，它们处在不同层级。实测锚点——benchmark-03 上限——是一个可审计的已发布结果。
+        循环治理模式是运营设计：它复用了本仓库中已经存在的原语，但它要防范的失控行为本身并没有在这里被测量。
+        下面这些层级标明了文档化输入在哪里结束，设计推断在哪里开始。
+      </p>
+      <ul>
+        <li>[1] <strong>Tier 1 — 方法论契约：</strong> 本仓库，<code>docs/05-methodology.md</code> §6 “预算防护”。这个模式泛化的是预运行估算加运行中硬上限中止；“无声的预算超支，也是实验范围的无声改变”这条规则，是带入 §5 的治理立场。</li>
+        <li>[2] <strong>Tier 2 — 实测配套项（benchmark-03）：</strong> 本仓库，<code>results/summary.md</code> §3 和 <code>benchmarks/03-tool-using-agent/analysis.md</code>。实测上限的来源——在整个强度阶梯上，质量保持在 1.97–2.00 内，而每请求成本从 $0.002762 → $0.003499，延迟从 2.9秒 → 3.8秒。这是循环的升级门必须尊重的逐步发现。</li>
+        <li>[3] <strong>运营模式（设计，不是实测层级）：</strong> 循环控制来自 <code>scripts/run_benchmark.py</code>——<code>BudgetTracker</code> / <code>hard_ceiling_usd</code>、<code>BudgetExceededError</code>、<code>EXIT_BUDGET</code>、<code>estimate_experiment_cost_usd</code> 由 <code>MAX_COST_PER_BENCHMARK_USD</code> 把关、<code>agent.max_tool_iterations</code>，以及 <code>tool_loop_terminated="iteration_cap"</code>——和 <code>scripts/run_judge.py</code> 中的评分量表门。规范性文章是 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a>，并在 <code>docs/09-operator-guide-one-page.md</code> 中作为运营杠杆 <strong>L6</strong> 引入。</li>
+        <li>[4] <strong>提议的下一个增量（未构建）：</strong> §4 中的循环范围字段——<code>loop_id</code>、<code>step_index</code>、<code>cumulative_cost_usd</code>、<code>budget_remaining_usd</code>——扩展 <code>docs/14-observability-schema.md</code> 和 <code>schemas/ptu_request_record.schema.json</code>。它们只是设计；本主题没有声称它们已经交付。</li>
+        <li>[5] <strong>证据仪表板：</strong> 实测配套项可通过渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 质量与成本图表</a>审计。</li>
+      </ul>
+      <p>
+        本主题确立了什么、没有确立什么：它展示了如何使用本仓库中已经运行的防护来约束循环，
+        并在决定是否继续时尊重一个实测上限。它<em>没有</em>测量循环多常失控、不同任务形状下步骤数的分布，
+        或长上下文成本缩放曲线——<code>docs/04</code> §4 已经记录，这里没有任何基准测量长输出 / 长上下文工作负载。
+        请把这些看作未来失控特征化基准会弥合的诚实空白，而不是隐含主张。
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>这个模式让我们能够说什么</h2>
+      <p>对循环工作来说，有用的句子不是“让它多想一点”或“让它多循环一会儿”。而是：“在运行之前先约束循环，并让这条边界成为你拥有的东西。”</p>
+      <p><a class="button-link" href="../../../zh-CN/">返回总览文章</a></p>
+
+      <h2>实践规则</h2>
+      <ol>
+        <li>给每个多调用任务两条边界，而不是一条：一个 <code>max_iterations</code> 步骤上限<em>和</em>一个 <code>hard_ceiling_usd</code> 累计上限，两者都根据代表性 p99 来定大小。</li>
+        <li>让断路器失败即关闭——遇到上限、成本上限或无进展时停止，记录有类型的原因，并返回尽力而为的部分答案。</li>
+        <li>把每一次升级都放在廉价评估之后，并尊重实测上限：超过中档后，强度买到的是成本，不是分数。</li>
+        <li>保留逐步行，而不只是任务结束时的总和，这样你才能指出是哪一步失控。</li>
+        <li>把预算作为已提交、经审查的政策来持有；把超支率作为 SLO 跟踪，并让提高上限具备范围变更的仪式。</li>
+      </ol>
+      <p>
+        <strong>实践规则：L1–L5 约束每次调用；L6 约束循环。
+        在循环运行之前决定何时停止，并让这个决定成为你拥有的东西，而不是模型默认走到的结果。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../tool-agent-ceiling-checks/zh-CN/">阅读配套的上限检查</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>下一篇：</strong>
+        <a href="../../ptu-payg-planning/zh-CN/">PTU/PAYG 交叉点：一条规划线，而不是容量结论</a>
+        &mdash; 当你已经约束循环并确定工作负载规模后，预置吞吐量何时会胜过按量付费？
+      </p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 许可的研究产物 · 已发布数据仅为脱敏或聚合形式。</p></footer>
+</body>
+</html>

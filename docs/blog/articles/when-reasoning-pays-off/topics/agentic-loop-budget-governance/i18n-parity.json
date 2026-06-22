@@ -1,0 +1,18 @@
+{
+  "required_locales": ["ko"],
+  "locales": {
+    "ko": "ko/index.html",
+    "ja": "ja/index.html",
+    "zh-CN": "zh-CN/index.html",
+    "hi": "hi/index.html"
+  },
+  "sections": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "boundary"
+  ],
+  "note": "Structural i18n parity per D-014: section-anchor (id) alignment across locales, not literal translation."
+}

@@ -195,6 +195,7 @@ measured magnitudes.
 | [`docs/15-spec-vs-inference-taxonomy.examples.md`](docs/15-spec-vs-inference-taxonomy.examples.md) | Worked examples of the citation taxonomy |
 | [`docs/16-release-tiers-and-redaction-policy.md`](docs/16-release-tiers-and-redaction-policy.md) | Three-tier release classification and redaction rules |
 | [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) | Publication boundaries and Azure AI Foundry packaging contract |
+| [`docs/18-agentic-loop-budget-governance.md`](docs/18-agentic-loop-budget-governance.md) | Operator lever L6 — governing unbounded agentic loops (thresholds, intervention, evals, traceability, governance) |
 
 ### Code and data
 
@@ -220,7 +221,7 @@ measured magnitudes.
 <sub>*The same burst of requests, two outcomes: without a limiter the API sheds load as 503; with a token-bucket limiter, over-limit requests get a **429 returned to the caller** so the API stays healthy. **L2** below is where you choose that spillover behavior.*</sub>
 
 If you operate a live deployment, [`docs/09-operator-guide-one-page.md`](docs/09-operator-guide-one-page.md)
-is the one-page reference. The five levers, in plain English:
+is the one-page reference. The six levers, in plain English (L1–L5 tune a single call or deployment; **L6** governs the multi-call loop):
 
 | Lever | What you change | Why it matters |
 | --- | --- | --- |
@@ -229,9 +230,13 @@ is the one-page reference. The five levers, in plain English:
 | **L3** System-prompt stability | Track `sha256(system_prompt)` per request and alarm on unintended changes | A single byte change flushes the prompt cache, so the next requests bill the full input rate until the cache re-warms. Migration-era "cache hit dropped" symptoms often resolve to this. |
 | **L4** Reasoning effort tuning | Per-task `reasoning_effort` default | Higher effort spends more reasoning tokens without necessarily lifting quality. Default new traffic to `minimal` (or `none` where supported); raise only where measured quality justifies it. |
 | **L5** `max_output_tokens` tightening | Tighten the per-call cap to `ceil((p99_visible + p99_reasoning) × 1.15)` | On PTU, this value is an admission-time reservation. Inflated caps silently reduce concurrency and pull 429 onset earlier. |
+| **L6** Loop / budget governance | Per-task step cap + cumulative cost ceiling, a fail-closed circuit-breaker, eval-gated continuation, and per-step cost traceability | L1–L5 bound a single call; **L6 bounds the loop.** Caps runaway agentic spend, makes per-loop cost traceable, and intervenes before overrun. See [`docs/18`](docs/18-agentic-loop-budget-governance.md). |
 
 Full mechanism, evidence, and Azure docs links for each lever are in
-[`docs/09`](docs/09-operator-guide-one-page.md).
+[`docs/09`](docs/09-operator-guide-one-page.md). L6's full treatment — step
+caps, cost ceilings, the circuit-breaker, eval-gated escalation, and per-step
+traceability — is in
+[`docs/18-agentic-loop-budget-governance.md`](docs/18-agentic-loop-budget-governance.md).
 
 ## Methodology summary
 
