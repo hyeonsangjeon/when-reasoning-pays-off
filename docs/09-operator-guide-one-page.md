@@ -1,14 +1,14 @@
-# Operator Guide — Five Levers for PTU + Reasoning Workloads
+# Operator Guide — Operator Levers for PTU + Reasoning Workloads
 
-![Five operator levers for PTU and reasoning workloads, ordered for diagnostic application.](assets/operator-five-levers.svg)
+![Five per-call operator levers (L1–L5) for PTU and reasoning workloads, ordered for diagnostic application.](assets/operator-five-levers.svg)
 
 > **Forwardable one-pager.** A single page an engineer or architect running an Azure OpenAI reasoning-model deployment can act on without consulting any other repo file. Each lever names the mechanism, one concrete action, in-repo evidence, and an Azure docs URL. Numbers cited here are the measured shape of the in-repo deployment, not a customer attribution; transfer to your deployment by re-measuring after each change.
 
 ## 1. Who this is for
 
-An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on PTU or PAYG, with or without spillover, looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 onset. The five levers below are ordered for diagnostic application, not by magnitude.
+An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on PTU or PAYG, with or without spillover, looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 onset. Levers **L1–L5** below are ordered for diagnostic application, not by magnitude; **L6** (loop / budget governance) is a different class — it governs the multi-call loop that wraps L1–L5, not a single call.
 
-## 2. The five levers
+## 2. The levers
 
 ### L1. First-token timeout in the saturated window
 
@@ -62,6 +62,16 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 **Azure docs.** <https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/provisioned-throughput>
 
+### L6. Loop / budget governance (governs the multi-call loop, not one call)
+
+**Mechanism.** L1–L5 each bound a single call or deployment; none bounds the *number* of calls a tool-using / agentic task makes or its *cumulative* spend. A loop's bill is the integral over steps, so without a step cap **and** a cumulative cost ceiling it can run away — the growing transcript re-sent each step (which also flushes the L3 cache prefix) makes the late steps the most expensive.
+
+**Action.** Wrap any multi-call task in: a per-task `max_iterations` step cap and a `hard_ceiling_usd` cost ceiling; a fail-closed circuit-breaker that aborts on cap / ceiling / no-progress and records a typed termination reason; eval-gated continuation (loop again only when a `run_judge`-style rubric says it will pay); and per-step cost traceability (`loop_id`, `step_index`, `cumulative_cost_usd`, `budget_remaining_usd`). Own the thresholds as committed, reviewed policy.
+
+**In-repo evidence.** This repo's measurement runner already implements the pattern: `scripts/run_benchmark.py` carries a `BudgetTracker` hard-ceiling halt (`BudgetExceededError`, `EXIT_BUDGET`), a pre-run estimate gated by `MAX_COST_PER_BENCHMARK_USD`, and a tool-loop `max_iterations` cap that fires a final answer-only call and records `tool_loop_terminated="iteration_cap"`. `docs/05-methodology.md` §6 "Budget guards" frames it as methodology, not hygiene. Full treatment: `docs/18-agentic-loop-budget-governance.md`.
+
+**Azure docs.** <https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/reasoning>
+
 ## 3. Five-step diagnostic recipe
 
 1. **Capture per-request fields:** `response.usage` (including `prompt_tokens_details.cached_tokens` and `completion_tokens_details.reasoning_tokens`), `prompt_cache_key`, `max_output_tokens`, `sha256(system_prompt)`, `retry-after-ms`.
@@ -79,6 +89,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 ## 5. Where to go next
 
 - `docs/04-decision-framework.md` — task → model × effort routing
+- `docs/18-agentic-loop-budget-governance.md` — L6 in full: governing the multi-call loop (thresholds, intervention, evals, traceability, governance)
 - `docs/07-cache-hit-degradation.md` — full hypothesis enumeration (A–I)
 - `docs/08-customer-simulation-findings.md` — end-to-end pattern with two-lens (PAYG / PTU) translation
 - `docs/05-methodology.md` — measurement contract every number above resolves to
