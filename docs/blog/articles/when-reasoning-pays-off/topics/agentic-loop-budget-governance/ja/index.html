@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>エージェント型ループと予算ガバナンス | when reasoning pays off</title>
+  <meta name="description" content="運用パターンのトピック。タスクがツールループになった瞬間、呼び出し単位の effort 調整は効きにくくなります。しきい値、フェイルクローズのブレーカー、評価に基づくエスカレーション、ステップ単位のコスト追跡でループに境界を引きます。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated_topic">
+  <meta name="article:source-locale" content="en">
+  <meta name="article:source-article-sha256" content="8e41112f14bcf0e907d50a36b7e41abf8c823db09ac88d92909d1552a87627df">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="../ja/">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="記事ナビゲーション">
+        <a href="../../../../../../ja/">ホーム</a>
+        <a href="../../../../ja/">記事</a>
+        <a href="../../../ja/">概説エッセイ</a>
+        <a href="../../../../../charts/?lang=ja">根拠ダッシュボード</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ja/">記事</a> / <a href="../../../ja/">When reasoning pays off</a> / トピック詳細</p>
+    <p class="article-kicker">運用パターン · ループと予算ガバナンス (L6) · 新しい測定ではなく設計</p>
+    <h1>エージェント型ループ：天井チェックが「止めるべき」と言ったあと、実際にループを止めるのは誰か</h1>
+    <p class="lede">対になるトピックは、きれいな結論で終わります。ツールエージェントの品質が天井に張り付いたら、推論 effort を上げても得られるのはスコアではなくレイテンシとコストである。だから、上限に届く最も低い effort にルーティングすればよい。単一の呼び出しなら、その助言はまったく正しいものです。けれども現実のエージェントが、一度の呼び出しで終わることはめったにありません。計画し、ツールを呼び、結果を読み、もう一度推論し、ループします。タスクがループになった瞬間、コストは価格表から読み取れる数値ではなく、<em>ステップにわたる積分</em>になります。そして誰もが最初に手を伸ばす呼び出し単位の effort ダイヤルは、実際にお金を使っている対象にはもう届きません。このトピックは天井チェックのもう半分です。「この呼び出しにさらに effort をかける価値があるか」ではなく、「ループはいつ止まるのか、そして誰がそう決めたのか」です。</p>
+
+    <section class="article-section">
+      <h2>このパターンが必要になる理由</h2>
+      <p>
+        このトピックを生む午後の形は、だいたいこうです。あなたのエージェントは
+        すべてのデモを通過します。ところが、ごく普通のサポートチケットが一つ、
+        それをループへ押し込みます
+        — 検索し、読み直し、別のツールを呼び、少しだけ深く考え、もう一度試す —
+        そして四十回のツール呼び出しのあとで答えを返します。答えは<em>正しい</em>。
+        ただし、そのタスクに見込んでいた予算の40×がかかっていて、月次請求書を見るまで
+        誰も気づきません。何も失敗していません。例外も、500も、アラートもない。
+        それが暴走するループを危険にします。請求書を読む直前まで、
+        それは正常に動いているエージェントに見えるのです。
+      </p>
+      <p>
+        そのエージェントが期待を下回ると、直感はいつもの方向へ向かいます — もう少し
+        長くループさせよう、もう少し強く考えさせよう。対になる天井チェックは、単一の
+        呼び出しで「もっと考える」が効かなくなる場所をすでに示しました。このトピックが
+        扱うのは、呼び出し単位のレバーが触れられない部分、つまり呼び出しの<em>回数</em>です。
+        こうしたワークロードを運用しているなら、おそらくすでに呼び出し単位のダイヤルに
+        手を伸ばし、それが十分には効かないことを感じているはずです。
+      </p>
+      <ul>
+        <li><code>reasoning_effort</code>（レバー <strong>L4</strong>）は、<em>一つ</em>の呼び出しの推論トークンに境界を引きます。ループが何回呼び出すかについては何も言いません。</li>
+        <li><code>max_output_tokens</code>（レバー <strong>L5</strong>）は、<em>一つ</em>の呼び出しの出力に境界を引きます。反復全体の累積支出には境界を引けません。</li>
+        <li>プロンプトキャッシュの安定性（レバー <strong>L3</strong>）は、一つのプレフィックスの入力コストを下げます。ループではステップごとにトランスクリプトが伸びるため、請求額が最も大きいときに、まさにキャッシュ可能な割合が小さくなります。</li>
+      </ul>
+      <p>
+        だからといって、呼び出し単位のレバーが間違っているわけではありません。単一の
+        呼び出しでは、なお最初に取るべき正しい手です。ただ、それらはループの一層下で
+        作用しているだけです。能力の問い — モデルはループできるのか、百万トークンを
+        保持できるのか — は、そもそも難所ではありませんでした。難しいのはループを
+        統治することです。しきい値、介入、評価、追跡可能性、そして所有です。
+      </p>
+    </section>
+
+    <aside class="article-section banner" aria-label="根拠の境界">
+      <p>
+        <strong>これは新しい測定ではなく、設計として読んでください。</strong> このトピックは
+        <strong>Tier&nbsp;2 運用パターン</strong>です。新しく測定した量は導入しません。
+        依拠している測定済みの支点は、対になるトピックの benchmark-03 の天井
+        （実際に公開された結果）だけです。そしてここで述べるすべてのループ制御は、
+        このリポジトリ自身の測定ランナーが<em>すでに</em>実装しているガードから取り出したものです —
+        ベンチマークバッチ自体が、暴走してはならない無境界コストのループだからです。
+        本番のループが実際にどれほど頻繁に暴走するのか、またそのステップ数の分布は、
+        <strong>ここでは測定していません</strong>。その誠実な境界は、下の出典セクションで
+        明示したままにしています。正準の書き下ろしは
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — エージェント型ループの予算ガバナンス</a>です。
+      </p>
+    </aside>
+
+    <div class="article-summary-grid" aria-label="トピック要約">
+      <section class="summary-tile"><h2>問い</h2><p>タスクがモデル呼び出しのループであるとき、累積コストに境界を引くものは何か — そしてその境界を誰が所有するのか。</p></section>
+      <section class="summary-tile"><h2>パターン</h2><p>運用レバー L6：ステップ上限とコスト天井、フェイルクローズのブレーカー、評価に基づくエスカレーション、ステップ単位のコスト追跡可能性。</p></section>
+      <section class="summary-tile"><h2>対になる根拠</h2><p>測定済み：benchmark-03 の品質天井は 1.97–2.00 にあり、コストは $0.002762 → $0.003499、レイテンシは 2.9s → 3.8s へ上がりました — ループが尊重すべきステップ単位の知見です。</p></section>
+      <section class="summary-tile"><h2>判断</h2><p>実行する前にループに境界を引き、ブレーカーをフェイルクローズにし、すべての天井を、誰かがホットフィックスで引き上げられる定数ではなく、コミットされレビューされるポリシーとして扱います。</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="トピックのセクション">
+      <strong>面ごとに読む：</strong>
+      <a href="#s1">しきい値</a>
+      <a href="#s2">介入</a>
+      <a href="#s3">評価</a>
+      <a href="#s4">追跡可能性</a>
+      <a href="#s5">ガバナンス</a>
+      <a href="#boundary">出典と根拠の境界</a>
+    </nav>
+
+    <p class="banner">
+      <strong>対になるトピック：</strong>
+      <a href="../../tool-agent-ceiling-checks/ja/">ツールエージェントの天井チェック</a>は
+      検出の半分です — 単一の呼び出しがどこで改善しなくなるかを示します。この
+      トピックは介入の半分です — それでもループが支出を続けるとき、何がそれを止めるのか。
+    </p>
+
+    <section class="article-section">
+      <h2>暴走コストは数値ではなく積分である</h2>
+      <p>
+        ループに驚かされるのは、その請求額が事前に価格づけできる数値ではなく、
+        ステップにわたる和だからです。
+      </p>
+      <pre class="code-block"><code>total_cost ≈ Σ_step ( input_tokens_step    × input_rate
+                    + reasoning_tokens_step × output_rate
+                    + output_tokens_step    × output_rate )</code></pre>
+      <p>
+        その和を、誰の予想よりも速く大きくするものが三つあります。第一に、反復回数に
+        境界がないことです。ハードキャップがなければ、収束しないループ — 不安定なツール、
+        あいまいなサブゴール、「正しくなるまで改善し続ける」という指示 — は、課金対象の
+        呼び出しを出し続けます。モデルの中にそれを止めるものはありません。第二に、
+        コンテキストがステップごとに伸びることです。各反復は、前のトランスクリプトに
+        新しいツール出力を足して次の入力として再送するため、後半のステップほど高価になります。
+        さらにプレフィックスの一バイトの変化がキャッシュを無効にし、それらは入力単価どおりに
+        請求されます。第三に、effort がループ内で掛け算されることです。高い
+        <code>reasoning_effort</code> のデフォルトは、ステップ単位の推論トークンに
+        ステップ数を掛けることになり、間違えるには最も高くつく場所です。
+      </p>
+      <p>
+        呼び出し単位のレバーは、それぞれその和の一項を攻めます。けれども、
+        <em>項の数</em>や<em>進行中の合計</em>に境界を引くことはできません。
+        それがループの開く隙間であり、下の五つの面がその閉じ方です。
+      </p>
+    </section>
+
+    <section id="s1" class="article-section">
+      <h2>しきい値 — ステップ上限と累積コスト天井</h2>
+      <p><em>一つのタスクが、隣のタスクの 40× を静かに使ったとき、初めてこれにぶつかります。</em></p>
+      <p>
+        <strong>仕組み。</strong> ループには、単一の呼び出しには不要な二つの境界が
+        必要です。最大反復回数と、タスク全体に対する累積トークン／コストの天井です。
+        どちらか一つだけでは漏れます。ステップ上限だけでは、各ステップが巨大な場合に
+        高価な暴走を許します。コスト天井だけでは、安価な無限スピンを許します。
+      </p>
+      <p>
+        <strong>対応。</strong> タスククラスごとに、<code>max_iterations</code> の
+        ステップ上限と <code>hard_ceiling_usd</code> の累積天井を宣言します。
+        天井は、安全に見える丸い数字ではなく、代表的なサンプルの p99 — ステップ数と
+        タスク単位のコスト — から導きます。どちらも保守的に設定し、根拠があるときだけ
+        引き上げます。
+      </p>
+      <p>
+        <strong>リポジトリ内の根拠。</strong> <code>scripts/run_benchmark.py</code> は
+        すでにまさにこれを行っています。事前見積もり
+        （<code>estimate_experiment_cost_usd</code>）を
+        <code>MAX_COST_PER_BENCHMARK_USD</code> でゲートし、実行中の
+        <code>hard_ceiling_usd</code> を <code>BudgetTracker</code>
+        データクラスで追跡し、ツールループには <code>max_iterations</code> 上限
+        （<code>agent.max_tool_iterations</code>）を置いています。<code>docs/05-methodology.md</code>
+        §6 「Budget guards」は、これを衛生ではなく方法論として扱います。「静かな
+        予算超過は、静かな実験スコープ変更でもある」。同じ文は本番にも当てはまります —
+        静かなループ超過は、そのタスクに許されたコストが静かに変わったということです。
+      </p>
+    </section>
+
+    <section id="s2" class="article-section">
+      <h2>介入 — フェイルクローズするサーキットブレーカー</h2>
+      <p><em>ループがエラーになる代わりに一晩中回り続けたとき、初めてこれに出会います。</em></p>
+      <p>
+        <strong>仕組み。</strong> しきい値がループの途中で越えられたら、ループは
+        決定的かつ目に見える形で止まらなければなりません — ベストエフォートの部分回答に、
+        型のある「予算超過」シグナルを添えて返す — 静かに続けても、静かに切り詰めても
+        いけません。その選択こそが、境界づけられたコストと暴走のすべての違いです。
+      </p>
+      <p>
+        <strong>対応。</strong> 次のいずれかでループを中断するサーキットブレーカーを
+        作ります。ステップ上限に達した、累積コストが <code>hard_ceiling_usd</code> に
+        達した、または進捗なし検出器が発火した — たとえば同じツール呼び出しの反復です。
+        中断時には、終了理由を持つ型付きの終端レコードを出し、そのうえで呼び出し元が
+        なお使えるものを受け取れるよう、最後に回答だけの呼び出しを一度行います。
+        フェイルクローズにします。迷ったときのデフォルトは<em>停止</em>であり、
+        <em>継続</em>ではありません。
+      </p>
+      <p>
+        <strong>リポジトリ内の根拠。</strong> ランナーは型付きの
+        <code>BudgetExceededError</code>（「事前見積もりまたは実行中の合計が予算ガードを
+        破ったときに送出される」）を送出し、<code>BudgetTracker.is_halted</code> は
+        合計が天井を越えた時点で次の呼び出しの前に停止を強制します。プロセスは専用の
+        <code>EXIT_BUDGET</code> コードで終了します。ツールループは同じ考え方の
+        きれいなモデルです。<code>iterations &gt;= max_iterations</code> になると、
+        モデルに最終回答を出させるために <code>tools=</code> なしで最後の呼び出しを一度行い、
+        <code>tool_loop_terminated="iteration_cap"</code> を記録し、回復のレッグを
+        軌跡に追加します。理由を残すフェイルクローズのブレーカーです。そのまま本番へ
+        持ち上げられます。
+      </p>
+    </section>
+
+    <section id="s3" class="article-section">
+      <h2>評価 — 効く場所でだけエスカレートする</h2>
+      <p><em>「ただもっと考えさせよう」が助けにならなくなっても、請求だけは続く日に、これがやって来ます。</em></p>
+      <p>
+        <strong>仕組み。</strong> このリポジトリの中心的な結果は、中程度を超える effort が
+        品質ではなくコストを買う、というものです。benchmark-03 では、品質は effort の
+        はしご全体で 1.97–2.00 付近の天井に保たれ、その一方でリクエスト単位のコストは
+        $0.002762 から $0.003499 へ、レイテンシは 2.9s から 3.8s へ上がりました。
+        ループでは、同じ知見が<em>継続</em>の判断を支配します。もう一ステップ、
+        あるいは次の呼び出しでより高い effort を使うなら、その場所を得るだけの理由が
+        必要です。
+      </p>
+      <p>
+        <strong>対応。</strong> エスカレーション — もう一回反復すること、または次の
+        呼び出しで <code>reasoning_effort</code> を上げること — を安価な評価の後ろに置きます。
+        ルーブリックのスコア、自己一貫性や信頼度のシグナル、明示的な停止チェックです。
+        デフォルトは停止にし、評価に継続の理由を主張させます。そうすれば、終わりのない
+        「終わるまでループする」は、境界のある「評価が効かなくなるまでループする」に
+        変わります。それは単一呼び出しのルーティング判断を、ループの形にしただけです。
+      </p>
+      <p>
+        <strong>リポジトリ内の根拠。</strong> <code>scripts/run_judge.py</code> は、
+        すべてのベンチマークで品質を採点している既存のルーブリック判定器です。同じ形が、
+        自然な継続ゲートになります。1.97–2.00 の天井
+        （<code>results/summary.md</code> §3;
+        <code>benchmarks/03-tool-using-agent/analysis.md</code>）は、ゲートのない
+        「もっと考えて、もう一度ループする」というデフォルトが、リターンの地点を大きく
+        越えて支出を続けることを示す測定済みの根拠です。
+      </p>
+    </section>
+
+    <section id="s4" class="article-section">
+      <h2>追跡可能性 — ループごと、ステップごとにコストを帰属させる</h2>
+      <p><em>$40 のタスクを前にして、どのステップが原因だったのか言えないとき、初めてこれが姿を現します。</em></p>
+      <p>
+        <strong>仕組み。</strong> 帰属できないものは統治できません。タスク終了時の
+        単一の数値は、どのステップが暴走したのか、なぜそうなったのかを隠します。
+        ガバナンスには、安定したループ id にひもづくステップ単位のレコードが必要です。
+        各レコードは、そのステップの使用量、進行中の累積コスト、残っている予算余力を
+        持ちます。
+      </p>
+      <p>
+        <strong>対応。</strong> <code>docs/14-observability-schema.md</code> の
+        リクエスト単位の捕捉を、ループスコープのフィールドで拡張します。安定した
+        <code>loop_id</code> / タスク id、単調増加する <code>step_index</code>、
+        ステップ単位の <code>usage</code> ブロック（すでに捕捉されています —
+        <code>reasoning_tokens</code>、<code>cached_tokens</code>、…）、
+        <code>cumulative_cost_usd</code>、そして <code>budget_remaining_usd</code> です。
+        ステップごとに JSONL の行を一つ出します。ループの請求額はその和であり、
+        <code>budget_remaining_usd</code> が初めて非正になる行が介入点です。
+        終了時の <code>step_index</code> の平均だけでなく、<em>分布</em>に
+        アラームを置きます — 暴走は裾に住んでいます。
+      </p>
+      <p>
+        <strong>範囲メモ（誠実な境界）。</strong> それらのループスコープのフィールドは、
+        すでに出荷済みのものではなく<em>次の増分</em>です。既存の <code>PTURequestRecord</code>
+        — すでに <code>request_idx</code> と完全な <code>usage</code> ブロックを持つもの —
+        と <code>schemas/ptu_request_record.schema.json</code> に差し込まれます。
+        今日のランナーは、すでに反復ごとの <code>usage</code> オブジェクトを一つの
+        セルレベルの dict に合算し、反復ごとの軌跡を記録しています。ループの追跡可能性とは、
+        そのロールアップを第一級にすることです — 合計だけを残すのではなく、ステップ単位の
+        行を残してください。
+      </p>
+    </section>
+
+    <section id="s5" class="article-section">
+      <h2>ガバナンス — 予算は所有される契約である</h2>
+      <p><em>そしてこれは、誰かがホットフィックスで天井を引き上げ、請求額だけが記録もなく動いたときに起こります。</em></p>
+      <p>
+        <strong>仕組み。</strong> ステップ上限とコスト天井は、魔法の数字ではなく
+        ポリシーです。システムが何をしてよいかを決める他の契約と同じように、所有され、
+        バージョン管理され、レビューを通じて変更されなければなりません。天井の引き上げは
+        スコープ変更であり、そう感じられるべきです。
+      </p>
+      <p>
+        <strong>対応。</strong> タスククラスごとの予算ポリシーは、サービス中に散らばる
+        定数ではなく、コミットされた設定として宣言します。すべての天井変更をレビューし、
+        超過率 — ブレーカーがどれほど頻繁に発火するか — を第一級の SLO として追跡し、
+        天井の引き上げには方法論変更と同じ儀式を与えます。
+        <code>docs/16-release-tiers-and-redaction-policy.md</code> のリリースガバナンスの
+        規律は、公開データに適用された同じ形です。ここではそれを支出に適用します。
+      </p>
+      <p>
+        <strong>リポジトリ内の根拠。</strong> <code>GOVERNANCE.md</code> は、予算ポリシーが
+        従う、所有された契約の変更管理モデルです。そして <code>docs/05</code> §6 の
+        「静かな超過 = 静かなスコープ変更」という規則は、天井変更を日常作業ではなく
+        レビュー可能なものにする文です。
+      </p>
+    </section>
+
+    <section id="boundary" class="article-section">
+      <h2>出典と根拠の境界</h2>
+      <p>
+        このトピックでは二つのことが起きており、それらは別々の Tier にあります。
+        測定済みの支点 — benchmark-03 の天井 — は、監査できる公開結果です。
+        ループガバナンスのパターンは運用設計です。このリポジトリにすでに存在する
+        プリミティブを再利用しますが、それが防ごうとしている暴走挙動そのものは、
+        ここでは測定されていません。下の Tier は、文書化された入力が終わり、設計上の
+        推論が始まる場所を示しています。
+      </p>
+      <ul>
+        <li>[1] <strong>Tier 1 — 方法論契約：</strong> このリポジトリ、<code>docs/05-methodology.md</code> §6 「Budget guards」。このパターンが一般化している、事前見積もりと実行中のハード天井による中断です。「静かな予算超過は、静かな実験スコープ変更でもある」という規則は、§5 に持ち込まれるガバナンス上の姿勢です。</li>
+        <li>[2] <strong>Tier 2 — 測定済みの対になる根拠（benchmark-03）：</strong> このリポジトリ、<code>results/summary.md</code> §3 および <code>benchmarks/03-tool-using-agent/analysis.md</code>。測定済みの天井の出典です — effort のはしご全体で品質は 1.97–2.00 の範囲にあり、その間にリクエスト単位のコストは $0.002762 → $0.003499、レイテンシは 2.9s → 3.8s へ上がりました。これは、ループのエスカレーションゲートが尊重すべきステップ単位の知見です。</li>
+        <li>[3] <strong>運用パターン（測定済み Tier ではなく設計）：</strong> ループ制御は <code>scripts/run_benchmark.py</code> から取り出されています — <code>BudgetTracker</code> / <code>hard_ceiling_usd</code>、<code>BudgetExceededError</code>、<code>EXIT_BUDGET</code>、<code>estimate_experiment_cost_usd</code> が <code>MAX_COST_PER_BENCHMARK_USD</code> によってゲートされること、<code>agent.max_tool_iterations</code>、そして <code>tool_loop_terminated="iteration_cap"</code> — さらに <code>scripts/run_judge.py</code> のルーブリックゲートです。正準の書き下ろしは <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a> で、<code>docs/09-operator-guide-one-page.md</code> では運用レバー <strong>L6</strong> として導入されています。</li>
+        <li>[4] <strong>提案されている次の増分（未実装）：</strong> §4 のループスコープのフィールド — <code>loop_id</code>、<code>step_index</code>、<code>cumulative_cost_usd</code>、<code>budget_remaining_usd</code> — は、<code>docs/14-observability-schema.md</code> と <code>schemas/ptu_request_record.schema.json</code> を拡張します。これらは設計にすぎません。このトピックのどこでも、出荷済みだとは主張していません。</li>
+        <li>[5] <strong>根拠ダッシュボード：</strong> 測定済みの対になる根拠は、レンダリングされた <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 品質・コストチャート</a>として監査できます。</li>
+      </ul>
+      <p>
+        このトピックが確立すること、しないことは次のとおりです。このリポジトリで
+        すでに動いているガードを使ってループに境界を引く方法を示し、継続するかどうかを
+        決めるときに測定済みの天井を尊重します。一方で、ループがどれほど頻繁に暴走するか、
+        タスク形状ごとのステップ数の分布、あるいはロングコンテキストのコストスケーリング曲線は
+        <em>測定していません</em> — <code>docs/04</code> §4 は、ここにあるどのベンチマークも
+        ロングアウトプット／ロングコンテキストのワークロードを測っていないと、すでに記録しています。
+        それらは静かな主張ではなく、将来の暴走特性化ベンチマークが閉じるべき誠実な空白として
+        扱ってください。
+      </p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>このパターンによって言えること</h2>
+      <p>ループ作業で役に立つ文は、「もっと強く考えさせよう」でも「もっと長くループさせよう」でもありません。「走らせる前にループに境界を引き、その境界を自分たちが所有するものにする」です。</p>
+      <p><a class="button-link" href="../../../ja/">概説エッセイへ戻る</a></p>
+
+      <h2>実践上の規則</h2>
+      <ol>
+        <li>すべての複数呼び出しタスクに、一つではなく二つの境界を与えます。代表的な p99 からサイズを決めた <code>max_iterations</code> のステップ上限<em>と</em> <code>hard_ceiling_usd</code> の累積天井です。</li>
+        <li>ブレーカーをフェイルクローズにします — 上限、天井、進捗なしのいずれでも、停止し、型付きの理由を記録し、ベストエフォートの部分回答を返します。</li>
+        <li>すべてのエスカレーションを安価な評価の後ろに置き、測定済みの天井を尊重します。中程度を超えると、effort が買ったのはスコアではなくコストでした。</li>
+        <li>タスク終了時の合計だけでなくステップ単位の行を残し、どのステップが暴走したのか名指しできるようにします。</li>
+        <li>予算をコミットされレビューされるポリシーとして保持します。超過率を SLO として追跡し、天井の引き上げにはスコープ変更と同じ儀式を与えます。</li>
+      </ol>
+      <p>
+        <strong>実践上の規則：L1–L5 は各呼び出しに境界を引き、L6 はループに境界を引きます。
+        ループが走る前にいつ止めるかを決め、その決定を、モデルがデフォルトで到達する何かではなく、
+        自分たちが所有する何かにしてください。</strong>
+      </p>
+      <p>
+        <a class="button-link" href="../../tool-agent-ceiling-checks/ja/">対になる天井チェックを読む</a>
+      </p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>次：</strong>
+        <a href="../../ptu-payg-planning/ja/">PTU/PAYG のクロスオーバー：容量の結果ではなく、計画のための線</a>
+        &mdash; ループに境界を引き、ワークロードの規模を見積もったあと、
+        プロビジョンドスループットはいつ pay-as-you-go を上回るのでしょうか。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT ライセンスの研究成果物 · 公開データはサニタイズ済み、または集計済みのものだけです。</p></footer>
+</body>
+</html>
