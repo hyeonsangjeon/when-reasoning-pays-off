@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agentic loop और budget governance | when reasoning pays off</title>
-  <meta name="description" content="एक operator-pattern विषय: जैसे ही कोई काम tool loop बनता है, per-call effort tuning का असर कम पड़ जाता है। loop को thresholds, fail-closed breaker, eval-gated escalation, और per-step cost traceability से बांधें।">
+  <meta name="description" content="एक operator-pattern topic: task जैसे ही tool loop बनता है, per-call effort tuning काम नहीं आती। loop को thresholds, fail-closed breaker, eval-gated escalation, और per-step cost traceability से बांधें।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -42,28 +42,28 @@
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../hi/">लेख</a> / <a href="../../../hi/">जब reasoning payoff देती है</a> / विषय विवरण</p>
     <p class="article-kicker">Operator pattern · loop &amp; budget governance (L6) · नई measurement नहीं, design</p>
-    <h1>Agentic loops: ceiling check के “रुकिए” कहने के बाद, असल में loop कौन रोकता है?</h1>
-    <p class="lede">साथ वाला विषय एक साफ़ नोट पर खत्म होता है: जब tool-agent की गुणवत्ता अपने ceiling से टिका दी जाती है, तब अधिक reasoning effort score नहीं, latency और cost खरीदता है — इसलिए उस सबसे कम effort पर route करें जो cap तक पहुंचता है। एक call के लिए यह सलाह बिल्कुल सही है। लेकिन वास्तविक agent शायद ही कभी एक call होता है। वह plan करता है, tool call करता है, result पढ़ता है, फिर से reason करता है, और loop करता है। जिस क्षण task loop बनता है, cost pricing page से पढ़ी जा सकने वाली संख्या नहीं रहती, बल्कि <em>steps पर integral</em> बन जाती है — और per-call effort dial, वह lever जिसे सब सबसे पहले पकड़ते हैं, अब उस चीज़ तक नहीं पहुंचता जो असल में आपका पैसा खर्च कर रही है। यह विषय ceiling check का दूसरा आधा है: “क्या इस call पर और effort लगाना सही है” नहीं, बल्कि “loop कब रुकता है, और यह किसने तय किया।”</p>
+    <h1>Agentic loops: ceiling check “रुको” कह दे, उसके बाद loop सच में कौन रोकता है?</h1>
+    <p class="lede">साथ वाला topic एक साफ़ बात पर खत्म होता है: tool-agent quality जब अपने ceiling पर अटक जाए, तब अधिक reasoning effort से score नहीं बढ़ता, सिर्फ latency और cost बढ़ती है — इसलिए उस सबसे कम effort पर route करें जो cap तक पहुंचता है। एक call के लिए यह सलाह बिल्कुल सही है। लेकिन असली agent शायद ही कभी सिर्फ एक call होता है। वह plan करता है, tool call करता है, result पढ़ता है, फिर reason करता है, और loop में जाता है। task जैसे ही loop बनता है, cost pricing page से पढ़ी जाने वाली एक संख्या नहीं रहती; वह <em>steps पर integral</em> बन जाती है। और per-call effort dial — वही lever जिसे सब पहले पकड़ते हैं — अब उस हिस्से तक नहीं पहुंचता जो असल में पैसा खर्च कर रहा है। यह topic ceiling check का दूसरा आधा है: “इस call पर और effort लगाने से फायदा है?” नहीं, बल्कि “loop कब रुकेगा, और यह किसने तय किया?”</p>
 
     <section class="article-section">
       <h2>यह pattern क्यों मौजूद है</h2>
       <p>
-        इस विषय को जन्म देने वाली दोपहर कुछ ऐसी दिखती है। आपका agent
-        हर demo पास कर देता है। फिर एक साधारण support ticket उसे loop में भेज देता है
-        — search, फिर से पढ़ना, दूसरा tool call करना, थोड़ा और गहराई से सोचना, फिर कोशिश करना —
-        और चालीस tool calls के बाद वह जवाब देता है। जवाब <em>सही</em> है। उस
-        task के लिए आपके budget से चालीस गुना cost भी आ चुकी है, और monthly invoice तक
-        किसी ने ध्यान नहीं दिया। कुछ fail नहीं हुआ: कोई exception नहीं, कोई 500 नहीं, कोई
-        alert नहीं। यही runaway loop को खतरनाक बनाता है। bill पढ़ने तक वह
-        एक working agent जैसा ही दिखता है।
+        जिस दोपहर से यह topic पैदा होता है, वह कुछ ऐसी होती है। आपका agent
+        हर demo पास कर देता है। फिर एक सामान्य support ticket उसे loop में डाल देता है
+        — search, फिर से पढ़ना, दूसरा tool call, थोड़ा और सोचना, फिर कोशिश —
+        और कई tool calls बाद वह जवाब देता है। जवाब <em>सही</em> है। लेकिन उस
+        task की cost आपके budget से कई गुना निकल चुकी है, और monthly invoice आने तक
+        किसी को पता नहीं चलता। कुछ fail नहीं हुआ: कोई exception नहीं, कोई 500 नहीं, कोई
+        alert नहीं। runaway loop इसी वजह से खतरनाक है। bill पढ़ने तक वह
+        बिल्कुल working agent जैसा दिखता है।
       </p>
       <p>
-        जब वह agent कमतर प्रदर्शन करता है, instinct वही परिचित होता है — उसे
-        थोड़ा और loop करने दें, उसे थोड़ा और सोचने दें। साथ वाले ceiling
-        check ने पहले ही दिखा दिया कि single call पर “think harder” कहां payoff देना बंद करता है।
-        यह विषय उस हिस्से के बारे में है जिसे per-call levers छू नहीं सकते: calls की <em>संख्या</em>।
-        अगर आप ऐसा workload operate करते हैं, तो शायद आपने per-call dials तक हाथ बढ़ाया होगा
-        और पाया होगा कि वे पूरी तरह काटते नहीं।
+        जब agent कमजोर पड़ता है, instinct वही पुरानी होती है — उसे
+        थोड़ा और loop करने दें, थोड़ा और सोचने दें। साथ वाले ceiling
+        check ने पहले ही दिखा दिया कि single call पर “think harder” कहां payoff देना बंद कर देता है।
+        यह topic उस हिस्से पर है जिसे per-call levers छू ही नहीं सकते: calls की <em>संख्या</em>।
+        अगर आप ऐसा workload चला रहे हैं, तो शायद आपने per-call dials आज़मा लिए होंगे
+        और पाया होगा कि वे यहां पूरी पकड़ नहीं बनाते।
       </p>
       <ul>
         <li><code>reasoning_effort</code> (lever <strong>L4</strong>) <em>एक</em> call के reasoning tokens को bound करता है। यह loop कितने calls करेगा, इस बारे में कुछ नहीं कहता।</li>
@@ -71,9 +71,9 @@
         <li>Prompt-cache stability (lever <strong>L3</strong>) एक prefix की input cost घटाती है। loop में transcript हर step पर बढ़ता है, इसलिए cacheable fraction ठीक तब घटता है जब bill सबसे बड़ा होता है।</li>
       </ul>
       <p>
-        इससे per-call levers गलत नहीं हो जाते; किसी भी single call पर वे अभी भी सही
-        first move हैं। वे बस loop से एक layer नीचे operate करते हैं।
-        capability वाला सवाल — क्या model loop कर सकता है, क्या वह million tokens पकड़ सकता है — कभी कठिन नहीं था।
+        इसका मतलब यह नहीं कि per-call levers गलत हैं; किसी भी single call पर वे अभी भी सही
+        first move हैं। बस वे loop से एक layer नीचे काम करते हैं।
+        capability वाला सवाल — क्या model loop कर सकता है, क्या वह million tokens संभाल सकता है — असली कठिन सवाल कभी था ही नहीं।
         कठिन हिस्सा loop को govern करना है:
         thresholds, intervention, evals, traceability, और ownership।
       </p>
@@ -81,29 +81,29 @@
 
     <aside class="article-section banner" aria-label="साक्ष्य सीमा">
       <p>
-        <strong>इसे नई measurement नहीं, design की तरह पढ़ें।</strong> यह विषय
+        <strong>इसे नई measurement नहीं, design की तरह पढ़ें।</strong> यह topic
         एक <strong>Tier&nbsp;2 operator pattern</strong> है: यह कोई नई measured magnitude
-        introduce नहीं करता। जिस एक measured anchor पर यह निर्भर है, वह साथ वाले topic से
+        introduce नहीं करता। इसका एक measured anchor साथ वाले topic का
         benchmark-03 ceiling है (एक वास्तविक, published result),
         और यहां बताए गए हर loop control को इस repository के अपने measurement runner में
-        <em>पहले से</em> implemented guard से उठाया गया है — क्योंकि
-        benchmark batch खुद भी unbounded-cost loop है जिसे runaway नहीं होने देना चाहिए।
-        production loops वास्तव में कितनी बार runaway होते हैं, और उनके step counts का distribution क्या है,
-        यह <strong>यहां measured नहीं है</strong>; यह ईमानदारी नीचे sources section में
-        explicit रखी गई है। canonical write-up है
+        <em>पहले से</em> मौजूद guard से सीधे लिया गया है — क्योंकि
+        benchmark batch खुद भी unbounded-cost loop है; उसे भी runaway नहीं होने देना होता।
+        production loops सच में कितनी बार runaway होते हैं, और उनके step counts का distribution क्या है,
+        यह <strong>यहां measured नहीं है</strong>; यह boundary नीचे sources section में
+        साफ़ रखी गई है। canonical write-up है
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — agentic loop budget governance</a>.
       </p>
     </aside>
 
     <div class="article-summary-grid" aria-label="विषय सारांश">
-      <section class="summary-tile"><h2>प्रश्न</h2><p>जब कोई task model calls का loop हो, तो cumulative cost को क्या bound करता है — और उस bound का owner कौन है?</p></section>
+      <section class="summary-tile"><h2>प्रश्न</h2><p>जब task model calls का loop हो, तो cumulative cost को क्या bound करता है — और उस bound का owner कौन है?</p></section>
       <section class="summary-tile"><h2>Pattern</h2><p>Operator lever L6: step cap और cost ceiling, fail-closed breaker, eval-gated escalation, और per-step cost traceability।</p></section>
-      <section class="summary-tile"><h2>साथ वाला evidence</h2><p>Measured: benchmark-03 का 1.97–2.00 quality ceiling, जबकि cost $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी — वह per-step finding जिसका loop को सम्मान करना चाहिए।</p></section>
-      <section class="summary-tile"><h2>निर्णय</h2><p>loop चलाने से पहले उसे bound करें, breaker को fail closed बनाएं, और हर ceiling को committed, reviewed policy मानें — ऐसा constant नहीं जिसे कोई hotfix में बढ़ा दे।</p></section>
+      <section class="summary-tile"><h2>साथ वाला evidence</h2><p>Measured: benchmark-03 का 1.97–2.00 quality ceiling, जबकि cost $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी — यही per-step finding loop को माननी होगी।</p></section>
+      <section class="summary-tile"><h2>निर्णय</h2><p>loop चलाने से पहले उसे bound करें, breaker को fail closed रखें, और हर ceiling को committed, reviewed policy मानें — ऐसा constant नहीं जिसे कोई hotfix में बढ़ा दे।</p></section>
     </div>
 
     <nav class="article-outline" aria-label="विषय अनुभाग">
-      <strong>Surface के अनुसार पढ़ें:</strong>
+      <strong>पहलू के हिसाब से पढ़ें:</strong>
       <a href="#s1">Thresholds</a>
       <a href="#s2">Intervention</a>
       <a href="#s3">Evals</a>
@@ -116,81 +116,81 @@
       <strong>साथ वाला topic:</strong>
       <a href="../../tool-agent-ceiling-checks/hi/">Tool-agent ceiling checks</a>
       detection वाला आधा है — यह दिखाता है कि single call कहां improve होना बंद करता है। यह
-      topic intervention वाला आधा है — जब loop फिर भी spend करता रहता है, तो उसे क्या रोकता है।
+      topic intervention वाला आधा है — जब loop फिर भी spend करता रहता है, तो उसे कौन रोकता है।
     </p>
 
     <section class="article-section">
       <h2>Runaway cost एक integral है, कोई एक number नहीं</h2>
       <p>
-        loop आपको इसलिए चौंकाता है क्योंकि उसका bill steps पर sum होता है, कोई ऐसी figure नहीं
-        जिसे आप पहले से price कर सकें:
+        loop आपको इसलिए चौंकाता है क्योंकि उसका bill steps का sum होता है, कोई ऐसी figure नहीं
+        जिसका अंदाज़ा आप पहले से भरोसे के साथ लगा सकें:
       </p>
       <pre class="code-block"><code>total_cost ≈ Σ_step ( input_tokens_step    × input_rate
                     + reasoning_tokens_step × output_rate
                     + output_tokens_step    × output_rate )</code></pre>
       <p>
-        तीन बातें उस sum को अपेक्षा से तेज़ बढ़ाती हैं। पहली, iteration count unbounded होता है:
+        तीन बातें उस sum को उम्मीद से तेज़ बढ़ाती हैं। पहली, iteration count unbounded होता है:
         hard cap न हो तो जो loop converge नहीं करता — flaky tool, ambiguous sub-goal,
-        “सही होने तक refine करते रहो” instruction — वह billable calls जारी रखता है, और
-        model के भीतर कुछ उसे रोकता नहीं। दूसरी, context हर step पर बढ़ता है: हर
-        iteration पिछले transcript के साथ नया tool output जोड़कर next input के रूप में फिर भेजता है,
-        इसलिए late steps सबसे महंगे होते हैं, और prefix में single byte change cache flush कर देता है,
-        जिससे वे full input rate पर bill होते हैं। तीसरी, effort loop के भीतर multiply होता है: high
+        “सही होने तक refine करते रहो” instruction — वह billable calls चलाता रहता है, और
+        model के अंदर कोई चीज़ उसे अपने-आप नहीं रोकती। दूसरी, context हर step पर बढ़ता है: हर
+        iteration पुराने transcript के साथ नया tool output जोड़कर next input के रूप में भेजता है,
+        इसलिए late steps सबसे महंगे होते हैं। prefix में single byte change भी cache flush कर देता है,
+        और फिर वही steps full input rate पर bill होते हैं। तीसरी, effort loop के भीतर multiply होता है: high
         <code>reasoning_effort</code> default per-step reasoning
-        tokens को step count से multiply करता है, जो गलत होने की सबसे महंगी जगह है।
+        tokens को step count से multiply करता है; यहां गलती सबसे महंगी पड़ती है।
       </p>
       <p>
-        per-call levers उस sum के एक-एक term पर हमला करते हैं। वे जो नहीं कर सकते,
+        per-call levers उस sum के अलग-अलग term को संभालते हैं। वे जो नहीं कर सकते,
         वह है <em>terms की संख्या</em> या <em>running total</em> को bound करना। यही
-        gap loop खोलता है, और नीचे की पांच surfaces उसे बंद करने का तरीका हैं।
+        gap loop खोलता है, और नीचे दिए पाँच पहलू उसे बंद करने का तरीका हैं।
       </p>
     </section>
 
     <section id="s1" class="article-section">
       <h2>Thresholds — step cap और cumulative cost ceiling</h2>
-      <p><em>आप इसे पहली बार तब देखते हैं जब एक task चुपचाप अपने पड़ोसियों से 40× खर्च कर देता है।</em></p>
+      <p><em>यह पहली बार तब दिखता है जब एक task चुपचाप अपने पड़ोसी tasks से 40× खर्च कर देता है।</em></p>
       <p>
-        <strong>तंत्र।</strong> loop को दो bounds चाहिए जो single call को कभी नहीं चाहिए:
+        <strong>तंत्र।</strong> loop को दो bounds चाहिए, जो single call को नहीं चाहिए:
         maximum iteration count, और पूरे task के लिए cumulative token/cost ceiling।
-        सिर्फ एक से leak होता है। step cap फिर भी expensive runaway allow करता है
-        अगर हर step बहुत बड़ा हो; सिर्फ cost ceiling फिर भी endless cheap spin allow करती है।
+        सिर्फ एक bound leak कर जाता है। step cap के बावजूद expensive runaway हो सकता है
+        अगर हर step बहुत बड़ा हो; सिर्फ cost ceiling हो तो endless cheap spin चल सकता है।
       </p>
       <p>
         <strong>क्या करें।</strong> task class के हिसाब से <code>max_iterations</code>
         step cap और <code>hard_ceiling_usd</code> cumulative ceiling declare करें।
-        ceiling को representative sample के p99 से derive करें — step count और
-        per-task cost — न कि ऐसे round number से जो safe लगता हो। दोनों को
-        conservatively set करें और केवल evidence के साथ raise करें।
+        ceiling को representative sample के p99 से निकालें — step count और
+        per-task cost — किसी ऐसे round number से नहीं जो देखने में safe लगे। दोनों को
+        conservative रखें और केवल evidence के साथ raise करें।
       </p>
       <p>
         <strong>Repo के भीतर evidence।</strong> <code>scripts/run_benchmark.py</code>
-        पहले से ठीक यही करता है: pre-run estimate
+        पहले से यही करता है: pre-run estimate
         (<code>estimate_experiment_cost_usd</code>) जिसे
         <code>MAX_COST_PER_BENCHMARK_USD</code> gate करता है, mid-run
         <code>hard_ceiling_usd</code> जिसे <code>BudgetTracker</code>
         dataclass track करता है, और tool-loop <code>max_iterations</code> cap
         (<code>agent.max_tool_iterations</code>)। <code>docs/05-methodology.md</code>
         §6 “Budget guards” इसे hygiene नहीं, methodology मानता है: “silent
-        budget overrun भी experiment scope में silent change है।” वही
-        sentence production में भी लागू होता है — silent loop overrun, task को allowed cost में silent change है।
+        budget overrun भी experiment scope में silent change है।” यही बात
+        production में भी लागू होती है — silent loop overrun, task की allowed cost में silent change है।
       </p>
     </section>
 
     <section id="s2" class="article-section">
       <h2>Intervention — fail closed करने वाला circuit-breaker</h2>
-      <p><em>आप इसे पहली बार तब देखते हैं जब loop error देने के बजाय पूरी रात spin करता रहता है।</em></p>
+      <p><em>यह पहली बार तब सामने आता है जब loop error देने के बजाय पूरी रात spin करता रहता है।</em></p>
       <p>
         <strong>तंत्र।</strong> जब threshold mid-loop cross होती है, तो
         loop को deterministic और visible तरीके से रुकना चाहिए — best-effort
-        partial answer और typed “budget exceeded” signal लौटाते हुए — कभी silently
-        चलते रहना नहीं, और कभी silently truncate नहीं करना। यही choice bounded cost और runaway के बीच पूरा फर्क है।
+        partial answer और typed “budget exceeded” signal लौटाते हुए। वह कभी silently
+        चलता न रहे, और कभी silently truncate न करे। bounded cost और runaway के बीच असली फर्क यही choice है।
       </p>
       <p>
         <strong>क्या करें।</strong> ऐसा circuit-breaker बनाएं जो इनमें से किसी भी स्थिति पर loop abort करे:
-        step cap reached, cumulative cost <code>hard_ceiling_usd</code> तक पहुंचना,
-        या no-progress detector fire होना — उदाहरण के लिए वही tool call repeat होना।
+        step cap hit हो, cumulative cost <code>hard_ceiling_usd</code> तक पहुंच गई,
+        या no-progress detector fire हुआ — जैसे वही tool call बार-बार repeat हो।
         abort पर termination reason वाला typed terminal record emit करें, फिर एक final answer-only call करें
-        ताकि caller को फिर भी कुछ usable मिल सके। Fail closed: संदेह हो तो default
+        ताकि caller को फिर भी कुछ usable मिले। Fail closed: संदेह हो तो default
         <em>stop</em> है, <em>continue</em> नहीं।
       </p>
       <p>
@@ -200,47 +200,47 @@
         total ceiling cross करते ही next call से पहले halt enforce करता है;
         process dedicated <code>EXIT_BUDGET</code> code से exit करता है। tool
         loop उसी idea का clean model है: <code>iterations &gt;= max_iterations</code> पर
-        यह <code>tools=</code> के बिना one final call fire करता है ताकि model final answer emit करने को forced हो,
+        यह <code>tools=</code> के बिना one final call fire करता है ताकि model final answer emit करने पर मजबूर हो,
         <code>tool_loop_terminated="iteration_cap"</code> record करता है, और
-        recovery leg को trajectory में append करता है। यह reason छोड़ने वाला fail-closed breaker है — इसे production में as-is lift करें।
+        recovery leg को trajectory में append करता है। यह reason छोड़ने वाला fail-closed breaker है — इसे production में as-is अपनाएं।
       </p>
     </section>
 
     <section id="s3" class="article-section">
       <h2>Evals — escalation केवल वहीं करें जहां payoff हो</h2>
-      <p><em>यह उस दिन आता है जब “बस इसे और सोचने दें” मदद करना बंद कर देता है पर billing जारी रहती है।</em></p>
+      <p><em>यह उस दिन आता है जब “बस इसे और सोचने दें” मदद करना बंद कर देता है, लेकिन billing चलती रहती है।</em></p>
       <p>
         <strong>तंत्र।</strong> repo का central result यह है कि mid-range से ऊपर
-        effort quality नहीं, cost खरीदता है। benchmark-03 पर quality पूरे effort ladder में
+        effort से quality नहीं बढ़ती, सिर्फ cost बढ़ती है। benchmark-03 पर quality effort की पूरी range में
         1.97–2.00 के पास ceiling पर रही, जबकि per-request
         cost $0.002762 से $0.003499 और latency 2.9s से 3.8s तक बढ़ी।
         loop में यही finding <em>continuation</em> decision govern करती है: एक और
-        step, या next call पर higher effort, अपनी जगह earn करना चाहिए।
+        step, या next call पर higher effort, अपनी जगह साबित करे।
       </p>
       <p>
         <strong>क्या करें।</strong> escalation — एक और iteration, या next call पर higher
         <code>reasoning_effort</code> — को cheap eval के पीछे gate करें: कोई
         rubric score, self-consistency या confidence signal, explicit stop
-        check। default stop रखें, और eval से continuing के लिए argue करवाएं। इससे
-        open-ended “loop until done” bounded “loop until eval stops
-        paying” में बदलता है, जो single-call routing decision का loop form ही है।
+        check। default stop रखें, और eval से continue करने का कारण मांगें। इससे
+        open-ended “loop until done” bounded “loop until eval says continue” में बदलता है,
+        यानी single-call routing decision का loop form।
       </p>
       <p>
         <strong>Repo के भीतर evidence।</strong> <code>scripts/run_judge.py</code> वही
-        rubric judge है जो हर benchmark में quality score करता है; वही shape natural continuation gate है।
+        rubric judge है जो हर benchmark में quality score करता है; वही pattern natural continuation gate बनता है।
         1.97–2.00 ceiling
         (<code>results/summary.md</code> §3;
         <code>benchmarks/03-tool-using-agent/analysis.md</code>) measured
-        evidence है कि ungated “think harder, loop again” default return के point से काफी आगे तक spend करता रहता है।
+        evidence है कि ungated “think harder, loop again” default return के point से काफी आगे तक spend करवाता रहता है।
       </p>
     </section>
 
     <section id="s4" class="article-section">
       <h2>Traceability — cost को per loop, per step attribute करें</h2>
-      <p><em>यह पहली बार तब सामने आता है जब आप $40 task देखते हैं और बता नहीं पाते कि कौन सा step कारण था।</em></p>
+      <p><em>यह पहली बार तब चुभता है जब $40 task सामने हो और आप बता न पाएं कि कौन सा step वजह था।</em></p>
       <p>
         <strong>तंत्र।</strong> जिसे आप attribute नहीं कर सकते, उसे govern नहीं कर सकते।
-        single end-of-task number छिपा देता है कि कौन सा step runaway हुआ और क्यों। Governance को
+        single end-of-task number यह छिपा देता है कि कौन सा step runaway हुआ और क्यों। Governance के लिए
         stable loop id से keyed per-step records चाहिए, जिनमें step का
         usage, running cumulative cost, और बची हुई budget headroom हो।
       </p>
@@ -251,29 +251,29 @@
         per-step <code>usage</code> block (already captured —
         <code>reasoning_tokens</code>, <code>cached_tokens</code>, …),
         <code>cumulative_cost_usd</code>, और <code>budget_remaining_usd</code>।
-        हर step पर एक JSONL row emit करें; loop का bill sum है, और वह row जहां
+        हर step पर एक JSONL row emit करें; loop का bill इन rows का sum है, और वह row जहां
         <code>budget_remaining_usd</code> पहली बार non-positive होता है, आपका
         intervention point है। termination पर <code>step_index</code> के <em>distribution</em> पर alarm करें,
         सिर्फ mean पर नहीं — runaways tail में रहते हैं।
       </p>
       <p>
-        <strong>Scope note (ईमानदार सीमा)।</strong> वे loop-scoped fields
-        <em>next increment</em> हैं, already shipped चीज़ नहीं। वे existing
-        <code>PTURequestRecord</code> पर slot होते हैं — जिसमें पहले से
+        <strong>Scope note (ईमानदार सीमा)।</strong> ये loop-scoped fields
+        <em>next increment</em> हैं, already shipped चीज़ नहीं। ये existing
+        <code>PTURequestRecord</code> पर fit होते हैं — जिसमें पहले से
         <code>request_idx</code> और full <code>usage</code> block है — और
-        <code>schemas/ptu_request_record.schema.json</code> पर। runner today
+        <code>schemas/ptu_request_record.schema.json</code> पर। आज runner
         पहले से per-iteration <code>usage</code> objects को एक
         cell-level dict में sum करता है और per-iteration trajectory record करता है; loop traceability
-        वही roll-up first-class बनाया हुआ है — per-step rows रखें, केवल sum न रखें।
+        उसी roll-up को first-class बनाती है — per-step rows रखें, केवल sum नहीं।
       </p>
     </section>
 
     <section id="s5" class="article-section">
       <h2>Governance — budget एक owned contract है</h2>
-      <p><em>और यह तब चोट करता है जब कोई hotfix में ceiling bump कर देता है और bill बिना paper trail के साथ चल पड़ता है।</em></p>
+      <p><em>और यह तब चोट करता है जब कोई hotfix में ceiling bump कर देता है और bill बिना paper trail के बढ़ जाता है।</em></p>
       <p>
         <strong>तंत्र।</strong> Step caps और cost ceilings policy हैं, magic numbers नहीं।
-        उन्हें owned, version-controlled, और review के through changed होना चाहिए —
+        उन्हें owned, version-controlled, और review के जरिए change होना चाहिए —
         किसी भी ऐसे contract की तरह जो तय करता है system को क्या करने की अनुमति है।
         ceiling raise scope change है, और उसे वैसा ही महसूस होना चाहिए।
       </p>
@@ -283,37 +283,37 @@
         change review करें; overrun rate — breaker कितनी बार fire होता है — को
         first-class SLO की तरह track करें; और ceiling raise को methodology change जितनी ceremony दें।
         <code>docs/16-release-tiers-and-redaction-policy.md</code> में
-        release-governance discipline published data पर applied वही shape है; यह इसे spend पर apply करता है।
+        release-governance discipline published data पर यही pattern लागू करता है; यहां वही spend पर लागू होता है।
       </p>
       <p>
-        <strong>Repo के भीतर evidence।</strong> <code>GOVERNANCE.md</code> वह
-        owned-contract change-control model है जिसका budget policy अनुसरण करती है, और <code>docs/05</code> §6 से “silent
-        overrun = silent scope change” rule वह sentence है जो ceiling change को routine नहीं, reviewable बनाता है।
+        <strong>Repo के भीतर evidence।</strong> <code>GOVERNANCE.md</code> वही
+        owned-contract change-control model है जिसका budget policy पालन करती है, और <code>docs/05</code> §6 का “silent
+        overrun = silent scope change” rule वह line है जो ceiling change को routine नहीं, reviewable बनाती है।
       </p>
     </section>
 
     <section id="boundary" class="article-section">
       <h2>Sources और evidence boundary</h2>
       <p>
-        इस topic में दो चीज़ें हो रही हैं, और वे अलग tiers में रहती हैं।
+        इस topic में दो चीज़ें साथ चल रही हैं, और वे अलग tiers में रहती हैं।
         measured anchor — benchmark-03 ceiling — published result है जिसे आप
         audit कर सकते हैं। loop-governance pattern operational design है: यह
         इस repository में पहले से मौजूद primitives reuse करता है, लेकिन जिस runaway behavior
-        से यह guard करता है, वह खुद यहां measured नहीं है। नीचे के tiers बताते हैं कि
+        से यह guard करता है, वह खुद यहां measured नहीं है। नीचे के tiers साफ़ करते हैं कि
         documented input कहां खत्म होता है और design inference कहां शुरू होती है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> §6 “Budget guards.” pre-run estimate plus mid-run hard-ceiling abort जिसे यह pattern generalize करता है; rule “a silent budget overrun is also a silent change in experiment scope” वह governance stance है जिसे §5 में ले जाया गया है।</li>
-        <li>[2] <strong>Tier 2 — measured companion (benchmark-03):</strong> यह repository, <code>results/summary.md</code> §3 और <code>benchmarks/03-tool-using-agent/analysis.md</code>। measured ceiling का source — quality effort ladder के पार 1.97–2.00 के भीतर रही, जबकि per-request cost $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी। यह per-step finding है जिसका loop के escalation gate को सम्मान करना चाहिए।</li>
-        <li>[3] <strong>Operator pattern (design, measured tier नहीं):</strong> loop controls <code>scripts/run_benchmark.py</code> से lifted हैं — <code>BudgetTracker</code> / <code>hard_ceiling_usd</code>, <code>BudgetExceededError</code>, <code>EXIT_BUDGET</code>, <code>estimate_experiment_cost_usd</code> gated by <code>MAX_COST_PER_BENCHMARK_USD</code>, <code>agent.max_tool_iterations</code>, और <code>tool_loop_terminated="iteration_cap"</code> — और rubric gate <code>scripts/run_judge.py</code> से। canonical write-up <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a> है, जिसे <code>docs/09-operator-guide-one-page.md</code> में operator lever <strong>L6</strong> के रूप में introduce किया गया है।</li>
-        <li>[4] <strong>Proposed next increment (unbuilt):</strong> §4 में loop-scoped fields — <code>loop_id</code>, <code>step_index</code>, <code>cumulative_cost_usd</code>, <code>budget_remaining_usd</code> — <code>docs/14-observability-schema.md</code> और <code>schemas/ptu_request_record.schema.json</code> को extend करते हैं। वे design only हैं; इस topic में कहीं यह दावा नहीं कि वे shipped हैं।</li>
-        <li>[5] <strong>Evidence dashboard:</strong> measured companion rendered <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality और cost chart</a> के रूप में auditable है।</li>
+        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> §6 “Budget guards.” pre-run estimate plus mid-run hard-ceiling abort, जिसे यह pattern generalize करता है; rule “a silent budget overrun is also a silent change in experiment scope” वही governance stance है जिसे §5 में ले जाया गया है।</li>
+        <li>[2] <strong>Tier 2 — measured companion (benchmark-03):</strong> यह repository, <code>results/summary.md</code> §3 और <code>benchmarks/03-tool-using-agent/analysis.md</code>। measured ceiling का source — quality effort की पूरी range में 1.97–2.00 के भीतर रही, जबकि per-request cost $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी। यही per-step finding है जिसे loop के escalation gate को मानना चाहिए।</li>
+        <li>[3] <strong>Operator pattern (design, measured tier नहीं):</strong> loop controls सीधे <code>scripts/run_benchmark.py</code> से लिए गए हैं — <code>BudgetTracker</code> / <code>hard_ceiling_usd</code>, <code>BudgetExceededError</code>, <code>EXIT_BUDGET</code>, <code>estimate_experiment_cost_usd</code> gated by <code>MAX_COST_PER_BENCHMARK_USD</code>, <code>agent.max_tool_iterations</code>, और <code>tool_loop_terminated="iteration_cap"</code> — और rubric gate <code>scripts/run_judge.py</code> से। canonical write-up <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a> है, जिसे <code>docs/09-operator-guide-one-page.md</code> में operator lever <strong>L6</strong> के रूप में introduce किया गया है।</li>
+        <li>[4] <strong>Proposed next increment (unbuilt):</strong> §4 में loop-scoped fields — <code>loop_id</code>, <code>step_index</code>, <code>cumulative_cost_usd</code>, <code>budget_remaining_usd</code> — <code>docs/14-observability-schema.md</code> और <code>schemas/ptu_request_record.schema.json</code> को extend करते हैं। ये सिर्फ design हैं; इस topic में कहीं यह दावा नहीं कि वे shipped हैं।</li>
+        <li>[5] <strong>Evidence dashboard:</strong> measured companion rendered <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality और cost chart</a> के रूप में audit किया जा सकता है।</li>
       </ul>
       <p>
         यह topic क्या establish करता है और क्या नहीं: यह दिखाता है कि इस repository में पहले से चल रहे guards से loop को कैसे bound करें,
-        और continue करने का decision लेते समय measured ceiling का सम्मान करता है। यह <em>measure नहीं करता</em>
+        और continue करने का decision लेते समय measured ceiling को कैसे respect करें। यह <em>measure नहीं करता</em>
         कि loops कितनी बार runaway होते हैं, task
-        shape के हिसाब से step counts का distribution, या long-context cost-scaling curve — <code>docs/04</code> §4
+        shape के हिसाब से step counts का distribution क्या है, या long-context cost-scaling curve कैसा है — <code>docs/04</code> §4
         पहले से record करता है कि यहां कोई benchmark long-output / long-context
         workloads measure नहीं करता। इन्हें future runaway-characterization
         benchmark से close होने वाले honest gaps मानें, quiet claims नहीं।
@@ -322,21 +322,21 @@
 
     <section class="article-section decision-box">
       <h2>यह pattern हमें क्या कहने देता है</h2>
-      <p>loop work के लिए उपयोगी sentence “इसे और सोचने दें” या “इसे और लंबे समय तक loop करने दें” नहीं है। वह है “loop चलाने से पहले उसे bound करें, और उस bound को ऐसी चीज़ बनाएं जिसके owner आप हों।”</p>
+      <p>loop work के लिए उपयोगी sentence “इसे और सोचने दें” या “इसे और लंबे समय तक loop करने दें” नहीं है। उपयोगी sentence है: “loop चलाने से पहले उसे bound करें, और उस bound का owner तय करें।”</p>
       <p><a class="button-link" href="../../../hi/">अवलोकन निबंध पर वापस जाएं</a></p>
 
       <h2>व्यावहारिक नियम</h2>
       <ol>
         <li>हर multi-call task को एक नहीं, दो bounds दें: <code>max_iterations</code> step cap <em>और</em> <code>hard_ceiling_usd</code> cumulative ceiling, दोनों representative p99 से sized।</li>
         <li>breaker को fail closed बनाएं — cap, ceiling, या no-progress पर stop करें, typed reason record करें, और best-effort partial answer return करें।</li>
-        <li>हर escalation को cheap eval के पीछे gate करें, और measured ceiling का सम्मान करें: mid-range से ऊपर, effort ने score नहीं, cost खरीदी।</li>
+        <li>हर escalation को cheap eval के पीछे gate करें, और measured ceiling को मानें: mid-range से ऊपर, effort से score नहीं बढ़ा, सिर्फ cost बढ़ी।</li>
         <li>सिर्फ end-of-task sum नहीं, per-step rows रखें, ताकि आप runaway हुए step का नाम ले सकें।</li>
-        <li>budget को committed, reviewed policy की तरह hold करें; overrun rate को SLO की तरह track करें और ceiling raise को scope change की ceremony दें।</li>
+        <li>budget को committed, reviewed policy की तरह रखें; overrun rate को SLO की तरह track करें और ceiling raise को scope change जैसी ceremony दें।</li>
       </ol>
       <p>
         <strong>व्यावहारिक नियम: L1–L5 हर call को bound करते हैं; L6 loop को bound करता है।
         loop चलने से पहले तय करें कि कब stop करना है, और उस decision को
-        model द्वारा default से पहुंची चीज़ नहीं, बल्कि आपकी owned चीज़ बनाएं।</strong>
+        model के default पर छोड़ी गई चीज़ नहीं, बल्कि आपकी owned चीज़ बनाएं।</strong>
       </p>
       <p>
         <a class="button-link" href="../../tool-agent-ceiling-checks/hi/">साथ वाला ceiling check पढ़ें</a>
