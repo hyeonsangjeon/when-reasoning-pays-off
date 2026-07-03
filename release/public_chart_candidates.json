@@ -1,0 +1,391 @@
+{
+  "candidates": [
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "std_usd_per_request",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "2fdecd3514215cd1d86e9a412e3fe7a3ef339f7336fec4a577d54b63ee4fbeb2"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "usd_per_request"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-01/latency.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_latency_ms",
+        "std_latency_ms",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "460c29088d055f460c7d1133c45117f809971f7443a391f637f6f1cda9af29d1"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "milliseconds"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-01/quality.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_judge_score",
+        "std_judge_score",
+        "judge_n"
+      ],
+      "source_sanitized_sha256": [
+        "7a3b1ca1c4c9c5da8d555b4fa2322f1e47967881ada9d8b74245f6b8345d8ab8"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "judge_score"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-01/throughput-gain.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "throughput_gain_factor",
+        "tokens_per_request",
+        "baseline_tokens_per_request"
+      ],
+      "source_sanitized_sha256": [
+        "09e91245275b2c60ebbed2ef586d50a16c10f5978c5df585267bf3273c35be4f"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "factor"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "std_usd_per_request",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "f52caaca7dac9d6a691f00069b357edb3b9373d383f2037f9327357665095b01"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "usd_per_request"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-02/latency.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_latency_ms",
+        "std_latency_ms",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "dcaee17680b4b5aa1d3a81a8747e08a76cf9592be9556fa2d6763f5e5fab810e"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "milliseconds"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-02/quality.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_judge_score",
+        "std_judge_score",
+        "judge_n"
+      ],
+      "source_sanitized_sha256": [
+        "8e988fb65e0bf54b2ad2f5308fdf1e24594bb63866d2248fa069304fdc12110b"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "judge_score"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-02/throughput-gain.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "throughput_gain_factor",
+        "tokens_per_request",
+        "baseline_tokens_per_request"
+      ],
+      "source_sanitized_sha256": [
+        "bdeac983ea365be022a4415dabaa09c38dc9a9ab40d20b345eff1ce57700c41b"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "factor"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "std_usd_per_request",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "813e8473845def79b8368e78b0b57c4c904b2d6221e9fa82ad92960d6e08bc14"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "usd_per_request"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-03/latency.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_latency_ms",
+        "std_latency_ms",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "fbb1b14caea853b9c3310d7725b23da68ce589e4a615d662568aec780a62e389"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "milliseconds"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-03/quality.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_judge_score",
+        "std_judge_score",
+        "judge_n"
+      ],
+      "source_sanitized_sha256": [
+        "597a0ceecb41fd313288ec00a68159da4a7065942cfc9fb7296d554e307bc4c0"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "judge_score"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/cost-curves-effort/benchmark-03/throughput-gain.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "cost-curves-effort",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "throughput_gain_factor",
+        "tokens_per_request",
+        "baseline_tokens_per_request"
+      ],
+      "source_sanitized_sha256": [
+        "8f5c390deeaa5e0a255e99e445b43f36f2923c2cbc010fcb34068927add8d8f1"
+      ],
+      "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "factor"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/ptu-payg-crossover/benchmark-01/crossover.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "ptu-payg-crossover",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "throughput_gain_factor",
+        "modeled_break_even_rpm",
+        "ptu_hourly_rate_usd",
+        "min_ptu",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "4323158268e8496b01e0b3d174c90c4ab8bf1076ed8b62036322b0d6a95ac9d0",
+        "0b624e067cb406c88f010dd835a531bddabb0a8251e74d6da5d625d4b65bb883",
+        "744bb0c5fc81c580c587754e5d2584c4d742556ab72bf34e61a7776687b720b5",
+        "fee538c6e53cb5bcb33a8722d4888081c870c79cfbcf31b0da0fd08a368caa12"
+      ],
+      "target_topic_slug": "reasoning-ptu-payg-crossover",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "mixed_usd_rpm"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/ptu-payg-crossover/benchmark-02/crossover.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "ptu-payg-crossover",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "throughput_gain_factor",
+        "modeled_break_even_rpm",
+        "ptu_hourly_rate_usd",
+        "min_ptu",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "8e25beb787c76a1541c555dc3fa1386d617438533ca49fee1c03e4094a8e0d21",
+        "b25ea80bb7cde708a26946d71864be8019a8d50f166e44090fafb050e72fc96a",
+        "f4a39ff4ffe1fc3376ba4bb92bb2d2a4273b0cfc6c1022b0a8d2e8aa5d4aa535",
+        "4cd4f9d99e978d48a6fcc9f7eda429e8dd1baf9ca557a27096476fa071a5b2b1"
+      ],
+      "target_topic_slug": "reasoning-ptu-payg-crossover",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "mixed_usd_rpm"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/ptu-payg-crossover/benchmark-03/crossover.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "ptu-payg-crossover",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_usd_per_request",
+        "throughput_gain_factor",
+        "modeled_break_even_rpm",
+        "ptu_hourly_rate_usd",
+        "min_ptu",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "69b49013b778028b143c051cba763f094fc8d71a27024a10367e3d1e2a5d285f",
+        "031861130ee589a7d02a3cde328c610d996bc3eeb7e3ef90cdf97f320ffe0511",
+        "3b3381ee23f7dbec6a8eb24bab926cfdffd65375e65b7a00e60cf673b5b2edf1",
+        "7ee6463abbc8c3340a6d536080acbc10cbe95b14d8eb31703d2ded1d1bd78b16"
+      ],
+      "target_topic_slug": "reasoning-ptu-payg-crossover",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "mixed_usd_rpm"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/token-composition/benchmark-01/tokens.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "token-composition",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_input_tokens_noncached",
+        "mean_cached_tokens",
+        "mean_output_tokens",
+        "mean_reasoning_tokens",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "782a597e66383ec7dd3cb912cf3575d340ce5bf7e178d751c44d961728483861"
+      ],
+      "target_topic_slug": "token-composition-under-reasoning",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "tokens"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/token-composition/benchmark-02/tokens.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "token-composition",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_input_tokens_noncached",
+        "mean_cached_tokens",
+        "mean_output_tokens",
+        "mean_reasoning_tokens",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "a76a5796c86e9d224248897fa0f447b35ced0bb3b33a9a01ba9686cfe313a8ab"
+      ],
+      "target_topic_slug": "token-composition-under-reasoning",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "tokens"
+    },
+    {
+      "chart_data_path": "results/public/chart-data/token-composition/benchmark-03/tokens.json",
+      "dimension_keys": [
+        "effort",
+        "model"
+      ],
+      "family_key": "token-composition",
+      "schema_semver": "0.1.0",
+      "series_keys": [
+        "mean_input_tokens_noncached",
+        "mean_cached_tokens",
+        "mean_output_tokens",
+        "mean_reasoning_tokens",
+        "n_used"
+      ],
+      "source_sanitized_sha256": [
+        "dc14d5a53cf6a45ca1f99b513afd3b494944e4a55f8925acb992a2d3e3a128dc"
+      ],
+      "target_topic_slug": "token-composition-under-reasoning",
+      "tier": "SANITIZED_PUBLIC",
+      "units_key": "tokens"
+    }
+  ],
+  "schema": "wrpo-public-chart-candidates",
+  "schema_semver": "0.1.0",
+  "tier": "SANITIZED_PUBLIC"
+}

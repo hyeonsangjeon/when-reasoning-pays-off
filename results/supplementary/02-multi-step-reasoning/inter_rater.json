@@ -1,0 +1,572 @@
+{
+  "agreement": {
+    "cohens_kappa": null,
+    "cohens_kappa_interpretation": null,
+    "confusion_matrix": {
+      "0": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "1": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "2": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      }
+    },
+    "icc": null,
+    "icc_reason": "rubric is integer ordinal (0|1|2); ICC would only apply to a continuous graded rubric, which this corpus does not use",
+    "interpretation_scale": "Landis & Koch 1977",
+    "linear_weighted_kappa": null,
+    "linear_weighted_kappa_interpretation": null,
+    "method": "cohens_kappa",
+    "n_missing_judge": 0,
+    "n_missing_manual": 360,
+    "n_overlap": 0,
+    "percent_agreement": null,
+    "reason": "no committed manual spot-check score file was found at any accepted location, so judge-vs-human agreement is not computable; populate one of the accepted paths and re-run",
+    "status": "manual_scores_missing"
+  },
+  "benchmark": "02-multi-step-reasoning",
+  "cells": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 15,
+        "1": 0,
+        "2": 45
+      },
+      "label": "gpt-4o/baseline",
+      "model": "gpt-4o",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 0,
+        "1": 0,
+        "2": 60
+      },
+      "label": "gpt-5.2/none",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 2,
+        "1": 0,
+        "2": 58
+      },
+      "label": "gpt-5.2/low",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 0,
+        "1": 0,
+        "2": 60
+      },
+      "label": "gpt-5.2/medium",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 0,
+        "1": 0,
+        "2": 60
+      },
+      "label": "gpt-5.2/high",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 0,
+        "1": 0,
+        "2": 60
+      },
+      "label": "gpt-5.2/xhigh",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    }
+  ],
+  "expected_min_manual_count": 36,
+  "judge_score_count": 360,
+  "manual_review_queue": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 0,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092048Z_exp002_benchmark02_gpt4o_000_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092051Z_exp002_benchmark02_gpt4o_004_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092055Z_exp002_benchmark02_gpt4o_008_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092057Z_exp002_benchmark02_gpt4o_011_gpt-4o_null_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092100Z_exp002_benchmark02_gpt4o_015_gpt-4o_null_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092104Z_exp002_benchmark02_gpt4o_019_gpt-4o_null_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092144Z_exp002_benchmark02_gpt5_2_000_gpt-5.2_none_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092208Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_none_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092238Z_exp002_benchmark02_gpt5_2_008_gpt-5.2_none_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092308Z_exp002_benchmark02_gpt5_2_011_gpt-5.2_none_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092331Z_exp002_benchmark02_gpt5_2_015_gpt-5.2_none_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "none",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092351Z_exp002_benchmark02_gpt5_2_019_gpt-5.2_none_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092144Z_exp002_benchmark02_gpt5_2_000_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092209Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092241Z_exp002_benchmark02_gpt5_2_008_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092309Z_exp002_benchmark02_gpt5_2_011_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092331Z_exp002_benchmark02_gpt5_2_015_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092352Z_exp002_benchmark02_gpt5_2_019_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092146Z_exp002_benchmark02_gpt5_2_000_gpt-5.2_medium_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092210Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_medium_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092244Z_exp002_benchmark02_gpt5_2_008_gpt-5.2_medium_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092310Z_exp002_benchmark02_gpt5_2_011_gpt-5.2_medium_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092332Z_exp002_benchmark02_gpt5_2_015_gpt-5.2_medium_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092353Z_exp002_benchmark02_gpt5_2_019_gpt-5.2_medium_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092146Z_exp002_benchmark02_gpt5_2_000_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092214Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092246Z_exp002_benchmark02_gpt5_2_008_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092311Z_exp002_benchmark02_gpt5_2_011_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092333Z_exp002_benchmark02_gpt5_2_015_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092354Z_exp002_benchmark02_gpt5_2_019_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_01",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092148Z_exp002_benchmark02_gpt5_2_000_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_05",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092215Z_exp002_benchmark02_gpt5_2_004_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "mr_09",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092248Z_exp002_benchmark02_gpt5_2_008_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_12",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092312Z_exp002_benchmark02_gpt5_2_011_gpt-5.2_xhigh_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_16",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092335Z_exp002_benchmark02_gpt5_2_015_gpt-5.2_xhigh_r2.json"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "mr_20",
+      "source_path": "benchmarks/02-multi-step-reasoning/runs/20260521T092356Z_exp002_benchmark02_gpt5_2_019_gpt-5.2_xhigh_r2.json"
+    }
+  ],
+  "manual_spot_checks": {
+    "accepted_manual_score_paths_checked": [
+      "benchmarks/02-multi-step-reasoning/manual_spot_checks.json",
+      "benchmarks/02-multi-step-reasoning/manual_spot_checks/*.json",
+      "results/supplementary/02-multi-step-reasoning/manual_spot_checks.json"
+    ],
+    "accepted_record_format": "JSON array (or object with a 'scores'/'records' array) of {sample_id, model, effort, repeat, reviewer_score} with reviewer_score in {0,1,2}; effort may be null for the gpt-4o baseline",
+    "found_paths": [],
+    "manual_score_record_count": 0,
+    "sampling_fraction": 0.1,
+    "status": "manual_scores_missing"
+  },
+  "method": {
+    "agreement_definition": "percent_agreement = fraction of overlapping (judge, manual) pairs with identical scores; kappa corrects for chance using the observed marginal score distributions",
+    "icc_rationale": "ICC is reserved for a continuous graded rubric; the gating quality score here is integer ordinal 0|1|2, so Cohen's kappa (exact-match) is primary with a linear-weighted kappa to respect the ordering",
+    "icc_used": false,
+    "interpretation_scale": "Landis & Koch 1977",
+    "manual_join_key": [
+      "sample_id",
+      "model",
+      "effort",
+      "repeat"
+    ],
+    "name": "judge-vs-human inter-rater agreement",
+    "note": "Supplementary, descriptive inter-rater reporting per revision D-003. Manual scores are loaded from committed files only; no human scores are ever synthesized.",
+    "primary_statistic": "cohens_kappa",
+    "row_population": "outlier_reason is None (matches analysis.json n_used); rows joined from raw runs/*.json + judge_runs/*.json via scripts.analyze_tokens.build_analysis",
+    "rubric_source": "benchmarks/<name>/README.md 'Quality metric' section: binarized 3-tier judge rubric (0=fail, 1=partial, 2=pass)",
+    "rubric_type": "ordinal_3tier",
+    "sampling_rule": "manual spot-check covers >=10% of judge scores per non-empty (model, effort) cell (ceil, >=1)",
+    "score_scale": [
+      0,
+      1,
+      2
+    ],
+    "score_scale_meaning": {
+      "0": "fail",
+      "1": "partial",
+      "2": "pass"
+    },
+    "supplementary_statistics": [
+      "percent_agreement",
+      "linear_weighted_kappa"
+    ]
+  },
+  "skipped_cells": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "minimal",
+      "model": "gpt-5.2",
+      "n_used": 0,
+      "reason": "canonical analysis reports n_used=0 for this (model, effort) cell; no judge scores to review",
+      "status": "empty_canonical_cell"
+    }
+  ],
+  "source": {
+    "excluded_outlier_row_count": 0,
+    "experiment_prefix": "exp002",
+    "experiment_prefix_source": "builtin_map",
+    "included_run_count": 360,
+    "included_used_row_count": 360,
+    "input_mode": "raw_runs_and_judge_files",
+    "judge_dir": "benchmarks/02-multi-step-reasoning/judge_runs",
+    "note": "raw_run_file_count counts every *.json in runs/ before cohort filtering; included_run_count is the canonical authored cohort (experiment_prefix match). They differ when sibling smoke / warm-probe runs share the directory.",
+    "parsed_cell_count": 360,
+    "raw_judge_file_count": 360,
+    "raw_run_file_count": 366,
+    "runs_dir": "benchmarks/02-multi-step-reasoning/runs",
+    "skipped_non_cohort_run_files": 6
+  },
+  "status": "manual_scores_missing",
+  "warnings": [
+    "manual spot-check score data is NOT committed for this benchmark, so inter-rater agreement (percent agreement / Cohen's kappa) is not computable yet; this is a methodology gap, not a result. A deterministic manual_review_queue of 36 rows (10% per non-empty cell) is provided for a reviewer to fill in."
+  ]
+}

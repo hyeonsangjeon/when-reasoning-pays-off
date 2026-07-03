@@ -1,0 +1,13 @@
+{
+  "schema": "task032.aggregate_cell_table",
+  "schema_semver": "0.1.0",
+  "tier": "AGGREGATE_AZURE_SAMPLE",
+  "family_key": "cost-curves-effort",
+  "metric_key": "usd_per_request",
+  "units_key": "usd",
+  "cells": [
+    {"cell_id": "effort-low", "n": 58, "mean": 0.0123, "median": 0.0110, "p95": 0.0210, "p99": 0.0250, "std": 0.0040, "window_start_iso": "2026-06-03T00:00:00Z"},
+    {"cell_id": "effort-medium", "n": 60, "mean": 0.0241, "median": 0.0230, "p95": 0.0390, "p99": 0.0440, "std": 0.0061, "window_start_iso": "2026-06-03T00:00:00Z"},
+    {"cell_id": "effort-high", "n": 61, "mean": 0.0456, "median": 0.0440, "p95": 0.0700, "p99": 0.0810, "std": 0.0095, "window_start_iso": "2026-06-03T00:00:00Z"}
+  ]
+}

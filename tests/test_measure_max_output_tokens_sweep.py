@@ -6731,6 +6731,9 @@ class TestBracketSelectionSerialization_FixLoop6:
                 M.EXPECTED_USER_PROMPTS_SOURCE_SHA256
             ),
             expected_user_prompts_index_set=(0, 1, 2, 3, 4, 5, 6, 7),
+            now=datetime.datetime(
+                2026, 5, 30, 13, 0, tzinfo=datetime.timezone.utc,
+            ),
         )
         assert data["selected_at_phase"] == "bracket"
         assert data["selected_bracket_root_phase"] == "B"

@@ -200,11 +200,17 @@ measured magnitudes.
 
 - [`batch-runner/`](batch-runner/) — Python library: decision calculators,
   `prompt_cache_key` policy, observability schema, release-tier helpers.
-- [`scripts/`](scripts/) — Measurement and analysis pipeline.
+- [`scripts/`](scripts/) — Measurement, public-data generation, and article
+  publication pipeline. Start with [`scripts/README.md`](scripts/README.md).
 - [`benchmarks/`](benchmarks/) — Per-task measurement targets with sanitized
   run captures and per-target analysis. Tier classification per `docs/16`.
 - [`results/`](results/) — Cross-benchmark synthesis and charts. See
-  [`results/summary.md`](results/summary.md).
+  [`results/summary.md`](results/summary.md),
+  [`results/public/chart-data/README.md`](results/public/chart-data/README.md),
+  and [`results/supplementary/README.md`](results/supplementary/README.md).
+- [`scripts/article_topics/`](scripts/article_topics/) — Article-topic registry
+  that maps public articles to generators, input evidence, sample units, and
+  output contracts.
 - [`schemas/`](schemas/) — JSON Schemas for the observability and
   release-manifest record contracts.
 - [`pricing/`](pricing/) — Pricing snapshots used by the cost calculator (PAYG

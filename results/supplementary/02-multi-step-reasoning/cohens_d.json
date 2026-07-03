@@ -1,0 +1,2683 @@
+{
+  "benchmark": "02-multi-step-reasoning",
+  "cells": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.000798,
+        "delta": 0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": null,
+      "label": "gpt-4o/baseline",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.000798,
+          "median": 0.000799,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 5.3e-05
+        },
+        "latency": {
+          "mean": 1381.963382,
+          "median": 1226.618812,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 368.181705
+        },
+        "quality": {
+          "mean": 1.5,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.888523
+        },
+        "reasoning_tokens": {
+          "mean": 0.0,
+          "median": 0.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        }
+      },
+      "model": "gpt-4o",
+      "n_rows": 60,
+      "n_samples": 20
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.000618,
+        "delta": 0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": "none",
+      "label": "gpt-5.2/none",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.000618,
+          "median": 0.000613,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 4.5e-05
+        },
+        "latency": {
+          "mean": 1588.904051,
+          "median": 1489.625521,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 319.747743
+        },
+        "quality": {
+          "mean": 2.0,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        },
+        "reasoning_tokens": {
+          "mean": 0.0,
+          "median": 0.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        }
+      },
+      "model": "gpt-5.2",
+      "n_rows": 60,
+      "n_samples": 20
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.000859,
+        "delta": -0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": "low",
+      "label": "gpt-5.2/low",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.000859,
+          "median": 0.00064,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.000404
+        },
+        "latency": {
+          "mean": 1869.142269,
+          "median": 1727.34184,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 602.616817
+        },
+        "quality": {
+          "mean": 1.933333,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.205196
+        },
+        "reasoning_tokens": {
+          "mean": 17.433333,
+          "median": 0.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 29.148962
+        }
+      },
+      "model": "gpt-5.2",
+      "n_rows": 60,
+      "n_samples": 20
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.001083,
+        "delta": -0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": "medium",
+      "label": "gpt-5.2/medium",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.001083,
+          "median": 0.001041,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.000572
+        },
+        "latency": {
+          "mean": 2039.414781,
+          "median": 1902.908209,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 653.084847
+        },
+        "quality": {
+          "mean": 2.0,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        },
+        "reasoning_tokens": {
+          "mean": 32.0,
+          "median": 28.5,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 37.942246
+        }
+      },
+      "model": "gpt-5.2",
+      "n_rows": 60,
+      "n_samples": 20
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.00125,
+        "delta": -0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": "high",
+      "label": "gpt-5.2/high",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.00125,
+          "median": 0.001172,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.000554
+        },
+        "latency": {
+          "mean": 2324.938405,
+          "median": 2256.317077,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 655.630647
+        },
+        "quality": {
+          "mean": 2.0,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        },
+        "reasoning_tokens": {
+          "mean": 43.55,
+          "median": 38.5,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 36.871085
+        }
+      },
+      "model": "gpt-5.2",
+      "n_rows": 60,
+      "n_samples": 20
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "cost_validation": {
+        "committed_mean_usd": 0.002179,
+        "delta": 0.0,
+        "status": "match",
+        "tolerance": 2e-06
+      },
+      "effort": "xhigh",
+      "label": "gpt-5.2/xhigh",
+      "metric_stats": {
+        "cost": {
+          "mean": 0.002179,
+          "median": 0.001613,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.001483
+        },
+        "latency": {
+          "mean": 3264.953921,
+          "median": 2658.65918,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 1673.980838
+        },
+        "quality": {
+          "mean": 2.0,
+          "median": 2.0,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 0.0
+        },
+        "reasoning_tokens": {
+          "mean": 109.55,
+          "median": 71.5,
+          "n_missing_rows": 0,
+          "n_samples": 20,
+          "sd": 104.356915
+        }
+      },
+      "model": "gpt-5.2",
+      "n_rows": 60,
+      "n_samples": 20
+    }
+  ],
+  "comparisons": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "a_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": -0.99,
+      "effort_a": null,
+      "effort_b": "none",
+      "label": "gpt-4o/baseline vs gpt-5.2/none",
+      "magnitude": "large",
+      "mean_a": 0.000798,
+      "mean_b": 0.000618,
+      "median_a": 0.000799,
+      "median_b": 0.000613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.25,
+      "effort_a": null,
+      "effort_b": "none",
+      "label": "gpt-4o/baseline vs gpt-5.2/none",
+      "magnitude": "small",
+      "mean_a": 1.5,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.48,
+      "effort_a": null,
+      "effort_b": "none",
+      "label": "gpt-4o/baseline vs gpt-5.2/none",
+      "magnitude": "large",
+      "mean_a": 1381.963382,
+      "mean_b": 1588.904051,
+      "median_a": 1226.618812,
+      "median_b": 1489.625521,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": null,
+      "effort_b": "none",
+      "label": "gpt-4o/baseline vs gpt-5.2/none",
+      "magnitude": "negligible",
+      "mean_a": 0.0,
+      "mean_b": 0.0,
+      "median_a": 0.0,
+      "median_b": 0.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "a_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": -0.365,
+      "effort_a": null,
+      "effort_b": "low",
+      "label": "gpt-4o/baseline vs gpt-5.2/low",
+      "magnitude": "medium",
+      "mean_a": 0.000798,
+      "mean_b": 0.000859,
+      "median_a": 0.000799,
+      "median_b": 0.00064,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.175,
+      "effort_a": null,
+      "effort_b": "low",
+      "label": "gpt-4o/baseline vs gpt-5.2/low",
+      "magnitude": "small",
+      "mean_a": 1.5,
+      "mean_b": 1.933333,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.615,
+      "effort_a": null,
+      "effort_b": "low",
+      "label": "gpt-4o/baseline vs gpt-5.2/low",
+      "magnitude": "large",
+      "mean_a": 1381.963382,
+      "mean_b": 1869.142269,
+      "median_a": 1226.618812,
+      "median_b": 1727.34184,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.35,
+      "effort_a": null,
+      "effort_b": "low",
+      "label": "gpt-4o/baseline vs gpt-5.2/low",
+      "magnitude": "medium",
+      "mean_a": 0.0,
+      "mean_b": 17.433333,
+      "median_a": 0.0,
+      "median_b": 0.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.2,
+      "effort_a": null,
+      "effort_b": "medium",
+      "label": "gpt-4o/baseline vs gpt-5.2/medium",
+      "magnitude": "small",
+      "mean_a": 0.000798,
+      "mean_b": 0.001083,
+      "median_a": 0.000799,
+      "median_b": 0.001041,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.25,
+      "effort_a": null,
+      "effort_b": "medium",
+      "label": "gpt-4o/baseline vs gpt-5.2/medium",
+      "magnitude": "small",
+      "mean_a": 1.5,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.72,
+      "effort_a": null,
+      "effort_b": "medium",
+      "label": "gpt-4o/baseline vs gpt-5.2/medium",
+      "magnitude": "large",
+      "mean_a": 1381.963382,
+      "mean_b": 2039.414781,
+      "median_a": 1226.618812,
+      "median_b": 1902.908209,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.6,
+      "effort_a": null,
+      "effort_b": "medium",
+      "label": "gpt-4o/baseline vs gpt-5.2/medium",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 32.0,
+      "median_a": 0.0,
+      "median_b": 28.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.6,
+      "effort_a": null,
+      "effort_b": "high",
+      "label": "gpt-4o/baseline vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 0.000798,
+      "mean_b": 0.00125,
+      "median_a": 0.000799,
+      "median_b": 0.001172,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.25,
+      "effort_a": null,
+      "effort_b": "high",
+      "label": "gpt-4o/baseline vs gpt-5.2/high",
+      "magnitude": "small",
+      "mean_a": 1.5,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.86,
+      "effort_a": null,
+      "effort_b": "high",
+      "label": "gpt-4o/baseline vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 1381.963382,
+      "mean_b": 2324.938405,
+      "median_a": 1226.618812,
+      "median_b": 2256.317077,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.8,
+      "effort_a": null,
+      "effort_b": "high",
+      "label": "gpt-4o/baseline vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 43.55,
+      "median_a": 0.0,
+      "median_b": 38.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.995,
+      "effort_a": null,
+      "effort_b": "xhigh",
+      "label": "gpt-4o/baseline vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.000798,
+      "mean_b": 0.002179,
+      "median_a": 0.000799,
+      "median_b": 0.001613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.25,
+      "effort_a": null,
+      "effort_b": "xhigh",
+      "label": "gpt-4o/baseline vs gpt-5.2/xhigh",
+      "magnitude": "small",
+      "mean_a": 1.5,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.97,
+      "effort_a": null,
+      "effort_b": "xhigh",
+      "label": "gpt-4o/baseline vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 1381.963382,
+      "mean_b": 3264.953921,
+      "median_a": 1226.618812,
+      "median_b": 2658.65918,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "gpt4o_baseline_vs_gpt52",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 1.0,
+      "effort_a": null,
+      "effort_b": "xhigh",
+      "label": "gpt-4o/baseline vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 109.55,
+      "median_a": 0.0,
+      "median_b": 71.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-4o",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.32,
+      "effort_a": "none",
+      "effort_b": "low",
+      "label": "gpt-5.2/none vs gpt-5.2/low",
+      "magnitude": "small",
+      "mean_a": 0.000618,
+      "mean_b": 0.000859,
+      "median_a": 0.000613,
+      "median_b": 0.00064,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "a_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": -0.1,
+      "effort_a": "none",
+      "effort_b": "low",
+      "label": "gpt-5.2/none vs gpt-5.2/low",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 1.933333,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.43,
+      "effort_a": "none",
+      "effort_b": "low",
+      "label": "gpt-5.2/none vs gpt-5.2/low",
+      "magnitude": "medium",
+      "mean_a": 1588.904051,
+      "mean_b": 1869.142269,
+      "median_a": 1489.625521,
+      "median_b": 1727.34184,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.35,
+      "effort_a": "none",
+      "effort_b": "low",
+      "label": "gpt-5.2/none vs gpt-5.2/low",
+      "magnitude": "medium",
+      "mean_a": 0.0,
+      "mean_b": 17.433333,
+      "median_a": 0.0,
+      "median_b": 0.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.485,
+      "effort_a": "none",
+      "effort_b": "medium",
+      "label": "gpt-5.2/none vs gpt-5.2/medium",
+      "magnitude": "large",
+      "mean_a": 0.000618,
+      "mean_b": 0.001083,
+      "median_a": 0.000613,
+      "median_b": 0.001041,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "none",
+      "effort_b": "medium",
+      "label": "gpt-5.2/none vs gpt-5.2/medium",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.57,
+      "effort_a": "none",
+      "effort_b": "medium",
+      "label": "gpt-5.2/none vs gpt-5.2/medium",
+      "magnitude": "large",
+      "mean_a": 1588.904051,
+      "mean_b": 2039.414781,
+      "median_a": 1489.625521,
+      "median_b": 1902.908209,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.6,
+      "effort_a": "none",
+      "effort_b": "medium",
+      "label": "gpt-5.2/none vs gpt-5.2/medium",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 32.0,
+      "median_a": 0.0,
+      "median_b": 28.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.72,
+      "effort_a": "none",
+      "effort_b": "high",
+      "label": "gpt-5.2/none vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 0.000618,
+      "mean_b": 0.00125,
+      "median_a": 0.000613,
+      "median_b": 0.001172,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "none",
+      "effort_b": "high",
+      "label": "gpt-5.2/none vs gpt-5.2/high",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.705,
+      "effort_a": "none",
+      "effort_b": "high",
+      "label": "gpt-5.2/none vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 1588.904051,
+      "mean_b": 2324.938405,
+      "median_a": 1489.625521,
+      "median_b": 2256.317077,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.8,
+      "effort_a": "none",
+      "effort_b": "high",
+      "label": "gpt-5.2/none vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 43.55,
+      "median_a": 0.0,
+      "median_b": 38.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 1.0,
+      "effort_a": "none",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/none vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.000618,
+      "mean_b": 0.002179,
+      "median_a": 0.000613,
+      "median_b": 0.001613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "none",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/none vs gpt-5.2/xhigh",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.93,
+      "effort_a": "none",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/none vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 1588.904051,
+      "mean_b": 3264.953921,
+      "median_a": 1489.625521,
+      "median_b": 2658.65918,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 1.0,
+      "effort_a": "none",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/none vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.0,
+      "mean_b": 109.55,
+      "median_a": 0.0,
+      "median_b": 71.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.1725,
+      "effort_a": "low",
+      "effort_b": "medium",
+      "label": "gpt-5.2/low vs gpt-5.2/medium",
+      "magnitude": "small",
+      "mean_a": 0.000859,
+      "mean_b": 0.001083,
+      "median_a": 0.00064,
+      "median_b": 0.001041,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.1,
+      "effort_a": "low",
+      "effort_b": "medium",
+      "label": "gpt-5.2/low vs gpt-5.2/medium",
+      "magnitude": "negligible",
+      "mean_a": 1.933333,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.185,
+      "effort_a": "low",
+      "effort_b": "medium",
+      "label": "gpt-5.2/low vs gpt-5.2/medium",
+      "magnitude": "small",
+      "mean_a": 1869.142269,
+      "mean_b": 2039.414781,
+      "median_a": 1727.34184,
+      "median_b": 1902.908209,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.245,
+      "effort_a": "low",
+      "effort_b": "medium",
+      "label": "gpt-5.2/low vs gpt-5.2/medium",
+      "magnitude": "small",
+      "mean_a": 17.433333,
+      "mean_b": 32.0,
+      "median_a": 0.0,
+      "median_b": 28.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.3975,
+      "effort_a": "low",
+      "effort_b": "high",
+      "label": "gpt-5.2/low vs gpt-5.2/high",
+      "magnitude": "medium",
+      "mean_a": 0.000859,
+      "mean_b": 0.00125,
+      "median_a": 0.00064,
+      "median_b": 0.001172,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.1,
+      "effort_a": "low",
+      "effort_b": "high",
+      "label": "gpt-5.2/low vs gpt-5.2/high",
+      "magnitude": "negligible",
+      "mean_a": 1.933333,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.515,
+      "effort_a": "low",
+      "effort_b": "high",
+      "label": "gpt-5.2/low vs gpt-5.2/high",
+      "magnitude": "large",
+      "mean_a": 1869.142269,
+      "mean_b": 2324.938405,
+      "median_a": 1727.34184,
+      "median_b": 2256.317077,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.435,
+      "effort_a": "low",
+      "effort_b": "high",
+      "label": "gpt-5.2/low vs gpt-5.2/high",
+      "magnitude": "medium",
+      "mean_a": 17.433333,
+      "mean_b": 43.55,
+      "median_a": 0.0,
+      "median_b": 38.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.855,
+      "effort_a": "low",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/low vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.000859,
+      "mean_b": 0.002179,
+      "median_a": 0.00064,
+      "median_b": 0.001613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.1,
+      "effort_a": "low",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/low vs gpt-5.2/xhigh",
+      "magnitude": "negligible",
+      "mean_a": 1.933333,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.82,
+      "effort_a": "low",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/low vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 1869.142269,
+      "mean_b": 3264.953921,
+      "median_a": 1727.34184,
+      "median_b": 2658.65918,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.845,
+      "effort_a": "low",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/low vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 17.433333,
+      "mean_b": 109.55,
+      "median_a": 0.0,
+      "median_b": 71.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.215,
+      "effort_a": "medium",
+      "effort_b": "high",
+      "label": "gpt-5.2/medium vs gpt-5.2/high",
+      "magnitude": "small",
+      "mean_a": 0.001083,
+      "mean_b": 0.00125,
+      "median_a": 0.001041,
+      "median_b": 0.001172,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "medium",
+      "effort_b": "high",
+      "label": "gpt-5.2/medium vs gpt-5.2/high",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.365,
+      "effort_a": "medium",
+      "effort_b": "high",
+      "label": "gpt-5.2/medium vs gpt-5.2/high",
+      "magnitude": "medium",
+      "mean_a": 2039.414781,
+      "mean_b": 2324.938405,
+      "median_a": 1902.908209,
+      "median_b": 2256.317077,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.245,
+      "effort_a": "medium",
+      "effort_b": "high",
+      "label": "gpt-5.2/medium vs gpt-5.2/high",
+      "magnitude": "small",
+      "mean_a": 32.0,
+      "mean_b": 43.55,
+      "median_a": 28.5,
+      "median_b": 38.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.715,
+      "effort_a": "medium",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/medium vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.001083,
+      "mean_b": 0.002179,
+      "median_a": 0.001041,
+      "median_b": 0.001613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "medium",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/medium vs gpt-5.2/xhigh",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.71,
+      "effort_a": "medium",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/medium vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 2039.414781,
+      "mean_b": 3264.953921,
+      "median_a": 1902.908209,
+      "median_b": 2658.65918,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.715,
+      "effort_a": "medium",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/medium vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 32.0,
+      "mean_b": 109.55,
+      "median_a": 28.5,
+      "median_b": 71.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.615,
+      "effort_a": "high",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/high vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 0.00125,
+      "mean_b": 0.002179,
+      "median_a": 0.001172,
+      "median_b": 0.001613,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "cost",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "equal",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.0,
+      "effort_a": "high",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/high vs gpt-5.2/xhigh",
+      "magnitude": "negligible",
+      "mean_a": 2.0,
+      "mean_b": 2.0,
+      "median_a": 2.0,
+      "median_b": 2.0,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "ordinal",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable; metric 'quality' is ordinal (judge score 0|1|2 with heavy ties): a rank/dominance statistic is appropriate",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "quality",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.475,
+      "effort_a": "high",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/high vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 2324.938405,
+      "mean_b": 3264.953921,
+      "median_a": 2256.317077,
+      "median_b": 2658.65918,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "latency",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "comparison_kind": "within_gpt52_effort",
+      "direction": "b_greater",
+      "direction_convention": "positive effect_size => cell B (effort_b) tends to the larger metric value",
+      "effect_size": 0.6325,
+      "effort_a": "high",
+      "effort_b": "xhigh",
+      "label": "gpt-5.2/high vs gpt-5.2/xhigh",
+      "magnitude": "large",
+      "mean_a": 43.55,
+      "mean_b": 109.55,
+      "median_a": 38.5,
+      "median_b": 71.5,
+      "method": "cliffs_delta",
+      "method_selection": {
+        "effective_n": 20,
+        "method": "cliffs_delta",
+        "metric_type": "continuous",
+        "min_n_for_cohens_d": 30,
+        "reason": "effective independent N=20 < 30 (N=20 authored samples, R=3 repeats collapsed): Cohen's d mean/SD assumptions are unreliable",
+        "scale": "Romano et al. 2006",
+        "thresholds": {
+          "medium": 0.474,
+          "negligible": 0.147,
+          "small": 0.33
+        }
+      },
+      "metric": "reasoning_tokens",
+      "model_a": "gpt-5.2",
+      "model_b": "gpt-5.2",
+      "n_a": 20,
+      "n_b": 20,
+      "n_rows_a": 60,
+      "n_rows_b": 60,
+      "warnings": [
+        "supplementary nonparametric effect size over N=20 authored samples (R=3 repeats collapsed to per-sample means); descriptive only per D-003, not a universal inference claim"
+      ]
+    }
+  ],
+  "cost_provenance": {
+    "billing_mode": "output_only",
+    "cells_compared": 6,
+    "cost_means_validated_against_committed_analysis": true,
+    "derived_per_row_from_raw_usage": true,
+    "detection": "selected the per-row formula whose cell means best reproduce the committed analysis.json mean_usd_per_request",
+    "formula": "((input - cached) * input_rate + cached * cached_rate + output * output_rate) / 1e6",
+    "pricing_accessed_date": "2026-05-19",
+    "pricing_snapshot": "pricing/azure-openai-payg-2026-05.yaml",
+    "pricing_source_url": "https://azure.microsoft.com/en-us/pricing/details/azure-openai/",
+    "rationale": "Per-row cost is derived directly so the supplementary means reproduce this benchmark's committed analysis.json / public chart means, matching scripts.stats.bootstrap_ci (T-021). scripts.cost_calculator.payg_cost_per_call is not used because, under current code, it bills output-only and would disagree with benchmark 01's canonical (reasoning-billed) means.",
+    "total_abs_error_output_only": 1.813e-06,
+    "total_abs_error_reasoning_billed": 0.002835121,
+    "uses_cost_calculator_payg_cost_per_call": false
+  },
+  "method": {
+    "alternate_statistic": "cohens_d",
+    "cliffs_delta_thresholds": {
+      "medium": 0.474,
+      "negligible": 0.147,
+      "small": 0.33
+    },
+    "cohens_d_thresholds": {
+      "medium": 0.8,
+      "negligible": 0.2,
+      "small": 0.5
+    },
+    "continuous_metrics": [
+      "cost",
+      "latency",
+      "reasoning_tokens"
+    ],
+    "direction_convention": "pairs in canonical cell order (gpt-4o baseline, then gpt-5.2 by ascending effort); positive effect_size => cell B > cell A",
+    "independent_unit": "one authored sample (mean over its R repeats); the ~60 raw rows per cell are R=3 pseudoreplicates of N=20 samples",
+    "metrics": [
+      "cost",
+      "quality",
+      "latency",
+      "reasoning_tokens"
+    ],
+    "name": "pairwise effect size",
+    "note": "Supplementary, descriptive effect sizes per revision D-003. At N=20 authored samples (R=3 repeats) Cohen's d is treated as unreliable, so Cliff's delta is reported throughout and for the ordinal judge score always. Main-text reporting continues to use mean +/- SD per frozen methodology v1.0.",
+    "primary_statistic": "cliffs_delta",
+    "row_population": "outlier_reason is None (matches analysis.json n_used); rows joined from raw runs/*.json + judge_runs/*.json via scripts.analyze_tokens.build_analysis",
+    "selection_rule": "Cohen's d only when effective independent N >= 30, the metric is continuous, and pooled variance is non-degenerate; otherwise Cliff's delta. The per-comparison 'method' field records the choice."
+  },
+  "skipped_cells": [
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "effort": "minimal",
+      "model": "gpt-5.2",
+      "n_used": 0,
+      "reason": "canonical analysis reports n_used=0 for this (model, effort) cell; no observations for an effect-size comparison",
+      "status": "empty_canonical_cell"
+    }
+  ],
+  "source": {
+    "excluded_outlier_row_count": 0,
+    "experiment_prefix": "exp002",
+    "experiment_prefix_source": "builtin_map",
+    "included_run_count": 360,
+    "included_used_row_count": 360,
+    "input_mode": "raw_runs_and_judge_files",
+    "judge_dir": "benchmarks/02-multi-step-reasoning/judge_runs",
+    "note": "raw_run_file_count counts every *.json in runs/ before cohort filtering; included_run_count is the canonical authored cohort (experiment_prefix match). They differ when sibling smoke / warm-probe runs share the directory.",
+    "parsed_cell_count": 360,
+    "raw_judge_file_count": 360,
+    "raw_run_file_count": 366,
+    "runs_dir": "benchmarks/02-multi-step-reasoning/runs",
+    "skipped_non_cohort_run_files": 6
+  },
+  "warnings": []
+}
