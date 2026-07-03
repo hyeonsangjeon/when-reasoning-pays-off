@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 MIRROR_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_LAB_ROOT = MIRROR_ROOT.parent / "when-reasoning-pays-off"
+DEFAULT_SOURCE_ROOT = MIRROR_ROOT
 CHART_DATA_DIR = MIRROR_ROOT / "docs" / "blog" / "data" / "chart-data"
 MIRROR_MANIFEST = CHART_DATA_DIR / "public_chart_candidates.json"
 SNAPSHOT_MANIFEST = CHART_DATA_DIR / "snapshot_manifest.json"
@@ -181,8 +181,8 @@ def validate_chart_payload(payload: dict[str, Any], candidate: dict[str, Any], p
             raise ValueError(f"{path}: missing quality pairing")
 
 
-def load_source_manifest(lab_root: Path) -> dict[str, Any]:
-    return load_json(lab_root / "release" / "public_chart_candidates.json")
+def load_source_manifest(source_root: Path) -> dict[str, Any]:
+    return load_json(source_root / "release" / "public_chart_candidates.json")
 
 
 def build_snapshot(candidates: list[dict[str, Any]]) -> dict[str, Any]:
@@ -223,16 +223,16 @@ def write_sha_report(snapshot: dict[str, Any]) -> None:
     SHA_REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def sync(lab_root: Path) -> None:
-    manifest = load_source_manifest(lab_root)
+def sync(source_root: Path) -> None:
+    manifest = load_source_manifest(source_root)
     candidates = validate_candidate_manifest(manifest)
     CHART_DATA_DIR.mkdir(parents=True, exist_ok=True)
     dump_json(MIRROR_MANIFEST, manifest)
     MIRROR_SCHEMA.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(lab_root / "schemas" / "public_chart_candidates.schema.json", MIRROR_SCHEMA)
+    shutil.copy2(source_root / "schemas" / "public_chart_candidates.schema.json", MIRROR_SCHEMA)
     copied = []
     for candidate in candidates:
-        src = lab_root / candidate["chart_data_path"]
+        src = source_root / candidate["chart_data_path"]
         if not src.is_file():
             raise FileNotFoundError(candidate["chart_data_path"])
         payload = load_json(src)
@@ -294,12 +294,24 @@ def check() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--lab-root", default=os.environ.get("WRPO_LAB_REPO", str(DEFAULT_LAB_ROOT)))
+    parser.add_argument(
+        "--source-root",
+        default=os.environ.get("WRPO_CHART_DATA_SOURCE_REPO", str(DEFAULT_SOURCE_ROOT)),
+        help=(
+            "Repository root containing release/public_chart_candidates.json "
+            "and results/public/chart-data/. Defaults to this checkout."
+        ),
+    )
+    parser.add_argument(
+        "--lab-root",
+        dest="source_root",
+        help="Deprecated alias for --source-root.",
+    )
     args = parser.parse_args()
     if args.check:
         check()
     else:
-        sync(Path(args.lab_root).resolve())
+        sync(Path(args.source_root).resolve())
     return 0
 
 

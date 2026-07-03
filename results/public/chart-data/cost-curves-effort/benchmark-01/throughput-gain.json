@@ -1,0 +1,65 @@
+{
+  "benchmark_key": "benchmark-01",
+  "dimension_keys": [
+    "effort",
+    "model"
+  ],
+  "family_key": "cost-curves-effort",
+  "metric_key": "throughput_gain",
+  "rows": [
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "na",
+      "model": "gpt-4o",
+      "throughput_gain_factor": 1.0,
+      "tokens_per_request": 260.396551
+    },
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "minimal",
+      "model": "gpt-5.2",
+      "throughput_gain_factor": 0.984614,
+      "tokens_per_request": 264.465517
+    },
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "low",
+      "model": "gpt-5.2",
+      "throughput_gain_factor": 0.896065,
+      "tokens_per_request": 290.6
+    },
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "medium",
+      "model": "gpt-5.2",
+      "throughput_gain_factor": 0.743882,
+      "tokens_per_request": 350.050848
+    },
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "high",
+      "model": "gpt-5.2",
+      "throughput_gain_factor": 0.579668,
+      "tokens_per_request": 449.216667
+    },
+    {
+      "baseline_tokens_per_request": 260.396551,
+      "effort": "xhigh",
+      "model": "gpt-5.2",
+      "throughput_gain_factor": 0.451798,
+      "tokens_per_request": 576.355932
+    }
+  ],
+  "schema": "wrpo.chart_data",
+  "schema_semver": "0.1.0",
+  "series_keys": [
+    "throughput_gain_factor",
+    "tokens_per_request",
+    "baseline_tokens_per_request"
+  ],
+  "source_sanitized_sha256": [
+    "09e91245275b2c60ebbed2ef586d50a16c10f5978c5df585267bf3273c35be4f"
+  ],
+  "tier": "SANITIZED_PUBLIC",
+  "units_key": "factor"
+}

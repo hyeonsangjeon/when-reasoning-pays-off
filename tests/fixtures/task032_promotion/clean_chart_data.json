@@ -1,0 +1,18 @@
+{
+  "schema": "task032.chart_data_stub",
+  "schema_semver": "0.1.0",
+  "tier": "SANITIZED_PUBLIC",
+  "family_key": "token-composition",
+  "metric_key": "tokens",
+  "series_keys": ["input", "cached", "output", "reasoning"],
+  "dimension_keys": ["effort", "model"],
+  "units_key": "tokens",
+  "source_sanitized_sha256": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "series": [
+    {"effort": "low", "model": "model-a", "input": 1200, "cached": 300, "output": 450, "reasoning": 80},
+    {"effort": "medium", "model": "model-a", "input": 1210, "cached": 360, "output": 700, "reasoning": 240},
+    {"effort": "high", "model": "model-a", "input": 1225, "cached": 410, "output": 980, "reasoning": 560}
+  ]
+}

@@ -1,0 +1,572 @@
+{
+  "agreement": {
+    "cohens_kappa": null,
+    "cohens_kappa_interpretation": null,
+    "confusion_matrix": {
+      "0": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "1": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "2": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      }
+    },
+    "icc": null,
+    "icc_reason": "rubric is integer ordinal (0|1|2); ICC would only apply to a continuous graded rubric, which this corpus does not use",
+    "interpretation_scale": "Landis & Koch 1977",
+    "linear_weighted_kappa": null,
+    "linear_weighted_kappa_interpretation": null,
+    "method": "cohens_kappa",
+    "n_missing_judge": 0,
+    "n_missing_manual": 354,
+    "n_overlap": 0,
+    "percent_agreement": null,
+    "reason": "no committed manual spot-check score file was found at any accepted location, so judge-vs-human agreement is not computable; populate one of the accepted paths and re-run",
+    "status": "manual_scores_missing"
+  },
+  "benchmark": "01-short-factual",
+  "cells": [
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 1,
+        "1": 5,
+        "2": 52
+      },
+      "label": "gpt-4o/baseline",
+      "model": "gpt-4o",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 58,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 1,
+        "1": 5,
+        "2": 52
+      },
+      "label": "gpt-5.2/minimal",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 58,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 2,
+        "1": 10,
+        "2": 48
+      },
+      "label": "gpt-5.2/low",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 3,
+        "1": 10,
+        "2": 46
+      },
+      "label": "gpt-5.2/medium",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 59,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 1,
+        "1": 5,
+        "2": 54
+      },
+      "label": "gpt-5.2/high",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 60,
+      "percent_agreement": null
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "expected_min_manual": 6,
+      "judge_score_distribution": {
+        "0": 3,
+        "1": 7,
+        "2": 49
+      },
+      "label": "gpt-5.2/xhigh",
+      "model": "gpt-5.2",
+      "n_manual_matched": 0,
+      "n_missing_judge": 0,
+      "n_used": 59,
+      "percent_agreement": null
+    }
+  ],
+  "expected_min_manual_count": 36,
+  "judge_score_count": 354,
+  "manual_review_queue": [
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 1,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T130000Z_exp008_short-factual_fixture_gpt4o_000_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T140640Z_exp008_short-factual_fixture_gpt4o_004_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_09",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T151320Z_exp008_short-factual_fixture_gpt4o_008_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_13",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T162000Z_exp008_short-factual_fixture_gpt4o_012_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 2,
+      "model": "gpt-4o",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_17",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T172640Z_exp008_short-factual_fixture_gpt4o_016_gpt-4o_null_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": null,
+      "llm_judge_score": 0,
+      "model": "gpt-4o",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T181642Z_exp008_short-factual_fixture_gpt4o_019_gpt-4o_null_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 1,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T130910Z_exp008_short-factual_fixture_000_gpt-5.2_minimal_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T141550Z_exp008_short-factual_fixture_004_gpt-5.2_minimal_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 1,
+      "reviewer_score": null,
+      "sample_id": "sf_09",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T152231Z_exp008_short-factual_fixture_008_gpt-5.2_minimal_r1.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_13",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T162910Z_exp008_short-factual_fixture_012_gpt-5.2_minimal_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_17",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T173550Z_exp008_short-factual_fixture_016_gpt-5.2_minimal_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "minimal",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T182552Z_exp008_short-factual_fixture_019_gpt-5.2_minimal_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 1,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T131000Z_exp008_short-factual_fixture_000_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T141640Z_exp008_short-factual_fixture_004_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_09",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T152320Z_exp008_short-factual_fixture_008_gpt-5.2_low_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_12",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T161322Z_exp008_short-factual_fixture_011_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_16",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T172002Z_exp008_short-factual_fixture_015_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "low",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T182642Z_exp008_short-factual_fixture_019_gpt-5.2_low_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 1,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T131050Z_exp008_short-factual_fixture_000_gpt-5.2_medium_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T141730Z_exp008_short-factual_fixture_004_gpt-5.2_medium_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_08",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T150732Z_exp008_short-factual_fixture_007_gpt-5.2_medium_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_12",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T161412Z_exp008_short-factual_fixture_011_gpt-5.2_medium_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 1,
+      "reviewer_score": null,
+      "sample_id": "sf_16",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T172051Z_exp008_short-factual_fixture_015_gpt-5.2_medium_r1.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "medium",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 1,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T182731Z_exp008_short-factual_fixture_019_gpt-5.2_medium_r1.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T131140Z_exp008_short-factual_fixture_000_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T141820Z_exp008_short-factual_fixture_004_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_09",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T152500Z_exp008_short-factual_fixture_008_gpt-5.2_high_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_12",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T161502Z_exp008_short-factual_fixture_011_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_16",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T172142Z_exp008_short-factual_fixture_015_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "high",
+      "llm_judge_score": 1,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T182822Z_exp008_short-factual_fixture_019_gpt-5.2_high_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_01",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T131230Z_exp008_short-factual_fixture_000_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 1,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_05",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T141910Z_exp008_short-factual_fixture_004_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_08",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T150912Z_exp008_short-factual_fixture_007_gpt-5.2_xhigh_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 0,
+      "reviewer_score": null,
+      "sample_id": "sf_13",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T163230Z_exp008_short-factual_fixture_012_gpt-5.2_xhigh_r0.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_16",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T172232Z_exp008_short-factual_fixture_015_gpt-5.2_xhigh_r2.json"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "effort": "xhigh",
+      "llm_judge_score": 2,
+      "model": "gpt-5.2",
+      "repeat": 2,
+      "reviewer_score": null,
+      "sample_id": "sf_20",
+      "source_path": "benchmarks/01-short-factual/runs/20260520T182912Z_exp008_short-factual_fixture_019_gpt-5.2_xhigh_r2.json"
+    }
+  ],
+  "manual_spot_checks": {
+    "accepted_manual_score_paths_checked": [
+      "benchmarks/01-short-factual/manual_spot_checks.json",
+      "benchmarks/01-short-factual/manual_spot_checks/*.json",
+      "results/supplementary/01-short-factual/manual_spot_checks.json"
+    ],
+    "accepted_record_format": "JSON array (or object with a 'scores'/'records' array) of {sample_id, model, effort, repeat, reviewer_score} with reviewer_score in {0,1,2}; effort may be null for the gpt-4o baseline",
+    "found_paths": [],
+    "manual_score_record_count": 0,
+    "sampling_fraction": 0.1,
+    "status": "manual_scores_missing"
+  },
+  "method": {
+    "agreement_definition": "percent_agreement = fraction of overlapping (judge, manual) pairs with identical scores; kappa corrects for chance using the observed marginal score distributions",
+    "icc_rationale": "ICC is reserved for a continuous graded rubric; the gating quality score here is integer ordinal 0|1|2, so Cohen's kappa (exact-match) is primary with a linear-weighted kappa to respect the ordering",
+    "icc_used": false,
+    "interpretation_scale": "Landis & Koch 1977",
+    "manual_join_key": [
+      "sample_id",
+      "model",
+      "effort",
+      "repeat"
+    ],
+    "name": "judge-vs-human inter-rater agreement",
+    "note": "Supplementary, descriptive inter-rater reporting per revision D-003. Manual scores are loaded from committed files only; no human scores are ever synthesized.",
+    "primary_statistic": "cohens_kappa",
+    "row_population": "outlier_reason is None (matches analysis.json n_used); rows joined from raw runs/*.json + judge_runs/*.json via scripts.analyze_tokens.build_analysis",
+    "rubric_source": "benchmarks/<name>/README.md 'Quality metric' section: binarized 3-tier judge rubric (0=fail, 1=partial, 2=pass)",
+    "rubric_type": "ordinal_3tier",
+    "sampling_rule": "manual spot-check covers >=10% of judge scores per non-empty (model, effort) cell (ceil, >=1)",
+    "score_scale": [
+      0,
+      1,
+      2
+    ],
+    "score_scale_meaning": {
+      "0": "fail",
+      "1": "partial",
+      "2": "pass"
+    },
+    "supplementary_statistics": [
+      "percent_agreement",
+      "linear_weighted_kappa"
+    ]
+  },
+  "skipped_cells": [
+    {
+      "benchmark": "01-short-factual",
+      "effort": "none",
+      "model": "gpt-5.2",
+      "n_used": 0,
+      "reason": "canonical analysis reports n_used=0 for this (model, effort) cell; no judge scores to review",
+      "status": "empty_canonical_cell"
+    }
+  ],
+  "source": {
+    "excluded_outlier_row_count": 6,
+    "experiment_prefix": "exp008_short-factual_fixture",
+    "experiment_prefix_source": "builtin_map",
+    "included_run_count": 360,
+    "included_used_row_count": 354,
+    "input_mode": "raw_runs_and_judge_files",
+    "judge_dir": "benchmarks/01-short-factual/judge_runs",
+    "note": "raw_run_file_count counts every *.json in runs/ before cohort filtering; included_run_count is the canonical authored cohort (experiment_prefix match). They differ when sibling smoke / warm-probe runs share the directory.",
+    "parsed_cell_count": 360,
+    "raw_judge_file_count": 360,
+    "raw_run_file_count": 728,
+    "runs_dir": "benchmarks/01-short-factual/runs",
+    "skipped_non_cohort_run_files": 368
+  },
+  "status": "manual_scores_missing",
+  "warnings": [
+    "manual spot-check score data is NOT committed for this benchmark, so inter-rater agreement (percent agreement / Cohen's kappa) is not computable yet; this is a methodology gap, not a result. A deterministic manual_review_queue of 36 rows (10% per non-empty cell) is provided for a reviewer to fill in."
+  ]
+}
