@@ -284,10 +284,8 @@
         decision.
       </p>
       <p>
-        Longer retention is therefore a governance decision as much as a
-        performance one: confirm that the serving mode keeps cached data in-region
-        before relying on the extended window, instead of leaving the choice to a
-        default.
+        Confirm that the serving mode keeps cached data in-region before relying
+        on the extended window, rather than leaving that check to a default.
       </p>
     </section>
 
@@ -350,7 +348,7 @@
 
     <section class="article-section decision-box">
       <h2>The practical rule</h2>
-      <p><strong>The practical rule: when cache reuse must survive a short idle
+      <p><strong>When cache reuse must survive a short idle
         window on a model that can fall back to <code>in_memory</code>, set
         <code>prompt_cache_retention</code> explicitly instead of trusting the
         default, keep the cacheable prefix stable, and read first-token latency

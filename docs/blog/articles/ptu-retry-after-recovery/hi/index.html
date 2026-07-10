@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="6e398654d67d88f62682b1c5830b7a46f8de975886f2a03ca145b357ff42d6c7">
+  <meta name="article:source-article-sha256" content="0399a10130cc8ecec01b0683cc1ef71d3ad6936e32f60833fcd841e535882b15">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -104,7 +104,7 @@
         <p>जब PTU capacity “अभी नहीं” कहे, तो client अगला कदम कैसे तय करे?</p>
       </section>
       <section class="summary-tile">
-        <h2>सबूत</h2>
+        <h2>साक्ष्य</h2>
         <p>Microsoft Learn के provisioned-throughput और spillover documents, साथ में इस repository का PTU admission-controller operational note।</p>
       </section>
       <section class="summary-tile">
@@ -180,7 +180,7 @@
       <h2>यह wait admission control है, fixed cooldown नहीं</h2>
       <p>
         Microsoft Learn, PTU utilization को leaky-bucket algorithm के एक variation की
-        तरह document करता है। हर request एक estimated compute cost जोड़ती है — prompt
+        तरह document करता है। हर request एक estimated compute लागत जोड़ती है — prompt
         token count, जिसमें cached tokens घटे होते हैं, और call का
         <code>max_tokens</code> जुड़ा होता है — जबकि deployed capacity PTUs की संख्या के
         अनुपात में लगातार drain होती रहती है। अगर request उस समय पहुँचे जब utilization
@@ -374,7 +374,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · published data केवल sanitized या aggregate रूप में है।</p>
+    <p>MIT-licensed research artifact · published डेटा केवल sanitized या aggregate रूप में है।</p>
   </footer>
 </body>
 </html>

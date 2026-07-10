@@ -41,7 +41,7 @@
     <p class="article-kicker">ब्लॉग / साक्ष्य नोट्स</p>
     <h1>लेख</h1>
     <p class="lede">
-      साक्ष्य डैशबोर्ड audit trail है; ये लेख बताते हैं कि उससे फ़ैसले कैसे
+      साक्ष्य डैशबोर्ड सत्यापन रिकॉर्ड है; ये लेख बताते हैं कि उससे फ़ैसले कैसे
       निकलते हैं। हर निबंध एक सवाल से शुरू होता है, उसे समझाने वाले chart का
       नाम बताता है, और आखिर में operator के लिए साफ़ सीख देता है। इन्हें क्रम
       से पढ़ें, या सीधे उसी layer पर जाएँ जिसकी आपको ज़रूरत है।
@@ -57,15 +57,15 @@
     </nav>
 
     <p>
-      यह क्रम दावे से practical इस्तेमाल तक जाता है। <strong>अवलोकन</strong>
+      यह क्रम दावे से व्यावहारिक इस्तेमाल तक जाता है। <strong>अवलोकन</strong>
       निबंध मुख्य बात और साक्ष्य की सीमा तय करता है।
       <strong>साक्ष्य विषय</strong> मापे गए हर हिस्से को एक-एक करके खोलते हैं।
-      <strong>सेतु</strong> निबंध दिखाता है कि कहाँ भाषा measurement से
+      <strong>सेतु</strong> निबंध दिखाता है कि भाषा कहाँ measurement से
       production की तरफ़ मुड़ती है। <strong>परिचालन</strong> निबंध recovery,
-      cache routing, retention, और migration sizing जैसे रोज़मर्रा के कामों में
+      cache routing, retention और migration sizing जैसे रोज़मर्रा के कामों में
       measurement की यही आदत ले जाते हैं। इनके नीचे
-      <a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> में वे governed
-      tables और source charts हैं, जिन पर हर दावा टिका है।
+      <a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> में वे व्यवस्थित
+      तालिकाएँ और स्रोत चार्ट हैं, जिन पर हर दावा टिका है।
     </p>
 
     <section id="overview" class="series-hero">
@@ -82,22 +82,22 @@
     <div class="cards topic-cards">
       <article class="card">
         <h3>छोटा तथ्य-आधारित काम</h3>
-        <p>cost बढ़ती है, लेकिन quality में उसके बराबर सुधार नहीं मिलता।</p>
+        <p>लागत बढ़ती है, लेकिन गुणवत्ता उसके साथ नहीं चलती।</p>
         <p><a href="../when-reasoning-pays-off/topics/short-factual-work/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>अदृश्य रीज़निंग टोकन</h3>
-        <p>output लगभग वैसा ही दिखे, तब भी bill क्यों बदलता है, यह internal tokens समझाते हैं।</p>
+        <p>दिखने वाला आउटपुट लगभग वैसा ही रहे, तब भी बिल क्यों बदलता है, यह आंतरिक टोकन बताते हैं।</p>
         <p><a href="../when-reasoning-pays-off/topics/invisible-reasoning-tokens/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>कई चरणों वाला काम</h3>
-        <p>जब evaluator में काफ़ी बदलाव दिखे, तब reasoning effort वाजिब ठहर सकता है।</p>
+        <p>जब evaluator सचमुच हिले, तब reasoning effort वाजिब ठहर सकता है।</p>
         <p><a href="../when-reasoning-pays-off/topics/multi-step-work/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>टूल-एजेंट ceiling जाँच</h3>
-        <p>agent workloads में quality और latency को साथ देखकर समझना पड़ता है।</p>
+        <p>agent workloads में quality और latency को साथ पढ़ना पड़ता है।</p>
         <p><a href="../when-reasoning-pays-off/topics/tool-agent-ceiling-checks/hi/">यह विषय पढ़ें</a></p>
       </article>
       <article class="card">
@@ -112,7 +112,7 @@
       </article>
       <article class="card">
         <h3>साक्ष्य डैशबोर्ड</h3>
-        <p>इन लेखों के पीछे की governed tables और rendered source charts देखें।</p>
+        <p>इन लेखों के पीछे की व्यवस्थित तालिकाएँ और रेंडर किए गए स्रोत चार्ट देखें।</p>
         <p><a href="../../charts/?lang=hi">साक्ष्य डैशबोर्ड खोलें</a></p>
       </article>
     </div>
@@ -138,22 +138,22 @@
     <div class="cards topic-cards">
       <article class="card">
         <h3><code>retry-after-ms</code> के साथ 429 रिकवरी</h3>
-        <p>PTU recovery में health-check polling के बजाय service header का सहारा क्यों लेना चाहिए।</p>
+        <p>PTU recovery में health-check polling के बजाय service header पर भरोसा क्यों करना चाहिए।</p>
         <p><a href="../ptu-retry-after-recovery/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
         <h3><code>prompt_cache_key</code> बकेटिंग</h3>
-        <p>cache keys routing-affinity control हैं; bucket request ID से नहीं, workload के हिसाब से बनाइए।</p>
+        <p>cache keys routing-affinity controls हैं; bucket request ID से नहीं, workload shape से बनाइए।</p>
         <p><a href="../prompt-cache-key-bucketing/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>स्पष्ट cache retention</h3>
-        <p>जब operation लंबे cache window पर निर्भर हो, तब retention को request policy में साफ़-साफ़ लिखना चाहिए।</p>
+        <p>जब operation लंबे cache window पर निर्भर हो, retention को request policy में साफ़ लिखना चाहिए।</p>
         <p><a href="../prompt-cache-retention/hi/">यह लेख पढ़ें</a></p>
       </article>
       <article class="card">
         <h3>reasoning-model migration sizing</h3>
-        <p>output weighting, reasoning tokens, cache shape, और max-token policy के ज़रिए PTU demand को समझाइए।</p>
+        <p>output weighting, reasoning tokens, cache shape और max-token policy से PTU demand समझिए।</p>
         <p><a href="../reasoning-migration-sizing/hi/">यह लेख पढ़ें</a></p>
       </article>
     </div>
@@ -161,7 +161,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT-licensed शोध सामग्री · प्रकाशित data केवल sanitized या aggregate रूप में दिया गया है।</p>
+    <p>MIT-licensed शोध सामग्री · प्रकाशित डेटा केवल sanitized या aggregate रूप में दिया गया है।</p>
   </footer>
 </body>
 </html>

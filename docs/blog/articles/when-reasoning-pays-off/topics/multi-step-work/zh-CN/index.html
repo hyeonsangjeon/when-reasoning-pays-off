@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="9807de375a97a9fa67c3e0ca2ecbc791c18cdc511c6469b1e393ca4ebe3207aa">
+  <meta name="article:source-article-sha256" content="aeee713454b6c3b442d888d387204381f5b41c4797932409b88657004306a217">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -76,7 +76,7 @@
         信息一锤定音，并标明证据边界；随后各节再补上测得的细节。
         <a href="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">打开多步任务的单页概览 SVG</a>。
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="多步任务的单页概览。对比模型内部几乎持平的 effort 阶梯，与从 gpt-4o 到 gpt-5.2 的模型升级所带来的明显质量上行。核心信息：在多步任务里，质量的上行来自模型升级，而不是沿 effort 阶梯往上爬。基于测量聚合，在模型内部与模型之间比较了按 effort 划分的质量单元格。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="多步任务的单页概览。对比同一模型内部几乎持平的各档推理强度，与从 gpt-4o 到 gpt-5.2 的模型升级所带来的明显质量上行。核心信息：在多步任务里，质量的上行来自模型升级，而不是同一模型内部调高推理强度。基于测量聚合，在模型内部与模型之间比较了按 effort 划分的质量单元格。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="专题要点">
@@ -136,7 +136,8 @@
           <strong>Y 轴：</strong>0&ndash;2 评分标准下的平均评审分。
           <strong>柱子：</strong>每根柱子是一个配置的平均分——这是聚合比较，不是频次
           直方图——须线表示 &plusmn;1 标准差。
-          <strong>读法：</strong>台阶落在模型之间，而不在 effort 阶梯上——gpt-4o 基线在
+          <strong>读法：</strong>分数的跃升出现在模型之间，而不在同一模型内部的推理
+          强度变化上——gpt-4o 基线在
           1.5，而 gpt-5.2 的各配置全都落在 2.0 或其附近（none、medium、high、extra-high
           为 2.0，low 为 1.93）。所以在这组任务里，上行是沿着模型升级、而不是沿着更高的
           推理强度发生的。

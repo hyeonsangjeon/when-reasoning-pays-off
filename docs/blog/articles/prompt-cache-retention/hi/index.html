@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="e886f399d3fc64cca70f67725d09f02205a053bcb180cd910a238f11bdafb58f">
+  <meta name="article:source-article-sha256" content="87cf8149ad16de1e1922ee874a2d7eb5304902bcc0a2079f8781c3e4c9151337">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -102,7 +102,7 @@
         <code>in_memory</code> default, एक-सी pricing, और extended retention की
         in-region शर्त Microsoft Learn documented behavior के रूप में देता है। latency और
         hit ratio को साथ रखकर दिखाया गया यह public evidence इस repository का source-run
-        सबूत है, कोई universal latency curve नहीं। नीचे के charts वही pairing साफ़ करते
+        साक्ष्य है, कोई universal latency curve नहीं। नीचे के charts वही pairing साफ़ करते
         हैं।
       </p>
     </section>
@@ -113,7 +113,7 @@
         <p>जहाँ operation बाद में cache reuse की उम्मीद करता है, क्या request सचमुच वही window माँग रही है?</p>
       </section>
       <section class="summary-tile">
-        <h2>सबूत</h2>
+        <h2>साक्ष्य</h2>
         <p>Microsoft Learn retention modes को define करता है, और यह repository sparse public latency और hit-ratio evidence जोड़ती है।</p>
       </section>
       <section class="summary-tile">
@@ -125,7 +125,7 @@
     <nav class="article-outline" aria-label="लेख के खंड">
       <strong>प्रश्न से पढ़ें:</strong>
       <a href="#spec">आधिकारिक व्यवहार</a>
-      <a href="#evidence">सार्वजनिक सबूत</a>
+      <a href="#evidence">सार्वजनिक साक्ष्य</a>
       <a href="#policy">संचालन नीति</a>
       <a href="#residency">डेटा-निवास पर टिप्पणी</a>
       <a href="#sources">स्रोत</a>
@@ -164,7 +164,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">देखा गया सबूत · मापा गया public हिस्सा</p>
+      <p class="section-label">देखा गया साक्ष्य · मापा गया public हिस्सा</p>
       <h2>Retention का असर latency में साफ़ दिखा</h2>
       <figure class="article-figure">
         <figcaption>
@@ -188,7 +188,7 @@
           106,000&nbsp;ms p95 पर थी और <code>24h</code> series क़रीब 9,900&nbsp;ms पर —
           इस configuration में retention का असर latency tail में दिखा — और traffic 8
           buckets में बँटते ही दोनों series एक-दूसरे के क़रीब आ गईं।
-          <strong>सबूत-सीमा:</strong> PAYG gpt-5.2 पर एक sparse sanitized public
+          <strong>साक्ष्य-सीमा:</strong> PAYG gpt-5.2 पर एक sparse sanitized public
           aggregate (PTU नहीं)। source-run evidence, universal latency rule नहीं।
           <strong>स्रोत:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
@@ -206,7 +206,7 @@
           हिस्से में दोनों series ऊँची रहीं (क़रीब 0.93–0.96), और cardinality 1 पर
           <code>24h</code> series थोड़ी ऊँची थी। यहाँ retention का बड़ा फ़र्क़ hit ratio
           में नहीं, ऊपर वाले latency panel में दिखा — इसलिए retention को cached-token
-          share के साथ latency रखकर पढ़ना चाहिए। <strong>सबूत-सीमा:</strong> PAYG gpt-5.2
+          share के साथ latency रखकर पढ़ना चाहिए। <strong>साक्ष्य-सीमा:</strong> PAYG gpt-5.2
           पर वही sparse sanitized public aggregate (PTU नहीं)। यह वर्णनात्मक है,
           universal cache-hit rule नहीं। <strong>स्रोत:</strong>
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
@@ -273,23 +273,23 @@
       <p class="section-label">गवर्नेंस टिप्पणी · retention सिर्फ़ latency की बात नहीं</p>
       <h2>Longer retention के लिए governance check भी ज़रूरी है</h2>
       <p>
-        Microsoft Learn के अनुसार in-memory prompt caching सभी data-residency regions
-        के साथ compatible है। extended retention के लिए cached data region के भीतर
+        Microsoft Learn के अनुसार in-memory prompt caching सभी डेटा-residency regions
+        के साथ compatible है। extended retention के लिए cached डेटा region के भीतर
         तभी रहता है जब mode Regional Standard या Regional Provisioned हो। इसलिए
         retention सिर्फ़ performance decision नहीं, governance decision भी है।
       </p>
       <p>
         इसलिए longer retention पर भरोसा करने से पहले यह पक्का करें कि serving mode
-        cached data को region के भीतर रखता है। इस चुनाव को default पर न छोड़ें।
+        cached डेटा को region के भीतर रखता है। इस चुनाव को default पर न छोड़ें।
       </p>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और सबूत की सीमा</h2>
+      <h2>स्रोत और साक्ष्य की सीमा</h2>
       <p><strong>Tier 1 — service contract (Microsoft Learn)।</strong> दो retention
         policies, in-memory clear और removal windows, 24 घंटे की extended ceiling,
         <code>gpt-5.4</code> और उससे पुराने मॉडलों का <code>in_memory</code> default,
-        दोनों policies में एक-सी pricing, और data residency behavior यहाँ documented
+        दोनों policies में एक-सी pricing, और डेटा residency behavior यहाँ documented
         हैं।</p>
       <ul>
         <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong> — इसमें
@@ -297,8 +297,8 @@
           inactivity के भीतर in-memory clear होना और last use के 1 घंटे के भीतर हटना,
           24 घंटे की extended ceiling, <code>gpt-5.4</code> और उससे पुराने मॉडलों के
           लिए <code>in_memory</code> default, दोनों policies में एक-सी prompt cache
-          pricing, और यह data-residency rule documented है कि extended retention
-          cached data को region में तभी रखता है जब mode Regional Standard या Regional
+          pricing, और यह डेटा-residency rule documented है कि extended retention
+          cached डेटा को region में तभी रखता है जब mode Regional Standard या Regional
           Provisioned हो। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">archive</a>।</li>
       </ul>
       <p><strong>Tier 2 — operational inference (यह repository)।</strong>
