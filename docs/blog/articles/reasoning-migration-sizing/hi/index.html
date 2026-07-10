@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2b67be9d8a469b0f6fc5836708d6923bfebe64ac4cdf59473af98637ae315b3a">
+  <meta name="article:source-article-sha256" content="b6d2422431935712a7d63c3abc8cb87b72f589c52fbe1e5869423b38094da6ca">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -42,7 +42,7 @@
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख सूची</a> / संचालन-लेख / हिन्दी संस्करण</p>
     <p class="article-kicker">संचालन-लेख · GPT-4o से GPT-5.x साइज़िंग</p>
-    <h1>सिर्फ़ मॉडल-नाम के आधार पर reasoning migration का आकार तय न करें</h1>
+    <h1>Reasoning migration का आकार मॉडल-नाम से नहीं, मापन से तय करें</h1>
     <p class="lede">
       एक टीम <code>gpt-4o</code> ट्रैफ़िक को GPT-5.x reasoning model पर ले जाना चाहती है
       और नई तैनाती के लिए PTU संख्या निकालनी है। पहली प्रतिक्रिया यही होती है कि जो
@@ -71,7 +71,7 @@
     </figure>
 
     <section id="why-remeasure" class="article-section">
-      <h2>पुराना size फिर से क्यों न अपना लें</h2>
+      <h2>पुराना size सीधे क्यों न अपना लें</h2>
       <p>
         पुराने size को दोबारा इस्तेमाल करने की प्रवृत्ति यह मान लेती है कि model name ही
         size बता देता है — यानी <code>gpt-4o</code> के लिए काम कर चुका कोई number,
@@ -112,7 +112,7 @@
         <p>GPT-4o workload को PTU पर GPT-5.x के लिए size करने से पहले किन चीज़ों को फिर से मापना चाहिए?</p>
       </section>
       <section class="summary-tile">
-        <h2>सबूत</h2>
+        <h2>साक्ष्य</h2>
         <p>Microsoft Learn normalized-TPM formula देता है, और OpenAI reasoning-token accounting document करता है।</p>
       </section>
       <section class="summary-tile">
@@ -240,7 +240,7 @@
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और सबूत की सीमा</h2>
+      <h2>स्रोत और साक्ष्य की सीमा</h2>
       <p><strong>Tier 1 — service contract (Microsoft Learn और OpenAI)।</strong>
         normalized-TPM sizing formula, per-model Input TPM per PTU और output-to-input
         ratio, GPT-4.1 और बाद का output-token weighting, utilization से 100% cache

@@ -353,7 +353,7 @@
 
     <section class="article-section decision-box">
       <h2>The practical rule</h2>
-      <p><strong>The practical rule: when a PTU deployment returns 429, treat
+      <p><strong>When a PTU deployment returns 429, treat
         <code>retry-after-ms</code> as the admission contract — honor it, add
         jitter to de-synchronize the fleet, and redirect to a spillover deployment
         only after repeated honored waits fail to clear.</strong></p>

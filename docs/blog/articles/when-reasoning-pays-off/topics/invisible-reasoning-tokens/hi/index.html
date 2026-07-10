@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="9c2fddc1cb9b0bcb8563eae091101795d1b6baa11638eecdad725639084f865a">
+  <meta name="article:source-article-sha256" content="e53ce212233cfe7812d83cd36c7d55e5ac0673d912b8ceff1be48d9c288ec262">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -43,10 +43,10 @@
     <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
     <p class="article-kicker">विषय-लेख · छिपी बिलिंग सतह</p>
     <h1>अदृश्य reasoning tokens: बिल का वह हिस्सा जो जवाब में दिखता नहीं</h1>
-    <p class="lede">reasoning migration के बाद — या किसी ने reasoning effort बढ़ा दिया हो — जवाब फिर भी छोटा और साधारण दिख सकता है। दिखने वाले text से यह पता नहीं चलता कि ख़र्च बढ़ गया है। लेकिन उसी workload पर finance और telemetry बड़ा bill दिखाते हैं। तब सीधा सवाल उठता है: जब जवाब लंबा नहीं हुआ, तो cost कहाँ गई?</p>
+    <p class="lede">reasoning migration के बाद — या किसी ने reasoning effort बढ़ा दिया हो — जवाब फिर भी छोटा और साधारण दिख सकता है। दिखने वाले text से यह पता नहीं चलता कि ख़र्च बढ़ गया है। लेकिन उसी workload पर finance और telemetry बड़ा बिल दिखाते हैं। तब सीधा सवाल उठता है: जब जवाब लंबा नहीं हुआ, तो लागत कहाँ गई?</p>
 
     <section class="article-section">
-      <h2>हमने यह क्यों जाँचा</h2>
+      <h2>छिपे खर्च को क्यों खोला</h2>
       <p>
         लगभग हर टीम यही करती है। किसी request की लागत सोचते समय नज़र सबसे पहले उसी
         चीज़ पर जाती है जो दिखाई देती है — जवाब की लंबाई। छोटा जवाब सस्ता लगता है,
@@ -55,17 +55,17 @@
       </p>
       <p>
         इससे एक साफ़ जाँच बनती है। शायद visible answer की लंबाई ही सचमुच ख़र्च
-        समझाती हो, और बड़ा bill बस थोड़े लंबे जवाबों में छिपा हो जिन पर किसी ने ध्यान
-        न दिया हो। या फिर reasoning model इस सहज समझ को तोड़ देता हो, और cost उन
+        समझाती हो, और बड़ा बिल बस थोड़े लंबे जवाबों में छिपा हो जिन पर किसी ने ध्यान
+        न दिया हो। या फिर reasoning model इस सहज समझ को तोड़ देता हो, और लागत उन
         hidden reasoning tokens में चली जाती हो जिन्हें उपयोगकर्ता कभी पढ़ता ही नहीं।
         बदलाव कहाँ हो रहा है, यह chart साफ़ कर सकता है।
       </p>
       <p>
         इसलिए हमने इसे अलग-अलग देखा। हर billed request को input, cached input,
         visible output और hidden reasoning में बाँटा, और मापे गए इस छोटे factual case
-        में उसी breakdown को cost, quality और latency के साथ रखा। नतीजा साफ़ है।
+        में उसी breakdown को लागत, quality और latency के साथ रखा। नतीजा साफ़ है।
         visible output effort के स्तरों में सिर्फ़ क़रीब 12.7 से 17.9 tokens तक बदला,
-        जबकि hidden reasoning क़रीब 3.7 से 311.5 tokens तक पहुँचा। cost और latency
+        जबकि hidden reasoning क़रीब 3.7 से 311.5 tokens तक पहुँचा। लागत और latency
         hidden channel के साथ बढ़े, लेकिन paired quality chart में वैसी बढ़त नहीं
         दिखी। नीचे का one-pager यही बात एक फ़्रेम में कह देता है, और उसके बाद के खंड
         मापा हुआ विवरण जोड़ते हैं।
@@ -85,9 +85,9 @@
 
     <div class="article-summary-grid" aria-label="विषय का सार">
       <section class="summary-tile"><h2>प्रश्न</h2><p>अगर जवाब-पाठ छोटा ही रहा, तो अतिरिक्त लागत कहाँ से आई?</p></section>
-      <section class="summary-tile"><h2>सबूत</h2><p>benchmark-01 के token composition, cost और latency charts को एक ही evidence chain की तरह पढ़ें।</p></section>
+      <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-01 के token composition, लागत और latency charts को एक ही evidence chain की तरह पढ़ें।</p></section>
       <section class="summary-tile"><h2>नतीजा</h2><p>दिखने वाले जवाब की लंबाई में बहुत कम बदलाव आया, लेकिन hidden reasoning tokens effort के स्तर बढ़ने के साथ बढ़ते गए।</p></section>
-      <section class="summary-tile"><h2>निर्णय</h2><p>visible answer छोटा रहे तब भी reasoning tokens को telemetry में track करें। hidden-token budget को bill का हिस्सा मानें, भले जवाब उसे कभी न दिखाए।</p></section>
+      <section class="summary-tile"><h2>निर्णय</h2><p>visible answer छोटा रहे तब भी reasoning tokens को telemetry में track करें। hidden-token budget को बिल का हिस्सा मानें, भले जवाब उसे कभी न दिखाए।</p></section>
     </div>
 
     <nav class="article-outline" aria-label="विषय के खंड">
@@ -96,7 +96,7 @@
       <a href="#s2">चार्ट कैसे पढ़ें</a>
       <a href="#s3">मूल चार्ट क्या जोड़ता है</a>
       <a href="#s4">याद रखने योग्य बिंदु</a>
-      <a href="#table">सबूत की तालिका</a>
+      <a href="#table">साक्ष्य की तालिका</a>
     </nav>
 
     <p class="banner">
@@ -107,7 +107,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>विषय-गाइड चार्ट (public aggregate से हाथ से बनाया गया)।</strong> यह schematic एक chart-आकार के सवाल को अलग करके दिखाता है — effort के हिसाब से औसत hidden reasoning tokens, और हर bar के नीचे औसत visible output — और इसे नीचे दी गई source table के साथ रखता है। public chart-data pipeline से render हुआ source chart और नीचे है।
+          <strong>विषय-गाइड चार्ट (public aggregate से हाथ से बनाया गया)।</strong> यह schematic एक chart-आकार के सवाल को अलग करके दिखाता है — effort के हिसाब से औसत hidden reasoning tokens, और हर bar के नीचे औसत visible output — और इसे नीचे दी गई source table के साथ रखता है। public chart-data pipeline से render हुआ source chart नीचे है।
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-invisible-reasoning-tokens.hi.svg" alt="Bar chart: benchmark-01 में effort के हिसाब से औसत reasoning tokens, visible output labels के साथ।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -115,23 +115,23 @@
 
     <section id="s1" class="article-section">
       <h2>जवाब छोटा था, भीतर का काम नहीं</h2>
-      <p>benchmark-01 में असली हैरानी यह नहीं कि extra-high effort की cost ज़्यादा थी — यह तो अपेक्षित था। ध्यान देने वाली बात यह है कि उस बढ़ोतरी का बहुत छोटा हिस्सा ही अंतिम जवाब में दिखा। minimal effort पर visible output औसतन 12.7 tokens और reasoning tokens औसतन 3.7 tokens थे। extra-high effort पर visible output औसतन 17.9 tokens और reasoning tokens औसतन 311.5 tokens थे।</p><p>यानी पाठक जो text देखता है, वह इस बात का अच्छा proxy नहीं कि कितनी computation पर खर्च हुआ। छोटा जवाब बड़े reasoning budget को छिपा सकता है, और अगर साथ वाला quality chart न हिले, तो ऊपर-ऊपर ठीक दिखने वाला जवाब भी आर्थिक रूप से खराब सौदा हो सकता है।</p>
+      <p>benchmark-01 में असली हैरानी यह नहीं कि extra-high effort की लागत ज़्यादा थी — यह तो अपेक्षित था। ध्यान देने वाली बात यह है कि उस बढ़ोतरी का बहुत छोटा हिस्सा ही अंतिम जवाब में दिखा। minimal effort पर visible output औसतन 12.7 tokens और reasoning tokens औसतन 3.7 tokens थे। extra-high effort पर visible output औसतन 17.9 tokens और reasoning tokens औसतन 311.5 tokens थे।</p><p>यानी पाठक जो text देखता है, वह इस बात का अच्छा proxy नहीं कि कितनी computation पर खर्च हुआ। छोटा जवाब बड़े reasoning budget को छिपा सकता है, और अगर साथ वाला quality chart न हिले, तो ऊपर-ऊपर ठीक दिखने वाला जवाब भी आर्थिक रूप से खराब सौदा हो सकता है।</p>
     </section>
     <section id="s2" class="article-section">
       <h2>चार्ट कैसे पढ़ें</h2>
-      <p>ये bar अलग-अलग request का histogram नहीं, बल्कि aggregate model+effort combinations हैं। X-axis reasoning effort setting दिखाता है। Y-axis प्रति request औसत reasoning tokens दिखाता है। हर bar के नीचे दिया छोटा label उसी combination का औसत visible output बताता है।</p><p>chart को नीचे से ऊपर पढ़ें। पहले देखें कि क्या visible output में इतना बदलाव आया कि bill समझाया जा सके। फिर hidden reasoning वाले bar से तुलना करें। इस केस में जवाब की लंबाई नहीं, भीतर हुआ काम असली वजह है।</p>
+      <p>ये bar अलग-अलग request का histogram नहीं, बल्कि aggregate model+effort combinations हैं। X-axis reasoning effort setting दिखाता है। Y-axis प्रति request औसत reasoning tokens दिखाता है। हर bar के नीचे दिया छोटा label उसी combination का औसत visible output बताता है।</p><p>chart को नीचे से ऊपर पढ़ें। पहले देखें कि क्या visible output में इतना बदलाव आया कि बिल समझाया जा सके। फिर hidden reasoning वाले bar से तुलना करें। इस केस में जवाब की लंबाई नहीं, भीतर हुआ काम असली वजह है।</p>
     </section>
     <section id="s3" class="article-section">
       <h2>मूल चार्ट क्या जोड़ता है</h2>
-      <p>token composition mechanism समझाता है, लेकिन अकेले वही काफ़ी नहीं। cost chart bill बढ़ना दिखाता है। quality chart पूछता है कि उससे जवाब सचमुच बेहतर हुआ या नहीं। latency chart उपयोगकर्ता की wait time दिखाता है। तीनों को साथ पढ़ने पर तस्वीर साफ़ होती है: इस छोटे factual case में internal tokens बढ़े, spend बढ़ा, latency बढ़ी, और quality में वैसी बढ़त नहीं आई।</p>
+      <p>token composition mechanism समझाता है, लेकिन अकेले वही काफ़ी नहीं। cost chart बिल बढ़ना दिखाता है। quality chart पूछता है कि उससे जवाब सचमुच बेहतर हुआ या नहीं। latency chart उपयोगकर्ता की wait time दिखाता है। तीनों को साथ पढ़ने पर तस्वीर साफ़ होती है: इस छोटे factual case में internal tokens बढ़े, spend बढ़ा, latency बढ़ी, और quality में वैसी बढ़त नहीं आई।</p>
     </section>
     <section id="s4" class="article-section">
       <h2>इसका मतलब क्या है</h2>
-      <p>सबक़ यह नहीं कि reasoning tokens बुरे हैं। reasoning model का मतलब ही यही है कि कुछ internal work हो। असली सबक़ यह है कि उस work का काम होना चाहिए। अगर task सिर्फ़ छोटा factual answer माँगता है, तो internal reasoning चुपचाप budget leak बन सकती है। लेकिन अगर task multi-step resolution माँगता है, तो यही tokens quality gain की वजह भी बन सकते हैं।</p><p>इसीलिए overview essay cost, quality, latency और token composition को साथ रखता है। पूरा bill जवाब में दिखता नहीं है।</p>
+      <p>सबक़ यह नहीं कि reasoning tokens बुरे हैं। reasoning model का मतलब ही यही है कि कुछ internal work हो। असली सबक़ यह है कि उस work का काम होना चाहिए। अगर task सिर्फ़ छोटा factual answer माँगता है, तो internal reasoning चुपचाप budget leak बन सकती है। लेकिन अगर task multi-step resolution माँगता है, तो यही tokens quality gain की वजह भी बन सकते हैं।</p><p>इसीलिए overview essay लागत, quality, latency और token composition को साथ रखता है। पूरा बिल जवाब में दिखता नहीं है।</p>
     </section>
 
     <section id="table" class="article-section">
-      <h2>सबूत की तालिका</h2>
+      <h2>साक्ष्य की तालिका</h2>
       <figure class="article-figure" id="figure-invisible-tokens">
         <figcaption>
           <strong>Source chart — benchmark-01 token composition.</strong>
@@ -156,8 +156,8 @@
         <img class="wide-chart" src="../../../../../../assets/benchmark-01-tokens.png" alt="benchmark-01 में model और effort के हिसाब से प्रति request औसत tokens का stacked bar chart। input और visible output segments लगभग स्थिर रहते हैं, जबकि hidden reasoning segment minimal से extra-high तक तेज़ी से बढ़ता है।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-01 के छिपे टोकन का सबूत</caption>
-        <thead><tr><th>सबूत-पंक्ति</th><th>मीट्रिक A</th><th>मीट्रिक B</th><th>क्या जुड़ता है</th></tr></thead>
+        <caption>benchmark-01 के छिपे टोकन का साक्ष्य</caption>
+        <thead><tr><th>साक्ष्य-पंक्ति</th><th>मीट्रिक A</th><th>मीट्रिक B</th><th>क्या जुड़ता है</th></tr></thead>
         <tbody>
           <tr><td>Minimal effort</td><td>visible output 12.7 tokens</td><td>reasoning tokens 3.7</td><td>जवाब छोटा, hidden budget भी बहुत छोटा।</td></tr>
 <tr><td>Extra-high effort</td><td>visible output 17.9 tokens</td><td>reasoning tokens 311.5</td><td>text अब भी छोटा, लेकिन internal budget बहुत बड़ा।</td></tr>
@@ -168,19 +168,19 @@
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और सबूत-सीमा</h2>
+      <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
         ऊपर दिया हर number इस repository की किसी public artifact तक पहुँचा जा सकता
-        है, और हर cost claim dated pricing snapshot पर आधारित है। इस लेख की सुझाई
+        है, और हर लागत claim dated pricing snapshot पर आधारित है। इस लेख की सुझाई
         accounting habit — telemetry में reasoning-token budget को अलग से visible
         रखना — इसकी अपनी operational inference है। नीचे की दो tiers दिखाती हैं कि
         documented input कहाँ तक है और inference कहाँ से शुरू होता है।
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — कार्यप्रणाली अनुबंध:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। प्रति configuration N = 20 लिखे गए samples, R = 3 repeats, और केवल public aggregate case। chart-reading prose इसी fixed stance को मानकर चलती है; error bars confidence intervals नहीं, standard deviation हैं, और N = 20 पर p-values का दावा नहीं किया गया है।</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> प्रति request cost का framing इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर आधारित है — यह Azure OpenAI के public pricing page का 2026-05-19 का frozen snapshot है। list pricing बदलेगी तो hidden-token bill भी बदलेगा।</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> प्रति request लागत का framing इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर आधारित है — यह Azure OpenAI के public pricing page का 2026-05-19 का frozen snapshot है। list pricing बदलेगी तो hidden-token बिल भी बदलेगा।</li>
         <li>[3] <strong>Tier 2 — benchmark-01 case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यही 3.655172 से 311.474576 reasoning-token shift, 12.672414 से 17.881356 visible-output movement, 1.87931 से 1.779661 quality score, और 1112.798745 ms से 3088.001225 ms latency stretch का source है।</li>
-        <li>[4] <strong>Tier 2 — rendered chart data:</strong> यह repository, <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> token decomposition का source है। इसे <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>, <code>quality.json</code>, और <code>latency.json</code> के साथ पढ़ने पर evidence chain पूरी होती है: hidden tokens बढ़े, bill बढ़ा, wait बढ़ी, लेकिन quality में वैसी बढ़त नहीं आई।</li>
+        <li>[4] <strong>Tier 2 — rendered chart डेटा:</strong> यह repository, <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code> token decomposition का source है। इसे <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>, <code>quality.json</code>, और <code>latency.json</code> के साथ पढ़ने पर evidence chain पूरी होती है: hidden tokens बढ़े, बिल बढ़ा, wait बढ़ी, लेकिन quality में वैसी बढ़त नहीं आई।</li>
         <li>[5] <strong>Evidence dashboard:</strong> render किया गया <a href="../../../../../charts/?lang=hi#chart-token-composition-benchmark-01-token_composition">benchmark-01 token composition chart</a> इन्हीं artifacts का auditable रूप है।</li>
       </ul>
       <p>
@@ -193,18 +193,18 @@
     </section>
 
     <section id="decision" class="article-section decision-box">
-      <h2>इस सबूत से क्या निष्कर्ष निकलता है</h2>
+      <h2>इस साक्ष्य से क्या निष्कर्ष निकलता है</h2>
       <p>reasoning-token budget जवाब में भले न दिखे, telemetry में उसे अलग से दिखना चाहिए। यही बुनियादी accounting habit इस topic series का मुख्य व्यावहारिक निष्कर्ष है।</p>
-      <p><a class="button-link" href="../../../hi/">सिंहावलोकन लेख पर लौटें</a></p>
+      <p><a class="button-link" href="../../../hi/">अवलोकन लेख पर लौटें</a></p>
 
       <h2>व्यावहारिक नियम</h2>
       <ol>
         <li>हर request में reasoning tokens को visible output के साथ log करें, सिर्फ़ total tokens के रूप में नहीं।</li>
-        <li>short answer के बावजूद internal cost बड़ी हो सकती है, इसलिए hidden-token budget पर alert रखें।</li>
+        <li>short answer के बावजूद internal लागत बड़ी हो सकती है, इसलिए hidden-token budget पर alert रखें।</li>
         <li>इस workload shape पर paired quality chart में बदलाव दिखने के बाद ही effort बढ़ाएँ।</li>
       </ol>
       <p>
-        <strong>व्यावहारिक नियम: visible answer छोटा रहे तब भी telemetry में reasoning tokens मापें — hidden-token budget bill का वही हिस्सा है जो जवाब कभी नहीं दिखाता।</strong>
+        <strong>व्यावहारिक नियम: visible answer छोटा रहे तब भी telemetry में reasoning tokens मापें — hidden-token budget बिल का वही हिस्सा है जो जवाब कभी नहीं दिखाता।</strong>
       </p>
       <p>
         <a class="button-link" href="../../../../../charts/?lang=hi#chart-token-composition-benchmark-01-token_composition">टोकन-संरचना चार्ट खोलें</a>
@@ -215,7 +215,7 @@
       <p>
         <strong>आगे:</strong>
         <a href="../../multi-step-work/hi/">Multi-step काम: जब रीज़निंग आज़माना वाकई फ़ायदे का होता है</a>
-        &mdash; extra reasoning कब सिर्फ़ bill नहीं बढ़ाती, बल्कि quality सचमुच बेहतर करती है?
+        &mdash; extra reasoning कब सिर्फ़ बिल नहीं बढ़ाती, बल्कि quality सचमुच बेहतर करती है?
       </p>
     </section>
   </main>

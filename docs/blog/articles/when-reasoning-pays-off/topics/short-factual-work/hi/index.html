@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>छोटे तथ्यात्मक काम | reasoning कब वसूल होता है</title>
+  <title>छोटे तथ्यात्मक काम | reasoning कब वसूल होती है</title>
   <meta name="description" content="यह विषय-लेख दिखाता है कि छोटे तथ्यात्मक काम में reasoning effort बढ़ाने से गुणवत्ता नहीं बढ़ती; सिर्फ़ cost, latency और छिपे token बढ़ते हैं।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="b8fa03dc025507152268b653398d99a07d2b13cc5433ef506bde207d4b9860d5">
+  <meta name="article:source-article-sha256" content="da6f311e609e7912d4c2363cf6b5c812f9191326d1a0ca86b15f4716cd5fb5dc">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -48,11 +48,11 @@
       जगह लगते हैं जहाँ effort बढ़ाकर देखा जा सकता है। जवाब छोटा होता है, ग़लती जल्दी
       पकड़ में आ जाती है, और थोड़ा ज़्यादा सोचने देना सस्ते बीमे जैसा लगता है। इसलिए
       सबसे पहले reasoning effort बढ़ाने का मन करता है। लेकिन यह shipping policy नहीं,
-      जाँचने लायक़ hypothesis है — और यह लेख उसे data के साथ परखता है।
+      जाँचने लायक़ hypothesis है — और यह लेख उसे डेटा के साथ परखता है।
     </p>
 
     <section class="article-section">
-      <h2>हमने यह क्यों जाँचा</h2>
+      <h2>इस सहज धारणा को क्यों जाँचा</h2>
       <p>
         यह स्थिति परिचित है। migration के बाद टीम reasoning model पर आ जाती है,
         configuration में reasoning effort बदलने का विकल्प दिखता है, और छोटे तथ्यात्मक
@@ -68,10 +68,10 @@
       </p>
       <p>
         इसलिए हमने इसे मापा। workload shape वही रखा — छोटे तथ्यात्मक काम का यही मापा
-        गया हिस्सा — और effort के स्तरों को एक-एक करके देखा। हर स्तर पर cost per
-        request, latency, दिखने वाला जवाब, छिपे reasoning tokens और judge score की
+        गया हिस्सा — और effort के स्तरों को एक-एक करके देखा। हर स्तर पर प्रति-request
+        लागत, latency, दिखने वाला जवाब, छिपे reasoning tokens और judge score की
         तुलना की। इस केस में नतीजा इतना साफ़ था कि default बदलने की बात की जा सके:
-        ज़्यादा effort लगाने से score नहीं बढ़ा, सिर्फ़ cost, latency और छिपे token बढ़े।
+        ज़्यादा effort लगाने से score नहीं बढ़ा, सिर्फ़ लागत, latency और छिपे token बढ़े।
         नीचे का one-pager यही बात एक फ़्रेम में कहता है, और आगे के section मापा हुआ
         detail देते हैं।
       </p>
@@ -80,26 +80,26 @@
     <figure class="article-figure" id="figure-short-factual-one-pager">
       <figcaption>
         <strong>एक नज़र में यह विषय।</strong> छोटे तथ्यात्मक काम के इस मापे गए हिस्से में
-        reasoning effort के स्तर बढ़ाने पर cost per request लगभग 7.6x हो गई, जबकि औसत
+        reasoning effort के स्तर बढ़ाने पर प्रति-request लागत लगभग 7.6x हो गई, जबकि औसत
         judge score लगभग सपाट रहा। यह one-pager वही संदेश देता है और evidence boundary
         भी दिखाता है। नीचे के section उसका मापा हुआ detail जोड़ते हैं।
         <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">छोटे तथ्यात्मक काम का one-pager SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का one-pager। minimal से extra-high तक reasoning effort के स्तर बढ़ने पर cost per request लगभग 7.6x हो जाती है, जबकि judge quality सपाट रहती है। मुख्य संदेश: छोटे तथ्यात्मक काम में effort बढ़ाने से cost बढ़ी, लेकिन judge quality नहीं बढ़ी। यह N=20, R=3 का मापा गया aggregate है, और cost absolute spend नहीं बल्कि ratio के रूप में दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का one-pager। minimal से extra-high तक reasoning effort के स्तर बढ़ने पर प्रति-request लागत लगभग 7.6x हो जाती है, जबकि judge quality सपाट रहती है। मुख्य संदेश: छोटे तथ्यात्मक काम में effort बढ़ाने से cost बढ़ी, लेकिन judge quality नहीं बढ़ी। यह N=20, R=3 का मापा गया aggregate है, और cost absolute spend नहीं बल्कि ratio के रूप में दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="विषय का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>अगर काम में ज़्यादातर छोटे तथ्यात्मक जवाब चाहिए, तो क्या ज़्यादा reasoning effort quality को इतना सुधारता है कि bill जायज़ लगे?</p>
+        <p>अगर काम में ज़्यादातर छोटे तथ्यात्मक जवाब चाहिए, तो क्या ज़्यादा reasoning effort quality को इतना सुधारता है कि बिल जायज़ लगे?</p>
       </section>
       <section class="summary-tile">
-        <h2>सबूत</h2>
-        <p>benchmark-01 के cost, quality, latency और token-shape chart, सार्वजनिक data tables के साथ।</p>
+        <h2>साक्ष्य</h2>
+        <p>benchmark-01 के लागत, quality, latency और token-shape chart, सार्वजनिक data tables के साथ।</p>
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
-        <p>इस हिस्से में cost per request लगभग 7.6x बढ़ी, लेकिन औसत judge score नहीं बढ़ा — वह लगभग 1.88 से 1.78 तक ही रहा।</p>
+        <p>इस हिस्से में प्रति-request लागत लगभग 7.6x बढ़ी, लेकिन औसत judge score नहीं बढ़ा — वह लगभग 1.88 से 1.78 तक ही रहा।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
@@ -116,7 +116,7 @@
     <section class="article-section">
       <h2>डेटा ने क्या दिखाया</h2>
       <p>
-        hypothesis यह थी कि ज़्यादा effort पर जवाब ज़्यादा सुरक्षित होगा। data ने ऐसा
+        hypothesis यह थी कि ज़्यादा effort पर जवाब ज़्यादा सुरक्षित होगा। डेटा ने ऐसा
         नहीं दिखाया। cost bars minimal effort के $0.000663 से extra-high effort के
         $0.005043 तक चढ़ती हैं, लेकिन quality bars उनके साथ नहीं चढ़तीं। औसत judge
         score minimal पर 1.88 है और extra-high पर 1.78। latency भी लगभग 1.1s से 3.1s
@@ -124,8 +124,8 @@
         factor 0.98 से 0.45 तक गिरता है।
       </p>
       <p>
-        यानी cost बढ़ी, quality नहीं बढ़ी — चार्ट की पूरी बात बस इतनी है। बड़ा cost
-        bar असली है, छिपे tokens की बढ़ी हुई मात्रा भी असली है, लेकिन उसके बराबर का
+        यानी लागत बढ़ी, quality नहीं बढ़ी — चार्ट की पूरी बात बस इतनी है। ऊँची लागत
+        वाली bar असली है, छिपे tokens की बढ़ी हुई मात्रा भी असली है, लेकिन उसके बराबर का
         quality gain नहीं दिखता। इस workload shape में ऊँचा effort default नहीं, सिर्फ़
         experimental setting रहना चाहिए।
       </p>
@@ -143,7 +143,7 @@
       </p>
       <p>
         यही pattern इस हिस्से में दिखता है। judge score effort के साथ नहीं बढ़ता; वह
-        1.88 से 1.78 की ओर खिसकता है, जबकि cost, latency और hidden reasoning सब बढ़ते
+        1.88 से 1.78 की ओर खिसकता है, जबकि लागत, latency और hidden reasoning सब बढ़ते
         हैं। model के भीतर computation सचमुच बढ़ रही है, लेकिन उसका असर पाठक तक नहीं
         पहुँचता। इसलिए यहाँ ऊँचा default ऐसा ख़र्च बन जाता है जिसकी भरपाई जवाब नहीं करता।
       </p>
@@ -184,15 +184,15 @@
 
     <figure class="article-figure" id="figure-short-factual-cost">
       <figcaption>
-        <strong>मूल चार्ट &mdash; छोटे तथ्यात्मक काम की cost per request (benchmark&nbsp;01)।</strong>
+        <strong>मूल चार्ट &mdash; छोटे तथ्यात्मक काम की प्रति-request लागत (benchmark&nbsp;01)।</strong>
         <strong>X-अक्ष:</strong> model और effort के स्तर — gpt-4o baseline, फिर gpt-5.2
         का minimal, low, medium, high और extra-high।
         <strong>Y-अक्ष:</strong> mean PAYG USD per request।
-        <strong>Bars:</strong> हर bar एक effort configuration की औसत cost दिखाती है — यह
+        <strong>Bars:</strong> हर bar एक effort configuration की औसत लागत दिखाती है — यह
         frequency histogram नहीं, aggregate comparison है — और vertical whiskers दोहराए गए
         measurement पर &plusmn;1 standard deviation दिखाती हैं।
-        <strong>इसे कैसे पढ़ें:</strong> cost minimal effort के $0.000663 से extra-high पर
-        $0.005043 तक जाती है — यानी लगभग 7.6x bill — जबकि नीचे वाला paired judge score
+        <strong>इसे कैसे पढ़ें:</strong> लागत minimal effort के $0.000663 से extra-high पर
+        $0.005043 तक जाती है — यानी लगभग 7.6x बिल — जबकि नीचे वाला paired judge score
         लगभग नहीं बदलता।
         <strong>Evidence boundary:</strong> हर configuration में N = 20 authored sample,
         R = 3 repeats, छोटे तथ्यात्मक काम का यही एक हिस्सा, और pricing एक dated PAYG
@@ -203,7 +203,7 @@
         से आती हैं; इसे <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a>
         (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>) के साथ पढ़ें।
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का bar chart, जिसमें gpt-4o baseline और gpt-5.2 minimal से extra-high तक effort के स्तर बढ़ने पर mean PAYG cost per request चढ़ती है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का bar chart, जिसमें gpt-4o baseline और gpt-5.2 minimal से extra-high तक effort के स्तर बढ़ने पर mean PAYG प्रति-request लागत चढ़ती है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
@@ -216,7 +216,7 @@
         deviation दिखाते हैं।
         <strong>इसे कैसे पढ़ें:</strong> quality bars ऊपर वाली cost bars के साथ नहीं बढ़तीं —
         gpt-4o baseline 1.88, gpt-5.2 minimal 1.88, low 1.77, medium 1.73, high 1.88,
-        extra-high 1.78 — यानी इस हिस्से में cost बढ़ी, लेकिन बेहतर जवाब नहीं मिला।
+        extra-high 1.78 — यानी इस हिस्से में लागत बढ़ी, लेकिन बेहतर जवाब नहीं मिला।
         <strong>Evidence boundary:</strong> हर configuration में N = 20, R = 3 repeats;
         error bars confidence interval नहीं, standard deviation हैं, और N = 20 पर p-value
         claim नहीं किया गया है।
@@ -252,7 +252,7 @@
             <td>Cost per request</td>
             <td>X-अक्ष effort level है; Y-अक्ष mean USD per request है।</td>
             <td>minimal effort पर $0.000663; extra-high effort पर $0.005043।</td>
-            <td>quality साबित होने से पहले bill ऊपर चला जाता है।</td>
+            <td>quality साबित होने से पहले बिल ऊपर चला जाता है।</td>
           </tr>
           <tr>
             <td>Quality guardrail</td>
@@ -270,7 +270,7 @@
             <td>Token composition</td>
             <td>X-अक्ष effort level है; Y-अक्ष mean tokens per request है।</td>
             <td>reasoning tokens 3.655172 से 311.474576 तक बढ़ते हैं, जबकि visible output सिर्फ़ लगभग 12.7 से 17.9 tokens तक बदलता है।</td>
-            <td>bill की ज़्यादातर बढ़ोतरी जवाब के text में दिखती ही नहीं।</td>
+            <td>बिल की ज़्यादातर बढ़ोतरी जवाब के text में दिखती ही नहीं।</td>
           </tr>
           <tr>
             <td>Token-shape throughput</td>
@@ -285,22 +285,22 @@
     <section class="article-section">
       <h2>क्या हुआ</h2>
       <p>
-        cost curve तेज़ी से ऊपर गई। minimal effort पर औसत $0.000663 per request था,
-        extra-high effort पर औसत $0.005043 per request — यानी लगभग 7.6x bill। लेकिन
+        लागत-रेखा तेज़ी से ऊपर गई। minimal effort पर औसत $0.000663 per request था,
+        extra-high effort पर औसत $0.005043 per request — यानी लगभग 7.6x बिल। लेकिन
         paired quality movement इस खर्च को justify नहीं करती। औसत judge score 1.88 से
         1.78 तक गया।
       </p>
       <p>
         यह "reasoning बुरी है" जैसा सार्वभौमिक दावा नहीं है। यह सिर्फ़ workload shape
         के बारे में दावा है। इस हिस्से में model ने भीतर ज़्यादा computation किया, लेकिन
-        उसके बराबर की answer quality नहीं मिली। dashboard cost और quality को साथ रखता
+        उसके बराबर की answer quality नहीं मिली। dashboard लागत और quality को साथ रखता
         है, इसलिए यह mismatch साफ़ दिखता है।
       </p>
       <p>
         सबसे बड़ा trap यह है कि output फिर भी ठीक लग सकता है। अगर reviewer सिर्फ़ कुछ
         जवाब देखे, तो extra-high effort ज़्यादा सुरक्षित महसूस हो सकता है क्योंकि model
         ज़्यादा सोचता हुआ लगता है। chart इसी intuition को policy बनने से रोकता है: वह
-        ऊँची cost, धीमी latency और hidden-token bill स्वीकार करने से पहले मापा हुआ
+        ऊँची लागत, धीमी latency और hidden-token बिल स्वीकार करने से पहले मापा हुआ
         quality delta माँगता है।
       </p>
     </section>
@@ -313,11 +313,11 @@
           <p>
             effort एक treatment है। इसे किसी एक हिस्से पर लगाकर मापें, और तभी बढ़ाएँ
             जब evaluator सचमुच बदले। इसे global default बना देने से production traffic
-            आने तक bill छिपा रहता है।
+            आने तक बिल छिपा रहता है।
           </p>
         </div>
         <div>
-          <h3>cost को quality के साथ ही पढ़ें</h3>
+          <h3>लागत को quality के साथ ही पढ़ें</h3>
           <p>
             सिर्फ़ cost chart बदलाव को साफ़ लेकिन अधूरा दिखा सकता है। सिर्फ़ quality
             chart आर्थिक असर छिपा सकता है। काम की सही reading जोड़ी में है: खर्च कितना
@@ -340,38 +340,38 @@
       <p>
         इस नतीजे को हमेशा के लिए freeze मत कीजिए। अगर काम short recall से synthesis में
         बदल जाए, evaluator rubric multi-hop justification को reward करने लगे, prompt में
-        tool outputs आने लगें, या नया model cost-quality shape बदल दे, तो इसे फिर से
+        tool outputs आने लगें, या नया model लागत-गुणवत्ता का पैटर्न बदल दे, तो इसे फिर से
         जाँचिए। सबक़ यह नहीं है कि reasoning कभी इस्तेमाल न करें। सबक़ यह है: paired
         evidence के बिना effort मत बढ़ाइए।
       </p>
       <p>
         अच्छा follow-up experiment वही X-axis रखता है, लेकिन workload shape बदल देता है।
         छोटे तथ्यात्मक, multi-step, tool-agent और synthesis tasks — हर एक को अपनी effort
-        setting data से कमानी चाहिए। आम तौर पर reasoning की असली value इसी routing
+        setting डेटा से कमानी चाहिए। आम तौर पर reasoning की असली value इसी routing
         policy में निकलती है।
       </p>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और सबूत-सीमा</h2>
+      <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
         ऊपर दिया गया हर number इस repository की किसी public artifact तक trace होता है,
-        और हर cost figure एक dated pricing snapshot पर निकाली गई है। इस हिस्से में ऊँचा
+        और लागत का हर आँकड़ा एक dated pricing snapshot पर निकाला गया है। इस हिस्से में ऊँचा
         effort experimental रहना चाहिए — यह operational interpretation इस लेख की अपनी
         है। नीचे के दो tier बताते हैं कि documented input कहाँ ख़त्म होता है और inference
         कहाँ से शुरू होती है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate data। चार्ट की व्याख्या इसी fixed stance पर आधारित है; error bars standard deviation हैं, confidence interval नहीं, और N = 20 पर p-value claim नहीं किया गया है।</li>
+        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate डेटा। चार्ट की व्याख्या इसी fixed stance पर आधारित है; error bars standard deviation हैं, confidence interval नहीं, और N = 20 पर p-value claim नहीं किया गया है।</li>
         <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (minimal effort का $0.000663, extra-high effort का $0.005043, 7.6x बिल) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट। सूची-मूल्य हिलने पर अनुपात भी बदलेंगे।</li>
-        <li>[3] <strong>Tier 2 — short-factual measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से cost rise, 1.87931 से 1.779661 तक mean judge-score movement, 1112.798745 ms से 3088.001225 ms तक latency stretch, और 0.984614 से 0.451798 तक throughput factor मिलता है।</li>
-        <li>[4] <strong>Tier 2 — rendered chart data:</strong> यह repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। यहीं से reasoning tokens का 3.655172 से 311.474576 तक बढ़ना और visible output का सिर्फ़ 12.672414 से 17.881356 tokens तक बदलना दिखता है।</li>
+        <li>[3] <strong>Tier 2 — short-factual measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से लागत में वृद्धि, 1.87931 से 1.779661 तक mean judge-score movement, 1112.798745 ms से 3088.001225 ms तक latency stretch, और 0.984614 से 0.451798 तक throughput factor मिलता है।</li>
+        <li>[4] <strong>Tier 2 — rendered chart डेटा:</strong> यह repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। यहीं से reasoning tokens का 3.655172 से 311.474576 तक बढ़ना और visible output का सिर्फ़ 12.672414 से 17.881356 tokens तक बदलना दिखता है।</li>
         <li>[5] <strong>Evidence dashboard:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> की per-configuration tables और rendered source charts इन्हीं artifact का auditable रूप हैं।</li>
       </ul>
       <p>
         यह हिस्सा क्या साबित करता है, और क्या नहीं: छोटे तथ्यात्मक काम के इस workload
         shape में, एक tenant और एक region पर, इसी pricing snapshot के तहत, effort बढ़ने
-        से cost और hidden tokens बढ़े लेकिन matching quality lift नहीं मिली। यह यह साबित
+        से लागत और hidden tokens बढ़े लेकिन matching quality lift नहीं मिली। यह यह साबित
         नहीं करता कि यही pattern synthesis, multi-step या tool-using काम में भी रहेगा,
         या future pricing snapshot पर भी वैसा ही दिखेगा।
       </p>
@@ -382,11 +382,11 @@
       <p>
         <strong>व्यावहारिक नियम: छोटे तथ्यात्मक काम को उसी सबसे कम effort पर रखें जो
         पहले से सही जवाब दे रहा है। उसे तभी बढ़ाएँ जब इसी workload shape पर quality gate
-        सचमुच बदले — और वह फ़ैसला paired cost, latency और token-composition charts के साथ
+        सचमुच बदले — और वह फ़ैसला paired लागत, latency और token-composition charts के साथ
         पढ़कर लें।</strong>
       </p>
       <p>
-        evidence dashboard उसी नियम का audit trail है।
+        evidence dashboard उसी नियम का सत्यापन रिकॉर्ड है।
       </p>
       <p>
         <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">source chart देखें</a>
@@ -397,13 +397,13 @@
       <p>
         <strong>आगे:</strong>
         <a href="../../invisible-reasoning-tokens/hi/">Invisible reasoning tokens: छिपी हुई लागत आख़िर जाती कहाँ है</a>
-        &mdash; अगर answer text छोटा ही रहा, तो अतिरिक्त cost आई कहाँ से?
+        &mdash; अगर answer text छोटा ही रहा, तो अतिरिक्त लागत आई कहाँ से?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · प्रकाशित data सिर्फ़ sanitized या aggregate रूप में है।</p>
+    <p>MIT-licensed research artifact · प्रकाशित डेटा सिर्फ़ sanitized या aggregate रूप में है।</p>
   </footer>
 </body>
 </html>

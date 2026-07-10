@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>रीज़निंग कब काम आती है | वही token price, अलग bill</title>
+  <title>रीज़निंग कब वाजिब ठहरती है | वही token price, अलग बिल</title>
   <meta name="description" content="चार्ट-आधारित सार्वजनिक लेख: reasoning effort कब अपनी लागत वसूल करती है, कब नहीं, और operators को इस evidence को कैसे पढ़ना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="7519a4c0d73b32adf3aec2f5a8ee5bfd3c7962eb69edec0a6f3a6079eb13198e">
+  <meta name="article:source-article-sha256" content="2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -40,9 +40,9 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../hi/">लेख सूची</a> / सिंहावलोकन लेख / हिन्दी रूपांतर</p>
-    <p class="article-kicker">सिंहावलोकन लेख · reasoning effort, quality और spend</p>
-    <h1>रीज़निंग कब काम आती है: वही token price, अलग bill</h1>
+    <p class="breadcrumb"><a href="../../hi/">लेख सूची</a> / अवलोकन लेख / हिन्दी रूपांतर</p>
+    <p class="article-kicker">अवलोकन लेख · reasoning effort, quality और खर्च</p>
+    <h1>रीज़निंग कब वाजिब ठहरती है: वही token price, अलग बिल</h1>
     <p class="lede">
       एक टीम reasoning model चालू करती है, देखती है कि per-token price पुरानी तरह ही
       दिख रहा है, और reasoning effort बदलने का नया विकल्प सामने आता है। सबसे पहले
@@ -78,10 +78,10 @@
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>extra reasoning effort कब मापने लायक quality देती है, और कब सिर्फ़ hidden computation बढ़ाती है?</p>
+        <p>अतिरिक्त रीज़निंग एफर्ट कब मापने लायक गुणवत्ता देता है, और कब सिर्फ़ छिपी हुई आंतरिक गणना बढ़ाता है?</p>
       </section>
       <section class="summary-tile">
-        <h2>सबूत</h2>
+        <h2>साक्ष्य</h2>
         <p>सार्वजनिक chart-data वाले अलग-अलग cases में cost, judge score, token composition, latency और modeled reserved-capacity crossover की तुलना की गई है।</p>
       </section>
       <section class="summary-tile">
@@ -90,7 +90,7 @@
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>effort सिर्फ़ वहीं बढ़ाएँ जहाँ evaluator हिलता है; evidence dashboard को इस लेख के पीछे का audit trail बनाए रखें।</p>
+        <p>effort सिर्फ़ वहीं बढ़ाएँ जहाँ evaluator हिलता है; साक्ष्य डैशबोर्ड को इस लेख के पीछे का सत्यापन रिकॉर्ड बनाए रखें।</p>
       </section>
     </div>
 
@@ -99,14 +99,14 @@
       <h2>तीन परतों में यह सीरीज़</h2>
       <div class="article-summary-grid">
         <section class="summary-tile">
-          <h2>सिंहावलोकन · प्रश्न</h2>
+          <h2>अवलोकन · प्रश्न</h2>
           <p>यह लेख सवाल तय करता है: extra reasoning effort कब अपनी लागत वसूल करती है?</p>
           <p><a href="./">आप यहाँ हैं</a></p>
         </section>
         <section class="summary-tile">
-          <h2>सबूत · पाँच cases</h2>
+          <h2>साक्ष्य · पाँच cases</h2>
           <p>पाँच topic essays में हर एक workload case पर cost, quality, latency और token shape को मापा गया है।</p>
-          <p><a href="../topics/short-factual-work/hi/">सबूत परत से शुरू करें</a></p>
+          <p><a href="../topics/short-factual-work/hi/">साक्ष्य परत से शुरू करें</a></p>
         </section>
         <section class="summary-tile">
           <h2>पुल · मापन → प्रोडक्शन</h2>
@@ -121,7 +121,7 @@
       </div>
     </section>
 
-    <nav class="article-outline" aria-label="इस सिंहावलोकन के विषय">
+    <nav class="article-outline" aria-label="इस अवलोकन के विषय">
       <strong>इस overview के विषय:</strong>
       <a href="#short-factual">छोटे तथ्यात्मक जवाब</a>
       <a href="#reasoning-tokens">अदृश्य टोकन</a>
@@ -133,8 +133,8 @@
     <p class="banner">
       <strong>डेटा परिशिष्ट:</strong>
       पूरी तालिकाएँ और rendered source charts
-      <a href="../../../charts/?lang=hi">evidence dashboard</a> में देखे जा सकते हैं।
-      यह लेख बताता है कि हर chart क्यों है और उसे कैसे पढ़ना है।
+      <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> में देखे जा सकते हैं।
+      यह लेख बताता है कि हर chart क्यों मौजूद है और उसे कैसे पढ़ना है।
     </p>
 
     <section class="article-section chart-reading-guide">
@@ -202,7 +202,7 @@
           <h3>ऑपरेटर के लिए सबक़</h3>
           <p>
             छोटे factual काम में ज़्यादा effort लगाने से score नहीं बढ़ता, सिर्फ़
-            hidden computation बढ़ सकती है। ऐसे काम में सबसे low effort से शुरू करें
+            छिपी हुई आंतरिक गणना बढ़ सकती है। ऐसे काम में सबसे low effort से शुरू करें
             और तभी बढ़ाएँ जब कोई quality gate साफ़ लाभ दिखाए।
           </p>
         </div>
@@ -422,11 +422,11 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">पुल-लेख · सबूत और संचालन परतों के बीच</p>
+      <p class="section-label">पुल-लेख · साक्ष्य और संचालन परतों के बीच</p>
       <h2>मापन से प्रोडक्शन तक</h2>
       <p>
         evidence essays ने एक measurement सवाल का जवाब दिया: extra reasoning effort
-        कहाँ quality बेहतर करती है और कहाँ सिर्फ़ hidden computation बढ़ाती है?
+        कहाँ जवाब की quality बेहतर करती है और कहाँ सिर्फ़ छिपी हुई आंतरिक गणना बढ़ाती है?
         operations essays एक अलग सवाल लेते हैं: जब effort का फ़ैसला हो चुका हो और
         traffic चल रहा हो, तब production system को operator के लिए क्या भरोसेमंद
         व्यवहार देना चाहिए? यह bridge essay समझाता है कि दोनों layers के बीच लेखन का
@@ -439,7 +439,7 @@
 
     <section id="operations-next" class="article-section decision-box">
       <p class="section-label">संचालन-लेख · प्रोडक्शन परत</p>
-      <h2>संचालन-लेख सबूत की कहानी को आगे ले जाते हैं</h2>
+      <h2>संचालन-लेख साक्ष्य की कहानी को आगे ले जाते हैं</h2>
       <p>
         यह overview बताता है कि reasoning effort कब cost और quality बदलती है।
         operations essays वही evidence-first आदत production वाले सवालों पर ले जाते हैं:
@@ -462,8 +462,8 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">स्रोत · सबूत-सीमा</p>
-      <h2>स्रोत और सबूत-सीमा</h2>
+      <p class="section-label">स्रोत · साक्ष्य-सीमा</p>
+      <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
         यह overview पाँच cases में cost, quality, latency और token composition को
         साथ पढ़ता है। ऊपर का हर numeric claim इस repository के किसी public artifact
@@ -479,7 +479,7 @@
         <li>[5] <strong>Tier 2 — multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
         <li>[6] <strong>Tier 2 — tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
         <li>[7] <strong>Tier 2 — modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर 149 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
-        <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">evidence dashboard</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
+        <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
       </ul>
       <p>
         यह overview क्या साबित करता है और क्या नहीं: यह इस benchmark sample पर पाँच
@@ -498,7 +498,7 @@
         साथ पढ़ें।</strong>
       </p>
       <p>
-        evidence dashboard उस नियम के पीछे का audit trail है; topic essays उसका
+        साक्ष्य डैशबोर्ड उस नियम के पीछे का सत्यापन रिकॉर्ड है; topic essays उसका
         per-case रूप दिखाते हैं।
       </p>
       <p>

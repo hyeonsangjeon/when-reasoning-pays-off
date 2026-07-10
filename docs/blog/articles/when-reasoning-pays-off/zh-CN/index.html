@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="7519a4c0d73b32adf3aec2f5a8ee5bfd3c7962eb69edec0a6f3a6079eb13198e">
+  <meta name="article:source-article-sha256" content="2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -67,9 +67,11 @@
         只在配对的质量信号真的动了的地方调高强度——在没动的地方则保持低位。
       </p>
       <p>
-        于是我们做了检验。我们固定住提示词和工作负载类别，在每一类任务上测试同样的各档推理强度——短事实回答、多步推理、用工具的代理、token 构成，以及延迟与成本——再
-        在测得的 token 形态之上叠加一层建模出来的 PTU/PAYG 规划面。结果像好的证据
-        应有的那样分化开来：在短事实工作上，再调高强度多半只会带来隐藏的推理 token，
+        于是我们动手做了实测。我们固定住提示词与工作负载切片，让短事实回答、
+        多步推理、使用工具的代理这几类任务，各自套上同一套推理强度档位，
+        并在每次调用中记录 token 构成、延迟与成本。在这份实测数据之上，我们
+        再叠加一层建模出来的 PTU/PAYG 规划面。结果像好的证据应有的那样分化
+        开来：在短事实工作上，再调高强度多半只会带来隐藏的推理 token，
         而不是更好的答案；不可见 token 的视角解释了为什么可见输出几乎没变、账单却动了；
         多步工作在评审者真的动起来时可以值回成本；工具代理的质量常常撞上天花板，再加
         强度只增加延迟；而 PTU/PAYG 交叉点始终是一个建模出来的规划阈值，而不是测得的
@@ -120,7 +122,7 @@
         本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 extra-high。
       </p>
       <div class="evidence-grid">
-        <div><h3>X轴</h3><p>X轴是运营者可以调节的推理强度阶梯。从左到右表示允许模型消耗更多内部推理工作。</p></div>
+        <div><h3>X轴</h3><p>X轴是运营者可以调节的推理强度等级。从左到右表示允许模型消耗更多内部推理工作。</p></div>
         <div><h3>Y轴</h3><p>Y轴随图表而变：成本是每个请求的 USD，质量是评审分数，延迟是毫秒，token 构成是 token 数，交叉点是建模的每分钟请求数。</p></div>
         <div><h3>柱子</h3><p>柱子更高并不总是更好。质量柱更高可能是好事；成本、延迟或推理 token 柱更高，则需要相应的质量提升来证明其合理性。</p></div>
         <div><h3>源表格</h3><p>精确值、标准差和样本数请看仪表盘表格。正文只提取对决策最重要的形状。</p></div>
@@ -381,7 +383,7 @@
       <p>
         证据文章回答的是一个测量问题：额外的推理 effort 在哪里换来质量，又在哪里
         只换来隐藏的计算？运营文章回答的是另一个问题：一旦这个 effort 决策已经做出、
-        流量也已经在跑，这套部署又欠运营者什么？桥接文章解释了为什么叙述的声音会在
+        流量也已经在跑，这套部署又欠运营者什么？桥接文章解释了为什么叙事语气会在
         这两层之间发生变化，以及哪些习惯会一路延续下去。
       </p>
       <p>
