@@ -1,0 +1,19 @@
+# Runtime dependencies for running the experiments and reproducing the numbers.
+#
+# You do NOT need `pip install -e .` to reproduce anything: every runner is
+# invoked as `python -m scripts.<runner>` from the repository root, and the
+# tests add their own package roots to sys.path (see conftest.py). Installing
+# this file is enough.
+#
+#     python -m venv .venv && . .venv/bin/activate    # Windows: .venv\Scripts\activate
+#     pip install -r requirements.txt
+#
+# Mirrors [project.dependencies] in pyproject.toml.
+openai>=2.37.0
+azure-identity>=1.19.0
+pydantic>=2.0
+pyyaml>=6.0
+python-dotenv>=1.0
+matplotlib>=3.8
+pandas>=2.0
+numpy>=2.2
