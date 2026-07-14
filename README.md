@@ -62,7 +62,8 @@ and [`results/summary.md`](results/summary.md).</sub>
 | --- | --- | :---: |
 | **See the evidence** | [Open the live dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) — interactive cost / quality / latency / crossover charts | ❌ |
 | **Read the story** | [Overview essay →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/) in English · 한국어 · 日本語 · 简体中文 · हिन्दी | ❌ |
-| **Run the test suite** | `pip install -e ".[dev]" && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |
+| **Verify it runs locally** | `bash scripts/verify_setup.sh` — no credentials, ~10 s to a green check | ❌ |
+| **Run the test suite** | `pip install -r requirements-dev.txt && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |
 | **Reproduce the numbers** | [Reproducing these measurements ↓](#reproducing-these-measurements) | ✅ |
 
 > If this saved you a migration post-mortem, a ⭐ helps other teams find it.
@@ -256,32 +257,68 @@ Detailed methodology: [`docs/05-methodology.md`](docs/05-methodology.md).
 
 ## Reproducing these measurements
 
-**No Azure account needed to explore the results.** Open the
-[live dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en),
-read [`results/summary.md`](results/summary.md), or run the unit-test suite
-locally:
+**No Azure account is needed for anything here except the final, optional live
+re-run.** Three tiers, cheapest first.
+
+### Tier 0 — read the evidence (nothing to install)
+
+The [live dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en),
+[`results/summary.md`](results/summary.md), and the committed `runs/` +
+`analysis.md` under each [`benchmarks/`](benchmarks/) directory already contain
+every published number.
+
+### Tier 1 — run it locally, no cloud account
 
 ```bash
 git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
 cd when-reasoning-pays-off
 
-python3.11 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
+# Python 3.11+ required. If `python` is missing, use `python3` everywhere below.
+python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 
-# No credentials required for the test suite:
+# One command proves the setup works — no credentials, ~10 seconds:
+bash scripts/verify_setup.sh
+```
+
+Then explore or dry-run any experiment — still no cloud account, no tokens spent:
+
+```bash
+python experiments/examples/describe_all.py       # the full input → variable → output catalog
+python experiments/examples/pure_functions.py     # the deterministic primitives, zero network
+python -m scripts.run_benchmark \
+  --experiment experiments/exp001_short-factual_baseline.yaml --dry-run --allow-dirty
+```
+
+Run the unit-test suite (add the dev tools first):
+
+```bash
+pip install -r requirements-dev.txt
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
 ```
 
-**To re-run the benchmarks themselves** you need Azure OpenAI access with a
-GPT-5.2 deployment. This repo uses **Entra ID authentication** — no API keys in
-`.env`; run `az login` once and the cached token is auto-refreshed by
-`DefaultAzureCredential`.
+> You do **not** need `pip install -e .` to reproduce anything: every runner is
+> invoked as `python -m scripts.<runner>` from the repo root, and the tests add
+> their own import roots (see `conftest.py`). Editable install still works for
+> contributors on a modern toolchain (`setuptools >= 64`).
+
+### Tier 2 — re-run the benchmarks against a live model (Azure required)
+
+This needs Azure OpenAI access with a **GPT-5.2 deployment**. The repo uses
+**Entra ID authentication** — no API keys in `.env`; run `az login` once and the
+cached token is auto-refreshed by `DefaultAzureCredential`.
 
 ```bash
 az login                       # one-time
 cp .env.example .env           # then edit the endpoint + deployment names
-python scripts/run_benchmark.py experiments/exp001_short-factual_baseline.yaml
+
+# Drop --dry-run to spend real tokens. Every runner takes --experiment <yaml>:
+python -m scripts.run_benchmark --experiment experiments/exp001_short-factual_baseline.yaml
 ```
+
+See [`experiments/README.md`](experiments/README.md) for the full input →
+variable → output catalog, the blog-article ↔ experiment map, and a one-call
+Python interface (`experiments.run(...)`) that picks the right runner for you.
 
 ## Status
 
