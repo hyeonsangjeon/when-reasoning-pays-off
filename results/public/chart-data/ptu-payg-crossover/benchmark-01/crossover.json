@@ -20,63 +20,63 @@
   "rows": [
     {
       "effort": "na",
-      "mean_usd_per_request": 0.000747,
+      "mean_usd_per_request": 0.000665,
       "min_ptu": 50,
       "model": "gpt-4o",
-      "modeled_break_even_rpm": 2231.146809,
-      "n_used": 58,
+      "modeled_break_even_rpm": 2506.265664,
+      "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
       "throughput_gain_factor": 1.0
     },
     {
-      "effort": "minimal",
-      "mean_usd_per_request": 0.000663,
+      "effort": "none",
+      "mean_usd_per_request": 0.000587,
       "min_ptu": 50,
       "model": "gpt-5.2",
-      "modeled_break_even_rpm": 2475.148316,
-      "n_used": 58,
+      "modeled_break_even_rpm": 2808.608745,
+      "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
-      "throughput_gain_factor": 0.984614
+      "throughput_gain_factor": 0.989192
     },
     {
       "effort": "low",
-      "mean_usd_per_request": 0.001037,
+      "mean_usd_per_request": 0.000589,
       "min_ptu": 50,
       "model": "gpt-5.2",
-      "modeled_break_even_rpm": 1440.155898,
+      "modeled_break_even_rpm": 2797.306169,
       "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
-      "throughput_gain_factor": 0.896065
+      "throughput_gain_factor": 0.988568
     },
     {
       "effort": "medium",
-      "mean_usd_per_request": 0.001865,
+      "mean_usd_per_request": 0.000589,
       "min_ptu": 50,
       "model": "gpt-5.2",
-      "modeled_break_even_rpm": 664.773905,
-      "n_used": 59,
+      "modeled_break_even_rpm": 2797.108093,
+      "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
-      "throughput_gain_factor": 0.743882
+      "throughput_gain_factor": 0.988498
     },
     {
       "effort": "high",
-      "mean_usd_per_request": 0.003257,
+      "mean_usd_per_request": 0.000608,
       "min_ptu": 50,
       "model": "gpt-5.2",
-      "modeled_break_even_rpm": 296.626753,
+      "modeled_break_even_rpm": 2694.769737,
       "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
-      "throughput_gain_factor": 0.579668
+      "throughput_gain_factor": 0.983052
     },
     {
       "effort": "xhigh",
-      "mean_usd_per_request": 0.005043,
+      "mean_usd_per_request": 0.000598,
       "min_ptu": 50,
       "model": "gpt-5.2",
-      "modeled_break_even_rpm": 149.315222,
-      "n_used": 59,
+      "modeled_break_even_rpm": 2747.689521,
+      "n_used": 60,
       "ptu_hourly_rate_usd": 2.0,
-      "throughput_gain_factor": 0.451798
+      "throughput_gain_factor": 0.985871
     }
   ],
   "schema": "wrpo.chart_data",
@@ -90,10 +90,10 @@
     "n_used"
   ],
   "source_sanitized_sha256": [
-    "4323158268e8496b01e0b3d174c90c4ab8bf1076ed8b62036322b0d6a95ac9d0",
-    "0b624e067cb406c88f010dd835a531bddabb0a8251e74d6da5d625d4b65bb883",
-    "744bb0c5fc81c580c587754e5d2584c4d742556ab72bf34e61a7776687b720b5",
-    "fee538c6e53cb5bcb33a8722d4888081c870c79cfbcf31b0da0fd08a368caa12"
+    "4f134f58a1f0f9c08da0eadccc4eef2155d151fde31dfa52ecaaf92a15d3cd20",
+    "87be18be649e36ee40db307cfa32c540b831fc732088feec617f28dc9992b702",
+    "7004e832d9a57ea483578d217d3c9b290b9e5decd42894ab35b7c31b578684a2",
+    "42ebe760aaf6325f46bc1976e736cc65b82dff2f03ded541dad9f4a874e7eb66"
   ],
   "tier": "SANITIZED_PUBLIC",
   "units_key": "mixed_usd_rpm"

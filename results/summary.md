@@ -32,8 +32,9 @@ effort tier adds cost / loses throughput without lifting quality on the
 workloads measured here.
 
 - **PAYG (cost per correct answer):**
-  - **Null case (benchmark 01):** gpt-5.2 `minimal` at **$0.000663/correct**
-    beats the gpt-4o baseline ($0.000747) by 11 %
+  - **Null case (benchmark 01):** gpt-5.2 `none` at **$0.618 per 1,000
+    correct** ($0.000618/correct) beats the gpt-4o baseline ($0.739 per
+    1,000 correct) by 16 %
     ([cited from `benchmarks/01-short-factual/analysis.md` §5](../benchmarks/01-short-factual/analysis.md)).
   - **Ceiling case (benchmark 02):** gpt-5.2 `none` at **$0.000618/correct**
     beats the gpt-4o baseline ($0.001064) by 42 %
@@ -43,11 +44,12 @@ workloads measured here.
     ([cited from `benchmarks/03-tool-using-agent/analysis.md` §5](../benchmarks/03-tool-using-agent/analysis.md)).
 
 - **PTU (correct answers per minute at fixed capacity):**
-  - **Null case (benchmark 01):** gpt-4o wins; every gpt-5.2 effort tier
-    delivers fewer correct answers per minute
-    ([cited from `benchmarks/01-short-factual/analysis.md` §6](../benchmarks/01-short-factual/analysis.md);
-    throughput-gain `minimal = 0.985 ×`, `medium = 0.744 ×` relative to
-    gpt-4o baseline).
+  - **Null case (benchmark 01):** gpt-5.2 `none` wins on quality-adjusted
+    throughput — near-parity token footprint (0.989 × throughput) times a
+    higher pass-rate (95 % vs 90 %) yields **+4.4 %** correct-answers-per-
+    minute vs the gpt-4o baseline; raw throughput is a wash (every gpt-5.2
+    tier 0.98–0.99 ×)
+    ([cited from `benchmarks/01-short-factual/analysis.md` §6](../benchmarks/01-short-factual/analysis.md)).
   - **Ceiling case (benchmark 02):** gpt-5.2 `none` wins at **0.994 ×
     throughput × 100 % pass = +32.5 %** correct-answers-per-minute
     relative to gpt-4o baseline
@@ -58,8 +60,8 @@ workloads measured here.
     [cited from `benchmarks/03-tool-using-agent/analysis.md` §6](../benchmarks/03-tool-using-agent/analysis.md).
 
 - **Quality saturation point:**
-  - Benchmark 01 saturates at `none` (every effort yields the same ~88 %
-    pass-rate, ±2 percentage points;
+  - Benchmark 01 saturates at `none` (judge score ~1.95 on a 0–2 scale,
+    flat across every effort tier within one SD;
     [`benchmarks/01-short-factual/analysis.md` §7](../benchmarks/01-short-factual/analysis.md)).
   - Benchmark 02 saturates at `none` for gpt-5.2 (100 % pass-rate already;
     [`benchmarks/02-multi-step-reasoning/analysis.md` §7](../benchmarks/02-multi-step-reasoning/analysis.md)).
@@ -74,12 +76,15 @@ workloads measured here.
 Reasoning is unnecessary; the question is whether GPT-5.2 at any effort
 saves PAYG dollars or PTU throughput over gpt-4o.
 
-- **PAYG winner:** gpt-5.2 `minimal` ($0.000663/req vs gpt-4o $0.000747;
+- **PAYG winner:** gpt-5.2 `none` ($0.587 per 1,000 req vs gpt-4o $0.665;
+  $0.618 vs $0.739 per 1,000 correct;
   [01 §5](../benchmarks/01-short-factual/analysis.md)).
-- **PTU winner:** gpt-4o — every gpt-5.2 effort regresses throughput
+- **PTU winner:** gpt-5.2 `none` — near-parity throughput (0.989 ×) times a
+  higher pass-rate (95 % vs 90 %) nets +4.4 % correct-answers-per-minute
   ([01 §6](../benchmarks/01-short-factual/analysis.md)).
 - **Mechanism:** gpt-5.2's input rate ($1.75/M tokens) undercuts gpt-4o's
-  ($2.50/M); with `minimal` reasoning the savings flow through
+  ($2.50/M), and at `none` the reasoning surface is ≈ 0, so the saving
+  flows straight through with no token penalty
   ([pricing/azure-openai-payg-2026-05.yaml](../pricing/azure-openai-payg-2026-05.yaml)).
 - **Charts:**
   [cost-per-request](../results/cost-curves/benchmark-01-cost-per-request.png),
@@ -163,15 +168,16 @@ per-benchmark analysis.
 
 | Task shape | PAYG default | PTU default |
 | --- | --- | --- |
-| **Short-factual / null** (benchmark 01) | **gpt-5.2 `minimal`** — saves 11 % USD vs gpt-4o ([01 §5](../benchmarks/01-short-factual/analysis.md)) | **gpt-4o** — every gpt-5.2 effort loses throughput ([01 §6](../benchmarks/01-short-factual/analysis.md)) |
+| **Short-factual / null** (benchmark 01) | **gpt-5.2 `none`** — saves 12 % USD/req (16 % per correct) vs gpt-4o ([01 §5](../benchmarks/01-short-factual/analysis.md)) | **gpt-5.2 `none`** — +4.4 % correct-answers-per-minute (near-parity throughput × higher pass-rate) ([01 §6](../benchmarks/01-short-factual/analysis.md)) |
 | **Multi-step reasoning** (benchmark 02) | **gpt-5.2 `none`** — 42 % cost-per-correct saving ($0.000618 vs $0.001064; [02 §5](../benchmarks/02-multi-step-reasoning/analysis.md)) | **gpt-5.2 `none`** — +32.5 % correct-answers-per-minute relative to gpt-4o baseline ([02 §6](../benchmarks/02-multi-step-reasoning/analysis.md)) |
 | **Tool-using, no/one tool** (benchmark 03 subset) | **gpt-5.2 `low`** or **`none`** — both at 100.0 % no-tool / one-tool pass and ~$0.00277 / correct, beating gpt-4o ($0.00365 / correct, 83 % no-tool) ([03 §5, §7](../benchmarks/03-tool-using-agent/analysis.md)) | **gpt-5.2 `low`** — +4.3 % correct-answers-per-minute vs gpt-4o ([03 §6](../benchmarks/03-tool-using-agent/analysis.md)) |
 | **Tool-using, multi-tool** (benchmark 03 subset) | **gpt-5.2 `low`** — 100.0 % multi-tool pass at $0.002773 / correct; gpt-4o is 83.3 % at $0.003651 / correct ([03 §5, §7](../benchmarks/03-tool-using-agent/analysis.md)) | **gpt-5.2 `low`** — same 0.939 × throughput × 100.0 % pass beats gpt-4o (1.0 × × 83.3 %) ([03 §6](../benchmarks/03-tool-using-agent/analysis.md)) |
 
-The "effort > low" column is **empty on benchmarks 02 and 03** and the
-"any gpt-5.2 effort" column is empty on benchmark 01 (PTU lens). `high`
-and `xhigh` consistently add cost / lose throughput without lifting
-quality on the workloads measured here.
+The "effort > low" column is **empty on every benchmark**: `high` and
+`xhigh` consistently add cost without lifting quality on the workloads
+measured here. On benchmark 01 the effort dial does nothing at all —
+quality, cost, and reasoning tokens are all flat from `none` upward — so
+`none` wins both the PAYG and PTU lenses.
 
 ## 6. Caveats
 
@@ -211,7 +217,7 @@ quality on the workloads measured here.
 
 ```bash
 # Aggregate every benchmark into a deterministic analysis.json:
-python -m scripts.analyze_tokens --benchmark 01-short-factual --experiment-prefix exp008
+python -m scripts.analyze_tokens --benchmark 01-short-factual --experiment-prefix exp001_short-factual_baseline --judge-dir benchmarks/01-short-factual/judge_runs_real
 python -m scripts.analyze_tokens --benchmark 02-multi-step-reasoning --experiment-prefix exp002
 python -m scripts.analyze_tokens --benchmark 03-tool-using-agent --experiment-prefix exp003
 

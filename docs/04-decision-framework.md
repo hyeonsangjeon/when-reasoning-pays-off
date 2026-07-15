@@ -39,11 +39,14 @@ causal chains. (See
 for ~20 worked examples.)
 
 - **No.** Your task is a benchmark-01 shape (short-factual, classification,
-  formatting). gpt-4o suffices. **Stop and pick gpt-4o.** If you're on
-  PAYG and budget-sensitive,
+  formatting). Reasoning is unnecessary — but on PAYG, gpt-5.2 `none`
+  (no reasoning) is the pick:
   [`benchmarks/01-short-factual/analysis.md` §5](../benchmarks/01-short-factual/analysis.md)
-  shows gpt-5.2 `minimal` saves 11 % per request; the latency cost is
-  ~38 % higher per call. Stay on gpt-4o if latency-sensitive.
+  shows it runs ~12 % cheaper per request than gpt-4o at parity-or-better
+  quality (95 % vs 90 % pass) with no latency penalty (latency shows no
+  effort trend). On fixed-capacity PTU the two are a throughput wash, so
+  **gpt-4o is equally fine there.** Either way, don't dial effort above
+  `none`.
 - **Yes — but the task is single-shot (no tool calls).** Go to Q3
   (consumption model).
 - **Yes — and the task uses tools.** Go to Q2.
@@ -87,8 +90,9 @@ gpt-5.2 `low` or `none`.
 - **PAYG (pay-as-you-go; per-token billing):** the cost-per-correct
   table is the bill. Pick the cell with the lowest
   `mean_usd_per_cell / pass_rate` for your workload shape:
-  - Short-factual (benchmark 01): **gpt-5.2 `minimal`** — 11 % cheaper
-    than gpt-4o ([01 §5](../benchmarks/01-short-factual/analysis.md)).
+  - Short-factual (benchmark 01): **gpt-5.2 `none`** — ~12 % cheaper
+    per request than gpt-4o at parity-or-better quality
+    ([01 §5](../benchmarks/01-short-factual/analysis.md)).
   - Multi-step reasoning (benchmark 02): **gpt-5.2 `none`** —
     $0.000618/correct vs $0.001064 (gpt-4o), **42 % saving**
     ([02 §5](../benchmarks/02-multi-step-reasoning/analysis.md)).
@@ -130,13 +134,14 @@ gpt-5.2 `low` or `none`.
   paraphrase, not chained inference. Task shape ≈ benchmark 01
   (short-factual, null case).
 - Q3: **PAYG**.
-- **Recommendation:** **gpt-5.2 `minimal`** — saves $0.000084 per call
+- **Recommendation:** **gpt-5.2 `none`** — saves $0.000078 per call
   vs gpt-4o ([01 §5](../benchmarks/01-short-factual/analysis.md)), at
-  identical pass-rate (~88 %). That per-call saving scales linearly with
-  the customer's volume (multiply the sourced per-call delta by the daily
-  call count). Trade-off: ~38 % latency increase
-  ([01 §8](../benchmarks/01-short-factual/analysis.md)); confirm against
-  p95 SLO before flipping production.
+  parity-or-better pass-rate (95 % vs 90 %, within small-N noise). That
+  per-call saving scales linearly with the customer's volume (multiply the
+  sourced per-call delta by the daily call count). No latency trade-off:
+  latency shows no effort trend on this benchmark
+  ([01 §8](../benchmarks/01-short-factual/analysis.md)); still confirm
+  against p95 SLO before flipping production.
 - Confirm-on-your-data plan: run 200 representative queries through both
   models, judge with the same gpt-4o judge prompt, verify pass-rate
   parity and latency tolerance.
@@ -211,10 +216,12 @@ and a single pricing snapshot. It will **not** generalize cleanly to:
   is intentionally minimal; real-world tool surfaces with retries,
   rate-limits, and partial-failure recovery may dominate the cost / quality
   shape in ways not captured here.
-- **Real-time / sub-1-second SLOs.** The latency cost of every gpt-5.2
-  effort tier above `minimal` is ≥ 1.4 × gpt-4o
+- **Real-time / sub-1-second SLOs.** On reasoning-heavy shapes
+  (benchmarks 02 / 03) higher effort tiers add latency as reasoning tokens
+  grow; on the null case (benchmark 01) latency shows no effort trend
   ([01 §8](../benchmarks/01-short-factual/analysis.md)). Latency-bound
-  workloads must trade off quality for time-to-first-token directly.
+  workloads should measure time-to-first-token directly before dialing
+  effort up.
 - **PTU workloads with parallel batches / streaming.** The
   throughput-gain figures here are derived from token counts only — they
   do not account for queueing, batch composition, or rate-limit shaping.

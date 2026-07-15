@@ -53,7 +53,7 @@ one independent variable; everything else is held constant or recorded.
 
 | Variable | Values | Where it is set |
 | --- | --- | --- |
-| `reasoning_effort` | `minimal`, `low`, `medium`, `high` | `reasoning={"effort": ...}` on `client.responses.create()` |
+| `reasoning_effort` | `none`, `low`, `medium`, `high`, `xhigh` | `reasoning={"effort": ...}` on `client.responses.create()` |
 
 We pass the effort explicitly on every call. We never rely on deployment defaults — a
 deployment-side change would silently invalidate every prior result.

@@ -49,15 +49,18 @@
     <nav class="article-outline" aria-label="읽기 경로">
       <span class="section-label">읽기 경로</span>
       <a href="#overview">1 · 개요</a>
-      <a href="#topics">2 · 근거 토픽</a>
-      <a href="#bridge">3 · 브리지</a>
-      <a href="#operations">4 · 운영</a>
+      <a href="#retrospective">2 · 실험 회고</a>
+      <a href="#topics">3 · 근거 토픽</a>
+      <a href="#bridge">4 · 브리지</a>
+      <a href="#operations">5 · 운영</a>
       <a href="../../charts/?lang=ko">근거 대시보드</a>
     </nav>
 
     <p>
       흐름은 주장에서 실무로 이어집니다. <strong>개요</strong> 글은 단일
-      메시지와 근거의 경계를 제시합니다. <strong>근거 토픽</strong>은 측정된 각
+      메시지와 근거의 경계를 제시합니다. <strong>실험 회고</strong>는 그 근거가
+      어떻게 만들어졌는지를 타임라인과 질문별 이야기로 먼저 풀어냅니다.
+      <strong>근거 토픽</strong>은 측정된 각
       구간을 하나씩 엽니다. <strong>브리지</strong> 글은 서술 관점이 측정에서
       프로덕션으로 옮겨 가는 지점을 표시합니다. <strong>운영</strong> 글은 같은
       측정 습관을 일상 운영으로 가져갑니다 — 복구, 캐시 라우팅, 보존,
@@ -75,6 +78,42 @@
       </p>
       <p><a class="button-link" href="../when-reasoning-pays-off/ko/">개요 글 읽기</a></p>
     </section>
+
+    <h2 id="retrospective">실험 회고: 숫자가 나오기까지</h2>
+    <p class="muted-note">
+      사다리를 따라 계층별로 읽기 전에, 세 실험 전체를 하나의 이야기로 볼 수
+      있습니다. <a href="../reasoning-effort-retrospective/ko/">회고 허브</a>는
+      <strong>타임라인</strong>(언제 무엇이 어긋났나)과 <strong>질문별 회고</strong>(왜
+      실험했고 무엇을 배웠나) 두 축으로 탐색하고, 맨 위 명령어 한 줄로 자격증명
+      없이 바로 재현합니다.
+    </p>
+    <div class="cards topic-cards">
+      <article class="card">
+        <h3>회고 허브</h3>
+        <p>세 작업 형태를 관통하는 하나의 이야기 — 타임라인과 질문별 두 축으로 근거를 탐색합니다.</p>
+        <p><a href="../reasoning-effort-retrospective/ko/">회고 허브 읽기</a></p>
+      </article>
+      <article class="card">
+        <h3>exp001 · 짧은 사실 작업</h3>
+        <p>바닥 앵커(Null). 세 벤치마크 중 유일하게 <strong>실측</strong>으로, 추론이 값을 하지 못하는 자리를 확인합니다 &mdash; <code>none</code>이 이미 gpt-4o를 이기고 강도 다이얼은 비어 있습니다.</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp001-short-factual/ko/">실험 노트 읽기</a></p>
+      </article>
+      <article class="card">
+        <h3>exp002 · 다단계 추론</h3>
+        <p>다단계 천장 케이스. 사전 가설이 어디서 반증됐는지 입력·산출물·비용·품질까지 하나하나 해부합니다.</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp002-multi-step-reasoning/ko/">실험 노트 읽기</a></p>
+      </article>
+      <article class="card">
+        <h3>exp003 · 툴 사용 에이전트</h3>
+        <p>툴 에이전트 혼합 케이스. 바닥이 <code>none</code>이 아니라 <code>low</code>로 한 칸 올라가고, gpt-4o가 도구를 남용하는 지점을 짚습니다.</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp003-tool-using-agent/ko/">실험 노트 읽기</a></p>
+      </article>
+      <article class="card">
+        <h3>10초 재현</h3>
+        <p>자격증명 없이 실험 카탈로그·순수 함수·러너 dry-run을 한 줄로 검증합니다.</p>
+        <p><a href="../reasoning-effort-retrospective/ko/#reproduce">재현 방법 보기</a></p>
+      </article>
+    </div>
 
     <h2 id="topics">개요 글 속 토픽</h2>
     <div class="cards topic-cards">

@@ -1,0 +1,28 @@
+{
+  "effort": "none",
+  "git_commit": "",
+  "judge_model": "gpt-4o",
+  "judge_prompt_sha256": "fb997c90fe0778681194809793cdce218bcb9d6537304a525f2916cf29ba6942",
+  "model": "gpt-5.2",
+  "rationale": "The summary mentions clear skies and a high of 22 C but includes additional details, splitting the information into more than one sentence.",
+  "raw_response": {
+    "output_text": "{\"score\": 1, \"rationale\": \"The summary mentions clear skies and a high of 22 C but includes additional details, splitting the information into more than one sentence.\"}",
+    "usage": {
+      "input_tokens": 207,
+      "input_tokens_details": {
+        "cache_write_tokens": null,
+        "cached_tokens": 0
+      },
+      "output_tokens": 39,
+      "output_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "total_tokens": 246
+    }
+  },
+  "repeat": 1,
+  "sample_id": "sf_19",
+  "score": 1,
+  "source_run_filename": "20260520T205944Z_exp001_short-factual_baseline_018_gpt-5.2_none_r1.json",
+  "timestamp_utc": "2026-07-15T11:57:37Z"
+}

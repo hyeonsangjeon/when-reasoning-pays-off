@@ -1,10 +1,10 @@
 effort,mean_usd_per_request,model,n_used,pricing_accessed_date,pricing_snapshot_path,pricing_source_url,std_usd_per_request
-,0.000747,gpt-4o,58,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,6.3e-05
-minimal,0.000663,gpt-5.2,58,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,5.4e-05
-low,0.001037,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000178
-medium,0.001865,gpt-5.2,59,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.0004
-high,0.003257,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000569
-xhigh,0.005043,gpt-5.2,59,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000718
+,0.000665,gpt-4o,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,8.9e-05
+none,0.000587,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000124
+low,0.000589,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000126
+medium,0.000589,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000126
+high,0.000608,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000147
+xhigh,0.000598,gpt-5.2,60,2026-05-19,pricing/azure-openai-payg-2026-05.yaml,https://azure.microsoft.com/en-us/pricing/details/azure-openai/,0.000138
 # pricing_source_url: https://azure.microsoft.com/en-us/pricing/details/azure-openai/
 # pricing_accessed_date: 2026-05-19
 # pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--
+  DRAFT · 한국어 정본(canonical) 실험 노트 · exp003 (툴 사용 에이전트 / Mixed case).
+  이 시리즈(reasoning-effort-retrospective)는 한국어를 원본 언어로 삼습니다.
+  본문이 이야기로 짚은 판단을 여기서는 원자료와 재현 커맨드로 확인합니다.
+  승인 후: en/ja/zh-CN/hi 번역본을 KO 원본에서 파생하고 i18n-parity.json 추가.
+  수치는 모두 benchmarks/03-tool-using-agent/analysis.md 및 results/summary.md에서
+  재인용하며 재유도하지 않습니다. 비용은 1,000건당으로 정규화. 내부 태스크 ID는 절대 포함하지 않습니다.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp003 · 툴 에이전트에서 추론 강도는 값을 했는가 | when reasoning pays off</title>
+  <meta name="description" content="툴 사용 에이전트(Mixed) 벤치마크 exp003의 실험 노트. 설계·입력·산출물·사전등록 예측·실측 비용/품질·도구 남용·한계·결정을 순서대로 되짚고, 자격증명 없이 이 실험만 직접 재현합니다. 세 벤치마크 중 처음으로 추론이 조금 값을 한 케이스.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="draft">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../ko/">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ko/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="글 탐색">
+        <a href="../../../../../../ko/">홈</a>
+        <a href="../../../../ko/">글 목록</a>
+        <a href="../../../ko/">실험 회고(허브)</a>
+        <a href="../../../../../charts/?lang=ko">근거 대시보드</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp003</p>
+    <p class="article-kicker">실험 노트 · exp003 · 툴 사용 에이전트(Mixed case) · 추론이 처음으로 값을 한 자리</p>
+    <h1>exp003 &mdash; 툴 에이전트에서 추론 강도는 값을 했는가</h1>
+    <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">앞선 두 벤치마크에서 답은 늘 &ldquo;강도를 올리지 말라&rdquo;였다. 이번엔 달랐다. 도구를 부르고, 그 결과를 받아 다시 판단하는 <strong>혼합 작업</strong> &mdash; 세 벤치마크를 통틀어 <em>추론이 처음으로, 그것도 아주 조금 값을 한</em> 자리다.</p>
+    <p class="lede">우리는 <strong>사전 등록</strong>에서 중간 강도(<code>low</code>&ndash;<code>medium</code>)가 파레토 무릎일 거라 적었다. gpt-4o는 무툴&middot;1툴은 되지만 멀티툴 시퀀싱에서 무너지고, gpt-5.2 <code>none</code>은 계획할 추론 표면이 없어 멀티툴에서 gpt-4o만큼 약하며, <code>high</code>&middot;<code>xhigh</code>는 품질은 포화된 채 사소한 샘플에 도구를 과하게 부를 거라고.</p>
+    <p class="lede">측정은 <em>절반은 맞고 절반은 놀라웠다</em>. <code>low</code>가 정말 바닥이었다 &mdash; 이번만은 <code>none</code>이 아니라. 그런데 gpt-4o가 무너진 진짜 자리는 멀티툴이 아니라, <strong>도구가 필요 없는 문제에 계산기를 부른</strong> 곳이었다. 이 노트는 그 하루를 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 도구 남용 지도 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">먼저, 10초</p>
+      <h2>결론을 믿지 말고 이 실험만 직접 돌려보세요</h2>
+      <p>토큰 소비는 0입니다. 아래 두 줄이 이 실험의 입력&middot;변수&middot;산출물을 그대로 출력하고, 툴 루프 러너 배선을 dry-run으로 검증합니다.</p>
+      <pre class="code-block"><code># 이 실험의 입력 → 변수 → 산출물 카드를 출력 (네트워크 없음)
+python -c "import experiments; print(experiments.describe('exp003_benchmark03_gpt5_2.yaml').summary())"
+
+# 툴 루프 러너를 dry-run으로 배선만 검증 (토큰 소비 0)
+python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 레포 열기 &amp; ⭐</a></p>
+      <p class="muted-note">실제 유료 측정과 집계&middot;도표 재생성 커맨드는 <code>benchmarks/03-tool-using-agent/analysis.md</code>의 재현 푸터에 정리되어 있습니다.</p>
+    </section>
+
+    <nav class="article-outline" aria-label="이 노트의 구성">
+      <strong>읽는 순서 &mdash; 품질을 먼저, 비용은 그다음:</strong>
+      <a href="#design">이번엔 도구가 등장한다</a>
+      <a href="#predict">예측은 절반만 맞았다</a>
+      <a href="#reversal">바닥이 none이 아니라 low였다</a>
+      <a href="#subtypes">gpt-4o는 도구를 너무 자주 불렀다</a>
+      <a href="#limits">어디까지 믿을 수 있나</a>
+      <a href="#decision">그래서 무엇을 기본값으로</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">설계</p>
+      <h2>이번엔 도구가 등장한다</h2>
+      <p><strong>질문은 하나다.</strong> 도구를 쓰는 에이전트 작업 &mdash; 현실에 가장 가까운 <em>혼합</em> 케이스 &mdash; 에서, gpt-5.2의 강도를 어디까지 올려야 추론이 청구서 값을 하는가? PAYG(정답당 달러)와 PTU(고정 용량당 분당 정답) 두 렌즈로 동시에 본다.</p>
+      <p><strong>데이터셋.</strong> 얼려 둔 저작 샘플 20개(<code>tu_01</code>&hellip;<code>tu_20</code>). 세 유형이 섞여 있다 &mdash; <strong>무툴 6개</strong>(지식/형식만), <strong>1툴 8개</strong>(계산기 하나 또는 검색 하나), <strong>멀티툴 6개</strong>(검색 → 계산기로 2&ndash;3번 이어지는 사슬). 모든 샘플은 검증 가능한 정답과, 어떤 도구를 불러야 하는지에 대한 <code>expected_tool_calls</code> 정답표를 함께 갖는다.</p>
+      <p><strong>변하는 축은 딱 하나</strong> &mdash; gpt-5.2의 <code>reasoning.effort</code>를 <code>none · low · medium · high · xhigh</code>로 스윕한다. 여기에 추론 파라미터가 없는 gpt-4o 기준선을 나란히 둔다. 각 (샘플 × 모델 × 강도) 셀은 <strong>세 번씩(R=3)</strong> 반복하고, 툴 루프는 최대 4회 반복(<code>max_tool_iterations: 4</code>)으로 잘린다.</p>
+      <div class="article-summary-grid" aria-label="사전 등록 예측과 역할">
+        <section class="summary-tile"><h2>사전 등록 예측</h2><p>중간 강도(<code>low</code>&ndash;<code>medium</code>)가 혼합 작업의 파레토 무릎이다. gpt-4o는 무툴&middot;1툴은 되지만 멀티툴에서 깨지고, gpt-5.2 <code>none</code>은 멀티툴에서 gpt-4o만큼 약하며, <code>high</code>&middot;<code>xhigh</code>는 품질이 포화된 채 도구만 과하게 부른다.</p></section>
+        <section class="summary-tile"><h2>이 실험의 역할</h2><p>단답의 <em>바닥</em>(01)과 다단계의 <em>천장</em>(02)이 모두 &ldquo;강도를 올리지 말라&rdquo;로 끝난 뒤, <strong>추론 표면이 실제로 필요한 최소 지점</strong>이 있는지를 확인하는 혼합 앵커.</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">입력과 산출물</p>
+      <h2>무엇을 먹고 무엇을 남겼나</h2>
+      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 그래서 인풋에서 아웃풋까지 한 줄로 되짚을 수 있습니다.</p>
+      <div class="article-summary-grid" aria-label="입력과 산출물">
+        <section class="summary-tile">
+          <h2>입력 (in)</h2>
+          <p><strong>실험 정의:</strong> <code>experiments/exp003_benchmark03_gpt5_2.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
+          <strong>데이터셋:</strong> <code>benchmarks/03-tool-using-agent/dataset.json</code> (SHA-256으로 고정).<br>
+          <strong>프롬프트&middot;도구:</strong> 시스템 프롬프트와 도구 설정을 각각 SHA-256으로 지문화 &mdash; 360셀 전체에 <em>단일한</em> 시스템 프롬프트와 도구 설정이 쓰였음을 보증.</p>
+        </section>
+        <section class="summary-tile">
+          <h2>산출물 (out)</h2>
+          <p><strong>원시 호출:</strong> <code>runs/*.json</code> (Foundry v1 페이로드 + 반복별 <code>tool_calls</code> 궤적 원문).<br>
+          <strong>채점:</strong> <code>judge_runs/*.json</code> (정답 채점 + 별도 도구효율 점수).<br>
+          <strong>집계:</strong> <code>analysis.json</code>.<br>
+          <strong>도표/표:</strong> <code>results/cost-curves/benchmark-03-*.png</code>·<code>.csv</code>.</p>
+        </section>
+      </div>
+      <p><strong>측정 표면은 360셀</strong>(gpt-4o 60 + gpt-5.2 300, 강도 다섯 단계). 이상치로 제외된 셀은 <strong>1개</strong>(<code>tu_18</code>/<code>low</code>/r0). 채점은 중립 심판 gpt-4o가 셀당 한 번, <strong>360/360 성공</strong>. 모든 JSON은 실제 Azure Foundry v1 호출로 <code>"fixture": true</code> 마커가 하나도 없다. 다만 <strong>360셀 중 12개(3.3%)</strong>가 툴 루프 4회 한도에 걸려 도구 없이 최종 답을 강제 반환했고, 각 행에 <code>tool_loop_terminated="iteration_cap"</code> 플래그가 남아 있다.</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">예측 대 실측</p>
+      <h2>예측은 절반만 맞았다</h2>
+      <div class="article-summary-grid" aria-label="예측 대 실측">
+        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>중간 강도가 무릎이다. gpt-4o는 <em>멀티툴에서</em> 깨진다. gpt-5.2 <code>none</code>은 멀티툴에서 약하다. 요약하면 &ldquo;혼합 작업엔 약간의 추론이 필요하다.&rdquo;</p></section>
+        <section class="summary-tile"><h2>무엇이 나왔나</h2><p><code>low</code>가 정말 파레토 무릎이었다 &mdash; 이번만은 <code>none</code>이 아니라. 그런데 gpt-4o가 무너진 곳은 멀티툴만이 아니라 <strong>무툴(83.3%)</strong>이었다. 도구가 필요 없는데 계산기를 불렀다.</p></section>
+      </div>
+      <p><strong>판정: 방향은 확증, 실패 모드는 반전.</strong> &ldquo;혼합 작업엔 최소한의 추론 표면이 있어야 한다&rdquo;는 사전 등록은 지지되었다 &mdash; <code>low</code>(<code>none</code>이 아니라)가 정답당 파레토 최적이다. 다만 gpt-4o의 약점은 <em>멀티툴 시퀀싱</em>만이 아니라, 도구를 <strong>부르지 말아야 할 때 부르는 습관</strong>이었다. 예측의 절반은 맞았고, 절반은 데이터가 더 흥미로운 이야기로 바로잡았다.</p>
+    </section>
+
+    <section id="reversal" class="article-section">
+      <p class="section-label">첫 번째 신호</p>
+      <h2>바닥이 none이 아니라 low였다</h2>
+      <p>아래 표의 달러는 가격 스냅샷 <code>pricing/azure-openai-payg-2026-05.yaml</code>(접근일 2026-05-19)에 방법론의 PAYG 공식을 적용한 값으로, <code>analysis.md</code> §5에서 재인용하며 1,000건당으로 정규화했다.</p>
+      <pre class="code-block"><code>모델      강도     1,000요청당    통과율          1,000정답당
+gpt-4o    —        $3.29         90.0% (54/60)   $3.65   ← 기준선
+gpt-5.2   none     $2.76         98.3% (59/60)   $2.81
+gpt-5.2   low      $2.77         100%  (60/60)   $2.77   ← 파레토 최적
+gpt-5.2   medium   $2.89         98.3% (59/60)   $2.94
+gpt-5.2   high     $3.18         98.3% (59/60)   $3.23
+gpt-5.2   xhigh    $3.50         100%  (60/60)   $3.50</code></pre>
+      <p><strong>정답 1,000건당 <code>low</code>는 $2.77 &mdash; gpt-4o($3.65)보다 24% 싸다.</strong> 그리고 gpt-4o 단가 아래에서 유일하게 100% 통과에 닿은 셀이다. <code>none</code>도 이미 요청당으로는 gpt-4o보다 약 16% 싸지만(입력 단가 $1.75/1M 대 $2.50/1M, 툴 루프에선 입력이 청구서를 지배), 멀티툴에서 한 문제를 놓쳐 98.3%에 머문다. <code>low</code>가 더한 것은 평균 <strong>4토큰의 추론 표면</strong>뿐인데, 그 작은 표면이 통과율을 100%로 끌어올렸다(1,000요청당 +$0.011).</p>
+      <p>앞선 두 벤치마크에선 <code>none</code>이 바닥이자 최적이었다. 여기서 처음으로 바닥이 한 칸 올라갔다. <strong>혼합 실작업에는 양의 최소 강도 바닥이 있다</strong> &mdash; 추론이 마침내, 아주 조금 값을 했다.</p>
+
+      <figure class="article-figure" id="figure-exp003-quality">
+        <figcaption><strong>거의 평평한 품질 곡선.</strong> 강도별 통과율. gpt-5.2는 <code>none</code>(98.3%)부터 <code>low</code>(100%)로 올라선 뒤 평평하고, gpt-4o 기준선은 그 아래 90% 부근에 있다. 진짜 이야기는 이 집계선이 아니라 아래의 <em>유형별</em> 분해에 있다. 출처: <code>results/cost-curves/benchmark-03-quality.png</code>.</figcaption>
+        <img src="../../../../../../assets/benchmark-03-quality.png" alt="벤치마크 03의 강도별 통과율 막대 그래프. gpt-5.2는 none 98.3%에서 low 100%로 올라선 뒤 평평하고, gpt-4o는 90% 부근에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="subtypes" class="article-section">
+      <p class="section-label">도구 남용 지도</p>
+      <h2>gpt-4o는 도구를 너무 자주 불렀다</h2>
+      <p>90%라는 집계 숫자 하나로는 &ldquo;어디서&rdquo;가 보이지 않는다. 유형별로 쪼개면 이 벤치마크의 핵심 근거가 드러난다.</p>
+      <pre class="code-block"><code>모델      강도     무툴(18)   1툴(24)   멀티툴(18)
+gpt-4o    —        83.3%      100%      83.3%
+gpt-5.2   none     100%       100%      94.4%
+gpt-5.2   low      100%       100%      100%    ← 파레토 최적</code></pre>
+      <ul>
+        <li><strong>무툴 &mdash; gpt-4o가 발을 헛디딘 곳.</strong> gpt-4o는 도구가 필요 없는데도 계산기를 불러 83.3%에 그쳤다. 심판은 세 건을 &ldquo;루브릭이 도구 호출 0을 요구하는데 모델이 도구를 불렀다&rdquo;로 실패 처리했다 &mdash; &ldquo;1+1&rdquo; 같은 프롬프트에도 계산기를 남용한 것이다. gpt-5.2는 전 강도에서 100%.</li>
+        <li><strong>1툴 &mdash; 완전 포화.</strong> 모든 (모델×강도) 셀이 100%. 단일 도구 디스패치는 두 계열 모두에게 풀린 문제다.</li>
+        <li><strong>멀티툴 &mdash; 추론이 돕는 자리.</strong> gpt-4o 83.3%, gpt-5.2 <code>none</code> 94.4%, <code>low</code> 100%. 2&ndash;3번 이어지는 사슬에서 작은 추론 표면이 &ldquo;계획하고 실행&rdquo;을 더 안정적으로 만든다. <strong>gpt-4o → gpt-5.2 <code>low</code>의 16.7%p 상승</strong>이 이 벤치마크가 잡아내려던 실작업 신호다.</li>
+      </ul>
+      <p>도구 효율 점수(정답 채점과 별개로, 궤적을 0&ndash;1로 평가)도 같은 방향이다. gpt-4o는 <strong>0.950</strong>으로 가장 낮은데, 무툴에서 계산기를 남용해 정답을 맞히고도 점수가 깎였다. gpt-5.2는 <code>low</code>에서 <strong>0.988</strong>로 정점 &mdash; 통과율 100%를 찍은 바로 그 셀이다.</p>
+    </section>
+
+    <section class="article-section">
+      <p class="section-label">두 번째 신호</p>
+      <h2>low를 넘기면 같은 품질을 더 비싸게</h2>
+      <p><code>low</code> 위로는 다시 앞선 벤치마크의 이야기가 반복된다. <code>medium</code>은 1,000요청당 약 $0.13을 더 쓰고도 통과율이 98.3%로 오히려 <em>내려가</em> <code>low</code>에 파레토 열세다. <code>high</code>는 <code>low</code> 대비 요청당 +14%, <code>xhigh</code>는 +26%인데 통과율은 그대로다(<code>xhigh</code>는 100%지만 정답당으로 <code>low</code>보다 26% 비싸다).</p>
+      <p><strong>지연도 같은 이야기다.</strong> <code>none</code>은 gpt-4o보다 오히려 5% 빠르고(2,902ms 대 3,044ms), <code>low</code>는 +0.7%로 사실상 평평하다. 그런데 <code>high</code>는 +20.0%, <code>xhigh</code>는 +23.9%로 벌어진다. 지연에 민감한 워크로드라면 <code>medium</code>이 현실적 천장이다.</p>
+      <p><strong>토큰을 분해하면 이 벤치마크만의 구조가 보인다.</strong> 요청당 입력이 약 1,200&ndash;1,300토큰으로 청구서를 지배한다 &mdash; 시스템 프롬프트와 도구 정의가 루프의 매 반복마다 다시 실린 탓이다. 숨은 추론 토큰은 0(<code>none</code>)에서 약 52(<code>xhigh</code>)로 늘지만, 입력에 견주면 <strong>작다</strong>. 추론 토큰이 <code>xhigh</code> 비용을 지배하던 단발 벤치마크(01·02)와는 구조가 반대다.</p>
+      <p><strong>PTU 렌즈에서도 결론은 <code>low</code>로 모인다.</strong> <code>low</code>는 gpt-4o의 0.939배 처리량이지만 통과율 100%가 이를 뒤집어 <strong>분당 정답 +4.3%</strong>다(gpt-4o는 90%). 처리량 손실(−6.1% req/min)보다 통과율 상승(+10.0%p)이 크다. 반면 강도를 더 올리면 처리량만 깎인다(<code>medium</code> −8.5%, <code>xhigh</code> −10.8%). <strong>PAYG(정답당 최저)와 PTU(분당 정답 최고)가 같은 <code>low</code>를 가리키는 두 렌즈의 수렴</strong>이다.</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">투명성</p>
+      <h2>숫자에 남긴 얼룩까지 그대로</h2>
+      <ul>
+        <li><strong>이상치 1건.</strong> <code>tu_18</code>의 <code>low</code> 첫 반복이 토큰에서 3σ를 넘고 운영 플래그를 함께 달아 집계에서 제외됐다(360셀 중 1건 = 0.3%, 방법론 경보선 10%보다 한참 아래). 원시 JSON 트리에는 그대로 남아 있다 &mdash; 이상치 제외는 집계 마스크일 뿐 삭제가 아니다.</li>
+        <li><strong>루프 한도 12건.</strong> 360셀 중 12개(3.3%)가 툴 루프 4회 한도에 걸려 도구 없이 답을 강제 반환했다. 각 행에 <code>iteration_cap</code> 플래그가 남아, 어떤 셀이 한도에 눌렸는지 추적할 수 있다.</li>
+        <li><strong>부분 점수는 정답에서 제외.</strong> 심판 점수 1(부분 정답)은 §7에 따로 보고하되 정답당 비용의 분모에서는 <em>뺐다</em> &mdash; 프로덕션 규모에서 툴 작업의 부분 정답은 정답이 아니기 때문이다. 이 이진화 선택을 명시해 두어 헤드라인이 어떻게 계산됐는지 드러낸다.</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">한계</p>
+      <h2>어디까지 믿을 수 있나</h2>
+      <p>이 결과는 하나의 혼합 툴 작업 세트, 하나의 가격 스냅샷, 특정 모델 조합과 루브릭에서 나온 소규모 집계값입니다. 숫자 자체보다 <strong>방법을 가져가는 편</strong>이 안전합니다.</p>
+      <ul>
+        <li><strong>검색은 모킹이다.</strong> 이 벤치마크의 <code>web_search</code>는 실제 웹 검색이 아니라 <em>고정 지식베이스 조회</em>다. 라이브 검색은 통제 불가능한 분산을 들여와 범위 밖으로 두었다. 헤드라인(작은 추론 표면이 멀티툴 신뢰성을 올린다, <code>low</code> 초과는 토큰 낭비)은 이 단순화에 견고하다.</li>
+        <li><strong>표본.</strong> N=20 · R=3. 이 표본 크기에서는 신뢰구간이나 통계적 유의성을 주장하지 않는다 &mdash; 방향성 결론은 견고하나 절대 크기는 소표본 주의.</li>
+        <li><strong>가격.</strong> 단일 스냅샷. 요율이나 사용량 스키마가 바뀌면 같은 원자료에서 비용을 다시 계산해야 한다.</li>
+        <li><strong>채점.</strong> LLM-as-judge(gpt-4o). 심판 프롬프트 SHA-256을 채점 JSON에 기록해 드리프트를 감시한다.</li>
+        <li><strong>PTU.</strong> 처리량은 토큰 기반 추정이며 라이브 PTU 부하 테스트가 아니다.</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>그래서 무엇을 기본값으로</h2>
+      <p><strong>툴 사용 에이전트의 기본값은 gpt-5.2 <code>강도=low</code>다 &mdash; PAYG와 PTU 양쪽에서. 정답당 24% 저렴(gpt-4o 대비), 분당 정답 +4.3%, 그리고 멀티툴 통과율을 83.3%에서 100%로 끌어올리는 품질 보너스까지. 이번만은 <code>none</code>이 아니라 <code>low</code>가 바닥이다. 그러나 <code>low</code> 위로는 다시 품질 없이 비용&middot;지연만 더할 뿐이다.</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">이어짓기</p>
+      <h2>다음 사람이 덜 헤매도록</h2>
+      <p>근거를 기록하는 일은 숫자를 쌓는 데서 끝나지 않습니다. 어떤 질문을 던졌고, 어떤 프롬프트와 도구 설정을 썼고, 어느 가격 스냅샷과 표본을 기준으로 삼았는지까지 남아야 다음 결정에 다시 쓸 수 있습니다. 그래서 이 노트는 회고와 타임라인으로 되돌아 연결됩니다.</p>
+      <ul>
+        <li><strong>회고 본문 →</strong> <a href="../../../ko/#questions">질문별 회고 Q3 &mdash; 툴 에이전트에는 추론이 많을수록 안전한가</a>의 핵심 근거가 이 실험이다.</li>
+        <li><strong>타임라인 →</strong> <a href="../../../ko/#timeline">&ldquo;툴 에이전트 케이스 측정 &mdash; 뜻밖의 발견&rdquo;</a> 항목이 이 실험의 도구 남용 순간이다.</li>
+        <li><strong>짝 실험 →</strong> <a href="../../exp002-multi-step-reasoning/ko/">exp002 &mdash; 다단계 추론</a>은 <code>none</code>이 바닥이던 천장 케이스다. 이 노트와 나란히 읽으면 바닥이 왜 한 칸 올라갔는지 보인다.</li>
+        <li><strong>실험 카드 →</strong> 입력/변수/출력의 기계적 명세는 레포 <code>experiments/README.md</code>의 <code>exp003</code> 카드에 있다.</li>
+      </ul>
+      <p><strong>다음 실험.</strong> 여기 검색은 모킹이고 PTU 수치는 토큰 기반 추정이다. 다음은 <strong>라이브 검색</strong>과 <strong>실제 PTU 부하 테스트</strong> &mdash; 레이트리밋 셰이핑&middot;큐잉&middot;병렬 배치가 툴 루프의 처리량과 신뢰성에 어떻게 작용하는지다.</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">출처 · 근거 경계</p>
+      <h2>출처 &amp; 근거 경계</h2>
+      <ul>
+        <li>이 실험 분석: <code>benchmarks/03-tool-using-agent/analysis.md</code>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질&middot;유형별, §8 지연, §9 이상치, §10 도구 효율, §11 결론). 모든 수치는 여기서 재인용.</li>
+        <li>교차 요약: <code>results/summary.md</code>.</li>
+        <li>방법론: <code>docs/05-methodology.md</code>(변수·표본·캐시·채점·비용·재현·통계 보고 규약).</li>
+        <li>가격: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 접근일 2026-05-19).</li>
+        <li>경계: N=20 · 신뢰구간 없음 · 단일 가격 스냅샷 · 심판 gpt-4o · <code>web_search</code>는 고정 KB 모킹 · PTU는 토큰 기반 추정(라이브 부하 아님).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 라이선스 연구 아티팩트 · 게시 데이터는 정제 또는 집계본만 포함합니다.</p></footer>
+</body>
+</html>

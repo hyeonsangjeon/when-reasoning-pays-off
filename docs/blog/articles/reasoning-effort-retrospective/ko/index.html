@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+  DRAFT · 한국어 정본(canonical) 실험 회고 허브.
+  이 시리즈(reasoning-effort-retrospective)는 한국어를 원본 언어로 삼습니다.
+  승인 후: en/ja/zh-CN/hi 번역본을 KO 원본에서 파생하고 i18n-parity.json 추가.
+  비용 수치는 모두 1,000건당으로 정규화했고, results/summary.md 및 벤치마크별
+  analysis.md에서 재인용하며 재유도하지 않습니다. 내부 태스크 ID는 포함하지 않습니다.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>추론 강도는 값을 하는가 — 가설, 그리고 측정이 반증한 것 | when reasoning pays off</title>
+  <meta name="description" content="세 가지 작업 형태에서 GPT-5.2의 추론 강도(reasoning effort)를 스윕한 실험 회고. 무엇을 예상했고, 무엇이 어긋났고, 무엇을 기본값으로 정했는지를 타임라인과 질문별로 이야기하듯 정리하고, 명령어 한 줄로 직접 재현합니다.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="draft">
+  <link rel="stylesheet" href="../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../ko/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="글 탐색">
+        <a href="../../../../ko/">홈</a>
+        <a href="../../ko/">글 목록</a>
+        <a href="../../when-reasoning-pays-off/ko/">개요 글</a>
+        <a href="../../../charts/?lang=ko">근거 대시보드</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../ko/">글 목록</a> / 실험 회고</p>
+    <p class="article-kicker">실험 회고 · 세 가지 작업 형태를 가로질러 · 렌즈: 작업 형태(task-shape)</p>
+    <h1>추론 강도는 값을 하는가 &mdash; 가설, 그리고 측정이 반증한 것</h1>
+    <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+    <p class="lede">우리는 다단계 추론에서라면 높은 추론 강도(<code>reasoning_effort</code>)가 값을 할 거라고 <strong>사전 등록</strong>했다. 세 벤치마크에 걸쳐 1,080개 셀을 측정한 결과는 그 예측을 <strong>반증</strong>했다. 단답이든 다단계든 툴 에이전트든, 정답은 한 번도 <code>high</code>나 <code>xhigh</code>가 아니었다. 강도를 중간 위로 올리면 품질은 그대로인데 비용만 오르고 처리량만 떨어졌다. 이 글은 &ldquo;무엇을 예상했고, 무엇이 어긋났고, 그래서 무엇을 기본값으로 정했는가&rdquo;를 <strong>시간순(타임라인)</strong>과 <strong>질문순(질문별 회고)</strong>으로, 결론만이 아니라 <em>지나온 길</em>까지 이야기하듯 되짚는 회고다 &mdash; 그리고 맨 아래가 아니라 <em>바로 지금</em>, 명령어 한 줄로 직접 재현할 수 있다.</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">먼저: 10초 재현</p>
+      <h2>결론을 믿지 말고, 직접 돌려보세요</h2>
+      <p>클라우드 계정도, 자격증명도 필요 없습니다. 아래를 그대로 붙여넣으면 실험 카탈로그 &middot; 순수 함수 &middot; 러너 dry-run까지 초록불이 뜹니다(약 10초).</p>
+      <pre class="code-block"><code>git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
+cd when-reasoning-pays-off
+
+# Python 3.11+ 권장. 'python'이 없으면 아래를 'python3'로.
+python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+pip install -r requirements.txt
+
+# 자격증명 없이 셋업을 증명하는 단 한 줄:
+bash scripts/verify_setup.sh
+
+# 전체 실험 카탈로그(입력 → 변수 → 출력)를 그대로 출력:
+python experiments/examples/describe_all.py</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 레포 열기 &amp; ⭐</a></p>
+      <p class="muted-note">각 실험의 입력 파일 &middot; 변수 &middot; 정확한 출력 경로는 레포의 <code>experiments/README.md</code> 실험별 카드에 하나하나 정리되어 있습니다.</p>
+    </section>
+
+    <figure class="article-figure" id="figure-effort-quality">
+      <figcaption>
+        <strong>가설이 무너지는 지점.</strong> 다단계 벤치마크(02)의 강도별 통과율입니다.
+        gpt-5.2는 가장 낮은 강도에서 이미 100%로 포화하고, 강도를 올려도 곡선이
+        평평합니다 &mdash; 추가 강도는 품질이 아니라 추론 토큰만 소비했습니다.
+        수치 출처는 <code>results/summary.md</code> §3 &middot; §7이며, 벤치마크별
+        <code>analysis.md</code>를 재인용합니다.
+      </figcaption>
+      <img src="../../../../assets/benchmark-02-quality.png" alt="벤치마크 02(다단계 추론)의 강도별 통과율 막대 그래프. gpt-5.2는 none부터 xhigh까지 100%로 평평하고, gpt-4o baseline은 그보다 낮은 75% 부근에 있다. 추론 강도를 올려도 품질이 오르지 않는다는 것을 보여준다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="회고 요약">
+      <section class="summary-tile"><h2>질문</h2><p>새로운 프로덕션 작업에서, 추론 강도를 올리면 값을 하는가? 그것도 PAYG(달러당 정답)와 PTU(고정 용량당 분당 정답) 양쪽 렌즈에서.</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>세 벤치마크 &mdash; 01 단답(Null) &middot; 02 다단계(Ceiling) &middot; 03 툴 에이전트(Mixed) &mdash; 를 각각 N=20 샘플 × R=3 반복, 강도 {none, low, medium, high, xhigh} + gpt-4o 기준선으로 측정. 총 1,080셀. 모든 비용은 1,000건당으로 정규화했고 벤치마크별 <code>analysis.md</code>를 재인용합니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>최적의 (모델, 강도)는 작업 형태와 소비 모델에 따라 다르지만, 공통 결론은 하나입니다: <strong>정답은 절대 <code>high</code>나 <code>xhigh</code>가 아니다.</strong> 중간을 넘어서면 품질 없이 비용만 늘고 처리량만 깎입니다.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="회고 구성">
+      <strong>이렇게 읽으세요:</strong>
+      <a href="#timeline">타임라인 &mdash; 언제 무엇이 어긋났나</a>
+      <a href="#questions">질문별 회고 &mdash; 왜 실험했고 무엇을 배웠나</a>
+      <a href="#next">다음 판단 &middot; 다음 실험</a>
+    </nav>
+
+    <section id="timeline" class="article-section">
+      <p class="section-label">타임라인</p>
+      <h2>우리가 지나온 순서</h2>
+      <p>실험은 한 번에 결론이 나지 않았습니다. 아래 다섯 장면을 날짜순으로 따라가면, 예측이 어디서 빗나갔고 기본값이 어디서 바뀌었는지가 차례로 드러납니다.</p>
+      <ol>
+        <li><strong>2026년 5월 이전 &mdash; 사전 등록.</strong> 측정을 시작하기 전에 예측을 먼저 적어 두었다. 다단계 작업이라면 높은 추론 강도가 품질을 끌어올려 비용을 정당화할 것이라고. 나중에 결과에 맞춰 이야기를 바꾸지 못하도록, gpt-5.2의 강도를 <code>none</code>부터 <code>xhigh</code>까지 다섯 단계로 고정하고 gpt-4o 기준선을 나란히 두었다. 이 사전 등록이 있었기에 뒤에 이어질 &lsquo;반증&rsquo;이 의미를 가진다.</li>
+        <li><strong>2026년 5월 &mdash; 단답 케이스(01), 바닥을 찍다.</strong> 먼저 추론이 필요 없는 단답 작업으로 비용 곡면의 바닥을 확인했다 &mdash; 세 벤치마크 중 이 바닥만 <em>실측</em>으로 다시 쟀다(360셀 전부 실제 Azure 호출, 픽스처 마커 없음). gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률이 이미 95%로 포화했는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 비용은 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 <strong>16%</strong> 쌌다(요청 1,000건당으로도 12% 저렴). 그래서 단답 PAYG 기본값은 gpt-5.2 <code>none</code>으로 정했다 &mdash; 다만 고정 용량(PTU) 렌즈에서는 두 모델 처리량이 약 1% 안에서 겹쳐 사실상 무승부였다. 이 실험은 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에서 하나하나 뜯어본다.</li>
+        <li><strong>2026년 5월 &mdash; 다단계 케이스(02), 전환점.</strong> 이제 추론이 이길 차례였다. 그런데 뚜껑을 열자 gpt-5.2는 <em>아무 추론도 켜지 않은</em> 기본 상태(<code>none</code>)에서 스무 문제를 모두 맞혔다. 사전 가설이 그 자리에서 무너졌다. 정답 1,000건당 비용은 gpt-4o의 <strong>$1.06</strong>에서 <strong>$0.62</strong>로 42% 내려갔고 PTU로는 분당 정답이 32.5% 늘었는데, 강도를 더 올려도 품질은 꼼짝하지 않았다. 그래서 다단계 기본값을 gpt-5.2 <code>none</code>으로 정하고 강도 상향은 폐기했다. 승부를 가른 것은 &lsquo;강도 다이얼&rsquo;이 아니라 &lsquo;모델 교체&rsquo;였다. 이 실험은 <a href="../experiments/exp002-multi-step-reasoning/ko/">exp002 실험 노트</a>에서 하나하나 뜯어본다.</li>
+        <li><strong>2026년 5월 &mdash; 툴 에이전트 케이스(03), 뜻밖의 발견.</strong> 마지막은 도구를 쓰는 에이전트였다(무툴·1툴·멀티툴 혼합). 여기서 놀란 쪽은 gpt-4o였다. &lsquo;일반 지식으로 답하라&rsquo;는 프롬프트에도 계산기를 습관처럼 불러 무툴 통과율이 <strong>83.3%</strong>까지 떨어진 것이다. 반면 gpt-5.2는 <code>low</code>만으로 멀티툴 100%를 지키며 정답 1,000건당 <strong>$2.77</strong>(gpt-4o $3.65 대비 24% 저렴)에 도달했다. 그래서 툴 기본값은 gpt-5.2 <code>low</code>. 다만 <code>low</code>를 넘기면 처리량이 medium에서 8.5%, xhigh에서 10.8%씩 깎여 이득을 되돌렸다. 이 실험은 <a href="../experiments/exp003-tool-using-agent/ko/">exp003 실험 노트</a>에서 하나하나 뜯어본다.</li>
+        <li><strong>2026년 7월 &mdash; 근거와 재현 사이의 틈을 메우다.</strong> 측정이 끝난 뒤 남은 숙제는 성격이 달랐다. &lsquo;배포에는 관심이 큰데 README와 검증 계층이 그 관심을 다 받아내지 못한다&rsquo;는 피드백이 왔다. 실제로 새 방문자는 편집 가능 설치 실패(PEP 660)나 깨진 실행 커맨드에서 멈췄다. 그래서 자격증명 없이 한 줄로 끝나는 검증(<code>verify_setup.sh</code>), 실험별 가이드 카드, <code>requirements.txt</code> 분리를 더해 &lsquo;근거&rsquo;와 &lsquo;재현&rsquo; 사이의 틈을 메웠다. 이 글 맨 위의 10초 재현이 그 결과다.</li>
+      </ol>
+    </section>
+
+    <section id="questions" class="article-section">
+      <p class="section-label">질문별 회고</p>
+      <h2>왜 실험했고, 무엇을 배웠나</h2>
+      <p>같은 결과를 이번엔 질문에서 출발해 봅니다. &lsquo;무엇이 궁금했나&rsquo;를 먼저 놓고, 세 질문에 하나씩 답해 나갑니다.</p>
+
+      <h3>Q1 &mdash; 단답 작업에 추론이 필요한가?</h3>
+      <p>가장 단순한 질문부터. 한 번에 답이 나오는 짧은 사실 작업(추출&middot;형식&middot;분류&middot;음역&middot;산술)이라면 추론 강도는 <em>켤 이유가 없어</em> 보였다. 이 바닥을 세 벤치마크 중 유일하게 <strong>실측</strong>으로 다시 쟀다 &mdash; 360셀 전부 실제 Azure Foundry 호출, 픽스처 마커 없음, 심판 채점 360/360.</p>
+      <p>예측이 반전 없이 그대로 맞았다. gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률 95%로 이미 포화했는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 16% 쌌다(요청당으로도 12% 저렴). 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 0 근처에 머물러 품질도 비용도 거의 움직이지 않았다 &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리다. 그래서 단답 기본값은 gpt-5.2 <code>none</code>. 자세한 해부는 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에 있다.</p>
+
+      <h3>Q2 &mdash; 다단계에서는 강도를 올리면 값을 하는가?</h3>
+      <p>가설은 단순했다. 여러 단계를 거쳐야 하는 문제라면 <code>high</code>나 <code>xhigh</code>의 품질 상승이 비용 상승을 정당화하리라는 것. 이를 확인하려고 gpt-5.2의 다섯 강도(<code>none</code>부터 <code>xhigh</code>까지)를 gpt-4o 기준선과 나란히, 스무 문제를 세 번씩 반복해 비교했다.</p>
+      <p>결과는 가설을 뒤집었다. gpt-5.2는 <code>none</code>에서 이미 100%를 맞혔고, 정답 1,000건당 <strong>$0.62</strong>로 gpt-4o(<strong>$1.06</strong>)보다 42% 쌌으며 PTU로는 분당 정답이 32.5% 많았다. 뜻밖이었던 건 gpt-4o마저 예상보다 잘했다는 점이다 &mdash; 사전에 적어 둔 30&ndash;60% 범위를 넘겨 75%를 기록했다. 표본이 작아(N=20, 신뢰구간 없음) 절감폭의 <em>크기</em>는 조심해서 읽어야 하지만, 방향은 분명했다. 그래서 다단계 기본값은 gpt-5.2 <code>none</code>으로 정하고 <code>high</code>·<code>xhigh</code>는 채택하지 않았다.</p>
+
+      <h3>Q3 &mdash; 툴 에이전트에는 추론이 많을수록 안전한가?</h3>
+      <p>도구를 여러 개 엮는 계획일수록 더 많은 추론이 신뢰성을 높일 것 같았다. 그래서 무툴·1툴·멀티툴이 섞인 스무 작업에서 다시 gpt-5.2의 강도별로 gpt-4o와 겨뤘다.</p>
+      <p>정작 갈린 지점은 추론의 양이 아니라 도구를 <em>부르는 습관</em>이었다. gpt-4o는 &lsquo;일반 지식으로 답하라&rsquo;는 무툴 프롬프트에도 계산기를 불러 통과율이 83.3%로 내려간 반면, gpt-5.2는 무툴에서도 100%를 지켰다. 비용으로도 gpt-5.2 <code>low</code>가 정답 1,000건당 <strong>$2.77</strong>(gpt-4o $3.65 대비 24% 저렴)에 멀티툴 100%, PTU +4.3%로 앞섰다. 다만 이때 <code>web_search</code>는 실제 웹이 아니라 고정 지식베이스 조회를 모킹한 것이라는 한계가 있다. 결론은 다시 한 번 같았다 &mdash; 작은 추론 표면이면 충분하고, 툴 기본값은 gpt-5.2 <code>low</code>, 그 이상은 토큰 낭비다.</p>
+    </section>
+
+    <section id="experiment-detail" class="article-section">
+      <p class="section-label">실험 상세로</p>
+      <h2>루프의 반대쪽 &mdash; 숫자가 나온 자리</h2>
+      <p>회고 본문은 늘 <strong>실험 상세</strong>로 이어집니다. 위 각 이야기의 <em>입력 파일 · N/R/seed · 정확한 출력 경로</em>는 실험별 노트와 레포의 가이드 카드에 하나하나 적혀 있고, 그 카드마다 무비용 dry-run 한 줄이 붙어 있습니다. 예를 들어 다단계(Q2)를 자격증명 없이 확인하려면:</p>
+      <pre class="code-block"><code># YAML만 읽어 입력 → 변수 → 출력을 출력 (네트워크 없음)
+python -c "import experiments; print(experiments.describe('exp002_benchmark02_gpt5_2.yaml').summary())"
+
+# 러너를 dry-run으로 배선 검증 (토큰 소비 0)
+python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p class="muted-note">깊이 있는 해부는 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>(단답)&middot;<a href="../experiments/exp002-multi-step-reasoning/ko/">exp002 실험 노트</a>(다단계)&middot;<a href="../experiments/exp003-tool-using-agent/ko/">exp003 실험 노트</a>(툴 에이전트)에, 전체 실험 카탈로그(어떤 의도로, 무엇을 입력받아, 무엇을 출력하는가)는 <code>experiments/README.md</code>에 있습니다.</p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>실전 규칙</h2>
+      <p><strong>추론 강도를 &ldquo;똑똑해 보인다&rdquo;는 이유로 올리지 마라. 비용 · 품질 · 지연 · 토큰 구성을 함께 읽고, 강도가 실제로 값을 하는 지점에서만 토큰을 더 써라. 측정된 세 작업 형태에서 <code>high</code>와 <code>xhigh</code>는 한 번도 기본값이 아니었다.</strong></p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p class="section-label">다음으로</p>
+      <h2>다음 판단 · 다음 실험</h2>
+      <p><strong>다음 판단.</strong> 이 결론은 &ldquo;측정된 작업 형태&rdquo; 안에서만 유효합니다. 체인이 더 길어지거나 실제 툴이 들어오면 곡선이 다시 움직일 수 있으니, 워크로드 형태가 바뀌면 재측정하는 것이 규칙입니다.</p>
+      <p><strong>다음 실험.</strong> 여기 PTU 수치는 토큰 기반 추정입니다(라이브 부하 아님). 다음 실험은 실제 PTU 배포에서의 부하 테스트 &mdash; 레이트리밋 셰이핑 · 큐잉 · 병렬 배치가 처리량에 어떻게 작용하는지입니다.</p>
+      <p>
+        <strong>이어서:</strong>
+        <a href="../../ptu-retry-after-recovery/ko/">429는 오류가 아니라 복구 신호</a>
+        &mdash; PTU 용량이 &ldquo;지금은 안 됨&rdquo;이라고 말할 때, 클라이언트는 다음 수를 어떻게 정해야 하는가?
+      </p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기 &mdash; when-reasoning-pays-off</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">출처 · 근거 경계</p>
+      <h2>출처 &amp; 근거 경계</h2>
+      <p>이 회고는 새 측정을 도입하지 않고, 게시된 수치를 1,000건당으로 정규화해 재인용합니다. 원자료와 경계는 다음과 같습니다.</p>
+      <ul>
+        <li>교차 요약: <code>results/summary.md</code>(§3 헤드라인, §5 의사결정 경계, §6 한계). 모든 비용은 벤치마크별 <code>benchmarks/0[123]-*/analysis.md</code>에서 재인용.</li>
+        <li>가격: 단일 스냅샷 <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 접근일 2026-05-19). 요율이 바뀌면 스냅샷을 갱신하고 분석을 재실행해야 함.</li>
+        <li>표본: 벤치마크당 N=20 · R=3. 방법론 §8이 이 표본 크기에서 신뢰구간/표준오차 보고를 금지 &mdash; 방향성 결론은 견고하나 절대 크기는 소표본 주의.</li>
+        <li>채점: LLM-as-judge 루브릭은 중립 심판으로 gpt-4o 사용. 심판 프롬프트 SHA-256을 매 채점 JSON에 기록해 드리프트를 감시.</li>
+        <li>PTU: 처리량 수치는 토큰 수 기반 추정이며 라이브 PTU 부하 테스트가 아님. 툴 벤치마크의 <code>web_search</code>는 고정 KB 조회(모킹).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 라이선스 연구 아티팩트 · 게시 데이터는 정제 또는 집계본만 포함합니다.</p></footer>
+</body>
+</html>

@@ -177,10 +177,10 @@ more reasoning tokens without necessarily lifting quality.
 
 **In-repo evidence.** Null-case
 ([`benchmarks/01-short-factual/analysis.md` §5, §10](../benchmarks/01-short-factual/analysis.md)):
-`effort = minimal` at $0.000663 ± $0.000054 / req vs gpt-4o
-$0.000747 ± $0.000063 (11 % PAYG saving) at parity judge score
-(1.88 vs 1.88); every tier above `minimal` raised cost without lifting
-quality (`high` 4.4 ×, `xhigh` 6.8 ×). Multi-step
+`effort = none` at $0.000587 ± $0.000124 / req vs gpt-4o
+$0.000665 ± $0.000089 (12 % PAYG saving) at a marginally higher judge
+score (1.95 vs 1.90); no tier above `none` lifted quality, and with
+reasoning tokens ≈ 0 the bill stayed flat across the ladder. Multi-step
 ([`02-multi-step-reasoning/analysis.md`](../benchmarks/02-multi-step-reasoning/analysis.md)
 via [`results/summary.md` §3](../results/summary.md)): `effort = none`
 $0.000618 / correct vs gpt-4o $0.001064 (42 % PAYG saving). Tool-using
@@ -188,15 +188,17 @@ $0.000618 / correct vs gpt-4o $0.001064 (42 % PAYG saving). Tool-using
 `gpt-5.2 low` Pareto-optimal default.
 
 **Translation.**
-- **PAYG.** Lower effort = fewer reasoning tokens = lower bill,
-  monotonically. Null- / ceiling-case cost-per-correct floors at the
-  lowest non-zero effort (`minimal` / `none`); never default `high`
-  or `xhigh` ([`results/summary.md` §3, §5](../results/summary.md)).
+- **PAYG.** More reasoning tokens = higher bill. On the ceiling / mixed
+  cases the cost-per-correct floors at the lowest non-zero effort
+  (`none` / `low`); on the null case reasoning tokens are ≈ 0, so the
+  bill is flat across the ladder and floors at `none`. Never default
+  `high` or `xhigh` ([`results/summary.md` §3, §5](../results/summary.md)).
 - **PTU.** Throughput-gain factor vs gpt-4o on benchmark 01:
-  `minimal = 0.985 ×`, `low = 0.896 ×`, `medium = 0.744 ×`,
-  `high = 0.580 ×`, `xhigh = 0.452 ×`
-  ([benchmark 01 §6](../benchmarks/01-short-factual/analysis.md));
-  every `gpt-5.2` effort regresses null-case throughput. Ceiling-
+  `none = 0.989 ×`, `low = 0.989 ×`, `medium = 0.988 ×`,
+  `high = 0.983 ×`, `xhigh = 0.986 ×`
+  ([benchmark 01 §6](../benchmarks/01-short-factual/analysis.md)) —
+  a ~1 % wash; fold in the higher null-case pass-rate and `gpt-5.2 none`
+  nets +4.4 % correct-answers-per-minute. Ceiling-
   case (benchmark 02): `gpt-5.2 none` wins on both lenses
   ([results/summary.md §3](../results/summary.md)). See
   [`docs/04-decision-framework.md`](04-decision-framework.md).

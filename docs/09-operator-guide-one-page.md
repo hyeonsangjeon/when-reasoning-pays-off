@@ -44,11 +44,11 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 ### L4. Reasoning effort tuning
 
-**Mechanism.** `reasoning_effort` is per-request and reasoning tokens bill at the output rate while being invisible in the response. Higher tiers spend more reasoning tokens without necessarily lifting quality. On short-factual tasks the curve is flat above `minimal`; on multi-step tasks the lowest non-zero effort already captures the quality lift.
+**Mechanism.** `reasoning_effort` is per-request and reasoning tokens bill at the output rate while being invisible in the response. Higher tiers spend more reasoning tokens without necessarily lifting quality. On short-factual tasks reasoning tokens are ≈ 0 so the cost curve is flat from `none` up; on multi-step tasks the lowest non-zero effort already captures the quality lift.
 
-**Action.** Default new traffic to `minimal` (or `none` where supported); raise per task class only when the task's quality evaluation justifies it. Never default to `high` or `xhigh`.
+**Action.** Default new traffic to `none` (the measured effort floor; the live gpt-5.2 deployment rejects `minimal` with HTTP 400); raise per task class only when the task's quality evaluation justifies it. Never default to `high` or `xhigh`.
 
-**In-repo evidence.** `docs/04-decision-framework.md` (Q1–Q3 routing tree). `benchmarks/01-short-factual/analysis.md` §5/§10 — `minimal` at `$0.000663 ± $0.000054 / req` vs `gpt-4o` `$0.000747 ± $0.000063` (11 % PAYG saving) at parity judge score (`1.88` vs `1.88`); every tier above `minimal` raises cost without lifting quality (`high` 4.4×, `xhigh` 6.8×). `benchmarks/02-multi-step-reasoning/` via `results/summary.md` §3 — `effort = none` `$0.000618 / correct` vs `gpt-4o` `$0.001064` (42 % PAYG saving).
+**In-repo evidence.** `docs/04-decision-framework.md` (Q1–Q3 routing tree). `benchmarks/01-short-factual/analysis.md` §5/§10 — `none` at `$0.000587 ± $0.000124 / req` vs `gpt-4o` `$0.000665 ± $0.000089` (12 % PAYG saving) at a marginally higher judge score (`1.95` vs `1.90`); with reasoning tokens ≈ 0, no tier above `none` raises quality or, materially, cost. `benchmarks/02-multi-step-reasoning/` via `results/summary.md` §3 — `effort = none` `$0.000618 / correct` vs `gpt-4o` `$0.001064` (42 % PAYG saving).
 
 **Azure docs.** <https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/reasoning>
 

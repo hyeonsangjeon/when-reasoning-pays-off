@@ -8,46 +8,46 @@
   "metric_key": "throughput_gain",
   "rows": [
     {
-      "baseline_tokens_per_request": 260.396551,
+      "baseline_tokens_per_request": 234.916667,
       "effort": "na",
       "model": "gpt-4o",
       "throughput_gain_factor": 1.0,
-      "tokens_per_request": 260.396551
+      "tokens_per_request": 234.916667
     },
     {
-      "baseline_tokens_per_request": 260.396551,
-      "effort": "minimal",
+      "baseline_tokens_per_request": 234.916667,
+      "effort": "none",
       "model": "gpt-5.2",
-      "throughput_gain_factor": 0.984614,
-      "tokens_per_request": 264.465517
+      "throughput_gain_factor": 0.989192,
+      "tokens_per_request": 237.483333
     },
     {
-      "baseline_tokens_per_request": 260.396551,
+      "baseline_tokens_per_request": 234.916667,
       "effort": "low",
       "model": "gpt-5.2",
-      "throughput_gain_factor": 0.896065,
-      "tokens_per_request": 290.6
+      "throughput_gain_factor": 0.988568,
+      "tokens_per_request": 237.633333
     },
     {
-      "baseline_tokens_per_request": 260.396551,
+      "baseline_tokens_per_request": 234.916667,
       "effort": "medium",
       "model": "gpt-5.2",
-      "throughput_gain_factor": 0.743882,
-      "tokens_per_request": 350.050848
+      "throughput_gain_factor": 0.988498,
+      "tokens_per_request": 237.65
     },
     {
-      "baseline_tokens_per_request": 260.396551,
+      "baseline_tokens_per_request": 234.916667,
       "effort": "high",
       "model": "gpt-5.2",
-      "throughput_gain_factor": 0.579668,
-      "tokens_per_request": 449.216667
+      "throughput_gain_factor": 0.983052,
+      "tokens_per_request": 238.966667
     },
     {
-      "baseline_tokens_per_request": 260.396551,
+      "baseline_tokens_per_request": 234.916667,
       "effort": "xhigh",
       "model": "gpt-5.2",
-      "throughput_gain_factor": 0.451798,
-      "tokens_per_request": 576.355932
+      "throughput_gain_factor": 0.985871,
+      "tokens_per_request": 238.283333
     }
   ],
   "schema": "wrpo.chart_data",
@@ -58,7 +58,7 @@
     "baseline_tokens_per_request"
   ],
   "source_sanitized_sha256": [
-    "09e91245275b2c60ebbed2ef586d50a16c10f5978c5df585267bf3273c35be4f"
+    "dc7af5f3910e59259496293cf7b2a4659aad5301ce101e32a62bace9939af81c"
   ],
   "tier": "SANITIZED_PUBLIC",
   "units_key": "factor"

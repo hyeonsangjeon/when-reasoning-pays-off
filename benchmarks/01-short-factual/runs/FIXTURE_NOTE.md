@@ -1,5 +1,39 @@
 # Fixture provenance — benchmarks/01-short-factual/runs/ and judge_runs/
 
+> ## ✅ Status: real swap executed (benchmark 01 is now measured)
+>
+> The committed `analysis.json`, `analysis.md`, and `results/…/benchmark-01-*`
+> chart pairs are now aggregated from the **real Task 007 production cohort**
+> (`exp001_short-factual_baseline` / `_gpt4o`, 360 measured calls) plus **360
+> real gpt-4o judge runs** committed under
+> `benchmarks/01-short-factual/judge_runs_real/`. The aggregate was produced
+> offline with the **explicit** flags:
+>
+> ```
+> python -m scripts.analyze_tokens --benchmark 01-short-factual \
+>     --experiment-prefix exp001_short-factual_baseline \
+>     --judge-dir benchmarks/01-short-factual/judge_runs_real \
+>     --out benchmarks/01-short-factual/analysis.json
+> ```
+>
+> Two corrections to the historical narrative below:
+> - **The real effort floor is `none`, not `minimal`.** The live gpt-5.2
+>   deployment rejects `reasoning.effort = "minimal"` with HTTP 400, so the
+>   measured schema is `{none, low, medium, high, xhigh}`. The "5-effort
+>   schema with `minimal`" the fixtures were built against was never real;
+>   `analyze_tokens` still emits a phantom `minimal` n=0 cell (the union
+>   `CANONICAL_EFFORT_ORDER`), which the plotter correctly drops.
+> - **The production cohort now HAS judge runs** — in `judge_runs_real/`
+>   (below it still reads "no judge runs on disk", true only of the original
+>   `judge_runs/` fixture directory).
+>
+> **Footgun:** `analyze_tokens` still *defaults* `--experiment-prefix` to the
+> fixture cohort, so running it with bare flags reproduces the **fixture**
+> artifact and would overwrite the committed real `analysis.json`. Always
+> pass the explicit `--experiment-prefix` + `--judge-dir` shown above (and in
+> `analysis.md` §11) to reproduce the committed numbers. The fixtures are kept
+> as a credential-free offline scaffold; they are not the published evidence.
+
 ## What is in these directories right now
 
 This branch lands the **Task 008 analysis pipeline** (`scripts/analyze_tokens.py`,
@@ -37,8 +71,10 @@ The runs/ tree therefore contains, side by side:
    set so the provenance is auditable.
 
 The judge_runs/ directory contains **360 synthetic judge JSONs** generated
-in the same pass, also marked `"fixture": true`. The legacy production
-cohort has no judge runs on disk.
+in the same pass, also marked `"fixture": true`. The **real** judge runs for
+the production cohort live separately under
+`benchmarks/01-short-factual/judge_runs_real/` (360 real gpt-4o judge JSONs,
+no fixture marker) and are the judge source for the committed `analysis.json`.
 
 ## Cohort isolation contract
 
@@ -65,11 +101,13 @@ schema:
    supersede the legacy 4-effort production cohort.
 2. Run `python -m scripts.run_judge --benchmark 01-short-factual --confirm`
    to generate the judge runs.
-3. Re-run the analyzer pointed at the production cohort:
+3. Re-run the analyzer pointed at the production cohort **and its real judge
+   directory** (this is the command that produced the committed artifact):
    ```
    python -m scripts.analyze_tokens \
        --benchmark 01-short-factual \
-       --experiment-prefix exp001_short-factual_baseline
+       --experiment-prefix exp001_short-factual_baseline \
+       --judge-dir benchmarks/01-short-factual/judge_runs_real
    ```
    This emits `benchmarks/01-short-factual/analysis.json` aggregated from
    the real cohort instead of the fixture cohort.

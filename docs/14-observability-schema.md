@@ -73,7 +73,7 @@ each.
 | `max_output_tokens_sent` | int \| null | The value passed in the request. |
 | `prompt_cache_key_used` | string \| null | **Hash, never raw.** See §5. |
 | `prompt_cache_retention_sent` | enum: `in_memory` \| `24h` \| null | |
-| `reasoning_effort_sent` | enum: `minimal` \| `low` \| `medium` \| `high` \| null | |
+| `reasoning_effort_sent` | enum: `none` \| `low` \| `medium` \| `high` \| `xhigh` \| null | |
 | `model_id` | string | The `model` field sent on the request. |
 
 ### Latency (operational inference)
