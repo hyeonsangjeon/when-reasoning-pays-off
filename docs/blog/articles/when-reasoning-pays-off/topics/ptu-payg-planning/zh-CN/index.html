@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="e492d0f89a68b2485907b47caab7d25576af4b20027f3bb5edd3bcb1f13b3f57">
+  <meta name="article:source-article-sha256" content="862f2195a43e14013d677e11bca2763014e7e5aec700bceee18e232b0afb6b94">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -66,7 +66,7 @@
     <div class="article-summary-grid" aria-label="专题要点">
       <section class="summary-tile"><h2>问题</h2><p>建模出来的 PTU/PAYG 交叉点能说什么，又绝不该主张什么？</p></section>
       <section class="summary-tile"><h2>证据</h2><p>一次盈亏平衡计算：把两份带日期的价格快照——<code>pricing/azure-openai-payg-2026-05.yaml</code> 与 <code>pricing/azure-openai-ptu-2026-05.yaml</code>——和 benchmark-01、-02、-03 测得的每请求成本与 token 形态吞吐量系数组合起来。输出是交叉点图表数据里的 <code>modeled_break_even_rpm</code> 系列，而不是测得的吞吐量。</p></section>
-      <section class="summary-tile"><h2>发现</h2><p>在这份价格快照下，建模出来的盈亏平衡点落在由每请求账单与 token 形态决定的位置：benchmark-01 extra-high 约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm——都按每 PTU 小时 $2.00 的 50 PTU 下限来缩放。这些是随价格快照和每请求 token 构成一起变动的计算值，而不是测得的饱和点。</p></section>
+      <section class="summary-tile"><h2>发现</h2><p>在这份价格快照下，建模出来的盈亏平衡点落在由每请求账单与 token 形态决定的位置：benchmark-01 extra-high 约 2,748 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm——都按每 PTU 小时 $2.00 的 50 PTU 下限来缩放。这些是随价格快照和每请求 token 构成一起变动的计算值，而不是测得的饱和点。</p></section>
       <section class="summary-tile"><h2>结论</h2><p>把交叉点当成一条规划线来读：它告诉你，在这种工作负载形态下，什么时候值得去跑一次容量实验，而不是判定某个具体部署一定需要 PTU。价格、token 构成、区域一变，就重新推导。</p></section>
     </div>
 
@@ -90,7 +90,7 @@
           <strong>导读图（由建模聚合手工制作）：</strong>
           <strong>读什么：</strong>选定基准行的建模 PTU/PAYG 盈亏平衡 RPM。
           <strong>X 轴：</strong>选定的基准行，<strong>Y 轴：</strong>建模盈亏平衡 RPM（柱子越高，意味着在建模 PTU 下限开始显得更便宜之前，PAYG 能伸展到越高的请求速率）。
-          <strong>当作规划线索而非测量来读：</strong>这些柱子——包括 benchmark-01 约 149 rpm 的标记和 50 PTU 下限——是在这份价格快照和每请求 token 形态下算出来的，而不是测得的 PTU 容量结果。建模交叉点的 JSON 在来源一节里引用。
+          <strong>当作规划线索而非测量来读：</strong>这些柱子——包括 benchmark-01 约 2,748 rpm 的标记和 50 PTU 下限——是在这份价格快照和每请求 token 形态下算出来的，而不是测得的 PTU 容量结果。建模交叉点的 JSON 在来源一节里引用。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.zh-CN.svg" alt="柱状图：选定基准行的建模 PTU/PAYG 盈亏平衡 RPM。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -98,7 +98,7 @@
 
     <section id="s1" class="article-section">
       <h2>模型回答的是一个很窄的问题</h2>
-      <p>交叉点计算把每请求平均成本、token 形态的吞吐量系数、公开价格快照，以及 50 PTU 下限组合起来，输出的是建模盈亏平衡 RPM。例如，benchmark-01 extra-high effort 落在约 149 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm。</p><p>这些数字之所以有用，是因为它们揭示了工作负载形态如何改变规划层面的对话。它们不是在线负载的测量：429 从哪里开始、接近饱和时缓存如何表现、某个具体配置在 p95 延迟上会怎样——这些它都不说。</p>
+      <p>交叉点计算把每请求平均成本、token 形态的吞吐量系数、公开价格快照，以及 50 PTU 下限组合起来，输出的是建模盈亏平衡 RPM。例如，benchmark-01 extra-high effort 落在约 2,748 rpm，benchmark-02 none 约 2,680 rpm，benchmark-03 low 约 564 rpm。</p><p>这些数字之所以有用，是因为它们揭示了工作负载形态如何改变规划层面的对话。它们不是在线负载的测量：429 从哪里开始、接近饱和时缓存如何表现、某个具体配置在 p95 延迟上会怎样——这些它都不说。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
@@ -106,7 +106,7 @@
     </section>
     <section id="s3" class="article-section">
       <h2>这个区分为什么重要</h2>
-      <p>没有这个区分，交叉点图就可能被误读成承诺。人们会想说：交叉点在 149 rpm 的行"需要 PTU"，交叉点在 2,680 rpm 的行"不需要 PTU"。但证据要谨慎得多：图说的是，在建模前提下经济性看上去如何。一个在线系统，仍然需要延迟、缓存、重试、饱和方面的证据。</p><p>这份谨慎不是软弱。正是它让这张图变得可用：图告诉团队什么时候该去跑一次容量实验，而不告诉你那次实验会发现什么。</p>
+      <p>没有这个区分，交叉点图就可能被误读成承诺。人们会想说：交叉点在 564 rpm 的行“需要 PTU”，交叉点在 2,700 rpm 的行“不需要 PTU”。但证据要谨慎得多：图说的是，在建模前提下经济性看上去如何。一个在线系统，仍然需要延迟、缓存、重试、饱和方面的证据。</p><p>这份谨慎不是软弱。正是它让这张图变得可用：图告诉团队什么时候该去跑一次容量实验，而不告诉你那次实验会发现什么。</p>
     </section>
     <section id="s4" class="article-section">
       <h2>这意味着什么</h2>
@@ -119,9 +119,9 @@
         <caption>选定的交叉点示例</caption>
         <thead><tr><th>证据行</th><th>指标 A</th><th>指标 B</th><th>它补充了什么</th></tr></thead>
         <tbody>
-          <tr><td>benchmark-01 extra-high</td><td>建模 149 rpm</td><td>50 PTU 下限</td><td>每请求账单偏高，因此交叉点来得早。</td></tr>
+          <tr><td>benchmark-01 extra-high</td><td>建模 2,748 rpm</td><td>50 PTU 下限</td><td>晚交叉：短事实型任务即使在 extra-high effort 下也保持便宜。</td></tr>
           <tr><td>benchmark-02 none</td><td>建模 2,680 rpm</td><td>50 PTU 下限</td><td>测得的请求便宜，因此交叉点来得晚。</td></tr>
-          <tr><td>benchmark-03 low</td><td>建模 564 rpm</td><td>50 PTU 下限</td><td>居中的情形：代理工作负载的 token 形态更大。</td></tr>
+          <tr><td>benchmark-03 low</td><td>建模 564 rpm</td><td>50 PTU 下限</td><td>早交叉：工具代理更大的 token 形态让每个请求更贵。</td></tr>
           <tr><td>证据边界</td><td>建模出来的经济性</td><td>不是在线容量</td><td>用来决定下一步该试什么。</td></tr>
         </tbody>
       </table>
@@ -132,7 +132,7 @@
       <p>
         上面所有盈亏平衡数字都是计算，而不是测量。它们把测得的每请求成本与 token
         形态，套在两份带日期的价格快照上算出。下面两个 Tier 标明了：有文档记载的输入
-        到哪里为止，建模出来的输出又从哪里开始。带 50 PTU 下限的 149 rpm 交叉点是一个
+        到哪里为止，建模出来的输出又从哪里开始。带 50 PTU 下限的 2,748 rpm 交叉点是一个
         推导出来的计算，既不是测得的吞吐量，也不是 429 的发生，更不是饱和点。
       </p>
       <ul>
@@ -140,7 +140,7 @@
         <li>[2] <strong>Tier 1 — PAYG 价格快照：</strong>本仓库，<code>pricing/azure-openai-payg-2026-05.yaml</code>。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。这里每 1M token 的单价（gpt-5.2 input $1.75/1M、cached input $0.175/1M、output 与 reasoning $14.00/1M；gpt-4o input $2.50/1M、cached $1.25/1M、output $10.00/1M）决定了进入公式的每请求账单。</li>
         <li>[3] <strong>Tier 1 — PTU 价格快照：</strong>本仓库，<code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 文档</a>（2026-05-19 访问，区域 eastus2）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。公式的 PTU 侧——每 PTU 小时 $2.00、50 PTU 的最小值（下限）、用于吞吐量系数的每 PTU Input TPM（gpt-4o 2,500、gpt-5.2 3,400）——都来自这份快照。PAYG 与 PTU 两侧的价格都进入盈亏平衡：一边是每请求的 PAYG 账单，另一边是固定的 $100/hour PTU 下限（50 × $2.00）。</li>
         <li>[4] <strong>Tier 2 — 测得的每请求输入：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>、<code>benchmarks/03-tool-using-agent/analysis.json</code>。它们提供每请求平均成本，以及成为相对 gpt-4o 基线吞吐量增益系数的逐配置 token 分布。</li>
-        <li>[5] <strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 149 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
+        <li>[5] <strong>Tier 2 — 建模出来的交叉点输出（计算，而非测量）：</strong>本仓库，<code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>、<code>benchmark-02/crossover.json</code>、<code>benchmark-03/crossover.json</code>。图所画的 <code>modeled_break_even_rpm</code> 系列由 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> 算出。benchmark-01 extra-high 的 2,748 rpm、50 PTU 下限、每 PTU 小时 $2.00，都明确标注为计算或引用的输入，是建模值，而不是测得的吞吐量。</li>
         <li>[6] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 交叉点图表组</a>，是审计同一批 JSON 产物的可核查形态。</li>
       </ul>
       <p>

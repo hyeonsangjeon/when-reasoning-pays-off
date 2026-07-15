@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_bridge">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0e329c2694a0350e802c621a9e6e2b03bdc81b352d2d1fac3c19b323ab071560">
+  <meta name="article:source-article-sha256" content="c384211ea97b033d8d4be5bf3603ceca26daa22bc7eb73a207d1f284300b9cf4">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ja/">
   <link rel="alternate" hreflang="en" href="../">
@@ -83,7 +83,7 @@
       <p>ベンチマークの声は、答えが自分たちの所有する測定値から来るときに適切です。運用の声は、答えが他者の維持する契約から来て、それをランブックへ翻訳するときに適切です。二つを混ぜると——文書化された挙動について「測定しました」と言ったり、自分たちで回した強度別のコスト曲線について「Microsoft Learn にこう書いてある」と言ったり——どちらの半分も弱くなります。この切り分けは不整合ではなく、設計上の特長です。</p>
       <p>実務では三か所に現れます。</p>
       <ul>
-        <li><strong>時制。</strong> 根拠の記事は測定結果を過去形で書きます（「最小強度ではリクエストあたり平均 $0.000663」）。運用の記事は契約上の挙動を現在形で書きます（「サービスは <code>retry-after-ms</code> ヘッダーつきで 429 を返します」）。</li>
+        <li><strong>時制。</strong> 根拠の記事は測定結果を過去形で書きます（「none 強度ではリクエストあたり平均 $0.000587」）。運用の記事は契約上の挙動を現在形で書きます（「サービスは <code>retry-after-ms</code> ヘッダーつきで 429 を返します」）。</li>
         <li><strong>出典。</strong> 根拠の記事は本リポジトリの <code>analysis.json</code> 成果物を引用します。運用の記事はアクセス日付つきで Microsoft Learn のページを引用し、文書が沈黙しているときにだけリポジトリの測定値へ立ち戻ります。</li>
         <li><strong>結びの一行。</strong> 根拠の記事は「わかったこと」や「運用チェックリスト」で終わります。運用の記事は「実務上のルール」で終わります。結びの一行は、読者がいま読んだ根拠がどの種類なのかを伝えます。</li>
       </ul>

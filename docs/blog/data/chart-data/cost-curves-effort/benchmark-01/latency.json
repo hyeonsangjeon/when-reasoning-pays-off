@@ -9,45 +9,45 @@
   "rows": [
     {
       "effort": "na",
-      "mean_latency_ms": 809.723222,
+      "mean_latency_ms": 1494.362119,
       "model": "gpt-4o",
-      "n_used": 58,
-      "std_latency_ms": 160.651036
+      "n_used": 60,
+      "std_latency_ms": 752.584811
     },
     {
-      "effort": "minimal",
-      "mean_latency_ms": 1112.798745,
+      "effort": "none",
+      "mean_latency_ms": 1657.418603,
       "model": "gpt-5.2",
-      "n_used": 58,
-      "std_latency_ms": 248.958635
+      "n_used": 60,
+      "std_latency_ms": 700.350696
     },
     {
       "effort": "low",
-      "mean_latency_ms": 1479.719976,
+      "mean_latency_ms": 1713.317074,
       "model": "gpt-5.2",
       "n_used": 60,
-      "std_latency_ms": 273.837344
+      "std_latency_ms": 677.090872
     },
     {
       "effort": "medium",
-      "mean_latency_ms": 1965.984625,
+      "mean_latency_ms": 1409.902877,
       "model": "gpt-5.2",
-      "n_used": 59,
-      "std_latency_ms": 353.857469
+      "n_used": 60,
+      "std_latency_ms": 292.716285
     },
     {
       "effort": "high",
-      "mean_latency_ms": 2434.12802,
+      "mean_latency_ms": 1580.424512,
       "model": "gpt-5.2",
       "n_used": 60,
-      "std_latency_ms": 386.503711
+      "std_latency_ms": 415.919539
     },
     {
       "effort": "xhigh",
-      "mean_latency_ms": 3088.001225,
+      "mean_latency_ms": 1441.444824,
       "model": "gpt-5.2",
-      "n_used": 59,
-      "std_latency_ms": 548.162933
+      "n_used": 60,
+      "std_latency_ms": 304.800774
     }
   ],
   "schema": "wrpo.chart_data",
@@ -58,7 +58,7 @@
     "n_used"
   ],
   "source_sanitized_sha256": [
-    "460c29088d055f460c7d1133c45117f809971f7443a391f637f6f1cda9af29d1"
+    "6266935346d4065a368a93a5960259fc9eb0b90a6fa0e25ccdc60414a52c336d"
   ],
   "tier": "SANITIZED_PUBLIC",
   "units_key": "milliseconds"

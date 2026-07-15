@@ -44,9 +44,10 @@ for ~20 worked examples.)
   [`benchmarks/01-short-factual/analysis.md` §5](../benchmarks/01-short-factual/analysis.md)
   shows it runs ~12 % cheaper per request than gpt-4o at parity-or-better
   quality (95 % vs 90 % pass) with no latency penalty (latency shows no
-  effort trend). On fixed-capacity PTU the two are a throughput wash, so
-  **gpt-4o is equally fine there.** Either way, don't dial effort above
-  `none`.
+  effort trend). On fixed-capacity PTU raw throughput is a wash (0.989 ×),
+  and gpt-5.2 `none`'s higher pass-rate keeps it at parity-or-better on
+  quality-adjusted throughput — so `none` stays the pick on both
+  consumption models. Either way, don't dial effort above `none`.
 - **Yes — but the task is single-shot (no tool calls).** Go to Q3
   (consumption model).
 - **Yes — and the task uses tools.** Go to Q2.
@@ -104,8 +105,9 @@ gpt-5.2 `low` or `none`.
   correct-answers-per-minute lens replaces the cost-per-correct lens.
   Throughput is the lever; you cannot save dollars (your bill is fixed)
   but you can shrink the workload's throughput footprint.
-  - Short-factual (benchmark 01): **gpt-4o** — every gpt-5.2 effort
-    regresses throughput
+  - Short-factual (benchmark 01): **gpt-5.2 `none`** — raw throughput is
+    a wash (0.989 × vs gpt-4o), and its higher pass-rate (95 % vs 90 %)
+    nets **+4.4 % correct-answers-per-minute**
     ([01 §6](../benchmarks/01-short-factual/analysis.md)).
   - Multi-step reasoning (benchmark 02): **gpt-5.2 `none`** — same as
     PAYG. Throughput-gain = 0.994 × at 100 % pass-rate vs gpt-4o

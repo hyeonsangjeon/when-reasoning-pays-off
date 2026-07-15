@@ -138,7 +138,7 @@
       </section>
       <section class="summary-tile">
         <h2>Finding</h2>
-        <p>On the short-factual slice, cost climbed about 7.6x but the mean judge score did not follow, moving only from about 1.88 to about 1.78; on the multi-step slice, where the evaluator did move, it rose from 1.5 to 2.0.</p>
+        <p>On the short-factual slice, cost stayed essentially flat across the effort ladder &mdash; every gpt-5.2 tier landed below the gpt-4o baseline &mdash; while the mean judge score held around 1.95, at or above the baseline; on the multi-step slice, where the evaluator did move, it rose from 1.5 to 2.0.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
@@ -195,7 +195,7 @@
       <p>
         The small bar figures in this essay are guideposts for the full source
         charts. They are not frequency histograms. Each bar is an aggregate
-        measurement for one effort cell: baseline, minimal, low, medium, high,
+        measurement for one effort cell: baseline, none, low, medium, high,
         or extra-high.
       </p>
       <div class="evidence-grid">
@@ -243,12 +243,12 @@
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="Bar chart: X-axis is reasoning effort; Y-axis is cost or judge score depending on the paired source chart.">
           <div class="mini-axis-row"><span>Y: cost / judge score</span><span>Each bar: one effort cell</span></div>
           <div class="mini-plot">
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">None</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Extra-high</b></div>
           </div>
           <div class="mini-x-axis">X: reasoning effort</div>
         </div>
@@ -257,15 +257,16 @@
         <figcaption>
           <strong>Source chart &mdash; short-factual cost per request (benchmark&nbsp;01).</strong>
           <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
-          then gpt-5.2 at minimal, low, medium, high, and extra-high effort.
+          then gpt-5.2 at none, low, medium, high, and extra-high effort.
           <strong>Y-axis:</strong> mean pay-as-you-go USD per request.
           <strong>Bars:</strong> each bar is the mean cost of one effort cell; there is
           no line series, and the vertical whiskers show &plusmn;1 standard deviation
           across the repeated measurements.
-          <strong>How to read it:</strong> cost climbs from about $0.0007 at minimal effort
-          to about $0.005 at extra-high &mdash; about a 7.6x bill &mdash; while the paired
-          judge score moves only from about 1.88 to about 1.78, so the taller bars buy hidden
-          computation rather than a better answer.
+          <strong>How to read it:</strong> cost stays essentially flat &mdash; about
+          $0.000587 at none effort and $0.000598 at extra-high, every gpt-5.2 tier
+          landing below the gpt-4o baseline of $0.000665 &mdash; while the paired
+          judge score holds around 1.95, at or above the baseline's 1.90, so climbing
+          the ladder buys neither a lower bill nor a better answer.
           <strong>Evidence boundary:</strong> N = 20 authored samples per cell, R = 3
           repeats, this one short-factual slice, priced against a single dated PAYG
           snapshot on a single Azure OpenAI tenant and region; it is not proof for other
@@ -276,7 +277,7 @@
           <a href="../../charts/?lang=en">evidence dashboard</a>
           (<a href="../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request rising across the effort ladder from the gpt-4o baseline and gpt-5.2 minimal through extra-high, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder &mdash; the gpt-4o baseline and gpt-5.2 none through extra-high, every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <div class="chart-reading-note">
         <h3>Reading this bar chart</h3>
@@ -299,10 +300,10 @@
         <div>
           <h3>What it means</h3>
           <p>
-            In the short-factual slice, minimal effort averaged about $0.0007
-            per request. Extra-high effort averaged about $0.005 per request, a
-            7.6x bill, while the mean judge score moved only from about 1.88 to
-            about 1.78.
+            In the short-factual slice, none effort averaged $0.000587
+            per request and extra-high $0.000598 &mdash; a flat 1.02x span that
+            stays below the gpt-4o baseline of $0.000665 &mdash; while the mean
+            judge score held around 1.95, at or above the baseline's 1.90.
           </p>
         </div>
         <div>
@@ -346,10 +347,11 @@
         <div>
           <h3>What it means</h3>
           <p>
-            In the short-factual slice, minimal effort averaged about 3.7
-            reasoning tokens per request. Extra-high effort averaged about 311
-            reasoning tokens per request &mdash; an invisible jump the answer
-            text never shows.
+            In the short-factual slice, reasoning stays near zero at every
+            tier &mdash; 0 tokens at none and about 1.35 even at high effort
+            &mdash; which is exactly why the bill stays flat. The invisible jump
+            shows up instead on the multi-step slice, where reasoning tokens
+            climb with effort and drive a cost gap the answer text never shows.
           </p>
         </div>
         <div>
@@ -523,7 +525,7 @@
           <h3>What it means</h3>
           <p>
             For the short-factual xhigh row, the PTU/PAYG crossover is a modeled
-            hypothesis at 149 rpm with a 50 PTU floor. It is not measured PTU
+            hypothesis at 2748 rpm with a 50 PTU floor. It is not measured PTU
             throughput.
           </p>
         </div>
@@ -595,10 +597,10 @@
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance and does not claim p-values at N = 20.</li>
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The ratios will drift if list pricing moves.</li>
         <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
-        <li>[4] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the $0.000663 to $0.005043 cost climb (7.6x bill), the 1.87931 to 1.779661 mean judge-score movement, and the 3.655172 to 311.474576 reasoning-token shift.</li>
+        <li>[4] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat $0.000587-to-$0.000598 gpt-5.2 cost band (every tier below the $0.000665 gpt-4o baseline, a 1.02x span), the ~1.95 mean judge score that matches or beats the 1.90 baseline, and the near-zero reasoning-token counts (0 at none, about 1.35 at high) across the effort ladder.</li>
         <li>[5] <strong>Tier 2 — multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
         <li>[6] <strong>Tier 2 — tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>
-        <li>[7] <strong>Tier 2 — modeled crossover:</strong> 149 rpm with a 50 PTU floor for the short-factual extra-high row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
+        <li>[7] <strong>Tier 2 — modeled crossover:</strong> 2748 rpm with a 50 PTU floor for the short-factual extra-high row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
         <li>[8] <strong>Evidence dashboard:</strong> the per-essay tables and rendered source charts at the <a href="../../charts/?lang=en">evidence dashboard</a> are the auditable form of the same artifacts.</li>
       </ul>
       <p>

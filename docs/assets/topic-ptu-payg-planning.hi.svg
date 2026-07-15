@@ -18,10 +18,10 @@
   <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
   <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">3000</text>
   <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">मॉडल-किया-गया लाभ-हानि RPM</text>
-  <rect x="160.0" y="376.6" width="236.7" height="13.4" rx="8" fill="#fb8500"/>
-  <text x="278.3" y="366.6" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">149</text>
+  <rect x="160.0" y="142.7" width="236.7" height="247.3" rx="8" fill="#fb8500"/>
+  <text x="278.3" y="132.7" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2748</text>
   <text x="278.3" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b01 xhigh</text>
-  <text x="278.3" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">लागत $0.005043</text>
+  <text x="278.3" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">लागत $0.000598</text>
   <rect x="416.7" y="148.8" width="236.7" height="241.2" rx="8" fill="#06d6a0"/>
   <text x="535.0" y="138.8" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2680</text>
   <text x="535.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b02 none</text>

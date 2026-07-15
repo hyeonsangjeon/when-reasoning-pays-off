@@ -65,7 +65,7 @@
     <div class="article-summary-grid" aria-label="Topic summary">
       <section class="summary-tile"><h2>Question</h2><p>What can a modeled PTU/PAYG crossover tell us, and what must it not claim?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>A break-even calculation that combines two dated pricing snapshots — <code>pricing/azure-openai-payg-2026-05.yaml</code> and <code>pricing/azure-openai-ptu-2026-05.yaml</code> — with the measured per-request cost and token-shape throughput factor from benchmark-01, -02, and -03. The output is the <code>modeled_break_even_rpm</code> series in the crossover chart data, not a measured throughput.</p></section>
-      <section class="summary-tile"><h2>Finding</h2><p>At this pricing snapshot, the modeled break-even lands wherever the per-request bill and token shape put it: benchmark-01 extra-high near 149 rpm, benchmark-02 none near 2,680 rpm, benchmark-03 low near 564 rpm — each scaled by the 50 PTU floor at $2.00/PTU-hour. These are calculated figures that move with the pricing snapshot and the token-per-request mix; they are not measured saturation points.</p></section>
+      <section class="summary-tile"><h2>Finding</h2><p>At this pricing snapshot, the modeled break-even lands wherever the per-request bill and token shape put it: benchmark-01 extra-high near 2,748 rpm, benchmark-02 none near 2,680 rpm, benchmark-03 low near 564 rpm — each scaled by the 50 PTU floor at $2.00/PTU-hour. These are calculated figures that move with the pricing snapshot and the token-per-request mix; they are not measured saturation points.</p></section>
       <section class="summary-tile"><h2>Decision</h2><p>Read the crossover as a planning line that tells the team when a capacity experiment is worth running on this workload shape — not as a verdict that a deployment needs PTU. Re-derive it when pricing, token mix, or region changes.</p></section>
     </div>
 
@@ -92,7 +92,7 @@
           rows; <strong>Y-axis:</strong> modeled break-even RPM (a taller bar means
           PAYG can scale to a higher request rate before the modeled PTU floor looks
           cheaper). <strong>Read it as planning guidance, not measurement:</strong>
-          the bars &mdash; including the ~149 rpm benchmark-01 marker and the 50 PTU
+          the bars &mdash; including the ~2,748 rpm benchmark-01 marker and the 50 PTU
           floor &mdash; are calculated at this pricing snapshot and token-per-request
           shape, not a measured PTU capacity result. The modeled crossover JSON is
           cited in the sources section.
@@ -103,7 +103,7 @@
 
     <section id="s1" class="article-section">
       <h2>The model answers a narrow question</h2>
-      <p>The crossover calculation combines mean cost per request, token-shape throughput factor, a public pricing snapshot, and a 50 PTU floor. The output is a modeled break-even RPM. For example, benchmark-01 extra-high effort lands around 149 rpm, benchmark-02 none around 2,680 rpm, and benchmark-03 low around 564 rpm.</p>
+      <p>The crossover calculation combines mean cost per request, token-shape throughput factor, a public pricing snapshot, and a 50 PTU floor. The output is a modeled break-even RPM. For example, benchmark-01 extra-high effort lands around 2,748 rpm, benchmark-02 none around 2,680 rpm, and benchmark-03 low around 564 rpm.</p>
       <p>Those numbers are useful because they expose how workload shape changes the planning conversation. They are not live-load measurements. They do not say where 429 begins, how cache behaves near saturation, or what a particular serving setup will do at p95 latency.</p>
     </section>
     <section id="s2" class="article-section">
@@ -113,7 +113,7 @@
     </section>
     <section id="s3" class="article-section">
       <h2>Why the distinction matters</h2>
-      <p>Without the distinction, a crossover chart can be misread as a promise. It is tempting to say that a row with a 149 rpm crossover “needs PTU” or that a row with a 2,680 rpm crossover “does not need PTU.” The evidence is more careful than that. The chart says what the economics look like under the modeled assumptions. A live system still needs latency, cache, retry, and saturation evidence.</p>
+      <p>Without the distinction, a crossover chart can be misread as a promise. It is tempting to say that a row with a 564 rpm crossover “needs PTU” or that a row with a 2,700 rpm crossover “does not need PTU.” The evidence is more careful than that. The chart says what the economics look like under the modeled assumptions. A live system still needs latency, cache, retry, and saturation evidence.</p>
       <p>That caution is not weakness. It is what makes the chart usable: it tells the team when to run a capacity experiment, not what the capacity experiment will find.</p>
     </section>
     <section id="s4" class="article-section">
@@ -128,9 +128,9 @@
         <caption>selected crossover examples</caption>
         <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
         <tbody>
-          <tr><td>benchmark-01 extra-high</td><td>Modeled 149 rpm</td><td>50 PTU floor</td><td>Early crossover because the per-request bill is high.</td></tr>
+          <tr><td>benchmark-01 extra-high</td><td>Modeled 2,748 rpm</td><td>50 PTU floor</td><td>Late crossover: short-factual stays cheap even at extra-high effort.</td></tr>
 <tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>Late crossover because the measured request is cheap.</td></tr>
-<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>Middle case: agent workload has a larger token shape.</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>Early crossover: the tool-agent's larger token shape makes each request pricier.</td></tr>
 <tr><td>Evidence boundary</td><td>Modeled economics</td><td>not live capacity</td><td>Use it to decide what to test next.</td></tr>
         </tbody>
       </table>
@@ -142,7 +142,7 @@
         Every break-even figure above is a calculation, not a measurement. It
         is produced by pricing a measured per-request cost and token shape
         against two dated pricing snapshots. The two tiers below mark where the
-        documented inputs end and the modeled output begins. The 149 rpm
+        documented inputs end and the modeled output begins. The 2,748 rpm
         crossover with a 50 PTU floor is derived arithmetic — it is not a
         measured throughput, a 429 onset, or a saturation point.
       </p>
@@ -151,7 +151,7 @@
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> this repository, <code>pricing/azure-openai-payg-2026-05.yaml</code>. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The per-token rates here (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output and reasoning $14.00/1M; gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) set the per-request bill that feeds the formula.</li>
         <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> this repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. accessed 2026-05-19, region eastus2: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The PTU side of the formula — $2.00 per PTU-hour, a 50 PTU minimum (the floor), and the Input TPM per PTU used for the throughput factor (gpt-4o 2,500; gpt-5.2 3,400) — comes from this snapshot. Both the PAYG and PTU prices feed the break-even: a PAYG bill per request on one side, a fixed $100/hour PTU floor (50 × $2.00) on the other.</li>
         <li>[4] <strong>Tier 2 — measured per-request inputs:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, and <code>benchmarks/03-tool-using-agent/analysis.json</code>. These supply the mean cost per request and the per-cell token-per-request distribution that becomes the throughput-gain factor relative to the gpt-4o baseline.</li>
-        <li>[5] <strong>Tier 2 — modeled crossover output (CALCULATION, not measurement):</strong> this repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, and <code>benchmark-03/crossover.json</code>. The <code>modeled_break_even_rpm</code> series rendered by the chart is computed as <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>. The 149 rpm figure for benchmark-01 extra-high, the 50 PTU floor, and the $2.00 PTU-hour rate are all calculated or quoted inputs — labeled MODELED, not measured throughput.</li>
+        <li>[5] <strong>Tier 2 — modeled crossover output (CALCULATION, not measurement):</strong> this repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, and <code>benchmark-03/crossover.json</code>. The <code>modeled_break_even_rpm</code> series rendered by the chart is computed as <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>. The 2,748 rpm figure for benchmark-01 extra-high, the 50 PTU floor, and the $2.00 PTU-hour rate are all calculated or quoted inputs — labeled MODELED, not measured throughput.</li>
         <li>[6] <strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a> is the auditable form of the same JSON artifacts.</li>
       </ul>
       <p>

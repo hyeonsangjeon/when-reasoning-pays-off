@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a">
+  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -103,7 +103,7 @@
       </section>
       <section class="summary-tile">
         <h2>발견</h2>
-        <p>짧은 사실형 구간에서는 비용이 약 7.6배로 커져도 평균 평가 점수가 약 1.88에서 약 1.78로 오르지 않았고, 다단계 구간에서는 1.5에서 2.0으로 올랐습니다.</p>
+        <p>짧은 사실형 구간에서는 강도 사다리 전반에서 비용이 사실상 평평했고(모든 gpt-5.2 강도가 gpt-4o 기준선보다 낮았습니다), 평균 평가 점수는 약 1.95로 기준선과 같거나 그 이상이었습니다. 평가자가 실제로 움직인 곳은 다단계 구간으로, 1.5에서 2.0으로 올랐습니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
@@ -155,12 +155,12 @@
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="막대 차트: X축은 추론 강도이고, Y축은 짝지은 원천 차트에 따라 비용 또는 평가 점수입니다.">
           <div class="mini-axis-row"><span>Y: 비용 / 평가 점수</span><span>각 막대: 강도 조합 하나</span></div>
           <div class="mini-plot">
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">기준선</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">최소</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">기준선</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">없음</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">낮음</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">중간</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">높음</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">매우 높음</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">중간</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">높음</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">매우 높음</b></div>
           </div>
           <div class="mini-x-axis">X: 추론 강도</div>
         </div>
@@ -186,9 +186,10 @@
         <div>
           <h3>이 차트가 보여주는 것</h3>
           <p>
-            짧은 사실형 구간에서 최소 강도(minimal)는 요청당 평균 약 $0.0007였습니다.
-            매우 높은 강도(xhigh)는 요청당 평균 약 $0.005로, 청구액이 7.6배까지
-            뛰었지만, 평균 평가 점수는 약 1.88에서 약 1.78로 오히려 내려갔습니다.
+            짧은 사실형 구간에서 강도 없음(none)은 요청당 평균 $0.000587,
+            매우 높은 강도(xhigh)는 $0.000598였습니다. 1.02배에 불과한 평평한
+            간격으로, 둘 다 gpt-4o 기준선 $0.000665보다 낮았습니다. 평균 평가
+            점수는 약 1.95로 기준선 1.90과 같거나 그 이상이었습니다.
           </p>
         </div>
         <div>
@@ -232,10 +233,11 @@
         <div>
           <h3>이 차트가 보여주는 것</h3>
           <p>
-            짧은 사실형 구간에서 최소 강도는 요청당 평균 약 3.7 추론
-            토큰을 사용했습니다. 매우 높은 강도는 요청당 평균 약 311 추론
-            토큰을 사용했습니다 &mdash; 답변 텍스트는 결코 보여 주지 않는,
-            보이지 않는 도약입니다.
+            짧은 사실형 구간에서 추론 토큰은 모든 강도에서 0에 가깝습니다
+            &mdash; 강도 없음에서 0, 높음에서도 약 1.35 &mdash; 청구서가
+            평평하게 유지되는 이유가 바로 이것입니다. 보이지 않는 도약은
+            오히려 다단계 구간에서 나타나며, 그곳에서는 추론 토큰이 강도에
+            따라 늘며 답변 텍스트가 드러내지 않는 비용 격차를 만듭니다.
           </p>
         </div>
         <div>
@@ -405,7 +407,7 @@
           <h3>이 차트가 보여주는 것</h3>
           <p>
             짧은 사실형 매우 높은 강도(xhigh) 행에서 PTU/PAYG 교차점은 50 PTU
-            바닥 조건의 149 rpm이라는 모델링된 가설입니다. 측정된 PTU 처리량이
+            바닥 조건에서 약 2748 rpm이라는 모델링된 가설입니다. 측정된 PTU 처리량이
             아닙니다.
           </p>
         </div>
@@ -472,10 +474,10 @@
         <li>[1] <strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, N = 20에서 p-값을 주장하지 않습니다.</li>
         <li>[2] <strong>Tier 1 — PAYG 가격 스냅샷:</strong> PAYG 비용 주장(요청당 평균 USD)은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 계산합니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 바뀌면 비율도 달라집니다.</li>
         <li>[3] <strong>Tier 1 — PTU 가격 스냅샷:</strong> PTU 모델링 교차점과 50 PTU 바닥값은 이 저장소의 <code>pricing/azure-openai-ptu-2026-05.yaml</code>에서 가져옵니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 문서</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">아카이브</a>. PTU 시간당 요금이나 PAYG 토큰 단가가 움직이면 교차점도 이동합니다.</li>
-        <li>[4] <strong>Tier 2 — 짧은 사실형 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.json"><code>benchmarks/01-short-factual/analysis.json</code></a>. $0.000663에서 $0.005043로의 비용 상승(7.6배 청구서), 1.87931에서 1.779661로의 평균 평가 점수 이동, 3.655172에서 311.474576으로의 추론 토큰 변화의 출처입니다.</li>
+        <li>[4] <strong>Tier 2 — 짧은 사실형 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.json"><code>benchmarks/01-short-factual/analysis.json</code></a>. $0.000587에서 $0.000598로 사실상 평평한 요청당 비용(모두 gpt-4o 기준선 $0.000665보다 낮음), gpt-4o 1.9 대 gpt-5.2 강도 없음 1.95의 평균 평가 점수, 강도 없음 0.0에서 높음 1.35로 사실상 0에 가까운 추론 토큰의 출처입니다.</li>
         <li>[5] <strong>Tier 2 — 다단계 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.json"><code>benchmarks/02-multi-step-reasoning/analysis.json</code></a>. 비추론 기준선 1.5점과 요청당 $0.00125에서의 높은 강도 2.0점의 출처입니다.</li>
         <li>[6] <strong>Tier 2 — 도구 에이전트 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.json"><code>benchmarks/03-tool-using-agent/analysis.json</code></a>. 도구 에이전트 절에서 언급한 천장 효과 품질 막대의 출처입니다.</li>
-        <li>[7] <strong>Tier 2 — 모델링된 교차점:</strong> 짧은 사실형 매우 높은 강도 행의 50 PTU 바닥값 기준 149 rpm은 측정된 토큰 형태 위에 얹은 계획 계산이며, 측정된 PTU 처리량 결과가 아닙니다. 용량 근거가 아니라 크기 산정 안내로 읽으세요. 모델링 산출물: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"><code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code></a>.</li>
+        <li>[7] <strong>Tier 2 — 모델링된 교차점:</strong> 짧은 사실형 매우 높은 강도 행의 50 PTU 바닥값 기준 약 2748 rpm은 측정된 토큰 형태 위에 얹은 계획 계산이며, 측정된 PTU 처리량 결과가 아닙니다. 용량 근거가 아니라 크기 산정 안내로 읽으세요. 모델링 산출물: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"><code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code></a>.</li>
         <li>[8] <strong>근거 대시보드:</strong> <a href="../../../charts/?lang=ko">근거 대시보드</a>의 글별 표와 렌더링된 원천 차트는 같은 산출물을 감사할 수 있는 형태로 제공합니다.</li>
       </ul>
       <p>

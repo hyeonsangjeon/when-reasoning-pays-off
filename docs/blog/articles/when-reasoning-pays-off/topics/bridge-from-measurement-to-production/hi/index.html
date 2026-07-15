@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_bridge">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="0e329c2694a0350e802c621a9e6e2b03bdc81b352d2d1fac3c19b323ab071560">
+  <meta name="article:source-article-sha256" content="c384211ea97b033d8d4be5bf3603ceca26daa22bc7eb73a207d1f284300b9cf4">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -83,7 +83,7 @@
       <p>benchmark वाला स्वर तब सही है जब जवाब हमारे अपने measurement से आता है। संचालन वाला स्वर तब सही है जब जवाब किसी और द्वारा बनाए रखे गए contract से आता है और हमें उसे runbook में बदलना होता है। अगर हम documented behavior के बारे में "हमने मापा" कहें, या अपने चलाए हुए per-effort लागत curve के बारे में "Microsoft Learn ऐसा कहता है" कहें, तो दोनों ही बातें कमज़ोर पड़ जाती हैं। यह बँटवारा inconsistency नहीं, बल्कि डिज़ाइन की ख़ासियत है।</p>
       <p>व्यवहार में यह फ़र्क़ तीन जगह साफ़ दिखता है:</p>
       <ul>
-        <li><strong>काल।</strong> साक्ष्य-लेख मापे गए नतीजे भूतकाल में लिखते हैं ("minimal effort प्रति-request औसत $0.000663 था")। संचालन-लेख contract behavior वर्तमानकाल में लिखते हैं ("सेवा <code>retry-after-ms</code> हेडर के साथ 429 लौटाती है")।</li>
+        <li><strong>काल।</strong> साक्ष्य-लेख मापे गए नतीजे भूतकाल में लिखते हैं ("none effort प्रति-request औसत $0.000587 था")। संचालन-लेख contract behavior वर्तमानकाल में लिखते हैं ("सेवा <code>retry-after-ms</code> हेडर के साथ 429 लौटाती है")।</li>
         <li><strong>स्रोत।</strong> साक्ष्य-लेख इस repository की <code>analysis.json</code> artifacts का हवाला देते हैं। संचालन-लेख access date के साथ Microsoft Learn pages का हवाला देते हैं, और दस्तावेज़ चुप हो तभी repository के measurement पर लौटते हैं।</li>
         <li><strong>आख़िरी पंक्ति।</strong> साक्ष्य-लेख "हमने क्या सीखा" या "operator playbook" जैसी closing line पर ख़त्म होते हैं। संचालन-लेख "व्यावहारिक नियम" पर ख़त्म होते हैं। आख़िरी पंक्ति पाठक को बता देती है कि उसने अभी किस तरह का evidence पढ़ा है।</li>
       </ul>

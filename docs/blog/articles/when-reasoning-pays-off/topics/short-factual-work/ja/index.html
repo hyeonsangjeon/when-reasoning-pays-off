@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="da6f311e609e7912d4c2363cf6b5c812f9191326d1a0ca86b15f4716cd5fb5dc">
+  <meta name="article:source-article-sha256" content="09b3dff817c898223ac61d3578511a6f8bfaca036a8484f3f58f4c8e075220b4">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
   <link rel="canonical" href="../ja/">
   <link rel="alternate" hreflang="en" href="../">
@@ -72,21 +72,23 @@
         短い事実回答の測定区間で——推論強度の各段階を一つずつ適用し、
         レベルごとにリクエストあたりのコスト、レイテンシ、見える回答
         テキスト、隠れた推論トークン、評価スコアを比較しました。この測定
-        区間での結果は、既定値を見直すべき種類のものでした。推論強度を
-        上げても、コスト・レイテンシ・隠れたトークンが増えるだけで、より
-        良い答えは得られなかったのです。下の1枚要約がその結論を一つの図に
-        まとめ、続く各節が計測された詳細を示します。
+        区間での結果は、既定値を見直すべき種類のものでした。推論強度は
+        コスト、レイテンシ、隠れたトークンを買いましたが、より良い答えは
+        買えませんでした。下の1枚要約がその結論を一つの図にまとめ、続く
+        各節が計測された詳細を示します。
       </p>
     </section>
 
     <figure class="article-figure" id="figure-short-factual-one-pager">
       <figcaption>
-        <strong>ひと目で見るトピック。</strong> この短い事実回答の測定区間では、推論強度を上げるとリクエストあたりのコストは約 7.6 倍になりましたが、
-        平均評価スコアは横ばいのままでした。1枚要約はそのメッセージを一言で伝え、
+        <strong>ひと目で見るトピック。</strong> この短い事実回答の測定区間では、
+        推論強度の階段を上ってもリクエストあたりのコストは実質的に横ばいで、
+        平均評価スコアは 1.95 前後に保たれました。そしてすべての gpt-5.2
+        段階が gpt-4o ベースラインを下回りました。1枚要約はそのメッセージと
         根拠の境界を示します。続く各節で計測された詳細を補います。
         <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">短い事実回答の1枚要約 SVG を開く</a>。
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="短い事実回答の1枚要約。推論強度の段階（最小から最高まで）でリクエストあたりのコストが約 7.6 倍に上る一方、評価品質は横ばいであることを示す。中心メッセージ：短い事実回答では、推論強度を上げるとコストは増えたが評価品質は横ばいだった。N=20、R=3 の計測された集計で、コストは絶対額ではなく比で示すことを明記。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="短い事実回答の1枚要約。none から extra-high まで推論強度の階段を上ってもリクエストあたりのコストは実質的に横ばいで、すべての gpt-5.2 段階が gpt-4o ベースラインを下回り、評価品質は 1.95 前後に保たれることを示す。中心メッセージ：短い事実回答では、強度の階段を上ってもコストと品質は横ばいで、gpt-5.2 はすでに gpt-4o ベースラインに並んでいた。N=20、R=3 の計測された集計で、コストはリクエストあたりで示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="トピックの要約">
@@ -100,7 +102,7 @@
       </section>
       <section class="summary-tile">
         <h2>わかったこと</h2>
-        <p>この測定区間では、リクエストあたりのコストが約 7.6 倍に上りましたが、平均評価スコアは上がらず——約 1.88 から約 1.78 へ動きました。</p>
+        <p>この測定区間では、リクエストあたりのコストは実質的に横ばいでした &mdash; none から extra-high まで約 1.02x、すべての gpt-5.2 段階が gpt-4o ベースラインを下回りました &mdash; そして平均評価スコアは 1.95 前後に保たれました。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
@@ -118,19 +120,20 @@
       <h2>データが示したこと</h2>
       <p>
         仮説は、推論強度を上げればより安全な答えが得られると予測していました。
-        しかしデータはそれを裏づけませんでした。コストの棒は最小強度の
-        $0.000663 から最高強度の $0.005043 へ上りますが、品質の棒は一緒には
-        上がりません。平均評価スコアは最小強度で 1.88、最高強度で 1.78
-        です。レイテンシも約 1.1s から約 3.1s へ伸びます。容量の面でも
-        タダではなく、トークン形状のスループット係数は 0.98 から 0.45 へ
-        落ちます。
+        しかしデータはそれを裏づけませんでした。コストの棒は実質的に横ばいです
+        &mdash; none effort で $0.000587、extra-high で $0.000598、約 1.02x の幅で、
+        すべての gpt-5.2 段階が gpt-4o ベースラインの $0.000665 を下回ります
+        &mdash; 品質の棒も同じように横ばいです。平均評価スコアは階段全体で約
+        1.95、ベースラインの 1.90 以上です。レイテンシにも傾向はありません
+        （上昇なしにおおむね 1.4s から 1.7s）。トークン形状のスループット係数は
+        0.99 前後を保ちます。
       </p>
       <p>
-        コストの棒は上がり、品質の棒は上がらなかった——このチャートが語る
-        話はそれに尽きます。高くなったコストの棒は本物で、増えた隠れ
-        トークンの予算も本物ですが、それに見合う品質の上積みだけが欠けて
-        います。このワークロードの形では、より高い推論強度を既定値にする
-        のではなく、実験的な扱いにとどめるべきです。
+        つまりコストの棒も品質の棒も、推論強度とともには動きませんでした——
+        このチャートが語る話はそれに尽きます。reasoning に多く払っても、
+        より安い請求もより良い答えも買えず、最も低い設定の gpt-5.2 はすでに
+        gpt-4o ベースラインに並ぶか上回っていました。このワークロードの形では、
+        より高い推論強度を既定値にするのではなく、実験的な扱いにとどめるべきです。
       </p>
     </section>
 
@@ -146,12 +149,11 @@
         隠れたトークンだけが積み上がっていきます。
       </p>
       <p>
-        それがこの測定区間で見られた特性です。評価スコアは推論強度とともに
-        上がらず、コスト・レイテンシ・隠れた推論がすべて増えるなかで、
-        1.88 から 1.78 へと沈んでいきます。思考そのものは確かに行われて
-        いますが、モデルの内側にとどまり、読者には決して届きません——
-        だからこそ、ここでの高い既定値は、答えが決して返さないコストに
-        なるのです。
+        それがこの測定区間で見られた形です。評価スコアは推論強度とともに
+        上がらず、1.95 前後に保たれ、コスト、レイテンシ、reasoning tokens も
+        実質的に横ばいでした。ここでは支払うべき隠れた思考がほとんどありません
+        &mdash; だからこそ、この測定区間で高い既定値にしても、安い設定がすでに
+        出していないものは何も買えないのです。
       </p>
     </section>
 
@@ -166,7 +168,7 @@
         <div>
           <h3>X 軸</h3>
           <p>
-            棒は推論強度のレベルを左から右へ並びます——baseline、minimal、
+            棒は推論強度のレベルを左から右へ並びます——baseline、none、
             low、medium、high、extra-high。これは運用者が調整できる設定
             です。
           </p>
@@ -194,14 +196,15 @@
       <figcaption>
         <strong>元チャート——短い事実回答のリクエストあたりコスト（benchmark&nbsp;01）。</strong>
         <strong>X 軸：</strong> モデルと推論強度の段階——gpt-4o ベースライン、続いて
-        gpt-5.2 のなし・低・中・高・最高です。
+        gpt-5.2 の none・low・medium・high・extra-high です。
         <strong>Y 軸：</strong> 従量課金（PAYG）でのリクエストあたり平均 USD です。
         <strong>棒：</strong> 各棒は一つの強度設定の平均コストを示し——度数の
         ヒストグラムではなく集計の比較です——縦のひげは反復測定にわたる
         &plusmn;1 標準偏差を示します。
-        <strong>読み方：</strong> コストは最小強度の $0.000663 から最高強度の
-        $0.005043 へ——約 7.6 倍の請求——上る一方、下の対になる評価スコアは
-        ほとんど動きません。
+        <strong>読み方：</strong> コストは none effort の $0.000587 から extra-high の
+        $0.000598 まで実質的に横ばいです——約 1.02x の幅で、すべての gpt-5.2
+        段階が $0.000665 ベースラインを下回ります——一方、下の対になる評価スコアは
+        1.95 前後に保たれます。
         <strong>根拠の境界：</strong> 強度設定あたり N = 20 のサンプル、R = 3 回の
         反復、この短い事実回答の測定区間、単一の日付つき PAYG スナップショットで
         一つの Azure OpenAI テナントとリージョンに対して価格算定したものです。
@@ -211,20 +214,20 @@
         から来ており、<a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-01-cost_per_request">根拠ダッシュボード</a>
         （<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">配信されるチャートデータ</a>）と並べて読んでください。
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 の従量課金リクエストあたり平均コストが、gpt-4o ベースラインと gpt-5.2 最小から最高へと推論強度の段階に沿って上る棒グラフ。標準偏差のひげつき。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 の従量課金リクエストあたり平均コストが、推論強度の階段全体で実質的に横ばいに保たれ、gpt-4o ベースラインと gpt-5.2 none から extra-high までのうち、すべての gpt-5.2 段階がベースラインを下回る棒グラフ。標準偏差のひげつき。" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
       <figcaption>
         <strong>対になる元チャート——短い事実回答の評価スコア（benchmark&nbsp;01）。</strong>
         <strong>X 軸：</strong> 同じモデルと推論強度の段階です。
-        <strong>Y 軸：</strong> 0〜2 のルーブリックでの平均評価スコア（品質のガードレール）です。
+        <strong>Y 軸：</strong> 0&ndash;2 のルーブリックでの平均評価スコア（品質のガードレール）です。
         <strong>棒：</strong> 各棒は一つの強度設定の平均スコアを示し——度数の
         ヒストグラムではなく集計の比較です——ひげは &plusmn;1 標準偏差を示します。
-        <strong>読み方：</strong> 品質の棒は上のコストの棒とともには上りません——
-        gpt-4o ベースライン 1.88、gpt-5.2 minimal 1.88、low 1.77、medium 1.73、
-        high 1.88、最高強度で 1.78——だからこの測定区間では、高くなった
-        コストの棒で増えたのは隠れた計算であって、より良い答えではありません。
+        <strong>読み方：</strong> 品質の棒は横ばいで、ベースラインを少し上回ります——
+        gpt-4o ベースライン 1.90、gpt-5.2 none 1.95、low 1.97、medium 1.97、
+        high 1.93、extra-high 1.95——だからこの測定区間では、横ばいのコストの棒は
+        より低い請求もより良い答えも買いませんでした。
         <strong>根拠の境界：</strong> 強度設定あたり N = 20、R = 3 回の反復です。
         誤差バーは信頼区間ではなく標準偏差で、N = 20 で p 値は主張しません。
         <strong>出典とダッシュボード：</strong> 棒の値は
@@ -233,7 +236,7 @@
         （<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/quality.json">配信されるチャートデータ</a>）で
         コストチャートと対にして読んでください。
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark-01 の平均評価スコアが推論強度の段階に沿っておおむね約 1.7〜1.9 で横ばいのまま、コストは上る棒グラフ。標準偏差のひげつき。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark-01 の平均評価スコアが推論強度の階段全体でおおむね 1.9 から 2.0 の周辺に横ばいで、コストも横ばいの棒グラフ。標準偏差のひげつき。" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <section class="article-section">
@@ -259,32 +262,32 @@
           <tr>
             <td>リクエストあたりコスト</td>
             <td>X 軸は推論強度レベル、Y 軸はリクエストあたり平均 USD です。</td>
-            <td>最小強度で $0.000663、最高強度で $0.005043 です。</td>
-            <td>品質が正しさを証明する前に、請求が先に上がります。</td>
+            <td>none effort で $0.000587、extra-high effort で $0.000598、ベースラインは $0.000665 です。</td>
+            <td>請求は横ばいでベースラインを下回るため、より高い推論強度には証明すべきことがありません。</td>
           </tr>
           <tr>
             <td>品質のガードレール</td>
             <td>X 軸は同じ推論強度の段階、Y 軸は平均評価スコアです。</td>
-            <td>最小強度で 1.88、最高強度で 1.78 です。</td>
-            <td>高コストの強度設定は昇格の基準を超えません。</td>
+            <td>none effort で 1.95、extra-high effort で 1.95、ベースラインは 1.90 です。</td>
+            <td>品質は横ばいで、すでにベースライン以上です。</td>
           </tr>
           <tr>
             <td>レイテンシ</td>
             <td>X 軸は推論強度レベル、Y 軸は平均応答レイテンシです。</td>
-            <td>最小強度で約 1.1s、最高強度で約 3.1s です。</td>
-            <td>ユーザーは、見合う品質の見返りなしに長く待たされます。</td>
+            <td>none effort で約 1.7s、extra-high effort で約 1.4s。階段全体に傾向はありません。</td>
+            <td>レイテンシは noisy で、推論強度のコストではありません。</td>
           </tr>
           <tr>
             <td>トークン構成</td>
             <td>X 軸は推論強度レベル、Y 軸はリクエストあたり平均トークンです。</td>
-            <td>推論トークンは 3.655172 から 311.474576 へ上り、見える出力は約 12.7 から 17.9 トークンしか変わりません。</td>
-            <td>回答テキストが請求の伸びの大半を隠します。</td>
+            <td>reasoning tokens はほぼゼロにとどまります（none で 0、high で約 1.35）。見える出力は約 14.0 から 14.8 トークンへしか動きません。</td>
+            <td>この測定区間では、隠れた請求の伸びはほとんどありません。</td>
           </tr>
           <tr>
             <td>トークン形状のスループット</td>
             <td>X 軸は推論強度レベル、Y 軸はベースライン比のスループット係数です。</td>
-            <td>係数は最小強度の 0.98 から最高強度の 0.45 へ動きます。</td>
-            <td>同じトラフィックの形がより多くの容量の余裕を要します。</td>
+            <td>係数は none から extra-high まで 0.99 前後を保ちます。</td>
+            <td>トラフィックの形に追加の容量余裕は要りません。</td>
           </tr>
         </tbody>
       </table>
@@ -293,25 +296,26 @@
     <section class="article-section">
       <h2>何が起きたか</h2>
       <p>
-        コスト曲線は急に上がりました。最小強度ではリクエストあたり平均
-        $0.000663、最高強度ではリクエストあたり平均 $0.005043、つまり
-        7.6 倍の請求でした。対になる品質の動きは、その支出を正当化しません
-        でした。平均評価スコアは 1.88 から 1.78 へ動いています。
+        コスト曲線は横ばいでした。none effort ではリクエストあたり平均
+        $0.000587、extra-high effort ではリクエストあたり平均 $0.000598、
+        約 1.02x の幅で、すべての gpt-5.2 段階が gpt-4o ベースラインの
+        $0.000665 を下回りました。対になる品質も横ばいでした。平均評価スコアは
+        1.95 前後に保たれ、ベースラインの 1.90 以上でした。
       </p>
       <p>
         これは推論全般が悪いという主張ではありません。あくまでこの
-        ワークロードの形についての結果です。この測定区間では、追加された
-        内部計算に見合う回答品質の上積みが得られませんでした。ダッシュ
-        ボードはコストと品質を並べて示すため、その不一致がはっきり見えます。
+        ワークロードの形についての結果です。この測定区間では、支払うべき
+        追加の内部計算はほとんどなく、推論強度を上げてもより安い請求も
+        より良い答えも買えませんでした。ダッシュボードはコストと品質を並べて
+        示すため、それがはっきり見えます。
       </p>
       <p>
-        ここでの落とし穴は、出力がそれでもそれらしく見えてしまうことです。
-        レビュー担当者がいくつかの答えを抜き取って確認するだけなら、最高
-        強度ではモデルがより真剣に考えたように見え、かえって安心してしまう
-        かもしれません。チャートは、その直感がそのまま方針になるのを
-        防ぎます。より高いコスト、より遅いレイテンシ、より大きな隠れ
-        トークンの請求を受け入れる前に、計測された品質の差を確認して
-        ください。
+        ここでの落とし穴は逆の直感です。高い推論強度なら必ずより安全だ、
+        という直感です。レビュー担当者がいくつかの答えを抜き取って確認するだけなら、
+        extra-high effort ではモデルがより真剣に考えたように見え、強く感じられる
+        かもしれません。チャートは、その直感がそのまま方針になるのを防ぎます。
+        品質差は横ばいなので、より安い設定が遅い請求や大きな請求なしに同じ答えを
+        保つことを示しているからです。
       </p>
     </section>
 
@@ -365,29 +369,28 @@
       </p>
     </section>
 
-    <section id="sources" class="article-section">
+    <section class="article-section">
       <h2>出典と根拠の境界</h2>
       <p>
         上の数値はすべて本リポジトリの公開成果物にたどれ、コストの数値は
         いずれも日付つきの価格スナップショットをもとに算定しています。
         より高い推論強度はこの測定区間では実験的なままにとどめるべきだ、
         という運用上の解釈は、この記事自身のものです。下の二つの Tier は、
-        文書化された入力がどこで終わり、推論がどこから始まるのかを示して
-        います。
+        文書化された入力がどこで終わり、推論がどこから始まるのかを示しています。
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。強度設定あたり N = 20 のサンプル、R = 3 回の反復、公開集計の測定区間のみを対象とします。チャート読解の本文はこの固定された前提に立っており、誤差バーは信頼区間ではなく標準偏差で、N = 20 では p 値を主張しません。</li>
-        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコスト（minimal effort の $0.000663、extra-high effort の $0.005043、7.6 倍の請求）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> をもとに算定しています。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比も変わります。</li>
-        <li>[3] <strong>Tier 2 — 短い事実回答区間の測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。コストの上昇、1.87931 から 1.779661 への平均評価スコアの動き、1112.798745 ms から 3088.001225 ms へのレイテンシの伸び、0.984614 から 0.451798 へのスループット係数の出典です。</li>
-        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）と <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。3.655172 から 311.474576 への推論トークンの推移と、12.672414 から 17.881356 トークンしか動かない見える出力の出典です。</li>
+        <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> リクエストあたりのコスト（none effort の $0.000587、extra-high effort の $0.000598、どちらも $0.000665 ベースラインを下回る）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> をもとに算定しています。2026-05-19 アクセス：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>；<a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば数値も変わります。</li>
+        <li>[3] <strong>Tier 2 — 短い事実回答区間の測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。横ばいのリクエストあたりコスト、約 1.95 の平均評価スコア（gpt-4o ベースライン 1.9）、約 1409 ms から 1713 ms の間で傾向のないレイテンシ、0.99 近くを保つスループット係数の出典です。</li>
+        <li>[4] <strong>Tier 2 — レンダリング済みチャートデータ：</strong> 本リポジトリ、<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code>（<code>cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>、<code>throughput-gain.json</code>）と <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>。reasoning tokens がほぼゼロ（none で 0.0、high で 1.35）にとどまり、見える出力が約 14.0 から 14.8 トークンへしか動かないことの出典です。</li>
         <li>[5] <strong>根拠ダッシュボード：</strong> <a href="../../../../../charts/?lang=ja#chart-cost-curves-effort-benchmark-01-cost_per_request">根拠ダッシュボード</a>の強度設定ごとの表とレンダリングされた元チャートは、同じ成果物を監査できる形になっています。</li>
       </ul>
       <p>
         この測定区間が示すことと示さないこと：短い事実回答のこのワークロードの
         形で、一つのテナント、一つのリージョン、この価格スナップショットのもとでは、
-        推論強度を上げるとコストと隠れたトークンが増え、見合う品質の上積みは
-        得られなかったことを示しています。同じ形が統合、多段、ツールを使う作業で、
-        あるいは将来の価格スナップショットのもとで成り立つことまでは証明していません。
+        推論強度の階段はコストと隠れたトークンを買いましたが、見合う品質の上積みは
+        得られませんでした。同じ形が統合、多段、ツールを使う作業で、あるいは将来の
+        価格スナップショットのもとで成り立つことまでは証明していません。
       </p>
     </section>
 

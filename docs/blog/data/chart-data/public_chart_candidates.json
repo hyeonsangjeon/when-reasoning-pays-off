@@ -14,7 +14,7 @@
         "n_used"
       ],
       "source_sanitized_sha256": [
-        "2fdecd3514215cd1d86e9a412e3fe7a3ef339f7336fec4a577d54b63ee4fbeb2"
+        "828fde4ea960654ca5914377eb6d7783367fe8a69edc5df0c705bedd158a4a42"
       ],
       "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
       "tier": "SANITIZED_PUBLIC",
@@ -34,7 +34,7 @@
         "n_used"
       ],
       "source_sanitized_sha256": [
-        "460c29088d055f460c7d1133c45117f809971f7443a391f637f6f1cda9af29d1"
+        "6266935346d4065a368a93a5960259fc9eb0b90a6fa0e25ccdc60414a52c336d"
       ],
       "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
       "tier": "SANITIZED_PUBLIC",
@@ -54,7 +54,7 @@
         "judge_n"
       ],
       "source_sanitized_sha256": [
-        "7a3b1ca1c4c9c5da8d555b4fa2322f1e47967881ada9d8b74245f6b8345d8ab8"
+        "6446716c85826faa2e1126257ab000e3329c59a3be1c681ec014ffc0a8fe6111"
       ],
       "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
       "tier": "SANITIZED_PUBLIC",
@@ -74,7 +74,7 @@
         "baseline_tokens_per_request"
       ],
       "source_sanitized_sha256": [
-        "09e91245275b2c60ebbed2ef586d50a16c10f5978c5df585267bf3273c35be4f"
+        "dc7af5f3910e59259496293cf7b2a4659aad5301ce101e32a62bace9939af81c"
       ],
       "target_topic_slug": "reasoning-cost-quality-latency-by-effort",
       "tier": "SANITIZED_PUBLIC",
@@ -257,10 +257,10 @@
         "n_used"
       ],
       "source_sanitized_sha256": [
-        "4323158268e8496b01e0b3d174c90c4ab8bf1076ed8b62036322b0d6a95ac9d0",
-        "0b624e067cb406c88f010dd835a531bddabb0a8251e74d6da5d625d4b65bb883",
-        "744bb0c5fc81c580c587754e5d2584c4d742556ab72bf34e61a7776687b720b5",
-        "fee538c6e53cb5bcb33a8722d4888081c870c79cfbcf31b0da0fd08a368caa12"
+        "4f134f58a1f0f9c08da0eadccc4eef2155d151fde31dfa52ecaaf92a15d3cd20",
+        "87be18be649e36ee40db307cfa32c540b831fc732088feec617f28dc9992b702",
+        "7004e832d9a57ea483578d217d3c9b290b9e5decd42894ab35b7c31b578684a2",
+        "42ebe760aaf6325f46bc1976e736cc65b82dff2f03ded541dad9f4a874e7eb66"
       ],
       "target_topic_slug": "reasoning-ptu-payg-crossover",
       "tier": "SANITIZED_PUBLIC",
@@ -334,7 +334,7 @@
         "n_used"
       ],
       "source_sanitized_sha256": [
-        "782a597e66383ec7dd3cb912cf3575d340ce5bf7e178d751c44d961728483861"
+        "05277ccfba9f089b37503eefcea6be743f2092789b087d6fb55c30c4b578a2be"
       ],
       "target_topic_slug": "token-composition-under-reasoning",
       "tier": "SANITIZED_PUBLIC",

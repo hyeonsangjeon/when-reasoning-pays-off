@@ -9,45 +9,45 @@
   "rows": [
     {
       "effort": "na",
-      "judge_n": 58,
-      "mean_judge_score": 1.87931,
+      "judge_n": 60,
+      "mean_judge_score": 1.9,
       "model": "gpt-4o",
-      "std_judge_score": 0.37825
+      "std_judge_score": 0.302532
     },
     {
-      "effort": "minimal",
-      "judge_n": 58,
-      "mean_judge_score": 1.87931,
+      "effort": "none",
+      "judge_n": 60,
+      "mean_judge_score": 1.95,
       "model": "gpt-5.2",
-      "std_judge_score": 0.37825
+      "std_judge_score": 0.219784
     },
     {
       "effort": "low",
       "judge_n": 60,
-      "mean_judge_score": 1.766667,
+      "mean_judge_score": 1.966667,
       "model": "gpt-5.2",
-      "std_judge_score": 0.499717
+      "std_judge_score": 0.18102
     },
     {
       "effort": "medium",
-      "judge_n": 59,
-      "mean_judge_score": 1.728814,
+      "judge_n": 60,
+      "mean_judge_score": 1.966667,
       "model": "gpt-5.2",
-      "std_judge_score": 0.551815
+      "std_judge_score": 0.18102
     },
     {
       "effort": "high",
       "judge_n": 60,
-      "mean_judge_score": 1.883333,
+      "mean_judge_score": 1.933333,
       "model": "gpt-5.2",
-      "std_judge_score": 0.372425
+      "std_judge_score": 0.311729
     },
     {
       "effort": "xhigh",
-      "judge_n": 59,
-      "mean_judge_score": 1.779661,
+      "judge_n": 60,
+      "mean_judge_score": 1.95,
       "model": "gpt-5.2",
-      "std_judge_score": 0.527447
+      "std_judge_score": 0.219784
     }
   ],
   "schema": "wrpo.chart_data",
@@ -58,7 +58,7 @@
     "judge_n"
   ],
   "source_sanitized_sha256": [
-    "7a3b1ca1c4c9c5da8d555b4fa2322f1e47967881ada9d8b74245f6b8345d8ab8"
+    "6446716c85826faa2e1126257ab000e3329c59a3be1c681ec014ffc0a8fe6111"
   ],
   "tier": "SANITIZED_PUBLIC",
   "units_key": "judge_score"

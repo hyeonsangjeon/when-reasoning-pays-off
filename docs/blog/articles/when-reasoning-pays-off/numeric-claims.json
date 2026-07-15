@@ -3,21 +3,21 @@
   "schema_semver": "0.1.0",
   "article": "when-reasoning-pays-off",
   "canonical_locale": "en",
-  "canonical_article_sha256": "2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a",
+  "canonical_article_sha256": "ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55",
   "claims": [
     {
-      "id": "short-factual-minimal-cost",
+      "id": "short-factual-none-cost",
       "status": "verified",
-      "display_value": "$0.000663",
+      "display_value": "$0.000587",
       "source_values": [
-        "0.000663"
+        "0.000587"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
       ],
       "selector": {
         "model": "gpt-5.2",
-        "effort": "minimal",
+        "effort": "none",
         "field": "mean_usd_per_request"
       },
       "locations": [
@@ -30,9 +30,9 @@
     {
       "id": "short-factual-xhigh-cost",
       "status": "verified",
-      "display_value": "$0.005043",
+      "display_value": "$0.000598",
       "source_values": [
-        "0.005043"
+        "0.000598"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
@@ -50,18 +50,20 @@
       ]
     },
     {
-      "id": "short-factual-cost-ratio",
+      "id": "short-factual-baseline-cost",
       "status": "verified",
-      "display_value": "7.6x",
+      "display_value": "$0.000665",
       "source_values": [
-        "0.000663",
-        "0.005043"
+        "0.000665"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
       ],
-      "derived_exact": "7.606334841628959276018099548",
-      "derived_expression": "0.005043 / 0.000663",
+      "selector": {
+        "model": "gpt-4o",
+        "effort": "na",
+        "field": "mean_usd_per_request"
+      },
       "locations": [
         {
           "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
@@ -70,18 +72,38 @@
       ]
     },
     {
-      "id": "short-factual-minimal-quality",
+      "id": "short-factual-cost-ratio",
       "status": "verified",
-      "display_value": "1.87931",
+      "display_value": "1.02x",
       "source_values": [
-        "1.87931"
+        "0.000587",
+        "0.000598"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json"
+      ],
+      "derived_exact": "1.0187393526405453",
+      "derived_expression": "0.000598 / 0.000587",
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-none-quality",
+      "status": "verified",
+      "display_value": "1.95",
+      "source_values": [
+        "1.95"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
       ],
       "selector": {
         "model": "gpt-5.2",
-        "effort": "minimal",
+        "effort": "none",
         "field": "mean_judge_score"
       },
       "locations": [
@@ -92,24 +114,68 @@
       ]
     },
     {
-      "id": "short-factual-xhigh-quality",
+      "id": "short-factual-baseline-quality",
       "status": "verified",
-      "display_value": "1.779661",
+      "display_value": "1.90",
       "source_values": [
-        "1.779661"
+        "1.9"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json"
       ],
       "selector": {
-        "model": "gpt-5.2",
-        "effort": "xhigh",
+        "model": "gpt-4o",
+        "effort": "na",
         "field": "mean_judge_score"
       },
       "locations": [
         {
           "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
           "section": "short-factual"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-none-reasoning-tokens",
+      "status": "verified",
+      "display_value": "0",
+      "source_values": [
+        "0.0"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "none",
+        "field": "mean_reasoning_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "reasoning-tokens"
+        }
+      ]
+    },
+    {
+      "id": "short-factual-high-reasoning-tokens",
+      "status": "verified",
+      "display_value": "1.35",
+      "source_values": [
+        "1.35"
+      ],
+      "source_paths": [
+        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
+      ],
+      "selector": {
+        "model": "gpt-5.2",
+        "effort": "high",
+        "field": "mean_reasoning_tokens"
+      },
+      "locations": [
+        {
+          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
+          "section": "reasoning-tokens"
         }
       ]
     },
@@ -180,59 +246,16 @@
       ]
     },
     {
-      "id": "short-factual-minimal-reasoning-tokens",
-      "status": "verified",
-      "display_value": "3.655172",
-      "source_values": [
-        "3.655172"
-      ],
-      "source_paths": [
-        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
-      ],
-      "selector": {
-        "model": "gpt-5.2",
-        "effort": "minimal",
-        "field": "mean_reasoning_tokens"
-      },
-      "locations": [
-        {
-          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
-          "section": "reasoning-tokens"
-        }
-      ]
-    },
-    {
-      "id": "short-factual-xhigh-reasoning-tokens",
-      "status": "verified",
-      "display_value": "311.474576",
-      "source_values": [
-        "311.474576"
-      ],
-      "source_paths": [
-        "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
-      ],
-      "selector": {
-        "model": "gpt-5.2",
-        "effort": "xhigh",
-        "field": "mean_reasoning_tokens"
-      },
-      "locations": [
-        {
-          "file": "docs/blog/articles/when-reasoning-pays-off/index.html",
-          "section": "reasoning-tokens"
-        }
-      ]
-    },
-    {
       "id": "ptu-payg-xhigh-modeled-break-even",
       "status": "verified",
-      "display_value": "149 rpm",
+      "display_value": "2748 rpm",
       "source_values": [
-        "149.315222"
+        "2747.689521"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"
       ],
+      "derived_expression": "2747.689521 rpm rounded to about 2748 rpm",
       "selector": {
         "model": "gpt-5.2",
         "effort": "xhigh",
@@ -268,19 +291,19 @@
       ]
     },
     {
-      "id": "short-factual-minimal-latency-rounded",
+      "id": "short-factual-none-latency-rounded",
       "status": "verified",
-      "display_value": "1.1s",
+      "display_value": "1.7s",
       "source_values": [
-        "1112.798745"
+        "1657.418603"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/latency.json"
       ],
-      "derived_expression": "1112.798745 ms rounded to about 1.1s",
+      "derived_expression": "1657.418603 ms rounded to about 1.7s",
       "selector": {
         "model": "gpt-5.2",
-        "effort": "minimal",
+        "effort": "none",
         "field": "mean_latency_ms"
       },
       "locations": [
@@ -293,14 +316,14 @@
     {
       "id": "short-factual-xhigh-latency-rounded",
       "status": "verified",
-      "display_value": "3.1s",
+      "display_value": "1.4s",
       "source_values": [
-        "3088.001225"
+        "1441.444824"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/latency.json"
       ],
-      "derived_expression": "3088.001225 ms rounded to about 3.1s",
+      "derived_expression": "1441.444824 ms rounded to about 1.4s",
       "selector": {
         "model": "gpt-5.2",
         "effort": "xhigh",
@@ -314,19 +337,19 @@
       ]
     },
     {
-      "id": "short-factual-minimal-throughput-factor-rounded",
+      "id": "short-factual-none-throughput-factor-rounded",
       "status": "verified",
-      "display_value": "0.98",
+      "display_value": "0.99",
       "source_values": [
-        "0.984614"
+        "0.989192"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/throughput-gain.json"
       ],
-      "derived_expression": "0.984614 rounded to 0.98",
+      "derived_expression": "0.989192 rounded to 0.99",
       "selector": {
         "model": "gpt-5.2",
-        "effort": "minimal",
+        "effort": "none",
         "field": "throughput_gain_factor"
       },
       "locations": [
@@ -339,14 +362,14 @@
     {
       "id": "short-factual-xhigh-throughput-factor-rounded",
       "status": "verified",
-      "display_value": "0.45",
+      "display_value": "0.99",
       "source_values": [
-        "0.451798"
+        "0.985871"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/throughput-gain.json"
       ],
-      "derived_expression": "0.451798 rounded to 0.45",
+      "derived_expression": "0.985871 rounded to 0.99",
       "selector": {
         "model": "gpt-5.2",
         "effort": "xhigh",
@@ -360,19 +383,19 @@
       ]
     },
     {
-      "id": "short-factual-minimal-visible-output-rounded",
+      "id": "short-factual-none-visible-output-rounded",
       "status": "verified",
-      "display_value": "12.7",
+      "display_value": "14.0",
       "source_values": [
-        "12.672414"
+        "13.983333"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
       ],
-      "derived_expression": "12.672414 rounded to about 12.7 visible output tokens",
+      "derived_expression": "13.983333 rounded to about 14.0 visible output tokens",
       "selector": {
         "model": "gpt-5.2",
-        "effort": "minimal",
+        "effort": "none",
         "field": "mean_output_tokens"
       },
       "locations": [
@@ -385,14 +408,14 @@
     {
       "id": "short-factual-xhigh-visible-output-rounded",
       "status": "verified",
-      "display_value": "17.9",
+      "display_value": "14.8",
       "source_values": [
-        "17.881356"
+        "14.783333"
       ],
       "source_paths": [
         "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json"
       ],
-      "derived_expression": "17.881356 rounded to about 17.9 visible output tokens",
+      "derived_expression": "14.783333 rounded to about 14.8 visible output tokens",
       "selector": {
         "model": "gpt-5.2",
         "effort": "xhigh",

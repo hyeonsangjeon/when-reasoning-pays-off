@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a">
+  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -86,7 +86,7 @@
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
-        <p>छोटे factual काम वाले case में cost क़रीब 7.6x बढ़ी, लेकिन औसत judge score ने साथ नहीं दिया — वह सिर्फ़ क़रीब 1.88 से क़रीब 1.78 तक बदला; multi-step case में, जहाँ evaluator सच में हिला, यह 1.5 से 2.0 तक गया।</p>
+        <p>छोटे factual slice में effort ladder पर cost लगभग flat रही (हर gpt-5.2 tier gpt-4o baseline से नीचे रहा), और mean judge score baseline पर या उससे ऊपर, क़रीब 1.95 के आसपास टिका रहा। जहाँ evaluator सच में हिला, वह multi-step slice था, जो 1.5 से 2.0 तक गया।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
@@ -163,12 +163,12 @@
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="बार चार्ट: X-अक्ष रीज़निंग effort; Y-अक्ष मिलाए गए मूल चार्ट के अनुसार लागत या judge स्कोर।">
           <div class="mini-axis-row"><span>Y: cost / judge score</span><span>हर bar: एक effort configuration</span></div>
           <div class="mini-plot">
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">कोई नहीं</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Extra-high</b></div>
           </div>
           <div class="mini-x-axis">X: रीज़निंग effort</div>
         </div>
@@ -193,9 +193,9 @@
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे factual case में minimal effort का औसत प्रति-request क़रीब
-            $0.000663 था। Extra-high effort का औसत क़रीब $0.005043 — यानी 7.6x bill —
-            जबकि औसत judge score सिर्फ़ क़रीब 1.87931 से 1.779661 तक बदला।
+            छोटे factual slice में none effort का औसत प्रति-request $0.000587 रहा
+            और extra-high $0.000598 — एक flat 1.02x span, दोनों gpt-4o baseline
+            $0.000665 से नीचे। mean judge score baseline के 1.90 पर या उससे ऊपर, क़रीब 1.95 पर टिका रहा।
           </p>
         </div>
         <div>
@@ -238,9 +238,9 @@
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे factual case में minimal effort का औसत प्रति-request क़रीब
-            3.655172 reasoning tokens था। Extra-high effort का औसत क़रीब 311.474576
-            reasoning tokens — यह उछाल answer text में कभी दिखता ही नहीं।
+            छोटे factual slice में reasoning tokens हर effort level पर लगभग zero रहते हैं —
+            none पर 0 और high पर भी क़रीब 1.35 — इसलिए bill flat रहता है।
+            invisible jump इसके बजाय multi-step slice में दिखता है, जहाँ reasoning tokens effort के साथ चढ़ते हैं और ऐसा cost gap बनाते हैं जिसे answer text कभी नहीं दिखाता।
           </p>
         </div>
         <div>
@@ -405,8 +405,8 @@
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे factual xhigh row के लिए PTU/PAYG crossover 50 PTU floor के साथ
-            149 rpm पर एक modeled hypothesis है। यह measured PTU throughput नहीं है।
+            छोटे factual extra-high row में PTU/PAYG crossover 50 PTU floor पर
+            क़रीब 2748 rpm का एक modeled hypothesis है। यह measured PTU throughput नहीं है।
           </p>
         </div>
         <div>
@@ -475,10 +475,10 @@
         <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate case। chart-reading prose इसी fixed stance को मानता है और N = 20 पर p-value का दावा नहीं करता।</li>
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (प्रति-request औसत USD) इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> के आधार पर निकाले गए हैं। यह 2026-05-19 को लिया गया snapshot है। list pricing बदलने पर ratios भी बदलेंगे।</li>
         <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover और 50 PTU floor इस repository की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU hourly rate या PAYG per-token price बदलने पर crossover भी बदलता है।</li>
-        <li>[4] <strong>Tier 2 — short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000663 से $0.005043 की cost climb (7.6x bill), 1.87931 से 1.779661 की mean judge-score movement, और 3.655172 से 311.474576 की reasoning-token shift का स्रोत।</li>
+        <li>[4] <strong>Tier 2 — short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000587 (none) से $0.000598 (extra-high) तक essentially flat per-request cost का स्रोत, दोनों gpt-4o baseline $0.000665 से नीचे; gpt-4o 1.9 बनाम gpt-5.2 none 1.95 के mean judge score का स्रोत; और 0.0 (none) से 1.35 (high) तक near-zero reasoning tokens का स्रोत।</li>
         <li>[5] <strong>Tier 2 — multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
         <li>[6] <strong>Tier 2 — tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
-        <li>[7] <strong>Tier 2 — modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर 149 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
+        <li>[7] <strong>Tier 2 — modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर क़रीब 2748 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
         <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
       </ul>
       <p>

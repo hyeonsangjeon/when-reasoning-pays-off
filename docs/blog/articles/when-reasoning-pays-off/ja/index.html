@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="2354a2a0c25e43b98918368ee7ba6b7ac566785b2c23a730e5b31ddee4165a2a">
+  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -61,7 +61,7 @@
       </section>
       <section class="summary-tile">
         <h2>わかったこと</h2>
-        <p>短い事実回答の測定区間では、コストは約 7.6 倍に増えましたが、平均評価スコアは追随せず、約 1.88 から約 1.78 にとどまりました。評価スコアが改善した複数ステップの測定区間では、1.5 から 2.0 へ上がりました。</p>
+        <p>短い事実回答の測定区間では、コストは推論強度の階段を通じて実質的に横ばいでした（gpt-5.2 の各段階はいずれも gpt-4o ベースラインを下回りました）。平均評価スコアは 1.95 前後で、ベースライン以上を保ちました。評価器が実際に動いたのは複数ステップの測定区間で、1.5 から 2.0 へ上がりました。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
@@ -137,12 +137,12 @@
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="棒グラフ: X軸は推論強度、Y軸は組み合わせる元チャートに応じてコストまたは評価スコアです。">
           <div class="mini-axis-row"><span>Y: コスト / 評価スコア</span><span>各棒: 1つの強度設定</span></div>
           <div class="mini-plot">
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Baseline</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xs"></i><b class="bar-label">Minimal</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">なし</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Medium</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-lg"></i><b class="bar-label">High</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-xl"></i><b class="bar-label">Extra-high</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">High</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Extra-high</b></div>
           </div>
           <div class="mini-x-axis">X: 推論強度</div>
         </div>
@@ -166,9 +166,9 @@
         <div>
           <h3>何を意味するのか</h3>
           <p>
-            短い事実回答の測定区間では、最小強度でリクエストあたり平均 $0.000663 でした。
-            最高強度ではリクエストあたり平均 $0.005043 で、7.6x の請求額です。
-            平均評価スコアは 1.87931 から 1.779661 に動きました。
+            短い事実回答の測定区間では、なし強度でリクエストあたり平均 $0.000587、extra-high で $0.000598 でした。
+            これは横ばいの 1.02x 幅で、どちらも gpt-4o ベースラインの $0.000665 を下回ります。
+            平均評価スコアは 1.95 前後で、ベースラインの 1.90 以上を保ちました。
           </p>
         </div>
         <div>
@@ -209,8 +209,8 @@
         <div>
           <h3>何を意味するのか</h3>
           <p>
-            短い事実回答の測定区間では、最小強度でリクエストあたり平均 3.655172 推論トークンでした。
-            最高強度ではリクエストあたり平均 311.474576 推論トークンでした。
+            短い事実回答の測定区間では、推論トークンはどの強度でもゼロ近辺にとどまります。なしでは 0、high でも約 1.35 で、まさにそのため請求額は横ばいです。
+            見えない跳ね上がりはむしろ複数ステップの測定区間に現れ、そこでは推論トークンが強度とともに増え、回答本文からはわからないコスト差を生みます。
           </p>
         </div>
         <div>
@@ -365,7 +365,7 @@
         <div>
           <h3>何を意味するのか</h3>
           <p>
-            短い事実回答の xhigh 行では、PTU/PAYG の交点は 50 PTU の下限を置いた 149 rpm のモデル化された仮説です。
+            短い事実回答の extra-high 行では、PTU/PAYG の交点は 50 PTU の下限を置いた約 2748 rpm のモデル化された仮説です。
             測定された PTU スループットではありません。
           </p>
         </div>
@@ -427,10 +427,10 @@
         <li>[1] <strong>Tier 1 — 方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。強度設定あたり N = 20 のサンプル、R = 3 回の反復、公開集計の測定区間のみ。チャート読解の本文はこの固定された前提に立っており、N = 20 で p 値は主張しません。</li>
         <li>[2] <strong>Tier 1 — PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定します。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比率も変わります。</li>
         <li>[3] <strong>Tier 1 — PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> によります。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 アクセス）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動します。</li>
-        <li>[4] <strong>Tier 2 — 短い事実回答の区間測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000663 から $0.005043 へのコスト上昇（7.6 倍の請求）、1.87931 から 1.779661 への平均評価スコアの移動、3.655172 から 311.474576 への推論トークンの変化の出典です。</li>
+        <li>[4] <strong>Tier 2 — 短い事実回答の区間測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000587（なし）から $0.000598（extra-high）までの実質的に横ばいのリクエストあたりコスト、どちらも gpt-4o ベースラインの $0.000665 を下回ること、gpt-4o 1.9 に対する gpt-5.2 なし 1.95 の平均評価スコア、そして 0.0（なし）から 1.35（high）までのゼロ近辺の推論トークンの出典です。</li>
         <li>[5] <strong>Tier 2 — 多段の区間測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高強度評価スコア 2.0 の出典です。</li>
         <li>[6] <strong>Tier 2 — ツールエージェントの区間測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典です。</li>
-        <li>[7] <strong>Tier 2 — モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における 149 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読んでください。</li>
+        <li>[7] <strong>Tier 2 — モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における約 2748 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読んでください。</li>
         <li>[8] <strong>根拠ダッシュボード：</strong> <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じ成果物を監査できる形です。</li>
       </ul>
       <p>
