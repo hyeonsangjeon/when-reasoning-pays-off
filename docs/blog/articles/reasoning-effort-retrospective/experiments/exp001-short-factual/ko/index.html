@@ -55,7 +55,7 @@
 
     <p class="lede">세 벤치마크의 <strong>바닥</strong>부터 놓았다. 추출&middot;형식&middot;분류&middot;음역&middot;산술 &mdash; 한 번에 답이 나오는 <strong>짧은 사실 작업</strong>. 여기서 추론 강도를 올리는 건 &ldquo;1 더하기 1&rdquo;에 회의를 소집하는 일에 가깝다. 예측은 단순했다. <em>추론은 값을 하지 못한다.</em></p>
     <p class="lede">이 노트가 앞선 두 편과 다른 점이 하나 있다. <strong>합성 픽스처가 아니라 실측</strong>이다. 360셀 전부를 Azure Foundry v1으로 실제 호출하고, 중립 심판 gpt-4o로 셀당 한 번씩 <strong>360/360</strong> 채점했다. <code>"fixture": true</code> 마커는 어디에도 없다. 그래서 이 바닥은 &lsquo;그럴듯하게 합성된 바닥&rsquo;이 아니라 <em>측정된 바닥</em>이다.</p>
-    <p class="lede">측정은 예측을 <strong>그대로 확증했다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다.</p>
+    <p class="lede">측정은 예측을 <strong>그대로 확증했다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저, 10초</p>
@@ -172,8 +172,9 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="transparency" class="article-section">
       <p class="section-label">투명성</p>
       <h2>숫자에 남긴 얼룩까지 그대로</h2>
+      <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 벤치마크가 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
       <ul>
-        <li><strong>실측 대체.</strong> 이 벤치마크는 원래 합성 픽스처(<code>exp008_short-factual_fixture</code>)로 게시됐었다. 이 노트와 함께 그 자리를 <em>실측 코호트</em>로 바꿨다 &mdash; <code>analysis.json</code>&middot;도표&middot;표를 <code>--experiment-prefix exp001_short-factual_baseline</code>로 재생성했고, 픽스처는 자격증명 없는 오프라인 재현을 위한 발판으로 레포에 남겨 두되 게시 수치의 출처에서는 뺐다. 픽스처가 쓰던 <code>minimal</code> 강도는 실제 배포가 거부하는 값이라, 실측 스키마는 <code>none</code>이 바닥이다.</li>
+        <li><strong>실측 대체.</strong> 이 바닥은 처음엔 합성 픽스처(<code>exp008_short-factual_fixture</code>)로 게시됐었다. 그럴듯한 모양이었지만, 측정은 아니었다. 이 노트와 함께 그 자리를 <em>실측 코호트</em>로 바꿨다 &mdash; <code>analysis.json</code>&middot;도표&middot;표를 <code>--experiment-prefix exp001_short-factual_baseline</code>로 재생성했다. 픽스처는 지우지 않고 자격증명 없는 오프라인 재현용 발판으로 레포에 남겨 두되, 게시 수치의 출처에서는 뺐다. 픽스처가 쓰던 <code>minimal</code> 강도는 실제 배포가 거부하는 값이라, 실측 스키마는 <code>none</code>이 바닥이다.</li>
         <li><strong>이상치 0건.</strong> 360셀 어디에서도 3σ&middot;운영 플래그로 제외된 행이 없다(방법론 경보선 10%보다 한참 아래). 집계 마스크가 개입하지 않은 깨끗한 표면이다.</li>
         <li><strong>결정적 정답표 없음.</strong> 이 데이터셋은 규칙 대조용 정답표가 없어 품질을 <em>심판 점수로만</em> 판정한다. 그래서 &ldquo;정답률&rdquo;은 심판 점수 2(완전 정답)의 비율로 이진화했고, 부분 정답(1)은 분모에서 뺐다. 이 선택을 명시해 헤드라인이 어떻게 계산됐는지 드러낸다.</li>
         <li><strong>산술의 역전.</strong> gpt-5.2가 gpt-4o에 진 유일한 태그(산술)를 숨기지 않고 §실패가 숨은 자리에 그대로 적었다 &mdash; 바닥의 결론이 &ldquo;gpt-5.2가 모든 걸 이긴다&rdquo;가 아니라 &ldquo;강도가 값을 못 한다&rdquo;임을 분명히 하기 위해서다.</li>
@@ -214,6 +215,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="sources" class="article-section">
       <p class="section-label">출처 · 근거 경계</p>
       <h2>출처 &amp; 근거 경계</h2>
+      <p>이 노트의 숫자는 합성이 아니라 실측에서 나왔다. 그 숫자가 어디서 왔고 어디까지가 한계인지를, 아래에 그대로 둔다.</p>
       <ul>
         <li>이 실험 분석: <code>benchmarks/01-short-factual/analysis.md</code>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질, §8 지연, §9 이상치, §10 결론). 모든 수치는 여기서 재인용 &mdash; 실측 코호트 <code>exp001_short-factual_baseline</code>.</li>
         <li>교차 요약: <code>results/summary.md</code>.</li>

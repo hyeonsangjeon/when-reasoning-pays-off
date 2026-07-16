@@ -168,8 +168,9 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
     <section id="transparency" class="article-section">
       <p class="section-label">투명성</p>
       <h2>숫자에 남긴 얼룩까지 그대로</h2>
+      <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 벤치마크가 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
       <ul>
-        <li><strong>gpt-4o가 예상보다 쉬웠다.</strong> 75%는 사전 등록한 30&ndash;60%를 <em>넘어섰다</em>. 데이터셋이 애초에 gpt-4o에게 덜 가혹했다는 뜻이고, 그래서 &ldquo;gpt-4o 대비 절감폭&rdquo;의 <em>크기</em>는 더 어려운 데이터셋이었을 때보다 작아졌다(기대 1.7&ndash;3.3배 격차 → 실현 1.7배). 결론의 <em>방향</em>(gpt-5.2 <code>none</code>이 파레토 지배)은 그대로다.</li>
+        <li><strong>gpt-4o가 예상보다 쉬웠다.</strong> 75%는 사전 등록한 30&ndash;60%를 <em>넘어섰다</em>. 데이터셋이 애초에 gpt-4o에게 덜 가혹했다는 뜻이다. 그래서 &ldquo;gpt-4o 대비 절감폭&rdquo;의 <em>크기</em>는 더 어려운 데이터셋이었을 때보다 작아졌다(기대 1.7&ndash;3.3배 격차 → 실현 1.7배). 예측이 빗나간 쪽을 숫자에 맞춰 지우지 않고, 작아진 절감폭을 그대로 남긴다. 결론의 <em>방향</em>(gpt-5.2 <code>none</code>이 파레토 지배)은 그대로다.</li>
         <li><strong>안전 필터 거부 1건.</strong> <code>mr_05</code>의 <code>low</code> 첫 반복에서 Azure 콘텐츠 필터가 입력&middot;출력 토큰 0과 정형 거부를 반환했다. 이 셀은 운영 플래그(콜드스타트/재시도/절단)가 없어 <em>이상치 규칙에 걸리지 않으며</em>, append-only 원칙에 따라 덮어쓰지 않고 집계에 그대로 남겼다(심판은 정확히 0/실패로 채점). 같은 문제의 다른 반복은 정상 정답 &mdash; 계통적 트립이 아닌 1회성이고, 이 한 셀이 <code>low</code> 행의 분산을 키운 원인이다.</li>
         <li><strong>부분 점수 0건.</strong> 360셀 전체에서 심판의 <code>score == 1</code>이 하나도 없었다. 검증 가능한 정답 설계라 &ldquo;672를 냈다&rdquo;와 &ldquo;576을 냈다&rdquo; 사이에 중간이 없다. 그래서 이진화 선택이 헤드라인을 흔들지 않는다.</li>
       </ul>
@@ -208,6 +209,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
     <section id="sources" class="article-section">
       <p class="section-label">출처 · 근거 경계</p>
       <h2>출처 &amp; 근거 경계</h2>
+      <p>이 노트는 새 측정을 더하지 않고 게시된 집계를 다시 인용했다. 예측이 빗나간 자리까지 포함해, 근거와 경계를 아래에 둔다.</p>
       <ul>
         <li>이 실험 분석: <code>benchmarks/02-multi-step-reasoning/analysis.md</code>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질, §8 지연, §9 이상치, §10 결론). 모든 수치는 여기서 재인용.</li>
         <li>교차 요약: <code>results/summary.md</code>.</li>
