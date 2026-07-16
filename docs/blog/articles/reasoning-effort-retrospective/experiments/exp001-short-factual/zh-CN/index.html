@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  Numbers are re-cited from analysis.md / results/summary.md, not re-derived. No internal task IDs.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp001 · 短事实任务需要推理吗 | when reasoning pays off</title>
+  <meta name="description" content="短事实任务(Null case)基准 exp001 的实验笔记。按顺序回看设计、输入、产物、预先登记预测、实测成本/质量、失败藏身处、限制与决定，并在没有凭据的情况下只复现这个实验。三项基准的底部锚点——用实测确认推理不值得的位置。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="文章导航">
+        <a href="../../../../../../zh-CN/">首页</a>
+        <a href="../../../../zh-CN/">文章列表</a>
+        <a href="../../../zh-CN/">实验回顾(枢纽)</a>
+        <a href="../../../../../charts/?lang=zh-CN">证据看板</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">实验回顾</a> / 实验笔记 · exp001</p>
+    <p class="article-kicker">实验笔记 · exp001 · 短事实任务(Null case) · 推理不值得的底部</p>
+    <h1>exp001 &mdash; 短事实任务需要推理吗</h1>
+    <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">先放下三项基准的<strong>底部</strong>。抽取&middot;格式&middot;分类&middot;音译&middot;算术 &mdash; 一次就能答出的<strong>短事实任务</strong>。在这里提高推理强度，近似于为&ldquo;1 加 1&rdquo;召开一次评审会。预测很简单：<em>推理不值得。</em></p>
+    <p class="lede">这篇笔记与前两篇有一个不同之处。它<strong>不是合成 fixture，而是实测</strong>。360 个单元全部通过 Azure Foundry v1 真实调用，并由中立裁判 gpt-4o 对每个单元评分一次，共 <strong>360/360</strong>。任何地方都没有 <code>"fixture": true</code> 标记。所以这个底部不是&lsquo;看起来合理的合成底部&rsquo;，而是<em>被测量出来的底部</em>。</p>
+    <p class="lede">测量<strong>原样确认</strong>了预测 &mdash; 这是三项基准里唯一一个预先登记没有反转的位置。但实测也补上了两个细节。其一，gpt-5.2 在<em>完全不开推理</em>的 <code>none</code> 下，已经在<strong>质量上</strong>超过 gpt-4o。其二，即使把强度提高到 <code>xhigh</code>，隐藏推理 token 也<strong>贴近 0</strong> &mdash; 强度旋钮没有接到任何地方。本文按<em>设计 → 输入 → 产物 → 预测对实测 → 失败藏身处 → 决定</em>回看这个底部 &mdash; 希望后来的人少在同一路上绕弯。</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">先来，10 秒</p>
+      <h2>不要相信结论，只把这个实验自己跑一遍</h2>
+      <p>token 消耗为 0。下面两行会原样打印这个实验的输入&middot;变量&middot;产物，并用 dry-run 验证 runner 接线。</p>
+      <pre class="code-block"><code># 打印这个实验的输入 → 变量 → 产物卡片(无网络)
+python -c "import experiments; print(experiments.describe('exp001_short-factual_baseline.yaml').summary())"
+
+# 只用 dry-run 验证 runner 接线(token 消耗 0)
+python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
+      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <code>benchmarks/01-short-factual/analysis.md</code> 的复现页脚里。本文所有数字都重新引用自那份实测聚合(<code>analysis.json</code>)。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="本文结构">
+      <strong>阅读顺序 &mdash; 先看质量，再看成本：</strong>
+      <a href="#design">从最简单的任务开始</a>
+      <a href="#predict">预测原样成立的唯一位置</a>
+      <a href="#reversal">none 已经赢过 gpt-4o</a>
+      <a href="#subtypes">失败藏在哪里</a>
+      <a href="#flatline">提高强度，推理仍停在 0</a>
+      <a href="#decision">所以默认值是什么</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">设计</p>
+      <h2>从最简单的任务开始</h2>
+      <p><strong>问题只有一个。</strong> 对于一次就能答出的短事实任务 &mdash; 三项基准中最容易的案例 &mdash; 提高 gpt-5.2 的强度后，推理是否值回账单？我们同时用 PAYG(每个正确答案多少美元)和 PTU(固定容量下每分钟正确答案)两个视角来看。预期答案是&ldquo;不&rdquo;。这个实验的作用，是用实测钉住那个<em>底部</em>。</p>
+      <p><strong>数据集。</strong> 冻结的手写样本 20 个(<code>sf_01</code>&hellip;<code>sf_20</code>)。混合了抽取&middot;格式&middot;分类&middot;列举&middot;音译&middot;规范化&middot;单位换算&middot;简单算术&middot;摘要。没有确定性答案表 &mdash; 只固定 <code>expected_output_shape</code> 与 <code>quality_rubric_notes</code>。因此质量不是规则对照，而只由<strong>中立裁判(gpt-4o)评分</strong>判定。这是为了把评分依据留在原始材料中。</p>
+      <p><strong>变化的轴只有一个</strong> &mdash; 扫过 gpt-5.2 的 <code>reasoning.effort</code>：<code>none · low · medium · high · xhigh</code>。旁边放置没有推理参数的 gpt-4o 基线。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。</p>
+      <div class="article-summary-grid" aria-label="预先登记预测与作用">
+        <section class="summary-tile"><h2>预先登记预测</h2><p>短事实任务不需要推理表面。质量在最低强度已经饱和；提高强度后，质量不变，只增加成本&middot;延迟&middot;token。也就是说，答案是&ldquo;不要提高强度&rdquo;。</p></section>
+        <section class="summary-tile"><h2>本实验的作用</h2><p>三项基准的<em>底部锚点</em>。在测量多步(02)的天花板和工具智能体(03)的混合形态之前，用实测固定&ldquo;确实不需要推理的位置&rdquo;长什么样。后续实验的反转，正是与这个底部对照后才有意义。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">输入与产物</p>
+      <h2>吃进什么，留下什么</h2>
+      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以可以从输入到输出一行回看。</p>
+      <div class="article-summary-grid" aria-label="输入与产物">
+        <section class="summary-tile">
+          <h2>输入 (in)</h2>
+          <p><strong>实验定义：</strong> <code>experiments/exp001_short-factual_baseline.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
+          <strong>数据集：</strong> <code>benchmarks/01-short-factual/dataset.json</code> (以 SHA-256 固定)。<br>
+          <strong>提示：</strong> 系统提示以 SHA-256 指纹化 &mdash; 保证 360 个单元全都使用<em>同一个</em>提示。裁判提示 SHA-256 也记录在每个评分 JSON 中。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>产物 (out)</h2>
+          <p><strong>原始调用：</strong> <code>runs/*.json</code> (Foundry v1 载荷 + usage/latency 原文)。<br>
+          <strong>评分：</strong> <code>judge_runs_real/*.json</code> (实测 gpt-4o 裁判，每单元 1 次)。<br>
+          <strong>聚合：</strong> <code>analysis.json</code> (实测 cohort)。<br>
+          <strong>图表/表：</strong> <code>results/cost-curves/benchmark-01-*.png</code>·<code>.csv</code>.</p>
+        </section>
+      </div>
+      <p><strong>测量表面为 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>0 个</strong> &mdash; 没有任何行因运营标记(冷启动&middot;重试&middot;输出截断)超过 3σ。评分由中立裁判 gpt-4o 对每个单元一次完成，<strong>360/360 成功</strong>。所有 JSON 都是真实 Azure Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记。聚合用 <code>--experiment-prefix exp001_short-factual_baseline</code> 只选择实测 cohort 重新生成；跑两次字节相同(确定性聚合)。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">预测对实测</p>
+      <h2>预测原样成立的唯一位置</h2>
+      <div class="article-summary-grid" aria-label="预测对实测">
+        <section class="summary-tile"><h2>预测了什么</h2><p>短事实任务不需要推理。质量在底部已经饱和；提高强度后质量仍不变，只增加成本。概括就是&ldquo;不要提高强度&rdquo;。</p></section>
+        <section class="summary-tile"><h2>结果是什么</h2><p>完全如此 &mdash; 没有反转。质量在 <code>none</code> 就已饱和(正确率 95%)，提高强度后只在 60 个样本中 1&ndash;2 个的范围内晃动。额外细节是：<code>none</code> 在<em>质量上</em>也超过了 gpt-4o，而推理 token 即使在 <code>xhigh</code> 也接近 0。</p></section>
+      </div>
+      <p><strong>判定：预先登记得到确认。</strong> 多步(02)与工具(03)打开后故事都反转了(天花板里 <code>none</code> 是底部，混合里 <code>low</code> 是底部)，但只有这个底部按预测发生。因此这个实验充当本系列的<em>对照组</em> &mdash; 用实测展示&ldquo;推理不值得的位置&rdquo;实际长什么样。</p>
+    </section>
+
+    <section id="reversal" class="article-section">
+      <p class="section-label">第一个信号</p>
+      <h2>none 已经赢过 gpt-4o</h2>
+      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <code>pricing/azure-openai-payg-2026-05.yaml</code>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用，按每 1,000 次归一化。正确率是裁判分数 2(完全正确)的比例。</p>
+      <pre class="code-block"><code>模型      努力     每1,000次请求    正确率           每1,000个正确答案
+gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← 基线
+gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← 默认值
+gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
+gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
+gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
+gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
+      <p><strong>完全不开推理的 <code>none</code> 在两个轴上都领先 gpt-4o。</strong> 每 1,000 次请求 $0.587，比 gpt-4o($0.665)<strong>便宜 12%</strong>，正确率反而<strong>95% 对 90%</strong>更高。折算成每 1,000 个正确答案，是 $0.618 对 $0.739 &mdash; <strong>便宜 16%</strong>。真正起作用的不是强度旋钮，而是<em>模型替换</em>本身。</p>
+      <p><code>none</code> 以上几乎没有事情发生。<code>low</code>&middot;<code>medium</code> 的正确率<em>看起来</em>是 96.7%(60 个中多 1 个)，但这是样本噪声范围(N=20&middot;R=3，无置信区间)。<code>high</code> 按请求反而<strong>贵 +3.6%</strong>，正确率回到 95%。<strong>从 <code>none</code> 到 <code>medium</code> 基本上是同一个平面</strong>，再往上没有质量收益，只多成本。</p>
+
+      <figure class="article-figure" id="figure-exp001-quality">
+        <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的裁判分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<code>results/cost-curves/benchmark-01-quality.png</code>(实测 cohort)。</figcaption>
+        <img src="../../../../../../assets/benchmark-01-quality.png" alt="基准 01 按强度划分的平均裁判分数柱状图。gpt-5.2 从 none 到 xhigh 都在 1.9~1.97 之间保持平坦，gpt-4o 为 1.90，位于其下。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="subtypes" class="article-section">
+      <p class="section-label">失败藏身处</p>
+      <h2>失败藏在哪里</h2>
+      <p>90% 对 95% 这两个聚合数字看不出&ldquo;在哪里&rdquo;。按类型拆开，才会看到这个底部真正的纹理 &mdash; 大多数标签两边都是满分(2.0)，差异只出现在三个标签上。</p>
+      <pre class="code-block"><code>类型              gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
+抽取(extraction)  1.75     2.00       2.00      2.00       2.00
+摘要(summ.)       1.33     1.78       2.00      1.78       1.89
+算术(arith-triv)  2.00     1.83       1.67      1.67       1.67</code></pre>
+      <ul>
+        <li><strong>抽取 &mdash; gpt-5.2 在底部补上的地方。</strong> gpt-4o 在 12 个抽取样本中得 1.75，漏了几项；gpt-5.2 从<em>不开推理</em>的 <code>none</code> 开始已经是 2.00 满分。gpt-5.2 的 95% 领先 gpt-4o 的 90%，原因就在这里 &mdash; 不是推理，而是模型本身抽取得更稳。</li>
+        <li><strong>摘要 &mdash; low 达到顶点，之后回退。</strong> gpt-4o 最弱的标签(1.33)。gpt-5.2 从 <code>none</code> 1.78 → <code>low</code> 2.00 上升，又在 <code>medium</code>&middot;<code>high</code> 回到 1.78&ndash;1.89。提高强度并不会让摘要更好。</li>
+        <li><strong>算术 &mdash; 唯一 gpt-4o 获胜的位置，也是强度的反作用。</strong> 在 6 个细小算术样本上，gpt-4o 得 2.00 满分，而 gpt-5.2 从 <code>none</code> 1.83 下降到 <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 的 1.67。强度越高，越会把&ldquo;1 加 1&rdquo;反复咀嚼，反而踩空。推理不只是没有价值；在这里，它有<strong>负价值</strong>。</li>
+      </ul>
+      <p>三个标签彼此抵消。gpt-5.2 在抽取&middot;摘要上比 gpt-4o 赚回分数，在算术上略有损失，但净和在 <code>none</code>&middot;<code>low</code> 最高。而且没有任何标签<strong>从提高强度中获益</strong> &mdash; 这就是这个基准被称为 &ldquo;Null case&rdquo; 的原因。</p>
+    </section>
+
+    <section id="flatline" class="article-section">
+      <p class="section-label">第二个信号</p>
+      <h2>提高强度，推理仍停在 0</h2>
+      <p>为什么强度动不了质量？拆开 token 后答案很机械。gpt-5.2 的<strong>隐藏推理 token</strong>在 <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> 平均为 0.00，在 <code>high</code> 为 1.35，在 <code>xhigh</code> 为 0.62。<strong>即使把强度拉到最大，模型实际使用的推理 token 也接近 0</strong>。短事实任务没有可规划的表面，强度旋钮没有接到任何地方。这与前面的单发基准(02)里推理 token 随强度上升正好相反。</p>
+      <p><strong>所以成本也平坦。</strong> 每次请求输入固定为 224 token(提示字节相同)，可见输出只从 10&ndash;16 token 轻微增加。推理为 0，因此各强度间成本差只是从 <code>none</code> $0.587 到 <code>high</code> $0.608 &mdash; 每 1,000 次请求<strong>两美分多一点</strong>的晃动。</p>
+      <p><strong>延迟也不跟随强度。</strong> gpt-4o 为 1,494ms，gpt-5.2 无论强度如何都像噪声一样散在 1,410&ndash;1,713ms 之间(<code>medium</code> 比 <code>none</code> 更快)。在单发任务中，强度不是延迟的预测变量。</p>
+      <p><strong>PTU 视角下结论没有反转，只是略微躺平。</strong> gpt-5.2 <code>none</code> 的每请求 token 比 gpt-4o 多约 1%，吞吐为 <strong>0.99倍</strong>(约 −1%) &mdash; 按固定容量每分钟正确答案看，gpt-4o 略微领先。也就是说，<strong>PAYG 下 gpt-5.2 <code>none</code> 明确更便宜，PTU 下实质上是平手</strong>。不像前两个基准那样 PTU 拉开很大差距，这里两个模型几乎重叠。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明度</p>
+      <h2>连数字上的污点也原样留下</h2>
+      <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下 &mdash; 因为藏起来，后来的人会在同一个地方踩空。</p>
+      <ul>
+        <li><strong>替换为实测。</strong> 这个底部一开始是以合成 fixture(<code>exp008_short-factual_fixture</code>)发布的。形状合理，但不是测量。随本文一起，我们把那个位置换成了<em>实测 cohort</em> &mdash; 用 <code>--experiment-prefix exp001_short-factual_baseline</code> 重新生成 <code>analysis.json</code>&middot;图&middot;表。fixture 没有删除，仍作为无需凭据的离线复现脚手架保留在仓库里，但从发布数字来源中移除。fixture 使用的 <code>minimal</code> 强度会被真实部署拒绝，因此实测 schema 的底部是 <code>none</code>。</li>
+        <li><strong>异常值 0 个。</strong> 360 个单元里没有任何行因 3σ&middot;运营标记被排除(远低于方法论 10% 警戒线)。这是聚合掩码没有介入的干净表面。</li>
+        <li><strong>没有确定性答案表。</strong> 这个数据集没有用于规则对照的答案表，因此质量<em>只能由裁判分数</em>判定。所以&ldquo;正确率&rdquo;被二值化为裁判分数 2(完全正确)的比例，部分正确(1)不计入分子。明确这个选择，是为了说明 headline 如何计算出来。</li>
+        <li><strong>算术的逆转。</strong> gpt-5.2 输给 gpt-4o 的唯一标签(算术)没有隐藏，而是原样写在§失败藏身处 &mdash; 为了说明底部的结论不是&ldquo;gpt-5.2 赢过一切&rdquo;，而是&ldquo;强度不值得&rdquo;。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限制</p>
+      <h2>可以相信到哪里</h2>
+      <p>这个结果来自一个短事实任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>带走方法</strong>更安全。</p>
+      <ul>
+        <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> 的正确率差异(60 个中 1 个)应读作噪声。方向性结论(&ldquo;强度不值得&rdquo;)稳健，但绝对幅度需按小样本谨慎看待。</li>
+        <li><strong>评分。</strong> LLM-as-judge(gpt-4o)。没有确定性答案表，质量完全依赖裁判。裁判提示 SHA-256 记录在评分 JSON 中以监控漂移，但裁判自身偏差仍然可能存在。</li>
+        <li><strong>价格。</strong> 单一快照。如果费率或 usage schema 改变，应从同一原始材料重新计算成本。</li>
+        <li><strong>PTU。</strong> 吞吐是基于 token 的估算，不是真实 PTU 负载测试。这个底部里两种模型吞吐在约 1% 内重叠，所以 PTU 结论尤其要谨慎阅读。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>所以默认值是什么</h2>
+      <p><strong>短事实任务的默认值是 gpt-5.2 <code>effort=none</code>。完全不开推理时，按请求比 gpt-4o 便宜 12%、按正确答案便宜 16%，正确率反而 95% 对 90% 更高。从 <code>none</code> 到 <code>medium</code> 实质上是同一平面，使用 low·medium 也无妨，但额外收益在样本噪声内。<code>high</code> 以上推理 token 仍接近 0，却只增加成本，因此弃用。PTU 视角下 gpt-4o 略微领先，实质上平手 &mdash; 起作用的是模型替换，不是强度。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">继续连接</p>
+      <h2>让后来的人少绕弯</h2>
+      <p>记录证据并不止于堆数字。提出了什么问题，用了什么提示和量规，以哪个价格快照和样本为基准，这些也必须留下，下一次决定才能再次使用。因此本文会回连到回顾和时间线。</p>
+      <ul>
+        <li><strong>回顾正文 →</strong> <a href="../../../zh-CN/#questions">逐问题回顾 Q1 &mdash; 短事实任务需要推理吗</a>的核心证据就是这个实验。</li>
+        <li><strong>时间线 →</strong> <a href="../../../zh-CN/#timeline">&ldquo;短事实案例测量 &mdash; 触到底部&rdquo;</a>条目是这个实验的锚点时刻。</li>
+        <li><strong>配对实验 →</strong> <a href="../../exp002-multi-step-reasoning/zh-CN/">exp002 &mdash; 多步推理</a>本应是&ldquo;推理获胜的时候&rdquo;，却仍是 <code>none</code> 做底的天花板案例。与这个底部并排读，就会看到两个单发任务中强度旋钮为何是空的。</li>
+        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <code>experiments/README.md</code> 的 <code>exp001</code> 卡片中。</li>
+      </ul>
+      <p><strong>下一项实验。</strong> 这个底部没有确定性答案表，只依赖裁判。下一步是加上<strong>基于规则的验证器</strong>来交叉检查裁判偏差，并用<strong>真实 PTU 负载测试</strong>确认这里约 ~1% 的吞吐差距在实时环境中是否仍然重叠。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">来源 · 证据边界</p>
+      <h2>来源 &amp; 证据边界</h2>
+      <p>本文的数字不是合成，而是来自实测。数字来自哪里、边界到哪里，都原样列在下面。</p>
+      <ul>
+        <li>本实验分析：<code>benchmarks/01-short-factual/analysis.md</code>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用 &mdash; 实测 cohort <code>exp001_short-factual_baseline</code>。</li>
+        <li>交叉摘要：<code>results/summary.md</code>。</li>
+        <li>方法论：<code>docs/05-methodology.md</code>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
+        <li>价格：<code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 访问日 2026-05-19)。</li>
+        <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · 无确定性答案表(质量仅为裁判分数) · PTU 为基于 token 的估算(非实时负载)。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 许可研究工件 · 发布数据仅包含经清理或聚合的形式。</p></footer>
+</body>
+</html>

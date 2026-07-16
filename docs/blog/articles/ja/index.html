@@ -49,15 +49,18 @@
     <nav class="article-outline" aria-label="読みの道筋">
       <span class="section-label">読みの道筋</span>
       <a href="#overview">1 · 概要</a>
-      <a href="#topics">2 · 根拠トピック</a>
-      <a href="#bridge">3 · ブリッジ</a>
-      <a href="#operations">4 · 運用</a>
+      <a href="#retrospective">2 · 実験回顧</a>
+      <a href="#topics">3 · 根拠トピック</a>
+      <a href="#bridge">4 · ブリッジ</a>
+      <a href="#operations">5 · 運用</a>
       <a href="../../charts/?lang=ja">根拠ダッシュボード</a>
     </nav>
 
     <p>
       道筋は主張から実践へと進みます。<strong>概要</strong>記事は単一の
-      メッセージと根拠の境界を示します。<strong>根拠トピック</strong>は、
+      メッセージと根拠の境界を示します。<strong>実験回顧</strong>は、その根拠が
+      どのように作られたのかを、タイムラインと問いごとの物語として先にほどきます。
+      <strong>根拠トピック</strong>は、
       測定済みの各区分を一つずつ掘り下げます。<strong>ブリッジ</strong>記事は、
       語り口が測定からプロダクションへ移る地点を示します。<strong>運用</strong>
       記事は、同じ測定の習慣を日々の運用へ持ち込みます — 復旧、キャッシュ
@@ -75,6 +78,42 @@
       </p>
       <p><a class="button-link" href="../when-reasoning-pays-off/ja/">概要記事を読む</a></p>
     </section>
+
+    <h2 id="retrospective">実験回顧：数字が出るまで</h2>
+    <p class="muted-note">
+      梯子を下りながら層ごとに読む前に、三つの実験全体を一つの物語として見ることが
+      できます。<a href="../reasoning-effort-retrospective/ja/">回顧ハブ</a>は
+      <strong>タイムライン</strong>(いつ何が外れたのか)と<strong>問いごとの回顧</strong>(なぜ
+      実験し、何を学んだのか)という二つの軸で探索し、冒頭のコマンド一行で資格情報なしに
+      そのまま再現します。
+    </p>
+    <div class="cards topic-cards">
+      <article class="card">
+        <h3>回顧ハブ</h3>
+        <p>三つのタスク形状を貫く一つの物語 &mdash; タイムラインと問いごとの二つの軸で根拠を探索します。</p>
+        <p><a href="../reasoning-effort-retrospective/ja/">回顧ハブを読む</a></p>
+      </article>
+      <article class="card">
+        <h3>exp001 · 短い事実回答タスク</h3>
+        <p>床アンカー(Null)。三つのベンチマークのうち唯一<strong>実測</strong>で、推論が割に合わない場所を確認します &mdash; <code>none</code> がすでに gpt-4o に勝ち、努力度ダイヤルは空です。</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp001-short-factual/ja/">実験ノートを読む</a></p>
+      </article>
+      <article class="card">
+        <h3>exp002 · 多段階推論</h3>
+        <p>多段階の天井ケース。事前仮説がどこで反証されたのかを、入力・成果物・コスト・品質まで一つずつ解剖します。</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp002-multi-step-reasoning/ja/">実験ノートを読む</a></p>
+      </article>
+      <article class="card">
+        <h3>exp003 · ツール使用エージェント</h3>
+        <p>ツールエージェントの混合ケース。床が <code>none</code> ではなく <code>low</code> へ一段上がり、gpt-4o がツールを濫用する地点を示します。</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp003-tool-using-agent/ja/">実験ノートを読む</a></p>
+      </article>
+      <article class="card">
+        <h3>10秒で再現</h3>
+        <p>資格情報なしで、実験カタログ・純粋関数・ランナー dry-run を一行で検証します。</p>
+        <p><a href="../reasoning-effort-retrospective/ja/#reproduce">再現方法を見る</a></p>
+      </article>
+    </div>
 
     <h2 id="topics">概要記事の中のトピック</h2>
     <div class="cards topic-cards">

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All cost figures are normalized
+  per 1,000 and re-cited from benchmarks/02-multi-step-reasoning/analysis.md
+  and results/summary.md, not re-derived. No internal task IDs.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp002 · Did reasoning effort pay off in multi-step reasoning? | when reasoning pays off</title>
+  <meta name="description" content="The experiment note for exp002, the multi-step reasoning (Ceiling) benchmark. Design, inputs, artifacts, pre-registered prediction, measured cost/quality, outliers, limits, and decision — in order, reproducible with zero credentials. The evidence page for narrative installment ①.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="Article navigation">
+        <a href="../../../../../en/">Home</a>
+        <a href="../../../">Articles</a>
+        <a href="../../">Experiment retrospective (hub)</a>
+        <a href="../../../../charts/?lang=en">Evidence dashboard</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">Experiment retrospective</a> / Experiment note · exp002</p>
+    <p class="article-kicker">Experiment note · exp002 · Multi-step reasoning (Ceiling case) · the evidence page for narrative installment ①</p>
+    <h1>exp002 &mdash; Did reasoning effort pay off in multi-step reasoning?</h1>
+    <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">This experiment was reasoning's turn to win. Twenty problems that answer only after at least two steps &mdash; the kind of place where every notch up in reasoning effort (<code>reasoning_effort</code>) feels like it should make the answer safer.</p>
+    <p class="lede">That is what we <strong>pre-registered</strong>. gpt-4o would miss more than half (30&ndash;60% pass), and gpt-5.2 would clear 80% only by raising effort. The measurement missed both predictions. gpt-5.2 <strong>already scored full marks at the lowest effort</strong>, and gpt-4o did far better than expected.</p>
+    <p class="lede">This note retraces that day as <em>design &rarr; inputs &rarr; artifacts &rarr; prediction vs. measurement &rarr; outliers &rarr; decision</em>. Not just the numbers, but the road they came from and how to read them &mdash; so the next person wanders less on the same road.</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">First, 10 seconds</p>
+      <h2>Don't take the conclusion on faith &mdash; run just this experiment</h2>
+      <p>Token spend is zero. The two lines below print this experiment's inputs, variables, and artifacts verbatim, and verify the runner wiring with a dry run.</p>
+      <pre class="code-block"><code># Print this experiment's input -> variable -> artifact card (no network)
+python -c "import experiments; print(experiments.describe('exp002_benchmark02_gpt5_2.yaml').summary())"
+
+# Verify only the runner wiring with a dry run (zero token spend)
+python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
+      <p class="muted-note">The commands for the real paid measurement and for regenerating the aggregates and charts are collected in the reproduction footer of <code>benchmarks/02-multi-step-reasoning/analysis.md</code>.</p>
+    </section>
+
+    <nav class="article-outline" aria-label="Structure of this note">
+      <strong>Reading order &mdash; quality first, cost after:</strong>
+      <a href="#design">It was reasoning's turn to win</a>
+      <a href="#predict">The prediction missed twice</a>
+      <a href="#reversal">Two reversals</a>
+      <a href="#quality-map">Where did gpt-4o break down</a>
+      <a href="#limits">How far can you trust this</a>
+      <a href="#decision">So what becomes the default</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">Design</p>
+      <h2>It was reasoning's turn to win</h2>
+      <p><strong>One question.</strong> On multi-step reasoning &mdash; the <em>ceiling</em> case for reasoning &mdash; how far do you have to raise gpt-5.2's effort before reasoning is worth the bill? We look through two lenses at once: PAYG (dollars per correct answer) and PTU (correct answers per minute per fixed capacity).</p>
+      <p><strong>Dataset.</strong> Twenty frozen synthetic samples (<code>mr_01</code>&hellip;<code>mr_20</code>). Arithmetic word problems, constraint satisfaction, date/time, causal chains, code tracing, boolean logic, counting &mdash; spanning seven types, and every sample has a verifiable answer and requires at least two steps of reasoning.</p>
+      <p><strong>Exactly one axis moves</strong> &mdash; we sweep gpt-5.2's <code>reasoning.effort</code> across <code>none · low · medium · high · xhigh</code>, and set a gpt-4o baseline (which has no reasoning parameter) alongside it. Each (sample × model × effort) cell is repeated <strong>three times (R=3)</strong>.</p>
+      <div class="article-summary-grid" aria-label="Pre-registered prediction and role">
+        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>The multi-step shape overturns the short-answer benchmark's conclusion. gpt-4o passes only <strong>30&ndash;60%</strong>, and gpt-5.2 passes <strong>80% or more</strong> at <em>sufficient effort</em>, so reasoning pays.</p></section>
+        <section class="summary-tile"><h2>This experiment's role</h2><p>Paired with the short-answer benchmark's <em>floor</em> (a place that needs no reasoning), the anchor that fixes the <strong>ceiling</strong> of the cost surface where &ldquo;reasoning is worth the bill.&rdquo;</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">Inputs and artifacts</p>
+      <h2>What it consumed, what it left behind</h2>
+      <p>What this experiment consumed and what it left behind are not hand-written summaries but actual files in the repo. So you can trace it from input to output in a single line.</p>
+      <div class="article-summary-grid" aria-label="Inputs and artifacts">
+        <section class="summary-tile">
+          <h2>Input (in)</h2>
+          <p><strong>Experiment definitions:</strong> <code>experiments/exp002_benchmark02_gpt5_2.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
+          <strong>Dataset:</strong> <code>benchmarks/02-multi-step-reasoning/dataset.json</code> (pinned by SHA-256).<br>
+          <strong>Prompts:</strong> the system and user templates are each fingerprinted by SHA-256 &mdash; guaranteeing a byte-identical prompt was used across all cells.</p>
+        </section>
+        <section class="summary-tile">
+          <h2>Artifacts (out)</h2>
+          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (raw Foundry v1 Responses payloads).<br>
+          <strong>Grading:</strong> <code>judge_runs/*.json</code>.<br>
+          <strong>Aggregate:</strong> <code>analysis.json</code>.<br>
+          <strong>Charts/tables:</strong> <code>results/cost-curves/benchmark-02-*.png</code>·<code>.csv</code>.</p>
+        </section>
+      </div>
+      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>0</strong>. Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful (0 failures, 0 retries)</strong>. Every JSON is a real Foundry v1 call with not one <code>"fixture": true</code> marker (159 of the 360 rows have <code>reasoning_tokens &gt; 0</code>).</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">Prediction vs. measurement</p>
+      <h2>The prediction missed twice</h2>
+      <div class="article-summary-grid" aria-label="Prediction vs. measurement">
+        <section class="summary-tile"><h2>What we predicted</h2><p>gpt-4o breaks down at 30&ndash;60%. gpt-5.2 clears 80% only by <em>raising</em> effort. In short: &ldquo;higher effort buys quality and justifies the cost.&rdquo;</p></section>
+        <section class="summary-tile"><h2>What came out</h2><p>gpt-4o was stronger than expected at <strong>75%</strong> (45/60). gpt-5.2 was <strong>already 100% at the lowest <code>none</code></strong> (60/60). By mean rating score, gpt-4o <strong>1.50</strong> vs. gpt-5.2 <strong>2.00</strong>.</p></section>
+      </div>
+      <p><strong>Verdict: hypothesis refuted.</strong> The pre-registration that &ldquo;in multi-step, higher effort pays&rdquo; was refuted as stated. The real decider was not the <em>effort dial</em> but the <strong>gpt-4o &rarr; gpt-5.2 model swap</strong>, because gpt-5.2's <em>default</em> reasoning setting (<code>none</code>) was already enough.</p>
+    </section>
+
+    <section id="reversal" class="article-section">
+      <p class="section-label">First reversal</p>
+      <h2>Swap the model and quality rose while cost fell</h2>
+      <p>The dollars in the table below apply the methodology's PAYG formula to the price snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (accessed 2026-05-19); they are re-cited from <code>analysis.md</code> §5.</p>
+      <pre class="code-block"><code>Model     Effort   Per 1,000 req   Pass rate       Per 1,000 correct
+gpt-4o    —        $0.80           75.0% (45/60)   $1.06   ← baseline
+gpt-5.2   none     $0.62           100%  (60/60)   $0.62   ← Pareto-optimal
+gpt-5.2   low      $0.86           96.7% (58/60)   $0.89
+gpt-5.2   medium   $1.08           100%  (60/60)   $1.08
+gpt-5.2   high     $1.25           100%  (60/60)   $1.25
+gpt-5.2   xhigh    $2.18           100%  (60/60)   $2.18</code></pre>
+      <p>This table is on the same scale (per 1,000) as the narrative essay. <strong>Swap the model and quality rose while cost actually fell</strong> &mdash; per 1,000 correct, <code>none</code> at $0.62 is <strong>42% cheaper</strong> than gpt-4o ($1.06).</p>
+      <p><code>low</code> costs 7.6% more per request, but its higher pass rate (96.7% vs. 75%) repays that premium, making it <strong>16% cheaper</strong> than gpt-4o per 1,000 correct. The first optimization was not to raise effort but to <em>treat model and effort as one combination and find the cheapest point that clears quality</em>.</p>
+
+      <figure class="article-figure" id="figure-exp002-quality">
+        <figcaption><strong>A saturated quality curve.</strong> Pass rate by effort. gpt-5.2 is flat at 100% from <code>none</code> to <code>xhigh</code>, and the gpt-4o baseline sits below it near 75%. Source: <code>results/cost-curves/benchmark-02-quality.png</code>.</figcaption>
+        <img src="../../../../../assets/benchmark-02-quality.png" alt="Bar chart of pass rate by effort for benchmark 02. gpt-5.2 is flat at 100% from none to xhigh and gpt-4o is near 75%." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section class="article-section">
+      <p class="section-label">Second reversal</p>
+      <h2>Higher effort bought the same quality more expensively</h2>
+      <p>gpt-5.2's <code>none</code> and <code>xhigh</code> are <strong>both full marks (mean 2.00, 100% pass rate)</strong>. Yet the cost per 1,000 correct rises from the <code>none</code> floor ($0.62) to <strong>1.75×</strong> at <code>medium</code>, <strong>2.02×</strong> at <code>high</code>, and <strong>3.53×</strong> at <code>xhigh</code> ($2.18).</p>
+      <p><strong>Latency tells the same story.</strong> <code>none</code> is about 1.6 seconds per call (1,589ms), <code>xhigh</code> about 3.3 seconds (3,265ms). Against gpt-4o (1,382ms), <code>none</code>'s latency tax is only about <strong>15%</strong>, but <code>xhigh</code> is 2.4×. Higher effort in this band did not buy a better answer &mdash; it bought <em>the same answer more expensively and more slowly</em>.</p>
+      <p><strong>Break down the tokens and the reason is clear.</strong> The visible answer is about 5.8 tokens at <code>none</code> and about 7.7 at <code>xhigh</code> &mdash; barely two tokens more. Yet the hidden reasoning tokens swell from 0 to about <strong>109.5</strong>, and at <code>xhigh</code> reasoning alone accounts for about 26% of the request size. Quality stays the same while only the billed tokens balloon.</p>
+      <p>This does not mean reasoning tokens are useless. Reasoning pays when there is structure to solve. It's just that this task band <strong>already touched the top of the rubric at the lowest combination</strong>, and when there is no room for quality to rise, raising effort makes the extra tokens closer to overspend than investment.</p>
+      <p><strong>The PTU lens reaches the same conclusion.</strong> gpt-5.2 <code>none</code> is 0.994× gpt-4o's throughput × 100% pass, so on fixed PTU spend it delivers <strong>+32.5%</strong> correct answers per minute (gpt-4o is 75%). Raising effort only trims throughput with no quality reward.</p>
+    </section>
+
+    <section id="quality-map" class="article-section">
+      <p class="section-label">Quality map</p>
+      <h2>Where did gpt-4o break down</h2>
+      <p>The single number 75% doesn't show &ldquo;where.&rdquo; Split by type, gpt-4o's failures cluster in particular places.</p>
+      <ul>
+        <li><strong>Where it missed most:</strong> arithmetic word problems (mean 1.20), date/time (1.00), code tracing (1.33), constraint satisfaction (1.33) &mdash; the types that need re-computation or backward tracing.</li>
+        <li><strong>Where it got them all:</strong> counting, boolean logic, causal chains (2.00 each) &mdash; the types where a single forward pass suffices.</li>
+        <li><strong>gpt-5.2 is full marks across every type</strong> (2.00). The only exception is the one <code>mr_05</code> safety-filter refusal cell noted earlier.</li>
+      </ul>
+      <p>In other words, for gpt-4o this dataset draws a map of &ldquo;pass when the chain is short and forward, fail when it needs re-tracing.&rdquo; gpt-5.2 flattened that map entirely.</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">Transparency</p>
+      <h2>Even the smudges left on the numbers, as they are</h2>
+      <p>No measurement is perfectly clean. We write down the marks this benchmark left without erasing them &mdash; because hidden away, they'd trip the next person at the same spot.</p>
+      <ul>
+        <li><strong>gpt-4o was easier than expected.</strong> 75% <em>exceeded</em> the pre-registered 30&ndash;60%. It means the dataset was less harsh on gpt-4o to begin with. So the <em>size</em> of the &ldquo;savings vs. gpt-4o&rdquo; came out smaller than it would have on a harder dataset (expected 1.7&ndash;3.3× gap → realized 1.7×). Rather than erasing where the prediction missed to fit the numbers, we leave the shrunken savings as they are. The <em>direction</em> of the conclusion (gpt-5.2 <code>none</code> Pareto-dominates) is unchanged.</li>
+        <li><strong>One safety-filter refusal.</strong> On <code>mr_05</code>'s first <code>low</code> repetition, the Azure content filter returned 0 input·output tokens and a structured refusal. This cell has no operational flag (cold start/retry/truncation), so it is <em>not caught by the outlier rule</em>, and per the append-only principle it is left in the aggregate without overwrite (the judge scored it exactly 0/fail). Other repetitions of the same problem answered correctly &mdash; a one-off, not a systematic trip, and this single cell is what widened the <code>low</code> row's variance.</li>
+        <li><strong>Zero partial scores.</strong> Across all 360 cells, the judge's <code>score == 1</code> never occurred once. With a verifiable-answer design, there is no middle ground between &ldquo;produced 672&rdquo; and &ldquo;produced 576.&rdquo; So the binarization choice doesn't shake the headline.</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">Limits</p>
+      <h2>How far can you trust this</h2>
+      <p>These results are small-sample aggregates from one multi-step task set, one price snapshot, and a particular model-and-rubric combination. It is safer to <strong>take the method</strong> than the numbers themselves.</p>
+      <ul>
+        <li><strong>Sample.</strong> N=20 · R=3. At this sample size we claim no confidence intervals or statistical significance &mdash; the directional conclusion is robust, but treat absolute magnitudes with small-sample caution.</li>
+        <li><strong>Price.</strong> A single snapshot. If rates or the usage schema change, cost must be recomputed from the same raw data.</li>
+        <li><strong>Grading.</strong> LLM-as-judge (gpt-4o). We record the judge prompt's SHA-256 in the grading JSON to watch for drift.</li>
+        <li><strong>Fallout from exceeding pre-registration.</strong> Because gpt-4o's denominator (0.75) was larger than expected (0.30&ndash;0.60), the dollar savings shrank. So in this experiment the PTU throughput lens, which is insensitive to gpt-4o's pass rate, is the more robust view.</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>So what becomes the default</h2>
+      <p><strong>The default for multi-step reasoning is gpt-5.2 <code>effort=none</code> &mdash; in both PAYG and PTU. <code>none</code> is both the floor and the optimum, and any effort above it only adds cost and latency without quality. Higher effort is merely a candidate to promote in experiments &ldquo;only when it actually buys additional quality,&rdquo; not the default for this task shape.</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">Carrying it forward</p>
+      <h2>So the next person wanders less</h2>
+      <p>Recording evidence doesn't end at piling up numbers. What question we asked, what prompt and rubric we used, which price snapshot and sample we based it on &mdash; all of it has to remain so the next decision can reuse it. So this note connects back to the retrospective and its timeline.</p>
+      <ul>
+        <li><strong>Retrospective essay &rarr;</strong> this experiment is the core evidence for <a href="../../#questions">by-question retrospective Q2 &mdash; does effort pay off in multi-step</a>.</li>
+        <li><strong>Timeline &rarr;</strong> the entry <a href="../../#timeline">&ldquo;Measuring the ceiling case &mdash; the turning point&rdquo;</a> is this experiment's refutation moment.</li>
+        <li><strong>Experiment card &rarr;</strong> the mechanical spec of inputs/variables/outputs is in the <code>exp002</code> card in the repo's <code>experiments/README.md</code>.</li>
+      </ul>
+      <p><strong>Next experiment.</strong> The &ldquo;effort &gt; none&rdquo; column is empty in both the short-answer and multi-step benchmarks. The first to fill that column is <a href="../exp003-tool-using-agent/">exp003 &mdash; the tool-using agent (Mixed case)</a>. When quality already touches the ceiling at low effort, that note examines the moment when the bigger lever becomes not effort but <em>tool choice·tool latency·loop budget</em> &mdash; and why <code>low</code>, not <code>none</code>, becomes the floor.</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">Sources · evidence boundary</p>
+      <h2>Sources &amp; evidence boundary</h2>
+      <p>This note adds no new measurement; it re-cites the published aggregate. Including the places where the prediction missed, we leave the evidence and its boundaries below.</p>
+      <ul>
+        <li>This experiment's analysis: <code>benchmarks/02-multi-step-reasoning/analysis.md</code> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). All figures re-cited from here.</li>
+        <li>Cross-summary: <code>results/summary.md</code>.</li>
+        <li>Methodology: <code>docs/05-methodology.md</code> (variables, sampling, cache, grading, cost, reproduction, statistical reporting conventions).</li>
+        <li>Price: <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19).</li>
+        <li>Boundary: N=20 · no confidence intervals · single price snapshot · judge gpt-4o · PTU is a token-based estimate (not a live load test).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · published data contains only redacted or aggregated forms.</p></footer>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  Numbers are re-cited from analysis.md / results/summary.md, not re-derived. No internal task IDs.
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp003 · ツールエージェントで推論努力度は割に合ったのか | when reasoning pays off</title>
+  <meta name="description" content="ツール使用エージェント(Mixed)ベンチマーク exp003 の実験ノート。設計・入力・成果物・事前登録予測・実測コスト/品質・ツール濫用・限界・判断を順に振り返り、資格情報なしでこの実験だけを直接再現します。三つのベンチマークで初めて推論が少し割に合ったケース。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="記事ナビゲーション">
+        <a href="../../../../../../ja/">ホーム</a>
+        <a href="../../../../ja/">記事一覧</a>
+        <a href="../../../ja/">実験回顧(ハブ)</a>
+        <a href="../../../../../charts/?lang=ja">根拠ダッシュボード</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート · exp003</p>
+    <p class="article-kicker">実験ノート · exp003 · ツール使用エージェント(Mixed case) · 推論が初めて割に合った場所</p>
+    <h1>exp003 &mdash; ツールエージェントで推論努力度は割に合ったのか</h1>
+    <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">前の二つのベンチマークで、答えはいつも &ldquo;努力度を上げるな&rdquo; だった。今回は違った。ツールを呼び、その結果を受けてもう一度判断する<strong>混合タスク</strong> &mdash; 三つのベンチマークを通じて、<em>推論が初めて、それもごく少し割に合った</em>場所である。</p>
+    <p class="lede">私たちは<strong>事前登録</strong>で、中間の努力度(<code>low</code>&ndash;<code>medium</code>)がパレートの膝になるだろうと書いた。gpt-4o は無ツール&middot;1ツールはできるがマルチツールのシーケンシングで崩れ、gpt-5.2 <code>none</code> は計画する推論表面がなくマルチツールで gpt-4o くらい弱く、<code>high</code>&middot;<code>xhigh</code> は品質が飽和したまま些細なサンプルにツールを過剰に呼ぶだろう、と。</p>
+    <p class="lede">測定は<em>半分は当たり、半分は驚きだった</em>。<code>low</code> が本当に床だった &mdash; 今回だけは <code>none</code> ではなく。ところが gpt-4o が崩れた本当の場所はマルチツールではなく、<strong>ツールが要らない問題で計算機を呼んだ</strong>ところだった。このノートはその一日を<em>設計 → 入力 → 成果物 → 予測対実測 → ツール濫用マップ → 判断</em>として振り返る &mdash; 次の人が同じ道で迷いにくいように。</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">まず、10秒</p>
+      <h2>結論を信じず、この実験だけを自分で実行してください</h2>
+      <p>トークン消費は 0 です。以下の二行がこの実験の入力&middot;変数&middot;成果物をそのまま出力し、ツールループランナーの配線を dry-run で検証します。</p>
+      <pre class="code-block"><code># この実験の入力 → 変数 → 成果物カードを出力 (ネットワークなし)
+python -c "import experiments; print(experiments.describe('exp003_benchmark03_gpt5_2.yaml').summary())"
+
+# ツールループランナーを dry-run で配線だけ検証 (トークン消費 0)
+python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
+      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <code>benchmarks/03-tool-using-agent/analysis.md</code> の再現フッターに整理されています。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="このノートの構成">
+      <strong>読む順序 &mdash; 品質を先に、コストはその次:</strong>
+      <a href="#design">今回はツールが登場する</a>
+      <a href="#predict">予測は半分だけ当たった</a>
+      <a href="#reversal">床は none ではなく low だった</a>
+      <a href="#subtypes">gpt-4o はツールを呼びすぎた</a>
+      <a href="#limits">どこまで信じられるか</a>
+      <a href="#decision">だから何をデフォルトにするか</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">設計</p>
+      <h2>今回はツールが登場する</h2>
+      <p><strong>問いは一つだ。</strong> ツールを使うエージェントタスク &mdash; 現実に最も近い<em>混合</em>ケース &mdash; で、gpt-5.2 の努力度をどこまで上げれば推論が請求書に見合うのか。PAYG(正答当たりのドル)と PTU(固定容量当たりの分当たり正答)の二つのレンズで同時に見る。</p>
+      <p><strong>データセット。</strong> 凍結した著作サンプル 20個(<code>tu_01</code>&hellip;<code>tu_20</code>)。三つの型が混ざっている &mdash; <strong>無ツール 6個</strong>(知識/形式のみ)、<strong>1ツール 8個</strong>(計算機一つまたは検索一つ)、<strong>マルチツール 6個</strong>(検索 → 計算機へ 2&ndash;3回つながる鎖)。すべてのサンプルは検証可能な正答と、どのツールを呼ぶべきかについての <code>expected_tool_calls</code> 正答表を併せ持つ。</p>
+      <p><strong>変わる軸は一つだけ</strong> &mdash; gpt-5.2 の <code>reasoning.effort</code> を <code>none · low · medium · high · xhigh</code> でスイープする。そこに推論パラメータのない gpt-4o ベースラインを横に置く。各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>繰り返し、ツールループは最大 4回反復(<code>max_tool_iterations: 4</code>)で切る。</p>
+      <div class="article-summary-grid" aria-label="事前登録予測と役割">
+        <section class="summary-tile"><h2>事前登録予測</h2><p>中間の努力度(<code>low</code>&ndash;<code>medium</code>)が混合タスクのパレートの膝である。gpt-4o は無ツール&middot;1ツールはできるがマルチツールで壊れ、gpt-5.2 <code>none</code> はマルチツールで gpt-4o と同じくらい弱く、<code>high</code>&middot;<code>xhigh</code> は品質が飽和したままツールだけを過剰に呼ぶ。</p></section>
+        <section class="summary-tile"><h2>この実験の役割</h2><p>短い事実回答の<em>床</em>(01)と多段階の<em>天井</em>(02)がどちらも &ldquo;努力度を上げるな&rdquo; で終わったあと、<strong>推論表面が実際に必要になる最小地点</strong>があるかを確認する混合アンカー。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">入力と成果物</p>
+      <h2>何を食べ、何を残したか</h2>
+      <p>この実験が食べたものも残したものも、手書きの要約ではなくリポジトリの実ファイルです。だから入力から出力まで一行でたどれます。</p>
+      <div class="article-summary-grid" aria-label="入力と成果物">
+        <section class="summary-tile">
+          <h2>入力 (in)</h2>
+          <p><strong>実験定義:</strong> <code>experiments/exp003_benchmark03_gpt5_2.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
+          <strong>データセット:</strong> <code>benchmarks/03-tool-using-agent/dataset.json</code> (SHA-256 で固定)。<br>
+          <strong>プロンプト&middot;ツール:</strong> システムプロンプトとツール設定をそれぞれ SHA-256 で指紋化 &mdash; 360セル全体に<em>単一の</em>システムプロンプトとツール設定が使われたことを保証。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>成果物 (out)</h2>
+          <p><strong>生呼び出し:</strong> <code>runs/*.json</code> (Foundry v1 ペイロード + 反復ごとの <code>tool_calls</code> 軌跡原文)。<br>
+          <strong>採点:</strong> <code>judge_runs/*.json</code> (正答採点 + 別個のツール効率スコア)。<br>
+          <strong>集計:</strong> <code>analysis.json</code>.<br>
+          <strong>図表/表:</strong> <code>results/cost-curves/benchmark-03-*.png</code>·<code>.csv</code>.</p>
+        </section>
+      </div>
+      <p><strong>測定表面は 360セル</strong>(gpt-4o 60 + gpt-5.2 300、努力度五段階)。外れ値として除外されたセルは<strong>1個</strong>(<code>tu_18</code>/<code>low</code>/r0)。採点は中立ジャッジ gpt-4o がセルごとに一回、<strong>360/360 成功</strong>。すべての JSON は実際の Azure Foundry v1 呼び出しで、<code>"fixture": true</code> マーカーは一つもない。ただし<strong>360セル中 12個(3.3%)</strong>がツールループ 4回の上限にかかり、ツールなしで最終答えを強制返却し、各行に <code>tool_loop_terminated="iteration_cap"</code> フラグが残っている。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">予測対実測</p>
+      <h2>予測は半分だけ当たった</h2>
+      <div class="article-summary-grid" aria-label="予測対実測">
+        <section class="summary-tile"><h2>何を予測したか</h2><p>中間の努力度が膝である。gpt-4o は<em>マルチツールで</em>壊れる。gpt-5.2 <code>none</code> はマルチツールで弱い。要するに &ldquo;混合タスクには少しの推論が必要だ。&rdquo;</p></section>
+        <section class="summary-tile"><h2>何が出たか</h2><p><code>low</code> が本当にパレートの膝だった &mdash; 今回だけは <code>none</code> ではなく。ところが gpt-4o が崩れた場所はマルチツールだけでなく<strong>無ツール(83.3%)</strong>だった。ツールが要らないのに計算機を呼んだ。</p></section>
+      </div>
+      <p><strong>判定: 方向は確認、失敗モードは反転。</strong> &ldquo;混合タスクには最小限の推論表面が必要だ&rdquo;という事前登録は支持された &mdash; <code>low</code>(<code>none</code> ではなく)が正答当たりのパレート最適である。ただし gpt-4o の弱点は<em>マルチツールシーケンシング</em>だけでなく、ツールを<strong>呼んではいけないときに呼ぶ習慣</strong>だった。予測の半分は当たり、半分はデータがより興味深い物語へ正した。</p>
+    </section>
+
+    <section id="reversal" class="article-section">
+      <p class="section-label">第一のシグナル</p>
+      <h2>床は none ではなく low だった</h2>
+      <p>下の表のドルは価格スナップショット <code>pricing/azure-openai-payg-2026-05.yaml</code>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用し、1,000件当たりに正規化した。</p>
+      <pre class="code-block"><code>モデル      努力度   1,000リクエスト当たり 通過率          正答1,000件当たり
+gpt-4o    —        $3.29         90.0% (54/60)   $3.65   ← ベースライン
+gpt-5.2   none     $2.76         98.3% (59/60)   $2.81
+gpt-5.2   low      $2.77         100%  (60/60)   $2.77   ← パレート最適
+gpt-5.2   medium   $2.89         98.3% (59/60)   $2.94
+gpt-5.2   high     $3.18         98.3% (59/60)   $3.23
+gpt-5.2   xhigh    $3.50         100%  (60/60)   $3.50</code></pre>
+      <p><strong>正答 1,000件当たり <code>low</code> は $2.77 &mdash; gpt-4o($3.65) より 24% 安い。</strong> そして gpt-4o の単価を下回って唯一 100% 通過に届いたセルである。<code>none</code> もすでにリクエスト当たりでは gpt-4o より約 16% 安いが(入力単価 $1.75/1M 対 $2.50/1M、ツールループでは入力が請求書を支配する)、マルチツールで一問を落とし 98.3% にとどまる。<code>low</code> が足したのは平均<strong>4トークンの推論表面</strong>だけだが、その小さな表面が通過率を 100% へ引き上げた(1,000リクエスト当たり +$0.011)。</p>
+      <p>前の二つのベンチマークでは <code>none</code> が床であり最適でもあった。ここで初めて床が一段上がった。<strong>混合の実作業には、正の最小努力度の床がある</strong> &mdash; 推論がついに、ごく少し割に合った。</p>
+
+      <figure class="article-figure" id="figure-exp003-quality">
+        <figcaption><strong>ほぼ平らな品質曲線。</strong> 努力度別通過率。gpt-5.2 は <code>none</code>(98.3%)から <code>low</code>(100%)へ上がったあと平らで、gpt-4o ベースラインはその下の 90% 付近にある。本当の話はこの集計線ではなく、下の<em>型別</em>分解にある。出典: <code>results/cost-curves/benchmark-03-quality.png</code>.</figcaption>
+        <img src="../../../../../../assets/benchmark-03-quality.png" alt="ベンチマーク 03 の努力度別通過率の棒グラフ。gpt-5.2 は none 98.3% から low 100% へ上がったあと平らで、gpt-4o は 90% 付近にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="subtypes" class="article-section">
+      <p class="section-label">ツール濫用マップ</p>
+      <h2>gpt-4o はツールを呼びすぎた</h2>
+      <p>90% という集計数字一つだけでは、&ldquo;どこで&rdquo;が見えない。型別に分けると、このベンチマークの中心的根拠が見えてくる。</p>
+      <pre class="code-block"><code>モデル      努力度   無ツール(18) 1ツール(24) マルチツール(18)
+gpt-4o    —        83.3%      100%      83.3%
+gpt-5.2   none     100%       100%      94.4%
+gpt-5.2   low      100%       100%      100%    ← パレート最適</code></pre>
+      <ul>
+        <li><strong>無ツール &mdash; gpt-4o が足を踏み外した場所。</strong> gpt-4o はツールが要らないのに計算機を呼び、83.3% にとどまった。ジャッジは三件を &ldquo;ルーブリックはツール呼び出し 0 を求めているのに、モデルがツールを呼んだ&rdquo; として失敗処理した &mdash; &ldquo;1+1&rdquo; のようなプロンプトでも計算機を濫用したのである。gpt-5.2 は全努力度で 100%。</li>
+        <li><strong>1ツール &mdash; 完全飽和。</strong> すべての (モデル×努力度) セルが 100%。単一ツールディスパッチは、どちらの系列にも解けた問題である。</li>
+        <li><strong>マルチツール &mdash; 推論が助ける場所。</strong> gpt-4o 83.3%、gpt-5.2 <code>none</code> 94.4%、<code>low</code> 100%。2&ndash;3回つながる鎖で、小さな推論表面が &ldquo;計画して実行する&rdquo; をより安定させる。<strong>gpt-4o → gpt-5.2 <code>low</code> の 16.7%p 上昇</strong>が、このベンチマークが捉えようとした実作業シグナルである。</li>
+      </ul>
+      <p>ツール効率スコア(正答採点とは別に、軌跡を 0&ndash;1 で評価)も同じ方向だ。gpt-4o は <strong>0.950</strong> で最も低く、無ツールで計算機を濫用し、正答しても点を削られた。gpt-5.2 は <code>low</code> で <strong>0.988</strong> と頂点 &mdash; 通過率 100% を出したまさにそのセルである。</p>
+    </section>
+
+    <section class="article-section">
+      <p class="section-label">第二のシグナル</p>
+      <h2>low を超えると同じ品質をより高く</h2>
+      <p><code>low</code> の上では、また前のベンチマークの話が繰り返される。<code>medium</code> は 1,000リクエスト当たり約 $0.13 を余分に使っても通過率が 98.3% へむしろ<em>下がり</em>、<code>low</code> にパレート劣後する。<code>high</code> は <code>low</code> 比でリクエスト当たり +14%、<code>xhigh</code> は +26% だが通過率はそのままだ(<code>xhigh</code> は 100% だが、正答当たりでは <code>low</code> より 26% 高い)。</p>
+      <p><strong>遅延も同じ話だ。</strong> <code>none</code> は gpt-4o よりむしろ 5% 速く(2,902ms 対 3,044ms)、<code>low</code> は +0.7% で実質平らだ。ところが <code>high</code> は +20.0%、<code>xhigh</code> は +23.9% へ開く。遅延に敏感なワークロードなら <code>medium</code> が現実的な天井である。</p>
+      <p><strong>トークンを分解すると、このベンチマークだけの構造が見える。</strong> リクエスト当たり入力が約 1,200&ndash;1,300トークンで請求書を支配する &mdash; システムプロンプトとツール定義がループの各反復で再び載るためだ。隠れた推論トークンは 0(<code>none</code>)から約 52(<code>xhigh</code>)へ増えるが、入力に比べれば<strong>小さい</strong>。推論トークンが <code>xhigh</code> コストを支配した多段階ベンチマーク(02)とは構造が反対である &mdash; むしろ入力が請求書を支配する点は短い事実回答ベンチマーク(01)に似ている。</p>
+      <p><strong>PTU レンズでも結論は <code>low</code> に集まる。</strong> <code>low</code> は gpt-4o の 0.939倍スループットだが、通過率 100% がこれをひっくり返し、<strong>分当たり正答 +4.3%</strong> である(gpt-4o は 90%)。スループット損失(−6.1% req/min)より通過率上昇(+10.0%p)が大きい。一方、努力度をさらに上げるとスループットだけが削られる(<code>medium</code> −8.5%、<code>xhigh</code> −10.8%)。<strong>PAYG(正答当たり最安)と PTU(分当たり正答最高)が同じ <code>low</code> を指す、二つのレンズの収束</strong>である。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明性</p>
+      <h2>数字に残った汚れまでそのまま</h2>
+      <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を消さず、そのまま書いておく &mdash; 隠すと次の人が同じ場所で踏み外すからだ。</p>
+      <ul>
+        <li><strong>外れ値 1件。</strong> <code>tu_18</code> の <code>low</code> 1回目の反復がトークンで 3σ を超え、運用フラグも併せて持ったため集計から除外された(360セル中 1件 = 0.3%、方法論の警告線 10% を大きく下回る)。生 JSON ツリーにはそのまま残っている &mdash; 外れ値除外は集計マスクであって削除ではない。</li>
+        <li><strong>ループ上限 12件。</strong> 360セル中 12個(3.3%)がツールループ 4回の上限にかかり、ツールなしで答えを強制返却した。各行に <code>iteration_cap</code> フラグが残り、どのセルが上限に押されたかを追跡できる。</li>
+        <li><strong>部分点は正答から除外。</strong> ジャッジスコア 1(部分正答)は §7 に別途報告するが、正答当たりコストの分母からは<em>外した</em> &mdash; 本番規模でツールタスクの部分正答は正答ではないからだ。この二値化の選択を明示し、ヘッドラインがどう計算されたかを示す。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限界</p>
+      <h2>どこまで信じられるか</h2>
+      <p>この結果は、一つの混合ツールタスクセット、一つの価格スナップショット、特定のモデル組み合わせとルーブリックから出た小規模な集計値です。数字そのものより、<strong>方法を持ち帰る</strong>ほうが安全です。</p>
+      <ul>
+        <li><strong>検索はモックである。</strong> このベンチマークの <code>web_search</code> は実際のウェブ検索ではなく、<em>固定知識ベース検索</em>だ。ライブ検索は制御不能な分散を持ち込むため範囲外に置いた。ヘッドライン(小さな推論表面がマルチツール信頼性を上げる、<code>low</code> 超過はトークンの無駄)はこの単純化に対して堅い。完全な再現ではなく、制御できるものだけを制御した場所である &mdash; その境界を隠さない。</li>
+        <li><strong>標本。</strong> N=20 · R=3。この標本サイズでは信頼区間や統計的有意性を主張しない &mdash; 方向性の結論は堅いが、絶対値の大きさは小標本として注意。</li>
+        <li><strong>価格。</strong> 単一スナップショット。料率や使用量スキーマが変われば、同じ原資料からコストを再計算する必要がある。</li>
+        <li><strong>採点。</strong> LLM-as-judge(gpt-4o)。ジャッジプロンプト SHA-256 を採点 JSON に記録してドリフトを監視する。</li>
+        <li><strong>PTU。</strong> スループットはトークンベースの推定であり、ライブ PTU 負荷テストではない。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>だから何をデフォルトにするか</h2>
+      <p><strong>ツール使用エージェントのデフォルトは gpt-5.2 <code>effort=low</code> である &mdash; PAYG と PTU の両方で。正答当たり 24% 安く(gpt-4o 比)、分当たり正答 +4.3%、そしてマルチツール通過率を 83.3% から 100% へ引き上げる品質ボーナスまである。今回だけは <code>none</code> ではなく <code>low</code> が床である。しかし <code>low</code> の上では、また品質なしにコスト&middot;遅延だけを足すだけだ。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">つなぐ</p>
+      <h2>次の人が迷いにくいように</h2>
+      <p>根拠を記録する仕事は、数字を積むだけでは終わりません。どんな問いを立て、どんなプロンプトとツール設定を使い、どの価格スナップショットと標本を基準にしたのかまで残ってこそ、次の判断にもう一度使えます。だからこのノートは回顧とタイムラインへ戻ってつながります。</p>
+      <ul>
+        <li><strong>回顧本文 →</strong> <a href="../../../ja/#questions">問いごとの回顧 Q3 &mdash; ツールエージェントには推論が多いほど安全か</a>の中心的根拠がこの実験である。</li>
+        <li><strong>タイムライン →</strong> <a href="../../../ja/#timeline">&ldquo;ツールエージェントケース測定 &mdash; 意外な発見&rdquo;</a>項目がこの実験のツール濫用の瞬間である。</li>
+        <li><strong>対になる実験 →</strong> <a href="../../exp002-multi-step-reasoning/ja/">exp002 &mdash; 多段階推論</a>は <code>none</code> が床だった天井ケースだ。このノートと並べて読むと、床がなぜ一段上がったのかが見える。</li>
+        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <code>experiments/README.md</code> の <code>exp003</code> カードにある。</li>
+      </ul>
+      <p><strong>次の実験。</strong> ここでの検索はモックで、PTU 数値はトークンベース推定である。次は<strong>ライブ検索</strong>と<strong>実際の PTU 負荷テスト</strong> &mdash; レートリミットシェイピング&middot;キューイング&middot;並列バッチがツールループのスループットと信頼性にどう作用するかだ。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">出典 · 根拠の境界</p>
+      <h2>出典 &amp; 根拠の境界</h2>
+      <p>このノートも新しい測定なしに公開済みの集計を再引用した。検索をモックしたという限界まで、根拠と境界を下に置く。</p>
+      <ul>
+        <li>この実験の分析: <code>benchmarks/03-tool-using-agent/analysis.md</code>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質&middot;型別, §8 遅延, §9 外れ値, §10 ツール効率, §11 結論)。すべての数値はここから再引用。</li>
+        <li>横断要約: <code>results/summary.md</code>.</li>
+        <li>方法論: <code>docs/05-methodology.md</code>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
+        <li>価格: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, アクセス日 2026-05-19)。</li>
+        <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · ジャッジ gpt-4o · <code>web_search</code> は固定 KB モック · PTU はトークンベース推定(ライブ負荷ではない)。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT ライセンスの研究アーティファクト · 公開データには編集済みまたは集計済みの形だけを含みます。</p></footer>
+</body>
+</html>

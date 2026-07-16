@@ -1,0 +1,27 @@
+{
+  "canonical_locale": "ko",
+  "required_locales": ["ko", "en", "ja", "zh-CN", "hi"],
+  "locales": {
+    "ko": "ko/index.html",
+    "en": "index.html",
+    "ja": "ja/index.html",
+    "zh-CN": "zh-CN/index.html",
+    "hi": "hi/index.html"
+  },
+  "sections": [
+    "reproduce",
+    "design",
+    "io",
+    "predict",
+    "reversal",
+    "figure-exp001-quality",
+    "subtypes",
+    "flatline",
+    "transparency",
+    "limits",
+    "decision",
+    "forward",
+    "sources"
+  ],
+  "note": "Structural i18n parity per D-014: section-anchor (id) alignment across locales, not literal translation. Korean (ko/index.html) is the canonical source; en (index.html) and ja/zh-CN/hi are derived translations."
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All cost figures are normalized
+  per 1,000 and re-cited from results/summary.md and per-benchmark analysis.md,
+  not re-derived. No internal task IDs.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Does reasoning effort pay off — the hypothesis, and what measurement refuted | when reasoning pays off</title>
+  <meta name="description" content="An experiment retrospective sweeping GPT-5.2 reasoning effort across three task shapes. What we expected, what broke, and what we made the default — told as a timeline and by question, and reproducible with a single command.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../en/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="Article navigation">
+        <a href="../../../en/">Home</a>
+        <a href="../">Articles</a>
+        <a href="../when-reasoning-pays-off/">Overview essay</a>
+        <a href="../../charts/?lang=en">Evidence dashboard</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../">Articles</a> / Experiment retrospective</p>
+    <p class="article-kicker">Experiment retrospective · Across three task shapes · Lens: task-shape</p>
+    <h1>Does reasoning effort pay off &mdash; the hypothesis, and what measurement refuted</h1>
+    <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+    <p class="lede">We <strong>pre-registered</strong> a prediction: for multi-step reasoning, a higher reasoning effort (<code>reasoning_effort</code>) would pay off. Measuring 1,080 cells across three benchmarks <strong>refuted</strong> that prediction. Short-factual, multi-step, or tool agent &mdash; the answer was never <code>high</code> or <code>xhigh</code>. Raise the effort above the middle and quality holds flat while cost rises and throughput drops. This retrospective retraces &ldquo;what we expected, what broke, and what we therefore chose as the default&rdquo; both <strong>in time order (a timeline)</strong> and <strong>by question (a per-question retrospective)</strong>, recounting not only the conclusions but <em>the road we walked</em> &mdash; and you can reproduce it yourself, <em>right now</em> rather than at the very bottom, with a single command.</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">First: reproduce in 10 seconds</p>
+      <h2>Don&rsquo;t trust the conclusion &mdash; run it yourself</h2>
+      <p>No cloud account, no credentials required. Paste the following as-is and the experiment catalog &middot; pure functions &middot; runner dry-run all light up green (about 10 seconds).</p>
+      <pre class="code-block"><code>git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
+cd when-reasoning-pays-off
+
+# Python 3.11+ recommended. If 'python' is missing, use 'python3' below.
+python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+pip install -r requirements.txt
+
+# The single line that proves the setup without credentials:
+bash scripts/verify_setup.sh
+
+# Print the full experiment catalog (inputs -> variables -> outputs) as-is:
+python experiments/examples/describe_all.py</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
+      <p class="muted-note">Each experiment&rsquo;s input files &middot; variables &middot; exact output paths are laid out one by one in the per-experiment cards of the repo&rsquo;s <code>experiments/README.md</code>.</p>
+    </section>
+
+    <figure class="article-figure" id="figure-effort-quality">
+      <figcaption>
+        <strong>Where the hypothesis breaks.</strong> Pass rate by effort for the
+        multi-step benchmark (02). gpt-5.2 is already saturated at 100% at the
+        lowest effort, and the curve stays flat as effort rises &mdash; the extra
+        effort spent reasoning tokens, not quality. Figures are sourced from
+        <code>results/summary.md</code> §3 &middot; §7, re-citing each benchmark&rsquo;s
+        <code>analysis.md</code>.
+      </figcaption>
+      <img src="../../../assets/benchmark-02-quality.png" alt="Bar chart of pass rate by effort for benchmark 02 (multi-step reasoning). gpt-5.2 is flat at 100% from none through xhigh, while the gpt-4o baseline sits lower, near 75%. It shows that raising reasoning effort does not raise quality." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
+
+    <div class="article-summary-grid" aria-label="Retrospective summary">
+      <section class="summary-tile"><h2>Question</h2><p>On a new production task, does raising reasoning effort pay off? And under both lenses &mdash; PAYG (correct answers per dollar) and PTU (correct answers per minute per fixed capacity).</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>Three benchmarks &mdash; 01 short-factual (Null) &middot; 02 multi-step (Ceiling) &middot; 03 tool agent (Mixed) &mdash; each measured at N=20 samples × R=3 repeats, effort {none, low, medium, high, xhigh} plus a gpt-4o baseline. 1,080 cells total. All costs are normalized per 1,000 and re-cite each benchmark&rsquo;s <code>analysis.md</code>.</p></section>
+      <section class="summary-tile"><h2>Decision</h2><p>The best (model, effort) depends on task shape and consumption model, but the shared conclusion is one: <strong>the answer is never <code>high</code> or <code>xhigh</code>.</strong> Past the middle, cost rises and throughput is shaved with no quality gain.</p></section>
+    </div>
+
+    <nav class="article-outline" aria-label="Retrospective structure">
+      <strong>How to read this:</strong>
+      <a href="#timeline">Timeline &mdash; when what broke</a>
+      <a href="#questions">Per-question retrospective &mdash; why we ran it and what we learned</a>
+      <a href="#next">Next call &middot; next experiment</a>
+    </nav>
+
+    <section id="timeline" class="article-section">
+      <p class="section-label">Timeline</p>
+      <h2>The order we walked</h2>
+      <p>The experiment didn&rsquo;t resolve in one shot. Follow the five scenes below in date order, and you see in turn where the prediction went wrong and where the default changed.</p>
+      <ol>
+        <li><strong>Before May 2026 &mdash; pre-registration.</strong> Before measuring, we wrote the prediction down first: that for multi-step tasks, higher reasoning effort would lift quality enough to justify the cost. So we couldn&rsquo;t bend the story to the results later, we fixed gpt-5.2&rsquo;s effort across five steps from <code>none</code> to <code>xhigh</code> and set a gpt-4o baseline alongside. Because this pre-registration existed, the &lsquo;refutation&rsquo; that follows carries weight.</li>
+        <li><strong>May 2026 &mdash; short-factual case (01), hitting the floor.</strong> First we checked the floor of the cost surface with a short-factual task that needs no reasoning &mdash; of the three benchmarks, only this floor was re-measured as <em>real data</em> (all 360 cells real Azure calls, no fixture markers). gpt-5.2 was already saturated at 95% accuracy at <code>none</code>, with no reasoning turned on at all &mdash; higher, in fact, than gpt-4o (90%). Cost per 1,000 correct answers was <strong>$0.62</strong>, <strong>16%</strong> cheaper than gpt-4o (<strong>$0.74</strong>) (and 12% cheaper per 1,000 requests). So the short-factual PAYG default became gpt-5.2 <code>none</code> &mdash; though under the fixed-capacity (PTU) lens the two models&rsquo; throughput overlapped within about 1%, effectively a tie. This experiment is taken apart piece by piece in the <a href="experiments/exp001-short-factual/">exp001 experiment note</a>.</li>
+        <li><strong>May 2026 &mdash; multi-step case (02), the turning point.</strong> Now reasoning was supposed to win. But when we opened it up, gpt-5.2 got all twenty questions right in its default state (<code>none</code>) with <em>no reasoning turned on</em>. The prior hypothesis collapsed right there. Cost per 1,000 correct answers fell from gpt-4o&rsquo;s <strong>$1.06</strong> to <strong>$0.62</strong> (42% down) and PTU correct-per-minute rose 32.5%, while raising the effort didn&rsquo;t budge quality. So we set the multi-step default to gpt-5.2 <code>none</code> and scrapped the effort increase. What decided it was not the &lsquo;effort dial&rsquo; but the &lsquo;model swap.&rsquo; This experiment is taken apart piece by piece in the <a href="experiments/exp002-multi-step-reasoning/">exp002 experiment note</a>.</li>
+        <li><strong>May 2026 &mdash; tool agent case (03), the surprise.</strong> Last came a tool-using agent (a mix of no-tool, one-tool, multi-tool). Here the one who surprised us was gpt-4o. Even on a &lsquo;answer from general knowledge&rsquo; prompt it reached for the calculator out of habit, dropping no-tool pass rate to <strong>83.3%</strong>. gpt-5.2, meanwhile, held multi-tool 100% with just <code>low</code> and reached <strong>$2.77</strong> per 1,000 correct answers (24% cheaper than gpt-4o&rsquo;s $3.65). So the tool default is gpt-5.2 <code>low</code>. But push past <code>low</code> and throughput was shaved 8.5% at medium and 10.8% at xhigh, undoing the gain. This experiment is taken apart piece by piece in the <a href="experiments/exp003-tool-using-agent/">exp003 experiment note</a>.</li>
+        <li><strong>July 2026 &mdash; closing the gap between evidence and reproduction.</strong> The homework left after measuring was a different kind. Feedback came that &lsquo;the interest in deploying is high, but the README and validation layer don&rsquo;t fully catch that interest.&rsquo; In practice new visitors stalled on an editable-install failure (PEP 660) or a broken run command. So we added a credential-free one-line validation (<code>verify_setup.sh</code>), per-experiment guide cards, and a split <code>requirements.txt</code> to close the gap between &lsquo;evidence&rsquo; and &lsquo;reproduction.&rsquo; The 10-second reproduce at the top of this page is the result.</li>
+      </ol>
+    </section>
+
+    <section id="questions" class="article-section">
+      <p class="section-label">Per-question retrospective</p>
+      <h2>Why we ran it, and what we learned</h2>
+      <p>The same results, this time starting from the question. We put &lsquo;what were we curious about&rsquo; first, and answer three questions one by one.</p>
+
+      <h3>Q1 &mdash; does a short-factual task need reasoning?</h3>
+      <p>Start with the simplest question. For a short factual task answered in one shot (extraction &middot; formatting &middot; classification &middot; transliteration &middot; arithmetic), there seemed to be <em>no reason to turn on</em> reasoning effort. Of the three benchmarks, we re-measured this floor as <strong>real data</strong> &mdash; all 360 cells real Azure Foundry calls, no fixture markers, judge scoring 360/360.</p>
+      <p>The prediction held with no reversal. gpt-5.2 was already saturated at 95% accuracy at <code>none</code> with no reasoning turned on &mdash; higher, in fact, than gpt-4o (90%). At <strong>$0.62</strong> per 1,000 correct answers it was 16% cheaper than gpt-4o (<strong>$0.74</strong>) (and 12% cheaper per request). Raising the effort to <code>xhigh</code> kept the hidden reasoning tokens near zero, so neither quality nor cost moved &mdash; a place where the effort dial is wired to nothing. So the short-factual default is gpt-5.2 <code>none</code>. The detailed dissection is in the <a href="experiments/exp001-short-factual/">exp001 experiment note</a>.</p>
+
+      <h3>Q2 &mdash; does raising effort pay off on multi-step?</h3>
+      <p>The hypothesis was simple. For a problem that has to pass through several stages, the quality lift of <code>high</code> or <code>xhigh</code> would justify the cost increase. To check it we compared gpt-5.2&rsquo;s five efforts (<code>none</code> through <code>xhigh</code>) alongside a gpt-4o baseline, twenty questions repeated three times each.</p>
+      <p>The result overturned the hypothesis. gpt-5.2 already got 100% right at <code>none</code>, at <strong>$0.62</strong> per 1,000 correct answers it was 42% cheaper than gpt-4o (<strong>$1.06</strong>), and PTU correct-per-minute was 32.5% higher. What was unexpected is that gpt-4o did better than we thought too &mdash; beyond the 30&ndash;60% we&rsquo;d written down in advance, it recorded 75%. With a small sample (N=20, no confidence intervals) the <em>size</em> of the savings must be read carefully, but the direction was clear. So the multi-step default is gpt-5.2 <code>none</code>, and <code>high</code>·<code>xhigh</code> were not adopted.</p>
+
+      <h3>Q3 &mdash; is more reasoning always safer for a tool agent?</h3>
+      <p>The more tools a plan chains, the more reasoning seemed likely to raise reliability. So across twenty tasks mixing no-tool, one-tool, and multi-tool, we again pitted gpt-5.2&rsquo;s efforts against gpt-4o.</p>
+      <p>The dividing line turned out to be not the amount of reasoning but the <em>habit of calling</em> tools. gpt-4o reached for the calculator even on the no-tool &lsquo;answer from general knowledge&rsquo; prompt, dropping to 83.3%, whereas gpt-5.2 held 100% even with no tools. On cost too, gpt-5.2 <code>low</code> led at <strong>$2.77</strong> per 1,000 correct answers (24% cheaper than gpt-4o&rsquo;s $3.65), multi-tool 100%, PTU +4.3%. One caveat: here <code>web_search</code> is not a real web call but a mocked fixed knowledge-base lookup. The conclusion was again the same &mdash; a small reasoning surface is enough, the tool default is gpt-5.2 <code>low</code>, and beyond that is wasted tokens.</p>
+    </section>
+
+    <section id="experiment-detail" class="article-section">
+      <p class="section-label">To the experiment details</p>
+      <h2>The other side of the loop &mdash; where the numbers came from</h2>
+      <p>A retrospective always leads back to the <strong>experiment details</strong>. Each story&rsquo;s <em>input files · N/R/seed · exact output paths</em> are written out one by one in the per-experiment notes and the repo&rsquo;s guide cards, and every card carries a cost-free dry-run line. To check the multi-step case (Q2) without credentials, for example:</p>
+      <pre class="code-block"><code># Read only the YAML to print inputs -> variables -> outputs (no network)
+python -c "import experiments; print(experiments.describe('exp002_benchmark02_gpt5_2.yaml').summary())"
+
+# Verify the runner wiring with a dry-run (zero tokens consumed)
+python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p class="muted-note">The deep dissections are in the <a href="experiments/exp001-short-factual/">exp001 experiment note</a> (short-factual) &middot; <a href="experiments/exp002-multi-step-reasoning/">exp002 experiment note</a> (multi-step) &middot; <a href="experiments/exp003-tool-using-agent/">exp003 experiment note</a> (tool agent), and the full experiment catalog (with what intent, what inputs, what outputs) is in <code>experiments/README.md</code>.</p>
+    </section>
+
+    <section class="article-section decision-box">
+      <h2>The field rule</h2>
+      <p><strong>Don&rsquo;t raise reasoning effort because it &ldquo;looks smarter.&rdquo; Read cost · quality · latency · token composition together, and spend more tokens only where effort actually pays off. Across the three task shapes measured, <code>high</code> and <code>xhigh</code> were never the default.</strong></p>
+    </section>
+
+    <section id="next" class="article-section">
+      <p class="section-label">Next</p>
+      <h2>Next call · next experiment</h2>
+      <p><strong>Next call.</strong> This conclusion holds only within the &ldquo;task shapes measured.&rdquo; If the chain grows longer or real tools come in, the curve can move again, so the rule is to re-measure when the workload shape changes.</p>
+      <p><strong>Next experiment.</strong> The PTU figures here are token-based estimates (not a live load). The next experiment is a load test on a real PTU deployment &mdash; how rate-limit shaping · queuing · parallel batching act on throughput.</p>
+      <p>
+        <strong>Up next:</strong>
+        <a href="../ptu-retry-after-recovery/">429 is not an error but a recovery signal</a>
+        &mdash; when PTU capacity says &ldquo;not right now,&rdquo; how should the client decide its next move?
+      </p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐ &mdash; when-reasoning-pays-off</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">Sources · evidence boundary</p>
+      <h2>Sources &amp; evidence boundary</h2>
+      <p>This retrospective introduces no new measurement; it re-cites published figures normalized per 1,000. The raw materials and boundaries are as follows.</p>
+      <ul>
+        <li>Cross-summary: <code>results/summary.md</code> (§3 headline, §5 decision boundary, §6 limits). All costs are re-cited from each benchmark&rsquo;s <code>benchmarks/0[123]-*/analysis.md</code>.</li>
+        <li>Pricing: a single snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19). If rates change, update the snapshot and re-run the analysis.</li>
+        <li>Sample: N=20 · R=3 per benchmark. Methodology §8 forbids reporting confidence intervals / standard errors at this sample size &mdash; directional conclusions are robust, but treat absolute sizes with small-sample caution.</li>
+        <li>Scoring: the LLM-as-judge rubric uses gpt-4o as a neutral judge. The judge-prompt SHA-256 is recorded in every scoring JSON to watch for drift.</li>
+        <li>PTU: throughput figures are token-count estimates, not a live PTU load test. The tool benchmark&rsquo;s <code>web_search</code> is a fixed-KB lookup (mocked).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · published data includes only redacted or aggregate forms.</p></footer>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  Numbers are re-cited from analysis.md / results/summary.md, not re-derived. No internal task IDs.
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp001 · 短い事実回答に推論は必要だったのか | when reasoning pays off</title>
+  <meta name="description" content="短い事実回答(Null case)ベンチマーク exp001 の実験ノート。設計・入力・成果物・事前登録予測・実測コスト/品質・失敗が隠れた場所・限界・判断を順に振り返り、資格情報なしでこの実験だけを直接再現します。三つのベンチマークの床アンカー — 推論が割に合わなかった場所を実測で確認します。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="記事ナビゲーション">
+        <a href="../../../../../../ja/">ホーム</a>
+        <a href="../../../../ja/">記事一覧</a>
+        <a href="../../../ja/">実験回顧(ハブ)</a>
+        <a href="../../../../../charts/?lang=ja">根拠ダッシュボード</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート · exp001</p>
+    <p class="article-kicker">実験ノート · exp001 · 短い事実回答(Null case) · 推論が割に合わなかった床</p>
+    <h1>exp001 &mdash; 短い事実回答に推論は必要だったのか</h1>
+    <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">三つのベンチマークの<strong>床</strong>から置いた。抽出&middot;整形&middot;分類&middot;音訳&middot;算術 &mdash; 一度で答えが出る<strong>短い事実回答</strong>。ここで推論努力度を上げるのは、&ldquo;1 足す 1&rdquo;に会議を招集することに近い。予測は単純だった。<em>推論は割に合わない。</em></p>
+    <p class="lede">このノートが前の二編と違う点が一つある。<strong>合成フィクスチャではなく実測</strong>である。360セルすべてを Azure Foundry v1 で実際に呼び出し、中立ジャッジ gpt-4o でセルごとに一回ずつ <strong>360/360</strong> 採点した。<code>"fixture": true</code> マーカーはどこにもない。だからこの床は &lsquo;それらしく合成された床&rsquo; ではなく、<em>測定された床</em>である。</p>
+    <p class="lede">測定は予測を<strong>そのまま確認した</strong> &mdash; 三つのベンチマークのうち、事前登録が反転なしに当たった唯一の場所だ。ただし実測が添えてくれた細部が二つあった。一つ、gpt-5.2 は<em>推論を一切有効にしない</em> <code>none</code> で、すでに gpt-4o を<strong>品質でも</strong>上回った。二つ、努力度を <code>xhigh</code> まで上げても隠れた推論トークンは<strong>0 近くに張り付いた</strong> &mdash; 努力度ダイヤルがどこにも配線されていない場所。このノートはその床を<em>設計 → 入力 → 成果物 → 予測対実測 → 失敗が隠れた場所 → 判断</em>として振り返る &mdash; 次の人が同じ道で迷いにくいように。</p>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">まず、10秒</p>
+      <h2>結論を信じず、この実験だけを自分で実行してください</h2>
+      <p>トークン消費は 0 です。以下の二行がこの実験の入力&middot;変数&middot;成果物をそのまま出力し、ランナーの配線を dry-run で検証します。</p>
+      <pre class="code-block"><code># この実験の入力 → 変数 → 成果物カードを出力 (ネットワークなし)
+python -c "import experiments; print(experiments.describe('exp001_short-factual_baseline.yaml').summary())"
+
+# ランナーを dry-run で配線だけ検証 (トークン消費 0)
+python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
+      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <code>benchmarks/01-short-factual/analysis.md</code> の再現フッターに整理されています。このノートのすべての数字は、その実測集計(<code>analysis.json</code>)から再引用したものです。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="このノートの構成">
+      <strong>読む順序 &mdash; 品質を先に、コストはその次:</strong>
+      <a href="#design">最も単純なタスクから</a>
+      <a href="#predict">予測がそのまま当たった唯一の場所</a>
+      <a href="#reversal">none がすでに gpt-4o に勝っていた</a>
+      <a href="#subtypes">失敗はどこに隠れたか</a>
+      <a href="#flatline">努力度を上げても推論は 0 にとどまる</a>
+      <a href="#decision">だから何をデフォルトにするか</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">設計</p>
+      <h2>最も単純なタスクから</h2>
+      <p><strong>問いは一つだ。</strong> 一度で答えが出る短い事実回答タスク &mdash; 三つのベンチマークで最も易しいケース &mdash; で、gpt-5.2 の努力度を上げると推論は請求書に見合うのか。PAYG(正答当たりのドル)と PTU(固定容量当たりの分当たり正答)の二つのレンズで同時に見る。予想される答えは &ldquo;いいえ&rdquo; だ。この実験の役割は、その<em>床</em>を実測で固定すること。</p>
+      <p><strong>データセット。</strong> 凍結した著作サンプル 20個(<code>sf_01</code>&hellip;<code>sf_20</code>)。抽出&middot;整形&middot;分類&middot;列挙&middot;音訳&middot;正規化&middot;単位換算&middot;簡単な算術&middot;要約が混ざっている。決定的な正答表はない &mdash; 代わりに <code>expected_output_shape</code> と <code>quality_rubric_notes</code> だけを固定する。だから品質はルール照合ではなく、<strong>中立ジャッジ(gpt-4o)の採点</strong>だけで判定される。採点根拠を原資料に残すための設計だ。</p>
+      <p><strong>変わる軸は一つだけ</strong> &mdash; gpt-5.2 の <code>reasoning.effort</code> を <code>none · low · medium · high · xhigh</code> でスイープする。そこに推論パラメータのない gpt-4o ベースラインを横に置く。各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>繰り返す。</p>
+      <div class="article-summary-grid" aria-label="事前登録予測と役割">
+        <section class="summary-tile"><h2>事前登録予測</h2><p>短い事実回答タスクには推論表面が要らない。品質は最も低い努力度ですでに飽和し、努力度を上げると品質はそのまま、コスト&middot;遅延&middot;トークンだけが増える。つまり &ldquo;努力度を上げるな&rdquo; が答えだ。</p></section>
+        <section class="summary-tile"><h2>この実験の役割</h2><p>三つのベンチマークの<em>床アンカー</em>。多段階(02)の天井とツールエージェント(03)の混合を測る前に、&ldquo;推論が本当に必要ない場所&rdquo; がどんな形なのかを実測で固定する。後続実験の反転は、この床との対比で意味を持つ。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">入力と成果物</p>
+      <h2>何を食べ、何を残したか</h2>
+      <p>この実験が食べたものも残したものも、手書きの要約ではなくリポジトリの実ファイルです。だから入力から出力まで一行でたどれます。</p>
+      <div class="article-summary-grid" aria-label="入力と成果物">
+        <section class="summary-tile">
+          <h2>入力 (in)</h2>
+          <p><strong>実験定義:</strong> <code>experiments/exp001_short-factual_baseline.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
+          <strong>データセット:</strong> <code>benchmarks/01-short-factual/dataset.json</code> (SHA-256 で固定)。<br>
+          <strong>プロンプト:</strong> システムプロンプトを SHA-256 で指紋化 &mdash; 360セル全体に<em>単一の</em>プロンプトが使われたことを保証。ジャッジプロンプト SHA-256 も各採点 JSON に記録。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>成果物 (out)</h2>
+          <p><strong>生呼び出し:</strong> <code>runs/*.json</code> (Foundry v1 ペイロード + usage/latency 原文)。<br>
+          <strong>採点:</strong> <code>judge_runs_real/*.json</code> (実測 gpt-4o ジャッジ、セル当たり 1回)。<br>
+          <strong>集計:</strong> <code>analysis.json</code> (実測コホート)。<br>
+          <strong>図表/表:</strong> <code>results/cost-curves/benchmark-01-*.png</code>·<code>.csv</code>.</p>
+        </section>
+      </div>
+      <p><strong>測定表面は 360セル</strong>(gpt-4o 60 + gpt-5.2 300、努力度五段階)。外れ値として除外されたセルは<strong>0個</strong> &mdash; 運用フラグ(コールドスタート&middot;再試行&middot;出力切断)で 3σ を超えた行は一つもなかった。採点は中立ジャッジ gpt-4o がセルごとに一回、<strong>360/360 成功</strong>。すべての JSON は実際の Azure Foundry v1 呼び出しで、<code>"fixture": true</code> マーカーは一つもない。集計は <code>--experiment-prefix exp001_short-factual_baseline</code> で実測コホートだけを選んで再生成し、二回走らせてもバイトが同一である(決定的集計)。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">予測対実測</p>
+      <h2>予測がそのまま当たった唯一の場所</h2>
+      <div class="article-summary-grid" aria-label="予測対実測">
+        <section class="summary-tile"><h2>何を予測したか</h2><p>短い事実回答タスクに推論は要らない。品質は床ですでに飽和し、努力度を上げても品質はそのままでコストだけが増える。要するに &ldquo;努力度を上げるな。&rdquo;</p></section>
+        <section class="summary-tile"><h2>何が出たか</h2><p>まさにその通りだった &mdash; 反転はない。品質は <code>none</code> ですでに飽和(正答率 95%)し、努力度を上げても 60件中 1&ndash;2件の範囲でしか揺れなかった。添えられた細部: <code>none</code> が gpt-4o を<em>品質でも</em>上回り、推論トークンは <code>xhigh</code> でも 0 近くだった。</p></section>
+      </div>
+      <p><strong>判定: 事前登録の確認。</strong> 多段階(02)とツール(03)は蓋を開けると物語がひっくり返ったが(天井は <code>none</code> が床、混合は <code>low</code> が床)、この床だけは予測どおりだった。だからこの実験はシリーズの<em>対照群</em>の役割を果たす &mdash; &ldquo;推論が割に合わない場所&rdquo; が実際にどんな形なのかを実測で示すアンカーである。</p>
+    </section>
+
+    <section id="reversal" class="article-section">
+      <p class="section-label">第一のシグナル</p>
+      <h2>none がすでに gpt-4o に勝っていた</h2>
+      <p>下の表のドルは価格スナップショット <code>pricing/azure-openai-payg-2026-05.yaml</code>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用し、1,000件当たりに正規化した。正答率はジャッジスコア 2(完全正答)の比率である。</p>
+      <pre class="code-block"><code>モデル      努力度   1,000リクエスト当たり 正答率           正答1,000件当たり
+gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← ベースライン
+gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← デフォルト
+gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
+gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
+gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
+gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
+      <p><strong>推論を一切有効にしていない <code>none</code> が、二つの軸のどちらでも gpt-4o を上回る。</strong> リクエスト 1,000件当たり $0.587 で gpt-4o($0.665) より<strong>12% 安く</strong>、正答率はむしろ <strong>95% 対 90%</strong> と高い。正答 1,000件当たりに換算すると $0.618 対 $0.739 &mdash; <strong>16% 安い</strong>。割に合ったのは努力度ダイヤルではなく、<em>モデルの入れ替え</em>そのものだった。</p>
+      <p><code>none</code> の上では何も起きない。<code>low</code>&middot;<code>medium</code> は正答率が 96.7%(60件中 1件多い)に<em>見える</em>が、これは標本ノイズの範囲だ(N=20&middot;R=3、信頼区間なし)。<code>high</code> はリクエスト当たりでむしろ <strong>+3.6%</strong> 高くなり、正答率は 95% に戻る。<strong><code>none</code> から <code>medium</code> までは実質一つの平面</strong>で、その上は品質なしにコストだけが乗る。</p>
+
+      <figure class="article-figure" id="figure-exp001-quality">
+        <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別ジャッジスコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <code>results/cost-curves/benchmark-01-quality.png</code>(実測コホート)。</figcaption>
+        <img src="../../../../../../assets/benchmark-01-quality.png" alt="ベンチマーク 01 の努力度別平均ジャッジスコアの棒グラフ。gpt-5.2 は none から xhigh まで 1.9~1.97 の間で平らで、gpt-4o は 1.90 でその下にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="subtypes" class="article-section">
+      <p class="section-label">失敗が隠れた場所</p>
+      <h2>失敗はどこに隠れたか</h2>
+      <p>90% 対 95% という集計数字二つだけでは、&ldquo;どこで&rdquo;が見えない。型別に分けると、この床の本当の肌理が見えてくる &mdash; ほとんどのタグは両方とも満点(2.0)で、差は三つのタグだけに出ている。</p>
+      <pre class="code-block"><code>型                gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
+抽出(extraction)  1.75     2.00       2.00      2.00       2.00
+要約(summ.)       1.33     1.78       2.00      1.78       1.89
+算術(arith-triv)  2.00     1.83       1.67      1.67       1.67</code></pre>
+      <ul>
+        <li><strong>抽出 &mdash; gpt-5.2 が床で埋めた場所。</strong> gpt-4o は抽出 12件で 1.75 といくつか落としたが、gpt-5.2 は<em>推論を有効にしない</em> <code>none</code> からすでに 2.00 満点だ。gpt-5.2 の 95% が gpt-4o の 90% を上回った理由はここにある &mdash; 推論ではなく、モデル自体が抽出をより安定して行う。</li>
+        <li><strong>要約 &mdash; low で頂点、その後後退。</strong> gpt-4o が最も弱いタグ(1.33)。gpt-5.2 は <code>none</code> 1.78 → <code>low</code> 2.00 へ上がったあと、<code>medium</code>&middot;<code>high</code> で 1.78&ndash;1.89 へ<em>戻って下がる</em>。努力度を上げても要約は良くならない。</li>
+        <li><strong>算術 &mdash; 唯一 gpt-4o が勝った場所、そして努力度の逆効果。</strong> 些細な算術 6件で gpt-4o は 2.00 満点だが、gpt-5.2 は <code>none</code> 1.83 から <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 1.67 へ<em>下がる</em>。努力度を上げるほど &ldquo;1 足す 1&rdquo; を過剰に考え込み、かえって踏み外すのだ。推論が割に合わないどころか、ここでは<strong>負の値</strong>を持つ。</li>
+      </ul>
+      <p>三つのタグが互いを相殺する。gpt-5.2 は抽出&middot;要約で gpt-4o より稼ぎ、算術で少し失うが、純合計は <code>none</code>&middot;<code>low</code> で最高だ。そしてどのタグでも<strong>努力度を上げて得をした場所はない</strong> &mdash; このベンチマークが &ldquo;Null case&rdquo; である理由だ。</p>
+    </section>
+
+    <section id="flatline" class="article-section">
+      <p class="section-label">第二のシグナル</p>
+      <h2>努力度を上げても推論は 0 にとどまる</h2>
+      <p>なぜ努力度は品質を動かせないのか。トークンを分解すると機械的な答えが出る。gpt-5.2 の<strong>隠れた推論トークン</strong>は <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> で平均 0.00、<code>high</code> で 1.35、<code>xhigh</code> で 0.62 だ。<strong>努力度を最大まで上げても、モデルが実際に使う推論トークンは 0 近く</strong>である。短い事実回答タスクには計画する表面がなく、努力度ダイヤルはどこにもつながっていない。前の単発ベンチマーク(02)で推論トークンが努力度に沿って増えたのと正反対だ。</p>
+      <p><strong>だからコストも平らである。</strong> リクエスト当たり入力は 224トークンで固定(プロンプトがバイト同一)、見える出力は 10&ndash;16トークンだけわずかに増える。推論が 0 なので、努力度別コスト差は <code>none</code> $0.587 から <code>high</code> $0.608 の間 &mdash; リクエスト 1,000件当たり<strong>2セント余り</strong>の揺れでしかない。</p>
+      <p><strong>遅延も努力度に従わない。</strong> gpt-4o 1,494ms、gpt-5.2 は努力度と無関係に 1,410&ndash;1,713ms の間でノイズのように散らばる(<code>medium</code> が <code>none</code> より速い)。単発タスクで努力度は遅延の予測変数ではない。</p>
+      <p><strong>PTU レンズでは結論はひっくり返らないが、少し寝る。</strong> gpt-5.2 <code>none</code> はリクエスト当たりトークンが gpt-4o より約 1% 多く、スループットは <strong>0.99倍</strong>(約 −1%) だ &mdash; 固定容量当たりの分当たり正答では gpt-4o がわずかに先行する。つまり <strong>PAYG では gpt-5.2 <code>none</code> が明確に安く、PTU では実質引き分け</strong>である。前の二つのベンチマークのように PTU が大きく開く図ではなく、二つのモデルはほとんど重なる。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明性</p>
+      <h2>数字に残った汚れまでそのまま</h2>
+      <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を消さず、そのまま書いておく &mdash; 隠すと次の人が同じ場所で踏み外すからだ。</p>
+      <ul>
+        <li><strong>実測への置き換え。</strong> この床は当初、合成フィクスチャ(<code>exp008_short-factual_fixture</code>)として公開されていた。それらしい形ではあったが、測定ではなかった。このノートとともに、その場所を<em>実測コホート</em>に置き換えた &mdash; <code>analysis.json</code>&middot;図表&middot;表を <code>--experiment-prefix exp001_short-factual_baseline</code> で再生成した。フィクスチャは削除せず、資格情報なしのオフライン再現用の足場としてリポジトリに残すが、公開数値の出典からは外した。フィクスチャが使っていた <code>minimal</code> 努力度は実デプロイが拒否する値なので、実測スキーマでは <code>none</code> が床である。</li>
+        <li><strong>外れ値 0件。</strong> 360セルのどこでも 3σ&middot;運用フラグで除外された行はない(方法論の警告線 10% を大きく下回る)。集計マスクが介入していない、きれいな表面である。</li>
+        <li><strong>決定的な正答表なし。</strong> このデータセットにはルール照合用の正答表がないため、品質を<em>ジャッジスコアだけで</em>判定する。だから &ldquo;正答率&rdquo; はジャッジスコア 2(完全正答)の比率として二値化し、部分正答(1)は分母から外した。この選択を明示し、ヘッドラインがどう計算されたかを示す。</li>
+        <li><strong>算術の逆転。</strong> gpt-5.2 が gpt-4o に負けた唯一のタグ(算術)を隠さず、§失敗が隠れた場所にそのまま書いた &mdash; 床の結論が &ldquo;gpt-5.2 がすべてに勝つ&rdquo; ではなく、&ldquo;努力度が割に合わない&rdquo; であることを明確にするためだ。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限界</p>
+      <h2>どこまで信じられるか</h2>
+      <p>この結果は、一つの短い事実回答タスクセット、一つの価格スナップショット、特定のモデル組み合わせとルーブリックから出た小規模な集計値です。数字そのものより、<strong>方法を持ち帰る</strong>ほうが安全です。</p>
+      <ul>
+        <li><strong>標本。</strong> N=20 · R=3。この標本サイズでは信頼区間や統計的有意性を主張しない &mdash; <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> の正答率差(60件中 1件)はノイズとして読むべきだ。方向性の結論(&ldquo;努力度は割に合わない&rdquo;)は堅いが、絶対値の大きさは小標本として注意。</li>
+        <li><strong>採点。</strong> LLM-as-judge(gpt-4o)。決定的な正答表がないため、品質は完全にジャッジに依存する。ジャッジプロンプト SHA-256 を採点 JSON に記録してドリフトを監視するが、ジャッジ自体の偏りの可能性は残る。</li>
+        <li><strong>価格。</strong> 単一スナップショット。料率や使用量スキーマが変われば、同じ原資料からコストを再計算する必要がある。</li>
+        <li><strong>PTU。</strong> スループットはトークンベースの推定であり、ライブ PTU 負荷テストではない。この床では二つのモデルのスループットが約 1% 内で重なるため、PTU の結論は特に慎重に読むべきだ。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>だから何をデフォルトにするか</h2>
+      <p><strong>短い事実回答タスクのデフォルトは gpt-5.2 <code>effort=none</code> である。推論を一切有効にしないまま、リクエスト当たり gpt-4o より 12%·正答当たり 16% 安く、正答率はむしろ 95% 対 90% と高い。<code>none</code> から <code>medium</code> までは実質一つの平面なので low·medium を使っても構わないが、追加で得られるものは標本ノイズの中にある。<code>high</code> 以上は推論トークンがなお 0 近くなのにコストだけが上がるため捨てる。PTU レンズでは gpt-4o がわずかに先行し、実質引き分け &mdash; 割に合ったのは努力度ではなくモデルの入れ替えだった。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">つなぐ</p>
+      <h2>次の人が迷いにくいように</h2>
+      <p>根拠を記録する仕事は、数字を積むだけでは終わりません。どんな問いを立て、どんなプロンプトとルーブリックを使い、どの価格スナップショットと標本を基準にしたのかまで残ってこそ、次の判断にもう一度使えます。だからこのノートは回顧とタイムラインへ戻ってつながります。</p>
+      <ul>
+        <li><strong>回顧本文 →</strong> <a href="../../../ja/#questions">問いごとの回顧 Q1 &mdash; 短い事実回答に推論は必要か</a>の中心的根拠がこの実験である。</li>
+        <li><strong>タイムライン →</strong> <a href="../../../ja/#timeline">&ldquo;短い事実回答ケース測定 &mdash; 床を測る&rdquo;</a>項目がこの実験のアンカー瞬間である。</li>
+        <li><strong>対になる実験 →</strong> <a href="../../exp002-multi-step-reasoning/ja/">exp002 &mdash; 多段階推論</a>は &ldquo;推論が勝つ番&rdquo; だったのに <code>none</code> が床だった天井ケースだ。この床と並べて読むと、二つの単発タスクのどちらでも努力度ダイヤルがなぜ空なのかが見える。</li>
+        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <code>experiments/README.md</code> の <code>exp001</code> カードにある。</li>
+      </ul>
+      <p><strong>次の実験。</strong> この床は決定的な正答表なしでジャッジだけに頼った。次は<strong>ルールベースの検証器</strong>を付けてジャッジの偏りを交差検証し、<strong>実際の PTU 負荷テスト</strong>でここでの ~1% のスループット差がライブでも重なるかを確認することだ。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">出典 · 根拠の境界</p>
+      <h2>出典 &amp; 根拠の境界</h2>
+      <p>このノートの数字は合成ではなく実測から出た。その数字がどこから来て、どこまでが限界なのかを、下にそのまま置く。</p>
+      <ul>
+        <li>この実験の分析: <code>benchmarks/01-short-factual/analysis.md</code>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質, §8 遅延, §9 外れ値, §10 結論)。すべての数値はここから再引用 &mdash; 実測コホート <code>exp001_short-factual_baseline</code>.</li>
+        <li>横断要約: <code>results/summary.md</code>.</li>
+        <li>方法論: <code>docs/05-methodology.md</code>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
+        <li>価格: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, アクセス日 2026-05-19)。</li>
+        <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · ジャッジ gpt-4o · 決定的な正答表なし(品質はジャッジスコアのみ) · PTU はトークンベース推定(ライブ負荷ではない)。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT ライセンスの研究アーティファクト · 公開データには編集済みまたは集計済みの形だけを含みます。</p></footer>
+</body>
+</html>
