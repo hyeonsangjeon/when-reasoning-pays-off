@@ -165,7 +165,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>数字に残った汚れまでそのまま</h2>
       <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を消さず、そのまま書いておく &mdash; 隠すと次の人が同じ場所で踏み外すからだ。</p>
       <ul>
-        <li><strong>gpt-4o は予想より易しかった。</strong> 75% は事前登録した 30&ndash;60% を<em>超えた</em>。データセットがそもそも gpt-4o にそれほど厳しくなかったということだ。だから &ldquo;gpt-4o 比の削減幅&rdquo; の<em>大きさ</em>は、もっと難しいデータセットだった場合より小さくなった(期待 1.7&ndash;3.3倍の差 → 実現 1.7倍)。予測が外れた側を数字に合わせて消さず、小さくなった削減幅をそのまま残す。結論の<em>方向</em>(gpt-5.2 <code>none</code> がパレート支配)は変わらない。</li>
+        <li><strong>gpt-4o には予想より易しかった。</strong> 75% は事前登録した 30&ndash;60% を<em>超えた</em>。データセットがそもそも gpt-4o にそれほど厳しくなかったということだ。だから &ldquo;gpt-4o 比の削減幅&rdquo; の<em>大きさ</em>は、もっと難しいデータセットだった場合より小さくなった(期待 1.7&ndash;3.3倍の差 → 実現 1.7倍)。予測が外れた側を数字に合わせて消さず、小さくなった削減幅をそのまま残す。結論の<em>方向</em>(gpt-5.2 <code>none</code> がパレート支配)は変わらない。</li>
         <li><strong>安全フィルター拒否 1件。</strong> <code>mr_05</code> の <code>low</code> 1回目の反復で、Azure コンテンツフィルターが入力&middot;出力トークン 0 と定型拒否を返した。このセルには運用フラグ(コールドスタート/再試行/切断)がないため<em>外れ値規則にはかからず</em>、append-only 原則に従って上書きせず集計にそのまま残した(ジャッジは正確に 0/失敗と採点)。同じ問題の他の反復は正常な正答 &mdash; 系統的なトリップではなく一回限りで、この 1セルが <code>low</code> 行の分散を大きくした原因である。</li>
         <li><strong>部分点 0件。</strong> 360セル全体でジャッジの <code>score == 1</code> は一つもなかった。検証可能な正答設計なので、&ldquo;672 を出した&rdquo; と &ldquo;576 を出した&rdquo; の間に中間はない。だから二値化の選択はヘッドラインを揺らさない。</li>
       </ul>
@@ -197,7 +197,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
         <li><strong>タイムライン →</strong> <a href="../../../ja/#timeline">&ldquo;Ceiling ケース測定 &mdash; 転換点&rdquo;</a>項目がこの実験の反証の瞬間である。</li>
         <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <code>experiments/README.md</code> の <code>exp002</code> カードにある。</li>
       </ul>
-      <p><strong>次の実験。</strong> &ldquo;強度 &gt; none&rdquo; 列は短い事実回答と多段階ベンチマークのどちらでも空だった。その列を初めて埋めたのが <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツール使用エージェント(Mixed case)</a> である。品質が低い努力度ですでに天井に届いたとき、より大きなレバーが努力度ではなく<em>ツール選択&middot;ツール遅延&middot;ループ予算</em>になる瞬間を &mdash; そして <code>none</code> ではなく <code>low</code> が床になる理由を &mdash; そのノートで見る。</p>
+      <p><strong>次の実験。</strong> &ldquo;努力度 &gt; none&rdquo; 列は短い事実回答と多段階ベンチマークのどちらでも空だった。その列を初めて埋めたのが <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツール使用エージェント(Mixed case)</a> である。品質が低い努力度ですでに天井に届いたとき、より大きなレバーが努力度ではなく<em>ツール選択&middot;ツール遅延&middot;ループ予算</em>になる瞬間を &mdash; そして <code>none</code> ではなく <code>low</code> が床になる理由を &mdash; そのノートで見る。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
     </section>
 

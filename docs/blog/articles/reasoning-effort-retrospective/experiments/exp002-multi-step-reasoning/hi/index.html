@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>exp002 · multi-step reasoning में reasoning effort ने मूल्य चुकाया क्या | when reasoning pays off</title>
+  <title>exp002 · क्या multi-step reasoning में reasoning effort ने लागत वसूल की | when reasoning pays off</title>
   <meta name="description" content="multi-step reasoning (Ceiling) benchmark exp002 का experiment note. Design, inputs, outputs, preregistered prediction, measured cost/quality, outliers, limits, और decision को क्रम से देखता है, और credentials के बिना इसी experiment को reproduce करता है.">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
@@ -27,7 +27,7 @@
       <nav class="site-links" aria-label="लेख नेविगेशन">
         <a href="../../../../../../hi/">होम</a>
         <a href="../../../../hi/">लेख सूची</a>
-        <a href="../../../hi/">प्रयोग retrospective (hub)</a>
+        <a href="../../../hi/">experiment retrospective (hub)</a>
         <a href="../../../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
@@ -42,9 +42,9 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">प्रयोग retrospective</a> / experiment note · exp002</p>
+    <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">experiment retrospective</a> / experiment note · exp002</p>
     <p class="article-kicker">Experiment note · exp002 · multi-step reasoning (Ceiling case) · narrative series ① का evidence page</p>
-    <h1>exp002 &mdash; क्या multi-step reasoning में reasoning effort ने मूल्य चुकाया?</h1>
+    <h1>exp002 &mdash; क्या multi-step reasoning में reasoning effort ने लागत वसूल की?</h1>
     <p class="muted-note">लेखक Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">यह experiment वह जगह था जहाँ reasoning को जीतना था। बीस problems जिनके उत्तर के लिए कम से कम दो steps चाहिए &mdash; ऐसी जगह जहाँ reasoning effort (<code>reasoning_effort</code>) को एक notch बढ़ाने से answer और सुरक्षित होना चाहिए था।</p>
@@ -67,7 +67,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <nav class="article-outline" aria-label="इस note की संरचना">
       <strong>पढ़ने का क्रम &mdash; पहले quality, फिर cost:</strong>
       <a href="#design">reasoning को जीतना था</a>
-      <a href="#predict">prediction दो बार चूका</a>
+      <a href="#predict">prediction दो बार चूकी</a>
       <a href="#reversal">दो reversals</a>
       <a href="#quality-map">gpt-4o कहाँ टूटा</a>
       <a href="#limits">कहाँ तक भरोसा करें</a>
@@ -77,12 +77,12 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">Design</p>
       <h2>reasoning को जीतना था</h2>
-      <p><strong>प्रश्न एक है।</strong> Multi-step reasoning &mdash; reasoning का <em>ceiling</em> case &mdash; में, gpt-5.2 का effort कहाँ तक बढ़ाना पड़ेगा ताकि reasoning bill का मूल्य चुकाए? PAYG (प्रति सही answer dollar) और PTU (fixed capacity पर प्रति minute सही answer) दो lenses से साथ देखते हैं।</p>
+      <p><strong>प्रश्न एक है।</strong> Multi-step reasoning &mdash; reasoning का <em>ceiling</em> case &mdash; में, gpt-5.2 का effort कहाँ तक बढ़ाना पड़ेगा ताकि reasoning अपनी लागत वसूल करे? PAYG (प्रति सही answer dollar) और PTU (fixed capacity पर प्रति minute सही answer) दो lenses से साथ देखते हैं।</p>
       <p><strong>Dataset.</strong> Frozen synthetic samples 20 (<code>mr_01</code>&hellip;<code>mr_20</code>). Arithmetic word problems, constraint satisfaction, date/time, causal chains, code trace, Boolean logic, counting &mdash; सात types में फैले हुए, और हर sample के पास verifiable answer है तथा कम से कम दो-step reasoning चाहिए।</p>
       <p><strong>बदलने वाली axis केवल एक है</strong> &mdash; gpt-5.2 के <code>reasoning.effort</code> को <code>none · low · medium · high · xhigh</code> में sweep करना। साथ में reasoning parameter रहित gpt-4o baseline रखा गया। हर (sample × model × effort) cell को <strong>तीन बार (R=3)</strong> repeat किया गया।</p>
       <div class="article-summary-grid" aria-label="pre-registered prediction और भूमिका">
-        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>Multi-step shape short-factual benchmark के conclusion को उलट देगा। gpt-4o केवल <strong>30&ndash;60%</strong> pass करेगा, और gpt-5.2 <em>पर्याप्त effort</em> पर <strong>80% से अधिक</strong> pass करेगा; reasoning अपना मूल्य चुकाएगी।</p></section>
-        <section class="summary-tile"><h2>इस experiment की भूमिका</h2><p>Short-factual benchmark के <em>floor</em> (जहाँ reasoning नहीं चाहिए) के साथ जोड़ी बनाकर, &ldquo;जहाँ reasoning bill का मूल्य चुकाती है&rdquo; उस cost surface का <strong>ceiling</strong> anchor fix करना।</p></section>
+        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>Multi-step shape short-factual benchmark के conclusion को उलट देगा। gpt-4o केवल <strong>30&ndash;60%</strong> pass करेगा, और gpt-5.2 <em>पर्याप्त effort</em> पर <strong>80% से अधिक</strong> pass करेगा; reasoning अपनी लागत वसूल करेगी।</p></section>
+        <section class="summary-tile"><h2>इस experiment की भूमिका</h2><p>Short-factual benchmark के <em>floor</em> (जहाँ reasoning नहीं चाहिए) के साथ जोड़ी बनाकर, &ldquo;जहाँ reasoning अपनी लागत वसूल करती है&rdquo; उस cost surface का <strong>ceiling</strong> anchor fix करना।</p></section>
       </div>
     </section>
 
@@ -110,12 +110,12 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
 
     <section id="predict" class="article-section">
       <p class="section-label">Prediction versus measurement</p>
-      <h2>prediction दो बार चूका</h2>
+      <h2>prediction दो बार चूकी</h2>
       <div class="article-summary-grid" aria-label="prediction versus measurement">
         <section class="summary-tile"><h2>क्या predict किया</h2><p>gpt-4o 30&ndash;60% पर टूटेगा। gpt-5.2 को 80% पार करने के लिए effort <em>बढ़ाना पड़ेगा</em>। Summary: &ldquo;higher effort quality खरीदकर cost justify करता है।&rdquo;</p></section>
         <section class="summary-tile"><h2>क्या निकला</h2><p>gpt-4o अपेक्षा से मजबूत था: <strong>75%</strong> (45/60). gpt-5.2 <strong>सबसे कम <code>none</code> पर ही 100%</strong> (60/60). Average evaluation score में gpt-4o <strong>1.50</strong> versus gpt-5.2 <strong>2.00</strong>।</p></section>
       </div>
-      <p><strong>Decision: hypothesis refuted.</strong> &ldquo;multi-step में higher effort value देता है&rdquo; वाली pre-registration अपने literal form में refuted हुई। असली deciding point <em>effort dial</em> नहीं, <strong>gpt-4o → gpt-5.2 model swap</strong> था। क्योंकि gpt-5.2 की <em>default</em> reasoning setting (<code>none</code>) पहले से पर्याप्त थी।</p>
+      <p><strong>Decision: hypothesis refuted.</strong> &ldquo;multi-step में higher effort लागत वसूल करता है&rdquo; वाली pre-registration अपने literal form में refuted हुई। असली deciding point <em>effort dial</em> नहीं, <strong>gpt-4o → gpt-5.2 model swap</strong> था। क्योंकि gpt-5.2 की <em>default</em> reasoning setting (<code>none</code>) पहले से पर्याप्त थी।</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -165,7 +165,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>numbers पर लगे धब्बे भी जस के तस</h2>
       <p>कोई measurement पूरी तरह साफ़ नहीं होता। यह benchmark जो निशान छोड़ता है, उन्हें मिटाए बिना लिखते हैं &mdash; क्योंकि छिपाने से अगला व्यक्ति उसी जगह चूकेगा।</p>
       <ul>
-        <li><strong>gpt-4o अपेक्षा से आसान था।</strong> 75% pre-registered 30&ndash;60% से <em>ऊपर निकला</em>। इसका मतलब dataset शुरू से gpt-4o के लिए उतना कठोर नहीं था। इसलिए &ldquo;gpt-4o के मुकाबले savings gap&rdquo; का <em>आकार</em> कठिन dataset की अपेक्षा छोटा हुआ (expected 1.7&ndash;3.3 गुना gap → realized 1.7 गुना)। Prediction जिस दिशा में चूका, उसे numbers के हिसाब से मिटाते नहीं; smaller savings gap को जस का तस छोड़ते हैं। Conclusion की <em>direction</em> (gpt-5.2 <code>none</code> Pareto dominates) वही है।</li>
+        <li><strong>gpt-4o के लिए यह अपेक्षा से आसान था।</strong> 75% pre-registered 30&ndash;60% से <em>ऊपर निकला</em>। इसका मतलब dataset शुरू से gpt-4o के लिए उतना कठोर नहीं था। इसलिए &ldquo;gpt-4o के मुकाबले savings gap&rdquo; का <em>आकार</em> कठिन dataset की अपेक्षा छोटा हुआ (expected 1.7&ndash;3.3 गुना gap → realized 1.7 गुना)। Prediction जिस दिशा में चूका, उसे numbers के हिसाब से मिटाते नहीं; smaller savings gap को जस का तस छोड़ते हैं। Conclusion की <em>direction</em> (gpt-5.2 <code>none</code> Pareto dominates) वही है।</li>
         <li><strong>Safety filter refusal 1 case.</strong> <code>mr_05</code> के <code>low</code> first repeat में Azure content filter ने input&middot;output tokens 0 और structured refusal लौटाया। इस cell पर operational flags (coldstart/retry/truncation) नहीं थे, इसलिए <em>outlier rule में नहीं आता</em>, और append-only principle के अनुसार overwrite न करके aggregate में छोड़ा गया (judge ने exactly 0/fail score किया)। उसी problem के अन्य repeats normal correct &mdash; systematic trip नहीं, one-off, और यही one cell <code>low</code> row की variance बढ़ाता है।</li>
         <li><strong>Partial score 0.</strong> 360 cells में judge का <code>score == 1</code> एक भी नहीं। Verifiable answer design है, इसलिए &ldquo;672 दिया&rdquo; और &ldquo;576 दिया&rdquo; के बीच middle नहीं। इसलिए binarization choice headline को नहीं हिलाती।</li>
       </ul>
@@ -193,7 +193,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>ताकि अगला व्यक्ति कम भटके</h2>
       <p>Evidence दर्ज करना numbers जमा करने पर खत्म नहीं होता। कौन सा question पूछा, कौन सा prompt और rubric इस्तेमाल किया, कौन सा pricing snapshot और sample आधार बना &mdash; यह सब बचना चाहिए, तभी अगला decision इसे फिर इस्तेमाल कर सकेगा। इसलिए यह note retrospective और timeline से वापस जुड़ता है।</p>
       <ul>
-        <li><strong>Retrospective body →</strong> <a href="../../../hi/#questions">प्रति-प्रश्न retrospective Q2 &mdash; क्या multi-step में effort value देता है?</a> का core evidence यही experiment है।</li>
+        <li><strong>Retrospective body →</strong> <a href="../../../hi/#questions">प्रश्न-वार retrospective Q2 &mdash; क्या multi-step में effort लागत वसूल करता है?</a> का core evidence यही experiment है।</li>
         <li><strong>Timeline →</strong> <a href="../../../hi/#timeline">&ldquo;Ceiling case measurement &mdash; turning point&rdquo;</a> item इस experiment का refutation moment है।</li>
         <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <code>experiments/README.md</code> के <code>exp002</code> card में है।</li>
       </ul>

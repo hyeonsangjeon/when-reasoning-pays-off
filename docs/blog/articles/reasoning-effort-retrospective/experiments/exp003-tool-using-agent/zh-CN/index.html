@@ -48,7 +48,7 @@
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">前两个基准的答案一直是&ldquo;不要提高强度&rdquo;。这一次不同。调用工具、接收结果、再做判断的<strong>混合任务</strong> &mdash; 在三项基准中，这是<em>推理第一次、而且只是很小幅度地值得</em>的位置。</p>
-    <p class="lede">我们在<strong>预先登记</strong>中写下：中等强度(<code>low</code>&ndash;<code>medium</code>)会是帕累托膝点。gpt-4o 在无工具&middot;单工具上可以，但会在多工具排序中倒下；gpt-5.2 <code>none</code> 因为没有可规划的推理表面，会在多工具上像 gpt-4o 一样弱；<code>high</code>&middot;<code>xhigh</code> 会在质量饱和后，对小样本过度调用工具。</p>
+    <p class="lede">我们在<strong>预先登记</strong>中写下：中等强度(<code>low</code>&ndash;<code>medium</code>)会是帕累托膝点。gpt-4o 在无工具&middot;单工具上可以，但会在多工具编排中倒下；gpt-5.2 <code>none</code> 因为没有可规划的推理表面，会在多工具上像 gpt-4o 一样弱；<code>high</code>&middot;<code>xhigh</code> 会在质量饱和后，对小样本过度调用工具。</p>
     <p class="lede">测量<em>一半对了，一半令人意外</em>。<code>low</code> 确实是底部 &mdash; 这一次不是 <code>none</code>。但 gpt-4o 真正倒下的地方不是多工具，而是<strong>在不需要工具的问题上调用计算器</strong>。本文按<em>设计 → 输入 → 产物 → 预测对实测 → 工具滥用地图 → 决定</em>回看那一天 &mdash; 希望后来的人少在同一路上绕弯。</p>
 
     <section id="reproduce" class="article-section">
@@ -89,7 +89,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="io" class="article-section">
       <p class="section-label">输入与产物</p>
       <h2>吃进什么，留下什么</h2>
-      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以可以从输入到输出一行回看。</p>
+      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以从输入到输出，可以顺着一条线索回溯。</p>
       <div class="article-summary-grid" aria-label="输入与产物">
         <section class="summary-tile">
           <h2>输入 (in)</h2>
@@ -115,7 +115,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
         <section class="summary-tile"><h2>预测了什么</h2><p>中等强度是膝点。gpt-4o 会在<em>多工具</em>上破裂。gpt-5.2 <code>none</code> 在多工具上弱。概括就是&ldquo;混合任务需要少量推理&rdquo;。</p></section>
         <section class="summary-tile"><h2>结果是什么</h2><p><code>low</code> 确实是帕累托膝点 &mdash; 这一次不是 <code>none</code>。但 gpt-4o 倒下的地方不只是多工具，还有<strong>无工具(83.3%)</strong>。明明不需要工具，它却调用了计算器。</p></section>
       </div>
-      <p><strong>判定：方向得到确认，失败模式反转。</strong> &ldquo;混合任务至少需要一点推理表面&rdquo;这条预先登记得到支持 &mdash; <code>low</code>(不是 <code>none</code>)是按正确答案计的帕累托最优。但 gpt-4o 的弱点不只是<em>多工具排序</em>，还有在<strong>不该调用工具时调用工具的习惯</strong>。预测的一半对了，另一半被数据改写成更有意思的故事。</p>
+      <p><strong>判定：方向得到确认，失败模式反转。</strong> &ldquo;混合任务至少需要一点推理表面&rdquo;这条预先登记得到支持 &mdash; <code>low</code>(不是 <code>none</code>)是按正确答案计的帕累托最优。但 gpt-4o 的弱点不只是<em>多工具编排</em>，还有在<strong>不该调用工具时调用工具的习惯</strong>。预测的一半对了，另一半被数据改写成更有意思的故事。</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -170,16 +170,16 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
       <ul>
         <li><strong>异常值 1 个。</strong> <code>tu_18</code> 的 <code>low</code> 第一次重复在 token 上超过 3σ，并同时带有运营标记，因此从聚合中排除(360 个单元中 1 个 = 0.3%，远低于方法论 10% 警戒线)。它仍原样保留在原始 JSON 树中 &mdash; 异常值排除只是聚合掩码，不是删除。</li>
         <li><strong>循环上限 12 个。</strong> 360 个单元中有 12 个(3.3%)触及工具循环 4 次上限，被强制不再使用工具而返回答案。每行都留下 <code>iteration_cap</code> 标记，可以追踪哪些单元被上限压住。</li>
-        <li><strong>部分分不计入正确。</strong> 裁判分数 1(部分正确)在 §7 单独报告，但从每正确答案成本的分母中<em>排除</em> &mdash; 因为在生产规模下，工具任务的部分正确不是正确。明确这个二值化选择，是为了说明 headline 如何计算出来。</li>
+        <li><strong>部分分不计入正确。</strong> 裁判分数 1(部分正确)在 §7 单独报告，但从每正确答案成本的分母中<em>排除</em> &mdash; 因为在生产规模下，工具任务的部分正确不是正确。明确这个二值化选择，是为了说明这个核心数字是如何算出来的。</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">限制</p>
       <h2>可以相信到哪里</h2>
-      <p>这个结果来自一个混合工具任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>带走方法</strong>更安全。</p>
+      <p>这个结果来自一个混合工具任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>借鉴方法</strong>更稳妥。</p>
       <ul>
-        <li><strong>搜索是模拟的。</strong> 这个基准的 <code>web_search</code> 不是真实网页搜索，而是<em>固定知识库查询</em>。实时搜索会引入不可控方差，因此放在范围之外。headline(小推理表面提高多工具可靠性，超过 <code>low</code> 是 token 浪费)对这个简化是稳健的。这不是完美复现，而是只控制可以控制的部分 &mdash; 我们不隐藏这个边界。</li>
+        <li><strong>搜索是模拟的。</strong> 这个基准的 <code>web_search</code> 不是真实网页搜索，而是<em>固定知识库查询</em>。实时搜索会引入不可控方差，因此放在范围之外。核心结论(小推理表面提高多工具可靠性，超过 <code>low</code> 是 token 浪费)对这个简化是稳健的。这不是完美复现，而是只控制可以控制的部分 &mdash; 我们不隐藏这个边界。</li>
         <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎看待。</li>
         <li><strong>价格。</strong> 单一快照。如果费率或 usage schema 改变，应从同一原始材料重新计算成本。</li>
         <li><strong>评分。</strong> LLM-as-judge(gpt-4o)。裁判提示 SHA-256 记录在评分 JSON 中以监控漂移。</li>

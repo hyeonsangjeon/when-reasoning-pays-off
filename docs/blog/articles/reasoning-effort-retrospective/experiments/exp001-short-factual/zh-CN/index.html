@@ -89,7 +89,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="io" class="article-section">
       <p class="section-label">输入与产物</p>
       <h2>吃进什么，留下什么</h2>
-      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以可以从输入到输出一行回看。</p>
+      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以从输入到输出，可以顺着一条线索回溯。</p>
       <div class="article-summary-grid" aria-label="输入与产物">
         <section class="summary-tile">
           <h2>输入 (in)</h2>
@@ -170,7 +170,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <ul>
         <li><strong>替换为实测。</strong> 这个底部一开始是以合成 fixture(<code>exp008_short-factual_fixture</code>)发布的。形状合理，但不是测量。随本文一起，我们把那个位置换成了<em>实测 cohort</em> &mdash; 用 <code>--experiment-prefix exp001_short-factual_baseline</code> 重新生成 <code>analysis.json</code>&middot;图&middot;表。fixture 没有删除，仍作为无需凭据的离线复现脚手架保留在仓库里，但从发布数字来源中移除。fixture 使用的 <code>minimal</code> 强度会被真实部署拒绝，因此实测 schema 的底部是 <code>none</code>。</li>
         <li><strong>异常值 0 个。</strong> 360 个单元里没有任何行因 3σ&middot;运营标记被排除(远低于方法论 10% 警戒线)。这是聚合掩码没有介入的干净表面。</li>
-        <li><strong>没有确定性答案表。</strong> 这个数据集没有用于规则对照的答案表，因此质量<em>只能由裁判分数</em>判定。所以&ldquo;正确率&rdquo;被二值化为裁判分数 2(完全正确)的比例，部分正确(1)不计入分子。明确这个选择，是为了说明 headline 如何计算出来。</li>
+        <li><strong>没有确定性答案表。</strong> 这个数据集没有用于规则对照的答案表，因此质量<em>只能由裁判分数</em>判定。所以&ldquo;正确率&rdquo;被二值化为裁判分数 2(完全正确)的比例，部分正确(1)从分母中剔除。明确这个选择，是为了说明这个核心数字是如何算出来的。</li>
         <li><strong>算术的逆转。</strong> gpt-5.2 输给 gpt-4o 的唯一标签(算术)没有隐藏，而是原样写在§失败藏身处 &mdash; 为了说明底部的结论不是&ldquo;gpt-5.2 赢过一切&rdquo;，而是&ldquo;强度不值得&rdquo;。</li>
       </ul>
     </section>
@@ -178,7 +178,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="limits" class="article-section">
       <p class="section-label">限制</p>
       <h2>可以相信到哪里</h2>
-      <p>这个结果来自一个短事实任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>带走方法</strong>更安全。</p>
+      <p>这个结果来自一个短事实任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>借鉴方法</strong>更稳妥。</p>
       <ul>
         <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> 的正确率差异(60 个中 1 个)应读作噪声。方向性结论(&ldquo;强度不值得&rdquo;)稳健，但绝对幅度需按小样本谨慎看待。</li>
         <li><strong>评分。</strong> LLM-as-judge(gpt-4o)。没有确定性答案表，质量完全依赖裁判。裁判提示 SHA-256 记录在评分 JSON 中以监控漂移，但裁判自身偏差仍然可能存在。</li>

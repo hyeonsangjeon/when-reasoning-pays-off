@@ -105,7 +105,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
           <strong>図表/表:</strong> <code>results/cost-curves/benchmark-03-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>測定表面は 360セル</strong>(gpt-4o 60 + gpt-5.2 300、努力度五段階)。外れ値として除外されたセルは<strong>1個</strong>(<code>tu_18</code>/<code>low</code>/r0)。採点は中立ジャッジ gpt-4o がセルごとに一回、<strong>360/360 成功</strong>。すべての JSON は実際の Azure Foundry v1 呼び出しで、<code>"fixture": true</code> マーカーは一つもない。ただし<strong>360セル中 12個(3.3%)</strong>がツールループ 4回の上限にかかり、ツールなしで最終答えを強制返却し、各行に <code>tool_loop_terminated="iteration_cap"</code> フラグが残っている。</p>
+      <p><strong>測定表面は 360セル</strong>(gpt-4o 60 + gpt-5.2 300、努力度五段階)。外れ値として除外されたセルは<strong>1個</strong>(<code>tu_18</code>/<code>low</code>/r0)。採点は中立ジャッジ gpt-4o がセルごとに一回、<strong>360/360 成功</strong>。すべての JSON は実際の Azure Foundry v1 呼び出しで、<code>"fixture": true</code> マーカーは一つもない。ただし<strong>360セル中 12個(3.3%)</strong>がツールループ 4回の上限にかかり、ツールなしで最終回答を強制的に返し、各行に <code>tool_loop_terminated="iteration_cap"</code> フラグが残っている。</p>
     </section>
 
     <section id="predict" class="article-section">
@@ -115,7 +115,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
         <section class="summary-tile"><h2>何を予測したか</h2><p>中間の努力度が膝である。gpt-4o は<em>マルチツールで</em>壊れる。gpt-5.2 <code>none</code> はマルチツールで弱い。要するに &ldquo;混合タスクには少しの推論が必要だ。&rdquo;</p></section>
         <section class="summary-tile"><h2>何が出たか</h2><p><code>low</code> が本当にパレートの膝だった &mdash; 今回だけは <code>none</code> ではなく。ところが gpt-4o が崩れた場所はマルチツールだけでなく<strong>無ツール(83.3%)</strong>だった。ツールが要らないのに計算機を呼んだ。</p></section>
       </div>
-      <p><strong>判定: 方向は確認、失敗モードは反転。</strong> &ldquo;混合タスクには最小限の推論表面が必要だ&rdquo;という事前登録は支持された &mdash; <code>low</code>(<code>none</code> ではなく)が正答当たりのパレート最適である。ただし gpt-4o の弱点は<em>マルチツールシーケンシング</em>だけでなく、ツールを<strong>呼んではいけないときに呼ぶ習慣</strong>だった。予測の半分は当たり、半分はデータがより興味深い物語へ正した。</p>
+      <p><strong>判定: 方向は確認、失敗モードは反転。</strong> &ldquo;混合タスクには最小限の推論表面が必要だ&rdquo;という事前登録は支持された &mdash; <code>low</code>(<code>none</code> ではなく)が正答当たりのパレート最適である。ただし gpt-4o の弱点は<em>マルチツールシーケンシング</em>だけでなく、ツールを<strong>呼んではいけないときに呼ぶ習慣</strong>だった。予測の半分は当たり、半分はデータがより興味深い物語へと修正した。</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -169,7 +169,7 @@ gpt-5.2   low      100%       100%      100%    ← パレート最適</code></p
       <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を消さず、そのまま書いておく &mdash; 隠すと次の人が同じ場所で踏み外すからだ。</p>
       <ul>
         <li><strong>外れ値 1件。</strong> <code>tu_18</code> の <code>low</code> 1回目の反復がトークンで 3σ を超え、運用フラグも併せて持ったため集計から除外された(360セル中 1件 = 0.3%、方法論の警告線 10% を大きく下回る)。生 JSON ツリーにはそのまま残っている &mdash; 外れ値除外は集計マスクであって削除ではない。</li>
-        <li><strong>ループ上限 12件。</strong> 360セル中 12個(3.3%)がツールループ 4回の上限にかかり、ツールなしで答えを強制返却した。各行に <code>iteration_cap</code> フラグが残り、どのセルが上限に押されたかを追跡できる。</li>
+        <li><strong>ループ上限 12件。</strong> 360セル中 12個(3.3%)がツールループ 4回の上限にかかり、ツールなしで回答を強制的に返した。各行に <code>iteration_cap</code> フラグが残り、どのセルが上限に押されたかを追跡できる。</li>
         <li><strong>部分点は正答から除外。</strong> ジャッジスコア 1(部分正答)は §7 に別途報告するが、正答当たりコストの分母からは<em>外した</em> &mdash; 本番規模でツールタスクの部分正答は正答ではないからだ。この二値化の選択を明示し、ヘッドラインがどう計算されたかを示す。</li>
       </ul>
     </section>

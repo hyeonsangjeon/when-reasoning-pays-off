@@ -89,7 +89,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="io" class="article-section">
       <p class="section-label">输入与产物</p>
       <h2>吃进什么，留下什么</h2>
-      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以可以从输入到输出一行回看。</p>
+      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以从输入到输出，可以顺着一条线索回溯。</p>
       <div class="article-summary-grid" aria-label="输入与产物">
         <section class="summary-tile">
           <h2>输入 (in)</h2>
@@ -165,16 +165,16 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>连数字上的污点也原样留下</h2>
       <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下 &mdash; 因为藏起来，后来的人会在同一个地方踩空。</p>
       <ul>
-        <li><strong>gpt-4o 比预期容易。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这意味着数据集本来对 gpt-4o 没那么严苛。因此&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。预测错了的部分不按数字抹掉，而是原样留下缩小的节省幅度。结论的<em>方向</em>(gpt-5.2 <code>none</code> 帕累托支配)不变。</li>
+        <li><strong>对 gpt-4o 而言比预期容易。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这意味着数据集本来对 gpt-4o 没那么严苛。因此&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。预测错了的部分不按数字抹掉，而是原样留下缩小的节省幅度。结论的<em>方向</em>(gpt-5.2 <code>none</code> 帕累托支配)不变。</li>
         <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器返回了输入&middot;输出 token 0 与结构化拒绝。这个单元没有运营标记(冷启动/重试/截断)，因此<em>不会命中异常值规则</em>；按 append-only 原则，不覆盖，原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复均正常正确 &mdash; 不是系统性触发，这一个单元是 <code>low</code> 行方差变大的原因。</li>
-        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。因为设计了可验证答案，&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。因此二值化选择不会摇动 headline。</li>
+        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。因为设计了可验证答案，&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。因此二值化选择不会动摇核心结论。</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">限制</p>
       <h2>可以相信到哪里</h2>
-      <p>这个结果来自一个多步任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>带走方法</strong>更安全。</p>
+      <p>这个结果来自一个多步任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>借鉴方法</strong>更稳妥。</p>
       <ul>
         <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎看待。</li>
         <li><strong>价格。</strong> 单一快照。如果费率或 usage schema 改变，应从同一原始材料重新计算成本。</li>
