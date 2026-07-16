@@ -163,7 +163,7 @@ gpt-5.2   low      100%       100%      100%    ← 파레토 최적</code></pre
       <h2>low를 넘기면 같은 품질을 더 비싸게</h2>
       <p><code>low</code> 위로는 다시 앞선 벤치마크의 이야기가 반복된다. <code>medium</code>은 1,000요청당 약 $0.13을 더 쓰고도 통과율이 98.3%로 오히려 <em>내려가</em> <code>low</code>에 파레토 열세다. <code>high</code>는 <code>low</code> 대비 요청당 +14%, <code>xhigh</code>는 +26%인데 통과율은 그대로다(<code>xhigh</code>는 100%지만 정답당으로 <code>low</code>보다 26% 비싸다).</p>
       <p><strong>지연도 같은 이야기다.</strong> <code>none</code>은 gpt-4o보다 오히려 5% 빠르고(2,902ms 대 3,044ms), <code>low</code>는 +0.7%로 사실상 평평하다. 그런데 <code>high</code>는 +20.0%, <code>xhigh</code>는 +23.9%로 벌어진다. 지연에 민감한 워크로드라면 <code>medium</code>이 현실적 천장이다.</p>
-      <p><strong>토큰을 분해하면 이 벤치마크만의 구조가 보인다.</strong> 요청당 입력이 약 1,200&ndash;1,300토큰으로 청구서를 지배한다 &mdash; 시스템 프롬프트와 도구 정의가 루프의 매 반복마다 다시 실린 탓이다. 숨은 추론 토큰은 0(<code>none</code>)에서 약 52(<code>xhigh</code>)로 늘지만, 입력에 견주면 <strong>작다</strong>. 추론 토큰이 <code>xhigh</code> 비용을 지배하던 단발 벤치마크(01·02)와는 구조가 반대다.</p>
+      <p><strong>토큰을 분해하면 이 벤치마크만의 구조가 보인다.</strong> 요청당 입력이 약 1,200&ndash;1,300토큰으로 청구서를 지배한다 &mdash; 시스템 프롬프트와 도구 정의가 루프의 매 반복마다 다시 실린 탓이다. 숨은 추론 토큰은 0(<code>none</code>)에서 약 52(<code>xhigh</code>)로 늘지만, 입력에 견주면 <strong>작다</strong>. 추론 토큰이 <code>xhigh</code> 비용을 지배하던 다단계 벤치마크(02)와는 구조가 반대다 &mdash; 오히려 입력이 청구서를 지배하는 점은 단답 벤치마크(01)와 닮았다.</p>
       <p><strong>PTU 렌즈에서도 결론은 <code>low</code>로 모인다.</strong> <code>low</code>는 gpt-4o의 0.939배 처리량이지만 통과율 100%가 이를 뒤집어 <strong>분당 정답 +4.3%</strong>다(gpt-4o는 90%). 처리량 손실(−6.1% req/min)보다 통과율 상승(+10.0%p)이 크다. 반면 강도를 더 올리면 처리량만 깎인다(<code>medium</code> −8.5%, <code>xhigh</code> −10.8%). <strong>PAYG(정답당 최저)와 PTU(분당 정답 최고)가 같은 <code>low</code>를 가리키는 두 렌즈의 수렴</strong>이다.</p>
     </section>
 
