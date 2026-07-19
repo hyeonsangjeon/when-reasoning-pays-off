@@ -109,7 +109,17 @@ that do not reintroduce any forbidden token are tracked by re-running
 `scripts/sanitize_public_artifacts.py --apply`, which refreshes the
 entry's `sanitized_sha256` to the new on-disk sha while leaving
 `source_raw_sha256` and `source_archive_id` pinned to the original
-`RAW_PRIVATE` source. One central manifest is functionally equivalent
+`RAW_PRIVATE` source. When the private archive is not available (a
+public-tree edit, a contributor clone, or a CI-adjacent environment),
+the identical re-pin is available offline via
+`scripts/sanitize_public_artifacts.py --refresh-hashes`: it updates
+only the `sanitized_sha256` of already-listed, in-scope, token-clean
+entries, never reads the private archive, and never adds or removes
+entries. It refuses any file that reintroduced a forbidden token
+(those must go through `--apply`, which archives the raw original and
+redacts). This decouples the `--verify` drift signal from the
+owner-only `--apply` regeneration so a stale hash can be corrected
+wherever the edit was made. One central manifest is functionally equivalent
 to a sidecar file per artifact (every `SANITIZED_PUBLIC` artifact has
 exactly one provenance entry) while keeping the working tree free of
 several thousand sidecar files. The hash of the redaction rules is
@@ -309,6 +319,9 @@ scope differs.
   --verify --require-public-manifest` and fails if the manifest is
   missing, drifted, internally inconsistent, or any entry's on-disk
   artifact SHA-256 disagrees with the recorded `sanitized_sha256`.
+  Drift from a legitimate, token-clean edit is repaired from the public
+  tree with `--refresh-hashes` (no private archive); adding or
+  re-redacting an artifact uses `--apply`.
 - [ ] Every `AGGREGATE_AZURE_SAMPLE` artifact carries the list of
   source `SANITIZED_PUBLIC` SHA-256s, aggregation-script SHA-256, and
   schema semver.

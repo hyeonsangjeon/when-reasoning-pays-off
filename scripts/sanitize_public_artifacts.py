@@ -1241,6 +1241,115 @@ def apply_sweep(repo_root: Path, *, dry_run: bool) -> dict:
     return summary
 
 
+def refresh_public_hashes(
+    repo_root: Path,
+    *,
+    public_manifest_path: Path,
+    dry_run: bool = False,
+) -> dict:
+    """Public-side re-pin of ``sanitized_sha256`` for legitimately edited artifacts.
+
+    Refreshes ONLY the ``sanitized_sha256`` of *existing* public-manifest
+    entries whose on-disk artifact is still in scope, present, and free of
+    forbidden workload tokens. Every other field — crucially
+    ``source_raw_sha256`` and ``source_archive_id`` — stays pinned to the
+    original ``RAW_PRIVATE`` lineage; provenance-metadata fields
+    (``redacted_at_iso``, ``redactor_commit_sha``) are left untouched
+    because a byte-edit of a published file does not re-derive it from raw.
+
+    Unlike ``--apply`` this needs **no private archive input**: it never
+    reads ``.internal/`` and never adds or removes entries. It exists so a
+    legitimate downstream edit to an already-published, token-clean
+    artifact (the case documented in
+    :func:`build_public_manifest_from_private` step 4) can be re-pinned
+    from the public tree — decoupling the ``--verify`` drift signal from
+    the owner-only ``--apply`` regeneration. See docs/16 §.
+
+    Safety invariants:
+
+    * An entry whose file reintroduced a forbidden token is **not**
+      refreshed (that would launder a leak into a blessed hash); it is
+      reported under ``blocked_forbidden_token`` and the CLI exits
+      non-zero so the operator routes it through the private ``--apply``
+      sweep (which archives the raw original and redacts).
+    * Entries whose file is missing or now out-of-scope are reported, not
+      silently pruned — pruning needs the private manifest, i.e.
+      ``--apply``.
+    * Idempotent: a second run over an unchanged tree refreshes nothing.
+
+    Returns a summary dict describing what was (or would be) changed.
+    """
+    result: dict = {
+        "dry_run": dry_run,
+        "refreshed": [],
+        "unchanged": 0,
+        "blocked_forbidden_token": [],
+        "missing_on_disk": [],
+        "out_of_scope": [],
+        "wrote": False,
+        "public_manifest_path": str(public_manifest_path.relative_to(repo_root)),
+    }
+    if not public_manifest_path.exists():
+        result["error"] = (
+            f"public manifest missing at {result['public_manifest_path']}"
+        )
+        return result
+
+    data = load_public_manifest(public_manifest_path)
+    entries = data.get("entries")
+    if not isinstance(entries, list):
+        result["error"] = "public manifest 'entries' is not a list"
+        return result
+
+    changed = False
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        ap = str(entry.get("artifact_path") or "")
+        if not ap:
+            continue
+        if not is_in_scope(ap):
+            result["out_of_scope"].append(ap)
+            continue
+        f = repo_root / ap
+        if not f.is_file():
+            result["missing_on_disk"].append(ap)
+            continue
+        try:
+            content = f.read_bytes()
+        except OSError:
+            result["missing_on_disk"].append(ap)
+            continue
+        # Security gate: never re-pin a file that reintroduced a forbidden
+        # workload token — that must go through the private --apply sweep.
+        try:
+            text = content.decode("utf-8")
+        except UnicodeDecodeError:
+            text = ""
+        if any(tok in text for tok in FORBIDDEN_TOKENS):
+            result["blocked_forbidden_token"].append(ap)
+            continue
+        on_disk = _sha256_bytes(content)
+        if entry.get("sanitized_sha256") == on_disk:
+            result["unchanged"] += 1
+            continue
+        result["refreshed"].append(
+            {
+                "artifact_path": ap,
+                "old": str(entry.get("sanitized_sha256") or ""),
+                "new": on_disk,
+            }
+        )
+        if not dry_run:
+            entry["sanitized_sha256"] = on_disk
+        changed = True
+
+    if changed and not dry_run:
+        write_public_manifest(public_manifest_path, data)
+        result["wrote"] = True
+    return result
+
+
 def verify(repo_root: Path) -> tuple[int, list[tuple[str, str]]]:
     """Scan tracked in-scope files for any forbidden literal token.
 
@@ -1282,6 +1391,16 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--dry-run", action="store_true", help="List candidates, write nothing.")
     g.add_argument("--apply", action="store_true", help="Apply the sweep: archive + rewrite + public manifest.")
     g.add_argument("--verify", action="store_true", help="Scan for forbidden tokens and validate the public manifest.")
+    g.add_argument(
+        "--refresh-hashes",
+        action="store_true",
+        help=(
+            "Public-side re-pin: refresh sanitized_sha256 for existing, "
+            "token-clean public-manifest entries whose bytes changed, without "
+            "the private archive. Refuses files that reintroduced a forbidden "
+            "token (use --apply for those)."
+        ),
+    )
     parser.add_argument(
         "--require-public-manifest",
         action="store_true",
@@ -1331,6 +1450,53 @@ def main(argv: list[str] | None = None) -> int:
                     f"--require-public-manifest)."
                 )
         return code
+
+    if args.refresh_hashes:
+        res = refresh_public_hashes(
+            REPO_ROOT,
+            public_manifest_path=PUBLIC_MANIFEST_PATH,
+        )
+        if res.get("error"):
+            print(f"refresh-hashes: {res['error']}")
+            return 1
+        for r in res["refreshed"]:
+            print(
+                f"refresh-hashes: re-pinned {r['artifact_path']} "
+                f"{r['old'][:12]} -> {r['new'][:12]}"
+            )
+        if res["wrote"]:
+            print(
+                f"refresh-hashes: updated {len(res['refreshed'])} "
+                f"entr{'y' if len(res['refreshed']) == 1 else 'ies'} in "
+                f"{PUBLIC_MANIFEST_RELPATH}."
+            )
+        elif not res["refreshed"]:
+            print(
+                "refresh-hashes: no drift — all in-scope entries already "
+                "match on disk."
+            )
+        blocked = res["blocked_forbidden_token"]
+        missing = res["missing_on_disk"]
+        oos = res["out_of_scope"]
+        if blocked or missing or oos:
+            for ap in blocked:
+                print(
+                    f"refresh-hashes: REFUSED {ap} — file contains a forbidden "
+                    f"workload token; run the private '--apply' sweep "
+                    f"(archives + redacts) instead."
+                )
+            for ap in missing:
+                print(
+                    f"refresh-hashes: {ap} is listed in the manifest but missing "
+                    f"on disk — run '--apply' to reconcile."
+                )
+            for ap in oos:
+                print(
+                    f"refresh-hashes: {ap} is no longer in public scope — run "
+                    f"'--apply' to reconcile."
+                )
+            return 1
+        return 0
 
     summary = apply_sweep(REPO_ROOT, dry_run=args.dry_run)
     print(json.dumps(summary, sort_keys=True, indent=2))

@@ -38,13 +38,15 @@ if ! "$PY" scripts/sanitize_public_artifacts.py --verify --require-public-manife
   cat >&2 <<'EOF'
 
   ^ Public manifest drift or a forbidden token was detected.
-    If you legitimately edited a manifest-tracked public artifact, refresh
-    its recorded sanitized_sha256 by re-running the redaction sweep in the
-    environment that holds the private redaction archive:
+    If you legitimately edited a manifest-tracked public artifact and it is
+    still token-clean, re-pin its recorded hash from the public tree
+    (no private archive needed):
 
-        python scripts/sanitize_public_artifacts.py --apply
+        python scripts/sanitize_public_artifacts.py --refresh-hashes
         git add release/public_sanitized_manifest.json && git commit
 
+    Use --apply instead (needs the private redaction archive) when adding a
+    new artifact or if a forbidden token was reintroduced.
     (docs/16 §8.1 release-readiness gate; CONTRIBUTING "Pull request checklist".)
 EOF
 fi

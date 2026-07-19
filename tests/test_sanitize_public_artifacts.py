@@ -976,3 +976,91 @@ def test_project_name_substring_trap_still_avoided_with_public_manifest_active(t
     assert "urement" not in new
     assert "<project>" in new
     assert "<resource>" in new
+
+
+# ---------------------------------------------------------------------------
+# Public-side re-pin (--refresh-hashes): decouple drift repair from --apply
+# ---------------------------------------------------------------------------
+
+
+def _pm_entry(data: dict, path: str) -> dict:
+    return next(e for e in data["entries"] if e["artifact_path"] == path)
+
+
+def test_refresh_hashes_repins_token_clean_edit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mod, repo, _ = _setup_synthetic_repo_and_sweep(tmp_path, monkeypatch)
+    pm_path = repo / "release" / "public_sanitized_manifest.json"
+    before = json.loads(pm_path.read_text())
+    entry_before = _pm_entry(before, "scripts/y.py")
+    raw_lineage = entry_before["source_raw_sha256"]
+    archive_id = entry_before["source_archive_id"]
+
+    # A legitimate, token-clean downstream edit to a published artifact.
+    target = repo / "scripts/y.py"
+    target.write_text(target.read_text() + "\n# added a clean note\n", encoding="utf-8")
+    new_sha = mod._sha256_bytes(target.read_bytes())
+    assert new_sha != entry_before["sanitized_sha256"]
+
+    res = mod.refresh_public_hashes(repo, public_manifest_path=pm_path)
+    assert res["wrote"] is True
+    assert [r["artifact_path"] for r in res["refreshed"]] == ["scripts/y.py"]
+    assert res["blocked_forbidden_token"] == []
+    assert res["missing_on_disk"] == []
+
+    after = json.loads(pm_path.read_text())
+    entry_after = _pm_entry(after, "scripts/y.py")
+    # sanitized_sha256 re-pinned to the new on-disk bytes...
+    assert entry_after["sanitized_sha256"] == new_sha
+    # ...while the RAW lineage stays pinned to the original source.
+    assert entry_after["source_raw_sha256"] == raw_lineage
+    assert entry_after["source_archive_id"] == archive_id
+
+    # Full integrity now passes without touching the private archive.
+    errors = mod.verify_public_manifest(
+        repo,
+        pm_path,
+        private_manifest_path=repo / ".internal" / "release" / "raw_archive_manifest.json",
+        require_present=True,
+    )
+    assert errors == [], errors
+
+    # Idempotent: a second refresh over the unchanged tree is a no-op.
+    res2 = mod.refresh_public_hashes(repo, public_manifest_path=pm_path)
+    assert res2["refreshed"] == []
+    assert res2["wrote"] is False
+
+
+def test_refresh_hashes_refuses_reintroduced_forbidden_token(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mod, repo, _ = _setup_synthetic_repo_and_sweep(tmp_path, monkeypatch)
+    pm_path = repo / "release" / "public_sanitized_manifest.json"
+    before = json.loads(pm_path.read_text())
+    pinned = _pm_entry(before, "scripts/y.py")["sanitized_sha256"]
+
+    # Reintroduce a forbidden workload token into a published artifact.
+    (repo / "scripts/y.py").write_text(f"X = '{_RES}'  # leaked\n", encoding="utf-8")
+
+    res = mod.refresh_public_hashes(repo, public_manifest_path=pm_path)
+    assert "scripts/y.py" in res["blocked_forbidden_token"]
+    assert not any(r["artifact_path"] == "scripts/y.py" for r in res["refreshed"])
+
+    # The manifest hash was NOT laundered to bless the leak.
+    after = json.loads(pm_path.read_text())
+    assert _pm_entry(after, "scripts/y.py")["sanitized_sha256"] == pinned
+
+
+def test_refresh_hashes_reports_missing_file_without_pruning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mod, repo, _ = _setup_synthetic_repo_and_sweep(tmp_path, monkeypatch)
+    pm_path = repo / "release" / "public_sanitized_manifest.json"
+    (repo / "scripts/y.py").unlink()
+
+    res = mod.refresh_public_hashes(repo, public_manifest_path=pm_path)
+    assert "scripts/y.py" in res["missing_on_disk"]
+    # Entry is reported for --apply reconciliation, not silently removed.
+    after = json.loads(pm_path.read_text())
+    assert any(e["artifact_path"] == "scripts/y.py" for e in after["entries"])

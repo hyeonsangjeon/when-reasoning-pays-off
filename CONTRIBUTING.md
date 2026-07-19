@@ -56,11 +56,14 @@ formalizes this. Briefly:
    patterns. CI runs a defensive grep over the diff; locally you can run
    `bash scripts/check_public_surface.sh` before pushing. **If you edit a
    manifest-tracked public artifact** (e.g. `results/**`, chart data, CSVs),
-   re-run `python scripts/sanitize_public_artifacts.py --apply` in the
-   environment that holds the private redaction archive and commit the
-   refreshed `release/public_sanitized_manifest.json` in the **same** PR —
-   otherwise the release gate fails on a stale `sanitized_sha256` (drift).
-   Verify locally with
+   re-pin its recorded hash and commit the refreshed
+   `release/public_sanitized_manifest.json` in the **same** PR — otherwise
+   the release gate fails on a stale `sanitized_sha256` (drift). For a
+   token-clean edit to an already-tracked artifact, re-pin from the public
+   tree with `python scripts/sanitize_public_artifacts.py --refresh-hashes`
+   (no private archive needed); use `--apply` (which needs the private
+   redaction archive) only when adding a new artifact or if a workload
+   token was reintroduced. Verify locally with
    `python scripts/sanitize_public_artifacts.py --verify --require-public-manifest`.
 3. **Citation tier.** If your PR adds a claim about Azure / OpenAI /
    Foundry behaviour, mark it `OFFICIAL_SPEC` (Tier 1) with a vendor URL
