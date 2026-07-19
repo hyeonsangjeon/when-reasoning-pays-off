@@ -54,7 +54,14 @@ formalizes this. Briefly:
 2. **Redaction clean.** No endpoint hostnames, deployment names, request
    IDs, region identifiers, customer-shape fingerprints, or secret
    patterns. CI runs a defensive grep over the diff; locally you can run
-   `bash scripts/check_public_surface.sh` before pushing.
+   `bash scripts/check_public_surface.sh` before pushing. **If you edit a
+   manifest-tracked public artifact** (e.g. `results/**`, chart data, CSVs),
+   re-run `python scripts/sanitize_public_artifacts.py --apply` in the
+   environment that holds the private redaction archive and commit the
+   refreshed `release/public_sanitized_manifest.json` in the **same** PR —
+   otherwise the release gate fails on a stale `sanitized_sha256` (drift).
+   Verify locally with
+   `python scripts/sanitize_public_artifacts.py --verify --require-public-manifest`.
 3. **Citation tier.** If your PR adds a claim about Azure / OpenAI /
    Foundry behaviour, mark it `OFFICIAL_SPEC` (Tier 1) with a vendor URL
    + ISO access date, or `OPERATIONAL_INFERENCE` (Tier 2) with rationale
@@ -76,6 +83,14 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ruff check .
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
+```
+
+Enable the shared git hooks once per clone so the same read-only release
+and docs gates CI runs (public-manifest integrity, public-surface grep,
+static Pages validation) also run locally before every `git push`:
+
+```bash
+git config core.hooksPath .githooks
 ```
 
 You do not need Azure credentials to run the `batch-runner/tests/`
