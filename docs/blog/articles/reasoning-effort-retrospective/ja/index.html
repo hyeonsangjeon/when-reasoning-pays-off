@@ -65,7 +65,7 @@ bash scripts/verify_setup.sh
 # 実験カタログ全体(入力 → 変数 → 出力)をそのまま出力:
 python experiments/examples/describe_all.py</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
-      <p class="muted-note">各実験の入力ファイル &middot; 変数 &middot; 正確な出力パスは、リポジトリの <code>experiments/README.md</code> にある実験ごとのカードへ一つずつ整理されています。</p>
+      <p class="muted-note">各実験の入力ファイル &middot; 変数 &middot; 正確な出力パスは、リポジトリの <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> にある実験ごとのカードへ一つずつ整理されています。</p>
     </section>
 
     <figure class="article-figure" id="figure-effort-quality">
@@ -73,7 +73,7 @@ python experiments/examples/describe_all.py</code></pre>
         <strong>仮説が崩れる地点。</strong> 多段階ベンチマーク(02)の努力度別通過率です。
         gpt-5.2 は最も低い努力度ですでに 100% に飽和し、努力度を上げても曲線は
         平らです &mdash; 追加の努力度は品質ではなく推論トークンだけを消費しました。
-        数値の出典は <code>results/summary.md</code> §3 &middot; §7 で、ベンチマークごとの
+        数値の出典は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> §3 &middot; §7 で、ベンチマークごとの
         <code>analysis.md</code> を再引用しています。
       </figcaption>
       <img src="../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02(多段階推論)の努力度別通過率の棒グラフ。gpt-5.2 は none から xhigh まで 100% で平らで、gpt-4o baseline はそれより低い 75% 付近にある。推論努力度を上げても品質が上がらないことを示している。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -132,7 +132,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 
 # ランナーを dry-run で配線検証 (トークン消費 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
-      <p class="muted-note">深い解剖は <a href="../experiments/exp001-short-factual/ja/">exp001 実験ノート</a>(短い事実回答)&middot;<a href="../experiments/exp002-multi-step-reasoning/ja/">exp002 実験ノート</a>(多段階)&middot;<a href="../experiments/exp003-tool-using-agent/ja/">exp003 実験ノート</a>(ツールエージェント)に、実験カタログ全体(どんな意図で、何を入力し、何を出力するか)は <code>experiments/README.md</code> にあります。</p>
+      <p class="muted-note">深い解剖は <a href="../experiments/exp001-short-factual/ja/">exp001 実験ノート</a>(短い事実回答)&middot;<a href="../experiments/exp002-multi-step-reasoning/ja/">exp002 実験ノート</a>(多段階)&middot;<a href="../experiments/exp003-tool-using-agent/ja/">exp003 実験ノート</a>(ツールエージェント)に、実験カタログ全体(どんな意図で、何を入力し、何を出力するか)は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> にあります。</p>
     </section>
 
     <section class="article-section decision-box">
@@ -158,8 +158,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>出典 &amp; 根拠の境界</h2>
       <p>この回顧は新しい測定を導入せず、公開済みの数値を 1,000件当たりに正規化して再引用します。原資料と境界は次のとおりです。</p>
       <ul>
-        <li>横断要約: <code>results/summary.md</code>(§3 ヘッドライン, §5 判断境界, §6 限界)。すべてのコストはベンチマークごとの <code>benchmarks/0[123]-*/analysis.md</code> から再引用。</li>
-        <li>価格: 単一スナップショット <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, アクセス日 2026-05-19)。料率が変わればスナップショットを更新し、分析を再実行する必要がある。</li>
+        <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 ヘッドライン, §5 判断境界, §6 限界)。すべてのコストはベンチマークごとの <code>benchmarks/0[123]-*/analysis.md</code> から再引用。</li>
+        <li>価格: 単一スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。料率が変わればスナップショットを更新し、分析を再実行する必要がある。</li>
         <li>標本: ベンチマーク当たり N=20 · R=3。方法論 §8 はこの標本サイズで信頼区間/標準誤差の報告を禁じている &mdash; 方向性の結論は堅いが、絶対値の大きさは小標本として注意。</li>
         <li>採点: LLM-as-judge ルーブリックは中立ジャッジとして gpt-4o を使用。ジャッジプロンプト SHA-256 を各採点 JSON に記録し、ドリフトを監視。</li>
         <li>PTU: スループット数値はトークン数ベースの推定であり、ライブ PTU 負荷テストではない。ツールベンチマークの <code>web_search</code> は固定 KB 検索(モック)。</li>

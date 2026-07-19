@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp001_short-factual_
 # runner को dry-run में केवल wiring verify करें (token consumption 0)
 python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर repo खोलें &amp; ⭐</a></p>
-      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <code>benchmarks/01-short-factual/analysis.md</code> के reproduction footer में हैं। इस note के सभी numbers उसी real aggregate (<code>analysis.json</code>) से re-cite हैं।</p>
+      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> के reproduction footer में हैं। इस note के सभी numbers उसी real aggregate (<code>analysis.json</code>) से re-cite हैं।</p>
     </section>
 
     <nav class="article-outline" aria-label="इस note की संरचना">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="reversal" class="article-section">
       <p class="section-label">पहला signal</p>
       <h2>none ने पहले ही gpt-4o को हराया</h2>
-      <p>नीचे की table के dollars pricing snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले values हैं, जिन्हें <code>analysis.md</code> §5 से re-cite किया गया है और per 1,000 normalized किया गया है। Accuracy judge score 2 (fully correct) का ratio है।</p>
+      <p>नीचे की table के dollars pricing snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले values हैं, जिन्हें <code>analysis.md</code> §5 से re-cite किया गया है और per 1,000 normalized किया गया है। Accuracy judge score 2 (fully correct) का ratio है।</p>
       <pre class="code-block"><code>मॉडल      प्रयास   1,000अनुरोध   सही दर          1,000सही
 gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← baseline
 gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← default
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <p><code>none</code> से ऊपर कुछ नहीं होता। <code>low</code>&middot;<code>medium</code> की accuracy 96.7% (60 में एक case अधिक) <em>दिखती है</em>, पर यह sample noise की सीमा है (N=20&middot;R=3, confidence intervals नहीं)। <code>high</code> per request उल्टे <strong>+3.6%</strong> महँगा है और accuracy 95% पर लौट आती है। <strong><code>none</code> से <code>medium</code> तक व्यवहार में एक plane</strong> है, और उसके ऊपर quality के बिना cost जुड़ती है।</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>सपाट quality curve, real measurement.</strong> Effort के अनुसार judge score (0&ndash;2). gpt-5.2 <code>none</code> (1.95) से <code>xhigh</code> (1.95) तक 1.9&ndash;1.97 के बीच लगभग बिना हिले सपाट है, और gpt-4o baseline (1.90) ठीक नीचे है। पूरी effort ladder में maximum quality gap केवल <strong>0.07 points</strong> है। Source: <code>results/cost-curves/benchmark-01-quality.png</code> (real cohort).</figcaption>
+        <figcaption><strong>सपाट quality curve, real measurement.</strong> Effort के अनुसार judge score (0&ndash;2). gpt-5.2 <code>none</code> (1.95) से <code>xhigh</code> (1.95) तक 1.9&ndash;1.97 के बीच लगभग बिना हिले सपाट है, और gpt-4o baseline (1.90) ठीक नीचे है। पूरी effort ladder में maximum quality gap केवल <strong>0.07 points</strong> है। Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a> (real cohort).</figcaption>
         <img src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark 01 के effort-wise average judge score का bar chart. gpt-5.2 none से xhigh तक 1.9~1.97 के बीच सपाट है, और gpt-4o 1.90 पर उसके नीचे है." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -200,7 +200,7 @@ arith-trivial     2.00     1.83       1.67      1.67       1.67</code></pre>
         <li><strong>Retrospective body →</strong> <a href="../../../hi/#questions">प्रश्न-वार retrospective Q1 &mdash; क्या short-factual task को reasoning चाहिए?</a> का core evidence यही experiment है।</li>
         <li><strong>Timeline →</strong> <a href="../../../hi/#timeline">&ldquo;short-factual case measurement &mdash; floor को छूना&rdquo;</a> item इस experiment का anchor moment है।</li>
         <li><strong>Paired experiment →</strong> <a href="../../exp002-multi-step-reasoning/hi/">exp002 &mdash; multi-step reasoning</a> वह ceiling case है जहाँ &ldquo;reasoning को जीतना था&rdquo; फिर भी <code>none</code> floor निकला। इस floor के साथ पढ़ने पर दिखता है कि दोनों single-shot tasks में effort dial क्यों खाली है।</li>
-        <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <code>experiments/README.md</code> के <code>exp001</code> card में है।</li>
+        <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> के <code>exp001</code> card में है।</li>
       </ul>
       <p><strong>Next experiment.</strong> यह floor deterministic answer key के बिना judge पर निर्भर है। अगला कदम <strong>rule-based verifier</strong> जोड़कर judge bias को cross-check करना, और <strong>real PTU load test</strong> से यह देखना है कि यहाँ का ~1% throughput gap live में भी overlap करता है या नहीं।</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">इसे खुद reproduce करें और ⭐ छोड़ें</a></p>
@@ -211,10 +211,10 @@ arith-trivial     2.00     1.83       1.67      1.67       1.67</code></pre>
       <h2>स्रोत &amp; evidence boundary</h2>
       <p>इस note के numbers synthetic नहीं, real measurement से आए हैं। वे कहाँ से आए और सीमा कहाँ तक है, नीचे जस का तस रखते हैं।</p>
       <ul>
-        <li>इस experiment का analysis: <code>benchmarks/01-short-factual/analysis.md</code> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite &mdash; real cohort <code>exp001_short-factual_baseline</code>.</li>
-        <li>Cross-summary: <code>results/summary.md</code>.</li>
-        <li>Methodology: <code>docs/05-methodology.md</code> (variables·sample·cache·scoring·cost·reproduction·statistical reporting protocol).</li>
-        <li>Pricing: <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19).</li>
+        <li>इस experiment का analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite &mdash; real cohort <code>exp001_short-factual_baseline</code>.</li>
+        <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> (variables·sample·cache·scoring·cost·reproduction·statistical reporting protocol).</li>
+        <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19).</li>
         <li>Boundary: N=20 · confidence intervals नहीं · single pricing snapshot · judge gpt-4o · deterministic answer key नहीं (quality केवल judge score) · PTU token-based estimate है (live load नहीं).</li>
       </ul>
     </section>

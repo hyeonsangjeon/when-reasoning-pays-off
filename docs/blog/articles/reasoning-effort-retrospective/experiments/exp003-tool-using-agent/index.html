@@ -64,7 +64,7 @@ python -c "import experiments; print(experiments.describe('exp003_benchmark03_gp
 # Verify only the tool-loop runner wiring with a dry run (zero token spend)
 python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
-      <p class="muted-note">The commands for the real paid measurement and for regenerating the aggregates and charts are collected in the reproduction footer of <code>benchmarks/03-tool-using-agent/analysis.md</code>.</p>
+      <p class="muted-note">The commands for the real paid measurement and for regenerating the aggregates and charts are collected in the reproduction footer of <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.md"><code>benchmarks/03-tool-using-agent/analysis.md</code></a>.</p>
     </section>
 
     <nav class="article-outline" aria-label="Structure of this note">
@@ -124,7 +124,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">First signal</p>
       <h2>The floor was low, not none</h2>
-      <p>The dollars in the table below apply the methodology's PAYG formula to the price snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (accessed 2026-05-19); they are re-cited from <code>analysis.md</code> §5 and normalized per 1,000.</p>
+      <p>The dollars in the table below apply the methodology's PAYG formula to the price snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (accessed 2026-05-19); they are re-cited from <code>analysis.md</code> §5 and normalized per 1,000.</p>
       <pre class="code-block"><code>Model     Effort   Per 1,000 req   Pass rate       Per 1,000 correct
 gpt-4o    —        $3.29           90.0% (54/60)   $3.65   ← baseline
 gpt-5.2   none     $2.76           98.3% (59/60)   $2.81
@@ -136,7 +136,7 @@ gpt-5.2   xhigh    $3.50           100%  (60/60)   $3.50</code></pre>
       <p>In the previous two benchmarks <code>none</code> was both floor and optimum. Here, for the first time, the floor rose by one notch. <strong>Mixed real work has a positive minimum-effort floor</strong> &mdash; reasoning finally, if only a little, paid off.</p>
 
       <figure class="article-figure" id="figure-exp003-quality">
-        <figcaption><strong>An almost-flat quality curve.</strong> Pass rate by effort. gpt-5.2 rises from <code>none</code> (98.3%) to <code>low</code> (100%) and then stays flat, and the gpt-4o baseline sits below it near 90%. The real story is not this aggregate line but the <em>by-type</em> breakdown below. Source: <code>results/cost-curves/benchmark-03-quality.png</code>.</figcaption>
+        <figcaption><strong>An almost-flat quality curve.</strong> Pass rate by effort. gpt-5.2 rises from <code>none</code> (98.3%) to <code>low</code> (100%) and then stays flat, and the gpt-4o baseline sits below it near 90%. The real story is not this aggregate line but the <em>by-type</em> breakdown below. Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>.</figcaption>
         <img src="../../../../../assets/benchmark-03-quality.png" alt="Bar chart of pass rate by effort for benchmark 03. gpt-5.2 rises from none 98.3% to low 100% then stays flat, and gpt-4o is near 90%." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -203,7 +203,7 @@ gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code
         <li><strong>Retrospective essay &rarr;</strong> this experiment is the core evidence for <a href="../../#questions">by-question retrospective Q3 &mdash; is more reasoning safer for a tool agent</a>.</li>
         <li><strong>Timeline &rarr;</strong> the entry <a href="../../#timeline">&ldquo;Measuring the tool-agent case &mdash; an unexpected finding&rdquo;</a> is this experiment's tool-overuse moment.</li>
         <li><strong>Paired experiment &rarr;</strong> <a href="../exp002-multi-step-reasoning/">exp002 &mdash; multi-step reasoning</a> is the ceiling case where <code>none</code> was the floor. Read alongside this note, you see why the floor rose by one notch.</li>
-        <li><strong>Experiment card &rarr;</strong> the mechanical spec of inputs/variables/outputs is in the <code>exp003</code> card in the repo's <code>experiments/README.md</code>.</li>
+        <li><strong>Experiment card &rarr;</strong> the mechanical spec of inputs/variables/outputs is in the <code>exp003</code> card in the repo's <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>.</li>
       </ul>
       <p><strong>Next experiment.</strong> Here search is mocked and the PTU numbers are token-based estimates. Next is <strong>live search</strong> and a <strong>real PTU load test</strong> &mdash; how rate-limit shaping·queuing·parallel batching act on a tool loop's throughput and reliability.</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐</a></p>
@@ -214,10 +214,10 @@ gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code
       <h2>Sources &amp; evidence boundary</h2>
       <p>This note, too, adds no new measurement; it re-cites the published aggregate. Including the limit that search was mocked, we leave the evidence and its boundaries below.</p>
       <ul>
-        <li>This experiment's analysis: <code>benchmarks/03-tool-using-agent/analysis.md</code> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality·by-type, §8 latency, §9 outliers, §10 tool efficiency, §11 conclusion). All figures re-cited from here.</li>
-        <li>Cross-summary: <code>results/summary.md</code>.</li>
-        <li>Methodology: <code>docs/05-methodology.md</code> (variables, sampling, cache, grading, cost, reproduction, statistical reporting conventions).</li>
-        <li>Price: <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19).</li>
+        <li>This experiment's analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.md"><code>benchmarks/03-tool-using-agent/analysis.md</code></a> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality·by-type, §8 latency, §9 outliers, §10 tool efficiency, §11 conclusion). All figures re-cited from here.</li>
+        <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> (variables, sampling, cache, grading, cost, reproduction, statistical reporting conventions).</li>
+        <li>Price: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19).</li>
         <li>Boundary: N=20 · no confidence intervals · single price snapshot · judge gpt-4o · <code>web_search</code> is a fixed-KB mock · PTU is a token-based estimate (not a live load test).</li>
       </ul>
     </section>

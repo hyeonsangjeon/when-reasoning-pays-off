@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp001_short-factual_
 # 只用 dry-run 验证 runner 接线(token 消耗 0)
 python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
-      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <code>benchmarks/01-short-factual/analysis.md</code> 的复现页脚里。本文所有数字都重新引用自那份实测聚合(<code>analysis.json</code>)。</p>
+      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> 的复现页脚里。本文所有数字都重新引用自那份实测聚合(<code>analysis.json</code>)。</p>
     </section>
 
     <nav class="article-outline" aria-label="本文结构">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="reversal" class="article-section">
       <p class="section-label">第一个信号</p>
       <h2>none 已经赢过 gpt-4o</h2>
-      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <code>pricing/azure-openai-payg-2026-05.yaml</code>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用，按每 1,000 次归一化。正确率是裁判分数 2(完全正确)的比例。</p>
+      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用，按每 1,000 次归一化。正确率是裁判分数 2(完全正确)的比例。</p>
       <pre class="code-block"><code>模型      努力     每1,000次请求    正确率           每1,000个正确答案
 gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← 基线
 gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← 默认值
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <p><code>none</code> 以上几乎没有事情发生。<code>low</code>&middot;<code>medium</code> 的正确率<em>看起来</em>是 96.7%(60 个中多 1 个)，但这是样本噪声范围(N=20&middot;R=3，无置信区间)。<code>high</code> 按请求反而<strong>贵 +3.6%</strong>，正确率回到 95%。<strong>从 <code>none</code> 到 <code>medium</code> 基本上是同一个平面</strong>，再往上没有质量收益，只多成本。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的裁判分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<code>results/cost-curves/benchmark-01-quality.png</code>(实测 cohort)。</figcaption>
+        <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的裁判分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(实测 cohort)。</figcaption>
         <img src="../../../../../../assets/benchmark-01-quality.png" alt="基准 01 按强度划分的平均裁判分数柱状图。gpt-5.2 从 none 到 xhigh 都在 1.9~1.97 之间保持平坦，gpt-4o 为 1.90，位于其下。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -200,7 +200,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
         <li><strong>回顾正文 →</strong> <a href="../../../zh-CN/#questions">逐问题回顾 Q1 &mdash; 短事实任务需要推理吗</a>的核心证据就是这个实验。</li>
         <li><strong>时间线 →</strong> <a href="../../../zh-CN/#timeline">&ldquo;短事实案例测量 &mdash; 触到底部&rdquo;</a>条目是这个实验的锚点时刻。</li>
         <li><strong>配对实验 →</strong> <a href="../../exp002-multi-step-reasoning/zh-CN/">exp002 &mdash; 多步推理</a>本应是&ldquo;推理获胜的时候&rdquo;，却仍是 <code>none</code> 做底的天花板案例。与这个底部并排读，就会看到两个单发任务中强度旋钮为何是空的。</li>
-        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <code>experiments/README.md</code> 的 <code>exp001</code> 卡片中。</li>
+        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> 的 <code>exp001</code> 卡片中。</li>
       </ul>
       <p><strong>下一项实验。</strong> 这个底部没有确定性答案表，只依赖裁判。下一步是加上<strong>基于规则的验证器</strong>来交叉检查裁判偏差，并用<strong>真实 PTU 负载测试</strong>确认这里约 ~1% 的吞吐差距在实时环境中是否仍然重叠。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
@@ -211,10 +211,10 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <h2>来源 &amp; 证据边界</h2>
       <p>本文的数字不是合成，而是来自实测。数字来自哪里、边界到哪里，都原样列在下面。</p>
       <ul>
-        <li>本实验分析：<code>benchmarks/01-short-factual/analysis.md</code>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用 &mdash; 实测 cohort <code>exp001_short-factual_baseline</code>。</li>
-        <li>交叉摘要：<code>results/summary.md</code>。</li>
-        <li>方法论：<code>docs/05-methodology.md</code>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
-        <li>价格：<code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 访问日 2026-05-19)。</li>
+        <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用 &mdash; 实测 cohort <code>exp001_short-factual_baseline</code>。</li>
+        <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
+        <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
+        <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。</li>
         <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · 无确定性答案表(质量仅为裁判分数) · PTU 为基于 token 的估算(非实时负载)。</li>
       </ul>
     </section>

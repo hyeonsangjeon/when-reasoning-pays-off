@@ -66,7 +66,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 # 러너를 dry-run으로 배선만 검증 (토큰 소비 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 레포 열기 &amp; ⭐</a></p>
-      <p class="muted-note">실제 유료 측정과 집계&middot;도표 재생성 커맨드는 <code>benchmarks/02-multi-step-reasoning/analysis.md</code>의 재현 푸터에 정리되어 있습니다.</p>
+      <p class="muted-note">실제 유료 측정과 집계&middot;도표 재생성 커맨드는 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a>의 재현 푸터에 정리되어 있습니다.</p>
     </section>
 
     <nav class="article-outline" aria-label="이 노트의 구성">
@@ -126,7 +126,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">첫 번째 역전</p>
       <h2>모델을 바꾸자 품질은 오르고 비용은 내렸다</h2>
-      <p>아래 표의 달러는 가격 스냅샷 <code>pricing/azure-openai-payg-2026-05.yaml</code>(접근일 2026-05-19)에 방법론의 PAYG 공식을 적용한 값으로, <code>analysis.md</code> §5에서 재인용한다.</p>
+      <p>아래 표의 달러는 가격 스냅샷 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(접근일 2026-05-19)에 방법론의 PAYG 공식을 적용한 값으로, <code>analysis.md</code> §5에서 재인용한다.</p>
       <pre class="code-block"><code>모델      강도     1,000요청당    통과율          1,000정답당
 gpt-4o    —        $0.80         75.0% (45/60)   $1.06   ← 기준선
 gpt-5.2   none     $0.62         100%  (60/60)   $0.62   ← 파레토 최적
@@ -138,7 +138,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code>는 요청당 단가가 7.6% 더 비싸지만, 높은 통과율(96.7% 대 75%)이 그 프리미엄을 되갚아 정답 1,000건당으로는 gpt-4o보다 <strong>16% 싸다</strong>. 첫 번째 최적화는 강도를 올리는 일이 아니라, <em>모델과 강도를 한 조합으로 보고 품질을 통과한 가장 싼 지점을 찾는</em> 일이었다.</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>포화된 품질 곡선.</strong> 강도별 통과율. gpt-5.2는 <code>none</code>부터 <code>xhigh</code>까지 100%로 평평하고, gpt-4o 기준선은 그 아래 75% 부근에 있다. 출처: <code>results/cost-curves/benchmark-02-quality.png</code>.</figcaption>
+        <figcaption><strong>포화된 품질 곡선.</strong> 강도별 통과율. gpt-5.2는 <code>none</code>부터 <code>xhigh</code>까지 100%로 평평하고, gpt-4o 기준선은 그 아래 75% 부근에 있다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
         <img src="../../../../../../assets/benchmark-02-quality.png" alt="벤치마크 02의 강도별 통과율 막대 그래프. gpt-5.2는 none부터 xhigh까지 100%로 평평하고 gpt-4o는 75% 부근에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -200,7 +200,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>회고 본문 →</strong> <a href="../../../ko/#questions">질문별 회고 Q2 &mdash; 다단계에서 강도는 값을 하는가</a>의 핵심 근거가 이 실험이다.</li>
         <li><strong>타임라인 →</strong> <a href="../../../ko/#timeline">&ldquo;Ceiling 케이스 측정 &mdash; 전환점&rdquo;</a> 항목이 이 실험의 반증 순간이다.</li>
-        <li><strong>실험 카드 →</strong> 입력/변수/출력의 기계적 명세는 레포 <code>experiments/README.md</code>의 <code>exp002</code> 카드에 있다.</li>
+        <li><strong>실험 카드 →</strong> 입력/변수/출력의 기계적 명세는 레포 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>의 <code>exp002</code> 카드에 있다.</li>
       </ul>
       <p><strong>다음 실험.</strong> &ldquo;강도 &gt; none&rdquo; 열은 단답과 다단계 벤치마크에서 모두 비어 있다. 그 열을 처음으로 채운 것이 <a href="../../exp003-tool-using-agent/ko/">exp003 &mdash; 툴 사용 에이전트(Mixed case)</a>다. 품질이 낮은 강도에서 이미 천장에 닿았을 때, 더 큰 레버가 강도가 아니라 <em>도구 선택&middot;도구 지연&middot;루프 예산</em>이 되는 순간을 &mdash; 그리고 <code>none</code>이 아니라 <code>low</code>가 바닥이 되는 이유를 &mdash; 그 노트에서 살펴본다.</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기</a></p>
@@ -211,10 +211,10 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>출처 &amp; 근거 경계</h2>
       <p>이 노트는 새 측정을 더하지 않고 게시된 집계를 다시 인용했다. 예측이 빗나간 자리까지 포함해, 근거와 경계를 아래에 둔다.</p>
       <ul>
-        <li>이 실험 분석: <code>benchmarks/02-multi-step-reasoning/analysis.md</code>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질, §8 지연, §9 이상치, §10 결론). 모든 수치는 여기서 재인용.</li>
-        <li>교차 요약: <code>results/summary.md</code>.</li>
-        <li>방법론: <code>docs/05-methodology.md</code>(변수·표본·캐시·채점·비용·재현·통계 보고 규약).</li>
-        <li>가격: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 접근일 2026-05-19).</li>
+        <li>이 실험 분석: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질, §8 지연, §9 이상치, §10 결론). 모든 수치는 여기서 재인용.</li>
+        <li>교차 요약: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>방법론: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(변수·표본·캐시·채점·비용·재현·통계 보고 규약).</li>
+        <li>가격: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 접근일 2026-05-19).</li>
         <li>경계: N=20 · 신뢰구간 없음 · 단일 가격 스냅샷 · 심판 gpt-4o · PTU는 토큰 기반 추정(라이브 부하 아님).</li>
       </ul>
     </section>

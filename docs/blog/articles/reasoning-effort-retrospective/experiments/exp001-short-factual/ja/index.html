@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp001_short-factual_
 # ランナーを dry-run で配線だけ検証 (トークン消費 0)
 python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
-      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <code>benchmarks/01-short-factual/analysis.md</code> の再現フッターに整理されています。このノートのすべての数字は、その実測集計(<code>analysis.json</code>)から再引用したものです。</p>
+      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> の再現フッターに整理されています。このノートのすべての数字は、その実測集計(<code>analysis.json</code>)から再引用したものです。</p>
     </section>
 
     <nav class="article-outline" aria-label="このノートの構成">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="reversal" class="article-section">
       <p class="section-label">第一のシグナル</p>
       <h2>none がすでに gpt-4o に勝っていた</h2>
-      <p>下の表のドルは価格スナップショット <code>pricing/azure-openai-payg-2026-05.yaml</code>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用し、1,000件当たりに正規化した。正答率はジャッジスコア 2(完全正答)の比率である。</p>
+      <p>下の表のドルは価格スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用し、1,000件当たりに正規化した。正答率はジャッジスコア 2(完全正答)の比率である。</p>
       <pre class="code-block"><code>モデル      努力度   1,000リクエスト当たり 正答率           正答1,000件当たり
 gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← ベースライン
 gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← デフォルト
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <p><code>none</code> の上では何も起きない。<code>low</code>&middot;<code>medium</code> は正答率が 96.7%(60件中 1件多い)に<em>見える</em>が、これは標本ノイズの範囲だ(N=20&middot;R=3、信頼区間なし)。<code>high</code> はリクエスト当たりでむしろ <strong>+3.6%</strong> 高くなり、正答率は 95% に戻る。<strong><code>none</code> から <code>medium</code> までは実質一つの平面</strong>で、その上は品質なしにコストだけが乗る。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別ジャッジスコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <code>results/cost-curves/benchmark-01-quality.png</code>(実測コホート)。</figcaption>
+        <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別ジャッジスコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(実測コホート)。</figcaption>
         <img src="../../../../../../assets/benchmark-01-quality.png" alt="ベンチマーク 01 の努力度別平均ジャッジスコアの棒グラフ。gpt-5.2 は none から xhigh まで 1.9~1.97 の間で平らで、gpt-4o は 1.90 でその下にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -200,7 +200,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
         <li><strong>回顧本文 →</strong> <a href="../../../ja/#questions">問いごとの回顧 Q1 &mdash; 短い事実回答に推論は必要か</a>の中心的根拠がこの実験である。</li>
         <li><strong>タイムライン →</strong> <a href="../../../ja/#timeline">&ldquo;短い事実回答ケース測定 &mdash; 床を測る&rdquo;</a>項目がこの実験のアンカー瞬間である。</li>
         <li><strong>対になる実験 →</strong> <a href="../../exp002-multi-step-reasoning/ja/">exp002 &mdash; 多段階推論</a>は &ldquo;推論が勝つ番&rdquo; だったのに <code>none</code> が床だった天井ケースだ。この床と並べて読むと、二つの単発タスクのどちらでも努力度ダイヤルがなぜ空なのかが見える。</li>
-        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <code>experiments/README.md</code> の <code>exp001</code> カードにある。</li>
+        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> の <code>exp001</code> カードにある。</li>
       </ul>
       <p><strong>次の実験。</strong> この床は決定的な正答表なしでジャッジだけに頼った。次は<strong>ルールベースの検証器</strong>を付けてジャッジの偏りを交差検証し、<strong>実際の PTU 負荷テスト</strong>でここでの ~1% のスループット差がライブでも重なるかを確認することだ。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
@@ -211,10 +211,10 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <h2>出典 &amp; 根拠の境界</h2>
       <p>このノートの数字は合成ではなく実測から出た。その数字がどこから来て、どこまでが限界なのかを、下にそのまま置く。</p>
       <ul>
-        <li>この実験の分析: <code>benchmarks/01-short-factual/analysis.md</code>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質, §8 遅延, §9 外れ値, §10 結論)。すべての数値はここから再引用 &mdash; 実測コホート <code>exp001_short-factual_baseline</code>.</li>
-        <li>横断要約: <code>results/summary.md</code>.</li>
-        <li>方法論: <code>docs/05-methodology.md</code>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
-        <li>価格: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, アクセス日 2026-05-19)。</li>
+        <li>この実験の分析: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質, §8 遅延, §9 外れ値, §10 結論)。すべての数値はここから再引用 &mdash; 実測コホート <code>exp001_short-factual_baseline</code>.</li>
+        <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>方法論: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
+        <li>価格: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。</li>
         <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · ジャッジ gpt-4o · 決定的な正答表なし(品質はジャッジスコアのみ) · PTU はトークンベース推定(ライブ負荷ではない)。</li>
       </ul>
     </section>

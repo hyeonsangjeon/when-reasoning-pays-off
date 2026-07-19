@@ -68,7 +68,7 @@ bash scripts/verify_setup.sh
 # Print the full experiment catalog (inputs -> variables -> outputs) as-is:
 python experiments/examples/describe_all.py</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
-      <p class="muted-note">Each experiment&rsquo;s input files &middot; variables &middot; exact output paths are laid out one by one in the per-experiment cards of the repo&rsquo;s <code>experiments/README.md</code>.</p>
+      <p class="muted-note">Each experiment&rsquo;s input files &middot; variables &middot; exact output paths are laid out one by one in the per-experiment cards of the repo&rsquo;s <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>.</p>
     </section>
 
     <figure class="article-figure" id="figure-effort-quality">
@@ -77,7 +77,7 @@ python experiments/examples/describe_all.py</code></pre>
         multi-step benchmark (02). gpt-5.2 is already saturated at 100% at the
         lowest effort, and the curve stays flat as effort rises &mdash; the extra
         effort spent reasoning tokens, not quality. Figures are sourced from
-        <code>results/summary.md</code> §3 &middot; §7, re-citing each benchmark&rsquo;s
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> §3 &middot; §7, re-citing each benchmark&rsquo;s
         <code>analysis.md</code>.
       </figcaption>
       <img src="../../../assets/benchmark-02-quality.png" alt="Bar chart of pass rate by effort for benchmark 02 (multi-step reasoning). gpt-5.2 is flat at 100% from none through xhigh, while the gpt-4o baseline sits lower, near 75%. It shows that raising reasoning effort does not raise quality." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -136,7 +136,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 
 # Verify the runner wiring with a dry-run (zero tokens consumed)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
-      <p class="muted-note">The deep dissections are in the <a href="experiments/exp001-short-factual/">exp001 experiment note</a> (short-factual) &middot; <a href="experiments/exp002-multi-step-reasoning/">exp002 experiment note</a> (multi-step) &middot; <a href="experiments/exp003-tool-using-agent/">exp003 experiment note</a> (tool agent), and the full experiment catalog (with what intent, what inputs, what outputs) is in <code>experiments/README.md</code>.</p>
+      <p class="muted-note">The deep dissections are in the <a href="experiments/exp001-short-factual/">exp001 experiment note</a> (short-factual) &middot; <a href="experiments/exp002-multi-step-reasoning/">exp002 experiment note</a> (multi-step) &middot; <a href="experiments/exp003-tool-using-agent/">exp003 experiment note</a> (tool agent), and the full experiment catalog (with what intent, what inputs, what outputs) is in <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>.</p>
     </section>
 
     <section class="article-section decision-box">
@@ -162,8 +162,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>Sources &amp; evidence boundary</h2>
       <p>This retrospective introduces no new measurement; it re-cites published figures normalized per 1,000. The raw materials and boundaries are as follows.</p>
       <ul>
-        <li>Cross-summary: <code>results/summary.md</code> (§3 headline, §5 decision boundary, §6 limits). All costs are re-cited from each benchmark&rsquo;s <code>benchmarks/0[123]-*/analysis.md</code>.</li>
-        <li>Pricing: a single snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19). If rates change, update the snapshot and re-run the analysis.</li>
+        <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> (§3 headline, §5 decision boundary, §6 limits). All costs are re-cited from each benchmark&rsquo;s <code>benchmarks/0[123]-*/analysis.md</code>.</li>
+        <li>Pricing: a single snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19). If rates change, update the snapshot and re-run the analysis.</li>
         <li>Sample: N=20 · R=3 per benchmark. Methodology §8 forbids reporting confidence intervals / standard errors at this sample size &mdash; directional conclusions are robust, but treat absolute sizes with small-sample caution.</li>
         <li>Scoring: the LLM-as-judge rubric uses gpt-4o as a neutral judge. The judge-prompt SHA-256 is recorded in every scoring JSON to watch for drift.</li>
         <li>PTU: throughput figures are token-count estimates, not a live PTU load test. The tool benchmark&rsquo;s <code>web_search</code> is a fixed-KB lookup (mocked).</li>

@@ -65,7 +65,7 @@ bash scripts/verify_setup.sh
 # पूरा experiment catalog (inputs -> variables -> outputs) जस का तस print करें:
 python experiments/examples/describe_all.py</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर repo खोलें &amp; ⭐</a></p>
-      <p class="muted-note">हर experiment की input files &middot; variables &middot; exact output paths repo के <code>experiments/README.md</code> में per-experiment cards में एक-एक करके लिखी हैं।</p>
+      <p class="muted-note">हर experiment की input files &middot; variables &middot; exact output paths repo के <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> में per-experiment cards में एक-एक करके लिखी हैं।</p>
     </section>
 
     <figure class="article-figure" id="figure-effort-quality">
@@ -73,7 +73,7 @@ python experiments/examples/describe_all.py</code></pre>
         <strong>जहाँ hypothesis टूटती है।</strong> multi-step benchmark (02) के लिए effort के अनुसार pass rate।
         gpt-5.2 सबसे कम effort पर ही 100% में saturated है, और effort बढ़ने पर curve सपाट रहता है
         &mdash; अतिरिक्त effort ने quality नहीं, reasoning tokens खर्च किए। Figures
-        <code>results/summary.md</code> §3 &middot; §7 से लिए गए हैं, और हर benchmark के
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> §3 &middot; §7 से लिए गए हैं, और हर benchmark के
         <code>analysis.md</code> को फिर से cite करते हैं।
       </figcaption>
       <img src="../../../../assets/benchmark-02-quality.png" alt="benchmark 02 (multi-step reasoning) के लिए effort के अनुसार pass rate का bar chart. gpt-5.2 none से xhigh तक 100% पर सपाट है, जबकि gpt-4o baseline उससे कम, लगभग 75% के पास है. यह दिखाता है कि reasoning effort बढ़ाने से quality नहीं बढ़ती." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -132,7 +132,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 
 # dry-run से runner wiring verify करें (zero tokens consumed)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
-      <p class="muted-note">गहरे dissections <a href="../experiments/exp001-short-factual/hi/">exp001 experiment note</a> (short-factual)&middot;<a href="../experiments/exp002-multi-step-reasoning/hi/">exp002 experiment note</a> (multi-step)&middot;<a href="../experiments/exp003-tool-using-agent/hi/">exp003 experiment note</a> (tool agent) में हैं, और पूरा experiment catalog (किस intent से, क्या inputs, क्या outputs) <code>experiments/README.md</code> में है।</p>
+      <p class="muted-note">गहरे dissections <a href="../experiments/exp001-short-factual/hi/">exp001 experiment note</a> (short-factual)&middot;<a href="../experiments/exp002-multi-step-reasoning/hi/">exp002 experiment note</a> (multi-step)&middot;<a href="../experiments/exp003-tool-using-agent/hi/">exp003 experiment note</a> (tool agent) में हैं, और पूरा experiment catalog (किस intent से, क्या inputs, क्या outputs) <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> में है।</p>
     </section>
 
     <section class="article-section decision-box">
@@ -158,8 +158,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>स्रोत &amp; evidence boundary</h2>
       <p>यह retrospective कोई नया measurement नहीं जोड़ता; यह published figures को per 1,000 normalized रूप में re-cite करता है। Raw materials और boundaries ये हैं।</p>
       <ul>
-        <li>Cross-summary: <code>results/summary.md</code> (§3 headline, §5 decision boundary, §6 limits). सभी costs हर benchmark के <code>benchmarks/0[123]-*/analysis.md</code> से re-cite हैं।</li>
-        <li>Pricing: single snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19). Rates बदलें तो snapshot update करें और analysis फिर चलाएँ।</li>
+        <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> (§3 headline, §5 decision boundary, §6 limits). सभी costs हर benchmark के <code>benchmarks/0[123]-*/analysis.md</code> से re-cite हैं।</li>
+        <li>Pricing: single snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19). Rates बदलें तो snapshot update करें और analysis फिर चलाएँ।</li>
         <li>Sample: N=20 · R=3 per benchmark. Methodology §8 इस sample size पर confidence intervals / standard errors report करने से रोकती है &mdash; directional conclusions robust हैं, पर absolute sizes को small-sample caution से पढ़ें।</li>
         <li>Scoring: LLM-as-judge rubric neutral judge के रूप में gpt-4o इस्तेमाल करता है। Drift देखने के लिए judge-prompt SHA-256 हर scoring JSON में recorded है।</li>
         <li>PTU: throughput figures token-count estimates हैं, live PTU load test नहीं। Tool benchmark का <code>web_search</code> fixed-KB lookup (mocked) है।</li>

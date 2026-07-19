@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp003_benchmark03_gp
 # 只用 dry-run 验证工具循环 runner 接线(token 消耗 0)
 python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
-      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <code>benchmarks/03-tool-using-agent/analysis.md</code> 的复现页脚里。</p>
+      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.md"><code>benchmarks/03-tool-using-agent/analysis.md</code></a> 的复现页脚里。</p>
     </section>
 
     <nav class="article-outline" aria-label="本文结构">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">第一个信号</p>
       <h2>底部不是 none，而是 low</h2>
-      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <code>pricing/azure-openai-payg-2026-05.yaml</code>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用，按每 1,000 次归一化。</p>
+      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用，按每 1,000 次归一化。</p>
       <pre class="code-block"><code>模型      努力     每1,000次请求    通过率          每1,000个正确答案
 gpt-4o    —        $3.29         90.0% (54/60)   $3.65   ← 基线
 gpt-5.2   none     $2.76         98.3% (59/60)   $2.81
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $3.50         100%  (60/60)   $3.50</code></pre>
       <p>前两个基准里，<code>none</code> 既是底部也是最优。这里第一次把底部上移了一格。<strong>混合实际任务存在正的最小强度底部</strong> &mdash; 推理终于，哪怕只是很小幅度地，值得了。</p>
 
       <figure class="article-figure" id="figure-exp003-quality">
-        <figcaption><strong>几乎平坦的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code>(98.3%)升到 <code>low</code>(100%)后保持平坦，gpt-4o 基线在其下方，约 90%。真正的故事不在这条聚合线上，而在下面的<em>类型</em>拆解里。来源：<code>results/cost-curves/benchmark-03-quality.png</code>。</figcaption>
+        <figcaption><strong>几乎平坦的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code>(98.3%)升到 <code>low</code>(100%)后保持平坦，gpt-4o 基线在其下方，约 90%。真正的故事不在这条聚合线上，而在下面的<em>类型</em>拆解里。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>。</figcaption>
         <img src="../../../../../../assets/benchmark-03-quality.png" alt="基准 03 按强度划分的通过率柱状图。gpt-5.2 从 none 98.3% 升到 low 100% 后保持平坦，gpt-4o 在 90% 附近。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -200,7 +200,7 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
         <li><strong>回顾正文 →</strong> <a href="../../../zh-CN/#questions">逐问题回顾 Q3 &mdash; 对工具智能体来说，推理越多越安全吗</a>的核心证据就是这个实验。</li>
         <li><strong>时间线 →</strong> <a href="../../../zh-CN/#timeline">&ldquo;工具智能体案例测量 &mdash; 意外发现&rdquo;</a>条目是这个实验的工具滥用时刻。</li>
         <li><strong>配对实验 →</strong> <a href="../../exp002-multi-step-reasoning/zh-CN/">exp002 &mdash; 多步推理</a>是 <code>none</code> 做底的天花板案例。与本文并排读，就会看到为什么底部上移了一格。</li>
-        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <code>experiments/README.md</code> 的 <code>exp003</code> 卡片中。</li>
+        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> 的 <code>exp003</code> 卡片中。</li>
       </ul>
       <p><strong>下一项实验。</strong> 这里搜索是模拟的，PTU 数字是基于 token 的估算。下一步是<strong>实时搜索</strong>和<strong>真实 PTU 负载测试</strong> &mdash; rate-limit shaping&middot;排队&middot;并行批处理如何作用于工具循环的吞吐与可靠性。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
@@ -211,10 +211,10 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
       <h2>来源 &amp; 证据边界</h2>
       <p>本文同样没有新的测量，只重新引用已发布的聚合。连搜索被模拟这一限制，也一起把证据和边界列在下面。</p>
       <ul>
-        <li>本实验分析：<code>benchmarks/03-tool-using-agent/analysis.md</code>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality&middot;by type, §8 latency, §9 outliers, §10 tool efficiency, §11 conclusion)。所有数字均从这里重新引用。</li>
-        <li>交叉摘要：<code>results/summary.md</code>。</li>
-        <li>方法论：<code>docs/05-methodology.md</code>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
-        <li>价格：<code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 访问日 2026-05-19)。</li>
+        <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.md"><code>benchmarks/03-tool-using-agent/analysis.md</code></a>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality&middot;by type, §8 latency, §9 outliers, §10 tool efficiency, §11 conclusion)。所有数字均从这里重新引用。</li>
+        <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
+        <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
+        <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。</li>
         <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · <code>web_search</code> 是固定 KB 模拟 · PTU 为基于 token 的估算(非实时负载)。</li>
       </ul>
     </section>

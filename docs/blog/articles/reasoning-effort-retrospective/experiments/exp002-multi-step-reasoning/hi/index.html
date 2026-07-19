@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 # runner को dry-run में केवल wiring verify करें (token consumption 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर repo खोलें &amp; ⭐</a></p>
-      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <code>benchmarks/02-multi-step-reasoning/analysis.md</code> के reproduction footer में हैं।</p>
+      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a> के reproduction footer में हैं।</p>
     </section>
 
     <nav class="article-outline" aria-label="इस note की संरचना">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">पहला reversal</p>
       <h2>model बदलते ही quality बढ़ी और cost घटी</h2>
-      <p>नीचे की table के dollars pricing snapshot <code>pricing/azure-openai-payg-2026-05.yaml</code> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले values हैं, जिन्हें <code>analysis.md</code> §5 से re-cite किया गया है।</p>
+      <p>नीचे की table के dollars pricing snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले values हैं, जिन्हें <code>analysis.md</code> §5 से re-cite किया गया है।</p>
       <pre class="code-block"><code>मॉडल      प्रयास   1,000अनुरोध   पास दर         1,000सही
 gpt-4o    —        $0.80         75.0% (45/60)   $1.06   ← baseline
 gpt-5.2   none     $0.62         100%  (60/60)   $0.62   ← Pareto-optimal
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> per request 7.6% महँगा है, पर higher pass rate (96.7% versus 75%) उस premium को repay कर देता है; प्रति 1,000 correct answers में यह gpt-4o से <strong>16% सस्ता</strong> है। पहला optimization effort बढ़ाना नहीं, बल्कि <em>model और effort को एक combination की तरह देखकर quality pass करने वाला सबसे सस्ता point ढूँढना</em> था।</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>Saturated quality curve.</strong> Effort-wise pass rate. gpt-5.2 <code>none</code> से <code>xhigh</code> तक 100% पर सपाट है, और gpt-4o baseline नीचे, लगभग 75% पर है। Source: <code>results/cost-curves/benchmark-02-quality.png</code>.</figcaption>
+        <figcaption><strong>Saturated quality curve.</strong> Effort-wise pass rate. gpt-5.2 <code>none</code> से <code>xhigh</code> तक 100% पर सपाट है, और gpt-4o baseline नीचे, लगभग 75% पर है। Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
         <img src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark 02 के effort-wise pass rate का bar chart. gpt-5.2 none से xhigh तक 100% पर सपाट है और gpt-4o लगभग 75% पर है." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -195,7 +195,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>Retrospective body →</strong> <a href="../../../hi/#questions">प्रश्न-वार retrospective Q2 &mdash; क्या multi-step में effort लागत वसूल करता है?</a> का core evidence यही experiment है।</li>
         <li><strong>Timeline →</strong> <a href="../../../hi/#timeline">&ldquo;Ceiling case measurement &mdash; turning point&rdquo;</a> item इस experiment का refutation moment है।</li>
-        <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <code>experiments/README.md</code> के <code>exp002</code> card में है।</li>
+        <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> के <code>exp002</code> card में है।</li>
       </ul>
       <p><strong>Next experiment.</strong> &ldquo;effort &gt; none&rdquo; column short-factual और multi-step benchmarks दोनों में खाली है। उसे पहली बार भरने वाला <a href="../../exp003-tool-using-agent/hi/">exp003 &mdash; tool-using agent (Mixed case)</a> है। जब quality low effort पर ही ceiling छू लेती है, तब बड़ा lever effort नहीं बल्कि <em>tool selection&middot;tool latency&middot;loop budget</em> बन जाता है &mdash; और <code>none</code> नहीं, <code>low</code> floor क्यों होता है &mdash; यह उस note में देखते हैं।</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">इसे खुद reproduce करें और ⭐ छोड़ें</a></p>
@@ -206,10 +206,10 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>स्रोत &amp; evidence boundary</h2>
       <p>यह note नया measurement नहीं जोड़ता; published aggregates को फिर cite करता है। Prediction जहाँ चूका, उसे भी शामिल करके evidence और boundaries नीचे रखे हैं।</p>
       <ul>
-        <li>इस experiment का analysis: <code>benchmarks/02-multi-step-reasoning/analysis.md</code> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite।</li>
-        <li>Cross-summary: <code>results/summary.md</code>.</li>
-        <li>Methodology: <code>docs/05-methodology.md</code> (variables·sample·cache·scoring·cost·reproduction·statistical reporting protocol).</li>
-        <li>Pricing: <code>pricing/azure-openai-payg-2026-05.yaml</code> (Azure, accessed 2026-05-19).</li>
+        <li>इस experiment का analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite।</li>
+        <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> (variables·sample·cache·scoring·cost·reproduction·statistical reporting protocol).</li>
+        <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19).</li>
         <li>Boundary: N=20 · confidence intervals नहीं · single pricing snapshot · judge gpt-4o · PTU token-based estimate है (live load नहीं).</li>
       </ul>
     </section>

@@ -65,7 +65,7 @@ bash scripts/verify_setup.sh
 # 原样打印完整实验目录(输入 → 变量 → 输出)：
 python experiments/examples/describe_all.py</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
-      <p class="muted-note">每个实验的输入文件 &middot; 变量 &middot; 精确输出路径，都在仓库 <code>experiments/README.md</code> 的实验卡片里逐项列出。</p>
+      <p class="muted-note">每个实验的输入文件 &middot; 变量 &middot; 精确输出路径，都在仓库 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> 的实验卡片里逐项列出。</p>
     </section>
 
     <figure class="article-figure" id="figure-effort-quality">
@@ -73,7 +73,7 @@ python experiments/examples/describe_all.py</code></pre>
         <strong>假设崩塌的位置。</strong> 多步基准(02)按强度划分的通过率。
         gpt-5.2 在最低强度就已经以 100% 饱和，强度升高后曲线仍然平坦
         &mdash; 额外强度消耗的是推理 token，而不是换来质量。数字来源于
-        <code>results/summary.md</code> §3 &middot; §7，并重新引用各基准的
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> §3 &middot; §7，并重新引用各基准的
         <code>analysis.md</code>。
       </figcaption>
       <img src="../../../../assets/benchmark-02-quality.png" alt="基准 02(多步推理)按强度划分的通过率柱状图。gpt-5.2 从 none 到 xhigh 都平坦地保持 100%，gpt-4o baseline 更低，约在 75% 附近。它说明提高推理强度并不会提高质量。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -132,7 +132,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 
 # 用 dry-run 验证 runner 接线(token 消耗 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
-      <p class="muted-note">深入拆解见 <a href="../experiments/exp001-short-factual/zh-CN/">exp001 实验笔记</a>(短事实)&middot;<a href="../experiments/exp002-multi-step-reasoning/zh-CN/">exp002 实验笔记</a>(多步)&middot;<a href="../experiments/exp003-tool-using-agent/zh-CN/">exp003 实验笔记</a>(工具智能体)，完整实验目录(以什么意图、接收什么输入、输出什么)见 <code>experiments/README.md</code>。</p>
+      <p class="muted-note">深入拆解见 <a href="../experiments/exp001-short-factual/zh-CN/">exp001 实验笔记</a>(短事实)&middot;<a href="../experiments/exp002-multi-step-reasoning/zh-CN/">exp002 实验笔记</a>(多步)&middot;<a href="../experiments/exp003-tool-using-agent/zh-CN/">exp003 实验笔记</a>(工具智能体)，完整实验目录(以什么意图、接收什么输入、输出什么)见 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>。</p>
     </section>
 
     <section class="article-section decision-box">
@@ -158,8 +158,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>来源 &amp; 证据边界</h2>
       <p>这篇回顾没有引入新的测量；它重新引用了按每 1,000 次归一化的已发布数字。原始材料与边界如下。</p>
       <ul>
-        <li>交叉摘要：<code>results/summary.md</code>(§3 headline, §5 decision boundary, §6 limits)。所有成本均重新引用自各基准的 <code>benchmarks/0[123]-*/analysis.md</code>。</li>
-        <li>价格：单一快照 <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 访问日 2026-05-19)。如果费率变化，应更新快照并重新运行分析。</li>
+        <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 headline, §5 decision boundary, §6 limits)。所有成本均重新引用自各基准的 <code>benchmarks/0[123]-*/analysis.md</code>。</li>
+        <li>价格：单一快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。如果费率变化，应更新快照并重新运行分析。</li>
         <li>样本：每个基准 N=20 · R=3。方法论 §8 禁止在这个样本量报告置信区间/标准误 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎解读。</li>
         <li>评分：LLM-as-judge 量规使用 gpt-4o 作为中立裁判。每个评分 JSON 都记录裁判提示 SHA-256，用于监控漂移。</li>
         <li>PTU：吞吐数字是基于 token 数的估算，不是真实 PTU 负载测试。工具基准的 <code>web_search</code> 是固定 KB 查询(模拟)。</li>

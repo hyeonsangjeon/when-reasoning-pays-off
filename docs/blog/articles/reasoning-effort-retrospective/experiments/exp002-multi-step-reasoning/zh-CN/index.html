@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 # 只用 dry-run 验证 runner 接线(token 消耗 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
-      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <code>benchmarks/02-multi-step-reasoning/analysis.md</code> 的复现页脚里。</p>
+      <p class="muted-note">实际付费测量以及重新生成聚合&middot;图表的命令，整理在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a> 的复现页脚里。</p>
     </section>
 
     <nav class="article-outline" aria-label="本文结构">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">第一次逆转</p>
       <h2>换了模型，质量上升，成本下降</h2>
-      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <code>pricing/azure-openai-payg-2026-05.yaml</code>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用。</p>
+      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用。</p>
       <pre class="code-block"><code>模型      努力     每1,000次请求    通过率          每1,000个正确答案
 gpt-4o    —        $0.80         75.0% (45/60)   $1.06   ← 基线
 gpt-5.2   none     $0.62         100%  (60/60)   $0.62   ← 帕累托最优
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> 每请求单价高 7.6%，但较高通过率(96.7% 对 75%)抵回了这部分溢价；按每 1,000 个正确答案看，仍比 gpt-4o <strong>便宜 16%</strong>。第一层优化不是提高强度，而是<em>把模型与强度看成一个组合，找出通过质量门槛后最便宜的点</em>。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>饱和的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code> 到 <code>xhigh</code> 都平坦地保持 100%，gpt-4o 基线在其下方，约 75%。来源：<code>results/cost-curves/benchmark-02-quality.png</code>。</figcaption>
+        <figcaption><strong>饱和的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code> 到 <code>xhigh</code> 都平坦地保持 100%，gpt-4o 基线在其下方，约 75%。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>。</figcaption>
         <img src="../../../../../../assets/benchmark-02-quality.png" alt="基准 02 按强度划分的通过率柱状图。gpt-5.2 从 none 到 xhigh 都平坦地保持 100%，gpt-4o 在 75% 附近。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -195,7 +195,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>回顾正文 →</strong> <a href="../../../zh-CN/#questions">逐问题回顾 Q2 &mdash; 多步中强度是否值得</a>的核心证据就是这个实验。</li>
         <li><strong>时间线 →</strong> <a href="../../../zh-CN/#timeline">&ldquo;Ceiling 案例测量 &mdash; 转折点&rdquo;</a>条目是这个实验的反驳时刻。</li>
-        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <code>experiments/README.md</code> 的 <code>exp002</code> 卡片中。</li>
+        <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> 的 <code>exp002</code> 卡片中。</li>
       </ul>
       <p><strong>下一项实验。</strong> &ldquo;强度 &gt; none&rdquo; 这一列在短事实和多步基准中都是空的。第一次填上它的是 <a href="../../exp003-tool-using-agent/zh-CN/">exp003 &mdash; 工具使用智能体(Mixed case)</a>。当质量在低强度已经触到天花板时，更大的杠杆不再是强度，而是<em>工具选择&middot;工具延迟&middot;循环预算</em>；以及为什么底部不是 <code>none</code> 而是 <code>low</code>，都在那篇笔记里看。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
@@ -206,10 +206,10 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>来源 &amp; 证据边界</h2>
       <p>本文没有加入新的测量，而是重新引用已发布的聚合，包括预测偏离的位置。证据和边界列在下面。</p>
       <ul>
-        <li>本实验分析：<code>benchmarks/02-multi-step-reasoning/analysis.md</code>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用。</li>
-        <li>交叉摘要：<code>results/summary.md</code>。</li>
-        <li>方法论：<code>docs/05-methodology.md</code>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
-        <li>价格：<code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, 访问日 2026-05-19)。</li>
+        <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用。</li>
+        <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
+        <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
+        <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。</li>
         <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · PTU 为基于 token 的估算(非实时负载)。</li>
       </ul>
     </section>

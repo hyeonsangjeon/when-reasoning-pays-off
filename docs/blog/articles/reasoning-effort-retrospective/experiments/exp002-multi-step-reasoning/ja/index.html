@@ -61,7 +61,7 @@ python -c "import experiments; print(experiments.describe('exp002_benchmark02_gp
 # ランナーを dry-run で配線だけ検証 (トークン消費 0)
 python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
-      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <code>benchmarks/02-multi-step-reasoning/analysis.md</code> の再現フッターに整理されています。</p>
+      <p class="muted-note">実際の有料測定と集計&middot;図表再生成コマンドは <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a> の再現フッターに整理されています。</p>
     </section>
 
     <nav class="article-outline" aria-label="このノートの構成">
@@ -121,7 +121,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="reversal" class="article-section">
       <p class="section-label">第一の逆転</p>
       <h2>モデルを変えると品質は上がり、コストは下がった</h2>
-      <p>下の表のドルは価格スナップショット <code>pricing/azure-openai-payg-2026-05.yaml</code>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用している。</p>
+      <p>下の表のドルは価格スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(アクセス日 2026-05-19)に方法論の PAYG 式を適用した値で、<code>analysis.md</code> §5 から再引用している。</p>
       <pre class="code-block"><code>モデル      努力度   1,000リクエスト当たり 通過率          正答1,000件当たり
 gpt-4o    —        $0.80         75.0% (45/60)   $1.06   ← ベースライン
 gpt-5.2   none     $0.62         100%  (60/60)   $0.62   ← パレート最適
@@ -133,7 +133,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> はリクエスト当たり単価が 7.6% 高いが、高い通過率(96.7% 対 75%)がそのプレミアムを返し、正答 1,000件当たりでは gpt-4o より<strong>16% 安い</strong>。最初の最適化は努力度を上げることではなく、<em>モデルと努力度を一つの組み合わせとして見て、品質を通過した最も安い地点を探す</em>ことだった。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>飽和した品質曲線。</strong> 努力度別通過率。gpt-5.2 は <code>none</code> から <code>xhigh</code> まで 100% で平らで、gpt-4o ベースラインはその下の 75% 付近にある。出典: <code>results/cost-curves/benchmark-02-quality.png</code>.</figcaption>
+        <figcaption><strong>飽和した品質曲線。</strong> 努力度別通過率。gpt-5.2 は <code>none</code> から <code>xhigh</code> まで 100% で平らで、gpt-4o ベースラインはその下の 75% 付近にある。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
         <img src="../../../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02 の努力度別通過率の棒グラフ。gpt-5.2 は none から xhigh まで 100% で平らで、gpt-4o は 75% 付近にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
@@ -195,7 +195,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>回顧本文 →</strong> <a href="../../../ja/#questions">問いごとの回顧 Q2 &mdash; 多段階で努力度は割に合うのか</a>の中心的根拠がこの実験である。</li>
         <li><strong>タイムライン →</strong> <a href="../../../ja/#timeline">&ldquo;Ceiling ケース測定 &mdash; 転換点&rdquo;</a>項目がこの実験の反証の瞬間である。</li>
-        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <code>experiments/README.md</code> の <code>exp002</code> カードにある。</li>
+        <li><strong>実験カード →</strong> 入力/変数/出力の機械的な仕様は、リポジトリ <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> の <code>exp002</code> カードにある。</li>
       </ul>
       <p><strong>次の実験。</strong> &ldquo;努力度 &gt; none&rdquo; 列は短い事実回答と多段階ベンチマークのどちらでも空だった。その列を初めて埋めたのが <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツール使用エージェント(Mixed case)</a> である。品質が低い努力度ですでに天井に届いたとき、より大きなレバーが努力度ではなく<em>ツール選択&middot;ツール遅延&middot;ループ予算</em>になる瞬間を &mdash; そして <code>none</code> ではなく <code>low</code> が床になる理由を &mdash; そのノートで見る。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
@@ -206,10 +206,10 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>出典 &amp; 根拠の境界</h2>
       <p>このノートは新しい測定を足さず、公開済みの集計を再引用した。予測が外れた場所まで含めて、根拠と境界を下に置く。</p>
       <ul>
-        <li>この実験の分析: <code>benchmarks/02-multi-step-reasoning/analysis.md</code>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質, §8 遅延, §9 外れ値, §10 結論)。すべての数値はここから再引用。</li>
-        <li>横断要約: <code>results/summary.md</code>.</li>
-        <li>方法論: <code>docs/05-methodology.md</code>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
-        <li>価格: <code>pricing/azure-openai-payg-2026-05.yaml</code>(Azure, アクセス日 2026-05-19)。</li>
+        <li>この実験の分析: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a>(§3 プロベナンス, §4 トークン構成, §5 コスト, §6 消費モデル, §7 品質, §8 遅延, §9 外れ値, §10 結論)。すべての数値はここから再引用。</li>
+        <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
+        <li>方法論: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
+        <li>価格: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。</li>
         <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · ジャッジ gpt-4o · PTU はトークンベース推定(ライブ負荷ではない)。</li>
       </ul>
     </section>
