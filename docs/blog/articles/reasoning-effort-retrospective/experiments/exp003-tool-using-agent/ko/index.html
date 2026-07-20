@@ -137,8 +137,8 @@ gpt-5.2   xhigh    $3.50         100%  (60/60)   $3.50</code></pre>
       <p>앞선 두 벤치마크에선 <code>none</code>이 바닥이자 최적이었다. 여기서 처음으로 바닥이 한 칸 올라갔다. <strong>혼합 실작업에는 양의 최소 강도 바닥이 있다</strong> &mdash; 추론이 마침내, 아주 조금 값을 했다.</p>
 
       <figure class="article-figure" id="figure-exp003-quality">
-        <figcaption><strong>거의 평평한 품질 곡선.</strong> 강도별 통과율. gpt-5.2는 <code>none</code>(98.3%)부터 <code>low</code>(100%)로 올라선 뒤 평평하고, gpt-4o 기준선은 그 아래 90% 부근에 있다. 진짜 이야기는 이 집계선이 아니라 아래의 <em>유형별</em> 분해에 있다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-03-quality.png" alt="벤치마크 03의 강도별 통과율 막대 그래프. gpt-5.2는 none 98.3%에서 low 100%로 올라선 뒤 평평하고, gpt-4o는 90% 부근에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>평균 심판 점수와 표준편차.</strong> 세로축은 평균 심판 점수(0~2), 오차 막대는 표준편차다 &mdash; 거의 평평하고 높은 곡선이다. gpt-5.2는 <code>low</code>·<code>xhigh</code>에서 2.00, <code>none</code>·<code>high</code>에서 1.97, <code>medium</code>에서 1.98이고, gpt-4o 기준선은 1.85±0.48이다. <code>low</code> 통과율은 100%(60/60)다. 진짜 이야기는 이 집계선이 아니라 아래의 <em>유형별</em> 분해에 있다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-03-quality.png" alt="벤치마크 03의 모델·강도별 평균 심판 점수(0~2) 막대 그래프. gpt-4o 기준선 1.85, gpt-5.2는 none 1.97·low 2.00·medium 1.98·high 1.97·xhigh 2.00. 오차 막대는 표준편차이며 N=20·R=3, 신뢰구간 없음." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 

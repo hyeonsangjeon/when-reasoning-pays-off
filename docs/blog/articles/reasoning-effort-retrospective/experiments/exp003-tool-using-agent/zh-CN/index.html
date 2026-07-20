@@ -133,8 +133,8 @@ gpt-5.2   xhigh    $3.50         100%  (60/60)   $3.50</code></pre>
       <p>前两个基准里，<code>none</code> 既是底部也是最优。这里第一次把底部上移了一格。<strong>混合实际任务存在正的最小强度底部</strong> &mdash; 推理终于，哪怕只是很小幅度地，值得了。</p>
 
       <figure class="article-figure" id="figure-exp003-quality">
-        <figcaption><strong>几乎平坦的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code>(98.3%)升到 <code>low</code>(100%)后保持平坦，gpt-4o 基线在其下方，约 90%。真正的故事不在这条聚合线上，而在下面的<em>类型</em>拆解里。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>。</figcaption>
-        <img src="../../../../../../assets/benchmark-03-quality.png" alt="基准 03 按强度划分的通过率柱状图。gpt-5.2 从 none 98.3% 升到 low 100% 后保持平坦，gpt-4o 在 90% 附近。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平均评价分数与标准差。</strong> 纵轴是平均评价分数(0–2)，误差棒是标准差 &mdash; 一条几乎平坦且偏高的曲线。gpt-5.2 在 <code>low</code>、<code>xhigh</code> 为 2.00，<code>none</code>、<code>high</code> 为 1.97，<code>medium</code> 为 1.98，gpt-4o 基线为 1.85±0.48。<code>low</code> 通过率为 100%(60/60)。真正的故事不在这条聚合线上，而在下面的<em>类型</em>拆解里。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>。</figcaption>
+        <img src="../../../../../../assets/benchmark-03-quality.png" alt="基准 03 按模型与强度划分的平均评价分数(0–2)柱状图。gpt-4o 基线 1.85；gpt-5.2 none 1.97、low 2.00、medium 1.98、high 1.97、xhigh 2.00。误差棒为标准差；N=20、R=3，无置信区间。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
