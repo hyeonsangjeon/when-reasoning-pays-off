@@ -133,8 +133,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> はリクエスト当たり単価が 7.6% 高いが、高い通過率(96.7% 対 75%)がそのプレミアムを返し、正答 1,000件当たりでは gpt-4o より<strong>16% 安い</strong>。最初の最適化は努力度を上げることではなく、<em>モデルと努力度を一つの組み合わせとして見て、品質を通過した最も安い地点を探す</em>ことだった。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>飽和した品質曲線。</strong> 努力度別通過率。gpt-5.2 は <code>none</code> から <code>xhigh</code> まで 100% で平らで、gpt-4o ベースラインはその下の 75% 付近にある。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02 の努力度別通過率の棒グラフ。gpt-5.2 は none から xhigh まで 100% で平らで、gpt-4o は 75% 付近にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平均ジャッジスコアと標準偏差。</strong> 縦軸は平均ジャッジスコア(0〜2)、エラーバーは標準偏差だ。gpt-5.2 は <code>none</code>・<code>medium</code>・<code>high</code>・<code>xhigh</code> で 2.00、<code>low</code> は 2件の失敗で 1.93±0.36。gpt-4o ベースラインは 1.50±0.87。<code>low</code> の通過率は 96.7%(58/60)。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02 のモデル・努力度別の平均ジャッジスコア(0〜2)の棒グラフ。gpt-4o ベースライン 1.50、gpt-5.2 は none 2.00・low 1.93・medium/high/xhigh 2.00。エラーバーは標準偏差で、N=20・R=3、信頼区間なし。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
@@ -155,7 +155,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>多く間違えた場所:</strong> 算術文章題(平均 1.20)、日付/時刻(1.00)、コードトレース(1.33)、制約充足(1.33) &mdash; 戻って計算したり、逆向きに追跡したりする必要がある型。</li>
         <li><strong>すべて正解した場所:</strong> 数え上げ、ブール論理、因果の鎖(各 2.00) &mdash; 一度の前向きパスで足りる型。</li>
-        <li><strong>gpt-5.2 は全型で満点</strong>(2.00)。前述の <code>mr_05</code> 安全フィルター拒否 1セルだけが例外。</li>
+        <li><strong>gpt-5.2 は <code>low</code> を除く全努力度で全型満点</strong>(2.00)。<code>low</code> だけで 2セルが 0点 &mdash; <code>mr_05</code>(制約充足)の安全フィルター拒否と、<code>mr_15</code>(コードトレース)の誤答「cba a」(正答「cbaa」)。そのため <code>low</code> ではこの 2型が各 1.78(±0.67)。</li>
       </ul>
       <p>言い換えると、このデータセットは gpt-4o に対して &ldquo;チェーンが短く前向き推論なら通過、戻りが必要なら失敗&rdquo; という地図を描いた。gpt-5.2 はその地図を丸ごと平坦化した。</p>
     </section>
@@ -166,7 +166,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を消さず、そのまま書いておく &mdash; 隠すと次の人が同じ場所で踏み外すからだ。</p>
       <ul>
         <li><strong>gpt-4o には予想より易しかった。</strong> 75% は事前登録した 30&ndash;60% を<em>超えた</em>。データセットがそもそも gpt-4o にそれほど厳しくなかったということだ。だから &ldquo;gpt-4o 比の削減幅&rdquo; の<em>大きさ</em>は、もっと難しいデータセットだった場合より小さくなった(期待 1.7&ndash;3.3倍の差 → 実現 1.7倍)。予測が外れた側を数字に合わせて消さず、小さくなった削減幅をそのまま残す。結論の<em>方向</em>(gpt-5.2 <code>none</code> がパレート支配)は変わらない。</li>
-        <li><strong>安全フィルター拒否 1件。</strong> <code>mr_05</code> の <code>low</code> 1回目の反復で、Azure コンテンツフィルターが入力&middot;出力トークン 0 と定型拒否を返した。このセルには運用フラグ(コールドスタート/再試行/切断)がないため<em>外れ値規則にはかからず</em>、append-only 原則に従って上書きせず集計にそのまま残した(ジャッジは正確に 0/失敗と採点)。同じ問題の他の反復は正常な正答 &mdash; 系統的なトリップではなく一回限りで、この 1セルが <code>low</code> 行の分散を大きくした原因である。</li>
+        <li><strong>安全フィルター拒否 1件。</strong> <code>mr_05</code> の <code>low</code> 1回目の反復で、Azure コンテンツフィルターが入力&middot;出力トークン 0 と定型拒否を返した。このセルには運用フラグ(コールドスタート/再試行/切断)がないため<em>外れ値規則にはかからず</em>、append-only 原則に従って上書きせず集計にそのまま残した(ジャッジは正確に 0/失敗と採点)。同じ問題の他の反復は正常な正答 &mdash; 系統的なトリップではなく一回限りで、この 1セルが <code>low</code> 行の<em>入力トークン</em>分散を大きくした原因である。</li>
+        <li><strong>コードトレース誤答 1件。</strong> <code>mr_15</code> の <code>low</code> 3回目の反復(<code>r2</code>)で、<code>g("abc")</code> の出力を「cba a」と返した &mdash; 正答は「cbaa」(反転した「cba」に先頭文字「a」を連結)だ。ジャッジは 0/失敗と採点し、これは安全フィルターとは無関係の純粋な推論エラーだ。このセルと <code>mr_05</code> の拒否が、<code>low</code> の通過率を 96.7%(58/60)にした 2件の失敗である。</li>
         <li><strong>部分点 0件。</strong> 360セル全体でジャッジの <code>score == 1</code> は一つもなかった。検証可能な正答設計なので、&ldquo;672 を出した&rdquo; と &ldquo;576 を出した&rdquo; の間に中間はない。だから二値化の選択はヘッドラインを揺らさない。</li>
       </ul>
     </section>

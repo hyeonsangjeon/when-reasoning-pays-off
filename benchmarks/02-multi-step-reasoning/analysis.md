@@ -214,8 +214,9 @@ does **not** support confidence-interval or significance claims.
 
 The pre-registered sanity check **passes**: gpt-4o pass-rate (75.0 %) is
 strictly less than gpt-5.2 high pass-rate (100.0 %). The pass-rate is
-non-decreasing across the gpt-5.2 effort ladder except for a one-cell dip
-at `low` (96.7 %) caused by the single content-filter refusal at mr_05 r1.
+non-decreasing across the gpt-5.2 effort ladder except for a dip at `low`
+(96.7 %) caused by two failed cells — the content-filter refusal at mr_05 r1
+and a code-trace wrong answer ("cba a" instead of "cbaa") at mr_15 r2.
 Effort-tier ordering is correct: more reasoning never reduces pass-rate.
 
 The judge emitted **zero** `score == 1` rows on this benchmark — every
@@ -231,7 +232,7 @@ between "produced 672" and "produced 576".
 | boolean-logic (n=6) | 2.00 ± 0.00 | 2.0 ± 0.0 | 2.0 ± 0.0 | 2.0 ± 0.0 |
 | causal-chain (n=9) | 2.00 ± 0.00 | 2.0 ± 0.0 | 2.0 ± 0.0 | 2.0 ± 0.0 |
 | code-trace (n=9) | 1.33 ± 1.00 | 2.0 ± 0.0 | 1.78 ± 0.67 | 2.0 ± 0.0 |
-| constraint-satisfaction (n=9) | 1.33 ± 1.00 | 2.0 ± 0.0 | 1.33 ± 1.00 | 2.0 ± 0.0 |
+| constraint-satisfaction (n=9) | 1.33 ± 1.00 | 2.0 ± 0.0 | 1.78 ± 0.67 | 2.0 ± 0.0 |
 | counting (n=6) | 2.00 ± 0.00 | 2.0 ± 0.0 | 2.0 ± 0.0 | 2.0 ± 0.0 |
 | date-time (n=6) | 1.00 ± 1.10 | 2.0 ± 0.0 | 2.0 ± 0.0 | 2.0 ± 0.0 |
 
@@ -243,9 +244,11 @@ arithmetic), **code-trace** (mean 1.33 — aliasing and slicing), and
 succeeds on **counting**, **boolean-logic**, and **causal-chain** — tasks
 where a single forward pass without backtracking is enough.
 
-gpt-5.2 at every effort tier handles **every subtype perfectly**, with the
-single content-filter exception at mr_05 (constraint-satisfaction) low r1
-already noted. The full per-tag breakdown is preserved in
+gpt-5.2 handles **every subtype perfectly at every effort except `low`**,
+where two cells score 0: the content-filter refusal at mr_05
+(constraint-satisfaction) r1 and a code-trace wrong answer at mr_15 r2
+("cba a" instead of "cbaa"). Both `low` tags therefore sit at 1.78 ± 0.67,
+not 2.0. The full per-tag breakdown is preserved in
 [`analysis.json`](analysis.json) under `judge_breakdown_by_tag`.
 
 Sibling chart pair (quality):

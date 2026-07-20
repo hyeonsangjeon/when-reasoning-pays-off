@@ -138,8 +138,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code>는 요청당 단가가 7.6% 더 비싸지만, 높은 통과율(96.7% 대 75%)이 그 프리미엄을 되갚아 정답 1,000건당으로는 gpt-4o보다 <strong>16% 싸다</strong>. 첫 번째 최적화는 강도를 올리는 일이 아니라, <em>모델과 강도를 한 조합으로 보고 품질을 통과한 가장 싼 지점을 찾는</em> 일이었다.</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>포화된 품질 곡선.</strong> 강도별 통과율. gpt-5.2는 <code>none</code>부터 <code>xhigh</code>까지 100%로 평평하고, gpt-4o 기준선은 그 아래 75% 부근에 있다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-02-quality.png" alt="벤치마크 02의 강도별 통과율 막대 그래프. gpt-5.2는 none부터 xhigh까지 100%로 평평하고 gpt-4o는 75% 부근에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>평균 심판 점수와 표준편차.</strong> 세로축은 평균 심판 점수(0~2), 오차 막대는 표준편차다. gpt-5.2는 <code>none</code>&middot;<code>medium</code>&middot;<code>high</code>&middot;<code>xhigh</code>에서 2.00이고, <code>low</code>는 두 실패로 1.93±0.36이다. gpt-4o 기준선은 1.50±0.87이다. <code>low</code> 통과율은 96.7%(58/60)다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-02-quality.png" alt="벤치마크 02의 모델·강도별 평균 심판 점수(0~2) 막대 그래프. gpt-4o 기준선 1.50, gpt-5.2는 none 2.00·low 1.93·medium/high/xhigh 2.00. 오차 막대는 표준편차이며 N=20·R=3, 신뢰구간 없음." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
@@ -160,7 +160,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>많이 틀린 곳:</strong> 산술 문장제(평균 1.20), 날짜/시간(1.00), 코드 트레이스(1.33), 제약 충족(1.33) &mdash; 되짚어 계산하거나 후진 추적이 필요한 유형.</li>
         <li><strong>다 맞힌 곳:</strong> 세기, 불리언 논리, 인과 사슬(각 2.00) &mdash; 한 번의 전진 패스로 충분한 유형.</li>
-        <li><strong>gpt-5.2는 전 유형 만점</strong>(2.00). 앞서의 <code>mr_05</code> 안전 필터 거부 한 셀만 예외.</li>
+        <li><strong>gpt-5.2는 <code>low</code>를 뺀 모든 강도에서 전 유형 만점</strong>(2.00). <code>low</code>에서만 두 셀이 0점이다 &mdash; <code>mr_05</code>(제약 충족)의 안전 필터 거부와 <code>mr_15</code>(코드 트레이스)의 오답 &ldquo;cba a&rdquo;(정답 &ldquo;cbaa&rdquo;). 그래서 <code>low</code>에서는 이 두 유형이 각각 1.78(±0.67)이다.</li>
       </ul>
       <p>다시 말해, 이 데이터셋은 gpt-4o에게 &ldquo;체인이 짧고 전진 추론이면 통과, 되짚기가 필요하면 실패&rdquo;라는 지도를 그려 준다. gpt-5.2는 그 지도를 통째로 평탄화했다.</p>
     </section>
@@ -171,7 +171,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 벤치마크가 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
       <ul>
         <li><strong>gpt-4o가 예상보다 쉬웠다.</strong> 75%는 사전 등록한 30&ndash;60%를 <em>넘어섰다</em>. 데이터셋이 애초에 gpt-4o에게 덜 가혹했다는 뜻이다. 그래서 &ldquo;gpt-4o 대비 절감폭&rdquo;의 <em>크기</em>는 더 어려운 데이터셋이었을 때보다 작아졌다(기대 1.7&ndash;3.3배 격차 → 실현 1.7배). 예측이 빗나간 쪽을 숫자에 맞춰 지우지 않고, 작아진 절감폭을 그대로 남긴다. 결론의 <em>방향</em>(gpt-5.2 <code>none</code>이 파레토 지배)은 그대로다.</li>
-        <li><strong>안전 필터 거부 1건.</strong> <code>mr_05</code>의 <code>low</code> 첫 반복에서 Azure 콘텐츠 필터가 입력&middot;출력 토큰 0과 정형 거부를 반환했다. 이 셀은 운영 플래그(콜드스타트/재시도/절단)가 없어 <em>이상치 규칙에 걸리지 않으며</em>, append-only 원칙에 따라 덮어쓰지 않고 집계에 그대로 남겼다(심판은 정확히 0/실패로 채점). 같은 문제의 다른 반복은 정상 정답 &mdash; 계통적 트립이 아닌 1회성이고, 이 한 셀이 <code>low</code> 행의 분산을 키운 원인이다.</li>
+        <li><strong>안전 필터 거부 1건.</strong> <code>mr_05</code>의 <code>low</code> 첫 반복에서 Azure 콘텐츠 필터가 입력&middot;출력 토큰 0과 정형 거부를 반환했다. 이 셀은 운영 플래그(콜드스타트/재시도/절단)가 없어 <em>이상치 규칙에 걸리지 않으며</em>, append-only 원칙에 따라 덮어쓰지 않고 집계에 그대로 남겼다(심판은 정확히 0/실패로 채점). 같은 문제의 다른 반복은 정상 정답 &mdash; 계통적 트립이 아닌 1회성이고, 이 한 셀이 <code>low</code> 행의 <em>입력 토큰</em> 분산을 키운 원인이다.</li>
+        <li><strong>코드 트레이스 오답 1건.</strong> <code>mr_15</code>의 <code>low</code> 셋째 반복(<code>r2</code>)에서 <code>g("abc")</code>의 출력을 &ldquo;cba a&rdquo;로 냈다 &mdash; 정답은 &ldquo;cbaa&rdquo;(뒤집은 &ldquo;cba&rdquo;에 첫 글자 &ldquo;a&rdquo;를 이어 붙인 값)다. 심판은 0/실패로 채점했고, 안전 필터와 무관한 순수 추론 오류다. 이 셀과 <code>mr_05</code> 거부가 <code>low</code> 통과율을 96.7%(58/60)로 만든 두 실패다.</li>
         <li><strong>부분 점수 0건.</strong> 360셀 전체에서 심판의 <code>score == 1</code>이 하나도 없었다. 검증 가능한 정답 설계라 &ldquo;672를 냈다&rdquo;와 &ldquo;576을 냈다&rdquo; 사이에 중간이 없다. 그래서 이진화 선택이 헤드라인을 흔들지 않는다.</li>
       </ul>
     </section>

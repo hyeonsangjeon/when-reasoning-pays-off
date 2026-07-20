@@ -133,8 +133,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> 每请求单价高 7.6%，但较高通过率(96.7% 对 75%)抵回了这部分溢价；按每 1,000 个正确答案看，仍比 gpt-4o <strong>便宜 16%</strong>。第一层优化不是提高强度，而是<em>把模型与强度看成一个组合，找出通过质量门槛后最便宜的点</em>。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>饱和的质量曲线。</strong> 按强度划分的通过率。gpt-5.2 从 <code>none</code> 到 <code>xhigh</code> 都平坦地保持 100%，gpt-4o 基线在其下方，约 75%。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>。</figcaption>
-        <img src="../../../../../../assets/benchmark-02-quality.png" alt="基准 02 按强度划分的通过率柱状图。gpt-5.2 从 none 到 xhigh 都平坦地保持 100%，gpt-4o 在 75% 附近。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平均评价分数与标准差。</strong> 纵轴是平均评价分数(0–2)，误差棒是标准差。gpt-5.2 在 <code>none</code>、<code>medium</code>、<code>high</code>、<code>xhigh</code> 为 2.00，<code>low</code> 因两次失败为 1.93±0.36。gpt-4o 基线为 1.50±0.87。<code>low</code> 通过率为 96.7%(58/60)。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>。</figcaption>
+        <img src="../../../../../../assets/benchmark-02-quality.png" alt="基准 02 按模型与强度划分的平均评价分数(0–2)柱状图。gpt-4o 基线 1.50；gpt-5.2 none 2.00、low 1.93、medium/high/xhigh 2.00。误差棒为标准差；N=20、R=3，无置信区间。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
@@ -155,7 +155,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>错得多的地方：</strong> 算术应用题(平均 1.20)、日期/时间(1.00)、代码追踪(1.33)、约束满足(1.33) &mdash; 需要回头计算或反向追踪的类型。</li>
         <li><strong>全答对的地方：</strong> 计数、布尔逻辑、因果链(各 2.00) &mdash; 一次前向通过就足够的类型。</li>
-        <li><strong>gpt-5.2 在所有类型满分</strong>(2.00)。只有前述 <code>mr_05</code> 安全过滤拒绝的一个单元例外。</li>
+        <li><strong>gpt-5.2 除 <code>low</code> 外在所有强度的所有类型都满分</strong>(2.00)。只有 <code>low</code> 有两个 0 分单元 &mdash; <code>mr_05</code>(约束满足)的安全过滤拒绝，以及 <code>mr_15</code>(代码追踪)的错误答案 &ldquo;cba a&rdquo;(正确为 &ldquo;cbaa&rdquo;)。因此在 <code>low</code> 这两个类型各为 1.78(±0.67)。</li>
       </ul>
       <p>换句话说，这个数据集为 gpt-4o 画出了一张地图：&ldquo;链条短、前向推理就通过；需要回头检查就失败。&rdquo; gpt-5.2 把这张地图整个抹平了。</p>
     </section>
@@ -166,7 +166,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下 &mdash; 因为藏起来，后来的人会在同一个地方踩空。</p>
       <ul>
         <li><strong>对 gpt-4o 而言比预期容易。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这意味着数据集本来对 gpt-4o 没那么严苛。因此&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。预测错了的部分不按数字抹掉，而是原样留下缩小的节省幅度。结论的<em>方向</em>(gpt-5.2 <code>none</code> 帕累托支配)不变。</li>
-        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器返回了输入&middot;输出 token 0 与结构化拒绝。这个单元没有运营标记(冷启动/重试/截断)，因此<em>不会命中异常值规则</em>；按 append-only 原则，不覆盖，原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复均正常正确 &mdash; 不是系统性触发，这一个单元是 <code>low</code> 行方差变大的原因。</li>
+        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器返回了输入&middot;输出 token 0 与结构化拒绝。这个单元没有运营标记(冷启动/重试/截断)，因此<em>不会命中异常值规则</em>；按 append-only 原则，不覆盖，原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复均正常正确 &mdash; 不是系统性触发，这一个单元是 <code>low</code> 行<em>输入 token</em> 方差变大的原因。</li>
+        <li><strong>代码追踪错误 1 个。</strong> <code>mr_15</code> 的 <code>low</code> 第三次重复(<code>r2</code>)把 <code>g("abc")</code> 的输出返回为 &ldquo;cba a&rdquo; &mdash; 正确答案是 &ldquo;cbaa&rdquo;(反转的 &ldquo;cba&rdquo; 加上首字符 &ldquo;a&rdquo;)。裁判评分为 0/失败，这是与安全过滤无关的纯推理错误。这个单元和 <code>mr_05</code> 拒绝，是把 <code>low</code> 通过率变成 96.7%(58/60)的两次失败。</li>
         <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。因为设计了可验证答案，&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。因此二值化选择不会动摇核心结论。</li>
       </ul>
     </section>

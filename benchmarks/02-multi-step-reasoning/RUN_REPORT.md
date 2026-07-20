@@ -155,7 +155,7 @@ The runner stamps each call's `call_metadata` with `system_prompt_sha256` and
 | No `"fixture": true` marker in headline `judge_runs/*.json` | **PASS** | 0 fixture markers (all 360 judge JSONs are real gpt-4o calls) |
 | `exp002_benchmark02_gpt4o` carries `effort: null` (no reasoning param sent) | **PASS** | 60/60 |
 | Quality sanity: gpt-4o pass-rate < gpt-5.2 high pass-rate | **PASS** | 75.0 % < 100.0 % |
-| Pass-rate non-decreasing across gpt-5.2 effort ladder (excluding mr_05 r1 refusal) | **PASS** | none/medium/high/xhigh = 100 %; low = 96.7 % is the single-cell refusal |
+| Pass-rate non-decreasing across gpt-5.2 effort ladder (low dips to 96.7 % on two failed cells) | **PASS** | none/medium/high/xhigh = 100 %; low = 96.7 % from two failures (mr_05 r1 content-filter refusal + mr_15 r2 code-trace wrong answer) |
 
 ---
 
