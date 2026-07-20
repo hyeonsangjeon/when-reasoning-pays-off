@@ -77,8 +77,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">設計</p>
       <h2>推論が勝つ番だった</h2>
-      <p><strong>問いは一つだ。</strong> 多段階推論 &mdash; 推論の<em>天井</em>ケース &mdash; で、gpt-5.2 の努力度をどこまで上げれば推論が請求書に見合うのか。PAYG(正答当たりのドル)と PTU(固定容量当たりの分当たり正答)の二つのレンズで同時に見る。</p>
-      <p><strong>データセット。</strong> 凍結した合成サンプル 20個(<code>mr_01</code>&hellip;<code>mr_20</code>)。算術文章題、制約充足、日付/時刻、因果の鎖、コードトレース、ブール論理、数え上げ &mdash; 七つの型にわたり、すべてのサンプルは検証可能な正答を持ち、少なくとも二段階の推論を要求する。</p>
+      <p><strong>検証する問いは一つに絞った。</strong> 少なくとも二段階を踏まないと答えが出ない多段階推論 &mdash; 三つのベンチマークで推論が最も見合いそうな<em>天井</em>ケース &mdash; で、gpt-5.2 に<em>考える余地(推論の努力度)</em>を与えるほど答えは良くなり、それに見合うのか。だから確かめることも二つだけだ &mdash; 努力度を上げると<strong>(1) 品質は上がるか、(2) コストは上がるか。</strong> お金は二つの角度で読む。使った分だけ払う <strong>PAYG</strong> では &lsquo;正答一つ当たりいくら&rsquo; を、容量を丸ごと借りる <strong>PTU</strong> では &lsquo;同じ容量で分当たり何個当てるか&rsquo; を見る。</p>
+      <p><strong>何で測るか &mdash; データセット。</strong> 凍結した合成サンプル 20個(<code>mr_01</code>&hellip;<code>mr_20</code>)。算術文章題、制約充足、日付/時刻、因果の鎖、コードトレース、ブール論理、数え上げ &mdash; 七つの型に均等にわたる。肝心なのは<strong>一目では答えが出ない</strong>点だ。途中結果を手に持ったままもう一歩 &mdash; たとえば先に求めた値を条件にもう一度当てはめて &mdash; 進んで初めて正答に届く。だから &lsquo;少なくとも二段階&rsquo; なのだ。すべてのサンプルは機械で検証可能な正答を持つ。</p>
       <p><strong>変わる軸は一つだけ</strong> &mdash; gpt-5.2 の <code>reasoning.effort</code> を <code>none · low · medium · high · xhigh</code> でスイープする。そこに推論パラメータのない gpt-4o ベースラインを横に置く。各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>繰り返す。</p>
       <div class="article-summary-grid" aria-label="事前登録予測と役割">
         <section class="summary-tile"><h2>事前登録予測</h2><p>多段階形状は短い事実回答ベンチマークの結論をひっくり返す。gpt-4o は<strong>30&ndash;60%</strong>しか通過せず、gpt-5.2 は<em>十分な努力度</em>で<strong>80% 以上</strong>通過し、推論は割に合うはずだ。</p></section>
@@ -115,7 +115,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <section class="summary-tile"><h2>何を予測したか</h2><p>gpt-4o は 30&ndash;60% で崩れる。gpt-5.2 は努力度を<em>上げて</em>ようやく 80% を超える。要するに &ldquo;高い努力度が品質を買い、コストを正当化する。&rdquo;</p></section>
         <section class="summary-tile"><h2>何が出たか</h2><p>gpt-4o は <strong>75%</strong>(45/60)で予想より強かった。gpt-5.2 は<strong>最も低い <code>none</code> ですでに 100%</strong>(60/60)。平均評価スコアで見ると gpt-4o <strong>1.50</strong> 対 gpt-5.2 <strong>2.00</strong> である。</p></section>
       </div>
-      <p><strong>判定: 仮説反証。</strong> &ldquo;多段階では高い努力度が割に合う&rdquo;という事前登録は、記述どおりに反証された。本当の勝負所は<em>努力度ダイヤル</em>ではなく、<strong>gpt-4o → gpt-5.2 のモデル入れ替え</strong>だった。gpt-5.2 の<em>基本</em>推論設定(<code>none</code>)がすでに十分だったからだ。</p>
+      <p><strong>判定: 事前登録反証。</strong> &ldquo;多段階では努力度を上げてこそ見合う&rdquo;という予測は二つの方向で外れた &mdash; gpt-4o は予想より解けたし、gpt-5.2 は努力度を<em>上げる前から</em>すでに満点だった。だから本当の勝負所は<em>努力度ダイヤル</em>ではなく、<strong>gpt-4o を gpt-5.2 に入れ替えたこと</strong>そのものだった。gpt-5.2 の<em>基本</em>設定(<code>none</code>、推論を切った状態)がすでに十分だったからだ。</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -141,17 +141,17 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
     <section class="article-section">
       <p class="section-label">第二の逆転</p>
       <h2>より高い努力度は同じ品質をより高く買った</h2>
-      <p>gpt-5.2 の <code>none</code> と <code>xhigh</code> は<strong>どちらも満点(平均 2.00、通過率 100%)</strong>である。ところが正答 1,000件当たりのコストは <code>none</code>($0.62)を床に、<code>medium</code> <strong>1.75倍</strong>、<code>high</code> <strong>2.02倍</strong>、<code>xhigh</code> <strong>3.53倍</strong>($2.18)へ上がる。</p>
+      <p>ここで二つ目の事実が見えてくる。gpt-5.2 の <code>none</code> と <code>xhigh</code> は<strong>品質が等しく満点(平均 2.00、通過率 100%)</strong>である。ところが正答 1,000件当たりのコストは <code>none</code>($0.62)を床に、<code>medium</code> <strong>1.75倍</strong>、<code>high</code> <strong>2.02倍</strong>、<code>xhigh</code> <strong>3.53倍</strong>($2.18)へと跳ね上がる &mdash; <strong>同じ答えをどんどん高く買っている</strong>わけだ。</p>
       <p><strong>遅延も同じ話だ。</strong> <code>none</code> は呼び出し当たり約 1.6秒(1,589ms)、<code>xhigh</code> は約 3.3秒(3,265ms)。gpt-4o(1,382ms) に対する <code>none</code> の遅延税は約 <strong>15%</strong>にすぎないが、<code>xhigh</code> は 2.4倍だ。この区間の高い努力度は、より良い答えを買ったのではなく、<em>同じ答えをより高く、より遅く</em>買った。</p>
       <p><strong>トークンを分解すると理由ははっきりする。</strong> 目に見える答えは <code>none</code> で約 5.8トークン、<code>xhigh</code> で約 7.7トークン &mdash; 二トークン余り増えただけだ。ところが隠れた推論トークンは 0 から約 <strong>109.5</strong> へ膨らみ、<code>xhigh</code> では推論だけでリクエストサイズの約 26% を占める。品質はそのままなのに、請求されるトークンだけが膨らんだのである。</p>
-      <p>この結果は、推論トークンが役に立たないという意味ではない。推論は解くべき構造があるときに割に合う。ただしこの作業区間は<strong>最も低い組み合わせですでにルーブリックの頂点</strong>に届いており、品質がこれ以上上がる余地がないのに努力度だけを上げれば、追加トークンは投資より過剰支出に近くなる。</p>
+      <p>この結果は、推論トークンが役に立たないという意味ではない。<strong>推論はまだ解くべき構造が残っているときにだけ割に合う。</strong>ただしこの作業区間は<em>最も低い組み合わせですでにルーブリックの頂点</em>に届いてしまった &mdash; これ以上取れる点がない。天井に頭がついた場所で努力度だけを上げれば、追加で燃やす推論トークンは<em>投資</em>ではなく<em>過剰支出</em>になる。要するに、努力度ダイヤルは &lsquo;まだ上がる品質が残っているときにだけ&rsquo; 入れるスイッチだ。</p>
       <p><strong>PTU レンズでも結論は同じだ。</strong> gpt-5.2 <code>none</code> は gpt-4o の 0.994倍スループット × 100% 通過で、固定 PTU 支出における分当たり正答が <strong>+32.5%</strong> だ(gpt-4o は 75%)。努力度を上げるとスループットだけが削られ、品質の補償はない。</p>
     </section>
 
     <section id="quality-map" class="article-section">
       <p class="section-label">品質マップ</p>
       <h2>gpt-4o はどこで崩れたか</h2>
-      <p>75% という数字一つだけでは、&ldquo;どこで&rdquo;が見えない。型別に分けると、gpt-4o の失敗は特定の場所に集まっている。</p>
+      <p>gpt-4o の 75% という集計数字一つだけでは、&ldquo;どこで&rdquo;間違えたかが見えない。そこで作業の型別にスコアを割ってみた。すると失敗が特定の場所に &mdash; 戻って計算したり逆向きに追跡したりする必要のある型に &mdash; 集まっていることが分かった。</p>
       <ul>
         <li><strong>多く間違えた場所:</strong> 算術文章題(平均 1.20)、日付/時刻(1.00)、コードトレース(1.33)、制約充足(1.33) &mdash; 戻って計算したり、逆向きに追跡したりする必要がある型。</li>
         <li><strong>すべて正解した場所:</strong> 数え上げ、ブール論理、因果の鎖(各 2.00) &mdash; 一度の前向きパスで足りる型。</li>

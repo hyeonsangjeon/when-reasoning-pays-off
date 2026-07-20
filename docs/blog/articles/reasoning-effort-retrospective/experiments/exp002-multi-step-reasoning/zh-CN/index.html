@@ -77,8 +77,8 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>本该轮到推理获胜</h2>
-      <p><strong>问题只有一个。</strong> 在多步推理 &mdash; 推理的<em>天花板</em>案例 &mdash; 中，gpt-5.2 的强度要提高到哪里，推理才值回账单？我们同时用 PAYG(每个正确答案多少美元)和 PTU(固定容量下每分钟正确答案)两个视角来看。</p>
-      <p><strong>数据集。</strong> 冻结的合成样本 20 个(<code>mr_01</code>&hellip;<code>mr_20</code>)。覆盖算术应用题、约束满足、日期/时间、因果链、代码追踪、布尔逻辑、计数七类；所有样本都有可验证答案，并要求至少两步推理。</p>
+      <p><strong>要验证的问题收敛为一个。</strong> 在至少要走两步才能得出答案的多步推理 &mdash; 三个基准里推理最可能值回票价的<em>天花板</em>案例 &mdash; 中，给 gpt-5.2 更多<em>思考余地(推理强度)</em>，答案会更好、并且值回账单吗？所以要确认的也只有两件事 &mdash; 强度提高时，<strong>(1) 质量会不会上升，(2) 成本会不会上升。</strong> 钱从两个角度读：按量付费的 <strong>PAYG</strong> 看&lsquo;每个正确答案多少钱&rsquo;，整租容量的 <strong>PTU</strong> 看&lsquo;同样容量下每分钟答对几个&rsquo;。</p>
+      <p><strong>用什么来测 &mdash; 数据集。</strong> 冻结的合成样本 20 个(<code>mr_01</code>&hellip;<code>mr_20</code>)。均匀覆盖算术应用题、约束满足、日期/时间、因果链、代码追踪、布尔逻辑、计数七类。关键在于<strong>一眼看不出答案</strong>：你得握着一个中间结果再走一步 &mdash; 比如把先算出的值再代回条件 &mdash; 才能到达答案。所以是&lsquo;至少两步&rsquo;。所有样本都有可由机器验证的答案。</p>
       <p><strong>变化的轴只有一个</strong> &mdash; 扫过 gpt-5.2 的 <code>reasoning.effort</code>：<code>none · low · medium · high · xhigh</code>。旁边放置没有推理参数的 gpt-4o 基线。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。</p>
       <div class="article-summary-grid" aria-label="预先登记预测与作用">
         <section class="summary-tile"><h2>预先登记预测</h2><p>多步形态会推翻短事实基准的结论。gpt-4o 只会通过 <strong>30&ndash;60%</strong>，gpt-5.2 会在<em>足够强度</em>下通过 <strong>80% 以上</strong>，从而让推理值得。</p></section>
@@ -115,7 +115,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <section class="summary-tile"><h2>预测了什么</h2><p>gpt-4o 会在 30&ndash;60% 崩掉。gpt-5.2 必须<em>提高</em>强度才会超过 80%。概括就是&ldquo;高强度买来质量，并证明成本合理&rdquo;。</p></section>
         <section class="summary-tile"><h2>结果是什么</h2><p>gpt-4o 以 <strong>75%</strong>(45/60)比预期更强。gpt-5.2 在<strong>最低的 <code>none</code> 已经 100%</strong>(60/60)。按平均评价分数看，是 gpt-4o <strong>1.50</strong> 对 gpt-5.2 <strong>2.00</strong>。</p></section>
       </div>
-      <p><strong>判定：假设被反驳。</strong> &ldquo;多步任务中高强度值得&rdquo;这条预先登记，按原句被反驳。真正的胜负点不是<em>强度旋钮</em>，而是 <strong>gpt-4o → gpt-5.2 的模型替换</strong>。因为 gpt-5.2 的<em>默认</em>推理设置(<code>none</code>)已经足够。</p>
+      <p><strong>判定：预先登记被反驳。</strong> &ldquo;多步任务必须提高强度才值得&rdquo;这条预测在两个方向上都落空了 &mdash; gpt-4o 比预期解得更好，gpt-5.2 在<em>还没提高强度之前</em>就已经满分。所以真正的胜负点不是<em>强度旋钮</em>，而是<strong>把 gpt-4o 换成 gpt-5.2</strong> 本身。因为 gpt-5.2 的<em>默认</em>设置(<code>none</code>，即关闭推理)已经足够。</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -141,17 +141,17 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
     <section class="article-section">
       <p class="section-label">第二次逆转</p>
       <h2>更高强度用更高价格买到相同质量</h2>
-      <p>gpt-5.2 的 <code>none</code> 和 <code>xhigh</code> <strong>都是满分(平均 2.00，通过率 100%)</strong>。但每 1,000 个正确答案成本以 <code>none</code>($0.62)为底，升到 <code>medium</code> <strong>1.75倍</strong>、<code>high</code> <strong>2.02倍</strong>、<code>xhigh</code> <strong>3.53倍</strong>($2.18)。</p>
+      <p>这里浮现出第二个事实。gpt-5.2 的 <code>none</code> 和 <code>xhigh</code> <strong>质量完全相同 &mdash; 都是满分(平均 2.00，通过率 100%)</strong>。但每 1,000 个正确答案成本以 <code>none</code>($0.62)为底，升到 <code>medium</code> <strong>1.75倍</strong>、<code>high</code> <strong>2.02倍</strong>、<code>xhigh</code> <strong>3.53倍</strong>($2.18) &mdash; <strong>等于把同一个答案越买越贵</strong>。</p>
       <p><strong>延迟也是同一个故事。</strong> <code>none</code> 每次调用约 1.6 秒(1,589ms)，<code>xhigh</code> 约 3.3 秒(3,265ms)。相对 gpt-4o(1,382ms)，<code>none</code> 的延迟税只有约 <strong>15%</strong>，但 <code>xhigh</code> 是 2.4倍。在这个区间，高强度买到的不是更好的答案，而是<em>同一个答案，价格更高、速度更慢</em>。</p>
       <p><strong>拆开 token 后原因更清楚。</strong> 可见答案从 <code>none</code> 约 5.8 token 到 <code>xhigh</code> 约 7.7 token &mdash; 只多了两三个 token。但隐藏推理 token 从 0 膨胀到约 <strong>109.5</strong>，在 <code>xhigh</code> 时仅推理就占请求大小约 26%。质量不变，只有被计费的 token 膨胀。</p>
-      <p>这个结果并不意味着推理 token 没用。推理在存在待解决结构时会有价值。只是这个任务区间在<strong>最低组合已经触到量规顶端</strong>；当质量没有上升空间时，只提高强度会让额外 token 更接近过度支出，而不是投资。</p>
+      <p>这个结果并不意味着推理 token 没用。<strong>推理只有在还有结构待解决时才值得。</strong> 只是这个任务区间在<em>最低组合就已经触到量规顶端</em> &mdash; 没有可再涨的分数了。当头已经顶到天花板，再提高强度所多烧的推理 token 就成了<em>过度支出</em>，而非<em>投资</em>。一句话，强度旋钮是&lsquo;只在质量还有上升空间时&rsquo;才拧的开关。</p>
       <p><strong>PTU 视角下结论也相同。</strong> gpt-5.2 <code>none</code> 是 gpt-4o 的 0.994倍吞吐 × 100% 通过，所以固定 PTU 支出下每分钟正确答案为 <strong>+32.5%</strong>(gpt-4o 为 75%)。提高强度只削吞吐，没有质量补偿。</p>
     </section>
 
     <section id="quality-map" class="article-section">
       <p class="section-label">质量地图</p>
       <h2>gpt-4o 在哪里倒下</h2>
-      <p>75% 这个单一数字看不出&ldquo;在哪里&rdquo;。按类型拆开，gpt-4o 的失败集中在特定位置。</p>
+      <p>gpt-4o 的 75% 这个汇总数字，看不出到底&ldquo;在哪里&rdquo;错。于是我们按任务类型把分数拆开。这才看出失败集中在特定位置 &mdash; 那些需要回头计算或反向追踪的类型。</p>
       <ul>
         <li><strong>错得多的地方：</strong> 算术应用题(平均 1.20)、日期/时间(1.00)、代码追踪(1.33)、约束满足(1.33) &mdash; 需要回头计算或反向追踪的类型。</li>
         <li><strong>全答对的地方：</strong> 计数、布尔逻辑、因果链(各 2.00) &mdash; 一次前向通过就足够的类型。</li>
