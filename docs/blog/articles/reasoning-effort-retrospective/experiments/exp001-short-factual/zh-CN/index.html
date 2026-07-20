@@ -77,9 +77,9 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>从最简单的任务开始</h2>
-      <p><strong>问题只有一个。</strong> 对于一次就能答出的短事实任务 &mdash; 三项基准中最容易的案例 &mdash; 提高 gpt-5.2 的强度后，推理是否值回账单？我们同时用 PAYG(每个正确答案多少美元)和 PTU(固定容量下每分钟正确答案)两个视角来看。预期答案是&ldquo;不&rdquo;。这个实验的作用，是用实测钉住那个<em>底部</em>。</p>
-      <p><strong>数据集。</strong> 冻结的手写样本 20 个(<code>sf_01</code>&hellip;<code>sf_20</code>)。混合了抽取&middot;格式&middot;分类&middot;列举&middot;音译&middot;规范化&middot;单位换算&middot;简单算术&middot;摘要。没有确定性答案表 &mdash; 只固定 <code>expected_output_shape</code> 与 <code>quality_rubric_notes</code>。因此质量不是规则对照，而只由<strong>中立裁判(gpt-4o)评分</strong>判定。这是为了把评分依据留在原始材料中。</p>
-      <p><strong>变化的轴只有一个</strong> &mdash; 扫过 gpt-5.2 的 <code>reasoning.effort</code>：<code>none · low · medium · high · xhigh</code>。旁边放置没有推理参数的 gpt-4o 基线。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。</p>
+      <p><strong>要验证的问题被收敛成一个。</strong> 对于一次就能答出的短事实任务 &mdash; 三项基准中最容易的案例 &mdash; 给 gpt-5.2 <em>更多思考余地(推理强度)</em>，答案会不会更好、值不值这笔账？所以要看的也只有两点 &mdash; 提高强度后，<strong>(1) 质量会不会上升，(2) 成本会不会上升。</strong> 钱从两个角度读：按量付费的 <strong>PAYG</strong> 问&ldquo;每个正确答案多少钱&rdquo;，整块租用容量的 <strong>PTU</strong> 问&ldquo;同样的容量每分钟能答对几个&rdquo;。预期答案是&ldquo;不&rdquo;，而这个实验的作用，是用实测而非猜测钉住那个&ldquo;不&rdquo;的<em>底部</em>。</p>
+      <p><strong>用什么来测 &mdash; 数据集。</strong> 冻结的手写样本 20 个(<code>sf_01</code>&hellip;<code>sf_20</code>)，均匀混合了抽取&middot;格式&middot;分类&middot;列举&middot;音译&middot;规范化&middot;单位换算&middot;简单算术&middot;摘要。这类任务很难把&ldquo;唯一正确答案&rdquo;钉进一张表。于是不用答案表，只固定 <code>expected_output_shape</code>(答案的形状)与 <code>quality_rubric_notes</code>(评分标准)，再让<strong>中立裁判模型 gpt-4o 读每份答案并打 0&middot;1&middot;2 分</strong>。连每次打分的依据也照原样留在原始材料中。</p>
+      <p><strong>改变的只有一个</strong> &mdash; 把 gpt-5.2 的推理强度(<code>reasoning.effort</code>)从 <code>none</code>(关)一路提到 <code>low · medium · high · xhigh</code>，共五档。其余条件全部固定。旁边并排放一个<strong>根本没有推理旋钮的 gpt-4o 基线</strong>。为了滤掉偶然侥幸，每个(样本 × 模型 × 强度)单元<strong>各跑三次(R=3)</strong>。</p>
       <div class="article-summary-grid" aria-label="预先登记预测与作用">
         <section class="summary-tile"><h2>预先登记预测</h2><p>短事实任务不需要推理表面。质量在最低强度已经饱和；提高强度后，质量不变，只增加成本&middot;延迟&middot;token。也就是说，答案是&ldquo;不要提高强度&rdquo;。</p></section>
         <section class="summary-tile"><h2>本实验的作用</h2><p>三项基准的<em>底部锚点</em>。在测量多步(02)的天花板和工具智能体(03)的混合形态之前，用实测固定&ldquo;确实不需要推理的位置&rdquo;长什么样。后续实验的反转，正是与这个底部对照后才有意义。</p></section>
@@ -129,8 +129,8 @@ gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
 gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
 gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
 gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
-      <p><strong>完全不开推理的 <code>none</code> 在两个轴上都领先 gpt-4o。</strong> 每 1,000 次请求 $0.587，比 gpt-4o($0.665)<strong>便宜 12%</strong>，正确率反而<strong>95% 对 90%</strong>更高。折算成每 1,000 个正确答案，是 $0.618 对 $0.739 &mdash; <strong>便宜 16%</strong>。真正起作用的不是强度旋钮，而是<em>模型替换</em>本身。</p>
-      <p><code>none</code> 以上几乎没有事情发生。<code>low</code>&middot;<code>medium</code> 的正确率<em>看起来</em>是 96.7%(60 个中多 1 个)，但这是样本噪声范围(N=20&middot;R=3，无置信区间)。<code>high</code> 按请求反而<strong>贵 +3.6%</strong>，正确率回到 95%。<strong>从 <code>none</code> 到 <code>medium</code> 基本上是同一个平面</strong>，再往上没有质量收益，只多成本。</p>
+      <p><strong>完全不开推理的 <code>none</code> 在两个轴上都领先 gpt-4o。</strong> 每 1,000 次请求 $0.587，比 gpt-4o($0.665)<strong>便宜 12%</strong>，正确率反而<strong>95% 对 90%</strong>更高。折算成每 1,000 个正确答案，是 $0.618 对 $0.739 &mdash; <strong>便宜 16%</strong>。换句话说，这里真正起作用的不是&ldquo;提高强度&rdquo;，而是<em>换了模型</em>本身。强度旋钮到此还什么都没做。</p>
+      <p>而且 <code>none</code> 以上几乎什么都没发生。<code>low</code>&middot;<code>medium</code> 的正确率<em>看起来高了一档</em>，达到 96.7%，但那只是 60 个里多对了 1 个 &mdash; 样本这么小(N=20&middot;R=3，无置信区间)，应当当作噪声。继续提到 <code>high</code>，成本反而按请求<strong>涨 +3.6%</strong>，正确率却退回 95%。最终 <strong>从 <code>none</code> 到 <code>medium</code> 基本上是同一个平面</strong>，再往上只是叠加成本、不换来质量。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
         <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的裁判分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(实测 cohort)。</figcaption>
@@ -141,7 +141,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="subtypes" class="article-section">
       <p class="section-label">失败藏身处</p>
       <h2>失败藏在哪里</h2>
-      <p>90% 对 95% 这两个聚合数字看不出&ldquo;在哪里&rdquo;。按类型拆开，才会看到这个底部真正的纹理 &mdash; 大多数标签两边都是满分(2.0)，差异只出现在三个标签上。</p>
+      <p>90% 对 95% 这两个聚合数字看不出差距&ldquo;出在哪里&rdquo;。于是我们按任务类型把分数拆开。结果大多数类型在两个模型上都是满分(2.0)，<strong>差异只出现在三处 &mdash; 抽取&middot;摘要&middot;算术</strong>。这三类正是本实验的核心。</p>
       <pre class="code-block"><code>类型              gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
 抽取(extraction)  1.75     2.00       2.00      2.00       2.00
 摘要(summ.)       1.33     1.78       2.00      1.78       1.89
@@ -157,10 +157,10 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="flatline" class="article-section">
       <p class="section-label">第二个信号</p>
       <h2>提高强度，推理仍停在 0</h2>
-      <p>为什么强度动不了质量？拆开 token 后答案很机械。gpt-5.2 的<strong>隐藏推理 token</strong>在 <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> 平均为 0.00，在 <code>high</code> 为 1.35，在 <code>xhigh</code> 为 0.62。<strong>即使把强度拉到最大，模型实际使用的推理 token 也接近 0</strong>。短事实任务没有可规划的表面，强度旋钮没有接到任何地方。这与前面的单发基准(02)里推理 token 随强度上升正好相反。</p>
-      <p><strong>所以成本也平坦。</strong> 每次请求输入固定为 224 token(提示字节相同)，可见输出只从 10&ndash;16 token 轻微增加。推理为 0，因此各强度间成本差只是从 <code>none</code> $0.587 到 <code>high</code> $0.608 &mdash; 每 1,000 次请求<strong>两美分多一点</strong>的晃动。</p>
-      <p><strong>延迟也不跟随强度。</strong> gpt-4o 为 1,494ms，gpt-5.2 无论强度如何都像噪声一样散在 1,410&ndash;1,713ms 之间(<code>medium</code> 比 <code>none</code> 更快)。在单发任务中，强度不是延迟的预测变量。</p>
-      <p><strong>PTU 视角下结论没有反转，只是略微躺平。</strong> gpt-5.2 <code>none</code> 的每请求 token 比 gpt-4o 多约 1%，吞吐为 <strong>0.99倍</strong>(约 −1%) &mdash; 按固定容量每分钟正确答案看，gpt-4o 略微领先。也就是说，<strong>PAYG 下 gpt-5.2 <code>none</code> 明确更便宜，PTU 下实质上是平手</strong>。不像前两个基准那样 PTU 拉开很大差距，这里两个模型几乎重叠。</p>
+      <p><strong>那么，为什么提高强度质量却纹丝不动？</strong> 拆开 token 后答案很机械。gpt-5.2 不摆到台面上使用的<strong>推理 token</strong>在 <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> 平均为 <strong>0.00</strong>，在 <code>high</code> 为 1.35，在 <code>xhigh</code> 为 0.62。也就是说，<strong>即使把强度拉到最大，模型真正花在&ldquo;思考&rdquo;上的 token 也接近 0</strong>。短事实任务一次就能答完，<em>根本没有可规划、可回看的余地</em>，强度旋钮再怎么拧也接不到任何地方。这与推理 token 确实随强度上升的多步任务(02)正好相反。</p>
+      <p><strong>推理为 0，成本也随之平坦。</strong> 每次请求输入钉死在 224 token(提示逐字节相同)，可见输出也只在 10&ndash;16 token 间几乎不增。所以各强度间的成本差也不过是从 <code>none</code> $0.587 到 <code>high</code> $0.608 &mdash; 每 1,000 次请求<strong>两美分多一点</strong>的轻微晃动。</p>
+      <p><strong>响应耗时(延迟)也不跟随强度。</strong> gpt-4o 为 1,494ms，gpt-5.2 无论强度如何都像噪声一样散在 1,410&ndash;1,713ms 之间 &mdash; <code>medium</code> 甚至比 <code>none</code> 更快。在一次答完的任务里，强度预测不了速度。</p>
+      <p><strong>在整块租用容量的 PTU 视角下，结论没有反转，只是略微躺平。</strong> gpt-5.2 <code>none</code> 每请求 token 比 gpt-4o 多约 1%，吞吐为 <strong>0.99倍</strong>(约 −1%) &mdash; 按同一块固定容量每分钟答对的个数看，gpt-4o 略微领先。总结就是：<strong>按量付费的 PAYG 下 gpt-5.2 <code>none</code> 明确更便宜，租用的 PTU 下实质上是平手</strong>。不像前两个基准那样 PTU 拉开很大差距，这里两个模型几乎重叠。</p>
     </section>
 
     <section id="transparency" class="article-section">

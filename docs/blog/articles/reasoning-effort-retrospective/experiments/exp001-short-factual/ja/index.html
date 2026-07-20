@@ -77,9 +77,9 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="design" class="article-section">
       <p class="section-label">設計</p>
       <h2>最も単純なタスクから</h2>
-      <p><strong>問いは一つだ。</strong> 一度で答えが出る短い事実回答タスク &mdash; 三つのベンチマークで最も易しいケース &mdash; で、gpt-5.2 の努力度を上げると推論は請求書に見合うのか。PAYG(正答当たりのドル)と PTU(固定容量当たりの分当たり正答)の二つのレンズで同時に見る。予想される答えは &ldquo;いいえ&rdquo; だ。この実験の役割は、その<em>床</em>を実測で固定すること。</p>
-      <p><strong>データセット。</strong> 凍結した著作サンプル 20個(<code>sf_01</code>&hellip;<code>sf_20</code>)。抽出&middot;整形&middot;分類&middot;列挙&middot;音訳&middot;正規化&middot;単位換算&middot;簡単な算術&middot;要約が混ざっている。決定的な正答表はない &mdash; 代わりに <code>expected_output_shape</code> と <code>quality_rubric_notes</code> だけを固定する。だから品質はルール照合ではなく、<strong>中立ジャッジ(gpt-4o)の採点</strong>だけで判定される。採点根拠を原資料に残すための設計だ。</p>
-      <p><strong>変わる軸は一つだけ</strong> &mdash; gpt-5.2 の <code>reasoning.effort</code> を <code>none · low · medium · high · xhigh</code> でスイープする。そこに推論パラメータのない gpt-4o ベースラインを横に置く。各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>繰り返す。</p>
+      <p><strong>検証すべき問いは一つに絞った。</strong> 一度で答えが出る短い事実回答タスク &mdash; 三つのベンチマークで最も易しいケース &mdash; で、gpt-5.2 に<em>考える余地(推論の努力度)</em>をより与えるほど答えは良くなり、その分の価値があるのか。だから見るべきものも二つだけだ &mdash; 努力度を上げると<strong>(1) 品質は上がるか、(2) コストは上がるか。</strong> お金は二つの角度から読む。使った分だけ払う <strong>PAYG</strong> では &ldquo;正答一つ当たりいくら&rdquo; を、容量をまるごと借りる <strong>PTU</strong> では &ldquo;同じ容量で毎分いくつ正解できるか&rdquo; を見る。予想される答えは &ldquo;いいえ&rdquo; で、この実験の役割は、その &ldquo;いいえ&rdquo; の<em>床</em>を当て推量ではなく実測で固定することだ。</p>
+      <p><strong>何で測るか &mdash; データセット。</strong> 凍結した著作サンプル 20個(<code>sf_01</code>&hellip;<code>sf_20</code>)で、抽出&middot;整形&middot;分類&middot;列挙&middot;音訳&middot;正規化&middot;単位換算&middot;簡単な算術&middot;要約がまんべんなく混ざっている。こうしたタスクは &ldquo;唯一の正答&rdquo; を表で固定しにくい。そこで正答表の代わりに <code>expected_output_shape</code>(答えの形)と <code>quality_rubric_notes</code>(採点基準)だけを固定し、品質は<strong>中立ジャッジのモデル gpt-4o が答案を読んで 0&middot;1&middot;2 で採点する</strong>ようにした。採点の根拠まで原資料にそのまま残す。</p>
+      <p><strong>変えるのは一つだけ</strong> &mdash; gpt-5.2 の推論の努力度(<code>reasoning.effort</code>)を <code>none</code>(オフ)から <code>low · medium · high · xhigh</code> まで五段階で上げていく。ほかの条件はすべて固定だ。横には推論ダイヤルがそもそもない <strong>gpt-4o をベースライン</strong>として並べる。まぐれを取り除くため、各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>回す。</p>
       <div class="article-summary-grid" aria-label="事前登録予測と役割">
         <section class="summary-tile"><h2>事前登録予測</h2><p>短い事実回答タスクには推論表面が要らない。品質は最も低い努力度ですでに飽和し、努力度を上げると品質はそのまま、コスト&middot;遅延&middot;トークンだけが増える。つまり &ldquo;努力度を上げるな&rdquo; が答えだ。</p></section>
         <section class="summary-tile"><h2>この実験の役割</h2><p>三つのベンチマークの<em>床アンカー</em>。多段階(02)の天井とツールエージェント(03)の混合を測る前に、&ldquo;推論が本当に必要ない場所&rdquo; がどんな形なのかを実測で固定する。後続実験の反転は、この床との対比で意味を持つ。</p></section>
@@ -129,8 +129,8 @@ gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
 gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
 gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
 gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
-      <p><strong>推論を一切有効にしていない <code>none</code> が、二つの軸のどちらでも gpt-4o を上回る。</strong> リクエスト 1,000件当たり $0.587 で gpt-4o($0.665) より<strong>12% 安く</strong>、正答率はむしろ <strong>95% 対 90%</strong> と高い。正答 1,000件当たりに換算すると $0.618 対 $0.739 &mdash; <strong>16% 安い</strong>。割に合ったのは努力度ダイヤルではなく、<em>モデルの入れ替え</em>そのものだった。</p>
-      <p><code>none</code> の上では何も起きない。<code>low</code>&middot;<code>medium</code> は正答率が 96.7%(60件中 1件多い)に<em>見える</em>が、これは標本ノイズの範囲だ(N=20&middot;R=3、信頼区間なし)。<code>high</code> はリクエスト当たりでむしろ <strong>+3.6%</strong> 高くなり、正答率は 95% に戻る。<strong><code>none</code> から <code>medium</code> までは実質一つの平面</strong>で、その上は品質なしにコストだけが乗る。</p>
+      <p><strong>推論を一切有効にしていない <code>none</code> が、二つの軸のどちらでも gpt-4o を上回る。</strong> リクエスト 1,000件当たり $0.587 で gpt-4o($0.665) より<strong>12% 安く</strong>、正答率はむしろ <strong>95% 対 90%</strong> と高い。正答 1,000件当たりに換算すると $0.618 対 $0.739 &mdash; <strong>16% 安い</strong>。言い換えれば、ここで割に合ったのは &ldquo;努力度を上げたこと&rdquo; ではなく、<em>モデルを入れ替えたこと</em>そのものだ。努力度ダイヤルはまだ何もしていない。</p>
+      <p>そして <code>none</code> の上では何も起きない。<code>low</code>&middot;<code>medium</code> は正答率が 96.7% と<em>一段高く見える</em>が、60件中たった 1件の差だ &mdash; 標本が小さく(N=20&middot;R=3、信頼区間なし)ノイズと見るべき大きさである。<code>high</code> まで上げるとコストはむしろリクエスト当たり <strong>+3.6%</strong> 跳ね、正答率は 95% に戻る。結局 <strong><code>none</code> から <code>medium</code> までは実質一つの平面</strong>で、その上は品質なしにコストだけが乗る。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
         <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別ジャッジスコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(実測コホート)。</figcaption>
@@ -141,7 +141,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="subtypes" class="article-section">
       <p class="section-label">失敗が隠れた場所</p>
       <h2>失敗はどこに隠れたか</h2>
-      <p>90% 対 95% という集計数字二つだけでは、&ldquo;どこで&rdquo;が見えない。型別に分けると、この床の本当の肌理が見えてくる &mdash; ほとんどのタグは両方とも満点(2.0)で、差は三つのタグだけに出ている。</p>
+      <p>90% 対 95% という集計数字二つだけでは、&ldquo;どこで&rdquo;差がついたのか見えない。そこでタスクの型別にスコアを分けてみた。すると、ほとんどの型は両モデルとも満点(2.0)で、<strong>差はたった三か所 &mdash; 抽出&middot;要約&middot;算術 &mdash; だけ</strong>に出ていた。この三つがこの実験の核心だ。</p>
       <pre class="code-block"><code>型                gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
 抽出(extraction)  1.75     2.00       2.00      2.00       2.00
 要約(summ.)       1.33     1.78       2.00      1.78       1.89
@@ -157,10 +157,10 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="flatline" class="article-section">
       <p class="section-label">第二のシグナル</p>
       <h2>努力度を上げても推論は 0 にとどまる</h2>
-      <p>なぜ努力度は品質を動かせないのか。トークンを分解すると機械的な答えが出る。gpt-5.2 の<strong>隠れた推論トークン</strong>は <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> で平均 0.00、<code>high</code> で 1.35、<code>xhigh</code> で 0.62 だ。<strong>努力度を最大まで上げても、モデルが実際に使う推論トークンは 0 近く</strong>である。短い事実回答タスクには計画する表面がなく、努力度ダイヤルはどこにもつながっていない。前の単発ベンチマーク(02)で推論トークンが努力度に沿って増えたのと正反対だ。</p>
-      <p><strong>だからコストも平らである。</strong> リクエスト当たり入力は 224トークンで固定(プロンプトがバイト同一)、見える出力は 10&ndash;16トークンだけわずかに増える。推論が 0 なので、努力度別コスト差は <code>none</code> $0.587 から <code>high</code> $0.608 の間 &mdash; リクエスト 1,000件当たり<strong>2セント余り</strong>の揺れでしかない。</p>
-      <p><strong>遅延も努力度に従わない。</strong> gpt-4o 1,494ms、gpt-5.2 は努力度と無関係に 1,410&ndash;1,713ms の間でノイズのように散らばる(<code>medium</code> が <code>none</code> より速い)。単発タスクで努力度は遅延の予測変数ではない。</p>
-      <p><strong>PTU レンズでは結論はひっくり返らないが、少し寝る。</strong> gpt-5.2 <code>none</code> はリクエスト当たりトークンが gpt-4o より約 1% 多く、スループットは <strong>0.99倍</strong>(約 −1%) だ &mdash; 固定容量当たりの分当たり正答では gpt-4o がわずかに先行する。つまり <strong>PAYG では gpt-5.2 <code>none</code> が明確に安く、PTU では実質引き分け</strong>である。前の二つのベンチマークのように PTU が大きく開く図ではなく、二つのモデルはほとんど重なる。</p>
+      <p><strong>では、なぜ努力度を上げても品質はびくともしないのか。</strong> トークンを分解すると機械的な答えが出る。gpt-5.2 が表に出さずに使う<strong>推論トークン</strong>は <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> で平均 <strong>0.00</strong>、<code>high</code> で 1.35、<code>xhigh</code> で 0.62 だ。つまり <strong>努力度を最大まで上げても、モデルが実際に &ldquo;考える&rdquo; のに使うトークンは 0 近く</strong>である。短い事実回答タスクは一度で答えが出るので<em>計画したり見直したりする余地がそもそもなく</em>、努力度ダイヤルをいくら回してもつながる先がない。努力度に沿って推論トークンが実際に増えていった多段階タスク(02)とは正反対だ。</p>
+      <p><strong>推論が 0 なので、コストもそれにつれて平らだ。</strong> リクエスト当たり入力は 224トークンに固定され(プロンプトがバイトまで同一)、見える出力も 10&ndash;16トークンとほとんど増えない。だから努力度別のコスト差といっても <code>none</code> $0.587 から <code>high</code> $0.608 &mdash; リクエスト 1,000件当たり<strong>2セント余り</strong>の細かな揺れでしかない。</p>
+      <p><strong>応答にかかる時間(遅延)も努力度に従わない。</strong> gpt-4o 1,494ms、gpt-5.2 は努力度と無関係に 1,410&ndash;1,713ms の間でノイズのように散らばる &mdash; <code>medium</code> が <code>none</code> より速いほどだ。一度で答えるタスクでは、努力度から速度は予測できない。</p>
+      <p><strong>容量をまるごと借りる PTU レンズでは、結論はひっくり返らないが少し寝る。</strong> gpt-5.2 <code>none</code> はリクエスト当たりトークンを gpt-4o より約 1% 多く使うため、スループットは <strong>0.99倍</strong>(約 −1%) だ &mdash; 同じ容量で毎分正解できる数では gpt-4o がわずかに先行する。まとめると <strong>使った分だけ払う PAYG では gpt-5.2 <code>none</code> が明確に安く、容量を借りる PTU では実質引き分け</strong>である。前の二つのベンチマークのように PTU が大きく開く図ではなく、二つのモデルはほとんど重なる。</p>
     </section>
 
     <section id="transparency" class="article-section">
