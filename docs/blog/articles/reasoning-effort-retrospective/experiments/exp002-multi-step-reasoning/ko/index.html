@@ -52,7 +52,7 @@
     <h1>exp002 &mdash; 다단계 추론에서 추론 강도는 값을 했는가</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">이 실험은 추론이 이길 차례였다. 최소 두 단계를 거쳐야 답이 나오는 문제 스무 개 &mdash; 추론 강도(<code>reasoning_effort</code>)를 한 칸 올릴수록 답이 더 안전해질 것만 같은 자리다.</p>
+    <p class="lede">이 실험은 추론이 이길 차례였다. 최소 두 단계를 거쳐야 답이 나오는 문제 스무 개 &mdash; 추론 강도(<code>reasoning_effort</code>), 곧 모델이 답을 내기 전에 속으로 얼마나 더 곱씹을지 정하는 손잡이를 한 칸 올릴수록 답이 더 안전해질 것만 같은 자리다.</p>
     <p class="lede">우리는 그렇게 <strong>사전 등록</strong>했다. gpt-4o는 절반 남짓 틀리고(30&ndash;60% 통과), gpt-5.2는 강도를 올려야 80%를 넘긴다고. 측정은 두 예측을 모두 빗나갔다. gpt-5.2는 <strong>가장 낮은 강도에서 이미 만점</strong>을 받았고, gpt-4o는 예상보다 훨씬 잘했다.</p>
     <p class="lede">이 노트는 그 하루를 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 이상치 → 결정</em>으로 되짚는다. 숫자만이 아니라, 그 숫자가 나온 길과 읽는 법까지 함께 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
@@ -83,7 +83,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p class="section-label">설계</p>
       <h2>추론이 이길 차례였다</h2>
       <p><strong>검증할 질문은 하나로 줄였다.</strong> 최소 두 단계를 밟아야 답이 나오는 다단계 추론 &mdash; 세 벤치마크에서 추론이 가장 값을 할 법한 <em>천장</em> 케이스 &mdash; 에서, gpt-5.2에게 <em>생각할 여지(추론 강도)</em>를 더 줄수록 답이 좋아지고 그만한 값을 하는가? 그래서 확인할 것도 둘뿐이다 &mdash; 강도를 올리면 <strong>(1) 품질이 오르나, (2) 비용이 오르나.</strong> 돈은 두 각도에서 읽는다. 쓴 만큼 내는 <strong>PAYG</strong>에서는 &lsquo;정답 하나당 얼마&rsquo;를, 용량을 통째로 빌리는 <strong>PTU</strong>에서는 &lsquo;같은 용량으로 분당 몇 개를 맞히나&rsquo;를 본다.</p>
-      <p><strong>무엇으로 재나 &mdash; 데이터셋.</strong> 얼려 둔 합성 샘플 20개(<code>mr_01</code>&hellip;<code>mr_20</code>). 산술 문장제, 제약 충족, 날짜/시간, 인과 사슬, 코드 트레이스, 불리언 논리, 세기 &mdash; 일곱 유형에 고루 걸쳐 있다. 핵심은 <strong>한눈에 답이 나오지 않는다</strong>는 점이다. 중간 결과를 손에 쥔 채 한 걸음 더 &mdash; 이를테면 먼저 구한 값을 다시 조건에 대입해야 &mdash; 정답에 닿는다. 그래서 &lsquo;최소 두 단계&rsquo;다. 모든 샘플은 기계로 검증 가능한 정답을 갖는다.</p>
+      <p><strong>무엇으로 재나 &mdash; 데이터셋.</strong> 얼려 둔 합성 샘플 20개(<code>mr_01</code>&hellip;<code>mr_20</code>). 산술 문장제, 제약 충족(여러 조건 지키기), 날짜/시간 계산, 인과 사슬, 코드 트레이스(프로그램 실행 순서 읽기), 불리언 논리, 세기 &mdash; 일곱 유형에 고루 걸쳐 있다. 핵심은 <strong>한눈에 답이 나오지 않는다</strong>는 점이다. 중간 결과를 손에 쥔 채 한 걸음 더 &mdash; 이를테면 먼저 구한 값을 다시 조건에 대입해야 &mdash; 정답에 닿는다. 그래서 &lsquo;최소 두 단계&rsquo;다. 모든 샘플은 기계로 검증 가능한 정답을 갖는다.</p>
       <p><strong>변하는 축은 딱 하나</strong> &mdash; gpt-5.2의 <code>reasoning.effort</code>를 <code>none · low · medium · high · xhigh</code>로 스윕한다. 여기에 추론 파라미터가 없는 gpt-4o 기준선을 나란히 둔다. 각 (샘플 × 모델 × 강도) 셀은 <strong>세 번씩(R=3)</strong> 반복한다.</p>
       <div class="article-summary-grid" aria-label="사전 등록 예측과 역할">
         <section class="summary-tile"><h2>사전 등록 예측</h2><p>다단계 형태는 단답 벤치마크의 결론을 뒤집는다. gpt-4o는 <strong>30&ndash;60%</strong>만 통과하고, gpt-5.2는 <em>충분한 강도</em>에서 <strong>80% 이상</strong> 통과해 추론이 값을 할 것이다.</p></section>
@@ -110,7 +110,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
           <strong>도표/표:</strong> <code>results/cost-curves/benchmark-02-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>측정 표면은 360셀</strong>(gpt-4o 60 + gpt-5.2 300, 강도 다섯 단계). 이상치로 제외된 셀은 <strong>0개</strong>. 채점은 중립 심판 gpt-4o가 셀당 한 번, <strong>360/360 성공(실패 0, 재시도 0)</strong>. 모든 JSON은 실제 Foundry v1 호출로 <code>"fixture": true</code> 마커가 하나도 없다(360행 중 159행이 <code>reasoning_tokens &gt; 0</code>).</p>
+      <p><strong>측정 표면은 360셀</strong>(gpt-4o 60 + gpt-5.2 300, 강도 다섯 단계). 이상치로 제외된 셀은 <strong>0개</strong>. 채점은 중립 심판 gpt-4o가 셀당 한 번, <strong>360/360 성공(실패 0, 재시도 0)</strong>. 심판은 실패에 0점, 부분 통과에 1점, 완전 통과에 2점을 준다 &mdash; 그래서 평균 <strong>2.00은 60개가 다 통과</strong>했다는 뜻이고, gpt-4o의 <strong>1.50은 45개 통과에 15개 실패</strong>가 섞인 평균이다. 모든 JSON은 실제 Foundry v1 호출로 <code>"fixture": true</code> 마커가 하나도 없다(360행 중 159행이 <code>reasoning_tokens &gt; 0</code>).</p>
     </section>
 
     <section id="predict" class="article-section">
@@ -148,8 +148,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <h2>더 높은 강도는 같은 품질을 더 비싸게 샀다</h2>
       <p>여기서 두 번째 사실이 드러난다. gpt-5.2의 <code>none</code>과 <code>xhigh</code>는 <strong>품질이 똑같이 만점(평균 2.00, 통과율 100%)</strong>이다. 그런데 정답 1,000건당 비용은 <code>none</code>($0.62)을 바닥으로 <code>medium</code> <strong>1.75배</strong>, <code>high</code> <strong>2.02배</strong>, <code>xhigh</code> <strong>3.53배</strong>($2.18)까지 치솟는다. <strong>같은 답을 점점 더 비싸게 사는</strong> 셈이다.</p>
       <p><strong>지연도 같은 이야기다.</strong> <code>none</code>은 호출당 약 1.6초(1,589ms), <code>xhigh</code>는 약 3.3초(3,265ms). gpt-4o(1,382ms) 대비 <code>none</code>의 지연세는 약 <strong>15%</strong>뿐이지만, <code>xhigh</code>는 2.4배다. 이 구간의 높은 강도는 더 나은 답을 산 게 아니라, <em>같은 답을 더 비싸고 더 느리게</em> 샀다.</p>
-      <p><strong>토큰을 분해하면 이유가 또렷하다.</strong> 눈에 보이는 답은 <code>none</code>에서 약 5.8토큰, <code>xhigh</code>에서 약 7.7토큰 &mdash; 두 토큰 남짓 늘었을 뿐이다. 그런데 숨은 추론 토큰은 0에서 약 <strong>109.5</strong>로 불었고, <code>xhigh</code>에서는 추론만으로 요청 크기의 약 26%를 차지한다. 품질은 그대로인데 청구되는 토큰만 부푼 것이다.</p>
-      <p>이 결과가 추론 토큰이 쓸모없다는 뜻은 아니다. <strong>추론은 아직 풀 구조가 남아 있을 때에만 값을 한다.</strong> 그런데 이 작업 구간은 <em>가장 낮은 조합에서 이미 루브릭의 꼭대기</em>에 닿아 버렸다 &mdash; 더 오를 점수가 없다. 천장에 머리가 닿은 자리에서 강도만 더 올리면, 추가로 태우는 추론 토큰은 <em>투자</em>가 아니라 <em>과잉 지출</em>이 된다. 요약하면, 강도 다이얼은 &lsquo;아직 오를 품질이 남아 있을 때&rsquo;에만 켜는 스위치다.</p>
+      <p><strong>토큰을 분해하면 이유가 또렷하다.</strong> 식당에서 같은 접시가 나와도 주방에서 손질이 오래 걸리면 원가가 오르듯, 화면에 보이는 답이 같아도 모델이 속으로 더 많이 계산했다면 청구서는 커진다. 눈에 보이는 답은 <code>none</code>에서 약 5.8토큰, <code>xhigh</code>에서 약 7.7토큰 &mdash; 두 토큰 남짓 늘었을 뿐이다. 그런데 숨은 추론 토큰은 0에서 약 <strong>109.5</strong>로 불었고, <code>xhigh</code>에서는 추론만으로 요청 크기의 약 26%를 차지한다. 품질은 그대로인데 청구되는 토큰만 부푼 것이다.</p>
+      <p>이 결과가 추론 토큰이 쓸모없다는 뜻은 아니다. <strong>복잡한 계획이나 도구 선택처럼 아직 풀어야 할 단계가 남아 있을 때에만 추론은 값을 한다.</strong> 그런데 이 작업 구간은 <em>가장 낮은 조합에서 이미 루브릭의 꼭대기</em>에 닿아 버렸다 &mdash; 더 오를 점수가 없다. 천장에 머리가 닿은 자리에서 강도만 더 올리면, 추가로 태우는 추론 토큰은 <em>투자</em>가 아니라 <em>과잉 지출</em>이 된다. 요약하면, 강도 다이얼은 &lsquo;아직 오를 품질이 남아 있을 때&rsquo;에만 켜는 스위치다.</p>
       <p><strong>PTU 렌즈에서도 결론은 같다.</strong> gpt-5.2 <code>none</code>은 gpt-4o의 0.994배 처리량 × 100% 통과로, 고정 PTU 지출에서 분당 정답이 <strong>+32.5%</strong>다(gpt-4o는 75%). 강도를 올리면 처리량만 깎이고 품질 보상은 없다.</p>
     </section>
 
