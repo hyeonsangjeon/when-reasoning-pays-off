@@ -50,7 +50,7 @@
     <p class="article-kicker">실험 회고 · 세 가지 작업 형태를 가로질러 · 관점: 작업 형태(task-shape)</p>
     <h1>추론 강도는 값을 하는가 &mdash; 가설, 그리고 측정이 뒤집은 것</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
-    <p class="lede">우리는 다단계 추론에서라면 높은 추론 강도(<code>reasoning_effort</code>)가 값을 할 거라고 <strong>사전 등록</strong>했다. 세 벤치마크에 걸쳐 1,080개 셀을 측정한 결과는 그 예측을 <strong>뒤집었다</strong>. 단답이든 다단계든 툴 에이전트든, 정답은 한 번도 <code>high</code>나 <code>xhigh</code>가 아니었다. 강도를 중간 위로 올리면 품질은 그대로인데 비용만 오르고 처리량만 떨어졌다. 이 글은 &ldquo;무엇을 예상했고, 무엇이 어긋났고, 그래서 무엇을 기본값으로 정했는가&rdquo;를 <strong>시간순(타임라인)</strong>과 <strong>질문순(질문별 회고)</strong>으로, 결론만이 아니라 <em>지나온 길</em>까지 이야기하듯 되짚는 회고다 &mdash; 그리고 맨 아래가 아니라 <em>바로 지금</em>, 명령어 한 줄로 직접 재현할 수 있다.</p>
+    <p class="lede">우리는 다단계 추론에서라면 높은 추론 강도(<code>reasoning_effort</code>)가 값을 할 거라고 <strong>사전 등록</strong>했다. 세 벤치마크에 걸쳐 1,080개 셀을 측정한 결과는 그 예측을 <strong>뒤집었다</strong>. 단답이든 다단계든 툴 에이전트든, 정답은 한 번도 <code>high</code>나 <code>xhigh</code>가 아니었다. 강도를 중간 위로 올리면 품질은 그대로인데 비용만 오르고 처리량만 떨어졌다. 이 글은 그 과정을 이야기하듯 되짚는 회고다. &ldquo;무엇을 예상했고, 무엇이 어긋났고, 그래서 무엇을 기본값으로 정했는가&rdquo;를 <strong>시간순(타임라인)</strong>과 <strong>질문순(질문별 회고)</strong>으로 짚는다. 결론만이 아니라 <em>지나온 길</em>까지 남긴다. 그리고 맨 아래가 아니라 <em>바로 지금</em>, 명령어 한 줄로 직접 재현할 수 있다.</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저: 10초 재현</p>
@@ -86,7 +86,7 @@ python experiments/examples/describe_all.py</code></pre>
     <div class="article-summary-grid" aria-label="회고 요약">
       <section class="summary-tile"><h2>질문</h2><p>새로운 프로덕션 작업에서, 추론 강도를 올리면 값을 하는가? 그것도 PAYG(달러당 정답)와 PTU(고정 용량당 분당 정답) 양쪽 관점에서.</p></section>
       <section class="summary-tile"><h2>근거</h2><p>세 벤치마크 &mdash; 01 단답(Null) &middot; 02 다단계(Ceiling) &middot; 03 툴 에이전트(Mixed) &mdash; 를 각각 N=20 샘플 × R=3 반복, 강도 {none, low, medium, high, xhigh} + gpt-4o 기준선으로 측정. 총 1,080셀. 모든 비용은 1,000건당으로 정규화했고 벤치마크별 <code>analysis.md</code>를 재인용합니다.</p></section>
-      <section class="summary-tile"><h2>결정</h2><p>최적의 (모델, 강도)는 작업 형태와 소비 모델에 따라 다르지만, 공통 결론은 하나입니다: <strong>정답은 절대 <code>high</code>나 <code>xhigh</code>가 아니다.</strong> 중간을 넘어서면 품질 없이 비용만 늘고 처리량만 깎입니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>최적의 (모델, 강도)는 작업 형태와 소비 모델에 따라 다릅니다. 고르는 법은 간단합니다: 먼저 품질 <strong>합격선</strong>을 정하고, 그 선을 넘긴 설정 중에서 가장 싸고 빠른 걸 고릅니다. 그러면 공통 결론이 드러납니다 &mdash; <strong>정답은 절대 <code>high</code>나 <code>xhigh</code>가 아니었다.</strong> 중간을 넘어서면 품질은 그대로인데 비용만 늘고 처리량만 깎입니다.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="회고 구성">

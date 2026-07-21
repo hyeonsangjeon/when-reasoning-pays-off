@@ -46,7 +46,7 @@
     <p class="article-kicker">実験回顧 · 三つのタスク形状を横断して · 視点: task-shape</p>
     <h1>推論努力度は割に合うのか &mdash; 仮説、そして測定がひっくり返したこと</h1>
     <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
-    <p class="lede">私たちは、多段階推論なら高い推論努力度(<code>reasoning_effort</code>)が割に合うはずだと<strong>事前登録</strong>した。三つのベンチマークにわたり 1,080 セルを測定した結果は、その予測を<strong>ひっくり返した</strong>。短い事実回答でも、多段階でも、ツールエージェントでも、答えは一度も <code>high</code> や <code>xhigh</code> ではなかった。努力度を中間より上に上げると、品質は変わらないまま、コストだけが上がり、スループットだけが落ちた。本稿は「何を予想し、何が外れ、だから何をデフォルトにしたのか」を<strong>時間順(タイムライン)</strong>と<strong>問い順(問いごとの回顧)</strong>で、結論だけでなく<em>歩いてきた道</em>まで物語としてたどる回顧である &mdash; そして最後ではなく<em>今すぐ</em>、コマンド一行で直接再現できる。</p>
+    <p class="lede">私たちは、多段階推論なら高い推論努力度(<code>reasoning_effort</code>)が割に合うはずだと<strong>事前登録</strong>した。三つのベンチマークにわたり 1,080 セルを測定した結果は、その予測を<strong>ひっくり返した</strong>。短い事実回答でも、多段階でも、ツールエージェントでも、答えは一度も <code>high</code> や <code>xhigh</code> ではなかった。努力度を中間より上に上げると、品質は変わらないまま、コストだけが上がり、スループットだけが落ちた。本稿はその道のりを物語としてたどる回顧である。「何を予想し、何が外れ、だから何をデフォルトにしたのか」を<strong>時間順(タイムライン)</strong>と<strong>問い順(問いごとの回顧)</strong>でたどる。結論だけでなく<em>歩いてきた道</em>まで残す。そして最後ではなく<em>今すぐ</em>、コマンド一行で直接再現できる。</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">まず: 10秒で再現</p>
@@ -82,7 +82,7 @@ python experiments/examples/describe_all.py</code></pre>
     <div class="article-summary-grid" aria-label="回顧の要約">
       <section class="summary-tile"><h2>問い</h2><p>新しい本番タスクで、推論努力度を上げることは割に合うのか。それも PAYG(ドル当たりの正答)と PTU(固定容量当たりの分当たり正答)の両方の視点で。</p></section>
       <section class="summary-tile"><h2>根拠</h2><p>三つのベンチマーク &mdash; 01 短い事実回答(Null) &middot; 02 多段階(Ceiling) &middot; 03 ツールエージェント(Mixed) &mdash; をそれぞれ N=20 サンプル × R=3 反復、努力度 {none, low, medium, high, xhigh} + gpt-4o ベースラインで測定。合計 1,080セル。すべてのコストは 1,000件当たりに正規化し、ベンチマークごとの <code>analysis.md</code> を再引用します。</p></section>
-      <section class="summary-tile"><h2>判断</h2><p>最適な (モデル, 努力度) はタスク形状と消費モデルによって異なりますが、共通の結論は一つです: <strong>答えは決して <code>high</code> や <code>xhigh</code> ではない。</strong> 中間を超えると、品質改善なしにコストだけが増え、スループットだけが削られます。</p></section>
+      <section class="summary-tile"><h2>判断</h2><p>最適な (モデル, 努力度) はタスク形状と消費モデルによって異なります。選び方は単純です。まず品質の<strong>合格線</strong>を決めます。その線を越えた設定の中から、最も安く速いものを選びます。すると共通の結論が見えてきます &mdash; <strong>答えは決して <code>high</code> や <code>xhigh</code> ではない。</strong> 中間を超えると、品質は変わらないのにコストだけが増え、スループットだけが削られます。</p></section>
     </div>
 
     <nav class="article-outline" aria-label="回顧の構成">

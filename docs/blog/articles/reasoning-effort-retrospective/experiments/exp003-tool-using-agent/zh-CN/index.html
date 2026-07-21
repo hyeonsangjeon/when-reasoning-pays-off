@@ -48,7 +48,7 @@
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">前两个基准的答案一直是&ldquo;不要提高强度&rdquo;。这一次不同。调用工具、接收结果、再做判断的<strong>混合任务</strong> &mdash; 在三项基准中，这是<em>推理第一次，哪怕只是很小幅度地，值得</em>的位置。</p>
-    <p class="lede">我们在<strong>预先登记</strong>中写下：中等强度(<code>low</code>&ndash;<code>medium</code>)会是成本与质量的最佳平衡点。gpt-4o 能处理 no-tool 和 one-tool，但会在 multi-tool 上倒下。gpt-5.2 <code>none</code> 没有多少提前计划的空间，所以在 multi-tool 上会像 gpt-4o 一样弱。<code>high</code>&middot;<code>xhigh</code> 的质量已经到顶，可能会连简单样本也过度调用工具。</p>
+    <p class="lede">我们在<strong>预先登记</strong>中写下：中等强度(<code>low</code>&ndash;<code>medium</code>)会是成本与质量的最佳平衡点。我们的预测有三点。gpt-4o 能处理 no-tool 和 one-tool，但会在需要连续使用多个工具时倒下。gpt-5.2 <code>none</code> 没有提前计划的空间，所以在 multi-tool 上会像 gpt-4o 一样弱。<code>high</code>&middot;<code>xhigh</code> 的质量已经到顶，可能会连简单样本也过度调用工具。</p>
     <p class="lede">实测<em>一半对了，一半令人意外</em>。<code>low</code> 确实是底部 &mdash; 这一次不是 <code>none</code>。但 gpt-4o 真正倒下的地方不是 multi-tool，而是<strong>在不需要工具的问题上调用计算器</strong>。本文按<em>设计 → 输入 → 产物 → 预测对实测 → 工具过度使用地图 → 决定</em>回看那一天 &mdash; 希望后来的人少在同一路上绕弯。</p>
 
     <section id="reproduce" class="article-section">

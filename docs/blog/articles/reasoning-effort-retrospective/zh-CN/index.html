@@ -46,7 +46,7 @@
     <p class="article-kicker">实验回顾 · 横跨三种任务形态 · 视角：任务形态(task-shape)</p>
     <h1>推理强度是否值得 &mdash; 假设，以及测量推翻了什么</h1>
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
-    <p class="lede">我们曾<strong>预先登记</strong>一个预测：在多步推理中，更高的推理强度(<code>reasoning_effort</code>)会值得付出。跨三个基准测量 1,080 个单元后，结果<strong>推翻</strong>了这个预测。无论是短事实、多步，还是工具智能体，答案一次也不是 <code>high</code> 或 <code>xhigh</code>。把强度提到中档以上，质量保持不变，成本上升，吞吐下降。本文回顾的不只是结论，还包括<em>我们走过的路</em>：&ldquo;曾经预期什么，哪里出了偏差，因此把什么设为默认值&rdquo;，既按<strong>时间顺序(时间线)</strong>，也按<strong>问题顺序(逐问题回顾)</strong>重走一遍 &mdash; 而且不是到文末才说，你可以<em>现在就</em>用一行命令自己复现。</p>
+    <p class="lede">我们曾<strong>预先登记</strong>一个预测：在多步推理中，更高的推理强度(<code>reasoning_effort</code>)会值得付出。跨三个基准测量 1,080 个单元后，结果<strong>推翻</strong>了这个预测。无论是短事实、多步，还是工具智能体，答案一次也不是 <code>high</code> 或 <code>xhigh</code>。把强度提到中档以上，质量保持不变，成本上升，吞吐下降。本文像讲故事一样回看这段路。它沿着&ldquo;曾经预期什么，哪里出了偏差，因此把什么设为默认值&rdquo;，既按<strong>时间顺序(时间线)</strong>，也按<strong>问题顺序(逐问题回顾)</strong>重走一遍。这里不只留下结论，也留下<em>我们走过的路</em>。而且不是到文末才说，你可以<em>现在就</em>用一行命令自己复现。</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">先来：10 秒复现</p>
@@ -82,7 +82,7 @@ python experiments/examples/describe_all.py</code></pre>
     <div class="article-summary-grid" aria-label="回顾摘要">
       <section class="summary-tile"><h2>问题</h2><p>在新的生产任务上，提高推理强度是否值得？并且在 PAYG(每美元正确答案)与 PTU(固定容量下每分钟正确答案)两个视角下是否都值得。</p></section>
       <section class="summary-tile"><h2>证据</h2><p>三个基准 &mdash; 01 短事实(Null) &middot; 02 多步(Ceiling) &middot; 03 工具智能体(Mixed) &mdash; 各自以 N=20 样本 × R=3 重复、强度 {none, low, medium, high, xhigh} 加 gpt-4o 基线测量。总计 1,080 个单元。所有成本均按每 1,000 次归一化，并重新引用各基准的 <code>analysis.md</code>。</p></section>
-      <section class="summary-tile"><h2>决定</h2><p>最佳的(模型, 强度)取决于任务形态和消费模型，但共同结论只有一个：<strong>答案绝不是 <code>high</code> 或 <code>xhigh</code>。</strong>超过中档以后，没有质量收益，只会增加成本、削减吞吐。</p></section>
+      <section class="summary-tile"><h2>决定</h2><p>最佳的(模型, 强度)取决于任务形态和消费模型。选择方法很简单：先定质量门槛，再在通过这条线的配置中，挑最便宜也最快的。于是共同结论就浮出来了 &mdash; <strong>答案绝不是 <code>high</code> 或 <code>xhigh</code>。</strong>超过中档以后，没有质量收益，只会增加成本、削减吞吐。</p></section>
     </div>
 
     <nav class="article-outline" aria-label="回顾结构">
