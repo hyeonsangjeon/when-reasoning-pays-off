@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>推理强度是否值得 &mdash; 假设，以及测量反驳了什么 | when reasoning pays off</title>
+  <title>推理强度是否值得 &mdash; 假设，以及测量推翻了什么 | when reasoning pays off</title>
   <meta name="description" content="一篇实验回顾，在三种任务形态上扫过 GPT-5.2 的推理强度(reasoning effort)。我们预期了什么，哪里偏离了，以及最终把什么设为默认值；按时间线和问题逐一讲清，并用一行命令直接复现。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
@@ -44,9 +44,9 @@
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../zh-CN/">文章列表</a> / 实验回顾</p>
     <p class="article-kicker">实验回顾 · 横跨三种任务形态 · 视角：任务形态(task-shape)</p>
-    <h1>推理强度是否值得 &mdash; 假设，以及测量反驳了什么</h1>
+    <h1>推理强度是否值得 &mdash; 假设，以及测量推翻了什么</h1>
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
-    <p class="lede">我们曾<strong>预先登记</strong>一个预测：在多步推理中，更高的推理强度(<code>reasoning_effort</code>)会值得付出。跨三个基准测量 1,080 个单元后，结果<strong>反驳</strong>了这个预测。无论是短事实、多步，还是工具智能体，答案一次也不是 <code>high</code> 或 <code>xhigh</code>。把强度提到中档以上，质量保持不变，成本上升，吞吐下降。本文回顾的不只是结论，还包括<em>我们走过的路</em>：&ldquo;曾经预期什么，哪里出了偏差，因此把什么设为默认值&rdquo;，既按<strong>时间顺序(时间线)</strong>，也按<strong>问题顺序(逐问题回顾)</strong>重走一遍 &mdash; 而且不是到文末才说，你可以<em>现在就</em>用一行命令自己复现。</p>
+    <p class="lede">我们曾<strong>预先登记</strong>一个预测：在多步推理中，更高的推理强度(<code>reasoning_effort</code>)会值得付出。跨三个基准测量 1,080 个单元后，结果<strong>推翻</strong>了这个预测。无论是短事实、多步，还是工具智能体，答案一次也不是 <code>high</code> 或 <code>xhigh</code>。把强度提到中档以上，质量保持不变，成本上升，吞吐下降。本文回顾的不只是结论，还包括<em>我们走过的路</em>：&ldquo;曾经预期什么，哪里出了偏差，因此把什么设为默认值&rdquo;，既按<strong>时间顺序(时间线)</strong>，也按<strong>问题顺序(逐问题回顾)</strong>重走一遍 &mdash; 而且不是到文末才说，你可以<em>现在就</em>用一行命令自己复现。</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">先来：10 秒复现</p>
@@ -97,7 +97,7 @@ python experiments/examples/describe_all.py</code></pre>
       <h2>我们走过的顺序</h2>
       <p>实验并不是一次就得出结论。按日期顺序看下面五个场景，就能依次看到预测在哪里偏离、默认值在哪里改变。</p>
       <ol>
-        <li><strong>2026年 5月以前 &mdash; 预先登记。</strong> 开始测量前，我们先写下预测：如果是多步任务，更高的推理强度会提高质量，足以证明成本合理。为了避免之后按结果改故事，我们把 gpt-5.2 的强度从 <code>none</code> 到 <code>xhigh</code> 固定为五档，并放入 gpt-4o 基线。正因为有这份预先登记，后面的&lsquo;反驳&rsquo;才有分量。</li>
+        <li><strong>2026年 5月以前 &mdash; 预先登记。</strong> 开始测量前，我们先写下预测：如果是多步任务，更高的推理强度会提高质量，足以证明成本合理。为了避免之后按结果改故事，我们把 gpt-5.2 的强度从 <code>none</code> 到 <code>xhigh</code> 固定为五档，并放入 gpt-4o 基线。正因为有这份预先登记，后面的&lsquo;推翻&rsquo;才有分量。</li>
         <li><strong>2026年 5月 &mdash; 短事实案例(01)，触到底部。</strong> 我们先用不需要推理的短事实任务确认成本曲面的底部 &mdash; 三个基准中，只有这个底部被重新做成<em>实测</em>(360 个单元全是真实 Azure 调用，没有 fixture 标记)。gpt-5.2 在完全不开推理的 <code>none</code> 下，正确率已经以 95% 饱和，反而高于 gpt-4o(90%)。每 1,000 个正确答案成本为 <strong>$0.62</strong>，比 gpt-4o(<strong>$0.74</strong>)便宜 <strong>16%</strong>(按每 1,000 次请求也便宜 12%)。所以短事实 PAYG 默认值定为 gpt-5.2 <code>none</code> &mdash; 但在固定容量(PTU)视角下，两种模型吞吐在约 1% 内重叠，实质上是平手。这个实验在 <a href="../experiments/exp001-short-factual/zh-CN/">exp001 实验笔记</a>中逐项拆解。</li>
         <li><strong>2026年 5月 &mdash; 多步案例(02)，转折点。</strong> 这一次本该是推理获胜。可打开结果后，gpt-5.2 在<em>完全不开任何推理</em>的默认状态(<code>none</code>)下，把二十道题全答对了。先验假设就在这里倒下。每 1,000 个正确答案成本从 gpt-4o 的 <strong>$1.06</strong> 降到 <strong>$0.62</strong>，下降 42%，PTU 下每分钟正确答案增加 32.5%，而继续提高强度并没有推动质量。所以我们把多步默认值设为 gpt-5.2 <code>none</code>，并放弃上调强度。决定胜负的不是&lsquo;强度旋钮&rsquo;，而是&lsquo;模型替换&rsquo;。这个实验在 <a href="../experiments/exp002-multi-step-reasoning/zh-CN/">exp002 实验笔记</a>中逐项拆解。</li>
         <li><strong>2026年 5月 &mdash; 工具智能体案例(03)，意外发现。</strong> 最后是使用工具的智能体(无工具、单工具、多工具混合)。让我们意外的是 gpt-4o。即使提示是&lsquo;用一般知识回答&rsquo;，它也习惯性地调用计算器，使无工具通过率跌到 <strong>83.3%</strong>。相对地，gpt-5.2 只用 <code>low</code> 就守住多工具 100%，并达到每 1,000 个正确答案 <strong>$2.77</strong>(比 gpt-4o 的 $3.65 便宜 24%)。所以工具默认值是 gpt-5.2 <code>low</code>。但超过 <code>low</code> 后，吞吐在 medium 被削 8.5%、在 xhigh 被削 10.8%，把收益又还了回去。这个实验在 <a href="../experiments/exp003-tool-using-agent/zh-CN/">exp003 实验笔记</a>中逐项拆解。</li>
@@ -120,7 +120,7 @@ python experiments/examples/describe_all.py</code></pre>
 
       <h3>Q3 &mdash; 对工具智能体来说，推理越多越安全吗？</h3>
       <p>计划串联的工具越多，更多推理似乎越可能提高可靠性。因此在二十个混合了无工具、单工具、多工具的任务上，我们再次让 gpt-5.2 的各档强度与 gpt-4o 对照。</p>
-      <p>真正的分界线不是推理的量，而是<em>调用</em>工具的习惯。gpt-4o 即使在&lsquo;用一般知识回答&rsquo;的无工具提示中也调用计算器，通过率降到 83.3%，而 gpt-5.2 即使无工具也保持 100%。成本上，gpt-5.2 <code>low</code> 也领先：每 1,000 个正确答案 <strong>$2.77</strong>(比 gpt-4o 的 $3.65 便宜 24%)，多工具 100%，PTU +4.3%。一个限制是：这里的 <code>web_search</code> 不是真实网页调用，而是模拟的固定知识库查询。结论再次相同 &mdash; 一个很小的推理表面就够了，工具默认值是 gpt-5.2 <code>low</code>，超过它就是 token 浪费。</p>
+      <p>真正的分界线不是推理的量，而是<em>调用</em>工具的习惯。gpt-4o 即使在&lsquo;用一般知识回答&rsquo;的无工具提示中也调用计算器，通过率降到 83.3%，而 gpt-5.2 即使无工具也保持 100%。成本上，gpt-5.2 <code>low</code> 也领先：每 1,000 个正确答案 <strong>$2.77</strong>(比 gpt-4o 的 $3.65 便宜 24%)，多工具 100%，PTU +4.3%。一个限制是：这里的 <code>web_search</code> 不是真实网页调用，而是模拟的固定知识库查询。结论再次相同 &mdash; 一点点推理就够了，工具默认值是 gpt-5.2 <code>low</code>，超过它就是 token 浪费。</p>
     </section>
 
     <section id="experiment-detail" class="article-section">
@@ -144,7 +144,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p class="section-label">接下来</p>
       <h2>下一次判断 · 下一项实验</h2>
       <p><strong>下一次判断。</strong> 这个结论只在&ldquo;已测量的任务形态&rdquo;内有效。如果链条更长，或真实工具进入，曲线可能再次移动；因此规则是：工作负载形态改变时就重新测量。</p>
-      <p><strong>下一项实验。</strong> 这里的 PTU 数字是基于 token 的估算(不是实时负载)。下一项实验是在真实 PTU 部署上的负载测试 &mdash; rate-limit shaping · 排队 · 并行批处理如何作用于吞吐。</p>
+      <p><strong>下一项实验。</strong> 这里的 PTU 数字是基于 token 的估算(不是实时负载)。下一项实验是在真实 PTU 部署上的负载测试 &mdash; 限速调节 · 排队 · 并行批处理如何作用于吞吐。</p>
       <p>
         <strong>接着读：</strong>
         <a href="../../ptu-retry-after-recovery/zh-CN/">429 不是错误，而是恢复信号</a>
@@ -161,7 +161,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 headline, §5 decision boundary, §6 limits)。所有成本均重新引用自各基准的 <code>benchmarks/0[123]-*/analysis.md</code>。</li>
         <li>价格：单一快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。如果费率变化，应更新快照并重新运行分析。</li>
         <li>样本：每个基准 N=20 · R=3。方法论 §8 禁止在这个样本量报告置信区间/标准误 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎解读。</li>
-        <li>评分：LLM-as-judge 量规使用 gpt-4o 作为中立裁判。每个评分 JSON 都记录裁判提示 SHA-256，用于监控漂移。</li>
+        <li>评分：使用评判模型(gpt-4o)。裁判提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
         <li>PTU：吞吐数字是基于 token 数的估算，不是真实 PTU 负载测试。工具基准的 <code>web_search</code> 是固定 KB 查询(模拟)。</li>
       </ul>
     </section>

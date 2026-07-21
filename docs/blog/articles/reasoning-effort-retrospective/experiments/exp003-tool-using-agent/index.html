@@ -51,7 +51,7 @@
     <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">In the previous two benchmarks the answer was always &ldquo;don't raise the effort.&rdquo; This time was different. A <strong>mixed task</strong> that calls a tool, takes the result, and decides again &mdash; across all three benchmarks, the first place where <em>reasoning finally paid off, if only a little</em>.</p>
-    <p class="lede">In <strong>pre-registration</strong> we wrote that a middle effort (<code>low</code>&ndash;<code>medium</code>) would be the Pareto knee. gpt-4o would handle no-tool·one-tool but break down on multi-tool sequencing; gpt-5.2 <code>none</code>, with no reasoning surface to plan over, would be as weak as gpt-4o on multi-tool; and <code>high</code>·<code>xhigh</code> would, with quality saturated, over-call tools on trivial samples.</p>
+    <p class="lede">When we <strong>wrote our prediction down in advance</strong>, we said a middle effort (<code>low</code>&ndash;<code>medium</code>) would be the sweet spot where cost and quality meet. gpt-4o would handle no-tool·one-tool but break down when it had to chain several tools; gpt-5.2 <code>none</code>, with no room to plan ahead, would be as weak as gpt-4o on multi-tool; and <code>high</code>·<code>xhigh</code>, with quality already maxed out, would over-call tools on trivial samples.</p>
     <p class="lede">The measurement was <em>half right, half surprising</em>. <code>low</code> really was the floor &mdash; this once, not <code>none</code>. But the real place gpt-4o broke down was not multi-tool; it was <strong>calling a calculator on problems that needed no tool</strong>. This note retraces that day as <em>design &rarr; inputs &rarr; artifacts &rarr; prediction vs. measurement &rarr; the tool-overuse map &rarr; decision</em> &mdash; so the next person wanders less on the same road.</p>
 
     <section id="reproduce" class="article-section">
@@ -80,12 +80,12 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">Design</p>
       <h2>This time, tools enter</h2>
-      <p><strong>One question.</strong> On tool-using agent work &mdash; the <em>mixed</em> case closest to reality &mdash; how far do you have to raise gpt-5.2's effort before reasoning is worth the bill? We look through two lenses at once: PAYG (dollars per correct answer) and PTU (correct answers per minute per fixed capacity).</p>
+      <p><strong>One question.</strong> On tool-using agent work &mdash; the <em>mixed</em> case closest to reality &mdash; how far do you have to raise gpt-5.2's effort before reasoning is worth the bill? We look at it through two viewpoints at once: PAYG (dollars per correct answer) and PTU (correct answers per minute per fixed capacity).</p>
       <p><strong>Dataset.</strong> Twenty frozen authored samples (<code>tu_01</code>&hellip;<code>tu_20</code>). Three types are mixed &mdash; <strong>6 no-tool</strong> (knowledge/format only), <strong>8 one-tool</strong> (a single calculator or a single search), <strong>6 multi-tool</strong> (a chain of 2&ndash;3 steps from search → calculator). Every sample has a verifiable answer and an <code>expected_tool_calls</code> answer key for which tools should be called.</p>
-      <p><strong>Exactly one axis moves</strong> &mdash; we sweep gpt-5.2's <code>reasoning.effort</code> across <code>none · low · medium · high · xhigh</code>, and set a gpt-4o baseline (which has no reasoning parameter) alongside it. Each (sample × model × effort) cell is repeated <strong>three times (R=3)</strong>, and the tool loop is cut at a maximum of four iterations (<code>max_tool_iterations: 4</code>).</p>
-      <div class="article-summary-grid" aria-label="Pre-registered prediction and role">
-        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>A middle effort (<code>low</code>&ndash;<code>medium</code>) is the Pareto knee for mixed work. gpt-4o handles no-tool·one-tool but breaks on multi-tool; gpt-5.2 <code>none</code> is as weak as gpt-4o on multi-tool; and <code>high</code>·<code>xhigh</code>, with quality saturated, only over-call tools.</p></section>
-        <section class="summary-tile"><h2>This experiment's role</h2><p>After the short-answer floor (01) and the multi-step ceiling (02) both ended in &ldquo;don't raise the effort,&rdquo; the mixed anchor that checks whether there is a <strong>minimum point where a reasoning surface is actually needed</strong>.</p></section>
+      <p><strong>Exactly one axis moves</strong> &mdash; we step gpt-5.2's <code>reasoning.effort</code> up one stage at a time across <code>none · low · medium · high · xhigh</code>, and set a gpt-4o baseline (which has no reasoning dial) alongside it. Each (sample × model × effort) cell is repeated <strong>three times (R=3)</strong>, and the tool loop is cut at a maximum of four iterations (<code>max_tool_iterations: 4</code>).</p>
+      <div class="article-summary-grid" aria-label="Prediction written in advance and role">
+        <section class="summary-tile"><h2>Prediction written in advance</h2><p>A middle effort (<code>low</code>&ndash;<code>medium</code>) is the sweet spot where cost and quality meet for mixed work. gpt-4o handles no-tool·one-tool but breaks on multi-tool; gpt-5.2 <code>none</code> is as weak as gpt-4o on multi-tool; and <code>high</code>·<code>xhigh</code>, with quality already maxed out, only over-call tools.</p></section>
+        <section class="summary-tile"><h2>This experiment's role</h2><p>After the short-answer floor (01) and the multi-step ceiling (02) both ended in &ldquo;don't raise the effort,&rdquo; the mixed reference case that checks whether there is a <strong>minimum point where reasoning is actually needed</strong>.</p></section>
       </div>
     </section>
 
@@ -102,23 +102,23 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
         </section>
         <section class="summary-tile">
           <h2>Artifacts (out)</h2>
-          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (Foundry v1 payloads + raw per-iteration <code>tool_calls</code> trajectories).<br>
+          <p>          <strong>Raw calls:</strong> <code>runs/*.json</code> (Foundry v1 payloads + raw per-iteration <code>tool_calls</code> records).<br>
           <strong>Grading:</strong> <code>judge_runs/*.json</code> (correctness grading + a separate tool-efficiency score).<br>
           <strong>Aggregate:</strong> <code>analysis.json</code>.<br>
           <strong>Charts/tables:</strong> <code>results/cost-curves/benchmark-03-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>1</strong> (<code>tu_18</code>/<code>low</code>/r0). Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful</strong>. Every JSON is a real Azure Foundry v1 call with not one <code>"fixture": true</code> marker. That said, <strong>12 of the 360 cells (3.3%)</strong> hit the 4-iteration tool-loop cap and were forced to return a final answer without a tool, each row carrying a <code>tool_loop_terminated="iteration_cap"</code> flag.</p>
+      <p><strong>We measured 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>1</strong> (<code>tu_18</code>/<code>low</code>/r0). Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful</strong>. Every JSON is a real Azure Foundry v1 call with not one <code>"fixture": true</code> marker. That said, <strong>12 of the 360 cells (3.3%)</strong> hit the 4-iteration tool-loop cap and were forced to return a final answer without a tool, each row carrying a <code>tool_loop_terminated="iteration_cap"</code> marker.</p>
     </section>
 
     <section id="predict" class="article-section">
       <p class="section-label">Prediction vs. measurement</p>
       <h2>The prediction was only half right</h2>
       <div class="article-summary-grid" aria-label="Prediction vs. measurement">
-        <section class="summary-tile"><h2>What we predicted</h2><p>A middle effort is the knee. gpt-4o breaks on multi-tool. gpt-5.2 <code>none</code> is weak on multi-tool. In short: &ldquo;mixed work needs a little reasoning.&rdquo;</p></section>
-        <section class="summary-tile"><h2>What came out</h2><p><code>low</code> really was the Pareto knee &mdash; this once, not <code>none</code>. But where gpt-4o broke down was not only multi-tool but <strong>no-tool (83.3%)</strong>. It called a calculator when no tool was needed.</p></section>
+        <section class="summary-tile"><h2>What we predicted</h2><p>A middle effort is the sweet spot where cost and quality meet. gpt-4o breaks on multi-tool. gpt-5.2 <code>none</code> is weak on multi-tool. In short: &ldquo;mixed work needs a little reasoning.&rdquo;</p></section>
+        <section class="summary-tile"><h2>What came out</h2><p><code>low</code> really was the sweet spot where cost and quality meet &mdash; this once, not <code>none</code>. But where gpt-4o broke down was not only multi-tool but <strong>no-tool (83.3%)</strong>. It called a calculator when no tool was needed.</p></section>
       </div>
-      <p><strong>Verdict: direction confirmed, failure mode reversed.</strong> The pre-registration that &ldquo;mixed work needs a minimum reasoning surface&rdquo; was supported &mdash; <code>low</code> (not <code>none</code>) is Pareto-optimal per correct answer. But gpt-4o's weakness was not only multi-tool sequencing; it was the <strong>habit of calling a tool when it shouldn't</strong>. Half the prediction held, and half was corrected by the data into a more interesting story.</p>
+      <p><strong>Verdict: the direction held, but the way it failed was flipped.</strong> The prediction we wrote in advance &mdash; &ldquo;mixed work needs a minimum of reasoning&rdquo; &mdash; held: <code>low</code> (not <code>none</code>) is the cheapest per correct answer. But gpt-4o's weakness was not only chaining several tools; it was the <strong>habit of calling a tool when it shouldn't</strong>. Half the prediction held, and half was corrected by the data into a more interesting story.</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -132,8 +132,8 @@ gpt-5.2   low      $2.77           100%  (60/60)   $2.77   ← Pareto-optimal
 gpt-5.2   medium   $2.89           98.3% (59/60)   $2.94
 gpt-5.2   high     $3.18           98.3% (59/60)   $3.23
 gpt-5.2   xhigh    $3.50           100%  (60/60)   $3.50</code></pre>
-      <p><strong>Per 1,000 correct, <code>low</code> is $2.77 &mdash; 24% cheaper than gpt-4o ($3.65).</strong> And it is the only cell under gpt-4o's unit price to reach 100% pass. <code>none</code> is already about 16% cheaper than gpt-4o per request too (input price $1.75/1M vs. $2.50/1M; in a tool loop the input dominates the bill), but it misses one multi-tool problem and stays at 98.3%. What <code>low</code> added was only an average <strong>4 tokens of reasoning surface</strong>, and that small surface pulled the pass rate up to 100% (+$0.011 per 1,000 requests).</p>
-      <p>In the previous two benchmarks <code>none</code> was both floor and optimum. Here, for the first time, the floor rose by one notch. <strong>Mixed real work has a positive minimum-effort floor</strong> &mdash; reasoning finally, if only a little, paid off.</p>
+      <p><strong>Per 1,000 correct, <code>low</code> is $2.77 &mdash; 24% cheaper than gpt-4o ($3.65).</strong> And it is the only cell under gpt-4o's unit price to reach 100% pass. <code>none</code> is already about 16% cheaper than gpt-4o per request too (input price $1.75/1M vs. $2.50/1M; when a tool is called over and over, the input drives the bill), but it misses one multi-tool problem and stays at 98.3%. What <code>low</code> added was only an average <strong>4 tokens of reasoning</strong>, and that small amount pulled the pass rate up to 100% (+$0.011 per 1,000 requests).</p>
+      <p>In the previous two benchmarks <code>none</code> was both floor and optimum. Here, for the first time, the floor rose by one notch. <strong>Real tool-using work has a floor where you must raise the effort at least a little</strong> &mdash; reasoning finally, if only a little, paid off.</p>
 
       <figure class="article-figure" id="figure-exp003-quality">
         <figcaption><strong>Mean judge score with standard deviation.</strong> The y-axis is the mean judge score (0&ndash;2) and the error bars are the standard deviation &mdash; an almost-flat, high curve. gpt-5.2 is 2.00 at <code>low</code> and <code>xhigh</code>, 1.97 at <code>none</code> and <code>high</code>, and 1.98 at <code>medium</code>, while the gpt-4o baseline is 1.85±0.48. The <code>low</code> pass rate is 100% (60/60). The real story is not this aggregate line but the <em>by-type</em> breakdown below. Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-03-quality.png"><code>results/cost-curves/benchmark-03-quality.png</code></a>.</figcaption>
@@ -144,26 +144,26 @@ gpt-5.2   xhigh    $3.50           100%  (60/60)   $3.50</code></pre>
     <section id="subtypes" class="article-section">
       <p class="section-label">Tool-overuse map</p>
       <h2>gpt-4o called tools too often</h2>
-      <p>The single aggregate number 90% doesn't show &ldquo;where.&rdquo; Split by type, the core evidence of this benchmark appears.</p>
+      <p>The single combined number 90% doesn't show &ldquo;where.&rdquo; Split by type, the core evidence of this benchmark appears.</p>
       <pre class="code-block"><code>Model     Effort   No-tool(18)  One-tool(24)  Multi-tool(18)
 gpt-4o    —        83.3%        100%          83.3%
 gpt-5.2   none     100%         100%          94.4%
 gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code></pre>
       <ul>
-        <li><strong>No-tool &mdash; where gpt-4o tripped.</strong> gpt-4o called a calculator even when no tool was needed, stalling at 83.3%. The judge failed three items as &ldquo;the rubric requires 0 tool calls but the model called a tool&rdquo; &mdash; it overused the calculator even on prompts like &ldquo;1+1.&rdquo; gpt-5.2 is 100% at every effort.</li>
-        <li><strong>One-tool &mdash; fully saturated.</strong> Every (model×effort) cell is 100%. Single-tool dispatch is a solved problem for both families.</li>
-        <li><strong>Multi-tool &mdash; where reasoning helps.</strong> gpt-4o 83.3%, gpt-5.2 <code>none</code> 94.4%, <code>low</code> 100%. On chains of 2&ndash;3 steps, a small reasoning surface makes &ldquo;plan and execute&rdquo; more reliable. The <strong>16.7pp rise from gpt-4o to gpt-5.2 <code>low</code></strong> is the real-work signal this benchmark was built to catch.</li>
+        <li><strong>No-tool &mdash; where gpt-4o tripped.</strong> gpt-4o called a calculator even when no tool was needed, stalling at 83.3%. The judge failed three items as &ldquo;the grading rule requires 0 tool calls but the model called a tool&rdquo; &mdash; it overused the calculator even on questions like &ldquo;1+1.&rdquo; gpt-5.2 is 100% at every effort.</li>
+        <li><strong>One-tool &mdash; fully saturated.</strong> Every (model×effort) cell is 100%. Calling a single tool is a solved problem for both families.</li>
+        <li><strong>Multi-tool &mdash; where reasoning helps.</strong> gpt-4o 83.3%, gpt-5.2 <code>none</code> 94.4%, <code>low</code> 100%. On chains of 2&ndash;3 steps, a little reasoning makes &ldquo;plan and execute&rdquo; more reliable. The <strong>16.7pp rise from gpt-4o to gpt-5.2 <code>low</code></strong> is the real-work signal this benchmark was built to catch.</li>
       </ul>
-      <p>The tool-efficiency score (separate from correctness grading, rating the trajectory 0&ndash;1) points the same way. gpt-4o is lowest at <strong>0.950</strong> &mdash; even when it got the answer right, it lost points for overusing the calculator on no-tool items. gpt-5.2 peaks at <code>low</code> with <strong>0.988</strong> &mdash; the very cell that hit 100% pass.</p>
+      <p>The tool-efficiency score (separate from correctness grading, rating the tool-use path 0&ndash;1) points the same way. gpt-4o is lowest at <strong>0.950</strong> &mdash; even when it got the answer right, it lost points for overusing the calculator on no-tool items. gpt-5.2 peaks at <code>low</code> with <strong>0.988</strong> &mdash; the very cell that hit 100% pass.</p>
     </section>
 
     <section class="article-section">
       <p class="section-label">Second signal</p>
       <h2>Past low, the same quality costs more</h2>
-      <p>Above <code>low</code>, the earlier benchmarks' story repeats. <code>medium</code> spends about $0.13 more per 1,000 requests yet its pass rate <em>falls</em> to 98.3%, Pareto-inferior to <code>low</code>. <code>high</code> is +14% per request vs. <code>low</code>, <code>xhigh</code> +26%, while the pass rate is unchanged (<code>xhigh</code> is 100% but 26% more expensive than <code>low</code> per correct answer).</p>
+      <p>Above <code>low</code>, the earlier benchmarks' story repeats. <code>medium</code> spends about $0.13 more per 1,000 requests yet its pass rate <em>falls</em> to 98.3%, losing to <code>low</code> on both cost and quality. <code>high</code> is +14% per request vs. <code>low</code>, <code>xhigh</code> +26%, while the pass rate is unchanged (<code>xhigh</code> is 100% but 26% more expensive than <code>low</code> per correct answer).</p>
       <p><strong>Latency tells the same story.</strong> <code>none</code> is actually 5% faster than gpt-4o (2,902ms vs. 3,044ms), and <code>low</code> is +0.7%, effectively flat. But <code>high</code> widens to +20.0% and <code>xhigh</code> to +23.9%. For a latency-sensitive workload, <code>medium</code> is the realistic ceiling.</p>
-      <p><strong>Break down the tokens and this benchmark's own structure shows.</strong> Input per request dominates the bill at about 1,200&ndash;1,300 tokens &mdash; because the system prompt and tool definitions are reloaded on every loop iteration. Hidden reasoning tokens grow from 0 (<code>none</code>) to about 52 (<code>xhigh</code>), but against the input they are <strong>small</strong>. This is the opposite of the multi-step benchmark (02), where reasoning tokens dominated the <code>xhigh</code> cost &mdash; the way input dominates the bill here instead resembles the short-answer benchmark (01).</p>
-      <p><strong>The PTU lens converges on <code>low</code> too.</strong> <code>low</code> is 0.939× gpt-4o's throughput, but its 100% pass rate flips that into <strong>+4.3%</strong> correct answers per minute (gpt-4o is 90%). The pass-rate gain (+10.0pp) outweighs the throughput loss (−6.1% req/min). Raise effort further and only throughput is trimmed (<code>medium</code> −8.5%, <code>xhigh</code> −10.8%). It is a convergence of two lenses &mdash; PAYG (lowest per correct answer) and PTU (highest correct answers per minute) &mdash; both pointing at the same <code>low</code>.</p>
+      <p><strong>Break down the tokens and this benchmark's own structure shows.</strong> Input per request drives the bill at about 1,200&ndash;1,300 tokens &mdash; because the system prompt and tool definitions are reloaded on every loop pass. Hidden reasoning tokens grow from 0 (<code>none</code>) to about 52 (<code>xhigh</code>), but against the input they are <strong>small</strong>. This is the opposite of the multi-step benchmark (02), where reasoning tokens drove the <code>xhigh</code> cost &mdash; the way input drives the bill here instead resembles the short-answer benchmark (01).</p>
+      <p><strong>Seen through PTU, it converges on <code>low</code> too.</strong> <code>low</code> is 0.939× gpt-4o's throughput, but its 100% pass rate flips that into <strong>+4.3%</strong> correct answers per minute (gpt-4o is 90%). The pass-rate gain (+10.0pp) outweighs the throughput loss (−6.1% req/min). Raise effort further and only throughput is trimmed (<code>medium</code> −8.5%, <code>xhigh</code> −10.8%). Two viewpoints converge &mdash; PAYG (lowest per correct answer) and PTU (highest correct answers per minute) &mdash; both pointing at the same <code>low</code>.</p>
     </section>
 
     <section id="transparency" class="article-section">
@@ -171,9 +171,9 @@ gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code
       <h2>Even the smudges left on the numbers, as they are</h2>
       <p>No measurement is perfectly clean. We write down the marks this benchmark left without erasing them &mdash; because hidden away, they'd trip the next person at the same spot.</p>
       <ul>
-        <li><strong>One outlier.</strong> <code>tu_18</code>'s first <code>low</code> repetition crossed 3σ in tokens with an operational flag attached, so it was excluded from the aggregate (1 of 360 cells = 0.3%, well under the methodology's 10% alert line). It remains in the raw JSON tree &mdash; an outlier exclusion is only an aggregation mask, not a deletion.</li>
-        <li><strong>Twelve loop-cap cells.</strong> 12 of 360 cells (3.3%) hit the 4-iteration tool-loop cap and were forced to return an answer without a tool. Each row carries an <code>iteration_cap</code> flag, so you can trace which cells were pressed against the cap.</li>
-        <li><strong>Partial credit excluded from correct.</strong> Judge score 1 (partial) is reported separately in §7 but <em>removed</em> from the denominator of per-correct cost &mdash; because at production scale a partial answer on tool work is not a correct answer. We state this binarization choice to reveal how the headline was computed.</li>
+        <li><strong>One outlier.</strong> <code>tu_18</code>'s first <code>low</code> repetition crossed 3σ (far outside the normal range) in tokens with an operational-problem marker attached, so it was excluded from the aggregate (1 of 360 cells = 0.3%, well under the methodology's 10% alert line). It remains in the raw JSON tree &mdash; the exclusion only masks it from the totals, it isn't a deletion.</li>
+        <li><strong>Twelve loop-cap cells.</strong> 12 of 360 cells (3.3%) hit the 4-iteration tool-loop cap and were forced to return an answer without a tool. Each row carries an <code>iteration_cap</code> marker, so you can trace which cells were pressed against the cap.</li>
+        <li><strong>Partial credit excluded from correct.</strong> Judge score 1 (partial) is reported separately in §7 but <em>removed</em> when we counted per-correct cost &mdash; because at production scale a partial answer on tool work is not a correct answer. We state this pass-fail choice to show how the top-line number was computed.</li>
       </ul>
     </section>
 
@@ -182,10 +182,10 @@ gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code
       <h2>How far can you trust this</h2>
       <p>These results are small-sample aggregates from one mixed tool-task set, one price snapshot, and a particular model-and-rubric combination. It is safer to <strong>take the method</strong> than the numbers themselves.</p>
       <ul>
-        <li><strong>Search is mocked.</strong> This benchmark's <code>web_search</code> is not a real web search but a <em>fixed knowledge-base lookup</em>. Live search would import uncontrollable variance, so we placed it out of scope. The headline (a small reasoning surface raises multi-tool reliability; past <code>low</code> is token waste) is robust to this simplification. It is not a perfect reproduction but a place where we controlled only what we could control &mdash; and we don't hide that boundary.</li>
+        <li><strong>Search is mocked.</strong> This benchmark's <code>web_search</code> is not a real web search but a <em>fixed knowledge-base lookup</em>. Live search would import uncontrollable variation, so we placed it out of scope. The main conclusion (a little reasoning raises multi-tool reliability; past <code>low</code> is token waste) is robust to this simplification. It is not a perfect reproduction but a place where we controlled only what we could control &mdash; and we don't hide that boundary.</li>
         <li><strong>Sample.</strong> N=20 · R=3. At this sample size we claim no confidence intervals or statistical significance &mdash; the directional conclusion is robust, but treat absolute magnitudes with small-sample caution.</li>
-        <li><strong>Price.</strong> A single snapshot. If rates or the usage schema change, cost must be recomputed from the same raw data.</li>
-        <li><strong>Grading.</strong> LLM-as-judge (gpt-4o). We record the judge prompt's SHA-256 in the grading JSON to watch for drift.</li>
+        <li><strong>Price.</strong> A single snapshot. If rates or the billing model change, cost must be recomputed from the same raw data.</li>
+        <li><strong>Grading.</strong> A judge model (gpt-4o). We record the judge prompt's SHA-256 in the grading JSON to tell later if it changed.</li>
         <li><strong>PTU.</strong> Throughput is a token-based estimate, not a live PTU load test.</li>
       </ul>
     </section>
@@ -205,7 +205,7 @@ gpt-5.2   low      100%         100%          100%      ← Pareto-optimal</code
         <li><strong>Paired experiment &rarr;</strong> <a href="../exp002-multi-step-reasoning/">exp002 &mdash; multi-step reasoning</a> is the ceiling case where <code>none</code> was the floor. Read alongside this note, you see why the floor rose by one notch.</li>
         <li><strong>Experiment card &rarr;</strong> the mechanical spec of inputs/variables/outputs is in the <code>exp003</code> card in the repo's <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>.</li>
       </ul>
-      <p><strong>Next experiment.</strong> Here search is mocked and the PTU numbers are token-based estimates. Next is <strong>live search</strong> and a <strong>real PTU load test</strong> &mdash; how rate-limit shaping·queuing·parallel batching act on a tool loop's throughput and reliability.</p>
+      <p><strong>Next experiment.</strong> Here search is mocked and the PTU numbers are token-based estimates. Next is <strong>live search</strong> and a <strong>real PTU load test</strong> &mdash; how rate-limit control, queuing, and parallel batching act on a tool loop's throughput and reliability.</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐</a></p>
     </section>
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>推論努力度は割に合うのか — 仮説、そして測定が反証したこと | when reasoning pays off</title>
+  <title>推論努力度は割に合うのか — 仮説、そして測定がひっくり返したこと | when reasoning pays off</title>
   <meta name="description" content="三つのタスク形状で GPT-5.2 の推論努力度(reasoning effort)をスイープした実験回顧。何を予想し、何が外れ、何をデフォルトにしたのかをタイムラインと問いごとに物語として整理し、コマンド一行で直接再現します。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
@@ -43,10 +43,10 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 実験回顧</p>
-    <p class="article-kicker">実験回顧 · 三つのタスク形状を横断して · レンズ: task-shape</p>
-    <h1>推論努力度は割に合うのか &mdash; 仮説、そして測定が反証したこと</h1>
+    <p class="article-kicker">実験回顧 · 三つのタスク形状を横断して · 視点: task-shape</p>
+    <h1>推論努力度は割に合うのか &mdash; 仮説、そして測定がひっくり返したこと</h1>
     <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
-    <p class="lede">私たちは、多段階推論なら高い推論努力度(<code>reasoning_effort</code>)が割に合うはずだと<strong>事前登録</strong>した。三つのベンチマークにわたり 1,080 セルを測定した結果は、その予測を<strong>反証</strong>した。短い事実回答でも、多段階でも、ツールエージェントでも、答えは一度も <code>high</code> や <code>xhigh</code> ではなかった。努力度を中間より上に上げると、品質は変わらないまま、コストだけが上がり、スループットだけが落ちた。本稿は「何を予想し、何が外れ、だから何をデフォルトにしたのか」を<strong>時間順(タイムライン)</strong>と<strong>問い順(問いごとの回顧)</strong>で、結論だけでなく<em>歩いてきた道</em>まで物語としてたどる回顧である &mdash; そして最後ではなく<em>今すぐ</em>、コマンド一行で直接再現できる。</p>
+    <p class="lede">私たちは、多段階推論なら高い推論努力度(<code>reasoning_effort</code>)が割に合うはずだと<strong>事前登録</strong>した。三つのベンチマークにわたり 1,080 セルを測定した結果は、その予測を<strong>ひっくり返した</strong>。短い事実回答でも、多段階でも、ツールエージェントでも、答えは一度も <code>high</code> や <code>xhigh</code> ではなかった。努力度を中間より上に上げると、品質は変わらないまま、コストだけが上がり、スループットだけが落ちた。本稿は「何を予想し、何が外れ、だから何をデフォルトにしたのか」を<strong>時間順(タイムライン)</strong>と<strong>問い順(問いごとの回顧)</strong>で、結論だけでなく<em>歩いてきた道</em>まで物語としてたどる回顧である &mdash; そして最後ではなく<em>今すぐ</em>、コマンド一行で直接再現できる。</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">まず: 10秒で再現</p>
@@ -80,7 +80,7 @@ python experiments/examples/describe_all.py</code></pre>
     </figure>
 
     <div class="article-summary-grid" aria-label="回顧の要約">
-      <section class="summary-tile"><h2>問い</h2><p>新しい本番タスクで、推論努力度を上げることは割に合うのか。それも PAYG(ドル当たりの正答)と PTU(固定容量当たりの分当たり正答)の両方のレンズで。</p></section>
+      <section class="summary-tile"><h2>問い</h2><p>新しい本番タスクで、推論努力度を上げることは割に合うのか。それも PAYG(ドル当たりの正答)と PTU(固定容量当たりの分当たり正答)の両方の視点で。</p></section>
       <section class="summary-tile"><h2>根拠</h2><p>三つのベンチマーク &mdash; 01 短い事実回答(Null) &middot; 02 多段階(Ceiling) &middot; 03 ツールエージェント(Mixed) &mdash; をそれぞれ N=20 サンプル × R=3 反復、努力度 {none, low, medium, high, xhigh} + gpt-4o ベースラインで測定。合計 1,080セル。すべてのコストは 1,000件当たりに正規化し、ベンチマークごとの <code>analysis.md</code> を再引用します。</p></section>
       <section class="summary-tile"><h2>判断</h2><p>最適な (モデル, 努力度) はタスク形状と消費モデルによって異なりますが、共通の結論は一つです: <strong>答えは決して <code>high</code> や <code>xhigh</code> ではない。</strong> 中間を超えると、品質改善なしにコストだけが増え、スループットだけが削られます。</p></section>
     </div>
@@ -97,8 +97,8 @@ python experiments/examples/describe_all.py</code></pre>
       <h2>私たちが歩いた順序</h2>
       <p>実験は一度で結論に至ったわけではありません。下の五つの場面を日付順に追うと、予測がどこで外れ、デフォルトがどこで変わったのかが順に見えてきます。</p>
       <ol>
-        <li><strong>2026年 5月以前 &mdash; 事前登録。</strong> 測定を始める前に、まず予測を書き留めておいた。多段階タスクなら、高い推論努力度が品質を引き上げ、コストを正当化するはずだと。あとから結果に合わせて物語を変えられないように、gpt-5.2 の努力度を <code>none</code> から <code>xhigh</code> まで五段階に固定し、gpt-4o ベースラインを横に置いた。この事前登録があったからこそ、後に続く &lsquo;反証&rsquo; には意味がある。</li>
-        <li><strong>2026年 5月 &mdash; 短い事実回答ケース(01)、床を測る。</strong> まず、推論を必要としない短い事実回答タスクでコスト曲面の床を確認した &mdash; 三つのベンチマークのうち、この床だけは<em>実測</em>で測り直した(360セルすべて実 Azure 呼び出し、フィクスチャマーカーなし)。gpt-5.2 は推論を一切有効にしない <code>none</code> で正答率がすでに 95% に飽和し、むしろ gpt-4o(90%) より高かった。正答 1,000件当たりのコストは <strong>$0.62</strong> で gpt-4o(<strong>$0.74</strong>) より <strong>16%</strong> 安かった(リクエスト 1,000件当たりでも 12% 安い)。そのため短い事実回答の PAYG デフォルトは gpt-5.2 <code>none</code> にした &mdash; ただし固定容量(PTU)レンズでは二つのモデルのスループットが約 1% 内で重なり、実質引き分けだった。この実験は <a href="../experiments/exp001-short-factual/ja/">exp001 実験ノート</a>で一つずつ分解する。</li>
+        <li><strong>2026年 5月以前 &mdash; 事前登録。</strong> 測定を始める前に、まず予測を書き留めておいた。多段階タスクなら、高い推論努力度が品質を引き上げ、コストを正当化するはずだと。あとから結果に合わせて物語を変えられないように、gpt-5.2 の努力度を <code>none</code> から <code>xhigh</code> まで五段階に固定し、gpt-4o ベースラインを横に置いた。この事前登録があったからこそ、後に続く &lsquo;ひっくり返り&rsquo; には意味がある。</li>
+        <li><strong>2026年 5月 &mdash; 短い事実回答ケース(01)、床を測る。</strong> まず、推論を必要としない短い事実回答タスクでコスト曲面の床を確認した &mdash; 三つのベンチマークのうち、この床だけは<em>実測</em>で測り直した(360セルすべて実 Azure 呼び出し、フィクスチャマーカーなし)。gpt-5.2 は推論を一切有効にしない <code>none</code> で正答率がすでに 95% に飽和し、むしろ gpt-4o(90%) より高かった。正答 1,000件当たりのコストは <strong>$0.62</strong> で gpt-4o(<strong>$0.74</strong>) より <strong>16%</strong> 安かった(リクエスト 1,000件当たりでも 12% 安い)。そのため短い事実回答の PAYG デフォルトは gpt-5.2 <code>none</code> にした &mdash; ただし固定容量(PTU)の視点では二つのモデルのスループットが約 1% 内で重なり、実質引き分けだった。この実験は <a href="../experiments/exp001-short-factual/ja/">exp001 実験ノート</a>で一つずつ分解する。</li>
         <li><strong>2026年 5月 &mdash; 多段階ケース(02)、転換点。</strong> ここで推論が勝つはずだった。ところが蓋を開けると、gpt-5.2 は<em>何の推論も有効にしない</em>基本状態(<code>none</code>)で二十問すべてを正解した。事前仮説はその場で崩れた。正答 1,000件当たりのコストは gpt-4o の <strong>$1.06</strong> から <strong>$0.62</strong> へ 42% 下がり、PTU では分当たり正答が 32.5% 増えたが、努力度をさらに上げても品質は動かなかった。だから多段階のデフォルトを gpt-5.2 <code>none</code> とし、努力度の引き上げは捨てた。勝負を分けたのは &lsquo;努力度ダイヤル&rsquo; ではなく &lsquo;モデルの入れ替え&rsquo; だった。この実験は <a href="../experiments/exp002-multi-step-reasoning/ja/">exp002 実験ノート</a>で一つずつ分解する。</li>
         <li><strong>2026年 5月 &mdash; ツールエージェントケース(03)、意外な発見。</strong> 最後はツールを使うエージェントだった(無ツール・1ツール・マルチツールの混合)。ここで驚かせたのは gpt-4o だった。&lsquo;一般知識で答えよ&rsquo; というプロンプトでも計算機を習慣のように呼び、無ツール通過率が <strong>83.3%</strong> まで落ちたのである。一方 gpt-5.2 は <code>low</code> だけでマルチツール 100% を保ち、正答 1,000件当たり <strong>$2.77</strong>(gpt-4o $3.65 比 24% 安い) に到達した。だからツールのデフォルトは gpt-5.2 <code>low</code>。ただし <code>low</code> を超えると、スループットは medium で 8.5%、xhigh で 10.8% ずつ削られ、利得を戻してしまった。この実験は <a href="../experiments/exp003-tool-using-agent/ja/">exp003 実験ノート</a>で一つずつ分解する。</li>
         <li><strong>2026年 7月 &mdash; 根拠と再現のあいだの隙間を埋める。</strong> 測定が終わったあとに残った宿題は、性質が違っていた。&lsquo;デプロイへの関心は高いのに、README と検証層がその関心を受け止めきれていない&rsquo; というフィードバックが来た。実際、新しい訪問者は編集可能インストールの失敗(PEP 660)や壊れた実行コマンドで止まった。そこで資格情報なしに一行で終わる検証(<code>verify_setup.sh</code>)、実験ごとのガイドカード、<code>requirements.txt</code> の分離を加え、&lsquo;根拠&rsquo; と &lsquo;再現&rsquo; のあいだの隙間を埋めた。このページ冒頭の 10秒再現がその結果である。</li>
@@ -120,7 +120,7 @@ python experiments/examples/describe_all.py</code></pre>
 
       <h3>Q3 &mdash; ツールエージェントでは推論が多いほど安全か?</h3>
       <p>複数のツールをつなぐ計画ほど、より多い推論が信頼性を高めそうに思えた。そこで無ツール・1ツール・マルチツールが混ざる二十タスクで、再び gpt-5.2 の努力度別に gpt-4o と競わせた。</p>
-      <p>実際に分かれた地点は、推論の量ではなくツールを<em>呼ぶ習慣</em>だった。gpt-4o は &lsquo;一般知識で答えよ&rsquo; という無ツールプロンプトでも計算機を呼び、通過率が 83.3% へ下がった一方、gpt-5.2 は無ツールでも 100% を保った。コストでも gpt-5.2 <code>low</code> が正答 1,000件当たり <strong>$2.77</strong>(gpt-4o $3.65 比 24% 安い)、マルチツール 100%、PTU +4.3% で先行した。ただし、このときの <code>web_search</code> は実際のウェブではなく、固定知識ベースの検索をモックしたものという限界がある。結論はまた同じだった &mdash; 小さな推論表面で十分であり、ツールのデフォルトは gpt-5.2 <code>low</code>、それ以上はトークンの無駄である。</p>
+      <p>実際に分かれた地点は、推論の量ではなくツールを<em>呼ぶ習慣</em>だった。gpt-4o は &lsquo;一般知識で答えよ&rsquo; という無ツールプロンプトでも計算機を呼び、通過率が 83.3% へ下がった一方、gpt-5.2 は無ツールでも 100% を保った。コストでも gpt-5.2 <code>low</code> が正答 1,000件当たり <strong>$2.77</strong>(gpt-4o $3.65 比 24% 安い)、マルチツール 100%、PTU +4.3% で先行した。ただし、このときの <code>web_search</code> は実際のウェブではなく、固定知識ベースの検索をモックしたものという限界がある。結論はまた同じだった &mdash; 少しの推論で十分であり、ツールのデフォルトは gpt-5.2 <code>low</code>、それ以上はトークンの無駄である。</p>
     </section>
 
     <section id="experiment-detail" class="article-section">
@@ -144,7 +144,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p class="section-label">次へ</p>
       <h2>次の判断 · 次の実験</h2>
       <p><strong>次の判断。</strong> この結論は「測定したタスク形状」の中でだけ有効です。チェーンがもっと長くなったり実ツールが入ったりすれば曲線はまた動き得るため、ワークロード形状が変わったら再測定するのがルールです。</p>
-      <p><strong>次の実験。</strong> ここでの PTU 数値はトークンベースの推定です(ライブ負荷ではありません)。次の実験は実際の PTU デプロイでの負荷テスト &mdash; レートリミットシェイピング · キューイング · 並列バッチがスループットにどう作用するかです。</p>
+      <p><strong>次の実験。</strong> ここでの PTU 数値はトークンベースの推定です(ライブ負荷ではありません)。次の実験は実際の PTU デプロイでの負荷テスト &mdash; レート制限の調整 · キューイング · 並列バッチがスループットにどう作用するかです。</p>
       <p>
         <strong>続けて:</strong>
         <a href="../../ptu-retry-after-recovery/ja/">429 はエラーではなく回復シグナル</a>
@@ -161,7 +161,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 ヘッドライン, §5 判断境界, §6 限界)。すべてのコストはベンチマークごとの <code>benchmarks/0[123]-*/analysis.md</code> から再引用。</li>
         <li>価格: 単一スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。料率が変わればスナップショットを更新し、分析を再実行する必要がある。</li>
         <li>標本: ベンチマーク当たり N=20 · R=3。方法論 §8 はこの標本サイズで信頼区間/標準誤差の報告を禁じている &mdash; 方向性の結論は堅いが、絶対値の大きさは小標本として注意。</li>
-        <li>採点: LLM-as-judge ルーブリックは中立ジャッジとして gpt-4o を使用。ジャッジプロンプト SHA-256 を各採点 JSON に記録し、ドリフトを監視。</li>
+        <li>採点: 審判モデルのルーブリックは中立ジャッジとして gpt-4o を使用。ジャッジプロンプト SHA-256 を各採点 JSON に記録し、あとで変わったか分かるようにした。</li>
         <li>PTU: スループット数値はトークン数ベースの推定であり、ライブ PTU 負荷テストではない。ツールベンチマークの <code>web_search</code> は固定 KB 検索(モック)。</li>
       </ul>
     </section>

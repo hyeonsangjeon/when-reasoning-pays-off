@@ -47,21 +47,21 @@
     <h1>exp001 &mdash; क्या short-factual task में reasoning की ज़रूरत थी?</h1>
     <p class="muted-note">लेखक Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">हमने तीन benchmarks का <strong>floor</strong> पहले रखा। extraction&middot;format&middot;classification&middot;transliteration&middot;arithmetic &mdash; ऐसे <strong>short factual tasks</strong> जिनका उत्तर एक ही बार में निकलता है। यहाँ reasoning effort बढ़ाना &ldquo;1 plus 1&rdquo; के लिए meeting बुलाने जैसा है। Prediction सरल था: <em>reasoning से लागत वसूल नहीं होगी।</em></p>
-    <p class="lede">इस note को पिछली दो entries से अलग करने वाली एक बात है। यह <strong>synthetic fixture नहीं, real measurement</strong> है। सभी 360 cells को Azure Foundry v1 पर सचमुच call किया गया, और neutral judge gpt-4o से प्रति cell एक बार <strong>360/360</strong> scoring हुई। <code>"fixture": true</code> marker कहीं नहीं है। इसलिए यह floor &lsquo;plausible synthetic floor&rsquo; नहीं, <em>measured floor</em> है।</p>
-    <p class="lede">Measurement ने prediction को <strong>ज्यों का त्यों confirm</strong> किया &mdash; तीन benchmarks में केवल यही जगह थी जहाँ pre-registration बिना reversal के सही निकला। फिर भी real measurement ने दो details जोड़े। पहला, gpt-5.2 ने <em>बिना कोई reasoning चालू किए</em> <code>none</code> पर gpt-4o को <strong>quality में भी</strong> पीछे छोड़ा। दूसरा, effort को <code>xhigh</code> तक उठाने पर भी hidden reasoning tokens <strong>0 के पास टिके रहे</strong> &mdash; effort dial किसी चीज़ से जुड़ा नहीं था। यह note उस floor को <em>design → inputs → outputs → prediction versus measurement → failure pockets → decision</em> के क्रम में दोबारा देखता है &mdash; ताकि अगला व्यक्ति इसी रास्ते में कम भटके।</p>
+    <p class="lede">हमने तीन benchmarks में सबसे पहले <strong>floor</strong> देखा। extraction&middot;format&middot;classification&middot;transliteration&middot;arithmetic &mdash; ऐसे <strong>short factual tasks</strong> जिनका उत्तर एक ही बार में आ जाता है। यहाँ reasoning effort बढ़ाना &ldquo;1 plus 1&rdquo; के लिए meeting बुलाने जैसा है। Prediction सीधा था: <em>reasoning से लागत वसूल नहीं होगी।</em></p>
+    <p class="lede">इस note में पिछली दो entries से एक फर्क है। यह <strong>synthetic fixture नहीं, real measurement</strong> है। सभी 360 cells को Azure Foundry v1 पर सचमुच call किया गया। neutral judge gpt-4o ने हर cell को एक बार score किया, <strong>360/360</strong>। <code>"fixture": true</code> marker कहीं नहीं है। इसलिए यह floor कोई &lsquo;लगभग बनाया हुआ floor&rsquo; नहीं, <em>मापा हुआ floor</em> है।</p>
+    <p class="lede">Measurement में अनुमान <strong>बिलकुल सही निकला</strong>। तीन benchmarks में यह अकेली जगह थी जहाँ अनुमान बिना उलटफेर के सही रहा। फिर भी real measurement ने दो बातें और दिखाईं। पहली, gpt-5.2 ने <em>बिना कोई reasoning चालू किए</em> <code>none</code> पर gpt-4o को <strong>quality में भी</strong> पीछे छोड़ा। दूसरी, effort को <code>xhigh</code> तक बढ़ाने पर भी hidden reasoning tokens <strong>0 के पास टिके रहे</strong>। यानी effort dial किसी चीज़ से जुड़ा नहीं था। यह note उस floor को <em>design → inputs → outputs → prediction versus measurement → failure pockets → decision</em> के क्रम में दोबारा देखता है। ताकि अगला व्यक्ति इसी रास्ते में कम भटके।</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">पहले, 10 सेकंड</p>
       <h2>निष्कर्ष पर भरोसा न करें, केवल यह experiment खुद चलाएँ</h2>
-      <p>Token consumption 0 है। नीचे की दो lines इस experiment के inputs&middot;variables&middot;outputs को जस का तस print करती हैं, और runner wiring को dry-run में verify करती हैं।</p>
+      <p>Token consumption 0 है। नीचे की दो lines इस experiment के inputs&middot;variables&middot;outputs को जस का तस print करती हैं। वे runner wiring को dry-run में verify भी करती हैं।</p>
       <pre class="code-block"><code># इस experiment का inputs → variables → outputs card print करें (network नहीं)
 python -c "import experiments; print(experiments.describe('exp001_short-factual_baseline.yaml').summary())"
 
 # runner को dry-run में केवल wiring verify करें (token consumption 0)
 python -c "import experiments; print(experiments.run('exp001_short-factual_baseline.yaml', dry_run=True, extra_args=['--max-samples','1']).ok)"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर repo खोलें &amp; ⭐</a></p>
-      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> के reproduction footer में हैं। इस note के सभी numbers उसी real aggregate (<code>analysis.json</code>) से re-cite हैं।</p>
+      <p class="muted-note">Actual paid measurement और aggregate&middot;chart regeneration commands <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> के reproduction footer में हैं। इस note के सभी numbers उसी मापे गए aggregate (<code>analysis.json</code>) से re-cite हैं।</p>
     </section>
 
     <nav class="article-outline" aria-label="इस note की संरचना">
@@ -77,51 +77,51 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="design" class="article-section">
       <p class="section-label">Design</p>
       <h2>सबसे सरल task से</h2>
-      <p><strong>जाँचने वाला प्रश्न एक तक समेट दिया।</strong> एक बार में उत्तर देने वाले short factual task &mdash; तीन benchmarks का सबसे आसान case &mdash; में, gpt-5.2 को <em>सोचने की गुंजाइश (reasoning effort)</em> जितनी ज़्यादा दें, क्या उत्तर उतने बेहतर होते हैं और उतनी लागत वसूल होती है? इसलिए देखने को भी दो ही चीज़ें हैं &mdash; effort बढ़ाने पर <strong>(1) quality बढ़ती है क्या, (2) cost बढ़ती है क्या।</strong> पैसे को दो नज़रियों से पढ़ते हैं: जितना उपयोग उतना भुगतान वाला <strong>PAYG</strong> पूछता है &ldquo;प्रति सही उत्तर कितने dollar&rdquo;, और पूरी capacity किराए पर लेने वाला <strong>PTU</strong> पूछता है &ldquo;उसी capacity से प्रति minute कितने सही&rdquo;। Expected answer &ldquo;नहीं&rdquo; था, और इस experiment की भूमिका उस &ldquo;नहीं&rdquo; के <em>floor</em> को अनुमान से नहीं, real measurement से pin करना है।</p>
-      <p><strong>किससे मापते हैं &mdash; dataset.</strong> Frozen authored samples 20 (<code>sf_01</code>&hellip;<code>sf_20</code>), जिनमें extraction&middot;format&middot;classification&middot;enumeration&middot;transliteration&middot;normalization&middot;unit conversion&middot;simple arithmetic&middot;summary समान रूप से मिले हैं। ऐसे task में &ldquo;एकमात्र सही उत्तर&rdquo; को table में pin करना कठिन है। इसलिए answer key के बजाय केवल <code>expected_output_shape</code>(उत्तर का आकार) और <code>quality_rubric_notes</code>(scoring मानक) fixed रखते हैं, और quality तय करने के लिए <strong>neutral judge model gpt-4o हर उत्तर पढ़कर 0&middot;1&middot;2 अंक देता है</strong>। हर score का आधार भी raw material में ज्यों का त्यों रहता है।</p>
-      <p><strong>बदलती केवल एक चीज़ है</strong> &mdash; gpt-5.2 के reasoning effort (<code>reasoning.effort</code>) को <code>none</code>(बंद) से <code>low · medium · high · xhigh</code> तक पाँच steps में बढ़ाते हैं। बाकी सब fixed। बगल में <strong>gpt-4o baseline</strong> रखते हैं, जिसमें reasoning dial है ही नहीं। इत्तफ़ाक़ छानने के लिए हर (sample × model × effort) cell को <strong>तीन बार (R=3)</strong> चलाते हैं।</p>
+      <p><strong>जाँचने वाला प्रश्न एक पर सिमटा दिया।</strong> यहाँ short factual task है, जिसका उत्तर एक बार में निकलता है। तीन benchmarks में यह सबसे आसान case है। सवाल यह था: gpt-5.2 को <em>सोचने की गुंजाइश (reasoning effort)</em> अधिक दें तो क्या उत्तर बेहतर होता है, और क्या वह खर्च के लायक है? जाँचने को बस दो बातें हैं। effort बढ़ने पर <strong>(1) quality बढ़ती है क्या, (2) cost बढ़ती है क्या।</strong> पैसे दो तरह से पढ़ते हैं। जितना इस्तेमाल उतना देने वाले <strong>PAYG</strong> में &ldquo;प्रति सही उत्तर कितने dollar&rdquo;। पूरी capacity किराए पर लेने वाले <strong>PTU</strong> में &ldquo;उसी capacity पर प्रति minute कितने सही&rdquo;। Expected answer &ldquo;नहीं&rdquo; था। इस experiment का काम उस &ldquo;नहीं&rdquo; के <em>floor</em> को अनुमान से नहीं, real measurement से पक्का करना है।</p>
+      <p><strong>किससे मापें &mdash; dataset.</strong> Frozen authored samples 20 (<code>sf_01</code>&hellip;<code>sf_20</code>) हैं। इनमें extraction&middot;format&middot;classification&middot;enumeration&middot;transliteration&middot;normalization&middot;unit conversion&middot;simple arithmetic&middot;summary बराबर फैले हैं। ऐसे task में &ldquo;एकमात्र सही उत्तर&rdquo; को table में बाँधना कठिन है। इसलिए answer key के बजाय केवल <code>expected_output_shape</code>(उत्तर का आकार) और <code>quality_rubric_notes</code>(scoring मानक) fixed रखते हैं। quality तय करने के लिए <strong>neutral judge model gpt-4o हर उत्तर पढ़कर 0&middot;1&middot;2 अंक देता है</strong>। हर score का कारण भी raw material में जस का तस रहता है।</p>
+      <p><strong>बदलने वाली चीज़ केवल एक है।</strong> gpt-5.2 के reasoning effort (<code>reasoning.effort</code>) को <code>none</code>(बंद) से <code>low · medium · high · xhigh</code> तक पाँच steps में चलाते हैं। बाकी सब fixed है। साथ में <strong>gpt-4o baseline</strong> रखते हैं, जिसमें reasoning dial है ही नहीं। इत्तफ़ाक़ छानने के लिए हर (sample × model × effort) cell को <strong>तीन बार (R=3)</strong> चलाते हैं।</p>
       <div class="article-summary-grid" aria-label="pre-registered prediction और भूमिका">
-        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>Short factual task को reasoning surface की ज़रूरत नहीं। Quality सबसे कम effort पर ही saturated होगी, और effort बढ़ाने पर quality वैसी ही रहेगी जबकि cost&middot;latency&middot;tokens बढ़ेंगे। यानी उत्तर है &ldquo;effort मत बढ़ाओ।&rdquo;</p></section>
-        <section class="summary-tile"><h2>इस experiment की भूमिका</h2><p>तीन benchmarks का <em>floor anchor</em>। Multi-step (02) के ceiling और tool agent (03) के mixed case को मापने से पहले, &ldquo;जहाँ reasoning सचमुच आवश्यक नहीं&rdquo; उसका आकार real measurement से fix करना। बाद के experiments के reversals इसी floor से contrast में अर्थ पाते हैं।</p></section>
+        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>Short factual task को reasoning की ज़रूरत नहीं। Quality सबसे कम effort पर ही भर जाएगी। effort बढ़ाने पर quality वैसी ही रहेगी, बस cost&middot;latency&middot;tokens बढ़ेंगे। यानी उत्तर है &ldquo;effort मत बढ़ाओ।&rdquo;</p></section>
+        <section class="summary-tile"><h2>इस experiment की भूमिका</h2><p>तीन benchmarks का <em>floor anchor</em>। Multi-step (02) के ceiling और tool agent (03) के mixed case को मापने से पहले, &ldquo;जहाँ reasoning सचमुच आवश्यक नहीं&rdquo; वह जगह कैसी दिखती है, इसे real measurement से fix करना। बाद के experiments के reversals इसी floor से तुलना में अर्थ पाते हैं।</p></section>
       </div>
     </section>
 
     <section id="io" class="article-section">
       <p class="section-label">Inputs और outputs</p>
       <h2>क्या खाया और क्या छोड़ा</h2>
-      <p>इस experiment ने जो खाया और जो छोड़ा, वह हाथ से लिखी summary नहीं बल्कि repo की वास्तविक files हैं। इसलिए input से output तक एक line में trace किया जा सकता है।</p>
+      <p>इस experiment ने जो लिया और जो छोड़ा, वे हाथ से लिखी summary नहीं हैं। वे repo की वास्तविक files हैं। इसलिए input से output तक एक line में trace किया जा सकता है।</p>
       <div class="article-summary-grid" aria-label="inputs और outputs">
         <section class="summary-tile">
           <h2>Inputs (in)</h2>
           <p><strong>Experiment definitions:</strong> <code>experiments/exp001_short-factual_baseline.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
           <strong>Dataset:</strong> <code>benchmarks/01-short-factual/dataset.json</code> (SHA-256 से fixed).<br>
-          <strong>Prompt:</strong> system prompt को SHA-256 fingerprint किया गया &mdash; यह guarantee करने के लिए कि 360 cells में <em>एक ही</em> prompt इस्तेमाल हुआ। Judge prompt SHA-256 भी हर scoring JSON में recorded है।</p>
+          <strong>Prompt:</strong> system prompt को SHA-256 fingerprint किया गया। इससे पता रहता है कि 360 cells में <em>एक ही</em> prompt इस्तेमाल हुआ। Judge prompt SHA-256 भी हर scoring JSON में recorded है।</p>
         </section>
         <section class="summary-tile">
           <h2>Outputs (out)</h2>
           <p><strong>Raw calls:</strong> <code>runs/*.json</code> (Foundry v1 payload + usage/latency raw).<br>
           <strong>Scoring:</strong> <code>judge_runs_real/*.json</code> (real gpt-4o judge, प्रति cell 1 बार).<br>
-          <strong>Aggregate:</strong> <code>analysis.json</code> (real cohort).<br>
+          <strong>Aggregate:</strong> <code>analysis.json</code> (मापा गया डेटा).<br>
           <strong>Charts/tables:</strong> <code>results/cost-curves/benchmark-01-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>Measurement surface 360 cells</strong> है (gpt-4o 60 + gpt-5.2 300, effort पाँच steps)। Outlier के रूप में excluded cells <strong>0</strong> &mdash; operational flags (cold start&middot;retry&middot;output truncation) के साथ 3σ से बाहर कोई row नहीं। Scoring neutral judge gpt-4o ने प्रति cell एक बार की, <strong>360/360 success</strong>। सभी JSON real Azure Foundry v1 calls हैं; <code>"fixture": true</code> marker एक भी नहीं। Aggregate <code>--experiment-prefix exp001_short-factual_baseline</code> से केवल real cohort चुनकर regenerate हुआ, और दो बार चलाने पर bytes identical रहते हैं (deterministic aggregate)।</p>
+      <p><strong>Measurement surface 360 cells</strong> है (gpt-4o 60 + gpt-5.2 300, effort पाँच steps)। Outlier के रूप में excluded cells <strong>0</strong>। संचालन-समस्या का चिह्न (cold start&middot;retry&middot;output truncation) लेकर 3σ (सामान्य दायरे से काफ़ी बाहर का मान) से बाहर कोई row नहीं गई। Scoring neutral judge gpt-4o ने प्रति cell एक बार की, <strong>360/360 success</strong>। सभी JSON real Azure Foundry v1 calls हैं; <code>"fixture": true</code> marker एक भी नहीं। Aggregate <code>--experiment-prefix exp001_short-factual_baseline</code> से केवल मापा गया डेटा चुनकर regenerate हुआ। दो बार चलाने पर bytes identical रहते हैं, यानी एक ही input पर हमेशा वही result।</p>
     </section>
 
     <section id="predict" class="article-section">
       <p class="section-label">Prediction versus measurement</p>
       <h2>एकमात्र जगह जहाँ prediction ज्यों का त्यों सही था</h2>
       <div class="article-summary-grid" aria-label="prediction versus measurement">
-        <section class="summary-tile"><h2>क्या predict किया</h2><p>Short factual task को reasoning नहीं चाहिए। Quality floor पर ही saturated होगी, और effort बढ़ाने पर quality वैसी ही रहकर cost बढ़ेगी। Summary: &ldquo;effort मत बढ़ाओ।&rdquo;</p></section>
-        <section class="summary-tile"><h2>क्या निकला</h2><p>ठीक वही &mdash; कोई reversal नहीं। Quality <code>none</code> पर ही saturated (accuracy 95%) थी और effort बढ़ाने पर 60 cases में केवल 1&ndash;2 cases की सीमा में हिली। Added detail: <code>none</code> ने gpt-4o को <em>quality में भी</em> हराया, और reasoning tokens <code>xhigh</code> पर भी 0 के पास रहे।</p></section>
+        <section class="summary-tile"><h2>क्या predict किया</h2><p>Short factual task को reasoning नहीं चाहिए। Quality floor पर ही भर जाएगी। effort बढ़ाने पर quality वैसी ही रहेगी और cost बढ़ेगी। Summary: &ldquo;effort मत बढ़ाओ।&rdquo;</p></section>
+        <section class="summary-tile"><h2>क्या निकला</h2><p>ठीक वही &mdash; कोई reversal नहीं। Quality <code>none</code> पर ही भर चुकी थी (accuracy 95%)। effort बढ़ाने पर वह 60 cases में केवल 1&ndash;2 cases की सीमा में हिली। Added detail: <code>none</code> ने gpt-4o को <em>quality में भी</em> हराया, और reasoning tokens <code>xhigh</code> पर भी 0 के पास रहे।</p></section>
       </div>
-      <p><strong>Decision: pre-registration confirmed.</strong> Multi-step (02) और tool (03) खोलते ही कहानी उलट गई (ceiling में <code>none</code> floor था, mixed में <code>low</code> floor), पर यह floor prediction जैसा ही रहा। इसलिए यह experiment series का <em>control</em> है &mdash; &ldquo;जहाँ reasoning फ़ायदा नहीं देती&rdquo; सचमुच कैसा दिखता है, यह measured anchor।</p>
+      <p><strong>Decision: अनुमान बिलकुल सही निकला।</strong> Multi-step (02) और tool (03) खोलते ही कहानी उलट गई (ceiling में <code>none</code> floor था, mixed में <code>low</code> floor), पर यह floor prediction जैसा ही रहा। इसलिए यह experiment series का <em>आधार-बिंदु (reference point)</em> है। यह measured anchor दिखाता है कि &ldquo;जहाँ reasoning फ़ायदा नहीं देती&rdquo; वह सचमुच कैसा दिखता है।</p>
     </section>
 
     <section id="reversal" class="article-section">
       <p class="section-label">पहला signal</p>
       <h2>none ने पहले ही gpt-4o को हराया</h2>
-      <p>नीचे की table के dollars pricing snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले values हैं, जिन्हें <code>analysis.md</code> §5 से re-cite किया गया है और per 1,000 normalized किया गया है। Accuracy judge score 2 (fully correct) का ratio है।</p>
+      <p>नीचे की table के dollars pricing snapshot <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (accessed 2026-05-19) पर methodology का PAYG formula लगाकर निकले हैं। इन्हें <code>analysis.md</code> §5 से re-cite किया गया है और per 1,000 normalized किया गया है। Accuracy judge score 2 (fully correct) की पास दर (pass rate) है।</p>
       <pre class="code-block"><code>मॉडल      प्रयास   1,000अनुरोध   सही दर          1,000सही
 gpt-4o    —        $0.665        90.0% (54/60)    $0.739   ← baseline
 gpt-5.2   none     $0.587        95.0% (57/60)    $0.618   ← default
@@ -129,8 +129,8 @@ gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
 gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
 gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
 gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
-      <p><strong>बिना reasoning चालू किए <code>none</code> दोनों axes पर gpt-4o से आगे है।</strong> प्रति 1,000 requests $0.587 पर यह gpt-4o ($0.665) से <strong>12% सस्ता</strong> है, और accuracy उल्टे <strong>95% versus 90%</strong> अधिक है। प्रति 1,000 correct answers में बदलें तो $0.618 versus $0.739 &mdash; <strong>16% cheaper</strong>। यानी यहाँ value देने वाली चीज़ &ldquo;effort बढ़ाना&rdquo; नहीं, <em>model बदलना</em> ही थी। Effort dial ने अभी तक कुछ नहीं किया।</p>
-      <p>और <code>none</code> से ऊपर कुछ नहीं होता। <code>low</code>&middot;<code>medium</code> की accuracy 96.7% पर <em>एक पायदान ऊँची दिखती है</em>, पर यह 60 में सिर्फ़ 1 case ज़्यादा है &mdash; sample इतना छोटा (N=20&middot;R=3, confidence intervals नहीं) कि इसे noise मानना चाहिए। <code>high</code> तक बढ़ाओ तो cost उल्टे per request <strong>+3.6%</strong> चढ़ती है और accuracy 95% पर लौट आती है। आख़िरकार <strong><code>none</code> से <code>medium</code> तक व्यवहार में एक ही सपाट plane</strong> है, और उसके ऊपर quality के बिना केवल cost जुड़ती है।</p>
+      <p><strong>बिना reasoning चालू किए <code>none</code> दोनों axes पर gpt-4o से आगे है।</strong> प्रति 1,000 requests $0.587 पर यह gpt-4o ($0.665) से <strong>12% सस्ता</strong> है। accuracy भी उल्टे <strong>95% versus 90%</strong> अधिक है। प्रति 1,000 correct answers में बदलें तो $0.618 versus $0.739 &mdash; <strong>16% cheaper</strong>। यानी यहाँ value देने वाली चीज़ &ldquo;effort बढ़ाना&rdquo; नहीं थी। वह <em>model बदलना</em> था। Effort dial ने अभी तक कुछ नहीं किया।</p>
+      <p>और <code>none</code> से ऊपर कुछ नहीं होता। <code>low</code>&middot;<code>medium</code> की accuracy 96.7% पर <em>एक पायदान ऊँची दिखती है</em>। पर यह 60 में सिर्फ़ 1 case ज़्यादा है। sample छोटा है (N=20&middot;R=3, confidence intervals नहीं), इसलिए इसे noise मानना चाहिए। <code>high</code> तक बढ़ाओ तो cost उल्टे per request <strong>+3.6%</strong> चढ़ती है और accuracy 95% पर लौट आती है। आख़िरकार <strong><code>none</code> से <code>medium</code> तक व्यवहार में लगभग सपाट</strong> है। उसके ऊपर quality के बिना केवल cost जुड़ती है।</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
         <figcaption><strong>सपाट quality curve, real measurement.</strong> Effort के अनुसार judge score (0&ndash;2). gpt-5.2 <code>none</code> (1.95) से <code>xhigh</code> (1.95) तक 1.9&ndash;1.97 के बीच लगभग बिना हिले सपाट है, और gpt-4o baseline (1.90) ठीक नीचे है। पूरी effort ladder में maximum quality gap केवल <strong>0.07 points</strong> है। Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a> (real cohort).</figcaption>
@@ -141,81 +141,81 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="subtypes" class="article-section">
       <p class="section-label">Failure pockets</p>
       <h2>असफलताएँ कहाँ छिपी थीं</h2>
-      <p>90% versus 95% जैसे दो aggregate numbers से यह नहीं दिखता कि फर्क &ldquo;कहाँ&rdquo; पड़ा। इसलिए हमने score को task type के हिसाब से तोड़ा। पता चला कि अधिकतर types में दोनों models full score (2.0) हैं, और <strong>फर्क केवल तीन जगह &mdash; extraction&middot;summarization&middot;arithmetic &mdash; में</strong> है। यही तीन इस experiment का केंद्र हैं।</p>
+      <p>90% versus 95% जैसे दो aggregate numbers से यह नहीं दिखता कि फर्क &ldquo;कहाँ&rdquo; पड़ा। इसलिए हमने score को task type के हिसाब से तोड़ा। तब दिखा कि अधिकतर types में दोनों models full score (2.0) हैं। <strong>फर्क केवल तीन जगह &mdash; extraction&middot;summarization&middot;arithmetic &mdash; में</strong> है। यही तीन इस experiment का केंद्र हैं।</p>
       <pre class="code-block"><code>प्रकार            gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
 extraction        1.75     2.00       2.00      2.00       2.00
 summarization     1.33     1.78       2.00      1.78       1.89
 arith-trivial     2.00     1.83       1.67      1.67       1.67</code></pre>
       <ul>
-        <li><strong>Extraction &mdash; जहाँ gpt-5.2 ने floor पर gap भरा।</strong> gpt-4o ने 12 extraction cases में 1.75 पर कुछ छोड़ा, जबकि gpt-5.2 <em>reasoning चालू किए बिना</em> <code>none</code> से ही 2.00 full score है। gpt-5.2 का 95% gpt-4o के 90% से आगे क्यों है, कारण यही है &mdash; reasoning नहीं, model itself extraction को अधिक stable करता है।</li>
-        <li><strong>Summary &mdash; low पर peak, फिर पीछे।</strong> gpt-4o का सबसे कमजोर tag (1.33). gpt-5.2 <code>none</code> 1.78 → <code>low</code> 2.00 तक उठता है, फिर <code>medium</code>&middot;<code>high</code> पर 1.78&ndash;1.89 तक <em>फिर नीचे आता है</em>। Effort बढ़ाने से summary बेहतर नहीं होती।</li>
-        <li><strong>Arithmetic &mdash; अकेली जगह जहाँ gpt-4o जीता, और effort का reverse effect.</strong> trivial arithmetic के 6 cases में gpt-4o 2.00 full score है, जबकि gpt-5.2 <code>none</code> 1.83 से <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 1.67 तक <em>नीचे जाता है</em>। Effort बढ़ने पर &ldquo;1 plus 1&rdquo; पर ज़्यादा सोचकर उल्टा चूकता है। Reasoning फ़ायदा नहीं देती, इतना ही नहीं; यहाँ वह <strong>negative value</strong> देती है।</li>
+        <li><strong>Extraction &mdash; जहाँ gpt-5.2 ने floor पर gap भरा।</strong> gpt-4o ने 12 extraction cases में 1.75 पर कुछ छोड़ा। gpt-5.2 <em>reasoning चालू किए बिना</em> <code>none</code> से ही 2.00 full score है। gpt-5.2 का 95% gpt-4o के 90% से आगे क्यों है, कारण यही है। reasoning नहीं, model itself extraction को अधिक stable करता है।</li>
+        <li><strong>Summary &mdash; low पर peak, फिर पीछे।</strong> gpt-4o का सबसे कमजोर tag (1.33). gpt-5.2 <code>none</code> 1.78 → <code>low</code> 2.00 तक उठता है। फिर <code>medium</code>&middot;<code>high</code> पर 1.78&ndash;1.89 तक <em>फिर नीचे आता है</em>। Effort बढ़ाने से summary बेहतर नहीं होती।</li>
+        <li><strong>Arithmetic &mdash; अकेली जगह जहाँ gpt-4o जीता, और effort का उलटा असर।</strong> trivial arithmetic के 6 cases में gpt-4o 2.00 full score है। gpt-5.2 <code>none</code> 1.83 से <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 1.67 तक <em>नीचे जाता है</em>। Effort बढ़ने पर &ldquo;1 plus 1&rdquo; पर ज़्यादा सोचकर उल्टा चूकता है। Reasoning फ़ायदा नहीं देती, इतना ही नहीं। यहाँ वह <strong>negative value</strong> देती है।</li>
       </ul>
-      <p>तीन tags एक-दूसरे को offset करते हैं। gpt-5.2 extraction&middot;summary में gpt-4o से कमाता है और arithmetic में थोड़ा खोता है, पर net <code>none</code>&middot;<code>low</code> पर highest है। और किसी भी tag में <strong>effort बढ़ाने से gain नहीं मिला</strong> &mdash; यही वजह है कि यह benchmark &ldquo;Null case&rdquo; है।</p>
+      <p>तीन tags एक-दूसरे को offset करते हैं। gpt-5.2 extraction&middot;summary में gpt-4o से आगे जाता है और arithmetic में थोड़ा खोता है। कुल मिलाकर <code>none</code>&middot;<code>low</code> पर score सबसे अच्छा है। और किसी भी tag में <strong>effort बढ़ाने से gain नहीं मिला</strong>। यही वजह है कि यह benchmark &ldquo;Null case&rdquo; है।</p>
     </section>
 
     <section id="flatline" class="article-section">
       <p class="section-label">दूसरा signal</p>
       <h2>effort बढ़ाने पर भी reasoning 0 रहती है</h2>
-      <p><strong>तो फिर effort बढ़ाने पर quality टस से मस क्यों नहीं होती?</strong> Tokens तोड़ने पर mechanical answer मिलता है। gpt-5.2 जो reasoning tokens परदे के पीछे खर्च करता है वे <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> पर average <strong>0.00</strong>, <code>high</code> पर 1.35, <code>xhigh</code> पर 0.62 हैं। यानी <strong>effort को maximum पर ले जाएँ तब भी model असल में &ldquo;सोचने&rdquo; पर जो tokens खर्च करता है वे 0 के पास ही हैं</strong>। Short factual task एक ही बार में हल हो जाता है, इसलिए <em>plan करने या दोबारा देखने को कुछ है ही नहीं</em>, और effort dial को जितना भी घुमाओ वह कहीं connected नहीं। यह उस multi-step task (02) का उलटा है, जहाँ reasoning tokens सचमुच effort के साथ बढ़ते थे।</p>
-      <p><strong>Reasoning 0 है, तो cost भी उसी के साथ सपाट रहती है।</strong> Per-request input 224 tokens पर टिका है (prompt bytes identical), और visible output भी 10&ndash;16 tokens में मुश्किल से बढ़ता है। इसलिए effort-wise cost का फर्क भी बस <code>none</code> $0.587 से <code>high</code> $0.608 तक &mdash; प्रति 1,000 requests <strong>2 cents से थोड़ा अधिक</strong> की हलचल भर है।</p>
-      <p><strong>जवाब में लगने वाला समय (latency) भी effort का पीछा नहीं करता।</strong> gpt-4o 1,494ms, gpt-5.2 effort से लगभग स्वतंत्र 1,410&ndash;1,713ms के बीच noise की तरह बिखरा &mdash; <code>medium</code> तो <code>none</code> से भी तेज है। एक ही बार में जवाब देने वाले task में effort से speed का अनुमान नहीं लगता।</p>
-      <p><strong>पूरी capacity किराए पर लेने वाले PTU lens में conclusion उलटता नहीं, बस थोड़ा झुकता है।</strong> gpt-5.2 <code>none</code> में per-request tokens gpt-4o से लगभग 1% अधिक हैं, इसलिए throughput <strong>0.99 गुना</strong> (लगभग −1%) है &mdash; उसी fixed capacity पर प्रति minute correct answers में gpt-4o मामूली आगे है। यानी <strong>जितना उपयोग उतना भुगतान वाले PAYG में gpt-5.2 <code>none</code> साफ़ सस्ता है, और किराए वाले PTU में व्यवहार में tie</strong>। पिछले दो benchmarks की तरह PTU बड़ा gap नहीं दिखाता; दोनों models लगभग overlap करते हैं।</p>
+      <p><strong>तो फिर effort बढ़ाने पर quality टस से मस क्यों नहीं होती?</strong> Tokens तोड़कर देखें तो जवाब सीधा है। gpt-5.2 जो reasoning tokens परदे के पीछे खर्च करता है वे <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> पर average <strong>0.00</strong>, <code>high</code> पर 1.35, <code>xhigh</code> पर 0.62 हैं। यानी <strong>effort को maximum पर ले जाएँ तब भी model असल में &ldquo;सोचने&rdquo; पर जो tokens खर्च करता है वे 0 के पास ही हैं</strong>। Short factual task एक ही बार में हल हो जाता है। इसलिए <em>plan करने या दोबारा देखने को कुछ है ही नहीं</em>। effort dial को जितना भी घुमाओ, वह कहीं connected नहीं। यह उस multi-step task (02) का उलटा है, जहाँ reasoning tokens सचमुच effort के साथ बढ़ते थे।</p>
+      <p><strong>Reasoning 0 है, तो cost भी उसी के साथ सपाट रहती है।</strong> Per-request input 224 tokens पर टिका है (prompt bytes identical)। visible output भी 10&ndash;16 tokens में मुश्किल से बढ़ता है। इसलिए effort-wise cost का फर्क भी बस <code>none</code> $0.587 से <code>high</code> $0.608 तक है। प्रति 1,000 requests <strong>2 cents से थोड़ा अधिक</strong> की हलचल भर।</p>
+      <p><strong>जवाब में लगने वाला समय, latency (प्रतिक्रिया समय), भी effort का पीछा नहीं करता।</strong> gpt-4o 1,494ms, gpt-5.2 effort से लगभग स्वतंत्र 1,410&ndash;1,713ms के बीच noise की तरह बिखरा। <code>medium</code> तो <code>none</code> से भी तेज है। एक ही बार में जवाब देने वाले task में effort से speed का अनुमान नहीं लगता।</p>
+      <p><strong>PTU के नज़रिए से conclusion उलटता नहीं, बस थोड़ा झुकता है।</strong> gpt-5.2 <code>none</code> में per-request tokens gpt-4o से लगभग 1% अधिक हैं। इसलिए throughput <strong>0.99 गुना</strong> (लगभग −1%) है। उसी fixed capacity पर प्रति minute correct answers में gpt-4o मामूली आगे है। यानी <strong>जितना उपयोग उतना भुगतान वाले PAYG में gpt-5.2 <code>none</code> साफ़ सस्ता है, और किराए वाले PTU में व्यवहार में tie</strong>। पिछले दो benchmarks की तरह PTU बड़ा gap नहीं दिखाता। दोनों models लगभग overlap करते हैं।</p>
     </section>
 
     <section id="transparency" class="article-section">
       <p class="section-label">Transparency</p>
       <h2>numbers पर लगे धब्बे भी जस के तस</h2>
-      <p>कोई measurement पूरी तरह साफ़ नहीं होता। यह benchmark जो निशान छोड़ता है, उन्हें मिटाए बिना लिखते हैं &mdash; क्योंकि छिपाने से अगला व्यक्ति उसी जगह चूकेगा।</p>
+      <p>कोई measurement पूरी तरह साफ़ नहीं होता। यह benchmark जो निशान छोड़ता है, उन्हें हम मिटाते नहीं। क्योंकि छिपाने से अगला व्यक्ति उसी जगह चूकेगा।</p>
       <ul>
-        <li><strong>Real measurement replacement.</strong> यह floor पहले synthetic fixture (<code>exp008_short-factual_fixture</code>) से प्रकाशित था। आकार plausible था, measurement नहीं। इस note के साथ वह जगह <em>real cohort</em> से बदली &mdash; <code>analysis.json</code>&middot;charts&middot;tables को <code>--experiment-prefix exp001_short-factual_baseline</code> से regenerate किया। Fixture को हटाया नहीं; credential-free offline reproduction के stepping stone के रूप में repo में रखा, पर published numbers के source से बाहर किया। Fixture का <code>minimal</code> effort वास्तविक deployment reject करता है, इसलिए real schema में <code>none</code> floor है।</li>
-        <li><strong>Outliers 0.</strong> 360 cells में कहीं भी 3σ&middot;operational flag से excluded row नहीं (methodology alert line 10% से बहुत नीचे)। Aggregate mask के बिना साफ़ surface।</li>
-        <li><strong>Deterministic answer key नहीं।</strong> इस dataset में rule comparison answer key नहीं, इसलिए quality <em>judge score ही</em> तय करता है। इसलिए &ldquo;accuracy&rdquo; judge score 2 (fully correct) का ratio बनाकर binarized है, और partial answer (1) denominator से निकाला गया। इस choice को स्पष्ट रखना headline calculation को visible बनाता है।</li>
-        <li><strong>Arithmetic reversal.</strong> gpt-5.2 जिस अकेले tag (arithmetic) में gpt-4o से हारा, उसे छिपाया नहीं; §failure pockets में जस का तस रखा &mdash; ताकि floor का conclusion &ldquo;gpt-5.2 सब जीतता है&rdquo; नहीं, बल्कि &ldquo;effort फ़ायदा नहीं देता&rdquo; रहे।</li>
+        <li><strong>Real measurement replacement.</strong> यह floor पहले synthetic fixture (<code>exp008_short-factual_fixture</code>) से प्रकाशित था। आकार plausible था, measurement नहीं। इस note के साथ वह जगह <em>मापे गए डेटा</em> से बदली। <code>analysis.json</code>&middot;charts&middot;tables को <code>--experiment-prefix exp001_short-factual_baseline</code> से regenerate किया। Fixture को हटाया नहीं। credential-free offline reproduction के stepping stone के रूप में repo में रखा, पर published numbers के source से बाहर किया। Fixture का <code>minimal</code> effort वास्तविक deployment reject करता है, इसलिए मापे गए डेटा में <code>none</code> floor है।</li>
+        <li><strong>Outliers 0.</strong> 360 cells में कहीं भी 3σ&middot;संचालन-समस्या का चिह्न से excluded row नहीं (methodology alert line 10% से बहुत नीचे)। समुच्चय से कुछ भी नहीं हटाया गया। कोई मास्क नहीं। surface साफ़ है।</li>
+        <li><strong>Fixed answer key नहीं।</strong> इस dataset में rule comparison answer key नहीं है। इसलिए quality <em>judge score ही</em> तय करता है। &ldquo;accuracy&rdquo; judge score 2 (fully correct) की पास दर (pass rate) है। यानी सिर्फ़ पास·फेल के रूप में गिनना। partial answer (1) पास दर (pass rate) में नहीं गिना गया। इस choice को साफ़ रखने से मुख्य आँकड़ा कैसे निकला, यह दिखता है।</li>
+        <li><strong>Arithmetic reversal.</strong> gpt-5.2 जिस अकेले tag (arithmetic) में gpt-4o से हारा, उसे छिपाया नहीं। §failure pockets में जस का तस रखा। ताकि floor का conclusion &ldquo;gpt-5.2 सब जीतता है&rdquo; नहीं, बल्कि &ldquo;effort फ़ायदा नहीं देता&rdquo; रहे।</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">Limits</p>
       <h2>कहाँ तक भरोसा करें</h2>
-      <p>यह result एक short factual task set, एक pricing snapshot, और एक specific model combination व rubric से निकला small aggregate है। Numbers से अधिक <strong>method को साथ ले जाना</strong> सुरक्षित है।</p>
+      <p>यह result एक short factual task set, एक pricing snapshot, और specific model combination व rubric से निकला small aggregate है। इसलिए numbers से अधिक <strong>method को साथ ले जाना</strong> सुरक्षित है।</p>
       <ul>
-        <li><strong>Sample.</strong> N=20 · R=3. इस sample size पर confidence intervals या statistical significance claim नहीं करते &mdash; <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> की accuracy difference (60 में 1 case) को noise पढ़ना चाहिए। Directional conclusion (&ldquo;effort फ़ायदा नहीं देता&rdquo;) robust है, पर absolute size पर small-sample caution।</li>
-        <li><strong>Scoring.</strong> LLM-as-judge (gpt-4o). Deterministic answer key नहीं, इसलिए quality पूरी तरह judge पर निर्भर है। Judge prompt SHA-256 scoring JSON में recorded है ताकि drift monitor हो, पर judge bias की संभावना रहती है।</li>
-        <li><strong>Pricing.</strong> Single snapshot. Rates या usage schema बदलें तो same raw material से cost फिर calculate करनी होगी।</li>
+        <li><strong>Sample.</strong> N=20 · R=3. इस sample size पर confidence intervals या statistical significance claim नहीं करते। <code>none</code>&middot;<code>low</code>&middot;<code>medium</code> की accuracy difference (60 में 1 case) को noise पढ़ना चाहिए। Directional conclusion (&ldquo;effort फ़ायदा नहीं देता&rdquo;) robust है, पर absolute size पर small-sample caution।</li>
+        <li><strong>Scoring.</strong> जज मॉडल (judge model) gpt-4o था। Fixed answer key नहीं, इसलिए quality पूरी तरह judge पर निर्भर है। Judge prompt SHA-256 scoring JSON में recorded है, ताकि बाद में बदला या नहीं, इसकी जाँच हो सके। फिर भी judge bias की संभावना रहती है।</li>
+        <li><strong>Pricing.</strong> Single snapshot. Rates या बिलिंग तरीका बदलें तो same raw material से cost फिर calculate करनी होगी।</li>
         <li><strong>PTU.</strong> Throughput token-based estimate है, live PTU load test नहीं। इस floor में दोनों models का throughput लगभग 1% के भीतर overlap करता है, इसलिए PTU conclusion को विशेष सावधानी से पढ़ें।</li>
       </ul>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>तो default क्या रखें</h2>
-      <p><strong>Short factual task का default gpt-5.2 <code>effort=none</code> है। बिना reasoning चालू किए यह per request gpt-4o से 12% और per correct answer 16% सस्ता है, और accuracy उल्टे 95% versus 90% अधिक है। <code>none</code> से <code>medium</code> तक व्यवहार में एक plane है, इसलिए low·medium इस्तेमाल करना हानिकारक नहीं, पर extra gain sample noise में है। <code>high</code> और ऊपर reasoning tokens अब भी 0 के पास हैं और cost ही बढ़ती है, इसलिए उन्हें छोड़ते हैं। PTU lens में gpt-4o मामूली आगे है, व्यवहार में tie &mdash; value effort ने नहीं, model swap ने दी।</strong></p>
+      <p><strong>Short factual task का default gpt-5.2 <code>effort=none</code> है। बिना reasoning चालू किए यह per request gpt-4o से 12% और per correct answer 16% सस्ता है, और accuracy उल्टे 95% versus 90% अधिक है। <code>none</code> से <code>medium</code> तक व्यवहार में लगभग सपाट है। इसलिए low·medium इस्तेमाल करना हानिकारक नहीं, पर extra gain sample noise में है। <code>high</code> और ऊपर reasoning tokens अब भी 0 के पास हैं और cost ही बढ़ती है, इसलिए उन्हें छोड़ते हैं। PTU के नज़रिए से gpt-4o मामूली आगे है, व्यवहार में tie। value effort ने नहीं, model swap ने दी।</strong></p>
     </section>
 
     <section id="forward" class="article-section">
       <p class="section-label">आगे जोड़ना</p>
       <h2>ताकि अगला व्यक्ति कम भटके</h2>
-      <p>Evidence दर्ज करना numbers जमा करने पर खत्म नहीं होता। कौन सा question पूछा, कौन सा prompt और rubric इस्तेमाल किया, कौन सा pricing snapshot और sample आधार बना &mdash; यह सब बचना चाहिए, तभी अगला decision इसे फिर इस्तेमाल कर सकेगा। इसलिए यह note retrospective और timeline से वापस जुड़ता है।</p>
+      <p>Evidence दर्ज करना numbers जमा करने पर खत्म नहीं होता। कौन सा question पूछा गया? कौन सा prompt और rubric इस्तेमाल हुआ? कौन सा pricing snapshot और sample आधार बना? यह सब बचना चाहिए। तभी अगला decision इसे फिर इस्तेमाल कर सकेगा। इसलिए यह note retrospective और timeline से वापस जुड़ता है।</p>
       <ul>
         <li><strong>Retrospective body →</strong> <a href="../../../hi/#questions">प्रश्न-वार retrospective Q1 &mdash; क्या short-factual task को reasoning चाहिए?</a> का core evidence यही experiment है।</li>
         <li><strong>Timeline →</strong> <a href="../../../hi/#timeline">&ldquo;short-factual case measurement &mdash; floor को छूना&rdquo;</a> item इस experiment का anchor moment है।</li>
         <li><strong>Paired experiment →</strong> <a href="../../exp002-multi-step-reasoning/hi/">exp002 &mdash; multi-step reasoning</a> वह ceiling case है जहाँ &ldquo;reasoning को जीतना था&rdquo; फिर भी <code>none</code> floor निकला। इस floor के साथ पढ़ने पर दिखता है कि दोनों single-shot tasks में effort dial क्यों खाली है।</li>
         <li><strong>Experiment card →</strong> inputs/variables/outputs की mechanical spec repo <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> के <code>exp001</code> card में है।</li>
       </ul>
-      <p><strong>Next experiment.</strong> यह floor deterministic answer key के बिना judge पर निर्भर है। अगला कदम <strong>rule-based verifier</strong> जोड़कर judge bias को cross-check करना, और <strong>real PTU load test</strong> से यह देखना है कि यहाँ का ~1% throughput gap live में भी overlap करता है या नहीं।</p>
+      <p><strong>Next experiment.</strong> यह floor fixed answer key के बिना judge पर निर्भर है। अगला कदम <strong>नियम से अपने-आप अंक देने वाला जाँचकर्ता</strong> जोड़कर judge bias को cross-check करना है। साथ में <strong>real PTU load test</strong> से यह देखना है कि यहाँ का ~1% throughput gap live में भी overlap करता है या नहीं।</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">इसे खुद reproduce करें और ⭐ छोड़ें</a></p>
     </section>
 
     <section id="sources" class="article-section">
       <p class="section-label">स्रोत · evidence boundary</p>
       <h2>स्रोत &amp; evidence boundary</h2>
-      <p>इस note के numbers synthetic नहीं, real measurement से आए हैं। वे कहाँ से आए और सीमा कहाँ तक है, नीचे जस का तस रखते हैं।</p>
+      <p>इस note के numbers synthetic नहीं, real measurement से आए हैं। वे कहाँ से आए और सीमा कहाँ तक है, नीचे जस का तस रखा है।</p>
       <ul>
-        <li>इस experiment का analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite &mdash; real cohort <code>exp001_short-factual_baseline</code>.</li>
+        <li>इस experiment का analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a> (§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion). सभी figures यहीं से re-cite &mdash; मापा गया डेटा <code>exp001_short-factual_baseline</code>.</li>
         <li>Cross-summary: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
         <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> (variables·sample·cache·scoring·cost·reproduction·statistical reporting protocol).</li>
         <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19).</li>
-        <li>Boundary: N=20 · confidence intervals नहीं · single pricing snapshot · judge gpt-4o · deterministic answer key नहीं (quality केवल judge score) · PTU token-based estimate है (live load नहीं).</li>
+        <li>Boundary: N=20 · confidence intervals नहीं · single pricing snapshot · judge gpt-4o · fixed answer key नहीं (quality केवल judge score) · PTU token-based estimate है (live load नहीं).</li>
       </ul>
     </section>
   </main>
