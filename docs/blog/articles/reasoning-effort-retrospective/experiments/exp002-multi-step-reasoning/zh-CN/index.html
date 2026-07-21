@@ -47,9 +47,9 @@
     <h1>exp002 &mdash; 多步推理中推理强度是否值得</h1>
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">这个实验本该轮到推理获胜。二十个至少要经过两步才能得到答案的问题 &mdash; 看起来每把推理强度(<code>reasoning_effort</code>)——也就是决定模型在回答前先在内部多琢磨多少的旋钮——提高一档，答案就会更安全。</p>
-    <p class="lede">我们也这样<strong>预先登记</strong>了。gpt-4o 会错掉一半多(30&ndash;60% 通过)，gpt-5.2 必须提高强度才会超过 80%。测量把两个预测都打偏了。gpt-5.2 在<strong>最低强度已经满分</strong>，gpt-4o 也远比预期更好。</p>
-    <p class="lede">本文按<em>设计 → 输入 → 产物 → 预测对实测 → 异常值 → 决定</em>回看那一天。不只是数字，也包括数字产生的路径和读法 &mdash; 希望后来的人少在同一路上绕弯。</p>
+    <p class="lede">这个实验本该轮到推理获胜。二十个问题都至少要走两步才有答案 &mdash; 这种场景里，推理强度(<code>reasoning_effort</code>)像一个旋钮。它决定模型回答前在心里多想多久。看起来每提高一档，答案就该更稳。</p>
+    <p class="lede">我们也这样<strong>预先登记</strong>了。gpt-4o 会错掉一半多(30&ndash;60% 通过)。gpt-5.2 要提高强度才会超过 80%。实测把两个预测都推翻了。gpt-5.2 在<strong>最低强度已经满分</strong>，gpt-4o 也远比预期更好。</p>
+    <p class="lede">本文按<em>设计 → 输入 → 产物 → 预测对实测 → 异常值 → 决定</em>回看那一天。这里不只放数字。也说明数字从哪里来、该怎么读。希望后来的人少在同一路上绕弯。</p>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">先来，10 秒</p>
@@ -77,25 +77,25 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>本该轮到推理获胜</h2>
-      <p><strong>要验证的问题收敛为一个。</strong> 在至少要走两步才能得出答案的多步推理 &mdash; 三个基准里推理最可能值回票价的<em>天花板</em>案例 &mdash; 中，给 gpt-5.2 更多<em>思考余地(推理强度)</em>，答案会更好、并且值回账单吗？所以要确认的也只有两件事 &mdash; 强度提高时，<strong>(1) 质量会不会上升，(2) 成本会不会上升。</strong> 钱从两个角度读：按量付费的 <strong>PAYG</strong> 看&lsquo;每个正确答案多少钱&rsquo;，整租容量的 <strong>PTU</strong> 看&lsquo;同样容量下每分钟答对几个&rsquo;。</p>
-      <p><strong>用什么来测 &mdash; 数据集。</strong> 冻结的合成样本 20 个(<code>mr_01</code>&hellip;<code>mr_20</code>)。均匀覆盖算术应用题、约束满足(同时遵守多个条件)、日期/时间、因果链、代码追踪(读出程序的执行顺序)、布尔逻辑、计数七类。关键在于<strong>一眼看不出答案</strong>：你得握着一个中间结果再走一步 &mdash; 比如把先算出的值再代回条件 &mdash; 才能到达答案。所以是&lsquo;至少两步&rsquo;。所有样本都有可由机器验证的答案。</p>
-      <p><strong>变化的轴只有一个</strong> &mdash; 扫过 gpt-5.2 的 <code>reasoning.effort</code>：<code>none · low · medium · high · xhigh</code>。旁边放置没有推理参数的 gpt-4o 基线。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。</p>
+      <p><strong>要验证的问题收敛为一个。</strong> 这是至少要走两步才有答案的问题。在三个基准里，这里最像推理能值回票价的<em>天花板</em>案例。给 gpt-5.2 更多<em>思考余地(推理强度)</em>，答案会不会更好？账单值不值？要确认的只有两件事。强度提高时，<strong>(1) 质量会不会上升，(2) 成本会不会上升。</strong> 钱从两个角度读。按量付费的 <strong>PAYG</strong> 看&lsquo;每个正确答案多少钱&rsquo;。整租容量的 <strong>PTU</strong> 看&lsquo;同样容量下每分钟答对几个&rsquo;。</p>
+      <p><strong>用什么来测 &mdash; 数据集。</strong> 冻结的合成样本 20 个(<code>mr_01</code>&hellip;<code>mr_20</code>)。它们均匀覆盖七类问题：算术应用题、约束满足(同时遵守多个条件)、日期/时间、因果链、代码追踪(读出程序的执行顺序)、布尔逻辑、计数。关键是<strong>一眼看不出答案</strong>。你要先拿到一个中间结果，再走一步。比如把先算出的值再代回条件。这样才到达答案。所以是&lsquo;至少两步&rsquo;。所有样本都有可由机器验证的答案。</p>
+      <p><strong>只改一件事。</strong> 我们把 gpt-5.2 的 <code>reasoning.effort</code> 依次设成 <code>none · low · medium · high · xhigh</code>。旁边放一个 gpt-4o 做基线。它没有推理强度设置。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。</p>
       <div class="article-summary-grid" aria-label="预先登记预测与作用">
-        <section class="summary-tile"><h2>预先登记预测</h2><p>多步形态会推翻短事实基准的结论。gpt-4o 只会通过 <strong>30&ndash;60%</strong>，gpt-5.2 会在<em>足够强度</em>下通过 <strong>80% 以上</strong>，从而让推理值得。</p></section>
-        <section class="summary-tile"><h2>本实验的作用</h2><p>与短事实基准的<em>底部</em>(不需要推理的位置)配对，固定&ldquo;推理值回账单&rdquo;的成本曲面<strong>天花板</strong>锚点。</p></section>
+        <section class="summary-tile"><h2>预先登记预测</h2><p>多步问题会推翻短事实基准的结论。gpt-4o 只会通过 <strong>30&ndash;60%</strong>。gpt-5.2 会在<em>足够强度</em>下通过 <strong>80% 以上</strong>。所以推理会值得。</p></section>
+        <section class="summary-tile"><h2>本实验的作用</h2><p>它和短事实基准的<em>底部</em>(不需要推理的位置)配成一组。它用来固定成本曲面的<strong>天花板</strong>，也就是&ldquo;推理值回账单&rdquo;的位置。</p></section>
       </div>
     </section>
 
     <section id="io" class="article-section">
       <p class="section-label">输入与产物</p>
       <h2>吃进什么，留下什么</h2>
-      <p>这个实验吃进和留下的都不是手写摘要，而是仓库里的真实文件。所以从输入到输出，可以顺着一条线索回溯。</p>
+      <p>这个实验吃进什么、留下什么，都不是手写摘要。它们是仓库里的真实文件。所以你可以从输入一路查到输出。</p>
       <div class="article-summary-grid" aria-label="输入与产物">
         <section class="summary-tile">
           <h2>输入 (in)</h2>
           <p><strong>实验定义：</strong> <code>experiments/exp002_benchmark02_gpt5_2.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
           <strong>数据集：</strong> <code>benchmarks/02-multi-step-reasoning/dataset.json</code> (以 SHA-256 固定)。<br>
-          <strong>提示：</strong> 系统/用户模板分别以 SHA-256 指纹化 &mdash; 保证所有单元使用字节完全相同的提示。</p>
+          <strong>提示：</strong> 系统/用户模板各自记录 SHA-256 指纹 &mdash; 保证所有单元使用字节完全相同的提示。</p>
         </section>
         <section class="summary-tile">
           <h2>产物 (out)</h2>
@@ -105,23 +105,23 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
           <strong>图表/表：</strong> <code>results/cost-curves/benchmark-02-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>测量表面为 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>0 个</strong>。评分由中立裁判 gpt-4o 对每个单元一次完成，<strong>360/360 成功(失败 0，重试 0)</strong>。评分对失败给 0 分、部分通过给 1 分、完全通过给 2 分 &mdash; 所以平均 <strong>2.00 表示 60 个全部通过</strong>，而 gpt-4o 的 <strong>1.50 是 45 个通过与 15 个失败</strong>混合后的平均。所有 JSON 都是真实 Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记(360 行中 159 行 <code>reasoning_tokens &gt; 0</code>)。</p>
+      <p><strong>测量表面为 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>0 个</strong>。评分由中立裁判 gpt-4o 完成，每个单元评一次，<strong>360/360 成功(失败 0，重试 0)</strong>。评分规则很直接。失败给 0 分，部分通过给 1 分，完全通过给 2 分。所以平均 <strong>2.00 表示 60 个全部通过</strong>。gpt-4o 的 <strong>1.50 是 45 个通过与 15 个失败</strong>混合后的平均。所有 JSON 都是真实 Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记(360 行中 159 行 <code>reasoning_tokens &gt; 0</code>)。</p>
     </section>
 
     <section id="predict" class="article-section">
       <p class="section-label">预测对实测</p>
       <h2>预测错了两次</h2>
       <div class="article-summary-grid" aria-label="预测对实测">
-        <section class="summary-tile"><h2>预测了什么</h2><p>gpt-4o 会在 30&ndash;60% 崩掉。gpt-5.2 必须<em>提高</em>强度才会超过 80%。概括就是&ldquo;高强度买来质量，并证明成本合理&rdquo;。</p></section>
-        <section class="summary-tile"><h2>结果是什么</h2><p>gpt-4o 以 <strong>75%</strong>(45/60)比预期更强。gpt-5.2 在<strong>最低的 <code>none</code> 已经 100%</strong>(60/60)。按平均评价分数看，是 gpt-4o <strong>1.50</strong> 对 gpt-5.2 <strong>2.00</strong>。</p></section>
+        <section class="summary-tile"><h2>预测了什么</h2><p>gpt-4o 会在 30&ndash;60% 崩掉。gpt-5.2 必须<em>提高</em>强度才会超过 80%。简单说，就是&ldquo;高强度能买到质量，所以成本合理&rdquo;。</p></section>
+        <section class="summary-tile"><h2>结果是什么</h2><p>gpt-4o 比预期更强，达到 <strong>75%</strong>(45/60)。gpt-5.2 在<strong>最低的 <code>none</code> 已经 100%</strong>(60/60)。按平均评价分数看，是 gpt-4o <strong>1.50</strong> 对 gpt-5.2 <strong>2.00</strong>。</p></section>
       </div>
-      <p><strong>判定：预先登记被反驳。</strong> &ldquo;多步任务必须提高强度才值得&rdquo;这条预测在两个方向上都落空了 &mdash; gpt-4o 比预期解得更好，gpt-5.2 在<em>还没提高强度之前</em>就已经满分。所以真正的胜负点不是<em>强度旋钮</em>，而是<strong>把 gpt-4o 换成 gpt-5.2</strong> 本身。因为 gpt-5.2 的<em>默认</em>设置(<code>none</code>，即关闭推理)已经足够。</p>
+      <p><strong>判定：预测落空了。</strong> 我们原以为&ldquo;多步任务必须提高强度才值得&rdquo;。这条预测错了两处。gpt-4o 比预期解得更好。gpt-5.2 在<em>还没提高强度之前</em>就已经满分。所以真正的分岔点不是<em>强度旋钮</em>，而是<strong>把 gpt-4o 换成 gpt-5.2</strong>。gpt-5.2 的<em>默认</em>设置(<code>none</code>，即关闭推理)已经足够。</p>
     </section>
 
     <section id="reversal" class="article-section">
       <p class="section-label">第一次逆转</p>
       <h2>换了模型，质量上升，成本下降</h2>
-      <p>下表中的美元数，是把方法论的 PAYG 公式应用于价格快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(访问日 2026-05-19)后得到，并从 <code>analysis.md</code> §5 重新引用。</p>
+      <p>下表中的美元数来自同一套算法。我们把方法论里的 PAYG 公式，套到价格快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(访问日 2026-05-19)上。数值从 <code>analysis.md</code> §5 重新引用。</p>
       <pre class="code-block"><code>模型      努力     每1,000次请求    通过率          每1,000个正确答案
 gpt-4o    —        $0.80         75.0% (45/60)   $1.06   ← 基线
 gpt-5.2   none     $0.62         100%  (60/60)   $0.62   ← 帕累托最优
@@ -129,8 +129,8 @@ gpt-5.2   low      $0.86         96.7% (58/60)   $0.89
 gpt-5.2   medium   $1.08         100%  (60/60)   $1.08
 gpt-5.2   high     $1.25         100%  (60/60)   $1.25
 gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
-      <p>这张表就是连载正文使用的同一刻度(每 1,000 次)。<strong>模型变了，质量提高了，成本反而下降了</strong> &mdash; 每 1,000 个正确答案下，<code>none</code> 为 $0.62，比 gpt-4o($1.06)<strong>便宜 42%</strong>。</p>
-      <p><code>low</code> 每请求单价高 7.6%，但较高通过率(96.7% 对 75%)抵回了这部分溢价；按每 1,000 个正确答案看，仍比 gpt-4o <strong>便宜 16%</strong>。第一层优化不是提高强度，而是<em>把模型与强度看成一个组合，找出通过质量门槛后最便宜的点</em>。</p>
+      <p>这张表和连载正文用的是同一刻度(每 1,000 次)。<strong>模型变了，质量提高了，成本反而下降了。</strong> 按每 1,000 个正确答案看，<code>none</code> 为 $0.62，比 gpt-4o($1.06)<strong>便宜 42%</strong>。</p>
+      <p><code>low</code> 每请求单价高 7.6%。但通过率也更高(96.7% 对 75%)，足以抵掉这部分加价。按每 1,000 个正确答案看，它仍比 gpt-4o <strong>便宜 16%</strong>。所以第一步优化不是提高强度。而是<em>把模型与强度看成一个组合，找出通过质量门槛后最便宜的点</em>。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
         <figcaption><strong>平均评价分数与标准差。</strong> 纵轴是平均评价分数(0–2)，误差棒是标准差。gpt-5.2 在 <code>none</code>、<code>medium</code>、<code>high</code>、<code>xhigh</code> 为 2.00，<code>low</code> 因两次失败为 1.93±0.36。gpt-4o 基线为 1.50±0.87。<code>low</code> 通过率为 96.7%(58/60)。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>。</figcaption>
@@ -141,71 +141,71 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
     <section class="article-section">
       <p class="section-label">第二次逆转</p>
       <h2>更高强度用更高价格买到相同质量</h2>
-      <p>这里浮现出第二个事实。gpt-5.2 的 <code>none</code> 和 <code>xhigh</code> <strong>质量完全相同 &mdash; 都是满分(平均 2.00，通过率 100%)</strong>。但每 1,000 个正确答案成本以 <code>none</code>($0.62)为底，升到 <code>medium</code> <strong>1.75倍</strong>、<code>high</code> <strong>2.02倍</strong>、<code>xhigh</code> <strong>3.53倍</strong>($2.18) &mdash; <strong>等于把同一个答案越买越贵</strong>。</p>
-      <p><strong>延迟也是同一个故事。</strong> <code>none</code> 每次调用约 1.6 秒(1,589ms)，<code>xhigh</code> 约 3.3 秒(3,265ms)。相对 gpt-4o(1,382ms)，<code>none</code> 的延迟税只有约 <strong>15%</strong>，但 <code>xhigh</code> 是 2.4倍。在这个区间，高强度买到的不是更好的答案，而是<em>同一个答案，价格更高、速度更慢</em>。</p>
-      <p><strong>拆开 token 后原因更清楚。</strong> 就像同一道菜端上桌，厨房里备料越久成本越高，屏幕上看到的答案即使相同，只要模型在内部算得更多，账单也会变大。可见答案从 <code>none</code> 约 5.8 token 到 <code>xhigh</code> 约 7.7 token &mdash; 只多了两三个 token。但隐藏推理 token 从 0 膨胀到约 <strong>109.5</strong>，在 <code>xhigh</code> 时仅推理就占请求大小约 26%。质量不变，只有被计费的 token 膨胀。</p>
-      <p>这个结果并不意味着推理 token 没用。<strong>只有在还有步骤要走时——比如做复杂规划或在工具间做选择——推理才值得。</strong> 只是这个任务区间在<em>最低组合就已经触到量规顶端</em> &mdash; 没有可再涨的分数了。当头已经顶到天花板，再提高强度所多烧的推理 token 就成了<em>过度支出</em>，而非<em>投资</em>。一句话，强度旋钮是&lsquo;只在质量还有上升空间时&rsquo;才拧的开关。</p>
-      <p><strong>PTU 视角下结论也相同。</strong> gpt-5.2 <code>none</code> 是 gpt-4o 的 0.994倍吞吐 × 100% 通过，所以固定 PTU 支出下每分钟正确答案为 <strong>+32.5%</strong>(gpt-4o 为 75%)。提高强度只削吞吐，没有质量补偿。</p>
+      <p>这里出现第二个事实。gpt-5.2 的 <code>none</code> 和 <code>xhigh</code> <strong>质量完全相同 &mdash; 都是满分(平均 2.00，通过率 100%)</strong>。但每 1,000 个正确答案成本从 <code>none</code>($0.62)这个底点往上走。到 <code>medium</code> 是 <strong>1.75倍</strong>，到 <code>high</code> 是 <strong>2.02倍</strong>，到 <code>xhigh</code> 是 <strong>3.53倍</strong>($2.18)。<strong>这等于把同一个答案越买越贵</strong>。</p>
+      <p><strong>等待时间也是同一个故事。</strong> <code>none</code> 每次调用约 1.6 秒(1,589ms)，<code>xhigh</code> 约 3.3 秒(3,265ms)。相对 gpt-4o(1,382ms)，<code>none</code> 只慢约 <strong>15%</strong>，但 <code>xhigh</code> 是 2.4倍。在这个区间，高强度没有买到更好的答案。它只买到<em>同一个答案，价格更高、速度更慢</em>。</p>
+      <p><strong>拆开 token 后原因更清楚。</strong> 同一道菜端上桌，如果厨房里备料更久，成本就更高。答案也是这样。屏幕上看到的答案相同，但模型在内部算得更多，账单就会变大。可见答案从 <code>none</code> 约 5.8 token 到 <code>xhigh</code> 约 7.7 token &mdash; 只多了两三个 token。但隐藏推理 token 从 0 膨胀到约 <strong>109.5</strong>。在 <code>xhigh</code> 时，仅推理就占请求大小约 26%。质量不变，只有被计费的 token 膨胀。</p>
+      <p>这个结果并不意味着推理 token 没用。<strong>只有在还有步骤要走时 &mdash; 比如做复杂规划或在工具间做选择 &mdash; 推理才值得。</strong> 只是这个任务集在<em>最低设置就已经拿到评分标准的满分</em>。没有可再涨的分数了。已经顶到天花板时，再提高强度所多烧的推理 token 就成了<em>浪费</em>，而非<em>投资</em>。一句话，强度旋钮是&lsquo;只在质量还有上升空间时&rsquo;才拧的开关。</p>
+      <p><strong>从 PTU 看，结论也相同。</strong> gpt-5.2 <code>none</code> 是 gpt-4o 的 0.994倍吞吐，并且 100% 通过。所以在固定 PTU 支出下，每分钟正确答案多 <strong>+32.5%</strong>(gpt-4o 为 75%)。提高强度只会削低吞吐，质量不会变好。</p>
     </section>
 
     <section id="quality-map" class="article-section">
       <p class="section-label">质量地图</p>
       <h2>gpt-4o 在哪里倒下</h2>
-      <p>gpt-4o 的 75% 这个汇总数字，看不出到底&ldquo;在哪里&rdquo;错。于是我们按任务类型把分数拆开。这才看出失败集中在特定位置 &mdash; 那些需要回头计算或反向追踪的类型。</p>
+      <p>gpt-4o 的 75% 这个总数，看不出它到底&ldquo;在哪里&rdquo;错。于是我们按任务类型把分数拆开。失败集中在一个地方：需要回头计算或反向追踪的类型。</p>
       <ul>
-        <li><strong>错得多的地方：</strong> 算术应用题(平均 1.20)、日期/时间(1.00)、代码追踪(1.33)、约束满足(1.33) &mdash; 需要回头计算或反向追踪的类型。</li>
-        <li><strong>全答对的地方：</strong> 计数、布尔逻辑、因果链(各 2.00) &mdash; 一次前向通过就足够的类型。</li>
-        <li><strong>gpt-5.2 除 <code>low</code> 外在所有强度的所有类型都满分</strong>(2.00)。只有 <code>low</code> 有两个 0 分单元 &mdash; <code>mr_05</code>(约束满足)的安全过滤拒绝，以及 <code>mr_15</code>(代码追踪)的错误答案 &ldquo;cba a&rdquo;(正确为 &ldquo;cbaa&rdquo;)。因此在 <code>low</code> 这两个类型各为 1.78(±0.67)。</li>
+        <li><strong>错得多的地方：</strong> 算术应用题(平均 1.20)、日期/时间(1.00)、代码追踪(1.33)、约束满足(1.33) &mdash; 都是需要回头计算或反向追踪的类型。</li>
+        <li><strong>全答对的地方：</strong> 计数、布尔逻辑、因果链(各 2.00) &mdash; 从前往后读一遍就够的类型。</li>
+        <li><strong>gpt-5.2 除 <code>low</code> 外在所有强度的所有类型都满分</strong>(2.00)。只有 <code>low</code> 有两个 0 分单元 &mdash; <code>mr_05</code>(约束满足)是安全过滤拒绝，<code>mr_15</code>(代码追踪)是错误答案 &ldquo;cba a&rdquo;(正确为 &ldquo;cbaa&rdquo;)。所以在 <code>low</code>，这两个类型各为 1.78(±0.67)。</li>
       </ul>
-      <p>换句话说，这个数据集为 gpt-4o 画出了一张地图：&ldquo;链条短、前向推理就通过；需要回头检查就失败。&rdquo; gpt-5.2 把这张地图整个抹平了。</p>
+      <p>换句话说，这个数据集为 gpt-4o 画出了一张地图。链条短、只往前走就通过。需要回头检查就失败。gpt-5.2 把这张地图整个抹平了 &mdash; 哪里都答对。</p>
     </section>
 
     <section id="transparency" class="article-section">
       <p class="section-label">透明度</p>
       <h2>连数字上的污点也原样留下</h2>
-      <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下 &mdash; 因为藏起来，后来的人会在同一个地方踩空。</p>
+      <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下。因为藏起来，后来的人会在同一个地方踩空。</p>
       <ul>
-        <li><strong>对 gpt-4o 而言比预期容易。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这意味着数据集本来对 gpt-4o 没那么严苛。因此&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。预测错了的部分不按数字抹掉，而是原样留下缩小的节省幅度。结论的<em>方向</em>(gpt-5.2 <code>none</code> 帕累托支配)不变。</li>
-        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器返回了输入&middot;输出 token 0 与结构化拒绝。这个单元没有运营标记(冷启动/重试/截断)，因此<em>不会命中异常值规则</em>；按 append-only 原则，不覆盖，原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复均正常正确 &mdash; 不是系统性触发，这一个单元是 <code>low</code> 行<em>输入 token</em> 方差变大的原因。</li>
-        <li><strong>代码追踪错误 1 个。</strong> <code>mr_15</code> 的 <code>low</code> 第三次重复(<code>r2</code>)把 <code>g("abc")</code> 的输出返回为 &ldquo;cba a&rdquo; &mdash; 正确答案是 &ldquo;cbaa&rdquo;(反转的 &ldquo;cba&rdquo; 加上首字符 &ldquo;a&rdquo;)。裁判评分为 0/失败，这是与安全过滤无关的纯推理错误。这个单元和 <code>mr_05</code> 拒绝，是把 <code>low</code> 通过率变成 96.7%(58/60)的两次失败。</li>
-        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。因为设计了可验证答案，&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。因此二值化选择不会动摇核心结论。</li>
+        <li><strong>gpt-4o 比预期更容易过。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这说明数据集一开始就没有那么为难 gpt-4o。所以&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。我们不把预测错掉的地方擦掉来配合数字。缩小的节省幅度也原样留下。结论的<em>方向</em>(gpt-5.2 <code>none</code> 在成本和质量上都更好)不变。</li>
+        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器挡住了请求。输入&middot;输出 token 都是 0，并返回了固定格式的拒绝。这个单元没有运营标记(冷启动/重试/截断)，所以<em>不是该删掉的异常值</em>。我们没有覆盖它，而是原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复都正常正确。它不是反复出现的问题，只发生了这一次。这个单元让 <code>low</code> 行的<em>输入 token</em> 方差变大。</li>
+        <li><strong>代码追踪错误 1 个。</strong> <code>mr_15</code> 的 <code>low</code> 第三次重复(<code>r2</code>)把 <code>g("abc")</code> 的输出返回为 &ldquo;cba a&rdquo; &mdash; 正确答案是 &ldquo;cbaa&rdquo;(反转的 &ldquo;cba&rdquo; 加上首字符 &ldquo;a&rdquo;)。裁判评分为 0/失败。这是纯推理错误，和安全过滤无关。这个单元和 <code>mr_05</code> 拒绝，是把 <code>low</code> 通过率变成 96.7%(58/60)的两次失败。</li>
+        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。这些答案本来就是可验证的。&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。所以只按通过/失败来看，核心结论也不变。</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">限制</p>
       <h2>可以相信到哪里</h2>
-      <p>这个结果来自一个多步任务集、一个价格快照、特定模型组合与量规下的小规模聚合。比起数字本身，<strong>借鉴方法</strong>更稳妥。</p>
+      <p>这个结果来自一个多步任务集、一个价格快照、特定模型组合和评分设置。样本也不大。所以比起直接拿走数字，<strong>借鉴方法</strong>更稳妥。</p>
       <ul>
-        <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎看待。</li>
-        <li><strong>价格。</strong> 单一快照。如果费率或 usage schema 改变，应从同一原始材料重新计算成本。</li>
-        <li><strong>评分。</strong> LLM-as-judge(gpt-4o)。裁判提示 SHA-256 记录在评分 JSON 中以监控漂移。</li>
-        <li><strong>超出预先登记的影响。</strong> gpt-4o 分母(0.75)比预期(0.30&ndash;0.60)更大，美元节省幅度因此缩小。所以在这个实验中，对 gpt-4o 通过率不敏感的 PTU 吞吐视角更稳健。</li>
+        <li><strong>样本。</strong> N=20 · R=3。这个样本量下，我们不主张置信区间或统计显著性。方向性结论稳健，但绝对幅度要按小样本谨慎看待。</li>
+        <li><strong>价格。</strong> 只用了一张价格快照。如果费率或计费方式改变，应从同一原始材料重新计算成本。</li>
+        <li><strong>评分。</strong> 评分由裁判模型(gpt-4o)完成。裁判提示的 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
+        <li><strong>超出预先登记的影响。</strong> gpt-4o 通过率(0.75)比预期(0.30&ndash;0.60)更高，美元节省幅度因此缩小。所以在这个实验中，PTU 吞吐视角更稳。它较少受 gpt-4o 通过率影响。</li>
       </ul>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>所以默认值是什么</h2>
-      <p><strong>多步推理的默认值是 gpt-5.2 <code>effort=none</code> &mdash; 在 PAYG 和 PTU 两边都是。<code>none</code> 既是底部也是最优，其上任何强度都只增加成本和延迟，没有质量收益。更高强度只是在&ldquo;确实能买到额外质量&rdquo;时才值得提升的实验候选，而不是这种任务形态的默认值。</strong></p>
+      <p><strong>多步推理的默认值是 gpt-5.2 <code>effort=none</code> &mdash; PAYG 和 PTU 都一样。<code>none</code> 既最便宜，也最好。再往上的任何强度都只增加成本和等待时间，质量没有收益。更高强度只有在&ldquo;确实能买到额外质量&rdquo;时才值得试，不是这种任务形态的默认值。</strong></p>
     </section>
 
     <section id="forward" class="article-section">
       <p class="section-label">继续连接</p>
       <h2>让后来的人少绕弯</h2>
-      <p>记录证据并不止于堆数字。提出了什么问题，用了什么提示和量规，以哪个价格快照和样本为基准，这些也必须留下，下一次决定才能再次使用。因此本文会回连到回顾和时间线。</p>
+      <p>记录证据不只是堆数字。我们问了什么问题，用了什么提示和评分标准，基于哪张价格快照和哪些样本，这些也要留下。这样下一次决定才能再次使用。所以本文会回连到回顾和时间线。</p>
       <ul>
         <li><strong>回顾正文 →</strong> <a href="../../../zh-CN/#questions">逐问题回顾 Q2 &mdash; 多步中强度是否值得</a>的核心证据就是这个实验。</li>
         <li><strong>时间线 →</strong> <a href="../../../zh-CN/#timeline">&ldquo;Ceiling 案例测量 &mdash; 转折点&rdquo;</a>条目是这个实验的反驳时刻。</li>
         <li><strong>实验卡片 →</strong> 输入/变量/输出的机械规格在仓库 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a> 的 <code>exp002</code> 卡片中。</li>
       </ul>
-      <p><strong>下一项实验。</strong> &ldquo;强度 &gt; none&rdquo; 这一列在短事实和多步基准中都是空的。第一次填上它的是 <a href="../../exp003-tool-using-agent/zh-CN/">exp003 &mdash; 工具使用智能体(Mixed case)</a>。当质量在低强度已经触到天花板时，更大的杠杆不再是强度，而是<em>工具选择&middot;工具延迟&middot;循环预算</em>；以及为什么底部不是 <code>none</code> 而是 <code>low</code>，都在那篇笔记里看。</p>
+      <p><strong>下一项实验。</strong> 短事实和多步基准都没有给出&ldquo;强度 &gt; none&rdquo;的理由。第一次给出理由的是 <a href="../../exp003-tool-using-agent/zh-CN/">exp003 &mdash; 工具使用智能体(Mixed case)</a>。当质量在低强度已经碰到天花板时，最能左右成本的东西不再是强度，而是<em>工具选择&middot;工具等待时间&middot;重复调用的预算</em>。为什么底部不是 <code>none</code> 而是 <code>low</code>，也在那篇笔记里看。</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
     </section>
 
     <section id="sources" class="article-section">
       <p class="section-label">来源 · 证据边界</p>
       <h2>来源 &amp; 证据边界</h2>
-      <p>本文没有加入新的测量，而是重新引用已发布的聚合，包括预测偏离的位置。证据和边界列在下面。</p>
+      <p>本文没有加入新的测量。它只是重新引用已发布的聚合，也包括预测落空的地方。证据和边界列在下面。</p>
       <ul>
         <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.md"><code>benchmarks/02-multi-step-reasoning/analysis.md</code></a>(§3 provenance, §4 token composition, §5 cost, §6 consumption model, §7 quality, §8 latency, §9 outliers, §10 conclusion)。所有数字均从这里重新引用。</li>
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
