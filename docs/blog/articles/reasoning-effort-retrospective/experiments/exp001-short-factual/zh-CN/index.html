@@ -77,6 +77,9 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>从最简单的任务开始</h2>
+      <p><strong>为什么非要测这个。</strong> 有一个常见想法：&ldquo;让模型多想一点，答案就会更好。&rdquo; 这听起来很合理。所以很多团队拿不准时，就先把推理强度调高 &mdash; 觉得反正不会吃亏。可是强度一高，不管答案有没有变好，钱和时间都会实打实增加。所以&ldquo;不会吃亏&rdquo;可能并不成立。我们想用数据，而不是凭感觉，看看这个想法到底对不对。</p>
+      <p><strong>于是把这个想法变成了&ldquo;假设&rdquo;。</strong> 这句话是：<em>在最简单的任务里，更用力思考不会让答案更好，只会增加成本。</em> 一个有用的假设，必须有一条线说明&ldquo;如果发生这个，我就错了&rdquo;。这里这条线很清楚。<strong>如果强度越高，正确率也明显上升，这个假设当场就破了。</strong> 如果强度提高后正确率仍然持平，假设就站得住。我们设计这个实验，就是想靠实测来判定，而不是靠猜。</p>
+      <p><strong>为什么从最简单的任务开始。</strong> 因为要先钉住一个基准点，后面的结果才可信。要证明难题里&ldquo;推理值得&rdquo;，就得先用实测看清&ldquo;推理不值得的位置&rdquo;到底长什么样。有了这个底部，后面多步(02)和工具(03)笔记里的反转，才看得出是真的反转。所以这篇笔记就是本系列的<strong>出发点和基准点</strong>。</p>
       <p><strong>要验证的问题缩成一个。</strong> 这是一次就能答出的短事实任务。也是三项基准里最容易的情况。给 gpt-5.2 <em>更多思考余地(推理强度)</em>，答案会不会更好？这笔账值不值？要看的只有两点。提高强度后，<strong>(1) 质量会不会上升，(2) 成本会不会上升。</strong> 钱从两个角度读。按量付费的 <strong>PAYG</strong> 看&ldquo;每个正确答案多少钱&rdquo;。整块租用容量的 <strong>PTU</strong> 看&ldquo;同样的容量每分钟能答对几个&rdquo;。预期答案是&ldquo;不&rdquo;。这个实验的作用，就是用实测而不是猜测，把那个&ldquo;不&rdquo;的<em>底部</em>钉住。</p>
       <p><strong>用什么来测 &mdash; 数据集。</strong> 冻结的手写样本 20 个(<code>sf_01</code>&hellip;<code>sf_20</code>)，均匀混合了抽取&middot;格式&middot;分类&middot;列举&middot;音译&middot;规范化&middot;单位换算&middot;简单算术&middot;摘要。这类任务很难把&ldquo;唯一正确答案&rdquo;写进一张表。所以我们不用答案表，只固定 <code>expected_output_shape</code>(答案的形状)和 <code>quality_rubric_notes</code>(评分标准)。然后让<strong>中立评审模型 gpt-4o 读每份答案，并打 0&middot;1&middot;2 分</strong>。每次打分的理由也照原样留在原始材料中。</p>
       <p><strong>只改一件事。</strong> 我们把 gpt-5.2 的推理强度(<code>reasoning.effort</code>)从 <code>none</code>(关)一路提到 <code>low · medium · high · xhigh</code>，共五档。其余条件全部固定。旁边放一个<strong>没有推理旋钮的 gpt-4o 基准点</strong>。为了过滤偶然运气，每个(样本 × 模型 × 强度)单元<strong>各跑三次(R=3)</strong>。</p>
