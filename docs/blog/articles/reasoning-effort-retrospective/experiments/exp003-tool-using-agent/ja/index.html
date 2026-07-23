@@ -85,6 +85,9 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">設計</p>
       <h2>今回はツールが登場する</h2>
+      <p><strong>なぜ今度はツールまで入れたのか。</strong> 最初の二つの実験は、性格がはっきりした仕事だった。とても易しい仕事(01)か、純粋に複数の段階を踏む仕事(02)である。けれど実際のサービスは、たいていもっと雑然としている。検索を一度呼び、その結果を計算に渡し、さらにもう一度判断する。そんなふうに<strong>ツールを選び、つないで使う</strong>混合仕事だ。ここで本当に知りたいのは、モデル自身が&lsquo;どのツールを、どの順番で&rsquo;呼ぶかを決めるとき、推論努力度がその選択を助け、請求に見合うのかである。</p>
+      <p><strong>だから &lsquo;中くらいで足りる&rsquo; を仮説にした。</strong> 文にするとこうだ &mdash; <em>ツールを混ぜて使う仕事では、中くらいの努力度が費用と品質の最もよい接点であり、それ以上に上げても品質は横ばいで、ツールだけを呼びすぎる。</em> この仮説にも、壊れる線がある。<strong>努力度を上げるほど正答率が伸び続け、最も高い努力度が明らかに最善なら、&lsquo;中くらいで十分&rsquo; は間違いだ。</strong> 逆に努力度なしでは複数ツールの問題で崩れ、中くらいでちょうど合うなら、仮説は残る。判定は実測で下す。</p>
+      <p><strong>なぜこのノートが締めくくりなのか。</strong> 床(01)も天井(02)も、結論はどちらも &lsquo;つまみを不用意に上げるな&rsquo; だった。では、推論が<strong>本当に必要になる最小地点</strong>はどこにあるのか。このノートは、最も現実に近い混合仕事の中でその地点を探す。床、天井、混合がそろって初めて、実務で使える &lsquo;いつつまみを上げるか&rsquo; の規則が完成する。だからこのノートがシリーズの<strong>締めくくり</strong>である。</p>
       <p><strong>問いは一つだ。</strong> ツールを使うエージェントタスクで、gpt-5.2 の努力度をどこまで上げれば推論が請求に見合うのか。これは現実に近い<em>混合</em>ケースである。PAYG(正答当たりのドル)と PTU(固定容量当たりの分当たり正答)の二つの見方で同時に見る。</p>
       <p><strong>データセット。</strong> 凍結した著作サンプル 20個(<code>tu_01</code>&hellip;<code>tu_20</code>)。三つの型が混ざっている。<strong>no-tool 6個</strong>(知識/形式のみ)、<strong>one-tool(1ツール) 8個</strong>(計算機一つ、または検索一つ)、<strong>multi-tool 6個</strong>(検索 → 計算機へ 2&ndash;3回つながる鎖)である。すべてのサンプルには、検証できる正答がある。どのツールを呼ぶべきかを示す <code>expected_tool_calls</code> の正答表もある。</p>
       <p><strong>変えるものは一つだけ</strong> &mdash; gpt-5.2 の <code>reasoning.effort</code> を <code>none · low · medium · high · xhigh</code> の五段階で動かす。横には、推論努力度の設定がない gpt-4o を基準線として置く。各 (サンプル × モデル × 努力度) セルは<strong>三回ずつ(R=3)</strong>繰り返す。ツールループは最大 4回反復(<code>max_tool_iterations: 4</code>)で止める。</p>

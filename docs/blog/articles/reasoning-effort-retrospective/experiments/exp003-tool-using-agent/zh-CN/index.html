@@ -85,6 +85,9 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>这次，工具登场</h2>
+      <p><strong>为什么最后要看工具。</strong> 前两个实验处理的是边界很清楚的工作：要么非常容易，要么纯粹多步。但真实服务通常没这么干净。智能体要在混合任务里自己挑工具、接工具，把一次搜索的结果交给计算器，再带着新结果重新判断。真正的问题在这里：当模型必须自己决定“用哪个工具、按什么顺序用”时，推理强度能不能把这个选择做得足够好，好到值得付账？</p>
+      <p><strong>所以这次的假设不是越高越好，而是“中间刚好”。</strong> 句子是：<em>在混合工具任务里，中等强度是成本与质量最合适的点；继续往上推，质量基本持平，只会更频繁地过度调用工具。</em> 它同样有破线：如果准确率一路上涨，最高强度清楚地成为最佳选择，“中间就够”就错了；如果没有推理的设置在多工具问题上塌下来，而中间强度正好接住，假设就成立。答案交给实测。</p>
+      <p><strong>这也是系列的收束。</strong> 底部 01 和天花板 02 都提醒我们：别随手把旋钮调高。那最小的必要点到底在哪里？这篇笔记把问题放进最像现实的混合工作里找答案。只有把底部、天花板和混合场景都凑齐，“什么时候该调高旋钮”的实战规则才算完整。所以这篇就是系列的<strong>终章</strong>。</p>
       <p><strong>问题只有一个。</strong> 在使用工具的智能体任务中，也就是最接近现实的<em>混合</em>案例中，gpt-5.2 的强度要提高到哪里，推理才值回账单？我们同时用两个视角来看。PAYG 看每个正确答案要花多少美元。PTU 看固定容量下每分钟能答对几个。</p>
       <p><strong>数据集。</strong> 冻结的手写样本 20 个(<code>tu_01</code>&hellip;<code>tu_20</code>)。它们混合了三类：<strong>no-tool 6 个</strong>(只需要知识或格式)，<strong>one-tool 8 个</strong>(一个计算器或一次搜索)，<strong>multi-tool 6 个</strong>(从搜索到计算器，连续 2&ndash;3 步)。每个样本都有可验证答案。也有 <code>expected_tool_calls</code> 答案表，写明应该调用哪些工具。</p>
       <p><strong>只改一件事</strong> &mdash; 把 gpt-5.2 的 <code>reasoning.effort</code> 依次设成 <code>none · low · medium · high · xhigh</code>。旁边放一个 gpt-4o 做基线。它没有推理强度设置。每个(样本 × 模型 × 强度)单元<strong>重复三次(R=3)</strong>。工具循环最多重复 4 次(<code>max_tool_iterations: 4</code>)，到上限就停。</p>
