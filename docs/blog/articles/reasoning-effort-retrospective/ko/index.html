@@ -83,7 +83,7 @@ python experiments/examples/describe_all.py</code></pre>
     <figure class="article-figure" id="figure-effort-quality">
       <figcaption>
         <strong>가설이 무너지는 지점.</strong> 다단계 벤치마크(02)의 강도별 통과율입니다.
-        gpt-5.2는 가장 낮은 강도에서 이미 100%로 포화하고, 강도를 올려도 곡선이
+        gpt-5.2는 가장 낮은 강도에서 이미 100%에 닿고, 강도를 올려도 곡선이
         평평합니다 &mdash; 추가 강도는 품질이 아니라 추론 토큰만 소비했습니다.
         수치 출처는 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> §3 &middot; §7이며, 벤치마크별
         <code>analysis.md</code>를 재인용합니다.
@@ -110,7 +110,7 @@ python experiments/examples/describe_all.py</code></pre>
       <p>실험은 한 번에 결론이 나지 않았습니다. 아래 다섯 장면을 날짜순으로 따라가면, 예측이 어디서 빗나갔고 기본값이 어디서 바뀌었는지가 차례로 드러납니다.</p>
       <ol>
         <li><strong>2026년 5월 이전 &mdash; 사전 등록.</strong> 측정을 시작하기 전에 예측을 먼저 적어 두었다. 다단계 작업이라면 높은 추론 강도가 품질을 끌어올려 비용을 정당화할 것이라고. 나중에 결과에 맞춰 이야기를 바꾸지 못하도록, gpt-5.2의 강도를 <code>none</code>부터 <code>xhigh</code>까지 다섯 단계로 고정하고 gpt-4o 기준선을 나란히 두었다. 이 사전 등록이 있었기에 뒤에 이어질 &lsquo;뒤집힘&rsquo;이 의미를 가진다.</li>
-        <li><strong>2026년 5월 &mdash; 단답 케이스(01), 바닥을 찍다.</strong> 먼저 추론이 필요 없는 단답 작업으로 비용 곡면의 바닥을 확인했다 &mdash; 세 벤치마크 중 이 바닥만 <em>실측</em>으로 다시 쟀다(360셀 전부 실제 Azure 호출, 픽스처 마커 없음). gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률이 이미 95%로 포화했는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 비용은 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 <strong>16%</strong> 쌌다(요청 1,000건당으로도 12% 저렴). 그래서 단답 PAYG 기본값은 gpt-5.2 <code>none</code>으로 정했다 &mdash; 다만 고정 용량(PTU) 관점에서는 두 모델 처리량이 약 1% 안에서 겹쳐 사실상 무승부였다. 이 실험은 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에서 하나하나 뜯어본다.</li>
+        <li><strong>2026년 5월 &mdash; 단답 케이스(01), 바닥을 찍다.</strong> 먼저 추론이 필요 없는 단답 작업으로 비용 곡면의 바닥을 확인했다 &mdash; 세 벤치마크 중 이 바닥만 <em>실측</em>으로 다시 쟀다(360셀 전부 실제 Azure 호출, 픽스처 마커 없음). gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률이 이미 95%에 닿아 더 오르지 않는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 비용은 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 <strong>16%</strong> 쌌다(요청 1,000건당으로도 12% 저렴). 그래서 단답 PAYG 기본값은 gpt-5.2 <code>none</code>으로 정했다 &mdash; 다만 고정 용량(PTU) 관점에서는 두 모델 처리량이 약 1% 안에서 겹쳐 사실상 무승부였다. 이 실험은 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에서 하나하나 뜯어본다.</li>
         <li><strong>2026년 5월 &mdash; 다단계 케이스(02), 전환점.</strong> 이제 추론이 이길 차례였다. 그런데 뚜껑을 열자 gpt-5.2는 <em>아무 추론도 켜지 않은</em> 기본 상태(<code>none</code>)에서 스무 문제를 모두 맞혔다. 사전 가설이 그 자리에서 무너졌다. 정답 1,000건당 비용은 gpt-4o의 <strong>$1.06</strong>에서 <strong>$0.62</strong>로 42% 내려갔고 PTU로는 분당 정답이 32.5% 늘었는데, 강도를 더 올려도 품질은 꼼짝하지 않았다. 그래서 다단계 기본값을 gpt-5.2 <code>none</code>으로 정하고 강도 상향은 폐기했다. 승부를 가른 것은 &lsquo;강도 다이얼&rsquo;이 아니라 &lsquo;모델 교체&rsquo;였다. 이 실험은 <a href="../experiments/exp002-multi-step-reasoning/ko/">exp002 실험 노트</a>에서 하나하나 뜯어본다.</li>
         <li><strong>2026년 5월 &mdash; 툴 에이전트 케이스(03), 뜻밖의 발견.</strong> 마지막은 도구를 쓰는 에이전트였다(무툴·1툴·멀티툴 혼합). 여기서 놀란 쪽은 gpt-4o였다. &lsquo;일반 지식으로 답하라&rsquo;는 프롬프트에도 계산기를 습관처럼 불러 무툴 통과율이 <strong>83.3%</strong>까지 떨어진 것이다. 반면 gpt-5.2는 <code>low</code>만으로 멀티툴 100%를 지키며 정답 1,000건당 <strong>$2.77</strong>(gpt-4o $3.65 대비 24% 저렴)에 도달했다. 그래서 툴 기본값은 gpt-5.2 <code>low</code>. 다만 <code>low</code>를 넘기면 처리량이 medium에서 8.5%, xhigh에서 10.8%씩 깎여 이득을 되돌렸다. 이 실험은 <a href="../experiments/exp003-tool-using-agent/ko/">exp003 실험 노트</a>에서 하나하나 뜯어본다.</li>
         <li><strong>2026년 7월 &mdash; 근거와 재현 사이의 틈을 메우다.</strong> 측정이 끝난 뒤 남은 숙제는 성격이 달랐다. &lsquo;배포에는 관심이 큰데 README와 검증 계층이 그 관심을 다 받아내지 못한다&rsquo;는 피드백이 왔다. 실제로 새 방문자는 편집 가능 설치 실패(PEP 660)나 깨진 실행 커맨드에서 멈췄다. 그래서 자격증명 없이 한 줄로 끝나는 검증(<code>verify_setup.sh</code>), 실험별 가이드 카드, <code>requirements.txt</code> 분리를 더해 &lsquo;근거&rsquo;와 &lsquo;재현&rsquo; 사이의 틈을 메웠다. 이 글 맨 위의 10초 재현이 그 결과다.</li>
@@ -124,7 +124,7 @@ python experiments/examples/describe_all.py</code></pre>
 
       <h3>Q1 &mdash; 단답 작업에 추론이 필요한가?</h3>
       <p>가장 단순한 질문부터. 한 번에 답이 나오는 짧은 사실 작업(추출&middot;형식&middot;분류&middot;음역&middot;산술)이라면 추론 강도는 <em>켤 이유가 없어</em> 보였다. 이 바닥을 세 벤치마크 중 유일하게 <strong>실측</strong>으로 다시 쟀다 &mdash; 360셀 전부 실제 Azure Foundry 호출, 픽스처 마커 없음, 심판 채점 360/360.</p>
-      <p>예측이 반전 없이 그대로 맞았다. gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률 95%로 이미 포화했는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 16% 쌌다(요청당으로도 12% 저렴). 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 0 근처에 머물러 품질도 비용도 거의 움직이지 않았다 &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리다. 그래서 단답 기본값은 gpt-5.2 <code>none</code>. 자세한 해부는 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에 있다.</p>
+      <p>예측이 반전 없이 그대로 맞았다. gpt-5.2는 추론을 하나도 켜지 않은 <code>none</code>에서 정답률 95%에 닿아 더 오르지 않는데, 이는 gpt-4o(90%)보다 오히려 높다. 정답 1,000건당 <strong>$0.62</strong>로 gpt-4o(<strong>$0.74</strong>)보다 16% 쌌다(요청당으로도 12% 저렴). 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 0 근처에 머물러 품질도 비용도 거의 움직이지 않았다 &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리다. 그래서 단답 기본값은 gpt-5.2 <code>none</code>. 자세한 해부는 <a href="../experiments/exp001-short-factual/ko/">exp001 실험 노트</a>에 있다.</p>
 
       <h3>Q2 &mdash; 다단계에서는 강도를 올리면 값을 하는가?</h3>
       <p>가설은 단순했다. 여러 단계를 거쳐야 하는 문제라면 <code>high</code>나 <code>xhigh</code>의 품질 상승이 비용 상승을 정당화하리라는 것. 이를 확인하려고 gpt-5.2의 다섯 강도(<code>none</code>부터 <code>xhigh</code>까지)를 gpt-4o 기준선과 나란히, 스무 문제를 세 번씩 반복해 비교했다.</p>

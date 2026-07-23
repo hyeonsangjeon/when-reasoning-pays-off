@@ -119,7 +119,7 @@ python experiments/examples/describe_all.py</code></pre>
       <p>同じ結果を、今度は問いから出発してみます。&lsquo;何が気になっていたのか&rsquo;を先に置き、三つの問いに一つずつ答えます。</p>
 
       <h3>Q1 &mdash; 短い事実回答に推論は必要か?</h3>
-      <p>最も単純な問いから。一度で答えが出る短い事実タスク(抽出&middot;整形&middot;分類&middot;音訳&middot;算術)なら、推論努力度は<em>有効にする理由がない</em>ように見えた。この床を三つのベンチマークのうち唯一<strong>実測</strong>で測り直した &mdash; 360セルすべて実 Azure Foundry 呼び出し、フィクスチャマーカーなし、ジャッジ採点 360/360。</p>
+      <p>最も単純な問いから。一度で答えが出る短い事実タスク(抽出&middot;整形&middot;分類&middot;音訳&middot;算術)なら、推論努力度は<em>有効にする理由がない</em>ように見えた。この床を三つのベンチマークのうち唯一<strong>実測</strong>で測り直した &mdash; 360セルすべて実 Azure Foundry 呼び出し、フィクスチャマーカーなし、審判採点 360/360。</p>
       <p>予測は反転せず、そのまま当たった。gpt-5.2 は推論を一切有効にしない <code>none</code> で正答率 95% にすでに飽和し、むしろ gpt-4o(90%) より高かった。正答 1,000件当たり <strong>$0.62</strong> で gpt-4o(<strong>$0.74</strong>) より 16% 安かった(リクエスト当たりでも 12% 安い)。努力度を <code>xhigh</code> まで上げても隠れた推論トークンは 0 近くにとどまり、品質もコストもほとんど動かなかった &mdash; 努力度ダイヤルがどこにも配線されていない場所である。だから短い事実回答のデフォルトは gpt-5.2 <code>none</code>。詳細な解剖は <a href="../experiments/exp001-short-factual/ja/">exp001 実験ノート</a>にある。</p>
 
       <h3>Q2 &mdash; 多段階では努力度を上げると割に合うのか?</h3>
@@ -169,7 +169,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 ヘッドライン, §5 判断境界, §6 限界)。すべてのコストはベンチマークごとの <code>benchmarks/0[123]-*/analysis.md</code> から再引用。</li>
         <li>価格: 単一スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。料率が変わればスナップショットを更新し、分析を再実行する必要がある。</li>
         <li>標本: ベンチマーク当たり N=20 · R=3。方法論 §8 はこの標本サイズで信頼区間/標準誤差の報告を禁じている &mdash; 方向性の結論は堅いが、絶対値の大きさは小標本として注意。</li>
-        <li>採点: 審判モデルのルーブリックは中立ジャッジとして gpt-4o を使用。ジャッジプロンプト SHA-256 を各採点 JSON に記録し、あとで変わったか分かるようにした。</li>
+        <li>採点: 審判モデルのルーブリックは中立審判として gpt-4o を使用。審判プロンプト SHA-256 を各採点 JSON に記録し、あとで変わったか分かるようにした。</li>
         <li>PTU: スループット数値はトークン数ベースの推定であり、ライブ PTU 負荷テストではない。ツールベンチマークの <code>web_search</code> は固定 KB 検索(モック)。</li>
       </ul>
     </section>
