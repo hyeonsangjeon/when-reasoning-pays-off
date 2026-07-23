@@ -57,6 +57,14 @@
     <p class="lede">이 노트가 앞선 두 편과 다른 점이 하나 있다. <strong>합성 픽스처가 아니라 실측</strong>이다. 360셀 전부를 Azure Foundry v1으로 실제 호출하고, 중립 심판 gpt-4o로 셀당 한 번씩 <strong>360/360</strong> 채점했다. <code>"fixture": true</code> 마커는 어디에도 없다. 그래서 이 바닥은 &lsquo;그럴듯하게 합성된 바닥&rsquo;이 아니라 <em>측정된 바닥</em>이다.</p>
     <p class="lede">측정은 예측을 <strong>그대로 확증했다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
+    <section class="article-section">
+      <p class="section-label">왜 읽어야 하나</p>
+      <h2>이 손잡이, 올려야 이득일까?</h2>
+      <p>새 모델을 붙이면 설정 어딘가에 <strong>추론 강도(reasoning effort)</strong>라는 손잡이가 있다. 모델이 답을 내기 전에 속으로 얼마나 더 곱씹을지 정하는 값이다. 올릴수록 더 똑똑해질 것 같아서, 잘 모를 땐 일단 높여 두기 쉽다. 하지만 손잡이를 올리면 답이 좋아지든 아니든 <strong>돈과 시간은 확실히 더 든다.</strong> 그러니 &lsquo;밑져야 본전&rsquo;이 아닐 수도 있다.</p>
+      <p>그래서 가장 쉬운 자리부터 확인하기로 했다. 한 번에 답이 나오는 <strong>짧은 사실 작업</strong> &mdash; 값 뽑아내기, 형식 맞추기, 분류, 간단한 계산 &mdash; 은 많은 서비스가 가장 자주 처리하는 일이기도 하다. 여기서 손잡이가 헛돈다면, &lsquo;잘 모르니 일단 올려 두자&rsquo;라는 습관은 매달 청구서만 키우는 셈이다.</p>
+      <p>이 글은 그 손잡이가 언제 돈값을 하고 언제 낭비인지를, 가장 쉬운 경우부터 실측으로 가른다. 당신의 작업이 여기에 해당한다면 결론은 곧 <strong>기본값</strong>이 된다. 해당하지 않더라도 걱정 마라 &mdash; 뒤에 올 다단계(02)와 툴 작업(03)의 반전은 바로 이 바닥과 견줘야 의미가 생긴다.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저, 10초</p>
       <h2>결론을 믿지 말고 이 실험만 직접 돌려보세요</h2>

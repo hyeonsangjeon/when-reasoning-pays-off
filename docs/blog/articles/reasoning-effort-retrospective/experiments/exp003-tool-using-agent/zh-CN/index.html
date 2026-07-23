@@ -51,6 +51,14 @@
     <p class="lede">我们在<strong>预先登记</strong>中写下：中等强度(<code>low</code>&ndash;<code>medium</code>)会是成本与质量的最佳平衡点。我们的预测有三点。gpt-4o 能处理 no-tool 和 one-tool，但会在需要连续使用多个工具时倒下。gpt-5.2 <code>none</code> 没有提前计划的空间，所以在 multi-tool 上会像 gpt-4o 一样弱。<code>high</code>&middot;<code>xhigh</code> 的质量已经到顶，可能会连简单样本也过度调用工具。</p>
     <p class="lede">实测<em>一半对了，一半令人意外</em>。<code>low</code> 确实是底部 &mdash; 这一次不是 <code>none</code>。但 gpt-4o 真正倒下的地方不是 multi-tool，而是<strong>在不需要工具的问题上调用计算器</strong>。本文按<em>设计 → 输入 → 产物 → 预测对实测 → 工具过度使用地图 → 决定</em>回看那一天 &mdash; 希望后来的人少在同一路上绕弯。</p>
 
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>工具一进来，情况会变吗？</h2>
+      <p>前两个实验里，答案一直是&ldquo;不要提高强度&rdquo;。容易的任务(01)如此，多步任务(02)也如此。但现实里的智能体大多会<strong>调用工具</strong> &mdash; 搜索、运行计算器、拿到结果后再判断。工具一进来，推理强度是不是终于会值回成本？</p>
+      <p>为了确认，我们选了最接近现实的<strong>混合任务</strong>。不需要工具的问题、一个工具就够的问题、必须连续调用多个工具的问题，全都混在一起。我们在这里判断，放到三项基准一起看，<em>推理是否第一次值得</em> &mdash; 如果值得，又是从哪一档开始。</p>
+      <p>如果你在做<strong>会用工具的智能体</strong> &mdash; 把搜索、计算和 API 调用编成一个答案的那种 &mdash; 这篇最贴近你的场景。它用实测说明旋钮该放在哪里，才能把工具用得刚好又不浪费，也说明<strong>为什么底部不是 none</strong>。</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">先来，10 秒</p>
       <h2>不要相信结论，只把这个实验自己跑一遍</h2>

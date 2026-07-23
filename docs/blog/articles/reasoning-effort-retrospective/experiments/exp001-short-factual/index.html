@@ -54,6 +54,14 @@
     <p class="lede">There is one way this note differs from the previous two. It is <strong>measured, not a synthetic fixture</strong>. We actually called all 360 cells through Azure Foundry v1 and graded <strong>360/360</strong>, once per cell, with the neutral judge gpt-4o. Nowhere is there a <code>"fixture": true</code> marker. So this floor is not a &lsquo;plausibly synthesized floor&rsquo; but a <em>measured floor</em>.</p>
     <p class="lede">The measurement <strong>confirmed the prediction exactly</strong> &mdash; the only place across the three benchmarks where the prediction held without a reversal. Measurement did add two details. First, gpt-5.2 already beat gpt-4o <strong>on quality too</strong> at <code>none</code>, with <em>no reasoning switched on</em>. Second, even raising effort to <code>xhigh</code>, the hidden reasoning tokens stayed <strong>stuck near 0</strong> &mdash; a place where the effort dial connects to nothing. This note retraces that floor as <em>design &rarr; inputs &rarr; artifacts &rarr; prediction vs. measurement &rarr; where failure hid &rarr; decision</em> &mdash; so the next person wanders less on the same road.</p>
 
+    <section class="article-section">
+      <p class="section-label">Why read this</p>
+      <h2>That dial &mdash; is it worth turning up?</h2>
+      <p>Wire up a new model and somewhere in the settings sits a dial called <strong>reasoning effort</strong> &mdash; how much the model mulls a question over before it answers. Turning it up feels like it should make the model smarter, so when in doubt it is easy to just leave it high. But turning the dial up costs <strong>real money and time</strong> whether or not the answer improves. So &lsquo;no harm in trying&rsquo; may not hold.</p>
+      <p>So we started at the easiest place. <strong>Short factual tasks</strong> that answer in a single pass &mdash; pulling out a value, fixing a format, classifying, simple arithmetic &mdash; are also the work most services handle the most. If the dial spins for nothing here, the habit of &lsquo;not sure, so crank it up&rsquo; just grows the monthly bill.</p>
+      <p>This note settles when that dial earns its cost and when it is waste, starting from the easiest case, by measurement. If your work lives here, the conclusion becomes your <strong>default</strong>. And if it doesn&rsquo;t, don&rsquo;t worry &mdash; the reversals in the multi-step (02) and tool (03) notes only mean something measured against this floor.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">First, 10 seconds</p>
       <h2>Don't take the conclusion on faith &mdash; run just this experiment</h2>

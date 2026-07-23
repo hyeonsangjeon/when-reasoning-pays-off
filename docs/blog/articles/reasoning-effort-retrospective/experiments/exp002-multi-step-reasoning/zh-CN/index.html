@@ -51,6 +51,14 @@
     <p class="lede">我们也这样<strong>预先登记</strong>了。gpt-4o 会错掉一半多(30&ndash;60% 通过)。gpt-5.2 要提高强度才会超过 80%。实测把两个预测都推翻了。gpt-5.2 在<strong>最低强度已经满分</strong>，gpt-4o 也远比预期更好。</p>
     <p class="lede">本文按<em>设计 → 输入 → 产物 → 预测对实测 → 异常值 → 决定</em>回看那一天。这里不只放数字。也说明数字从哪里来、该怎么读。希望后来的人少在同一路上绕弯。</p>
 
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>难题就该让模型多想吗？</h2>
+      <p>上一篇(01)里，推理强度旋钮空转了。但那是在<strong>最容易</strong>的任务上。问题如果要走<strong>好几步</strong>才能解出 &mdash; 要先拿住一个中间值，再往前走一步 &mdash; 故事好像就该不一样。到了这里，每提高一档，答案难道不会更稳吗？</p>
+      <p>这个期待很合理。所以这一次，我们挑了一个<strong>推理本该赢</strong>的位置，继续测试同一个旋钮。那些至少要两步才有答案的问题 &mdash; 带计算的文字题、同时守住多个条件、日期计算。我们就在这里钉住一句老话：&ldquo;难的工作就要多想&rdquo;，到底值不值账单。</p>
+      <p>如果你的服务处理的是<strong>一次答不完</strong>的问题 &mdash; 组合条件、串起中间值、跟着逻辑往下走 &mdash; 这就是你的场景。该不该调高旋钮，还是有更便宜、更快的路？我们的预测<strong>两次</strong>落空，正好替你回答这个问题。</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">先来，10 秒</p>
       <h2>不要相信结论，只把这个实验自己跑一遍</h2>

@@ -51,6 +51,14 @@
     <p class="lede">这篇笔记和前两篇有一点不同。它<strong>不是合成 fixture，而是实测</strong>。我们真的用 Azure Foundry v1 调了 360 个单元。中立评审模型 gpt-4o 对每个单元评一次分，共 <strong>360/360</strong>。任何地方都没有 <code>"fixture": true</code> 标记。所以这个底部不是&lsquo;看起来合理的合成底部&rsquo;，而是<em>实际测出来的底部</em>。</p>
     <p class="lede">实测结果<strong>与预测一致</strong>。这是三项基准里唯一没有反转的地方。但实测也补了两个细节。第一，gpt-5.2 在<em>完全不开推理</em>的 <code>none</code> 下，已经在<strong>质量上</strong>超过 gpt-4o。第二，即使把强度提高到 <code>xhigh</code>，隐藏推理 token 也<strong>接近 0</strong>。也就是说，强度旋钮没有接到任何地方。本文按<em>设计 → 输入 → 产物 → 预测对实测 → 失败藏身处 → 决定</em>回看这个底部。希望后来的人少在同一路上绕弯。</p>
 
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>这个旋钮，调高真的划算吗？</h2>
+      <p>接上新模型，设置里常会有一个叫<strong>推理强度</strong>的旋钮。它决定模型回答前，要在心里多想多久。调高后好像会更聪明，所以拿不准时，很容易先设高一点。但只要调高旋钮，不管答案有没有变好，钱和时间都会实打实多花。所以&ldquo;试试也不亏&rdquo;可能并不成立。</p>
+      <p>所以我们先从最容易的地方查起。<strong>短事实任务</strong>，一次就能答出 &mdash; 抽取数值、调整格式、分类、简单计算 &mdash; 也是许多服务最常处理的工作。如果旋钮在这里空转，&ldquo;不确定，就先调高&rdquo;的习惯，只会把每月账单推高。</p>
+      <p>本文从最容易的情况开始，用实测划清这个旋钮什么时候值回成本，什么时候只是浪费。如果你的工作就在这里，结论就可以当成<strong>默认值</strong>。如果不是，也不用急 &mdash; 后面多步任务(02)和工具任务(03)里的反转，只有拿这个底部来对照才有意义。</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">先来，10 秒</p>
       <h2>不要相信结论，只把这个实验自己跑一遍</h2>

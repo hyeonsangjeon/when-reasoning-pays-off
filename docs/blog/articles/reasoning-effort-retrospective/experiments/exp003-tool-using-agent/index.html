@@ -54,6 +54,14 @@
     <p class="lede">When we <strong>wrote our prediction down in advance</strong>, we said a middle effort (<code>low</code>&ndash;<code>medium</code>) would be the sweet spot where cost and quality meet. The prediction had three parts. gpt-4o would handle no-tool·one-tool, but break down when it had to chain several tools. gpt-5.2 <code>none</code>, with no room to plan ahead, would be as weak as gpt-4o on multi-tool. And <code>high</code>·<code>xhigh</code>, with quality already maxed out, would over-call tools on trivial samples.</p>
     <p class="lede">The measurement was <em>half right, half surprising</em>. <code>low</code> really was the floor &mdash; this once, not <code>none</code>. But the real place gpt-4o broke down was not multi-tool; it was <strong>calling a calculator on problems that needed no tool</strong>. This note retraces that day as <em>design &rarr; inputs &rarr; artifacts &rarr; prediction vs. measurement &rarr; the tool-overuse map &rarr; decision</em> &mdash; so the next person wanders less on the same road.</p>
 
+    <section class="article-section">
+      <p class="section-label">Why read this</p>
+      <h2>Does anything change once tools come in?</h2>
+      <p>In the previous two experiments the answer was always &ldquo;don&rsquo;t raise the dial.&rdquo; That held on the easy task (01) and on the multi-step task (02). But real agents mostly <strong>call tools</strong> &mdash; they search, run a calculator, take the result, and decide again. Once tools enter, wouldn&rsquo;t reasoning effort finally pay off?</p>
+      <p>To check, we picked the <strong>mixed task</strong> closest to reality. Problems that need no tool, problems that need one tool, and problems that chain several tools are all mixed in. We settle here whether, across the three benchmarks, <em>reasoning pays off for the first time</em> &mdash; and if so, from which strength.</p>
+      <p>If you build <strong>tool-using agents</strong> &mdash; the kind that weave search, calculation, and API calls into an answer &mdash; this note is the closest. It shows, by measurement, where to set the dial so tools get used just right without waste, and <strong>why the floor was not none</strong>.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">First, 10 seconds</p>
       <h2>Don't take the conclusion on faith &mdash; run just this experiment</h2>

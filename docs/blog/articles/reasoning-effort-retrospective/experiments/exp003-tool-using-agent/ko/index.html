@@ -55,6 +55,14 @@
     <p class="lede">우리는 <strong>예측을 미리 적어두며</strong> 중간 강도(<code>low</code>&ndash;<code>medium</code>)가 비용과 품질이 가장 잘 만나는 지점일 거라 봤다. 예측은 셋이었다. gpt-4o는 무툴&middot;1툴은 되지만, 도구를 여러 번 이어 쓰는 멀티툴에서는 무너질 것이다. gpt-5.2 <code>none</code>은 미리 계획할 여지가 없어 멀티툴에서 gpt-4o만큼 약할 것이다. <code>high</code>&middot;<code>xhigh</code>는 품질이 이미 최대라, 사소한 문제에까지 도구를 과하게 부를 것이다.</p>
     <p class="lede">측정은 <em>절반은 맞고 절반은 놀라웠다</em>. <code>low</code>가 정말 바닥이었다 &mdash; 이번만은 <code>none</code>이 아니라. 그런데 gpt-4o가 무너진 진짜 자리는 멀티툴이 아니라, <strong>도구가 필요 없는 문제에 계산기를 부른</strong> 곳이었다. 이 노트는 그 하루를 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 도구 남용 지도 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
+    <section class="article-section">
+      <p class="section-label">왜 읽어야 하나</p>
+      <h2>도구를 쓰기 시작하면 달라질까?</h2>
+      <p>앞의 두 실험에서 답은 늘 &ldquo;손잡이를 올리지 말라&rdquo;였다. 쉬운 작업(01)에서도, 여러 단계를 밟는 작업(02)에서도 그랬다. 그런데 현실의 에이전트는 대개 <strong>도구를 부른다</strong> &mdash; 검색을 하고, 계산기를 돌리고, 그 결과를 받아 다시 판단한다. 도구가 끼어들면 그제야 추론 강도가 값을 하지 않을까?</p>
+      <p>이 질문을 확인하려고, 현실에 가장 가까운 <strong>혼합 작업</strong>을 골랐다. 도구가 필요 없는 문제, 도구 하나면 되는 문제, 도구를 여러 번 이어 써야 하는 문제가 고루 섞여 있다. 세 벤치마크를 통틀어 <em>추론이 처음으로 값을 하는지</em>, 한다면 어느 세기에서부터인지를 이 자리에서 가른다.</p>
+      <p>당신이 <strong>도구를 쓰는 에이전트</strong>를 만든다면 &mdash; 검색&middot;계산&middot;API 호출을 엮어 답을 만드는 종류 &mdash; 이 글이 가장 가깝다. 손잡이를 어디에 둬야 도구를 알맞게 쓰면서 낭비도 없는지, 그리고 <strong>바닥이 왜 none이 아니었는지</strong>를 실측으로 보여 준다.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저, 10초</p>
       <h2>결론을 믿지 말고 이 실험만 직접 돌려보세요</h2>
