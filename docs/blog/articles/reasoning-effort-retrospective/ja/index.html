@@ -153,6 +153,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>次の判断 · 次の実験</h2>
       <p><strong>次の判断。</strong> この結論は「測定したタスク形状」の中でだけ有効です。チェーンがもっと長くなったり実ツールが入ったりすれば曲線はまた動き得るため、ワークロード形状が変わったら再測定するのがルールです。</p>
       <p><strong>次の実験。</strong> ここでの PTU 数値はトークンベースの推定です(ライブ負荷ではありません)。次の実験は実際の PTU デプロイでの負荷テスト &mdash; レート制限の調整 · キューイング · 並列バッチがスループットにどう作用するかです。</p>
+      <p><strong>その最初の結果が出た。</strong> <a href="../experiments/exp004-spillover-simulation/ja/">exp004 &mdash; スピルオーバーポリシーシミュレーション(Phase 1)</a>では、飽和負荷で先回りする(proactive)スピルオーバーが事後対応(reactive)よりキャッシュを守れるのかを競わせた。答えはほぼ引き分けだった &mdash; 先回りした側の定常状態キャッシュはむしろ <strong>0.1657 pp 低く</strong>、スピルオーバーを一度も発動しなかった。本当の審判は、物理的に分離された 2デプロイ負荷テスト(Phase 2)の仕事である。</p>
       <p>
         <strong>続けて:</strong>
         <a href="../../ptu-retry-after-recovery/ja/">429 はエラーではなく回復シグナル</a>

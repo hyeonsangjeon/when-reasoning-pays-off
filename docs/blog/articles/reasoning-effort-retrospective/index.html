@@ -157,6 +157,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>Next call · next experiment</h2>
       <p><strong>Next call.</strong> This conclusion holds only within the &ldquo;task shapes measured.&rdquo; If the chain grows longer or real tools come in, the curve can move again, so the rule is to re-measure when the workload shape changes.</p>
       <p><strong>Next experiment.</strong> The PTU figures here are token-based estimates (not a live load). The next experiment is a load test on a real PTU deployment &mdash; how rate-limit control · queuing · parallel batching act on throughput.</p>
+      <p><strong>And the first result is in.</strong> <a href="experiments/exp004-spillover-simulation/">exp004 &mdash; the PTU spillover-policy simulation (Phase 1)</a> pitted a proactive spillover policy against a reactive one to see which protects the cache better under saturation load. The answer was close to a tie &mdash; the proactive policy's steady-state cache was actually <strong>0.1657 pp lower</strong>, and it never engaged spillover once. The real verdict belongs to a physically split two-deployment load test (Phase 2).</p>
       <p>
         <strong>Up next:</strong>
         <a href="../ptu-retry-after-recovery/">429 is not an error but a recovery signal</a>

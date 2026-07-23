@@ -157,6 +157,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>다음 판단 · 다음 실험</h2>
       <p><strong>다음 판단.</strong> 이 결론은 &ldquo;측정된 작업 형태&rdquo; 안에서만 유효합니다. 체인이 더 길어지거나 실제 툴이 들어오면 곡선이 다시 움직일 수 있으니, 워크로드 형태가 바뀌면 재측정하는 것이 규칙입니다.</p>
       <p><strong>다음 실험.</strong> 여기 PTU 수치는 토큰 기반 추정입니다(라이브 부하 아님). 다음 실험은 실제 PTU 배포에서의 부하 테스트 &mdash; 요청 속도 조절 · 대기열 · 병렬 배치가 처리량에 어떻게 작용하는지입니다.</p>
+      <p><strong>그 첫 결과가 나왔습니다.</strong> <a href="../experiments/exp004-spillover-simulation/ko/">exp004 &mdash; 스필오버 정책 시뮬레이션(Phase 1)</a>은 포화 부하에서 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨뤘습니다. 답은 무승부에 가까웠습니다 &mdash; 미리 대비한 쪽이 오히려 정상상태 캐시가 <strong>0.1657%p 낮았고</strong>, 스필오버를 한 번도 켜지 않았습니다. 진짜 판정은 물리적으로 분리된 2배포 부하 테스트(Phase 2)의 몫입니다.</p>
       <p>
         <strong>이어서:</strong>
         <a href="../../ptu-retry-after-recovery/ko/">429는 오류가 아니라 복구 신호</a>
