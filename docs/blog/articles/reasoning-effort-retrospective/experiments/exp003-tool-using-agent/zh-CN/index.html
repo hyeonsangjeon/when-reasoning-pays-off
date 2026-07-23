@@ -113,7 +113,7 @@ python -c "import experiments; print(experiments.run('exp003_benchmark03_gpt5_2.
           <strong>图表/表：</strong> <code>results/cost-curves/benchmark-03-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>我们测了 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>1 个</strong>(<code>tu_18</code>/<code>low</code>/r0)。评分由中立裁判 gpt-4o 对每个单元评一次，<strong>360/360 成功</strong>。所有 JSON 都是真实 Azure Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记。不过<strong>360 个单元中有 12 个(3.3%)</strong>触及工具循环 4 次上限。它们被强制在不再使用工具的情况下返回最终答案，并在各行留下 <code>tool_loop_terminated="iteration_cap"</code> 标记。</p>
+      <p><strong>我们测了 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>1 个</strong>(<code>tu_18</code>/<code>low</code>/r0)。评分由中立评审 gpt-4o 对每个单元评一次，<strong>360/360 成功</strong>。所有 JSON 都是真实 Azure Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记。不过<strong>360 个单元中有 12 个(3.3%)</strong>触及工具循环 4 次上限。它们被强制在不再使用工具的情况下返回最终答案，并在各行留下 <code>tool_loop_terminated="iteration_cap"</code> 标记。</p>
     </section>
 
     <section id="predict" class="article-section">
@@ -155,7 +155,7 @@ gpt-4o    —        83.3%      100%      83.3%
 gpt-5.2   none     100%       100%      94.4%
 gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
       <ul>
-        <li><strong>no-tool &mdash; gpt-4o 踩空的地方。</strong> gpt-4o 明明不需要工具，却调用计算器，只有 83.3%。裁判把三次判为失败，理由是&ldquo;评分规则要求工具调用 0 次，但模型调用了工具&rdquo; &mdash; 即使是&ldquo;1+1&rdquo;这样的题，它也过度使用计算器。gpt-5.2 在所有强度都是 100%。</li>
+        <li><strong>no-tool &mdash; gpt-4o 踩空的地方。</strong> gpt-4o 明明不需要工具，却调用计算器，只有 83.3%。评审把三次判为失败，理由是&ldquo;评分规则要求工具调用 0 次，但模型调用了工具&rdquo; &mdash; 即使是&ldquo;1+1&rdquo;这样的题，它也过度使用计算器。gpt-5.2 在所有强度都是 100%。</li>
         <li><strong>one-tool &mdash; 已经满了。</strong> 所有(模型×强度)单元都是 100%。只调用一个工具，对两个模型系列来说都已经不是难题。</li>
         <li><strong>multi-tool &mdash; 推理帮上忙的位置。</strong> gpt-4o 83.3%，gpt-5.2 <code>none</code> 94.4%，<code>low</code> 100%。在连续 2&ndash;3 步的链条中，一点点推理让&ldquo;先计划，再执行&rdquo;更稳定。<strong>gpt-4o → gpt-5.2 <code>low</code> 的 16.7%p 提升</strong>，正是这个基准想捕捉的实际任务信号。</li>
       </ul>
@@ -178,7 +178,7 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
       <ul>
         <li><strong>异常值 1 个。</strong> <code>tu_18</code> 的 <code>low</code> 第一次重复在 token 上超过 3σ(远超正常范围的值)，并同时带有运行问题的标记，因此从汇总中排除(360 个单元中 1 个 = 0.3%，远低于方法论 10% 警戒线)。它仍原样保留在原始 JSON 树中 &mdash; 只是从汇总中隐藏，不是删除。</li>
         <li><strong>循环上限 12 个。</strong> 360 个单元中有 12 个(3.3%)触及工具循环 4 次上限，被强制不再使用工具而返回答案。每行都留下 <code>iteration_cap</code> 标记，可以追踪哪些单元碰到了上限。</li>
-        <li><strong>部分分不计入正确。</strong> 裁判分数 1(部分正确)在 §7 单独报告。但在计算每个正确答案的成本时，我们把它<em>排除</em>。因为在生产规模下，工具任务的部分正确不是正确。我们说明这个只按通过/失败来计的选择，是为了说清最上面的数字是怎么算出来的。</li>
+        <li><strong>部分分不计入正确。</strong> 评审分数 1(部分正确)在 §7 单独报告。但在计算每个正确答案的成本时，我们把它<em>排除</em>。因为在生产规模下，工具任务的部分正确不是正确。我们说明这个只按通过/失败来计的选择，是为了说清最上面的数字是怎么算出来的。</li>
       </ul>
     </section>
 
@@ -190,7 +190,7 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
         <li><strong>搜索是模拟的。</strong> 这个基准的 <code>web_search</code> 不是真实网页搜索，而是<em>模拟(固定的知识库查询)</em>。实时搜索会引入无法控制的变化，所以放在范围之外。核心结论(一点点推理提高 multi-tool 可靠性，超过 <code>low</code> 是 token 浪费)对这个简化仍然稳。它不是完美复现，而是只控制可以控制的部分 &mdash; 我们不隐藏这个边界。</li>
         <li><strong>样本。</strong> N=20 · R=3。在这个样本量下，不主张置信区间或统计显著性 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎看待。</li>
         <li><strong>价格。</strong> 单一快照。如果费率或计费方式改变，应从同一原始材料重新计算成本。</li>
-        <li><strong>评分。</strong> 使用评判模型(gpt-4o)。裁判提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
+        <li><strong>评分。</strong> 使用评判模型(gpt-4o)。评审提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
         <li><strong>PTU。</strong> 吞吐是基于 token 的估算，不是真实 PTU 负载测试。</li>
       </ul>
     </section>
@@ -223,7 +223,7 @@ gpt-5.2   low      100%       100%      100%    ← 帕累托最优</code></pre>
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
         <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
         <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。</li>
-        <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · <code>web_search</code> 是模拟(固定的知识库查询) · PTU 为基于 token 的估算(非实时负载)。</li>
+        <li>边界：N=20 · 无置信区间 · 单一价格快照 · 评审 gpt-4o · <code>web_search</code> 是模拟(固定的知识库查询) · PTU 为基于 token 的估算(非实时负载)。</li>
       </ul>
     </section>
   </main>

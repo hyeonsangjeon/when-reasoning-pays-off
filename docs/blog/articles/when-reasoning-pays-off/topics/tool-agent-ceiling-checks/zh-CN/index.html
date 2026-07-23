@@ -41,7 +41,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 专题详情</p>
-    <p class="article-kicker">专题文章 · benchmark-03 工具代理</p>
+    <p class="article-kicker">专题文章、benchmark-03 工具代理</p>
     <h1>工具代理：质量触顶之后，真正的变量就变成了延迟</h1>
     <p class="lede">当团队搭起一个用工具的代理、而它开始出错时，第一反应往往都一样：让它多想一点。这个直觉是讲得通的——工具类工作牵涉规划、选工具、维持中间状态、综合回答，所以"多推理"听起来应该有用。但还有另一种可能：当工具路径已经足够好、评分标准本就接近顶点时，额外的推理也许只让延迟和成本上升，分数却原地踏步。benchmark-03 就在这组工具代理任务上检验：这两种解读，哪一种成立。</p>
 
@@ -60,7 +60,7 @@
         而不是在抽象层面成立。
       </p>
       <p>
-        于是我们做了检验。benchmark-03 固定住这组工具代理任务，测试同一套模型与各档推理强度——GPT-4o 基线，随后是 GPT-5.2 的 none、low、medium、high、extra-high——
+        于是我们做了检验。benchmark-03 固定住这组工具代理任务，测试同一套模型与各档推理强度——GPT-4o 基线，随后是 GPT-5.2 的 none、low、medium、high、xhigh——
         并在每个配置上把平均评审分挨着延迟、成本和 token 形态一起读。结果值得如实
         说出来：GPT-5.2 把质量推到了 GPT-4o 基线之上，但在 GPT-5.2 内部，各配置的质量
         朝着一个天花板（约 1.97～2.00）聚拢，而成本、延迟、推理 token 却还在往上走。
@@ -104,7 +104,7 @@
         <figcaption>
           <strong>导读图（由公开聚合手工制作）：</strong>
           <strong>读什么：</strong>按推理强度划分的平均延迟，每根柱子下方标注配对的平均评审分。
-          <strong>X 轴：</strong>模型／推理强度配置（gpt-4o 基线，随后是 gpt-5.2 的 none &rarr; extra-high），<strong>Y 轴：</strong>平均延迟。
+          <strong>X 轴：</strong>模型／推理强度配置（gpt-4o 基线，随后是 gpt-5.2 的 none &rarr; xhigh），<strong>Y 轴：</strong>平均延迟。
           <strong>当作天花板效应的诊断来读：</strong>评审质量已经贴在评分标准的顶点（约 1.97&ndash;2.00），所以柱子改追延迟——这说明额外的推理强度带来的是延迟、成本和内部推理 token，而不是更高的分数。由公开图表数据管线渲染出来的源质量图，还在更下方。
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-tool-agent-ceiling-checks.zh-CN.svg" alt="柱状图：benchmark-03 按 effort 划分的延迟，带评审分标签。" style="width:100%;height:auto;display:block;border-radius:12px;">
@@ -113,7 +113,7 @@
 
     <section id="s1" class="article-section">
       <h2>天花板效应才是重点</h2>
-      <p>benchmark-03 并没有给出一个简单的单调上升故事。GPT-4o 的平均评审分是 1.85。GPT-5.2 在 none 平均 1.97、low 达到 2.0、medium 平均 1.98、high 平均 1.97、extra-high 达到 2.0。相对基线这是质量的改善，但同时它也是一个天花板。</p><p>一旦好几个配置都聚拢在顶点附近，再去抬高推理强度就没有自动的意义了。下一份证据，来自延迟、token 形态，以及藏在聚合分数内部的失败模式。</p>
+      <p>benchmark-03 并没有给出一个简单的单调上升故事。GPT-4o 的平均评审分是 1.85。GPT-5.2 在 none 平均 1.97、low 达到 2.0、medium 平均 1.98、high 平均 1.97、xhigh 达到 2.0。相对基线这是质量的改善，但同时它也是一个天花板。</p><p>一旦好几个配置都聚拢在顶点附近，再去抬高推理强度就没有自动的意义了。下一份证据，来自延迟、token 形态，以及藏在聚合分数内部的失败模式。</p>
     </section>
     <section id="s2" class="article-section">
       <h2>这张图该怎么读</h2>
@@ -134,13 +134,13 @@
         <figcaption>
           <strong>源图——benchmark-03 的评审质量。</strong>
           <strong>X 轴：</strong>模型与各档推理强度——gpt-4o 基线，随后是 gpt-5.2 的
-          none、low、medium、high、extra-high。
+          none、low、medium、high、xhigh。
           <strong>Y 轴：</strong>0&ndash;2 评分标准下的平均评审分。
           <strong>柱子：</strong>每根柱子是一个配置的平均分——这是聚合比较，不是频次
           直方图——须线表示 &plusmn;1 标准差。
           <strong>读法：</strong>这就是本文所说的天花板——gpt-4o 基线在 1.85，而 gpt-5.2 的
           各配置都聚拢在 1.97～2.00 的窄带里（none 1.97、low 2.00、medium 1.98、
-          high 1.97、extra-high 2.00）。所以在这类任务里，抬高推理强度，分数也离不开上限。
+          high 1.97、xhigh 2.00）。所以在这类任务里，抬高推理强度，分数也离不开上限。
           <strong>证据边界：</strong>每个组合 N = 20、R = 3 次重复，取一个 Azure OpenAI
           租户与区域下这组工具代理任务。误差棒是标准差，不是置信区间；在 N = 20 下
           不主张 p 值。
@@ -159,7 +159,7 @@
           <tr><td>GPT-4o baseline</td><td>评审分 1.85</td><td>平均延迟 3.0s</td><td>强基线，但还不是天花板。</td></tr>
           <tr><td>GPT-5.2 none</td><td>评审分 1.97</td><td>平均延迟 2.9s</td><td>几乎相同的延迟，质量更高。</td></tr>
           <tr><td>GPT-5.2 low</td><td>评审分 2.00</td><td>平均延迟 3.1s</td><td>延迟略增，分数已到天花板。</td></tr>
-          <tr><td>GPT-5.2 extra-high</td><td>评审分 2.00</td><td>平均延迟 3.8s</td><td>同样是天花板分，但更慢。</td></tr>
+          <tr><td>GPT-5.2 xhigh</td><td>评审分 2.00</td><td>平均延迟 3.8s</td><td>同样是天花板分，但更慢。</td></tr>
         </tbody>
       </table>
     </section>
@@ -174,7 +174,7 @@
       <ul>
         <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提；误差棒是标准差而非置信区间，在 N = 20 下不主张 p 值。</li>
         <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>每个请求的成本按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，成本数字也随之变化。</li>
-        <li>[3] <strong>Tier 2 — benchmark-03 这组工具代理任务的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是天花板效应质量柱——GPT-4o 基线 1.85，以及在 1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（extra-high）区间内起伏的 GPT-5.2 各档——和延迟从 2.9s 拉长到 3.8s、对应成本从每请求 $0.002762（none）单调升到 $0.003499（extra-high）的来源。</li>
+        <li>[3] <strong>Tier 2 — benchmark-03 这组工具代理任务的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是天花板效应质量柱——GPT-4o 基线 1.85，以及在 1.97（none）、2.00（low）、1.98（medium）、1.97（high）、2.00（xhigh）区间内起伏的 GPT-5.2 各档——和延迟从 2.9s 拉长到 3.8s、对应成本从每请求 $0.002762（none）单调升到 $0.003499（xhigh）的来源。</li>
         <li>[4] <strong>Tier 2 — 渲染后的图表数据：</strong>本仓库，<code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>、<code>quality.json</code>、<code>latency.json</code>。与 <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> 一起读，就能佐证：推理 token 从每请求 0 增加到 52.15，质量柱却没离开天花板。</li>
         <li>[5] <strong>证据仪表盘：</strong>渲染后的 <a href="../../../../../charts/?lang=zh-CN#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 质量与成本配对图</a>，是审计同一批产物的可核查形态。</li>
       </ul>
@@ -216,6 +216,6 @@
     </section>
   </main>
 
-  <footer class="site"><p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p></footer>
+  <footer class="site"><p>MIT 许可的研究产物，公开数据均已脱敏或仅为聚合形式。</p></footer>
 </body>
 </html>

@@ -55,7 +55,7 @@
 
     <p class="lede">세 벤치마크의 <strong>바닥</strong>부터 놓았다. 추출&middot;형식&middot;분류&middot;음역&middot;산술 &mdash; 한 번에 답이 나오는 <strong>짧은 사실 작업</strong>. 여기서 추론 강도를 올리는 건 &ldquo;1 더하기 1&rdquo;에 회의를 소집하는 일에 가깝다. 예측은 단순했다. <em>추론은 값을 하지 못한다.</em></p>
     <p class="lede">이 노트가 앞선 두 편과 다른 점이 하나 있다. <strong>합성 픽스처가 아니라 실측</strong>이다. 360셀 전부를 Azure Foundry v1으로 실제 호출하고, 중립 심판 gpt-4o로 셀당 한 번씩 <strong>360/360</strong> 채점했다. <code>"fixture": true</code> 마커는 어디에도 없다. 그래서 이 바닥은 &lsquo;그럴듯하게 합성된 바닥&rsquo;이 아니라 <em>측정된 바닥</em>이다.</p>
-    <p class="lede">측정은 예측을 <strong>그대로 확증했다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
+    <p class="lede">측정해 보니 <strong>예측 그대로였다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
     <section class="article-section">
       <p class="section-label">왜 읽어야 하나</p>
@@ -98,7 +98,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
       <p><strong>무엇으로 재나 &mdash; 데이터셋.</strong> 얼려 둔 저작 샘플 20개(<code>sf_01</code>&hellip;<code>sf_20</code>)로, 추출&middot;형식&middot;분류&middot;열거&middot;음역&middot;정규화&middot;단위환산&middot;간단 산술&middot;요약이 고루 섞여 있다. 이런 작업은 &lsquo;정답 하나&rsquo;를 표로 못 박기 어렵다. 그래서 정답표 대신 <code>expected_output_shape</code>(답의 모양)와 <code>quality_rubric_notes</code>(채점 기준)만 고정하고, 품질은 <strong>중립 심판 모델 gpt-4o가 답안을 읽고 0&middot;1&middot;2로 매기게</strong> 했다. 채점의 근거까지 원자료에 그대로 남긴다.</p>
       <p><strong>바꾸는 건 딱 하나</strong> &mdash; gpt-5.2의 추론 강도(<code>reasoning.effort</code>)를 <code>none</code>(끔)에서 <code>low · medium · high · xhigh</code>까지 다섯 단계로 올려 본다. 나머지 조건은 전부 고정이다. 옆에는 추론 다이얼이 아예 없는 <strong>gpt-4o를 기준선</strong>으로 나란히 세운다. 우연한 요행을 걸러내려고 각 (샘플 × 모델 × 강도) 조합은 <strong>세 번씩(R=3)</strong> 돌린다.</p>
       <div class="article-summary-grid" aria-label="사전 등록 예측과 역할">
-        <section class="summary-tile"><h2>사전 등록 예측</h2><p>짧은 사실 작업에는 추론이 필요 없다. 품질은 가장 낮은 강도에서 이미 포화하고, 강도를 올리면 품질은 그대로인 채 비용&middot;지연&middot;토큰만 는다. 즉 &ldquo;강도를 올리지 말라&rdquo;가 답이다.</p></section>
+        <section class="summary-tile"><h2>사전 등록 예측</h2><p>짧은 사실 작업에는 추론이 필요 없다. 품질은 가장 낮은 강도에서 이미 천장에 닿고, 강도를 올리면 품질은 그대로인 채 비용&middot;지연&middot;토큰만 는다. 즉 &ldquo;강도를 올리지 말라&rdquo;가 답이다.</p></section>
         <section class="summary-tile"><h2>이 실험의 역할</h2><p>세 벤치마크의 <em>바닥 앵커</em>. 다단계(02)의 천장과 툴 에이전트(03)의 혼합을 재기 전에, &ldquo;추론이 정말 필요 없는 자리&rdquo;가 어떤 모양인지 실측으로 고정한다. 뒤 실험들의 반전은 이 바닥과의 대비에서 의미를 얻는다.</p></section>
       </div>
     </section>
@@ -112,7 +112,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
           <h2>입력 (in)</h2>
           <p><strong>실험 정의:</strong> <code>experiments/exp001_short-factual_baseline.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
           <strong>데이터셋:</strong> <code>benchmarks/01-short-factual/dataset.json</code> (SHA-256으로 고정).<br>
-          <strong>프롬프트:</strong> 시스템 프롬프트를 SHA-256으로 지문화 &mdash; 360셀 전체에 <em>단일한</em> 프롬프트가 쓰였음을 보증. 심판 프롬프트 SHA-256도 매 채점 JSON에 기록.</p>
+          <strong>프롬프트:</strong> 시스템 프롬프트를 SHA-256 해시로 고정 &mdash; 360셀 전체에 <em>단일한</em> 프롬프트가 쓰였음을 보증. 심판 프롬프트 SHA-256도 매 채점 JSON에 기록.</p>
         </section>
         <section class="summary-tile">
           <h2>산출물 (out)</h2>
@@ -129,8 +129,8 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
       <p class="section-label">예측 대 실측</p>
       <h2>예측이 그대로 맞은 유일한 자리</h2>
       <div class="article-summary-grid" aria-label="예측 대 실측">
-        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>짧은 사실 작업엔 추론이 필요 없다. 품질은 바닥에서 이미 포화하고, 강도를 올려도 품질은 그대로인 채 비용만 는다. 요약하면 &ldquo;강도를 올리지 말라.&rdquo;</p></section>
-        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>정확히 그대로였다 &mdash; 반전이 없다. 품질은 <code>none</code>에서 이미 포화(정답률 95%)했고 강도를 올려도 60건 중 1&ndash;2건 안에서만 흔들렸다. 얹어진 디테일: <code>none</code>이 gpt-4o를 <em>품질로도</em> 앞섰고, 추론 토큰은 <code>xhigh</code>에서도 0 근처였다.</p></section>
+        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>짧은 사실 작업엔 추론이 필요 없다. 품질은 바닥에서 이미 천장에 닿고, 강도를 올려도 품질은 그대로인 채 비용만 는다. 요약하면 &ldquo;강도를 올리지 말라.&rdquo;</p></section>
+        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>정확히 그대로였다 &mdash; 반전이 없다. 품질은 <code>none</code>에서 이미 천장에 닿았고(정답률 95%) 강도를 올려도 60건 중 1&ndash;2건 안에서만 흔들렸다. 얹어진 디테일: <code>none</code>이 gpt-4o를 <em>품질로도</em> 앞섰고, 추론 토큰은 <code>xhigh</code>에서도 0 근처였다.</p></section>
       </div>
       <p><strong>판정: 예상이 그대로 맞았다.</strong> 다단계(02)와 툴(03)은 뚜껑을 열자 이야기가 뒤집혔다(천장 케이스는 <code>none</code>이 바닥, 혼합 케이스는 <code>low</code>가 바닥). 하지만 이 바닥만은 예측대로였다. 그래서 이 실험은 시리즈의 <em>기준점</em> 노릇을 한다. &ldquo;추론이 값을 못 하는 자리&rdquo;가 실제로 어떤 모양인지 실측으로 보여 주는 자리다.</p>
     </section>
@@ -168,7 +168,7 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
         <li><strong>요약 &mdash; low에서 정점, 그 뒤 후퇴.</strong> gpt-4o가 가장 약한 태그(1.33). gpt-5.2는 <code>none</code> 1.78 → <code>low</code> 2.00으로 올라섰다가 <code>medium</code>&middot;<code>high</code>에서 1.78&ndash;1.89로 <em>도로 내려온다</em>. 강도를 올린다고 요약이 좋아지지 않는다.</li>
         <li><strong>산술 &mdash; 유일하게 gpt-4o가 이긴 자리, 그리고 강도의 역효과.</strong> 사소한 산술 6건에서 gpt-4o는 2.00 만점인데 gpt-5.2는 <code>none</code> 1.83에서 <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 1.67로 <em>내려간다</em>. 강도를 올릴수록 &ldquo;1 더하기 1&rdquo;을 과하게 곱씹어 오히려 헛디디는 것이다. 추론이 값을 못 하는 정도가 아니라, 여기선 <strong>음의 값</strong>을 한다.</li>
       </ul>
-      <p>세 유형이 서로를 상쇄한다. gpt-5.2는 추출&middot;요약에서 gpt-4o보다 앞서고 산술에서 조금 뒤지지만, 합쳐 보면 <code>none</code>&middot;<code>low</code>에서 가장 좋다. 그리고 어느 유형에서도 <strong>강도를 올려 이득을 본 곳이 없다</strong>. 이 벤치마크를 &lsquo;추론이 값을 못 하는 사례(Null case)&rsquo;라 부르는 이유다.</p>
+      <p>세 유형이 서로를 깎아먹는다. gpt-5.2는 추출&middot;요약에서 gpt-4o보다 앞서고 산술에서 조금 뒤지지만, 합쳐 보면 <code>none</code>&middot;<code>low</code>에서 가장 좋다. 그리고 어느 유형에서도 <strong>강도를 올려 이득을 본 곳이 없다</strong>. 이 벤치마크를 &lsquo;추론이 값을 못 하는 사례(Null case)&rsquo;라 부르는 이유다.</p>
     </section>
 
     <section id="flatline" class="article-section">

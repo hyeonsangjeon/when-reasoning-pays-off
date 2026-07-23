@@ -39,7 +39,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
-    <p class="article-kicker">Topic essay · benchmark-03 tool-agent work</p>
+    <p class="article-kicker">Topic essay: benchmark-03 tool-agent work</p>
     <h1>Tool-agent work: after quality reaches the ceiling, latency starts speaking</h1>
     <p class="lede">When a team builds a tool-using agent and it starts making mistakes, the first instinct is usually the same: let it think harder. That instinct is reasonable — tool work involves planning, tool selection, intermediate state, and answer synthesis, so more reasoning sounds like it should help. But there is another possibility. Once the tool path is good enough and the rubric is already near the top, extra reasoning may only add latency and cost while the quality score stays capped. Benchmark-03 tests which of those readings is true on a tool-agent slice.</p>
 
@@ -64,7 +64,7 @@
       <p>
         So we tested it. Benchmark-03 holds a tool-agent slice fixed and walks
         the same model and effort ladder — the GPT-4o baseline, then GPT-5.2 at
-        none, low, medium, high, and extra-high effort — reading mean judge score
+        none, low, medium, high, and xhigh effort — reading mean judge score
         next to latency, cost, and token shape at each cell. The result is worth
         stating plainly: GPT-5.2 lifted quality over the GPT-4o baseline, but
         inside GPT-5.2 the quality cells clustered against a ceiling (about
@@ -114,7 +114,7 @@
           <strong>What to read:</strong> mean latency by effort, with the paired mean
           judge score labelled under each bar.
           <strong>X-axis:</strong> the model/effort cell (gpt-4o baseline, then
-          gpt-5.2 none &rarr; extra-high); <strong>Y-axis:</strong> mean latency.
+          gpt-5.2 none &rarr; xhigh); <strong>Y-axis:</strong> mean latency.
           <strong>Read it as a ceiling-effect diagnostic:</strong> judge quality is
           already pinned near the top of the rubric (about 1.97&ndash;2.00), so the
           bars track latency instead &mdash; they show extra reasoning effort buying
@@ -128,7 +128,7 @@
 
     <section id="s1" class="article-section">
       <h2>The ceiling effect is the point</h2>
-      <p>Benchmark-03 did not produce a simple monotonic story. GPT-4o averaged a judge score of 1.85. GPT-5.2 none averaged 1.97, low reached 2.00, medium averaged 1.98, high averaged 1.97, and extra-high reached 2.00. That is a quality improvement over the baseline, but it is also a ceiling.</p>
+      <p>Benchmark-03 did not produce a simple monotonic story. GPT-4o averaged a judge score of 1.85. GPT-5.2 none averaged 1.97, low reached 2.00, medium averaged 1.98, high averaged 1.97, and xhigh reached 2.00. That is a quality improvement over the baseline, but it is also a ceiling.</p>
       <p>Once several cells are clustered near the top, raising effort is no longer automatically meaningful. The next evidence comes from latency, token shape, and the failure modes hidden inside the aggregate score.</p>
     </section>
     <section id="s2" class="article-section">
@@ -152,7 +152,7 @@
         <figcaption>
           <strong>Source chart &mdash; benchmark-03 judge quality.</strong>
           <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
-          then gpt-5.2 at none, low, medium, high, and extra-high effort.
+          then gpt-5.2 at none, low, medium, high, and xhigh effort.
           <strong>Y-axis:</strong> mean judge score on the 0&ndash;2 rubric.
           <strong>Bars:</strong> each bar is the mean score of one cell &mdash; an aggregate
           comparison, not a frequency histogram &mdash; and the whiskers show &plusmn;1
@@ -160,7 +160,7 @@
           <strong>How to read it:</strong> this is the ceiling the essay describes &mdash;
           the gpt-4o baseline sits at 1.85 and every gpt-5.2 cell clusters inside a narrow
           1.97&ndash;2.00 band (none 1.97, low 2.00, medium 1.98, high 1.97,
-          extra-high 2.00), so on this slice raising effort does not lift the score off the
+          xhigh 2.00), so on this slice raising effort does not lift the score off the
           cap.
           <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats, this one
           tool-agent slice on a single Azure OpenAI tenant and region; error bars are
@@ -181,7 +181,7 @@
           <tr><td>GPT-4o baseline</td><td>Score 1.85</td><td>3.0s mean latency</td><td>Strong baseline, but not the ceiling.</td></tr>
 <tr><td>GPT-5.2 none</td><td>Score 1.97</td><td>2.9s mean latency</td><td>Better quality with similar latency.</td></tr>
 <tr><td>GPT-5.2 low</td><td>Score 2.00</td><td>3.1s mean latency</td><td>Ceiling score with modest latency increase.</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Score 2.00</td><td>3.8s mean latency</td><td>Ceiling score again, but slower.</td></tr>
+<tr><td>GPT-5.2 xhigh</td><td>Score 2.00</td><td>3.8s mean latency</td><td>Ceiling score again, but slower.</td></tr>
         </tbody>
       </table>
     </section>
@@ -198,7 +198,7 @@
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The cost figures drift if list pricing moves.</li>
-        <li>[3] <strong>Tier 2 — benchmark-03 slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars — the 1.85 GPT-4o baseline and the GPT-5.2 ladder that bounced inside 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), and 2.00 (extra-high) — and the matching cost figures that climbed monotonically from $0.002762 (none) to $0.003499 (extra-high) per request as latency rose from 2.9s to 3.8s.</li>
+        <li>[3] <strong>Tier 2 — benchmark-03 slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars — the 1.85 GPT-4o baseline and the GPT-5.2 ladder that bounced inside 1.97 (none), 2.00 (low), 1.98 (medium), 1.97 (high), and 2.00 (xhigh) — and the matching cost figures that climbed monotonically from $0.002762 (none) to $0.003499 (xhigh) per request as latency rose from 2.9s to 3.8s.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-03/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-03/tokens.json</code> as paired-reading evidence that the reasoning tokens climbed from 0 to 52.15 per request without moving the quality bar off its ceiling.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>
       </ul>
@@ -245,6 +245,6 @@
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p></footer>
+  <footer class="site"><p>MIT-licensed research artifact; published data is sanitized or aggregate only.</p></footer>
 </body>
 </html>

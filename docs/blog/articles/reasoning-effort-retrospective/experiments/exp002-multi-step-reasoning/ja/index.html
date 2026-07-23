@@ -141,8 +141,8 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p><code>low</code> はリクエスト当たり単価が 7.6% 高い。だが通過率も高い(96.7% 対 75%)ので、その上乗せ分を埋める。正答 1,000件当たりでは gpt-4o より<strong>16% 安い</strong>。最初の最適化は、努力度を上げることではなかった。<em>モデルと努力度を一つの組み合わせとして見て、合格線を越えた最も安い地点を選ぶ</em>ことだった。</p>
 
       <figure class="article-figure" id="figure-exp002-quality">
-        <figcaption><strong>平均ジャッジスコアと標準偏差。</strong> 縦軸は平均ジャッジスコア(0〜2)、エラーバーは標準偏差だ。gpt-5.2 は <code>none</code>・<code>medium</code>・<code>high</code>・<code>xhigh</code> で 2.00、<code>low</code> は 2件の失敗で 1.93±0.36。gpt-4o ベースラインは 1.50±0.87。<code>low</code> の通過率は 96.7%(58/60)。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02 のモデル・努力度別の平均ジャッジスコア(0〜2)の棒グラフ。gpt-4o ベースライン 1.50、gpt-5.2 は none 2.00・low 1.93・medium/high/xhigh 2.00。エラーバーは標準偏差で、N=20・R=3、信頼区間なし。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平均審判スコアと標準偏差。</strong> 縦軸は平均審判スコア(0〜2)、エラーバーは標準偏差だ。gpt-5.2 は <code>none</code>・<code>medium</code>・<code>high</code>・<code>xhigh</code> で 2.00、<code>low</code> は 2件の失敗で 1.93±0.36。gpt-4o ベースラインは 1.50±0.87。<code>low</code> の通過率は 96.7%(58/60)。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-02-quality.png"><code>results/cost-curves/benchmark-02-quality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-02-quality.png" alt="ベンチマーク 02 のモデル・努力度別の平均審判スコア(0〜2)の棒グラフ。gpt-4o ベースライン 1.50、gpt-5.2 は none 2.00・low 1.93・medium/high/xhigh 2.00。エラーバーは標準偏差で、N=20・R=3、信頼区間なし。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
@@ -174,9 +174,9 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p>どんな測定も完全にきれいではない。このベンチマークが残した跡を、消さずにそのまま書いておく。隠すと、次の人が同じ場所でつまずくからだ。</p>
       <ul>
         <li><strong>gpt-4o には予想より易しかった。</strong> 75% は事前登録した 30&ndash;60% を<em>超えた</em>。データセットが、そもそも gpt-4o にそれほど厳しくなかったということだ。だから &ldquo;gpt-4o 比の削減幅&rdquo; の<em>大きさ</em>は、もっと難しいデータセットだった場合より小さくなった(期待 1.7&ndash;3.3倍の差 → 実現 1.7倍)。予測が外れた側を数字に合わせて消さない。小さくなった削減幅をそのまま残す。結論の<em>方向</em>(gpt-5.2 <code>none</code> は費用と品質の両方で上)は変わらない。</li>
-        <li><strong>安全フィルター拒否 1件。</strong> <code>mr_05</code> の <code>low</code> 1回目の反復で、Azure コンテンツフィルターがリクエストを止めた。入力&middot;出力トークンは 0 で、定型の拒否が返った。このセルには運用上の問題を示す印(コールドスタート/再試行/切断)がない。だから<em>外れ値として外す対象ではない</em>。上書きせず、集計にそのまま残した(ジャッジは正確に 0/失敗と採点)。同じ問題の他の反復は正常に正解した。続けて起きる問題ではなく、一回限りだった。この 1セルが <code>low</code> 行の<em>入力トークン</em>分散を大きくした。</li>
-        <li><strong>コードトレース誤答 1件。</strong> <code>mr_15</code> の <code>low</code> 3回目の反復(<code>r2</code>)で、<code>g("abc")</code> の出力を「cba a」と返した &mdash; 正答は「cbaa」(反転した「cba」に先頭文字「a」を連結)だ。ジャッジは 0/失敗と採点した。これは安全フィルターとは関係のない、純粋な推論エラーだ。このセルと <code>mr_05</code> の拒否が、<code>low</code> の通過率を 96.7%(58/60)にした 2件の失敗である。</li>
-        <li><strong>部分点 0件。</strong> 360セル全体でジャッジの <code>score == 1</code> は一つもなかった。正答がはっきり出るように作っているので、&ldquo;672 を出した&rdquo; と &ldquo;576 を出した&rdquo; の間に中間はない。だから合格・不合格だけで見ても、結論は変わらない。</li>
+        <li><strong>安全フィルター拒否 1件。</strong> <code>mr_05</code> の <code>low</code> 1回目の反復で、Azure コンテンツフィルターがリクエストを止めた。入力&middot;出力トークンは 0 で、定型の拒否が返った。このセルには運用上の問題を示す印(コールドスタート/再試行/切断)がない。だから<em>外れ値として外す対象ではない</em>。上書きせず、集計にそのまま残した(審判は正確に 0/失敗と採点)。同じ問題の他の反復は正常に正解した。続けて起きる問題ではなく、一回限りだった。この 1セルが <code>low</code> 行の<em>入力トークン</em>分散を大きくした。</li>
+        <li><strong>コードトレース誤答 1件。</strong> <code>mr_15</code> の <code>low</code> 3回目の反復(<code>r2</code>)で、<code>g("abc")</code> の出力を「cba a」と返した &mdash; 正答は「cbaa」(反転した「cba」に先頭文字「a」を連結)だ。審判は 0/失敗と採点した。これは安全フィルターとは関係のない、純粋な推論エラーだ。このセルと <code>mr_05</code> の拒否が、<code>low</code> の通過率を 96.7%(58/60)にした 2件の失敗である。</li>
+        <li><strong>部分点 0件。</strong> 360セル全体で審判の <code>score == 1</code> は一つもなかった。正答がはっきり出るように作っているので、&ldquo;672 を出した&rdquo; と &ldquo;576 を出した&rdquo; の間に中間はない。だから合格・不合格だけで見ても、結論は変わらない。</li>
       </ul>
     </section>
 
@@ -219,7 +219,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
         <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
         <li>方法論: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(変数·標本·キャッシュ·採点·コスト·再現·統計報告規約)。</li>
         <li>価格: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。</li>
-        <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · ジャッジ gpt-4o · PTU はトークンベース推定(ライブ負荷ではない)。</li>
+        <li>境界: N=20 · 信頼区間なし · 単一価格スナップショット · 審判 gpt-4o · PTU はトークンベース推定(ライブ負荷ではない)。</li>
       </ul>
     </section>
   </main>

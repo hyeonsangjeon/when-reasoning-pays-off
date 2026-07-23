@@ -64,9 +64,9 @@
       <p>
         इसलिए हमने इसे मापा। benchmark-02 इस multi-step काम को स्थिर रखता है और मॉडल व
         effort के वही स्तर देखता है — GPT-4o baseline, फिर GPT-5.2 का none, low, medium,
-        high, extra-high — और हर combination पर लागत, latency और mean judge score साथ में
+        high, xhigh — और हर combination पर लागत, latency और औसत judge score साथ में
         पढ़ता है। नतीजा मिला-जुला है, और इसे सीधे कहना चाहिए। GPT-5.2 ने GPT-4o
-        baseline के ऊपर quality बढ़ाई, लेकिन GPT-5.2 के भीतर सबसे ऊँचा effort अपने-आप
+        baseline के ऊपर quality बढ़ाई, लेकिन GPT-5.2 के भीतर xhigh effort अपने-आप
         विजेता नहीं बना। सबसे सस्ते top-scoring combination ने तो एक भी reasoning token
         खर्च नहीं किया। नीचे का one-pager यही बात एक फ़्रेम में दिखाता है, और उसके बाद
         के खंड मापा गया विवरण देते हैं।
@@ -87,7 +87,7 @@
     <div class="article-summary-grid" aria-label="विषय का सार">
       <section class="summary-tile"><h2>प्रश्न</h2><p>ज़्यादा reasoning कब सिर्फ़ बिल नहीं बढ़ाती, बल्कि quality सचमुच बेहतर करती है?</p></section>
       <section class="summary-tile"><h2>साक्ष्य</h2><p>benchmark-02 के quality, लागत, latency और token-shape charts.</p></section>
-      <section class="summary-tile"><h2>नतीजा</h2><p>GPT-5.2 का low/none हिस्सा, सबसे ऊँचे effort के बिना भी, GPT-4o baseline से साफ़ बेहतर quality देता है।</p></section>
+      <section class="summary-tile"><h2>नतीजा</h2><p>GPT-5.2 का low/none हिस्सा, xhigh effort के बिना भी, GPT-4o baseline से साफ़ बेहतर quality देता है।</p></section>
       <section class="summary-tile"><h2>निर्णय</h2><p>इस multi-step काम को उस सबसे कम effort पर चलाएँ जो quality bar पार कर दे, और effort तभी बढ़ाएँ जब साथ वाला quality chart सचमुच ऊपर जाए।</p></section>
     </div>
 
@@ -108,23 +108,23 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>विषय-गाइड चार्ट (सार्वजनिक समुच्चय से हाथ से बनाया गया)।</strong> यह स्कीमैटिक एक चार्ट-आकार के सवाल पर फ़ोकस करता है — मॉडल और effort के हिसाब से mean judge score, और हर bar के नीचे उसी combination की mean प्रति-request लागत — और इसे नीचे दी गई source table के साथ रखता है। सार्वजनिक chart-data pipeline से रेंडर हुआ source chart इससे नीचे दिया गया है।
+          <strong>विषय-गाइड चार्ट (सार्वजनिक समुच्चय से हाथ से बनाया गया)।</strong> यह स्कीमैटिक एक चार्ट-आकार के सवाल पर फ़ोकस करता है — मॉडल और effort के हिसाब से औसत judge score, और हर bar के नीचे उसी combination की mean प्रति-request लागत — और इसे नीचे दी गई source table के साथ रखता है। सार्वजनिक chart-data pipeline से रेंडर हुआ source chart इससे नीचे दिया गया है।
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.hi.svg" alt="Bar chart जिसमें benchmark-02 का mean judge score model और effort के हिसाब से दिखाया गया है, और cost labels भी दिए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.hi.svg" alt="Bar chart जिसमें benchmark-02 का औसत judge score model और effort के हिसाब से दिखाया गया है, और cost labels भी दिए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
       <h2>गुणवत्ता की हलचल ने व्याख्या बदली</h2>
-      <p>benchmark-02 में baseline GPT-4o configuration का judge score औसतन 1.5 था। GPT-5.2 ने none, medium, high, extra-high effort पर 2.0 हासिल किया और low effort पर 1.93 तक पहुँचा। चार्ट यह नहीं कहता कि "हमेशा effort बढ़ाओ"। यह दिखाता है कि इस workload में इतनी संरचना है कि मॉडल और effort की पसंद को जाँचना वाजिब है।</p><p>ज़्यादा अहम बात यह है कि सबसे पहले सफल होने वाले combination कैसे दिखते हैं। GPT-5.2 none ने प्रति-request औसत $0.000618 पर 2.0 हासिल किया। यानी सबसे ऊँचा effort default बनाए बिना भी यह trial काम का साबित होता है।</p>
+      <p>benchmark-02 में baseline GPT-4o configuration का judge score औसतन 1.5 था। GPT-5.2 ने none, medium, high, xhigh effort पर 2.0 हासिल किया और low effort पर 1.93 तक पहुँचा। चार्ट यह नहीं कहता कि "हमेशा effort बढ़ाओ"। यह दिखाता है कि इस workload में इतनी संरचना है कि मॉडल और effort की पसंद को जाँचना वाजिब है।</p><p>ज़्यादा अहम बात यह है कि सबसे पहले सफल होने वाले combination कैसे दिखते हैं। GPT-5.2 none ने प्रति-request औसत $0.000618 पर 2.0 हासिल किया। यानी xhigh effort default बनाए बिना भी यह trial काम का साबित होता है।</p>
     </section>
     <section id="s2" class="article-section">
       <h2>चार्ट कैसे पढ़ें</h2>
-      <p>X-axis model/effort combination है, और Y-axis mean judge score। हर bar के नीचे का label उसी combination की mean प्रति-request लागत है। इस जोड़ी को साथ पढ़ना ज़रूरी है, क्योंकि सिर्फ़ quality bar देखने पर ज़रूरत से ज़्यादा महँगा विकल्प चुन लेने का ख़तरा रहता है। अगर कई combinations rubric के शीर्ष तक पहुँच जाती हैं, तो सस्ती और तेज़ configuration ज़्यादा दिलचस्प हो जाती है।</p><p>यह frequency histogram नहीं है। हर bar एक summarized experimental combination है, जिसकी अपनी sample count और standard deviation source table में दी गई है।</p>
+      <p>X-axis model/effort combination है, और Y-axis औसत judge score। हर bar के नीचे का label उसी combination की mean प्रति-request लागत है। इस जोड़ी को साथ पढ़ना ज़रूरी है, क्योंकि सिर्फ़ quality bar देखने पर ज़रूरत से ज़्यादा महँगा विकल्प चुन लेने का ख़तरा रहता है। अगर कई combinations rubric के शीर्ष तक पहुँच जाती हैं, तो सस्ती और तेज़ configuration ज़्यादा दिलचस्प हो जाती है।</p><p>यह frequency histogram नहीं है। हर bar एक summarized experimental combination है, जिसकी अपनी sample count और standard deviation source table में दी गई है।</p>
     </section>
     <section id="s3" class="article-section">
       <h2>यह बेंचमार्क अलग क्यों था</h2>
-      <p>छोटे तथ्यात्मक काम में ज़्यादातर संक्षिप्त जवाब चाहिए थे। multi-step काम में मॉडल को reasoning की एक छोटी कड़ी संभालकर रखनी थी। इससे यह बदल गया कि extra thinking से क्या हासिल हो सकता है। अब मॉडल और effort की पसंद को सिर्फ़ बढ़े हुए खर्च के सामने नहीं, बल्कि कम ग़लत जवाबों के संदर्भ में पढ़ना पड़ा।</p><p>फिर भी साक्ष्य यह नहीं कहता कि हमेशा सबसे ज़्यादा effort लगाओ। effort बढ़ने पर latency भी बढ़ती है, और extra-high effort औसतन 3.3s था। quality के ceiling पर पहुँचने के बाद असली फ़र्क़ latency का होता है। तब सवाल यह रह जाता है कि क्या धीमा configuration सचमुच कुछ नया दे रहा है।</p>
+      <p>छोटे तथ्यात्मक काम में ज़्यादातर संक्षिप्त जवाब चाहिए थे। multi-step काम में मॉडल को reasoning की एक छोटी कड़ी संभालकर रखनी थी। इससे यह बदल गया कि extra thinking से क्या हासिल हो सकता है। अब मॉडल और effort की पसंद को सिर्फ़ बढ़े हुए खर्च के सामने नहीं, बल्कि कम ग़लत जवाबों के संदर्भ में पढ़ना पड़ा।</p><p>फिर भी साक्ष्य यह नहीं कहता कि हमेशा सबसे ज़्यादा effort लगाओ। effort बढ़ने पर latency भी बढ़ती है, और xhigh effort औसतन 3.3s था। quality के ceiling पर पहुँचने के बाद असली फ़र्क़ latency का होता है। तब सवाल यह रह जाता है कि क्या धीमा configuration सचमुच कुछ नया दे रहा है।</p>
     </section>
     <section id="s4" class="article-section">
       <h2>इसका मतलब क्या है</h2>
@@ -137,14 +137,14 @@
         <figcaption>
           <strong>Source chart — benchmark-02 judge quality.</strong>
           <strong>X-axis:</strong> model और effort के स्तर — gpt-4o baseline, फिर
-          gpt-5.2 का none, low, medium, high, extra-high।
-          <strong>Y-axis:</strong> 0–2 rubric पर mean judge score।
+          gpt-5.2 का none, low, medium, high, xhigh।
+          <strong>Y-axis:</strong> 0–2 rubric पर औसत judge score।
           <strong>Bars:</strong> हर bar एक configuration का mean score दिखाती है — यह
           frequency histogram नहीं, बल्कि aggregate comparison है — और whiskers &plusmn;1
           standard deviation दिखाते हैं।
           <strong>इसे कैसे पढ़ें:</strong> बढ़त models के बीच दिखती है, effort के
           स्तर ऊपर ले जाने से नहीं — gpt-4o baseline 1.5 पर है, जबकि gpt-5.2 की हर
-          configuration 2.0 या उसके क़रीब पहुँचती है (none, medium, high, extra-high
+          configuration 2.0 या उसके क़रीब पहुँचती है (none, medium, high, xhigh
           पर 2.0, low पर 1.93)। इसलिए मापे गए इस हिस्से में बढ़त मॉडल-अपग्रेड के साथ
           जुड़ी है, सिर्फ़ ऊँचे effort के साथ नहीं।
           <strong>साक्ष्य-सीमा:</strong> हर configuration के लिए N = 20, R = 3 repeats,
@@ -157,7 +157,7 @@
           (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-02/quality.json">served chart data</a>) में
           इन्हें cost chart के साथ जोड़कर पढ़ें।
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark-02 का bar chart, जिसमें mean judge score model और effort के हिसाब से दिखता है। gpt-4o baseline लगभग 1.5 पर है, जबकि gpt-5.2 की सभी effort configurations 2.0 या उसके क़रीब हैं, और standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark-02 का bar chart, जिसमें औसत judge score model और effort के हिसाब से दिखता है। gpt-4o baseline लगभग 1.5 पर है, जबकि gpt-5.2 की सभी effort configurations 2.0 या उसके क़रीब हैं, और standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
         <caption>benchmark-02 लागत-quality evidence</caption>
@@ -166,7 +166,7 @@
           <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>तुलना के लिए साफ़ baseline देता है।</td></tr>
 <tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>मापे गए इस सार्वजनिक हिस्से का सबसे सस्ता top-scoring combination।</td></tr>
 <tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>baseline से ऊपर है, लेकिन यहाँ सबसे साफ़ विजेता नहीं।</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>स्कोर सबसे ऊपर है, लेकिन बिल बड़ा है और latency भी ज़्यादा।</td></tr>
+<tr><td>GPT-5.2 xhigh</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>स्कोर सबसे ऊपर है, लेकिन बिल बड़ा है और latency भी ज़्यादा।</td></tr>
         </tbody>
       </table>
     </section>
@@ -183,7 +183,7 @@
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate हिस्सा। चार्ट को पढ़ने की यह भाषा इसी frozen stance को मानती है; error bars standard deviation हैं, confidence intervals नहीं, और N = 20 पर p-values का दावा नहीं किया गया है।</li>
         <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है — यह Azure OpenAI के आधिकारिक सार्वजनिक मूल्य-पृष्ठ का 2026-05-19 को लिया गया फ़्रोज़न स्नैपशॉट है। सूची-मूल्य हिलने पर लागत-संख्याएँ भी बदलेंगी।</li>
-        <li>[3] <strong>Tier 2 — benchmark-02 slice measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। यहीं से per-effort quality values आती हैं — GPT-4o baseline का 1.5, GPT-5.2 none, medium, high, extra-high का 2.0, GPT-5.2 low का 1.93 — और यहीं दिखता है कि GPT-5.2 none बिना reasoning tokens खर्च किए $0.000618 per request पर सबसे सस्ता top-scoring combination था। इसी में $0.000618 से $0.002179 per request तक की matching लागत figures भी हैं।</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 slice measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। यहीं से per-effort quality values आती हैं — GPT-4o baseline का 1.5, GPT-5.2 none, medium, high, xhigh का 2.0, GPT-5.2 low का 1.93 — और यहीं दिखता है कि GPT-5.2 none बिना reasoning tokens खर्च किए $0.000618 per request पर सबसे सस्ता top-scoring combination था। इसी में $0.000618 से $0.002179 per request तक की matching लागत figures भी हैं।</li>
         <li>[4] <strong>Tier 2 — rendered chart डेटा:</strong> यह repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, और <code>latency.json</code>। इन्हें <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> के साथ पढ़ने पर paired evidence मिलता है कि इस हिस्से में quality की बढ़त सिर्फ़ ऊँचे बिल के साथ नहीं, बल्कि वाजिब बिल के साथ आई।</li>
         <li>[5] <strong>Evidence dashboard:</strong> रेंडर हुआ <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 quality और cost paired chart</a> उन्हीं artifacts का audit करने योग्य रूप है।</li>
       </ul>

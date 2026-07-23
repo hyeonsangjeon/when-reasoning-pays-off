@@ -119,7 +119,7 @@ python experiments/examples/describe_all.py</code></pre>
       <p>同样的结果，这次从问题出发。先放下&lsquo;我们好奇什么&rsquo;，再逐一回答三个问题。</p>
 
       <h3>Q1 &mdash; 短事实任务需要推理吗？</h3>
-      <p>从最简单的问题开始。对于一次就能答出的短事实任务(抽取&middot;格式&middot;分类&middot;音译&middot;算术)，推理强度看起来<em>没有开启的理由</em>。三项基准中，我们只把这个底部重新做成了<strong>实测</strong> &mdash; 360 个单元全是真实 Azure Foundry 调用，没有 fixture 标记，裁判评分 360/360。</p>
+      <p>从最简单的问题开始。对于一次就能答出的短事实任务(抽取&middot;格式&middot;分类&middot;音译&middot;算术)，推理强度看起来<em>没有开启的理由</em>。三项基准中，我们只把这个底部重新做成了<strong>实测</strong> &mdash; 360 个单元全是真实 Azure Foundry 调用，没有 fixture 标记，评审评分 360/360。</p>
       <p>预测没有反转，原样成立。gpt-5.2 在完全不开推理的 <code>none</code> 下，正确率已经以 95% 饱和，反而高于 gpt-4o(90%)。每 1,000 个正确答案 <strong>$0.62</strong>，比 gpt-4o(<strong>$0.74</strong>)便宜 16%(按请求也便宜 12%)。把强度提高到 <code>xhigh</code>，隐藏推理 token 仍接近 0，所以质量和成本几乎都不动 &mdash; 这是强度旋钮没有接到任何地方的位置。所以短事实默认值是 gpt-5.2 <code>none</code>。详细拆解见 <a href="../experiments/exp001-short-factual/zh-CN/">exp001 实验笔记</a>。</p>
 
       <h3>Q2 &mdash; 多步任务上提高强度是否值得？</h3>
@@ -169,7 +169,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 headline, §5 decision boundary, §6 limits)。所有成本均重新引用自各基准的 <code>benchmarks/0[123]-*/analysis.md</code>。</li>
         <li>价格：单一快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。如果费率变化，应更新快照并重新运行分析。</li>
         <li>样本：每个基准 N=20 · R=3。方法论 §8 禁止在这个样本量报告置信区间/标准误 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎解读。</li>
-        <li>评分：使用评判模型(gpt-4o)。裁判提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
+        <li>评分：使用评判模型(gpt-4o)。评审提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
         <li>PTU：吞吐数字是基于 token 数的估算，不是真实 PTU 负载测试。工具基准的 <code>web_search</code> 是固定 KB 查询(模拟)。</li>
       </ul>
     </section>

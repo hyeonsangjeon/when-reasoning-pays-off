@@ -39,19 +39,19 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../">Article index</a> / Overview essay</p>
-    <p class="article-kicker">Overview essay · reasoning effort, quality, and spend</p>
+    <p class="article-kicker">Overview essay: reasoning effort, quality, and spend</p>
     <h1>When reasoning pays off: same token price, different bill</h1>
     <p class="lede">
       A team turns on a reasoning model, sees a per-token price card that looks
       just like the old one, and notices a new control: a reasoning-effort dial.
-      The natural instinct is to turn it up &mdash; if a little more thinking is
+      The natural instinct is to turn it up. If a little more thinking is
       almost free, why not buy better answers everywhere? But a reasoning model
       can carry the same price card and still produce a very different bill,
       because effort spends tokens generated inside the model, billed like usage
       and never shown in the response. So the real question is not &ldquo;is
       reasoning expensive?&rdquo; but &ldquo;where does extra effort buy a better
-      answer, and where does it only buy hidden computation?&rdquo; &mdash; and
-      this series tests that with data.
+      answer, and where does it only buy hidden computation?&rdquo; This
+      series tests that with data.
     </p>
 
     <section class="article-section">
@@ -59,7 +59,7 @@
       <p>
         The situation is familiar. A migration lands a team on a reasoning
         model, the configuration exposes a reasoning-effort dial, and the
-        per-token price looks unchanged &mdash; so turning effort up reads like
+        per-token price looks unchanged. Turning effort up can look like
         cheap insurance against wrong answers. The instinct to raise it
         everywhere is reasonable; what is missing is whether the extra thinking
         ever reaches the reader, or only the bill.
@@ -70,13 +70,13 @@
         buy hidden tokens, latency, and cost? Trusting the instinct would mean
         shipping a higher default and paying for thinking that may never change
         the output. Measuring it first means we only raise effort where a paired
-        quality signal moves &mdash; and keep it low where it does not.
+        quality signal moves, and keep it low where it does not.
       </p>
       <p>
         So we tested it. We held the prompts and workload slices fixed and
-        walked the same effort ladder across each one &mdash; short factual
+        walked the same effort ladder across each one: short factual
         answers, multi-step reasoning, tool-using agents, token composition, and
-        latency and cost &mdash; then added a modeled PTU/PAYG planning surface
+        latency and cost. We then added a modeled PTU/PAYG planning surface
         on top of the measured token shape. The results split the way good
         evidence should: on short factual work the extra effort mostly bought
         hidden reasoning tokens rather than a better answer; the invisible-token
@@ -99,7 +99,7 @@
         <a href="../../../assets/when-reasoning-pays-off-overview.svg">Open the one-pager SVG</a>.
       </figcaption>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" class="overview-one-pager" role="img" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA" aria-labelledby="t d" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
-        <title id="t">When reasoning pays off — and when it doesn’t</title>
+        <title id="t">When reasoning pays off, and when it doesn’t</title>
         <desc id="d">A measurement series on reasoning-model cost, quality, and the production contracts around them. Central message: A reasoning model can share the same per-token price card and still produce a very different bill.</desc>
         <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#5C6470"/></marker><marker id="arrowA" markerWidth="11" markerHeight="11" refX="4" refY="3.2" orient="auto"><path d="M0 0 L8 3.2 L0 6.4 z" fill="#5A3FA0"/></marker></defs>
         <rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
@@ -120,10 +120,10 @@
         <path d="M572 378 H700" stroke="#5A3FA0" stroke-width="3"/>
         <rect x="572" y="409" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="418" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15.5" fill="#2B2D42">So the series asks one thing per slice:</text><rect x="572" y="436" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="445" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15.5" fill="#2B2D42">did the extra spend buy a better answer?</text><rect x="572" y="463" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="472" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="15.5" fill="#2B2D42">Eleven essays: five measured, six operational.</text>
         <path d="M64 596 H1136" stroke="#E1E5EA" stroke-width="1.2"/>
-        <text x="64" y="624" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#5C6470">Evidence boundary — N=20 per cell, R=3, three reasoning benchmarks, single Azure OpenAI tenant/region.</text>
+        <text x="64" y="624" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#5C6470">Evidence boundary: N=20 per cell, R=3, three reasoning benchmarks, single Azure OpenAI tenant/region.</text>
         <text x="64" y="644" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="12.5" fill="#9AA3AD">Source: this repository, benchmarks/ + results/.</text>
         <rect x="1007" y="608" width="129" height="21" rx="10.5" fill="none" stroke="#5A3FA0" stroke-width="1.3"/><text x="1071.5" y="623" text-anchor="middle" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.6" fill="#5A3FA0">Series overview</text>
-        <text x="1136" y="644" text-anchor="end" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#9AA3AD">Static one-pager · sanitized public aggregate</text>
+        <text x="1136" y="644" text-anchor="end" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#9AA3AD">Static one-pager: sanitized public aggregate</text>
         </svg>
     </figure>
 
@@ -138,7 +138,7 @@
       </section>
       <section class="summary-tile">
         <h2>Finding</h2>
-        <p>On the short-factual slice, cost stayed essentially flat across the effort ladder &mdash; every gpt-5.2 tier landed below the gpt-4o baseline &mdash; while the mean judge score held around 1.95, at or above the baseline; on the multi-step slice, where the evaluator did move, it rose from 1.5 to 2.0.</p>
+        <p>On the short-factual slice, cost stayed essentially flat across the effort ladder: every gpt-5.2 tier landed below the gpt-4o baseline, while the mean judge score held around 1.95, at or above the baseline; on the multi-step slice, where the evaluator did move, it rose from 1.5 to 2.0.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
@@ -147,26 +147,26 @@
     </div>
 
     <section class="article-section" aria-label="How this series is structured">
-      <p class="section-label">How to read this series · three layers and a bridge</p>
+      <p class="section-label">How to read this series: three layers and a bridge</p>
       <h2>The series in three layers</h2>
       <div class="article-summary-grid">
         <section class="summary-tile">
-          <h2>Overview · Question</h2>
+          <h2>Overview: question</h2>
           <p>This essay frames the question: when does extra reasoning effort earn its cost?</p>
           <p><a href="./">You are here</a></p>
         </section>
         <section class="summary-tile">
-          <h2>Evidence · five slices</h2>
+          <h2>Evidence: five slices</h2>
           <p>Five topic essays measure cost, quality, latency, and token shape on one workload slice each.</p>
           <p><a href="topics/short-factual-work/">Start the evidence layer</a></p>
         </section>
         <section class="summary-tile">
-          <h2>Bridge · measurement → production</h2>
+          <h2>Bridge: measurement → production</h2>
           <p>One essay names why the voice shifts and which evidence habits carry into operations.</p>
           <p><a href="topics/bridge-from-measurement-to-production/">Read the bridge essay</a></p>
         </section>
         <section class="summary-tile">
-          <h2>Operations · production policy</h2>
+          <h2>Operations: production policy</h2>
           <p>Four essays apply the same audit discipline to recovery, cache routing, retention, and migration sizing.</p>
           <p><a href="../ptu-retry-after-recovery/">Start the operations layer</a></p>
         </section>
@@ -190,13 +190,13 @@
     </p>
 
     <section class="article-section chart-reading-guide">
-      <p class="section-label">Reading convention · bars, axes, and tables</p>
+      <p class="section-label">Reading convention: bars, axes, and tables</p>
       <h2>How to read the charts in this essay</h2>
       <p>
         The small bar figures in this essay are guideposts for the full source
         charts. They are not frequency histograms. Each bar is an aggregate
         measurement for one effort cell: baseline, none, low, medium, high,
-        or extra-high.
+        or xhigh.
       </p>
       <div class="evidence-grid">
         <div>
@@ -233,7 +233,7 @@
     </section>
 
     <section id="short-factual" class="article-section">
-      <p class="section-label">Topic · short factual answers</p>
+      <p class="section-label">Topic: short factual answers</p>
       <h2>Short factual work often does not pay</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
@@ -255,16 +255,16 @@
       </figure>
       <figure class="article-figure" id="figure-short-factual-cost">
         <figcaption>
-          <strong>Source chart &mdash; short-factual cost per request (benchmark&nbsp;01).</strong>
-          <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
-          then gpt-5.2 at none, low, medium, high, and extra-high effort.
+          <strong>Source chart: short-factual cost per request (benchmark&nbsp;01).</strong>
+          <strong>X-axis:</strong> the model and effort ladder: the gpt-4o baseline,
+          then gpt-5.2 at none, low, medium, high, and xhigh effort.
           <strong>Y-axis:</strong> mean pay-as-you-go USD per request.
           <strong>Bars:</strong> each bar is the mean cost of one effort cell; there is
           no line series, and the vertical whiskers show &plusmn;1 standard deviation
           across the repeated measurements.
-          <strong>How to read it:</strong> cost stays essentially flat &mdash; about
-          $0.000587 at none effort and $0.000598 at extra-high, every gpt-5.2 tier
-          landing below the gpt-4o baseline of $0.000665 &mdash; while the paired
+          <strong>How to read it:</strong> cost stays essentially flat: about
+          $0.000587 at none effort and $0.000598 at xhigh, with every gpt-5.2 tier
+          landing below the gpt-4o baseline of $0.000665, while the paired
           judge score holds around 1.95, at or above the baseline's 1.90, so climbing
           the ladder buys neither a lower bill nor a better answer.
           <strong>Evidence boundary:</strong> N = 20 authored samples per cell, R = 3
@@ -277,7 +277,7 @@
           <a href="../../charts/?lang=en">evidence dashboard</a>
           (<a href="../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder &mdash; the gpt-4o baseline and gpt-5.2 none through extra-high, every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder: the gpt-4o baseline and gpt-5.2 none through xhigh, every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <div class="chart-reading-note">
         <h3>Reading this bar chart</h3>
@@ -301,8 +301,8 @@
           <h3>What it means</h3>
           <p>
             In the short-factual slice, none effort averaged $0.000587
-            per request and extra-high $0.000598 &mdash; a flat 1.02x span that
-            stays below the gpt-4o baseline of $0.000665 &mdash; while the mean
+            per request and xhigh $0.000598, a flat 1.02x span that
+            stays below the gpt-4o baseline of $0.000665, while the mean
             judge score held around 1.95, at or above the baseline's 1.90.
           </p>
         </div>
@@ -318,12 +318,12 @@
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">Topic · invisible billing surface</p>
+      <p class="section-label">Topic: invisible billing surface</p>
       <h2>Reasoning tokens explain the bill gap</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>Chart to read:</strong> token composition by effort level —
-          cached input, non-cached input, visible output, and reasoning tokens.
+          <strong>Chart to read:</strong> token composition by effort level: cached input, non-cached input,
+          visible output, and reasoning tokens.
         </figcaption>
         <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="Stacked token composition: X-axis is token component; Y-axis is mean tokens per request.">
           <div class="mini-axis-row"><span>Y: mean tokens/request</span><span>X: token component</span></div>
@@ -348,8 +348,8 @@
           <h3>What it means</h3>
           <p>
             In the short-factual slice, reasoning stays near zero at every
-            tier &mdash; 0 tokens at none and about 1.35 even at high effort
-            &mdash; which is exactly why the bill stays flat. The invisible jump
+            tier: 0 tokens at none and about 1.35 even at high effort.
+            That is exactly why the bill stays flat. The invisible jump
             shows up instead on the multi-step slice, where reasoning tokens
             climb with effort and drive a cost gap the answer text never shows.
           </p>
@@ -366,7 +366,7 @@
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">Topic · multi-step reasoning</p>
+      <p class="section-label">Topic: multi-step reasoning</p>
       <h2>Multi-step work can pay</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
@@ -409,7 +409,7 @@
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">Topic · tool-using agents</p>
+      <p class="section-label">Topic: tool-using agents</p>
       <h2>Tool-agent work needs ceiling checks</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
@@ -479,7 +479,7 @@
     </section>
 
     <section id="ptu-payg" class="article-section">
-      <p class="section-label">Topic · capacity planning</p>
+      <p class="section-label">Topic: capacity planning</p>
       <h2>PTU/PAYG crossover is a planning model</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
@@ -507,7 +507,7 @@
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
           <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">planning threshold</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured · modeled</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured, modeled</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
@@ -543,7 +543,7 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">Bridge essay · between the evidence and operations layers</p>
+      <p class="section-label">Bridge essay: between the evidence and operations layers</p>
       <h2>From measurement to production</h2>
       <p>
         The evidence essays answered a measurement question: where does extra
@@ -559,7 +559,7 @@
     </section>
 
     <section id="operations-next" class="article-section decision-box">
-      <p class="section-label">Operations essays · production layer</p>
+      <p class="section-label">Operations essays: production layer</p>
       <h2>The operational essays continue the evidence story</h2>
       <p>
         This overview explains when reasoning effort changes cost and quality.
@@ -584,7 +584,7 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">Sources · evidence boundary</p>
+      <p class="section-label">Sources: evidence boundary</p>
       <h2>Sources and evidence boundary</h2>
       <p>
         The overview reads cost, quality, latency, and token composition
@@ -594,13 +594,13 @@
         ends and operational inference begins.
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance and does not claim p-values at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The ratios will drift if list pricing moves.</li>
-        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
-        <li>[4] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat $0.000587-to-$0.000598 gpt-5.2 cost band (every tier below the $0.000665 gpt-4o baseline, a 1.02x span), the ~1.95 mean judge score that matches or beats the 1.90 baseline, and the near-zero reasoning-token counts (0 at none, about 1.35 at high) across the effort ladder.</li>
-        <li>[5] <strong>Tier 2 — multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
-        <li>[6] <strong>Tier 2 — tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>
-        <li>[7] <strong>Tier 2 — modeled crossover:</strong> 2748 rpm with a 50 PTU floor for the short-factual extra-high row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
+        <li>[1] <strong>Tier 1: methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance and does not claim p-values at N = 20.</li>
+        <li>[2] <strong>Tier 1: PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The ratios will drift if list pricing moves.</li>
+        <li>[3] <strong>Tier 1: PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn: provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
+        <li>[4] <strong>Tier 2: short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat $0.000587-to-$0.000598 gpt-5.2 cost band (every tier below the $0.000665 gpt-4o baseline, a 1.02x span), the ~1.95 mean judge score that matches or beats the 1.90 baseline, and the near-zero reasoning-token counts (0 at none, about 1.35 at high) across the effort ladder.</li>
+        <li>[5] <strong>Tier 2: multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
+        <li>[6] <strong>Tier 2: tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>
+        <li>[7] <strong>Tier 2: modeled crossover:</strong> 2748 rpm with a 50 PTU floor for the short-factual xhigh row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
         <li>[8] <strong>Evidence dashboard:</strong> the per-essay tables and rendered source charts at the <a href="../../charts/?lang=en">evidence dashboard</a> are the auditable form of the same artifacts.</li>
       </ul>
       <p>
@@ -633,14 +633,14 @@
       <p>
         <strong>Next:</strong>
         <a href="topics/short-factual-work/">Short factual work: when extra reasoning buys cost, not quality</a>
-        &mdash; If the task mostly asks for short factual answers, does
+        If the task mostly asks for short factual answers, does
         higher reasoning effort improve quality enough to justify the bill?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+    <p>MIT-licensed research artifact: published data is sanitized or aggregate only.</p>
   </footer>
 </body>
 </html>

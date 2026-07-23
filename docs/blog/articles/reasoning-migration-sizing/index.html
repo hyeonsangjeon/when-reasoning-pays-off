@@ -47,10 +47,10 @@
       what already works: carry the old <code>gpt-4o</code> PTU size forward, or
       apply a family-level “5.x” multiplier to it, on the assumption that the
       model name carries enough information to resize. But PTU sizing is driven by
-      token shape, not by the model name &mdash; the prompt size, visible output,
-      hidden reasoning tokens, cache hit rate, and response ceiling all move the
+      token shape, not the model name: prompt size, visible output, hidden
+      reasoning tokens, cache hit rate, and response ceiling all move the
       result. So the instinct to size from the name alone runs straight into the
-      operating question this essay asks &mdash; is the model name enough, or does
+      operating question this essay asks: is the model name enough, or does
       the request shape have to be re-measured first?
     </p>
 
@@ -74,9 +74,9 @@
     <section id="why-remeasure" class="article-section">
       <h2>Why re-measure instead of reusing the old size</h2>
       <p>
-        The reuse reflex assumes the model name carries the size &mdash; that a
-        working <code>gpt-4o</code> number, scaled by a family multiplier, will
-        still fit GPT-5.x. Before accepting that, two things are worth putting
+        The reuse reflex assumes the model name carries the size: a working
+        <code>gpt-4o</code> number, scaled by a family multiplier, will still
+        fit GPT-5.x. Before accepting that, two things are worth putting
         side by side. The first is what the documentation specifies: Microsoft
         Learn converts traffic into normalized TPM from peak RPM, average prompt
         and output tokens, cache rate, the model's output-to-input ratio, and its
@@ -85,28 +85,28 @@
         reported in <code>output_tokens_details.reasoning_tokens</code>. The
         second is this repository's illustrative worked calculation, which runs
         that documented formula over one example call shape so the size drivers
-        sit side by side &mdash; not a measurement of any deployment.
+        sit side by side. It is not a measurement of any deployment.
       </p>
       <p>
         The pairing is the part worth pausing on. Read on visible output alone,
-        the migration can look manageable &mdash; the same prompt and the same
+        the migration can look manageable: the same prompt and the same
         visible answer can size at roughly the same level, or even slightly
         lighter, on the newer model. But the visible answer is not the whole
         request: once hidden reasoning output appears, the same answer can need
-        far more normalized TPM, and this repository's working hypothesis &mdash;
-        an admission risk to test, not a documented platform behavior &mdash; is
+        far more normalized TPM, and this repository's working hypothesis, an
+        admission risk to test rather than documented platform behavior, is
         that an oversized <code>max_output_tokens</code> ceiling could reserve
         admission weight whether or not those tokens are ever generated. That is
         why the operating question is not “is the new model
-        heavier?” but “what does the measured request shape &mdash; visible
-        output, reasoning output, cache rate, and response ceiling &mdash;
+        heavier?” but “what does the measured request shape (visible
+        output, reasoning output, cache rate, and response ceiling)
         actually reserve?” The normalized-TPM formula, the per-model table, the
         cache deduction, and the reasoning-token accounting are what Microsoft
         Learn and OpenAI document; treating an oversized
         <code>max_output_tokens</code> as PTU admission risk to test is
         operational inference this repository defends. The chart that follows is a
         synthetic worked example over a modeled workload with pinned pricing
-        snapshots &mdash; not measured capacity, live PTU throughput, or an SLA.
+        snapshots. It is not measured capacity, live PTU throughput, or an SLA.
         The illustrative chart below makes the size drivers explicit.
       </p>
     </section>
@@ -224,7 +224,7 @@
         </tbody>
       </table>
       <div class="chart-reading-note">
-        <h3>What this means</h3>
+        <h3>What the chart says</h3>
         <p>
           The visible-only rows do not support a blanket claim that GPT-5.x is
           always less efficient than GPT-4o. The reasoning rows show the trap:
@@ -305,7 +305,7 @@
     </section>
 
     <section class="article-section decision-box">
-      <h2>The practical rule</h2>
+      <h2>The rule for operators</h2>
       <p><strong>Before moving GPT-4o traffic to GPT-5.x on
         PTU, re-measure output, reasoning, cache, and <code>max_output_tokens</code>
         ceiling policy, then size with the normalized-TPM formula, because the

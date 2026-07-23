@@ -41,7 +41,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章</a> / <a href="../../../zh-CN/">推理何时值得</a> / 主题详情</p>
-    <p class="article-kicker">运营模式 · 循环与预算治理 (L6) · 设计，不是新的测量</p>
+    <p class="article-kicker">运营模式、循环与预算治理 (L6)、设计而非新的测量</p>
     <h1>智能体循环：当上限检查说该停之后，究竟由谁真正停下循环？</h1>
     <p class="lede">配套主题最后给了一个干净的结论：一旦工具智能体的质量已经顶到上限，更多推理强度换来的只是延迟和成本，而不是分数——所以应该路由到刚好够到上限的最低强度。对单次调用来说，这条建议完全正确。但真实智能体很少只调用一次。它会先规划，再调用工具、读取结果、再次推理，然后继续循环。任务变成循环的那一刻，成本就不再是价格页上能查到的单个数字，而成了<em>跨步骤的积分</em>；大家最先想到的那种逐次调用调节强度的手段，也碰不到真正烧钱的地方。这个主题是上限检查的另一半：问题不是“这次调用值不值得加推理强度”，而是“循环什么时候停，谁拍板让它停”。</p>
 
@@ -200,7 +200,7 @@
         “循环直到评估显示继续不再划算”；这只是把单次调用的路由决策写成循环版本。
       </p>
       <p>
-        <strong>仓库内证据。</strong> <code>scripts/run_judge.py</code> 是已经在每个基准中为质量打分的评分量表裁判；
+        <strong>仓库内证据。</strong> <code>scripts/run_judge.py</code> 是已经在每个基准中为质量打分的评分量表评审；
         同样的结构天然适合作为继续门。1.97–2.00 上限
         (<code>results/summary.md</code> §3;
         <code>benchmarks/03-tool-using-agent/analysis.md</code>) 是一条实测证据：
@@ -307,6 +307,6 @@
     </section>
   </main>
 
-  <footer class="site"><p>MIT 许可的研究产物 · 已发布数据仅为脱敏或聚合形式。</p></footer>
+  <footer class="site"><p>MIT 许可的研究产物，已发布数据仅为脱敏或聚合形式。</p></footer>
 </body>
 </html>

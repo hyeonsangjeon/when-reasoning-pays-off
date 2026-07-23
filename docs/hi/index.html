@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>when reasoning pays off — वही टोकन मूल्य, अलग बिल</title>
-  <meta name="description" content="Azure OpenAI परिनियोजन में यह तय करने की व्यावहारिक मार्गदर्शिका कि रीज़निंग मॉडल कब अपनी लागत वसूल करते हैं।">
+  <title>when reasoning pays off — वही token price, अलग bill</title>
+  <meta name="description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
   <!-- Social sharing (Open Graph + Twitter Card) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="when reasoning pays off">
   <meta property="og:locale" content="hi_IN">
-  <meta property="og:title" content="when reasoning pays off — वही टोकन मूल्य, अलग बिल">
-  <meta property="og:description" content="Azure OpenAI परिनियोजन में यह तय करने की व्यावहारिक मार्गदर्शिका कि रीज़निंग मॉडल कब अपनी लागत वसूल करते हैं।">
+  <meta property="og:title" content="when reasoning pays off — वही token price, अलग bill">
+  <meta property="og:description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
   <meta property="og:url" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/hi/">
   <meta property="og:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="वही टोकन मूल्य, अलग बिल: रीज़निंग वर्कलोड में छिपे हुए 'सोच' टोकन का अतिरिक्त शुल्क लगता है, इसलिए कुल बिल ऊँचा दिखता है।">
+  <meta property="og:image:alt" content="वही token price, अलग bill: reasoning workload में छिपे हुए 'सोच' tokens का अतिरिक्त शुल्क लगता है, इसलिए कुल bill ऊपर जाता है।">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="when reasoning pays off — वही टोकन मूल्य, अलग बिल">
-  <meta name="twitter:description" content="Azure OpenAI परिनियोजन में यह तय करने की व्यावहारिक मार्गदर्शिका कि रीज़निंग मॉडल कब अपनी लागत वसूल करते हैं।">
+  <meta name="twitter:title" content="when reasoning pays off — वही token price, अलग bill">
+  <meta name="twitter:description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
   <meta name="twitter:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
@@ -51,21 +51,20 @@
       </nav>
     </div>
     <div class="hero">
-      <img src="../assets/hero.svg" alt="दो वर्कलोड समान प्रति-टोकन मूल्य चुकाते हैं, लेकिन रीज़निंग वर्कलोड पर अदृश्य 'सोच' टोकन का अतिरिक्त शुल्क लगता है, इसलिए उसका कुल बिल अधिक होता है।">
+      <img src="../assets/hero.svg" alt="दो workloads का per-token price समान है, लेकिन reasoning workload पर अदृश्य 'सोच' tokens का अतिरिक्त शुल्क लगता है, इसलिए उसका कुल bill अधिक होता है।">
     </div>
   </header>
 
   <main>
-    <h1>वही टोकन मूल्य, अलग बिल</h1>
+    <h1>वही token price, अलग bill</h1>
     <p class="lede">
-      कोई टीम वर्कलोड को रीज़निंग मॉडल पर ले जाती है। प्रति-टोकन मूल्य पहले
-      जैसा ही दिखता है, लेकिन एक नई सेटिंग सामने आती है: रीज़निंग एफर्ट। उसे
-      बढ़ाना लगभग मुफ़्त-सा लगता है &mdash; तो फिर हर जगह इसे बढ़ाकर बेहतर जवाब
-      क्यों न पाया जाए? पर दिखने वाला आउटपुट लगभग वैसा ही रहता है और बिल फिर भी
-      चढ़ जाता है। वजह छिपे हुए "सोच" टोकन हैं: रीज़निंग मॉडल इन्हें बनाता है
-      और इन पर शुल्क लेता है, पर इन्हें प्रतिक्रिया में कभी नहीं दिखाता। यह
-      प्रोजेक्ट प्रतिनिधि कार्यों के एक छोटे समूह पर मापता है कि ये अतिरिक्त
-      टोकन कब अपनी लागत वसूल करते हैं और कब सिर्फ़ बिल बढ़ाते हैं।
+      कोई टीम workload को reasoning model पर ले जाती है। per-token price पहले जैसा
+      ही दिखता है, लेकिन एक नई setting सामने आती है: reasoning effort। उसे बढ़ाना
+      लगभग मुफ़्त-सा लगता है। फिर हर जगह इसे ऊपर कर बेहतर जवाब क्यों न लिया जाए?
+      पर visible output लगभग वैसा ही रहता है और bill फिर भी चढ़ जाता है। वजह छिपे
+      हुए "सोच" tokens हैं: reasoning model इन्हें बनाता है और इन पर charge करता
+      है, पर response में कभी नहीं दिखाता। यह project representative tasks के छोटे
+      set पर मापता है कि ये extra tokens कब लागत वसूल करते हैं और कब सिर्फ़ bill बढ़ाते हैं।
     </p>
 
     <nav class="article-outline" aria-label="यहाँ से शुरू करें">
@@ -79,49 +78,49 @@
     <h2>टीमें इसकी परवाह क्यों करती हैं</h2>
     <p>
       मॉडल माइग्रेशन के बाद इंजीनियर से सवाल सीधे पूछे जाते हैं: लागत क्यों
-      बदली, लेटेंसी क्यों बदली, थ्रॉटलिंग क्यों बढ़ी? रीज़निंग एफर्ट इन तीनों के
-      नीचे बैठा है। डिफ़ॉल्ट को ऊँचा छोड़ दें तो टोकन चुपचाप उस आंतरिक गणना पर
-      खर्च होते हैं जो पाठक तक कभी नहीं पहुँचती &mdash; PAYG में असली पैसा, और
-      PTU में बहुमूल्य क्षमता-गुंजाइश। एफर्ट कहाँ सच में जवाब बदलता है, यह
-      जानना भरोसेमंद रोलआउट और अचानक आए बिल के बीच का फर्क है।
+      बदली, लेटेंसी क्यों बदली, थ्रॉटलिंग क्यों बढ़ी? reasoning effort इन तीनों के
+      नीचे बैठा है। default ऊँचा छोड़ दें तो tokens चुपचाप उस internal computation पर
+      खर्च होते हैं जो reader तक कभी नहीं पहुँचती: PAYG में असली पैसा, और
+      PTU में कीमती capacity headroom। effort कहाँ सच में जवाब बदलता है, यह
+      जानना भरोसेमंद rollout और अचानक आए bill के बीच का फर्क है।
     </p>
 
     <h2>हमने क्या परखा</h2>
     <p>
-      हमने प्रॉम्प्ट और वर्कलोड स्लाइस स्थिर रखकर हर स्लाइस पर रीज़निंग-एफर्ट के
-      स्तरों का वही क्रम चलाया &mdash; छोटे तथ्यात्मक उत्तर, संरचित डेटा से
-      प्राकृतिक भाषा में रूपांतरण, बहु-चरणीय रीज़निंग, और टूल का उपयोग करने वाले
-      एजेंट &mdash; और हर कॉल पर पूरा उपयोग विवरण दर्ज किया: इनपुट, कैश,
-      रीज़निंग और आउटपुट टोकन, साथ ही गुणवत्ता संकेत और लेटेंसी। इस मापे गए
-      टोकन-स्वरूप के ऊपर हमने एक मॉडल-आधारित दृष्टि जोड़ी कि वही वर्कलोड
-      पे-ऐज़-यू-गो (PAYG) बनाम प्रोविज़ंड थ्रूपुट (PTU) पर कैसे मूल्यांकित होगा।
+      हमने prompts और workload slices स्थिर रखे, फिर हर slice पर reasoning-effort के
+      स्तरों का वही क्रम चलाया: छोटे factual answers, structured data से natural
+      language synthesis, multi-step reasoning, और tools इस्तेमाल करने वाले agents।
+      हर call पर पूरा usage breakdown दर्ज किया: input, cached, reasoning और output
+      tokens, साथ में quality signal और latency। इस measured token shape के ऊपर
+      हमने modeled view जोड़ा कि वही workload pay-as-you-go (PAYG) बनाम provisioned
+      throughput (PTU) में कैसे priced होगा।
     </p>
 
     <h2>साक्ष्य ने क्या दिखाया</h2>
     <p>
-      नतीजे वैसे ही अलग-अलग निकले जैसे ईमानदार साक्ष्य निकलता है &mdash; कुछ
-      जगह एफर्ट ने अपनी लागत वसूल की, तो कुछ जगह उसने सिर्फ़ छिपी हुई गणना की
-      लागत बढ़ाई। चार बातें हर स्लाइस पर लागू होती हैं।
+      नतीजे वैसे ही बँटे जैसे भरोसेमंद evidence बँटता है: कुछ जगह effort ने अपनी
+      लागत वसूल की, और कुछ जगह उसने सिर्फ़ hidden computation की लागत बढ़ाई।
+      चार बातें हर slice पर लागू होती हैं।
     </p>
     <div class="cards">
       <div class="card">
-        <h3>रीज़निंग टोकन हमेशा मापें</h3>
-        <p>इन पर शुल्क लगता है पर ये लौटाए नहीं जाते। हर कॉल पर पूरा उपयोग
-           विवरण दर्ज करें—इनपुट, कैश, रीज़निंग और आउटपुट।</p>
+        <h3>reasoning tokens हमेशा मापें</h3>
+        <p>इन पर शुल्क लगता है पर ये लौटाए नहीं जाते। हर call पर पूरा usage
+           breakdown दर्ज करें: input, cache, reasoning और output।</p>
       </div>
       <div class="card">
-        <h3>हर कार्य को रीज़निंग की ज़रूरत नहीं</h3>
+        <h3>हर task को reasoning की ज़रूरत नहीं</h3>
         <p>छोटे तथ्यात्मक उत्तर, संरचित डेटा से प्राकृतिक भाषा में रूपांतरण,
            और सरल वर्गीकरण में अक्सर लागत बढ़ी पर उसके साथ गुणवत्ता नहीं बढ़ी।</p>
       </div>
       <div class="card">
         <h3>एफर्ट प्रमुख लागत-नियंत्रक है</h3>
-        <p>रीज़निंग-एफर्ट नॉब को डिफ़ॉल्ट रूप से सबसे निचले स्तर पर रखें और
+        <p>reasoning-effort knob को default रूप से सबसे निचले स्तर पर रखें और
            तभी बढ़ाएँ जब गुणवत्ता मूल्यांकन इस खर्च को उचित ठहराए।</p>
       </div>
       <div class="card">
         <h3>बिलिंग मॉडल फ़ायदे को बदल देता है</h3>
-        <p>पे-ऐज़-यू-गो (PAYG) पर, रीज़निंग टोकन घटाने से बिल कम होता है।
+        <p>पे-ऐज़-यू-गो (PAYG) पर, reasoning tokens घटाने से bill कम होता है।
            प्रोविज़ंड थ्रूपुट (PTU) पर, वही कटौती निश्चित बिल पर थ्रूपुट लाभ
            बन जाती है।</p>
       </div>
@@ -129,29 +128,29 @@
 
     <h2>यह किसके लिए है</h2>
     <p>
-      उन इंजीनियरों और आर्किटेक्ट्स के लिए जो Azure OpenAI परिनियोजन चलाते हैं
-      और यह तय कर रहे हैं कि रीज़निंग सक्षम करें या नहीं (और कितनी), क्षमता का
+      उन इंजीनियरों और आर्किटेक्ट्स के लिए जो Azure OpenAI deployment चलाते हैं
+      और यह तय कर रहे हैं कि reasoning enable करें या नहीं (और कितनी), क्षमता का
       आकलन कर रहे हैं, या मॉडल माइग्रेशन के बाद लागत, लेटेंसी या थ्रॉटलिंग में
       बदलाव डीबग कर रहे हैं।
     </p>
 
     <div class="banner">
       <strong>यह कोई उत्पाद नहीं, शोध सामग्री है।</strong> कोई होस्टेड सेवा
-      नहीं है और कोई SLA नहीं। यह रिपॉज़िटरी केवल पुनरुत्पाद्य बेंचमार्क,
-      कार्यप्रणाली, निर्णय उपकरण और सैनिटाइज़्ड परिणाम-अंश प्रकाशित करती है।
+      नहीं है और कोई SLA नहीं। यह repository केवल reproducible benchmarks,
+      methodology, decision tools और sanitized result slices प्रकाशित करती है।
     </div>
 
     <h2>आगे क्या पढ़ें</h2>
     <div class="article-summary-grid">
       <article class="summary-tile">
         <h2>अवलोकन निबंध पढ़ें</h2>
-        <p>निर्देशित कहानी: एफर्ट कहाँ खर्च बर्बाद करता है, कहाँ आज़माने लायक है,
-           और छिपे टोकन को बजट में स्पष्ट रूप से क्यों रखना चाहिए।
+        <p>guided story: effort कहाँ खर्च बर्बाद करता है, कहाँ आज़माने लायक है,
+           और hidden tokens को budget में स्पष्ट रूप से क्यों रखना चाहिए।
            <a href="../blog/articles/when-reasoning-pays-off/hi/">पढ़ना शुरू करें →</a></p>
       </article>
       <article class="summary-tile">
         <h2>लेख-केंद्र देखें</h2>
-        <p>पूरा पठन-क्रम &mdash; साक्ष्य विषय, सेतु निबंध, और रिकवरी, कैशिंग व
+        <p>पूरा reading path: साक्ष्य विषय, सेतु निबंध, और recovery, caching व
            साइज़िंग पर परिचालन नोट्स। <a href="../blog/articles/hi/">केंद्र खोलें →</a></p>
       </article>
       <article class="summary-tile">
@@ -160,7 +159,7 @@
            <a href="../blog/charts/?lang=hi">डैशबोर्ड खोलें →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>पूरी कार्यप्रणाली पढ़ें</h2>
+        <h2>पूरी methodology पढ़ें</h2>
         <p>निर्णय ढाँचा और ऑपरेटर मार्गदर्शन रिपॉज़िटरी दस्तावेज़ में हैं।
            <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर देखें →</a></p>
       </article>
@@ -171,32 +170,32 @@
       <dl class="glossary-list">
         <div class="glossary-term" data-term="foundry">
           <dt>Foundry</dt>
-          <dd>Azure AI Foundry — इस प्रोजेक्ट में मापे गए मॉडल को डिप्लॉय और
+          <dd>Azure AI Foundry: इस project में मापे गए model को deploy और
               सर्व करने वाला प्रबंधित प्लेटफ़ॉर्म।</dd>
         </div>
         <div class="glossary-term" data-term="ptu">
           <dt>PTU</dt>
-          <dd>प्रोविज़ंड थ्रूपुट यूनिट — टोकन के बजाय थ्रूपुट के लिए भुगतान वाली
+          <dd>Provisioned Throughput Units: tokens के बजाय throughput के लिए payment वाली
               आरक्षित, निश्चित-क्षमता बिलिंग।</dd>
         </div>
         <div class="glossary-term" data-term="payg">
           <dt>PAYG</dt>
-          <dd>पे-ऐज़-यू-गो — इनपुट, कैश, रीज़निंग और आउटपुट टोकन के अनुसार लिया
+          <dd>Pay-as-you-go: input, cache, reasoning और output tokens के अनुसार लिया
               जाने वाला उपयोग-आधारित बिलिंग।</dd>
         </div>
         <div class="glossary-term" data-term="reasoning">
-          <dt>रीज़निंग टोकन</dt>
-          <dd>आंतरिक "सोच" टोकन जिन्हें रीज़निंग मॉडल बनाता और बिल करता है पर
+          <dt>reasoning tokens</dt>
+          <dd>internal "सोच" tokens जिन्हें reasoning model बनाता और bill करता है पर
               प्रतिक्रिया में कभी नहीं लौटाता।</dd>
         </div>
         <div class="glossary-term" data-term="cache">
           <dt>कैश</dt>
-          <dd>प्रॉम्प्ट कैश — पहले संसाधित प्रॉम्प्ट उपसर्गों का पुन: उपयोग, कम
+          <dd>Prompt cache: पहले process किए गए prompt prefixes का reuse, कम
               कैश-इनपुट दर पर बिल किया जाता है।</dd>
         </div>
         <div class="glossary-term" data-term="429">
           <dt>429</dt>
-          <dd>HTTP 429 Too Many Requests — जब कोई डिप्लॉयमेंट अपनी दर या
+          <dd>HTTP 429 Too Many Requests: जब कोई deployment अपनी rate या
               क्षमता सीमा पार करता है तब लौटाई जाने वाली थ्रॉटलिंग प्रतिक्रिया।</dd>
         </div>
       </dl>
@@ -204,8 +203,8 @@
   </main>
 
   <footer class="site">
-    <p>MIT-लाइसेंस प्राप्त शोध सामग्री · प्रकाशित डेटा केवल सैनिटाइज़्ड या
-       समेकित रूप में है।</p>
+    <p>MIT-licensed शोध सामग्री। प्रकाशित data केवल sanitized या
+       aggregate रूप में है।</p>
   </footer>
 
   <script src="../assets/i18n.js" defer></script>

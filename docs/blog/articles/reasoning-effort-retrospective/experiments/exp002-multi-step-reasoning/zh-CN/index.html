@@ -113,7 +113,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
           <strong>图表/表：</strong> <code>results/cost-curves/benchmark-02-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>测量表面为 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>0 个</strong>。评分由中立裁判 gpt-4o 完成，每个单元评一次，<strong>360/360 成功(失败 0，重试 0)</strong>。评分规则很直接。失败给 0 分，部分通过给 1 分，完全通过给 2 分。所以平均 <strong>2.00 表示 60 个全部通过</strong>。gpt-4o 的 <strong>1.50 是 45 个通过与 15 个失败</strong>混合后的平均。所有 JSON 都是真实 Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记(360 行中 159 行 <code>reasoning_tokens &gt; 0</code>)。</p>
+      <p><strong>测量表面为 360 个单元</strong>(gpt-4o 60 + gpt-5.2 300，五档强度)。作为异常值排除的单元为 <strong>0 个</strong>。评分由中立评审 gpt-4o 完成，每个单元评一次，<strong>360/360 成功(失败 0，重试 0)</strong>。评分规则很直接。失败给 0 分，部分通过给 1 分，完全通过给 2 分。所以平均 <strong>2.00 表示 60 个全部通过</strong>。gpt-4o 的 <strong>1.50 是 45 个通过与 15 个失败</strong>混合后的平均。所有 JSON 都是真实 Foundry v1 调用，没有一个 <code>"fixture": true</code> 标记(360 行中 159 行 <code>reasoning_tokens &gt; 0</code>)。</p>
     </section>
 
     <section id="predict" class="article-section">
@@ -174,9 +174,9 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <p>任何测量都不可能完全干净。这个基准留下的痕迹，我们不擦掉，而是原样写下。因为藏起来，后来的人会在同一个地方踩空。</p>
       <ul>
         <li><strong>gpt-4o 比预期更容易过。</strong> 75% <em>超过了</em>预先登记的 30&ndash;60%。这说明数据集一开始就没有那么为难 gpt-4o。所以&ldquo;相对 gpt-4o 的节省幅度&rdquo;的<em>大小</em>比更难数据集时更小(预期 1.7&ndash;3.3倍差距 → 实现 1.7倍)。我们不把预测错掉的地方擦掉来配合数字。缩小的节省幅度也原样留下。结论的<em>方向</em>(gpt-5.2 <code>none</code> 在成本和质量上都更好)不变。</li>
-        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器挡住了请求。输入&middot;输出 token 都是 0，并返回了固定格式的拒绝。这个单元没有运营标记(冷启动/重试/截断)，所以<em>不是该删掉的异常值</em>。我们没有覆盖它，而是原样留在聚合中(裁判准确评分为 0/失败)。同一问题其他重复都正常正确。它不是反复出现的问题，只发生了这一次。这个单元让 <code>low</code> 行的<em>输入 token</em> 方差变大。</li>
-        <li><strong>代码追踪错误 1 个。</strong> <code>mr_15</code> 的 <code>low</code> 第三次重复(<code>r2</code>)把 <code>g("abc")</code> 的输出返回为 &ldquo;cba a&rdquo; &mdash; 正确答案是 &ldquo;cbaa&rdquo;(反转的 &ldquo;cba&rdquo; 加上首字符 &ldquo;a&rdquo;)。裁判评分为 0/失败。这是纯推理错误，和安全过滤无关。这个单元和 <code>mr_05</code> 拒绝，是把 <code>low</code> 通过率变成 96.7%(58/60)的两次失败。</li>
-        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个裁判 <code>score == 1</code>。这些答案本来就是可验证的。&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。所以只按通过/失败来看，核心结论也不变。</li>
+        <li><strong>安全过滤拒绝 1 个。</strong> <code>mr_05</code> 的 <code>low</code> 第一次重复中，Azure 内容过滤器挡住了请求。输入&middot;输出 token 都是 0，并返回了固定格式的拒绝。这个单元没有运营标记(冷启动/重试/截断)，所以<em>不是该删掉的异常值</em>。我们没有覆盖它，而是原样留在聚合中(评审准确评分为 0/失败)。同一问题其他重复都正常正确。它不是反复出现的问题，只发生了这一次。这个单元让 <code>low</code> 行的<em>输入 token</em> 方差变大。</li>
+        <li><strong>代码追踪错误 1 个。</strong> <code>mr_15</code> 的 <code>low</code> 第三次重复(<code>r2</code>)把 <code>g("abc")</code> 的输出返回为 &ldquo;cba a&rdquo; &mdash; 正确答案是 &ldquo;cbaa&rdquo;(反转的 &ldquo;cba&rdquo; 加上首字符 &ldquo;a&rdquo;)。评审评分为 0/失败。这是纯推理错误，和安全过滤无关。这个单元和 <code>mr_05</code> 拒绝，是把 <code>low</code> 通过率变成 96.7%(58/60)的两次失败。</li>
+        <li><strong>部分分 0 个。</strong> 360 个单元里没有一个评审 <code>score == 1</code>。这些答案本来就是可验证的。&ldquo;给出 672&rdquo;和&ldquo;给出 576&rdquo;之间没有中间态。所以只按通过/失败来看，核心结论也不变。</li>
       </ul>
     </section>
 
@@ -187,7 +187,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
       <ul>
         <li><strong>样本。</strong> N=20 · R=3。这个样本量下，我们不主张置信区间或统计显著性。方向性结论稳健，但绝对幅度要按小样本谨慎看待。</li>
         <li><strong>价格。</strong> 只用了一张价格快照。如果费率或计费方式改变，应从同一原始材料重新计算成本。</li>
-        <li><strong>评分。</strong> 评分由裁判模型(gpt-4o)完成。裁判提示的 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
+        <li><strong>评分。</strong> 评分由评审模型(gpt-4o)完成。评审提示的 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
         <li><strong>超出预先登记的影响。</strong> gpt-4o 通过率(0.75)比预期(0.30&ndash;0.60)更高，美元节省幅度因此缩小。所以在这个实验中，PTU 吞吐视角更稳。它较少受 gpt-4o 通过率影响。</li>
       </ul>
     </section>
@@ -219,7 +219,7 @@ gpt-5.2   xhigh    $2.18         100%  (60/60)   $2.18</code></pre>
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>。</li>
         <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(变量·样本·缓存·评分·成本·复现·统计报告约定)。</li>
         <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。</li>
-        <li>边界：N=20 · 无置信区间 · 单一价格快照 · 裁判 gpt-4o · PTU 为基于 token 的估算(非实时负载)。</li>
+        <li>边界：N=20 · 无置信区间 · 单一价格快照 · 评审 gpt-4o · PTU 为基于 token 的估算(非实时负载)。</li>
       </ul>
     </section>
   </main>

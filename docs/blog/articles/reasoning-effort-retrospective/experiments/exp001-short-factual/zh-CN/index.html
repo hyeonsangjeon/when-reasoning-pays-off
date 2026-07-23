@@ -144,8 +144,8 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <p>而且 <code>none</code> 以上几乎什么都没发生。<code>low</code>&middot;<code>medium</code> 的正确率<em>看起来高了一档</em>，达到 96.7%。但那只是 60 个里多对了 1 个。样本这么小(N=20&middot;R=3，无置信区间)，应当读作噪声。继续提到 <code>high</code>，成本反而按请求<strong>涨 +3.6%</strong>，正确率却退回 95%。最终，<strong>从 <code>none</code> 到 <code>medium</code> 基本持平</strong>。再往上只是增加成本，不换来质量。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的裁判分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(实测 cohort)。</figcaption>
-        <img src="../../../../../../assets/benchmark-01-quality.png" alt="基准 01 按强度划分的平均裁判分数柱状图。gpt-5.2 从 none 到 xhigh 都在 1.9~1.97 之间保持平坦，gpt-4o 为 1.90，位于其下。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平坦的质量曲线，实测。</strong> 按强度划分的评审分数(0&ndash;2)。gpt-5.2 从 <code>none</code>(1.95)到 <code>xhigh</code>(1.95)都在 1.9&ndash;1.97 之间几乎不动，gpt-4o 基线(1.90)就在其下。整个强度阶梯的最大质量差只有 <strong>0.07点</strong>。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(实测 cohort)。</figcaption>
+        <img src="../../../../../../assets/benchmark-01-quality.png" alt="基准 01 按强度划分的平均评审分数柱状图。gpt-5.2 从 none 到 xhigh 都在 1.9~1.97 之间保持平坦，gpt-4o 为 1.90，位于其下。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 

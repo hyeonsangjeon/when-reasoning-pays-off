@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>कैश कीज़ लेबल नहीं, रूटिंग के संकेत हैं | when reasoning pays off</title>
-  <meta name="description" content="यह सार्वजनिक संचालन-लेख बताता है कि prompt_cache_key bucketing, cacheable prefix, और sparse public evidence को कैसे समझें।">
+  <meta name="description" content="यह सार्वजनिक operations लेख बताता है कि prompt_cache_key bucketing, cacheable prefix, और sparse public evidence को कैसे समझें।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -26,7 +26,7 @@
         <a href="../../../../hi/">होम</a>
         <a href="../../hi/">लेख सूची</a>
         <a href="../../when-reasoning-pays-off/hi/">अवलोकन निबंध</a>
-        <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
+        <a href="../../../charts/?lang=hi">evidence dashboard</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -41,16 +41,16 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख</a> / संचालन निबंध</p>
-    <p class="article-kicker">संचालन निबंध · prompt caching और routing hints</p>
+    <p class="article-kicker">संचालन निबंध, prompt caching और routing hints</p>
     <h1>कैश कीज़ लेबल नहीं, रूटिंग के संकेत हैं</h1>
     <p class="lede">
       जब कोई टीम <code>prompt_cache_key</code> जोड़ती है, तो अक्सर उसे भी बाकी labels
       की तरह ही इस्तेमाल करने लगती है। फिर सहज रूप से उसमें वही चीज़ें भर दी जाती हैं
-      जो हर call को अलग पहचान दें — <code>request_id</code>, user के सवाल का raw text,
+      जो हर call को अलग पहचान दें: <code>request_id</code>, user के सवाल का raw text,
       timestamp, या tenant/user का इतना बारीक axis कि सब अलग-अलग रहें। लेकिन यह field
       सिर्फ label नहीं है। यह prompt के prefix hash के साथ मिलकर repeated work को कहाँ
       route किया जाए, उस पर असर डालती है। इसलिए key को बहुत specific बनाने की सहज
-      इच्छा सीधे इस लेख के मुख्य सवाल से टकराती है — क्या ऐसी unique key reuse इकट्ठा
+      इच्छा सीधे इस लेख के मुख्य सवाल से टकराती है: क्या ऐसी unique key reuse इकट्ठा
       करती है, या वही cache locality तोड़ देती है जिसे shared prefix बनाने की कोशिश
       कर रहा था?
     </p>
@@ -61,7 +61,7 @@
         <code>prompt_cache_key</code> मिलकर repeated work को एक machine तक route करते
         हैं। Microsoft Learn यह भी बताता है कि एक bucket में प्रति minute क़रीब 15
         request के बाद cache effectiveness गिर सकती है। यह one-pager एक ही संदेश देता
-        है — हर bucket का size documented ceiling के नीचे रखें। साथ ही यह सीमा भी साफ़
+        है: हर bucket का size documented ceiling के नीचे रखें। साथ ही यह सीमा भी साफ़
         करता है: ceiling आधिकारिक spec है, जबकि उसके साथ दिखा hit ratio और latency का
         pattern PAYG पर मापा गया sanitized public aggregate है, जिसे यहाँ सिर्फ
         descriptive रूप में दिखाया गया है।
@@ -73,13 +73,11 @@
     <section id="why-bucket" class="article-section">
       <h2>अंदाज़े से नहीं, key का size तय क्यों करें</h2>
       <p>
-        unique key बनाने की सहज प्रवृत्ति यह मानकर चलती है कि specificity मुफ़्त है —
-        key जितनी बारीक होगी, बस requests को उतना बेहतर अलग कर देगी। इसे मान लेने से
+        unique key बनाने की सहज प्रवृत्ति यह मानकर चलती है कि specificity मुफ़्त है: key जितनी बारीक होगी, बस requests को उतना बेहतर अलग कर देगी। इसे मान लेने से
         पहले दो बातों को साथ देखना चाहिए। पहली, Microsoft Learn क्या कहता है: prompt
         cache के लिए शुरुआती prefix का identical होना ज़रूरी है, और
         <code>prompt_cache_key</code> prefix hash के साथ मिलकर repeated work कहाँ route
-        होगा, उस पर असर डालती है। वही documentation एक roughly guide point भी देती है —
-        एक prefix+key combination पर प्रति minute क़रीब 15 request — जिसके बाद traffic
+        होगा, उस पर असर डालती है। वही documentation एक roughly guide point भी देती है: एक prefix+key combination पर प्रति minute क़रीब 15 request: जिसके बाद traffic
         extra machines तक फैल सकता है और cache effectiveness गिर सकती है। दूसरी बात,
         इस repository के source runs का sparse sanitized public aggregate है, जो सिर्फ
         descriptive रूप में दिखाता है कि वही prefix ज़्यादा buckets में बाँटने पर cache
@@ -90,7 +88,7 @@
         लग सकता है, जबकि नीचे का user experience बदल रहा हो। मापे गए इस हिस्से में
         bucket cardinality बढ़ने पर भी hit ratio ऊँचा और लगभग flat रहा (क़रीब
         0.93–0.96), इसलिए अगर उसे अकेले पढ़ें तो लगेगा कि splitting की कोई क़ीमत नहीं
-        पड़ी। लेकिन first-token latency tail दूसरी आधी कहानी दिखाती है — एक hot bucket
+        पड़ी। लेकिन first-token latency tail दूसरी आधी कहानी दिखाती है: एक hot bucket
         बहुत बड़ा p95 उठा रही थी, और traffic को ज़्यादा buckets में फैलाते ही वह तेज़ी
         से गिर गया। इसलिए संचालन का असली सवाल यह नहीं है कि "cache hit हुआ या नहीं",
         बल्कि यह है कि "क्या हर bucket का size ऐसा है कि shared prefix अपनी locality
@@ -108,18 +106,18 @@
         <p>shared prompt prefix के लिए कितनी cache-key buckets रखनी चाहिए?</p>
       </section>
       <section class="summary-tile">
-        <h2>साक्ष्य</h2>
+        <h2>evidence</h2>
         <p>Microsoft Learn routing hint और approximate overflow point बताता है; यह repository sparse public measurement जोड़ती है।</p>
       </section>
       <section class="summary-tile">
-        <h2>निर्णय</h2>
+        <h2>फैसला</h2>
         <p>bucket को workload के हिसाब से बाँटें, per-bucket rate को risk zone के नीचे रखें, और hit ratio के साथ first-token latency भी देखें।</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="लेख के खंड">
       <strong>सवाल के हिसाब से पढ़ें:</strong>
-      <a href="#spec">आधिकारिक व्यवहार</a>
+      <a href="#spec">official behavior</a>
       <a href="#formula">bucket formula</a>
       <a href="#evidence">public evidence</a>
       <a href="#patterns">अच्छी और बुरी keys</a>
@@ -134,7 +132,7 @@
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">आधिकारिक व्यवहार · key क्या बदलती है</p>
+      <p class="section-label">official behavior, key क्या बदलती है</p>
       <h2>cache की शुरुआत identical prefix से होती है</h2>
       <p>
         Microsoft Learn के मुताबिक prompt cache के लिए कम-से-कम 1,024 input tokens
@@ -160,7 +158,7 @@
     </section>
 
     <section id="formula" class="article-section">
-      <p class="section-label">sizing · buckets को risk zone से नीचे रखें</p>
+      <p class="section-label">sizing, buckets को risk zone से नीचे रखें</p>
       <h2>एक bucket बहुत hot हो सकती है; बहुत ज़्यादा buckets बहुत cold पड़ सकती हैं</h2>
       <p>
         Microsoft Learn एक approximate overflow point बताता है। अगर वही prefix और
@@ -195,7 +193,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">observed evidence · sparse public case</p>
+      <p class="section-label">observed evidence, sparse public case</p>
       <h2>hit ratio और latency को साथ मापें</h2>
       <figure class="article-figure">
         <figcaption>
@@ -207,15 +205,15 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-hit-ratio">
         <figcaption>
-          <strong>source chart — cache hit ratio बनाम cache-key cardinality.</strong>
+          <strong>source chart: cache hit ratio बनाम cache-key cardinality.</strong>
           <strong>X-axis:</strong> log2 scale पर bucket cardinality (1, फिर उसी prefix
           पर 8 buckets)। <strong>Y-axis:</strong> steady-state cache hit ratio, 0–1.
-          <strong>Lines:</strong> दो retention series — <code>in_memory</code> और
+          <strong>Lines:</strong> दो retention series: <code>in_memory</code> और
           <code>24h</code>, हर एक N&nbsp;=&nbsp;960 records। यह two-series line chart है,
           frequency histogram नहीं। <strong>इसे कैसे पढ़ें:</strong> इस low per-bucket-rate
           case में cardinality बढ़ने पर भी hit ratio ऊँचा और लगभग flat रहा (क़रीब
           0.93–0.96)। यानी यहाँ prefix को ज़्यादा buckets में बाँटने से अपने-आप hit ratio
-          नहीं टूटा — fragmentation की क़ीमत इस panel में नहीं, अगले panel की latency
+          नहीं टूटा: fragmentation की क़ीमत इस panel में नहीं, अगले panel की latency
           tail में दिखी। <strong>evidence boundary:</strong> PAYG gpt-5.2 पर एक tenant
           और region से लिया गया sparse sanitized public aggregate (PTU नहीं)। यह
           descriptive है, universal cache-hit curve नहीं। <strong>Source:</strong> values
@@ -227,14 +225,14 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
-          <strong>paired source chart — first-token latency p95 बनाम cache-key cardinality.</strong>
+          <strong>paired source chart: first-token latency p95 बनाम cache-key cardinality.</strong>
           <strong>X-axis:</strong> वही log2 bucket-cardinality axis (1, फिर 8)।
           <strong>Y-axis:</strong> steady-state time to first token का p95, milliseconds
           में। <strong>Lines:</strong> वही दो retention series, हर एक N&nbsp;=&nbsp;960।
           <strong>इसे कैसे पढ़ें:</strong> cardinality&nbsp;1 पर एक single hot
           <code>in_memory</code> bucket बहुत बड़ा p95 (क़रीब 106,000&nbsp;ms) उठा रही
           थी, और traffic को 8 buckets में फैलाते ही यह तेज़ी से गिर गया (क़रीब
-          16,600&nbsp;ms)। वहीं <code>24h</code> series पूरे समय नीचे रही — इसलिए मापे
+          16,600&nbsp;ms)। वहीं <code>24h</code> series पूरे समय नीचे रही: इसलिए मापे
           गए इस हिस्से में bucketing की क़ीमत latency tail पर दिखी। इसी कारण hit ratio
           को first-token latency के साथ पढ़ना चाहिए, अकेले नहीं। <strong>evidence
           boundary:</strong> PAYG gpt-5.2 पर लिया गया वही sparse sanitized public
@@ -268,13 +266,13 @@
         <p>
           यह public case कोई universal threshold curve साबित नहीं करता। लेकिन यह साफ़
           दिखाता है कि operators को सिर्फ hit ratio नहीं देखना चाहिए। retention mode,
-          per-bucket rate, और first-token latency — तीनों user experience को बदलते हैं।
+          per-bucket rate, और first-token latency: तीनों user experience को बदलते हैं।
         </p>
       </div>
     </section>
 
     <section id="patterns" class="article-section">
-      <p class="section-label">key design · stable workload buckets</p>
+      <p class="section-label">key design, stable workload buckets</p>
       <h2>bucket को call से नहीं, workload से बाँटें</h2>
       <p>
         अच्छी key एक ही workload के लिए deterministic होनी चाहिए। बुरी key हर call की
@@ -299,38 +297,38 @@
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और evidence boundary</h2>
-      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> prompt caching
+      <h2>sources और evidence boundary</h2>
+      <p><strong>Tier 1: service contract (Microsoft Learn).</strong> prompt caching
         का prefix rule, prefix hash routing, per-128-token match step, single-character
         miss, <code>prompt_cache_key</code> routing hint, और प्रति minute क़रीब 15
         request वाला overflow point यहीं documented है.</p>
       <ul>
-        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong> — 1,024 टोकन की
+        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong>: 1,024 टोकन की
           न्यूनतम शर्त और identical prefix requirement, शुरुआती prefix के hash से
           routing, पहले 1,024 tokens के बाद हर identical 128 tokens पर cache match,
           single-character cache miss, prefix hash के साथ मिलकर routing पर असर डालने
           वाला <code>prompt_cache_key</code> hint, और वह प्रति minute क़रीब 15 request
           point जहाँ same prefix+key वाले requests extra machines तक spill होकर cache
-          effectiveness घटा सकते हैं — यह सब यहीं documented है। source: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को access किया गया) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">archive</a>।</li>
+          effectiveness घटा सकते हैं: यह सब यहीं documented है। source: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को access किया गया), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">archive</a>।</li>
       </ul>
-      <p><strong>Tier 2 — operational inference (यह repository).</strong> bucket-count
+      <p><strong>Tier 2: operational inference (यह repository).</strong> bucket-count
         math और public hit-ratio evidence Learn specifications नहीं हैं; ये इस
         repository की operational inference और source-run evidence हैं.</p>
       <ul>
         <li>[2] <strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — bucket-sizing runbook। repository documented क़रीब 15-RPM figure से
+         : bucket-sizing runbook। repository documented क़रीब 15-RPM figure से
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> निकालती है, जबकि
           <code>recommended_buckets</code> formula और default per-bucket 10-RPM target
           Learn specification नहीं, repository की operational inference है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
         <li>[3] <strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — hit ratio और first-token latency table के पीछे का sparse public aggregate।
+         : hit ratio और first-token latency table के पीछे का sparse public aggregate।
           यह universal curve नहीं, source-run evidence है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>
       <p>
         <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> access date पर
-        Microsoft Learn prompt caching contract को जैसा बताता है — 1,024-token prefix
+        Microsoft Learn prompt caching contract को जैसा बताता है: 1,024-token prefix
         rule, prefix hash routing, <code>prompt_cache_key</code> hint, और प्रति minute
-        क़रीब 15 request overflow point — यह लेख उसे दर्ज करता है। साथ ही repository
+        क़रीब 15 request overflow point: यह लेख उसे दर्ज करता है। साथ ही repository
         का यह sizing rule of thumb भी रखता है कि shared prefix को इतनी stable buckets
         में बाँटें कि हर bucket उस point से कुछ नीचे रहे। bucket-count formula और public
         hit-ratio evidence operational inference और source-run evidence हैं, guaranteed
@@ -352,7 +350,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · published डेटा केवल sanitized या aggregate रूप में है।</p>
+    <p>MIT-licensed research artifact, published डेटा केवल sanitized या aggregate रूप में है।</p>
   </footer>
 </body>
 </html>

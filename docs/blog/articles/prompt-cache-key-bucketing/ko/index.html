@@ -41,17 +41,17 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../ko/">Articles</a> / 운영 에세이 / 한국어 번역</p>
-    <p class="article-kicker">운영 에세이 · 프롬프트 캐싱과 라우팅 힌트</p>
+    <p class="article-kicker">운영 에세이, 프롬프트 캐싱과 라우팅 힌트</p>
     <h1>캐시 키: 라벨이 아니라 라우팅 힌트</h1>
     <p class="lede">
       어떤 팀이 <code>prompt_cache_key</code>를 붙이면서 여느 라벨과 똑같이
       다룹니다. 자연스러운 반사 동작은 호출을 고유하게 식별하는 무엇이든 채워
-      넣는 것입니다 &mdash; <code>request_id</code>, 사용자의 질문 텍스트,
-      타임스탬프, 또는 서로를 구분할 만큼 촘촘한 테넌트별·사용자별 축 같은 것
+      넣는 것입니다. 예를 들면 <code>request_id</code>, 사용자의 질문 텍스트,
+      타임스탬프, 또는 서로를 구분할 만큼 촘촘한 테넌트별 또는 사용자별 축 같은 것
       말입니다. 하지만 이 필드는 라벨보다 운영적입니다. 프롬프트 프리픽스
       해시와 결합되어 일치하는 작업이 어디로 라우팅될지에 영향을 줍니다. 그래서
       키를 구체적으로 만들려는 직관은 곧장 이 글이 던지는 운영 질문과
-      부딪힙니다 &mdash; 더 고유한 키는 재사용을 모을까요, 아니면 공유
+      부딪힙니다. 더 고유한 키는 재사용을 모을까요, 아니면 공유
       프리픽스가 애써 얻어 낸 캐시 지역성을 흩뜨릴까요?
     </p>
 
@@ -61,8 +61,8 @@
         <code>prompt_cache_key</code>는 반복 작업을 한 머신으로 라우팅하고,
         Microsoft Learn은 버킷마다 분당 약 15개 요청을 넘어서면 캐시 효율이
         떨어질 수 있는 지점을 문서화합니다. 이 한 장 요약은 한 가지
-        메시지만 전합니다 — 문서화된 천장 아래에 머물도록 버킷 크기를
-        잡으세요 — 그리고 경계를 표시합니다. 천장은 공식 사양이고, 그 옆의
+        메시지만 전합니다. 문서화된 천장 아래에 머물도록 버킷 크기를
+        잡으세요. 그리고 경계를 표시합니다. 천장은 공식 사양이고, 그 옆의
         적중률과 지연 형태는 PAYG에서 측정한 정제된 공개 집계로, 서술적으로만
         제시합니다.
         <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">캐시 키 버킷팅 한 장 요약 SVG 열기</a>.
@@ -73,14 +73,14 @@
     <section id="why-bucket" class="article-section">
       <h2>추측 대신 키 크기를 잡는 이유</h2>
       <p>
-        고유 키를 넣고 싶어지는 반사적 선택은 구체성이 공짜라고 &mdash; 더 촘촘한 키는 요청을
-        구분하는 데 도움만 줄 뿐이라고 &mdash; 전제합니다. 그 전제를 받아들이기
+        고유 키를 넣고 싶어지는 반사적 선택은 구체성이 공짜라고, 더 촘촘한 키는 요청을
+        구분하는 데 도움만 줄 뿐이라고 전제합니다. 그 전제를 받아들이기
         전에 두 가지를 나란히 놓아 볼 만합니다. 첫째는 Microsoft Learn이
         문서화하는 내용입니다. 프롬프트 캐싱은 캐시 적격 조건으로 동일한 앞부분
         프리픽스를 요구하고, <code>prompt_cache_key</code>는 프리픽스 해시와
         결합되어 반복 작업이 어디에 떨어질지를 조종합니다. 같은 문서는 대략적인
-        지점 하나를 표시합니다 &mdash; 하나의 프리픽스+키 조합에 대해 분당 약
-        15개 요청 &mdash; 이를 넘어서면 트래픽이 추가 머신으로 흘러넘치고 캐시
+        지점 하나를 표시합니다. 하나의 프리픽스+키 조합에 대해 분당 약
+        15개 요청이고, 이를 넘어서면 트래픽이 추가 머신으로 흘러넘치고 캐시
         효율이 떨어질 수 있습니다. 둘째는 이 저장소의 원천 실행에서 나온 희소한
         정제 공개 집계로, 같은 프리픽스를 더 많은 버킷으로 쪼갤 때 캐시 적중률과
         첫 토큰 지연이 실제로 어떻게 움직였는지를 보여 주려고 서술용으로
@@ -91,13 +91,13 @@
         경험이 바뀌는 동안에도 안심되게 읽힐 수 있습니다. 이 구간에서는 버킷
         수가 늘어나는 동안에도 적중률이 높고 거의 평평하게 유지되어, 그 값만
         읽으면 쪼개기에 비용이 들지 않은 것처럼 보입니다. 나머지 절반의 이야기는
-        첫 토큰 지연의 꼬리가 들려줍니다 &mdash; 뜨거운 버킷 하나가 매우 큰
+        첫 토큰 지연의 꼬리가 들려줍니다. 뜨거운 버킷 하나가 매우 큰
         p95를 지고 있었는데, 트래픽을 더 많은 버킷으로 분산하자 그 값이 가파르게
         떨어졌습니다. 그래서 운영의 질문은 “캐시가 적중했는가?”가 아니라 “각
         버킷이, 한 버킷만 너무 뜨거워지지 않으면서 프리픽스가 지역성을 유지하도록
         크기가 잡혀 있는가?”입니다. 프리픽스 해시 라우팅과 분당 약 15개 요청이라는
         대략적 오버플로 지점은 Microsoft Learn이 문서화하는 내용이고, 버킷 수
-        계산과 적중률·지연을 함께 보여 주는 공개 자료는 보편적인 캐시 적중 곡선이
+        계산과 적중률과 지연을 함께 보여 주는 공개 자료는 보편적인 캐시 적중 곡선이
         아니라 이 저장소가 옹호하는 운영적 추론이자 원천 실행 근거입니다. 아래
         차트가 그 짝짓기를 명시적으로 보여 줍니다.
       </p>
@@ -135,7 +135,7 @@
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">공식 동작 · 키가 바꾸는 것</p>
+      <p class="section-label">공식 동작, 키가 바꾸는 것</p>
       <h2>동일한 프리픽스에서 시작하는 캐시</h2>
       <p>
         Microsoft Learn에 따르면 프롬프트 캐싱에는 최소 1,024개의 입력
@@ -161,7 +161,7 @@
     </section>
 
     <section id="formula" class="article-section">
-      <p class="section-label">크기 산정 · 버킷을 위험 구간 아래로 유지</p>
+      <p class="section-label">크기 산정, 버킷을 위험 구간 아래로 유지</p>
       <h2>버킷 수의 트레이드오프: 하나는 너무 뜨겁고, 다수는 너무 차가움</h2>
       <p>
         Microsoft Learn은 대략적인 오버플로 지점을 설명합니다. 동일한
@@ -196,7 +196,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">관측된 근거 · 희소한 공개 자료</p>
+      <p class="section-label">관측된 근거, 희소한 공개 자료</p>
       <h2>적중률과 지연을 함께 읽기</h2>
       <figure class="article-figure">
         <figcaption>
@@ -208,18 +208,18 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-hit-ratio">
         <figcaption>
-          <strong>원천 차트 — 캐시 적중률 대 캐시 키 카디널리티.</strong>
+          <strong>원천 차트: 캐시 적중률 대 캐시 키 카디널리티.</strong>
           <strong>X축:</strong> log2 척도의 버킷 카디널리티(같은 프리픽스에
           대해 1, 그다음 8개 버킷)입니다. <strong>Y축:</strong> 0~1 범위의
-          정상 상태 캐시 적중률입니다. <strong>선:</strong> 두 보존 계열 —
-          <code>in_memory</code>와 <code>24h</code> — 이며 각각 N&nbsp;=&nbsp;960
+          정상 상태 캐시 적중률입니다. <strong>선:</strong> 두 보존 계열,
+          <code>in_memory</code>와 <code>24h</code>이며 각각 N&nbsp;=&nbsp;960
           레코드로, 빈도 히스토그램이 아니라 두 계열 선 차트입니다.
           <strong>읽는 법:</strong> 버킷별 비율이 낮은 이 구간에서는
           카디널리티가 올라가도 적중률이 높고 거의 평탄하게(약 0.93~0.96)
           유지되었습니다. 즉 프리픽스를 더 많은 버킷으로 나누는 것만으로는
-          여기서 적중률이 무너지지 않았습니다 — 조각화 비용은 이 패널이 아니라
+          여기서 적중률이 무너지지 않았습니다. 조각화 비용은 이 패널이 아니라
           다음 패널의 지연 꼬리에서 나타났습니다. <strong>근거 경계:</strong>
-          단일 테넌트·리전의 PAYG gpt-5.2에서 측정한 희소하고 정제된 공개
+          단일 테넌트와 리전의 PAYG gpt-5.2에서 측정한 희소하고 정제된 공개
           집계(PTU 아님)이며, 보편적인 캐시 적중 곡선이 아니라 서술적
           자료입니다. <strong>출처:</strong> 값은 이 저장소의
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
@@ -229,7 +229,7 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
-          <strong>짝지은 원천 차트 — 첫 토큰 지연 p95 대 캐시 키 카디널리티.</strong>
+          <strong>짝지은 원천 차트: 첫 토큰 지연 p95 대 캐시 키 카디널리티.</strong>
           <strong>X축:</strong> 동일한 log2 버킷 카디널리티 축(1, 그다음 8)입니다.
           <strong>Y축:</strong> 밀리초 단위의 정상 상태 첫 토큰까지 p95
           시간입니다. <strong>선:</strong> 동일한 두 보존 계열이며 각각
@@ -237,9 +237,9 @@
           단일 핫 <code>in_memory</code> 버킷은 매우 큰 p95(약 106,000&nbsp;ms)를
           기록했고, 트래픽이 8개 버킷으로 분산되자 가파르게
           떨어졌습니다(약 16,600&nbsp;ms). 반면 <code>24h</code> 계열은 내내 더
-          낮게 유지되었습니다 — 즉 이 구간에서는 버킷팅 비용이 지연 꼬리에
+          낮게 유지되었습니다. 즉 이 구간에서는 버킷팅 비용이 지연 꼬리에
           실렸고, 그래서 적중률은 단독이 아니라 첫 토큰 지연과 함께 읽어야
-          합니다. <strong>근거 경계:</strong> 동일한 희소·정제 공개 집계로
+          합니다. <strong>근거 경계:</strong> 동일한 희소하고 정제된 공개 집계로
           PAYG gpt-5.2(PTU 아님)이며, 지연 보장이 아니라 서술적 자료입니다.
           <strong>출처:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
@@ -276,7 +276,7 @@
     </section>
 
     <section id="patterns" class="article-section">
-      <p class="section-label">키 설계 · 안정적인 워크로드 버킷</p>
+      <p class="section-label">키 설계, 안정적인 워크로드 버킷</p>
       <h2>버킷 기준: 호출이 아니라 워크로드 단위</h2>
       <p>
         좋은 키는 동일한 워크로드에 대해 결정적이어야 합니다. 나쁜 키는
@@ -303,44 +303,44 @@
     <section id="sources" class="article-section">
       <h2>출처와 근거 경계</h2>
       <p>
-        <strong>Tier 1 — 서비스 계약(Microsoft Learn).</strong> 프롬프트 캐싱
+        <strong>Tier 1: 서비스 계약(Microsoft Learn).</strong> 프롬프트 캐싱
         프리픽스 규칙, 프리픽스 해시 라우팅, 128개 토큰 단위 일치 단계, 단 한
         글자의 미스, <code>prompt_cache_key</code> 라우팅 힌트, 그리고 분당 약
         15개 요청의 오버플로 지점이 여기에 문서화되어 있습니다.
       </p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 1,024 토큰 최소
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: 1,024 토큰 최소
           요건과 동일 프리픽스 요구, 초기 프리픽스 해시 기반 라우팅, 처음
           1,024개 이후 추가로 동일한 128개 토큰마다의 캐시 일치, 단 한 글자의
           캐시 미스, 프리픽스 해시와 결합되어 라우팅에 영향을 주는
-          <code>prompt_cache_key</code> 힌트, 그리고 동일 프리픽스·키 요청이
+          <code>prompt_cache_key</code> 힌트, 그리고 동일 프리픽스와 키 요청이
           추가 머신으로 넘쳐 캐시 효율이 떨어지는 분당 약 15개 요청 지점을
-          정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
+          정의합니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
       </ul>
       <p>
-        <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 버킷 개수 계산과
+        <strong>Tier 2: 운영적 추론(이 저장소).</strong> 버킷 개수 계산과
         공개 적중률 자료는 Learn 사양이 아니라 이 저장소의 운영적 추론이자
         소스 실행 근거입니다.
       </p>
       <ul>
         <li>[2] <strong>이 저장소, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — 버킷 크기 산정 런북: 문서화된 약 15-RPM 수치에서
+          : 버킷 크기 산정 런북: 문서화된 약 15-RPM 수치에서
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code>를
           도출하며, <code>recommended_buckets</code> 공식과 기본 버킷당 10-RPM
           목표는 Learn 사양이 아니라 이 저장소의 운영적 추론입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">출처</a>.</li>
         <li>[3] <strong>이 저장소, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 적중률과 첫 토큰 지연 표의 바탕이 된 희소한 공개 집계 자료로,
+          : 적중률과 첫 토큰 지연 표의 바탕이 된 희소한 공개 집계 자료로,
           보편적 곡선이 아니라 소스 실행 근거입니다. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">출처</a>.</li>
       </ul>
       <p>
         <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일
-        기준 Microsoft Learn이 명시하는 프롬프트 캐싱 계약 — 1,024 토큰
+        기준 Microsoft Learn이 명시하는 프롬프트 캐싱 계약, 즉 1,024 토큰
         프리픽스 규칙, 프리픽스 해시 라우팅, <code>prompt_cache_key</code> 힌트,
-        분당 약 15개 요청의 오버플로 지점 — 과, 공유 프리픽스를 각 버킷이
+        분당 약 15개 요청의 오버플로 지점과, 공유 프리픽스를 각 버킷이
         여유를 두고 그 지점 아래에 머물도록 충분히 안정적인 버킷으로 나누는
         이 저장소의 크기 산정 경험칙을 문서화합니다. 버킷 개수 공식과 공개
         적중률 자료는 운영적 추론이자 소스 실행 근거이며, 보장된 캐시 적중
-        곡선이 아닙니다. 모든 모델·리전·트래픽 형태에서 동일하게 성립하는
+        곡선이 아닙니다. 모든 모델, 리전, 트래픽 형태에서 동일하게 성립하는
         보편적 임계값은 증명하지 못합니다.
       </p>
     </section>
@@ -358,7 +358,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT 라이선스 연구 산출물 · 공개 데이터는 정제 또는 집계된 형태로만 제공됩니다.</p>
+    <p>MIT 라이선스 연구 산출물, 공개 데이터는 정제 또는 집계된 형태로만 제공됩니다.</p>
   </footer>
 </body>
 </html>

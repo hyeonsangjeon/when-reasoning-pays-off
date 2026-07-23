@@ -39,7 +39,7 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
-    <p class="article-kicker">Operations essay · prompt cache retention</p>
+    <p class="article-kicker">Operations essay; prompt cache retention</p>
     <h1>Retention is a request policy, not an assumption</h1>
     <p class="lede">
       Prompt caching can feel automatic, because supported models cache
@@ -50,7 +50,7 @@
       be there. But &ldquo;cached by default&rdquo; is not the same as
       &ldquo;retained as long as the operation assumes.&rdquo; If the request
       omits retention, the operation may be counting on a cache window it never
-      asked for &mdash; so the operating question is not &ldquo;is caching
+      asked for. So the operating question is not &ldquo;is caching
       on?&rdquo; but &ldquo;did the request actually ask for the reuse window
       this workload depends on?&rdquo;
     </p>
@@ -61,7 +61,7 @@
         but the retention window is a request policy: Microsoft Learn documents
         an <code>in_memory</code> default that can clear within minutes and an
         explicit <code>24h</code> window. The one-pager carries that single
-        message — make retention explicit when later reuse matters — and marks
+        message: make retention explicit when later reuse matters. It also marks
         the boundary: the retention modes are official spec, while the
         first-token-latency shape beside them is a sanitized public aggregate
         measured on pay-as-you-go, shown descriptively.
@@ -93,12 +93,11 @@
         reassuring while the retention choice surfaces somewhere else: in this
         slice both modes held a high hit ratio (about 0.93 to 0.96), so reading
         hit ratio by itself would suggest the retention mode barely mattered.
-        The first-token latency tail tells the other half of the story &mdash;
-        at cardinality&nbsp;1 the <code>in_memory</code> series sat near
+        The first-token latency tail tells the other half of the story: at cardinality&nbsp;1 the <code>in_memory</code> series sat near
         106,000&nbsp;ms p95 while the <code>24h</code> series sat near
         9,900&nbsp;ms, so the retention choice showed up in the latency tail,
         not in hit ratio. That is why retention should be read with latency
-        beside cached-token share &mdash; and why it is a request policy and a
+        beside cached-token share. That is why it is a request policy and a
         governance choice, not just a performance knob. The two retention
         modes, their lifetimes, the <code>in_memory</code> default, the equal
         pricing, and the in-region condition for extended retention are what
@@ -139,7 +138,7 @@
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">Official behavior · two retention modes</p>
+      <p class="section-label">Official behavior; two retention modes</p>
       <h2>Automatic caching is not the same as explicit retention</h2>
       <p>
         Microsoft Learn describes two prompt-cache retention policies:
@@ -165,7 +164,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">Observed evidence · sparse public slice</p>
+      <p class="section-label">Observed evidence; sparse public slice</p>
       <h2>Latency made the retention choice visible</h2>
       <figure class="article-figure">
         <figcaption>
@@ -178,17 +177,17 @@
       </figure>
       <figure class="article-figure" id="figure-retention-ttft">
         <figcaption>
-          <strong>Source chart &mdash; first-token latency p95 by retention mode.</strong>
+          <strong>Source chart: first-token latency p95 by retention mode.</strong>
           <strong>X-axis:</strong> bucket cardinality on a log2 scale (1, then 8).
           <strong>Y-axis:</strong> steady-state p95 time to first token, in
           milliseconds. <strong>Lines:</strong> the two retention policies this
-          essay compares &mdash; <code>in_memory</code> and <code>24h</code>,
+          essay compares, <code>in_memory</code> and <code>24h</code>,
           N&nbsp;=&nbsp;960 records each; a two-series line chart, not a
           frequency histogram. <strong>How to read it:</strong> at
           cardinality&nbsp;1 the <code>in_memory</code> series sat at about
           106,000&nbsp;ms p95 while the <code>24h</code> series sat at about
-          9,900&nbsp;ms &mdash; in this cell the retention choice was visible in
-          the latency tail &mdash; and the two series moved closer once traffic
+          9,900&nbsp;ms; in this cell the retention choice was visible in
+          the latency tail, and the two series moved closer once traffic
           was spread across 8 buckets. <strong>Evidence boundary:</strong> one
           sparse sanitized public aggregate on pay-as-you-go gpt-5.2 (not PTU);
           source-run evidence, not a universal latency rule.
@@ -200,7 +199,7 @@
       </figure>
       <figure class="article-figure" id="figure-retention-hit-ratio">
         <figcaption>
-          <strong>Paired source chart &mdash; cache hit ratio by retention mode.</strong>
+          <strong>Paired source chart: cache hit ratio by retention mode.</strong>
           <strong>X-axis:</strong> the same log2 bucket-cardinality axis (1, then 8).
           <strong>Y-axis:</strong> steady-state cache hit ratio, 0&ndash;1.
           <strong>Lines:</strong> the same <code>in_memory</code> and
@@ -208,7 +207,7 @@
           <strong>How to read it:</strong> both series stayed high in this slice
           (about 0.93&ndash;0.96), with the <code>24h</code> series slightly
           higher at cardinality&nbsp;1; the larger retention difference here
-          showed up in the latency panel above, not in hit ratio &mdash; which is
+          showed up in the latency panel above, not in hit ratio. That is
           why retention should be read with latency beside cached-token share.
           <strong>Evidence boundary:</strong> the same sparse sanitized public
           aggregate on pay-as-you-go gpt-5.2 (not PTU); descriptive, not a
@@ -248,7 +247,7 @@
     </section>
 
     <section id="policy" class="article-section">
-      <p class="section-label">Operating policy · fail closed on ambiguity</p>
+      <p class="section-label">Operating policy; fail closed on ambiguity</p>
       <h2>If retention matters, make the choice observable</h2>
       <p>
         The public repo includes a small retention-policy helper that rejects an
@@ -274,7 +273,7 @@
     </section>
 
     <section id="residency" class="article-section">
-      <p class="section-label">Governance note · retention is not just latency</p>
+      <p class="section-label">Governance note; retention is not just latency</p>
       <h2>Longer retention also needs a governance check</h2>
       <p>
         Microsoft Learn states that in-memory prompt caching is compatible with
@@ -291,13 +290,13 @@
 
     <section id="sources" class="article-section">
       <h2>Sources and evidence boundary</h2>
-      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> The two
+      <p><strong>Tier 1: service contract (Microsoft Learn).</strong> The two
         retention policies, the in-memory clear-and-removal windows, the 24-hour
         extended-retention ceiling, the <code>gpt-5.4</code>-and-older
         <code>in_memory</code> default, the equal pricing across both policies,
         and the data-residency behavior are documented here.</p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — documents the
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: documents the
           <code>in_memory</code> and <code>24h</code> retention policies, the
           in-memory clear within 5 to 10 minutes of inactivity and removal within
           one hour of last use, the extended-retention ceiling of 24 hours, the
@@ -307,25 +306,25 @@
           in-region only for Regional Standard or Regional Provisioned deployment
           types. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
       </ul>
-      <p><strong>Tier 2 — operational inference (this repository).</strong> The
+      <p><strong>Tier 2: operational inference (this repository).</strong> The
         retention-policy helper that fails closed on an omitted value for
         <code>in_memory</code>-default models, and the sparse public hit-ratio and
         first-token-latency slice, are repository operational inference and
         source-run evidence, not Learn specifications.</p>
       <ul>
         <li>[2] <strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — the prompt-cache-key and retention runbook: §4 derives the
+          : the prompt-cache-key and retention runbook: §4 derives the
           <code>in_memory</code> default table from the documented per-model
           defaults and prescribes making <code>prompt_cache_retention</code>
           explicit.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">source</a>.</li>
         <li>[3] <strong>this repository, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
-          — the <code>ensure_explicit</code> helper that raises on an omitted
+          : the <code>ensure_explicit</code> helper that raises on an omitted
           value for a model whose documented default is <code>in_memory</code>;
           operational inference, not a Learn specification.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">source</a>.</li>
         <li>[4] <strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — the sparse public aggregate slice behind the retention hit-ratio and
+          : the sparse public aggregate slice behind the retention hit-ratio and
           first-token-latency table; source-run evidence, not a universal latency
           rule.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source</a>.</li>
@@ -333,11 +332,11 @@
       <p>
         <strong>What this topic does and does not prove.</strong> It documents the
         prompt-cache retention contract as Microsoft Learn states it on the access
-        date — the <code>in_memory</code> and <code>24h</code> policies, the
+        date: the <code>in_memory</code> and <code>24h</code> policies, the
         in-memory clear-and-removal windows, the 24-hour extended ceiling, the
         <code>gpt-5.4</code>-and-older <code>in_memory</code> default, equal
         pricing across both policies, and the in-region residency condition for
-        extended retention — plus a repository rule of thumb: make
+        extended retention, plus a repository rule of thumb: make
         <code>prompt_cache_retention</code> explicit and fail closed when it is
         omitted on an <code>in_memory</code>-default model. The single public slice
         showed retention becoming visible in first-token latency at cardinality 1;
@@ -361,7 +360,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
+    <p>MIT-licensed research artifact; Published data is sanitized or aggregate only.</p>
   </footer>
 </body>
 </html>

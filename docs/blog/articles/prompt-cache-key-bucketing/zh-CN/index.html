@@ -41,46 +41,46 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../zh-CN/">文章列表</a> / 运维随笔 / 简体中文译文</p>
-    <p class="article-kicker">运维随笔 · 提示缓存与路由提示</p>
+    <p class="article-kicker">运维随笔、提示缓存与路由提示</p>
     <h1>缓存键是路由提示，而非标签</h1>
     <p class="lede">
       当团队接好 <code>prompt_cache_key</code> 时，很容易像对待其他标签一样对待它。
-      自然的反射，是往里塞能唯一标识一次调用的东西——<code>request_id</code>、用户的
+      自然的反射，是往里塞能唯一标识一次调用的东西：<code>request_id</code>、用户的
       问题文本、时间戳，或者足够细的按租户、按用户的维度。但这个字段更偏运维，而
       不只是标签：它会与提示的前缀哈希结合，影响匹配工作被路由到哪里。所以"想把键
-      弄得独一无二"的本能，正面撞上本文要问的运维问题——更唯一的键究竟是聚拢了
+      弄得独一无二"的本能，正面撞上本文要问的运维问题：更唯一的键究竟是聚拢了
       复用，还是把共享前缀本想挣得的缓存局部性打成了碎片？
     </p>
 
     <figure class="article-figure" id="figure-keybucket-one-pager">
       <figcaption>
         <strong>一眼看懂本文。</strong>可缓存的前缀加上 <code>prompt_cache_key</code>，会把
-        重复的工作路由到同一台机器上。而 Microsoft Learn 记录了一个经验值——每个桶
-        每分钟约 15 个请求——超过它，缓存有效性可能下降。这张单页概览传达的就是这一条
-        信息：把每个桶都缩放到这个有文档记载的上限之下，并标明边界。上限是官方规范；
+        重复的工作路由到同一台机器上。而 Microsoft Learn 记录了一个经验值：每个桶
+        每分钟约 15 个请求；超过它，缓存有效性可能下降。这张单页概览传达的就是这一条
+        信息：把每个桶的规模控制在这个有文档记载的上限之下，并标明边界。上限是官方规范；
         与它并排的命中率和延迟形态，则是按量付费下测得、经脱敏的公开聚合，仅作描述。
         <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">打开缓存键分桶的单页概览 SVG</a>。
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="提示缓存键分桶的单页概览。显示一个前缀＋键的桶会被路由到一台机器；每个桶每分钟约 15 个请求是有文档记载的溢出点；而源运行的缓存命中率保持高位、大体持平，内存中的 TTFT 得到改善。所以命中率要挨着延迟读。核心信息：把每个桶都保持在有文档记载的上限之下。标明上限是官方规范，形态是经脱敏的测量聚合，仅作描述。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="提示缓存键分桶的单页概览。显示一个前缀＋键的桶会被路由到一台机器；每个桶每分钟约 15 个请求是有文档记载的溢出点；而源运行的缓存命中率保持高位、大体持平，内存中的 TTFT 得到改善。所以命中率要和延迟放在一起读。核心信息：把每个桶都保持在有文档记载的上限之下。标明上限是官方规范，形态是经脱敏的测量聚合，仅作描述。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-bucket" class="article-section">
       <h2>为什么要给键做容量规划，而不是靠猜</h2>
       <p>
-        "唯一键"的反射假设独特性是免费的——细粒度的键只会帮你区分请求。在接受这个
-        假设之前，值得把两件事并排放一下。第一件是 Microsoft Learn 记录的：提示缓存
+        “唯一键”的反射假设独特性是免费的：细粒度的键只会帮你区分请求。在接受这个
+        假设之前，值得先把两件事放在一起看。第一件是 Microsoft Learn 记录的：提示缓存
         要被命中，需要相同的早期前缀，而 <code>prompt_cache_key</code> 会与前缀哈希结合，
-        引导重复的工作落到哪里。同一份文档给出一个经验值——一个前缀＋键的组合每分钟约
-        15 个请求——超过它，流量会溢出到额外的机器，缓存有效性可能下降。第二件是本仓库
+        引导重复的工作落到哪里。同一份文档给出一个经验值：一个前缀＋键的组合每分钟约
+        15 个请求；超过它，流量会溢出到额外的机器，缓存有效性可能下降。第二件是本仓库
         源运行里取出的、稀疏且经脱敏的公开聚合，用来描述当把同一个前缀拆进更多桶时，
         缓存命中率和首 token 延迟实际是怎么动的。
       </p>
       <p>
-        值得停下来的，正是那个"成对"的部分。只看命中率会让人安心，但底下的体验在动。
+        真正值得停下来看的，是这个“成对”的部分。只看命中率会让人安心，但底下的体验在动。
         在这类场景里，桶的基数上升了，命中率却保持高位、大体持平，所以单看它，会以为
-        分桶零成本。首 token 延迟的长尾，讲了另一半故事——一个过热的桶背着非常大的
-        p95，而当流量铺到更多桶上时，p95 又骤然下降。所以运维上的问题不是"缓存有没有
-        命中"，而是"每个桶的大小，能不能让前缀保住局部性、同时又不让某一个桶过热"。
+        分桶零成本。首 token 延迟的长尾，讲了另一半故事：一个过热的桶背着非常大的
+        p95，而当流量铺到更多桶上时，p95 又骤然下降。所以运维上的问题不是“缓存有没有
+        命中”，而是“每个桶的大小，能不能让前缀保住局部性、同时又不让某一个桶过热”。
         前缀哈希路由和每分钟约 15 个请求的大致溢出点，是 Microsoft Learn 记录的；分桶
         数量的计算，以及挨着延迟摆放的公开命中率测量，则是本仓库愿意为之背书的运维
         推断与源运行证据，而不是一条通用的缓存命中曲线。下面的图把这一对明示出来。
@@ -118,7 +118,7 @@
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">官方行为 · 这个键改变了什么</p>
+      <p class="section-label">官方行为、这个键改变了什么</p>
       <h2>缓存从完全相同的前缀开始</h2>
       <p>
         Microsoft Learn 指出，提示缓存至少需要 1,024 个输入 token，
@@ -143,7 +143,7 @@
     </section>
 
     <section id="formula" class="article-section">
-      <p class="section-label">容量规划 · 让分桶保持在风险区以下</p>
+      <p class="section-label">容量规划、让分桶保持在风险区以下</p>
       <h2>一个桶可能太热；太多桶又可能太冷</h2>
       <p>
         Microsoft Learn 描述了一个大致的溢出临界点：当相同前缀加上
@@ -171,13 +171,13 @@
         </div>
         <div>
           <h3>为什么不是唯一？</h3>
-          <p>每次调用使用唯一键会阻止复用的累积。缓存永远聚不起人气。</p>
+          <p>每次调用使用唯一键会阻止复用的累积。缓存永远积累不起复用。</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">观测证据 · 稀疏的公开测量</p>
+      <p class="section-label">观测证据、稀疏的公开测量</p>
       <h2>把命中率和延迟一起测</h2>
       <figure class="article-figure">
         <figcaption>
@@ -188,14 +188,14 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-hit-ratio">
         <figcaption>
-          <strong>源图——缓存命中率对缓存键基数。</strong>
+          <strong>源图：缓存命中率对缓存键基数。</strong>
           <strong>X 轴：</strong>log2 刻度的桶基数（1，随后是同一前缀上的 8 个桶）。
           <strong>Y 轴：</strong>稳态缓存命中率，0&ndash;1。
-          <strong>线：</strong>两条保留序列——<code>in_memory</code> 与 <code>24h</code>，各 N&nbsp;=&nbsp;960
+          <strong>线：</strong>两条保留序列：<code>in_memory</code> 与 <code>24h</code>，各 N&nbsp;=&nbsp;960
           条记录。这是双序列折线图，不是频次直方图。
           <strong>读法：</strong>在这个每桶速率较低的场景里，基数上升时命中率保持高位、
-          大体持平（约 0.93&ndash;0.96）。所以把前缀拆进更多桶，本身并没有在这里压垮命中率
-          ——碎片化的代价不在这一面板，而出现在下一面板的延迟长尾里。
+          大体持平（约 0.93&ndash;0.96）。所以把前缀拆进更多桶，本身并没有在这里压垮命中率。
+          碎片化的代价不在这一面板，而出现在下一面板的延迟长尾里。
           <strong>证据边界：</strong>在一个租户与区域、用按量付费的 gpt-5.2 测得的稀疏、
           经脱敏公开聚合（不是 PTU）。仅作描述，不是通用的缓存命中曲线。
           <strong>来源：</strong>取值来自本仓库的
@@ -206,13 +206,13 @@
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
-          <strong>配对源图——首 token 延迟 p95 对缓存键基数。</strong>
+          <strong>配对源图：首 token 延迟 p95 对缓存键基数。</strong>
           <strong>X 轴：</strong>同样的 log2 桶基数轴（1，随后 8）。
           <strong>Y 轴：</strong>稳态下首 token 的 p95 时间（毫秒）。
           <strong>线：</strong>同样两条保留序列，各 N&nbsp;=&nbsp;960。
           <strong>读法：</strong>基数为 1 的单个过热 <code>in_memory</code> 桶背着非常大的
           p95（约 106,000&nbsp;ms），当流量铺到 8 个桶时骤然下降（约 16,600&nbsp;ms）；而
-          <code>24h</code> 序列自始至终都偏低——所以在这组测量里，分桶的代价落在延迟
+          <code>24h</code> 序列自始至终都偏低。所以在这组测量里，分桶的代价落在延迟
           长尾里，因此命中率必须挨着首 token 延迟读，而不能单看。
           <strong>证据边界：</strong>按量付费 gpt-5.2 下同一批稀疏、经脱敏的公开聚合
           （不是 PTU）。仅作描述，不是延迟保证。
@@ -251,7 +251,7 @@
     </section>
 
     <section id="patterns" class="article-section">
-      <p class="section-label">键设计 · 稳定的工作负载分桶</p>
+      <p class="section-label">键设计、稳定的工作负载分桶</p>
       <h2>按工作负载分桶，而非按调用</h2>
       <p>
         好的键对于相同的工作负载应当是确定性的。坏的键包含
@@ -276,32 +276,32 @@
 
     <section id="sources" class="article-section">
       <h2>来源与证据边界</h2>
-      <p><strong>Tier 1 — 服务契约（Microsoft Learn）。</strong>提示缓存的前缀规则、
+      <p><strong>Tier 1: 服务契约（Microsoft Learn）。</strong>提示缓存的前缀规则、
         按前缀哈希路由、128-token 步长的匹配、单字符的未命中、<code>prompt_cache_key</code>
         的路由提示，以及每分钟约 15 个请求的溢出点，都记录在这里。</p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 定义了 1,024 token 的最小
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: 定义了 1,024 token 的最小
           要求和相同前缀的要求、初始前缀按哈希路由、前 1,024 token 之后每 128 token 一次的
           相同前缀缓存匹配、单字符的缓存未命中、与前缀哈希结合并影响路由的
           <code>prompt_cache_key</code> 提示，以及相同前缀与键的请求溢出到额外机器、缓存
-          有效性下降的每分钟约 15 个请求临界点。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
+          有效性下降的每分钟约 15 个请求临界点。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）、<a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
       </ul>
-      <p><strong>Tier 2 — 运维推断（本仓库）。</strong>分桶数量的计算和公开命中率测量，
+      <p><strong>Tier 2: 运维推断（本仓库）。</strong>分桶数量的计算和公开命中率测量，
         不是 Learn 的规范，而是本仓库的运维推断与源运行证据。</p>
       <ul>
         <li>[2] <strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — 分桶容量规划的运维手册。它从有文档记载的约 15-RPM 数值推导出
+          : 分桶容量规划的运维手册。它从有文档记载的约 15-RPM 数值推导出
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code>；而
           <code>recommended_buckets</code> 公式与默认每桶 10-RPM 的目标，则是本仓库的运维
           推断，而非 Learn 规范。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">来源</a>。</li>
         <li>[3] <strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 命中率与首 token 延迟表背后那一份稀疏的公开聚合测量。它是源运行证据，
+          : 命中率与首 token 延迟表背后那一份稀疏的公开聚合测量。它是源运行证据，
           不是通用曲线。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">来源</a>。</li>
       </ul>
       <p>
         <strong>本文证明了什么、又没证明什么。</strong>它记录了截至访问日期 Microsoft Learn
-        明示的提示缓存契约——1,024 token 的前缀规则、按前缀哈希路由、<code>prompt_cache_key</code>
-        提示、每分钟约 15 个请求的溢出点——以及本仓库的容量规划经验法则：把共享前缀拆成
+        明示的提示缓存契约：1,024 token 的前缀规则、按前缀哈希路由、<code>prompt_cache_key</code>
+        提示、每分钟约 15 个请求的溢出点，以及本仓库的容量规划经验法则：把共享前缀拆成
         足够多的稳定桶，让每个桶都留有余量地停在那个点之下。分桶数量公式和公开命中率测量
         是运维推断与源运行证据，而不是被保证的缓存命中曲线。它不证明存在一个在所有模型、
         区域、流量形态下都一致成立的通用阈值。
@@ -319,7 +319,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p>
+    <p>MIT 许可的研究产物、公开数据均已脱敏或仅为聚合形式。</p>
   </footer>
 </body>
 </html>

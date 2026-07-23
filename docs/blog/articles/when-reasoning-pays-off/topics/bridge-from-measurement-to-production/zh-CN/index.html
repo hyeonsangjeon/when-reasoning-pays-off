@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>从测量到生产 | when reasoning pays off</title>
-  <meta name="description" content="一篇桥接文章：解释为什么证据层与运维层之间会换一种声音，以及哪些习惯会跨层延续。">
+  <meta name="description" content="一篇衔接文章：解释为什么证据层与运维层之间会换一种声音，以及哪些习惯会跨层延续。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated_bridge">
   <meta name="article:source-locale" content="en">
@@ -40,26 +40,26 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 桥接文章</p>
-    <p class="article-kicker">桥接文章 · 证据层与运维层之间</p>
+    <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">推理何时值回成本</a> / 衔接文章</p>
+    <p class="article-kicker">衔接文章 · 证据层与运维层之间</p>
     <h1>从测量到生产</h1>
-    <p class="lede">读完五篇证据文章，你带走的是一种习惯，而不只是一个结论：不要因为“听起来更聪明”就先把推理强度调高——要把成本、质量、延迟和 token 形态放在一起读，只在真正划算的地方才多花那一个 token。这种习惯足以让你在基准测试里挑出一个 effort 档位，却还不足以支撑一个在线服务的运行。当你的选择撞上真实流量的那一刻，问题会悄悄换了形状：你不再问<em>推理在基准测试里究竟是在哪里值回成本的？</em>，而是开始问<em>当请求会被限流、重试、缓存、溢出，并要按真实容量来规划时，我该如何让那个决定继续稳妥？</em>这篇桥接文章讲的正是这次问题的转变——以及必须随之而来的那次“声音”的转变。</p>
+    <p class="lede">读完五篇证据文章，你带走的是一种习惯，而不只是一个结论：不要因为“听起来更聪明”就先把推理强度调高——要把成本、质量、延迟和 token 形态放在一起读，只在真正划算的地方才多花那一个 token。这种习惯足以让你在基准测试里挑出一个 effort 档位，却还不足以支撑一个在线服务的运行。当你的选择撞上真实流量的那一刻，问题会悄悄换了形状：你不再问<em>推理在基准测试里究竟是在哪里值回成本的？</em>，而是开始问<em>当请求会被限流、重试、缓存、溢出，并要按真实容量来规划时，我该如何让那个决定继续稳妥？</em>这篇衔接文章讲的正是这次问题的转变——以及必须随之而来的那次“声音”的转变。</p>
 
     <figure class="article-figure" id="figure-bridge-one-pager">
       <figcaption>
-        <strong>一眼看懂这座桥。</strong>这张单页概览点明了本页唯一的职责：证据层用
-        “我们测量过”来说话，运维层用“服务会返回”来说话，而这座桥负责指出某条主张
+        <strong>一眼看懂这次衔接。</strong>这张单页概览点明了本页唯一的职责：证据层用
+        “我们测量过”来说话，运维层用“服务会返回”来说话，而这篇衔接负责指出某条主张
         该用哪种声音。它是对整个系列脉络的一次元层面反思，不引入任何新的测量；下面
         各节再补充细节。
-        <a href="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.zh-CN.svg">打开桥接单页概览 SVG</a>。
+        <a href="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.zh-CN.svg">打开衔接单页概览 SVG</a>。
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.zh-CN.svg" alt="桥接文章《从测量到生产》的单页概览。它对比两种声音：标注“我们测量过”的证据面板，与标注“我们信守的契约”的运维面板，由一道弧线相连，弧线发问该用哪种声音。核心信息：两种声音——我们自己拥有的测量值，以及他人维护的契约——这座桥为各自的适用时机命名。标明这是对系列脉络的元层面反思，不引入任何新的测量。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.zh-CN.svg" alt="衔接文章《从测量到生产》的单页概览。它对比两种声音：标注“我们测量过”的证据面板，与标注“我们信守的契约”的运维面板，由一道弧线相连，弧线发问该用哪种声音。核心信息：两种声音——我们自己拥有的测量值，以及他人维护的契约——这次衔接为各自的适用时机命名。标明这是对系列脉络的元层面反思，不引入任何新的测量。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-bridge" class="article-section">
-      <h2>这座桥为何存在</h2>
+      <h2>这次衔接为何存在</h2>
       <p>五篇证据文章回答的都是同一类问题：一个推理 token <em>什么时候</em>值得花？它们用唯一诚实的方式作答——测量一个工作负载，把成本对照质量、延迟和 token 形态一起读。可一旦你部署上线，这个决定就不再老老实实待着。同一个提示词如今会以生产规模一次次到来，与其他在线流量一起经过缓存逻辑，有时以 429 的形式返回，还要争抢预置的容量。基准测试敲定了 token <em>什么时候</em>值得花；可一旦掌控条件的不再是你的测试框架，该<em>怎么</em>继续花，却还没有任何定论。</p>
-      <p>正是这道缝隙，构成了桥接页面存在的全部理由。它既不是又一次测量，也不是一份运维规范——它是两者之间的交接说明。证据层挣得了这个决定；运维层则必须在基准测试从未见过的条件下信守这个决定。把交接的话讲明白，才能让读者不把一项有文档记载的服务行为误当成“我们测量出来的”，也不把一个我们测量出来的数字误当成“平台承诺”的。职责不同、证据不同、声音也不同——本页接下来的内容，就是要把这两者区分清楚。</p>
+      <p>正是这道缝隙，构成了衔接页面存在的全部理由。它既不是又一次测量，也不是一份运维规范——它是两者之间的交接说明。证据层挣得了这个决定；运维层则必须在基准测试从未见过的条件下信守这个决定。把交接的话讲明白，才能让读者不把一项有文档记载的服务行为误当成“我们测量出来的”，也不把一个我们测量出来的数字误当成“平台承诺”的。职责不同、证据不同、声音也不同——本页接下来的内容，就是要把这两者区分清楚。</p>
     </section>
 
     <div class="article-summary-grid" aria-label="桥接文章要点">
@@ -90,7 +90,7 @@
 
     <section id="s2" class="article-section">
       <h2>两层共享的东西</h2>
-      <p>有三种习惯在桥上双向通行。</p>
+      <p>有三种习惯在两层之间双向通行。</p>
       <p>第一种是<strong>成对地读</strong>。基准测试层从不单看成本；它把成本挨着质量、延迟和 token 构成一起读。运维层也从不单看一个信号；它把 <code>retry-after-ms</code> 挨着那条负责这段等待的延迟策略一起读，把缓存命中率挨着首 token 延迟一起读，把 <code>max_output_tokens</code> 挨着准入并发数一起读。问题的形状变了，但同时盯着两样东西看的习惯没变。</p>
       <p>第二种是<strong>证据边界</strong>。每篇基准测试文章都会说明测量覆盖了什么、又没覆盖什么——N = 20 个人工编写的样本、R = 3 次重复、公开的聚合结果、仅采用标价。每篇运维文章用另一套词汇说着同一件事——Tier 1 规范对 Tier 2 推断、公开清单对私有归档、带访问日期的引用对运维上的经验法则。把边界点出来，能让读者不至于把任何一类证据过度拔高成“保证”。</p>
       <p>第三种是<strong>下一步该怎么走</strong>。每篇证据文章都会在结尾说明：如果工作负载的形状变了，下一个实验会是什么。每篇运维文章都会在结尾说明：下一次观测会告诉运维者什么。两种情况下，产出的都是一套决策框架，而不是一纸定论。</p>
@@ -113,7 +113,7 @@
     <section id="sources" class="article-section">
       <p class="section-label">来源 · 证据边界</p>
       <h2>来源与证据边界</h2>
-      <p>这篇桥接文章不引入新的测量，也不引入新的规范引文。它陈述的是把两层连接起来的编辑契约。各篇链接文章内部所引用的来源，分别适用于桥的两侧。</p>
+      <p>这篇衔接文章不引入新的测量，也不引入新的规范引文。它陈述的是把两层连接起来的编辑契约。各篇链接文章内部所引用的来源，分别适用于衔接的两侧。</p>
       <ul>
         <li><strong>证据侧引用：</strong>各篇的 <code>analysis.json</code> 产物、运行时所采用的定价快照，以及 <code>docs/05-methodology.md</code> 中的方法论契约。</li>
         <li><strong>运维侧引用：</strong>带访问日期的 Microsoft Learn 产品文档、<code>docs/15-spec-vs-inference-taxonomy.md</code> 中“规范对推断”的分类体系，以及 <code>docs/16-release-tiers-and-redaction-policy.md</code> 中的发布层级定义。</li>

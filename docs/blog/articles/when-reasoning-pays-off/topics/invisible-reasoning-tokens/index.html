@@ -40,46 +40,21 @@
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Topic essay · hidden billing surface</p>
-    <h1>Invisible reasoning tokens: the part of the bill the answer does not show</h1>
+    <h1>Invisible reasoning tokens: the part of the bill the answer never shows</h1>
     <p class="lede">
-      After a reasoning migration — or after someone nudges the effort dial
-      up — the answers can still look short and ordinary. Nothing about the
-      visible text says you are spending more. Yet finance and telemetry see a
-      larger bill for the same workload. The natural question writes itself: if
-      the answer did not get longer, where did the cost go?
+      After a reasoning migration, or after someone nudges the effort dial up, the answers can still look short and ordinary. The visible text gives no hint that spending has changed. Yet finance and telemetry see a larger bill for the same workload. The natural question writes itself: if the answer did not get longer, where did the cost go?
     </p>
 
     <section class="article-section">
       <h2>Why we tested this</h2>
       <p>
-        The habit is almost universal. When teams reason about what a request
-        costs, they reach for the thing they can see — the length of the
-        answer. A short reply feels cheap, a long one feels expensive, and for
-        most of the pre-reasoning era that intuition was close enough to be
-        useful.
+        The habit is almost universal. When teams estimate the cost of a request, they reach for the thing they can see: the length of the answer. A short reply feels cheap, a long one feels expensive, and for most of the pre-reasoning era that intuition was close enough to be useful.
       </p>
       <p>
-        That gives us a clean thing to check. Maybe visible answer length
-        really does explain the spend, and the bigger bill is hiding in
-        slightly longer replies nobody noticed. Or maybe a reasoning model
-        breaks the intuition, and the cost has moved into hidden reasoning
-        tokens the user never reads. The chart can show which one carries the
-        change.
+        That gives us a clean question to check. Maybe visible answer length really does explain the spend, and the bigger bill is hiding in slightly longer replies nobody noticed. Or maybe a reasoning model breaks the intuition, moving the cost into hidden reasoning tokens the user never reads. The chart can show which one carries the change.
       </p>
       <p>
-        So we decomposed it. We split each billed request into input, cached
-        input, visible output, and hidden reasoning, and read that
-        decomposition next to cost, quality, and latency &mdash; first on the
-        short-factual slice, then on the multi-step slice. The contrast is the
-        finding. On short-factual work the hidden reasoning channel barely
-        opened: visible output moved only about 14.0 to 14.8 tokens across the
-        effort ladder, and hidden reasoning stayed near zero &mdash; from 0 at
-        minimal effort to under one token at its peak. That is exactly why the
-        bill stayed flat. The invisible channel only opened when the task
-        demanded multi-step resolution, and there it climbed from 0 to about
-        110 reasoning tokens per request. The one-pager below states that
-        contrast in a single frame; the sections after it show the measured
-        detail.
+        So we decomposed the request. We split each billed request into input, cached input, visible output, and hidden reasoning, then read that breakdown next to cost, quality, and latency: first on the short-factual slice, then on the multi-step slice. The contrast is the finding. On short-factual work, the hidden reasoning channel barely opened: visible output moved only about 14.0 to 14.8 tokens across the effort ladder, and hidden reasoning stayed near zero, from 0 at minimal effort to under one token at its peak. That is exactly why the bill stayed flat. The invisible channel opened only when the task demanded multi-step resolution, and there it climbed from 0 to about 110 reasoning tokens per request. The one-pager below states that contrast in a single frame; the sections after it show the measured detail.
       </p>
     </section>
 
@@ -100,7 +75,7 @@
       <section class="summary-tile"><h2>Question</h2><p>If the answer text stays short, where did the extra cost come from?</p></section>
       <section class="summary-tile"><h2>Evidence</h2><p>benchmark-01 and benchmark-02 token composition, read next to cost, quality, and latency as one evidence chain.</p></section>
       <section class="summary-tile"><h2>Finding</h2><p>On short-factual work the hidden reasoning channel stayed near zero, so the bill stayed flat; on multi-step work the same channel scaled from 0 to about 110 tokens per request.</p></section>
-      <section class="summary-tile"><h2>Decision</h2><p>Track reasoning tokens in telemetry even when the visible answer stays short; treat the hidden-token budget as part of the bill the response never shows.</p></section>
+      <section class="summary-tile"><h2>Decision</h2><p>Track reasoning tokens in telemetry even when the visible answer stays short. Treat the hidden-token budget as part of the bill the response never shows.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="Topic sections">
@@ -124,26 +99,19 @@
         <figcaption>
           <strong>Topic guide chart (hand-built from the public aggregate).</strong> This schematic isolates one chart-sized question &mdash; mean hidden reasoning tokens by effort on the multi-step slice, with mean visible output labelled under each bar &mdash; and pairs it with the source table below. It is the positive case: the channel that stayed near zero on short-factual work opens here. The rendered benchmark-01 control chart follows further down.
         </figcaption>
-        <img class="wide-chart" src="../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-02 multi-step mean reasoning tokens by effort, climbing from zero at minimal effort to about 110 at extra-high, with visible output labelled under each bar." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../assets/topic-invisible-reasoning-tokens.svg" alt="Bar chart showing benchmark-02 multi-step mean reasoning tokens by effort, climbing from zero at minimal effort to about 110 at xhigh, with visible output labelled under each bar." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
       <h2>When the hidden channel stays shut &mdash; and when it opens</h2>
       <p>
-        The useful surprise in benchmark-01 is what did <em>not</em> happen.
-        Turning the effort dial up did not quietly inflate a hidden budget.
-        Minimal effort averaged about 14.0 visible output tokens and 0 reasoning
-        tokens. Extra-high effort averaged about 14.8 visible output tokens and
-        still under one reasoning token. The hidden channel stayed shut, so the
-        bill stayed flat and every gpt-5.2 cell landed at or below the gpt-4o
-        baseline. On a short factual answer the model simply had nothing to
-        deliberate about.
+        The useful surprise in benchmark-01 is what did <em>not</em> not happen. Turning the effort dial up did not quietly inflate a hidden budget. Minimal effort averaged about 14.0 visible output tokens and 0 reasoning tokens. Extra-high effort averaged about 14.8 visible output tokens and still under one reasoning token. The hidden channel stayed shut, so the bill stayed flat and every gpt-5.2 cell landed at or below the gpt-4o baseline. On a short factual answer, the model simply had nothing to deliberate about.
       </p>
       <p>
         The multi-step slice is where the same decomposition tells the opposite
         story. There, hidden reasoning climbed from 0 tokens at minimal effort
-        to about 110 at extra-high, while visible output rose alongside it from
+        to about 110 at xhigh, while visible output rose alongside it from
         about 6 to 117 tokens. That is the case the intuition misses: the text a
         reader sees becomes a poor proxy for the computation that was purchased,
         because a growing share of the work never reaches the answer. The lesson
@@ -191,7 +159,7 @@
         <figcaption>
           <strong>Source chart &mdash; benchmark-01 token composition.</strong>
           <strong>X-axis:</strong> the model and effort ladder &mdash; gpt-4o baseline,
-          then gpt-5.2 at minimal, low, medium, high, and extra-high effort.
+          then gpt-5.2 at minimal, low, medium, high, and xhigh effort.
           <strong>Y-axis:</strong> mean tokens per request.
           <strong>Stacked segments:</strong> each bar is one effort cell stacked into
           input (non-cached), cached input, visible output, and hidden reasoning &mdash;
@@ -216,9 +184,9 @@
         <thead><tr><th>Evidence row</th><th>Measure A</th><th>Measure B</th><th>What it adds</th></tr></thead>
         <tbody>
           <tr><td>benchmark-01 minimal effort</td><td>14.0 visible output tokens</td><td>0 reasoning tokens</td><td>Short answer, hidden channel shut.</td></tr>
-          <tr><td>benchmark-01 extra-high effort</td><td>14.8 visible output tokens</td><td>under 1 reasoning token</td><td>Still short, still no hidden budget &mdash; so the bill stayed flat.</td></tr>
+          <tr><td>benchmark-01 xhigh effort</td><td>14.8 visible output tokens</td><td>under 1 reasoning token</td><td>Still short, still no hidden budget &mdash; so the bill stayed flat.</td></tr>
           <tr><td>benchmark-02 minimal effort</td><td>5.75 visible output tokens</td><td>0 reasoning tokens</td><td>Multi-step task, channel still shut at minimal.</td></tr>
-          <tr><td>benchmark-02 extra-high effort</td><td>117.3 visible output tokens</td><td>109.6 reasoning tokens</td><td>The hidden channel opens: internal work nearly matches the visible answer.</td></tr>
+          <tr><td>benchmark-02 xhigh effort</td><td>117.3 visible output tokens</td><td>109.6 reasoning tokens</td><td>The hidden channel opens: internal work nearly matches the visible answer.</td></tr>
         </tbody>
       </table>
     </section>

@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>추론이 비용을 정당화할 때 — 같은 토큰 단가, 다른 청구서</title>
-  <meta name="description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
+  <title>추론은 언제 비용을 정당화하나 — 같은 토큰 단가, 다른 청구서</title>
+  <meta name="description" content="Azure OpenAI 배포에서 추론 모델이 언제 제값을 하는지 판단하는 실무 가이드.">
   <!-- Social sharing (Open Graph + Twitter Card) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="when reasoning pays off">
   <meta property="og:locale" content="ko_KR">
-  <meta property="og:title" content="추론이 비용을 정당화할 때 — 같은 토큰 단가, 다른 청구서">
+  <meta property="og:title" content="추론은 언제 비용을 정당화하나 — 같은 토큰 단가, 다른 청구서">
   <meta property="og:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
   <meta property="og:url" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/ko/">
   <meta property="og:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
@@ -17,7 +17,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Same token price, different bill: a reasoning workload bills extra hidden thinking tokens, so its total bill is taller.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="추론이 비용을 정당화할 때 — 같은 토큰 단가, 다른 청구서">
+  <meta name="twitter:title" content="추론은 언제 비용을 정당화하나 — 같은 토큰 단가, 다른 청구서">
   <meta name="twitter:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
   <meta name="twitter:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <link rel="stylesheet" href="../assets/styles.css">
@@ -51,7 +51,7 @@
       </nav>
     </div>
     <div class="hero">
-      <img src="../assets/hero.svg" alt="두 워크로드가 같은 토큰 단가를 지불하지만, 추론 워크로드는 보이지 않는 '사고' 토큰을 추가로 청구받아 총 청구액이 더 높습니다.">
+      <img src="../assets/hero.svg" alt="두 워크로드의 토큰 단가는 같지만, 추론 워크로드에는 보이지 않는 '사고' 토큰이 더해져 최종 청구액이 커집니다.">
     </div>
   </header>
 
@@ -60,9 +60,8 @@
     <p class="lede">
       어떤 팀이 워크로드를 추론 모델로 옮기고 나서, 토큰 단가는 예전과
       똑같다는 걸 확인합니다. 그런데 낯선 조절값이 하나 새로 생겼습니다. 바로
-      추론 강도입니다. 이 값을 올리는 일은 거의 공짜처럼 느껴집니다 &mdash;
-      그러니 어디서든 최대로 올려 최선의 답을 끌어내지 않을 이유가 없어
-      보입니다. 하지만 정작 눈에 보이는 출력은 거의 그대로인데 청구서만
+      추론 강도입니다. 이 값을 올리는 일은 거의 공짜처럼 느껴집니다. 그러니 어디서든 최대로
+      올려 최선의 답을 끌어내지 않을 이유가 없어 보입니다. 하지만 정작 눈에 보이는 출력은 거의 그대로인데 청구서만
       올라갑니다. 원인은 숨은 "사고" 토큰입니다. 추론 모델은 이 토큰을
       생성하고 그만큼 과금하지만, 응답에는 결코 드러내지 않습니다. 이
       프로젝트는 대표적인 소규모 작업 집합을 대상으로, 그 추가 토큰이 언제
@@ -82,8 +81,8 @@
       모델 마이그레이션 이후 엔지니어에게 닥치는 질문은 직설적입니다. 왜
       비용이 움직였는가, 왜 지연이 바뀌었는가, 왜 스로틀링이 늘었는가? 추론
       강도가 이 세 가지 모두의 밑에 깔려 있습니다. 기본값을 높게 두면 독자에게
-      결코 닿지 않는 내부 연산에 토큰을 조용히 소비합니다 &mdash; 종량제에서는
-      실제 비용으로, 프로비저닝 용량에서는 귀한 여유 용량으로 말이죠. 강도가
+      결코 닿지 않는 내부 연산에 토큰을 조용히 소비합니다. 종량제에서는 실제 비용으로,
+      프로비저닝 용량에서는 귀한 여유 용량으로 말이죠. 강도가
       실제로 답을 바꾸는 지점을 아는 것이, 자신 있는 롤아웃과 청구서에서의
       뜻밖의 사태를 가르는 차이입니다.
     </p>
@@ -93,7 +92,7 @@
       프롬프트와 워크로드 구간은 그대로 고정한 채, 짧은 사실 응답, 구조화
       데이터의 자연어 변환, 다단계 추론, 도구를 사용하는 에이전트라는 네
       구간 각각에 동일한 추론 강도 단계를 순서대로 적용했습니다. 그리고 모든
-      호출에서 사용량 전체를 낱낱이 기록했습니다 &mdash; 입력, 캐시, 추론,
+      호출에서 사용량 전체를 낱낱이 기록했습니다. 입력, 캐시, 추론,
       출력 토큰은 물론 품질 신호와 지연까지 함께 담았습니다. 이렇게 측정한
       토큰 구성 위에, 같은 워크로드가 종량제(PAYG)와 프로비저닝 처리량(PTU)에서
       각각 어떻게 과금되는지를 모델링해 비교했습니다.
@@ -101,7 +100,7 @@
 
     <h2>근거가 보여 준 것</h2>
     <p>
-      결과는 좋은 근거가 으레 그렇듯 엇갈렸습니다 &mdash; 어떤 구간에서는
+      결과는 좋은 근거가 으레 그렇듯 엇갈렸습니다. 어떤 구간에서는
       강도가 제값을 했고, 어떤 구간에서는 숨은 연산 비용만 늘었습니다. 네
       가지 교훈은 구간 전반에 걸쳐 똑같이 적용됩니다.
     </p>
@@ -132,7 +131,7 @@
     <h2>대상 독자</h2>
     <p>
       추론을 켤지(그리고 얼마나) 결정하거나, 용량을 산정하거나, 모델 마이그레이션
-      이후 비용·지연·스로틀링 변화를 디버깅하려는, Azure OpenAI 배포를 운영하는
+      이후 비용, 지연, 스로틀링 변화를 디버깅하려는, Azure OpenAI 배포를 운영하는
       엔지니어와 아키텍트를 위한 자료입니다.
     </p>
 
@@ -152,7 +151,7 @@
       </article>
       <article class="summary-tile">
         <h2>아티클 허브 둘러보기</h2>
-        <p>전체 읽기 흐름 &mdash; 근거 토픽, 브리지 글, 그리고 복구·캐싱·사이징에
+        <p>전체 읽기 흐름: 근거 토픽, 브리지 글, 그리고 복구, 캐싱, 사이징에
            대한 운영 노트. <a href="../blog/articles/ko/">허브 열기 →</a></p>
       </article>
       <article class="summary-tile">
@@ -172,17 +171,17 @@
       <dl class="glossary-list">
         <div class="glossary-term" data-term="foundry">
           <dt>Foundry</dt>
-          <dd>Azure AI Foundry — 이 프로젝트에서 측정한 모델을 배포하고
+          <dd>Azure AI Foundry: 이 프로젝트에서 측정한 모델을 배포하고
               서빙하는 관리형 플랫폼.</dd>
         </div>
         <div class="glossary-term" data-term="ptu">
           <dt>PTU</dt>
-          <dd>프로비저닝 처리량 단위 — 토큰 단위가 아니라 처리량에 대해
+          <dd>프로비저닝 처리량 단위: 토큰 단위가 아니라 처리량에 대해
               비용을 지불하는 예약된 고정 용량 과금.</dd>
         </div>
         <div class="glossary-term" data-term="payg">
           <dt>PAYG</dt>
-          <dd>종량제 — 입력, 캐시, 추론, 출력 토큰별로 청구되는 사용량 기반
+          <dd>종량제: 입력, 캐시, 추론, 출력 토큰별로 청구되는 사용량 기반
               과금.</dd>
         </div>
         <div class="glossary-term" data-term="reasoning">
@@ -192,12 +191,12 @@
         </div>
         <div class="glossary-term" data-term="cache">
           <dt>캐시</dt>
-          <dd>프롬프트 캐시 — 이전에 처리된 프롬프트 접두부를 재사용하며,
+          <dd>프롬프트 캐시: 이전에 처리된 프롬프트 접두부를 재사용하며,
               낮은 캐시 입력 단가로 청구됨.</dd>
         </div>
         <div class="glossary-term" data-term="429">
           <dt>429</dt>
-          <dd>HTTP 429 Too Many Requests — 배포가 속도 또는 용량 한도를
+          <dd>HTTP 429 Too Many Requests: 배포가 속도 또는 용량 한도를
               초과할 때 반환되는 스로틀링 응답.</dd>
         </div>
       </dl>
@@ -205,7 +204,7 @@
   </main>
 
   <footer class="site">
-    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만
+    <p>MIT 라이선스 연구 산출물. 공개된 데이터는 정제 또는 집계된 형태만
        포함합니다.</p>
   </footer>
 

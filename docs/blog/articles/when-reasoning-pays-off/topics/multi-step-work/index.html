@@ -40,8 +40,8 @@
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Topic essay · benchmark-02 multi-step work</p>
-    <h1>Multi-step work: when reasoning earns its trial</h1>
-    <p class="lede">After the short-factual slice, it is tempting to file reasoning effort under hidden spend — a dial that grows the bill without changing the answer. But teams also run tasks where the answer depends on holding several constraints in mind at once, and there the question reopens: does a stronger model or more reasoning effort change the answer, not just the cost? This benchmark puts that intuition to the test.</p>
+    <h1>Multi-step work: when reasoning deserves a trial</h1>
+    <p class="lede">After the short-factual slice, it is tempting to file reasoning effort under hidden spend — a dial that grows the bill without changing the answer. But teams also run tasks where the answer depends on holding several constraints in mind at once, and there the question reopens: does a stronger model or more reasoning effort change the answer, not just the cost? This benchmark gives that intuition a measured test.</p>
 
     <section class="article-section">
       <h2>Why we tested this</h2>
@@ -63,7 +63,7 @@
       <p>
         So we tested it. Benchmark-02 holds a multi-step slice fixed and walks
         the same model and effort ladder — the GPT-4o baseline, then GPT-5.2 at
-        none, low, medium, high, and extra-high effort — reading mean judge
+        none, low, medium, high, and xhigh effort — reading mean judge
         score next to cost and latency at each cell. The result is mixed and
         worth stating plainly: GPT-5.2 lifted quality over the GPT-4o baseline,
         but inside GPT-5.2 the highest effort settings were not automatically
@@ -75,7 +75,7 @@
 
     <figure class="article-figure" id="figure-multi-step-one-pager">
       <figcaption>
-        <strong>This topic at a glance.</strong> On this multi-step slice the quality
+        <strong>At a glance.</strong> On this multi-step slice the quality
         lift tracked the model upgrade (gpt-4o &rarr; gpt-5.2), not steps up the effort
         ladder. The one-pager states the same message and marks the evidence
         boundary; the sections below add the measured detail.
@@ -108,7 +108,7 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>Topic guide chart (hand-built from the public aggregate).</strong> This schematic isolates one chart-sized question &mdash; mean judge score by model and effort, with mean cost per request labelled under each bar &mdash; and pairs it with the source table below. The rendered source chart from the public chart-data pipeline follows further down.
+          <strong>Guide chart, hand-built from the public aggregate.</strong> This schematic isolates one chart-sized question &mdash; mean judge score by model and effort, with mean cost per request labelled under each bar &mdash; and pairs it with the source table below. The rendered source chart from the public chart-data pipeline follows further down.
         </figcaption>
         <img class="wide-chart" src="../../../../../assets/topic-multi-step-work.svg" alt="Bar chart showing benchmark-02 mean judge score by model and effort with cost labels." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -116,8 +116,8 @@
 
     <section id="s1" class="article-section">
       <h2>The quality movement changed the interpretation</h2>
-      <p>In benchmark-02, the baseline GPT-4o cell averaged a judge score of 1.5. GPT-5.2 at none, medium, high, and extra-high effort reached 2.0, and low effort reached 1.93. The chart does not say “always raise effort.” It says the workload has enough structure for model and effort choices to be worth testing.</p>
-      <p>The more important reading is the shape of the first successful cells. GPT-5.2 none averaged $0.000618 per request and reached 2.0. That makes the trial useful without turning the highest effort setting into the default.</p>
+      <p>In benchmark-02, the baseline GPT-4o cell averaged a judge score of 1.5. GPT-5.2 at none, medium, high, and xhigh effort reached 2.0, and low effort reached 1.93. The chart does not say “always raise effort.” It says the workload has enough structure for model and effort choices to be worth testing.</p>
+      <p>The more useful reading is the shape of the first cells that clear the bar. GPT-5.2 none averaged $0.000618 per request and reached 2.0. That makes the trial useful without turning the highest effort setting into the default.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>How to read the chart</h2>
@@ -127,11 +127,11 @@
     <section id="s3" class="article-section">
       <h2>Why this benchmark was different</h2>
       <p>The short-factual task mostly asked for brief answers. The multi-step task asked the model to preserve a small reasoning chain. That changed what “extra thinking” could buy. The model and effort choice now had to be read against fewer wrong answers, not just against added spend.</p>
-      <p>Still, the evidence does not reward maximalism. Latency rises as effort rises, and extra-high effort averaged 3.3s. Once quality has reached the top of the rubric, the next question becomes whether a slower cell is saying anything new.</p>
+      <p>Still, the evidence does not reward maximalism. Latency rises as effort rises, and xhigh effort averaged 3.3s. Once quality has reached the top of the rubric, the next question becomes whether a slower cell is saying anything new.</p>
     </section>
     <section id="s4" class="article-section">
       <h2>What this means</h2>
-      <p>Reasoning pays when it changes the answer, not when it changes the aura of the answer. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p>
+      <p>Reasoning pays when it changes the answer, not when it only changes the answer's aura. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p>
       <p>The decision is therefore not “use more reasoning everywhere.” It is “route multi-step slices to the lowest effort level that clears the quality bar.”</p>
     </section>
 
@@ -141,14 +141,14 @@
         <figcaption>
           <strong>Source chart &mdash; benchmark-02 judge quality.</strong>
           <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
-          then gpt-5.2 at none, low, medium, high, and extra-high effort.
+          then gpt-5.2 at none, low, medium, high, and xhigh effort.
           <strong>Y-axis:</strong> mean judge score on the 0&ndash;2 rubric.
           <strong>Bars:</strong> each bar is the mean score of one cell &mdash; an aggregate
           comparison, not a frequency histogram &mdash; and the whiskers show &plusmn;1
           standard deviation.
           <strong>How to read it:</strong> the step up is between models, not along the
           effort ladder &mdash; the gpt-4o baseline sits at 1.5 while every gpt-5.2 cell
-          lands at or near 2.0 (none, medium, high, and extra-high reach 2.0; low is
+          lands at or near 2.0 (none, medium, high, and xhigh reach 2.0; low is
           1.93), so on this slice the lift tracks the model upgrade rather than
           higher effort.
           <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats, this one
@@ -170,7 +170,7 @@
           <tr><td>GPT-4o baseline</td><td>Judge score 1.50</td><td>$0.000798/request</td><td>A clear baseline to beat.</td></tr>
 <tr><td>GPT-5.2 none</td><td>Judge score 2.00</td><td>$0.000618/request</td><td>The cheapest top-scoring cell in this public slice.</td></tr>
 <tr><td>GPT-5.2 low</td><td>Judge score 1.93</td><td>$0.000859/request</td><td>Still above baseline, but not the clean winner here.</td></tr>
-<tr><td>GPT-5.2 extra-high</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>Top score, but a larger bill and longer latency.</td></tr>
+<tr><td>GPT-5.2 xhigh</td><td>Judge score 2.00</td><td>$0.002179/request</td><td>Top score, but a larger bill and longer latency.</td></tr>
         </tbody>
       </table>
     </section>
@@ -187,7 +187,7 @@
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The cost figures drift if list pricing moves.</li>
-        <li>[3] <strong>Tier 2 — benchmark-02 slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the per-effort quality figures — the 1.5 GPT-4o baseline, the 2.0 reached by GPT-5.2 none, medium, high, and extra-high, and the 1.93 at GPT-5.2 low, where GPT-5.2 none spends no reasoning tokens yet is the cheapest top-scoring cell at $0.000618 — and the matching cost figures from $0.000618 to $0.002179 per request.</li>
+        <li>[3] <strong>Tier 2 — benchmark-02 slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the per-effort quality figures — the 1.5 GPT-4o baseline, the 2.0 reached by GPT-5.2 none, medium, high, and xhigh, and the 1.93 at GPT-5.2 low, where GPT-5.2 none spends no reasoning tokens yet is the cheapest top-scoring cell at $0.000618 — and the matching cost figures from $0.000618 to $0.002179 per request.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> as paired-reading evidence that the quality lift on this slice carried a justified bill rather than only a taller one.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>
       </ul>

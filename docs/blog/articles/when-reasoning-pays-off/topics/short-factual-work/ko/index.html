@@ -42,23 +42,15 @@
   <main class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">추론이 비용을 정당화할 때</a> / 주제 상세</p>
     <p class="article-kicker">주제 글 · benchmark-01 짧은 사실형 작업</p>
-    <h1>짧은 사실형 작업: 추가 추론이 품질 대신 비용만 키울 때</h1>
+    <h1>짧은 사실형 작업: 추론을 더 해도 품질 대신 비용만 커질 때</h1>
     <p class="lede">
-      추론 모델을 막 도입한 팀에게 짧은 사실형 질문은 강도를 올려 보기 가장
-      만만한 자리처럼 보입니다. 답이 짧아 틀리면 금방 눈에 띄고, "조금 더
-      생각하게 두자"는 선택이 값싼 보험처럼 느껴지기 때문입니다. 그래서 추론
-      강도를 여기서부터 올리고 싶어집니다. 하지만 그 직관은 곧장 적용할 정책이
-      아니라 시험해 볼 가설입니다. 이 글은 그 가설을 데이터로 확인합니다.
+      추론 모델을 막 들여온 팀에는 짧은 사실형 질문이 강도 손잡이를 올려 보기 가장 만만한 자리처럼 보입니다. 답이 짧아 틀리면 바로 드러나고, “조금 더 생각하게 두자”는 선택이 싼 보험처럼 들리기 때문입니다. 그래서 추론 강도를 여기서부터 올리고 싶어집니다. 하지만 그 직감은 곧장 배포할 정책이 아니라 먼저 시험할 가설입니다. 이 글은 그 가설을 데이터로 확인합니다.
     </p>
 
     <section class="article-section">
       <h2>이 직관을 시험한 이유</h2>
       <p>
-        익숙한 상황입니다. 마이그레이션으로 팀이 추론 모델에 올라타면 설정에서
-        추론 강도 설정을 바꿀 수 있게 되고, 짧은 사실형 질문은 그 값을 올리기에
-        가장 안전해 보입니다. 출력이 짧아 오류가 분명히 드러나고, "조금 더
-        생각하게 두자"는 선택이 값싼 보험처럼 들리니, 여기서 기본값을 올리는
-        일은 거의 공짜처럼 느껴집니다.
+        현장에서 자주 보는 장면입니다. 마이그레이션 뒤 팀이 추론 모델로 넘어오면 설정 화면에 추론 강도 손잡이가 생기고, 짧은 사실형 질문은 그 손잡이를 올리기에 가장 안전한 자리처럼 보입니다. 출력이 짧아 오류가 금방 드러나고, “조금 더 생각하게 두자”는 말은 싼 보험처럼 들리니, 여기서 기본값을 올리는 일은 거의 공짜처럼 느껴집니다.
       </p>
       <p>
         덕분에 확인할 가설이 깔끔하게 정리됩니다. 짧은 사실형 작업에서 추론
@@ -67,26 +59,20 @@
         비용을 치르는 셈입니다.
       </p>
       <p>
-        그래서 직접 측정했습니다. 워크로드 형태는 같은 짧은 사실형 작업으로
-        고정한 채, 강도 단계를 한 단계씩 올리며 각 수준에서 요청당 비용, 지연
-        시간, 눈에 보이는 답변 텍스트, 숨은 추론 토큰, 평가 점수를 비교했습니다.
-        이 작업 구간의 결과는 기본값을 다시 보게 만드는 종류였습니다. 강도는
-        비용, 지연 시간, 숨은 토큰을 샀지만 더 나은 답은 사지 못했습니다. 아래
-        한 장 요약이 그 결론을 한 화면에 담고, 이어지는 절에서 측정된 세부를
-        풀어냅니다.
+        그래서 직접 쟀습니다. 워크로드 형태는 같은 짧은 사실형 작업으로 묶어 두고, 강도 단계를 하나씩 올리며 각 수준에서 요청당 비용, 지연 시간, 눈에 보이는 답변 텍스트, 숨은 추론 토큰, 심판 점수를 비교했습니다. 이 구간의 결과는 기본값을 다시 보게 만드는 쪽이었습니다. 강도는 비용, 지연 시간, 숨은 토큰을 늘렸지만 더 나은 답은 사지 못했습니다. 아래 한 장 요약이 그 결론을 한 화면에 담고, 이어지는 절에서 측정된 세부를 풀어냅니다.
       </p>
     </section>
 
     <figure class="article-figure" id="figure-short-factual-one-pager">
       <figcaption>
         <strong>한눈에 보는 주제.</strong> 이 짧은 사실형 작업에서는 추론 강도
-        단계를 올려도 요청당 비용은 본질적으로 평평했고, 평균 평가 점수는 1.95
+        단계를 올려도 요청당 비용은 본질적으로 평평했고, 평균 심판 점수는 1.95
         안팎에 머물렀습니다. 모든 gpt-5.2 단계는 gpt-4o 기준선보다 낮았습니다.
         이 한 장 요약은 그 메시지와 근거 경계를 표시하며, 아래 절은 측정된
         세부를 더합니다.
         <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">짧은 사실형 한 장 요약 SVG 열기</a>.
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="짧은 사실형 작업 한 장 요약. none에서 extra-high까지 추론 강도 단계를 올려도 요청당 비용은 본질적으로 평평하고, 모든 gpt-5.2 단계가 gpt-4o 기준선보다 낮으며, 평가 품질은 1.95 안팎에 머무는 모습을 보여줍니다. 핵심 메시지: 짧은 사실형 작업에서는 강도 단계를 올려도 비용과 품질이 평평했고 gpt-5.2는 이미 gpt-4o 기준선에 맞먹었습니다. 측정된 집계값, N=20, R=3이며, 비용은 요청당 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="짧은 사실형 작업 한 장 요약. none에서 xhigh까지 추론 강도 단계를 올려도 요청당 비용은 본질적으로 평평하고, 모든 gpt-5.2 단계가 gpt-4o 기준선보다 낮으며, 평가 품질은 1.95 안팎에 머무는 모습을 보여줍니다. 핵심 메시지: 짧은 사실형 작업에서는 강도 단계를 올려도 비용과 품질이 평평했고 gpt-5.2는 이미 gpt-4o 기준선에 맞먹었습니다. 측정된 집계값, N=20, R=3이며, 비용은 요청당 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="주제 요약">
@@ -100,11 +86,11 @@
       </section>
       <section class="summary-tile">
         <h2>발견</h2>
-        <p>이 작업에서는 요청당 비용이 본질적으로 평평했습니다 &mdash; none에서 extra-high까지 약 1.02x, 모든 gpt-5.2 단계가 gpt-4o 기준선보다 낮았습니다 &mdash; 그리고 평균 평가 점수는 1.95 안팎에 머물렀습니다.</p>
+        <p>이 작업에서는 요청당 비용이 사실상 평평했습니다. none에서 xhigh까지 약 1.02x였고, 모든 gpt-5.2 단계가 gpt-4o 기준선보다 낮았습니다. 평균 심판 점수도 1.95 안팎에 머물렀습니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
-        <p>이미 정확히 답하는 가장 낮은 강도를 기본값으로 둡니다. 이 워크로드 형태에서 평가 점수에 실제 품질 향상이 나타날 때만 강도를 올립니다.</p>
+        <p>이미 정확히 답하는 가장 낮은 강도를 기본값으로 둡니다. 이 워크로드 형태에서 심판 점수에 실제 품질 향상이 나타날 때만 강도를 올립니다.</p>
       </section>
     </div>
 
@@ -119,18 +105,18 @@
       <p>
         가설은 강도를 올리면 답이 더 안전해질 것이라고 예측했지만, 데이터는
         그런 답을 내놓지 않았습니다. 비용 막대는 본질적으로 평평합니다 &mdash; none
-        강도에서 $0.000587, extra-high에서 $0.000598로 약 1.02x 폭이고, 모든
+        강도에서 $0.000587, xhigh에서 $0.000598로 약 1.02x 폭이고, 모든
         gpt-5.2 단계가 gpt-4o 기준선 $0.000665보다 낮습니다 &mdash; 품질 막대도
-        마찬가지로 평평합니다. 평균 평가 점수는 단계 전반에서 약 1.95이며,
+        마찬가지로 평평합니다. 평균 심판 점수는 단계 전반에서 약 1.95이며,
         기준선의 1.90 이상입니다. 지연 시간도 추세가 없습니다(상승 없이 대략
         1.4s에서 1.7s 사이). 토큰 형태 처리량 계수는 0.99 안팎을 유지합니다.
       </p>
       <p>
         그래서 비용 막대도 품질 막대도 강도와 함께 움직이지 않았습니다 &mdash; 차트가
-        전하려는 이야기는 그게 전부입니다. reasoning에 더 써도 더 싼 청구서나
+        말하는 핵심은 그뿐입니다. 추론에 더 써도 더 싼 청구서나
         더 나은 답을 사지 못했고, 가장 낮은 설정의 gpt-5.2가 이미 gpt-4o 기준선에
         맞먹거나 앞섰습니다. 이 워크로드 형태에서는 더 높은 강도를 기본값으로
-        삼기보다 실험 단계에 두는 편이 낫습니다.
+        올리기보다 실험 단계에 두는 편이 낫습니다.
       </p>
     </section>
 
@@ -145,7 +131,7 @@
         못한 채 숨은 토큰만 계속 쌓습니다.
       </p>
       <p>
-        이 작업 구간이 보여주는 모습이 그렇습니다. 평가 점수는 강도를 따라
+        이 작업 구간이 보여주는 모습이 그렇습니다. 심판 점수는 강도를 따라
         오르지 않고 1.95 안팎에 머무는 동안 비용, 지연 시간, 추론 토큰도
         본질적으로 평평하게 머뭅니다. 여기에는 지불할 숨은 생각이 거의 없습니다
         &mdash; 그래서 이 구간에서 더 높은 기본값은 더 싼 설정이 이미 내놓지 못한
@@ -165,7 +151,7 @@
           <h3>X축</h3>
           <p>
             막대는 추론 강도 수준을 따라 왼쪽에서 오른쪽으로 이동합니다.
-            baseline, none, low, medium, high, extra-high 순서이며, 이는 운영자가
+            baseline, none, low, medium, high, xhigh 순서이며, 이는 운영자가
             조절할 수 있는 설정입니다.
           </p>
         </div>
@@ -173,7 +159,7 @@
           <h3>Y축</h3>
           <p>
             비용 차트에서 막대 높이는 요청당 평균 USD이고, 품질 차트에서 막대
-            높이는 평균 평가 점수입니다. 둘은 따로가 아니라 한 쌍으로 읽으세요.
+            높이는 평균 심판 점수입니다. 둘은 따로가 아니라 한 쌍으로 읽으세요.
           </p>
         </div>
         <div>
@@ -191,14 +177,14 @@
       <figcaption>
         <strong>원천 차트 &mdash; 짧은 사실형 요청당 비용(benchmark&nbsp;01).</strong>
         <strong>X축:</strong> 모델과 강도 단계 &mdash; gpt-4o 기준선, 그다음 gpt-5.2의
-        none·low·medium·high·extra-high 강도입니다.
+        none·low·medium·high·xhigh 강도입니다.
         <strong>Y축:</strong> 요청당 평균 PAYG USD입니다.
         <strong>막대:</strong> 각 막대는 강도 조합 하나의 평균 비용이며 &mdash; 빈도
         히스토그램이 아니라 집계 비교입니다 &mdash; 세로 수염은 반복 측정의
         &plusmn;1 표준편차를 나타냅니다.
-        <strong>읽는 법:</strong> 비용은 none 강도의 $0.000587에서 extra-high의
+        <strong>읽는 법:</strong> 비용은 none 강도의 $0.000587에서 xhigh의
         $0.000598까지 본질적으로 평평합니다 &mdash; 약 1.02x 폭이고, 모든 gpt-5.2
-        단계가 $0.000665 기준선보다 낮습니다 &mdash; 아래 짝지은 평가 점수는 1.95
+        단계가 $0.000665 기준선보다 낮습니다 &mdash; 아래 짝지은 심판 점수는 1.95
         안팎에 머뭅니다.
         <strong>근거 경계:</strong> 셀당 N = 20 작성 표본, R = 3 반복, 이 하나의 짧은
         사실형 작업 구간이며, 하나의 Azure OpenAI 테넌트와 리전에서 날짜가 박힌 단일
@@ -211,19 +197,19 @@
         함께 읽으세요
         (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">제공되는 차트 데이터</a>).
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01의 요청당 평균 PAYG 비용이 강도 단계 전반에서 본질적으로 평평하게 유지되고, gpt-4o 기준선과 gpt-5.2 none부터 extra-high까지에서 모든 gpt-5.2 단계가 기준선보다 낮으며, 표준편차 수염이 함께 표시된 막대 차트입니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01의 요청당 평균 PAYG 비용이 강도 단계 전반에서 본질적으로 평평하게 유지되고, gpt-4o 기준선과 gpt-5.2 none부터 xhigh까지에서 모든 gpt-5.2 단계가 기준선보다 낮으며, 표준편차 수염이 함께 표시된 막대 차트입니다." style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
       <figcaption>
-        <strong>짝지은 원천 차트 &mdash; 짧은 사실형 평가 점수(benchmark&nbsp;01).</strong>
+        <strong>짝지은 원천 차트 &mdash; 짧은 사실형 심판 점수(benchmark&nbsp;01).</strong>
         <strong>X축:</strong> 같은 모델과 강도 단계입니다.
-        <strong>Y축:</strong> 0&ndash;2 루브릭의 평균 평가 점수(품질 가드레일)입니다.
+        <strong>Y축:</strong> 0&ndash;2 루브릭의 평균 심판 점수(품질 가드레일)입니다.
         <strong>막대:</strong> 각 막대는 강도 조합 하나의 평균 점수이며 &mdash; 빈도
         히스토그램이 아니라 집계 비교입니다 &mdash; 수염은 &plusmn;1 표준편차입니다.
         <strong>읽는 법:</strong> 품질 막대는 평평하고 기준선보다 약간 높습니다
         &mdash; gpt-4o 기준선 1.90, gpt-5.2 none 1.95, low 1.97, medium 1.97,
-        high 1.93, extra-high 1.95 &mdash; 따라서 이 구간에서는 평평한 비용 막대가
+        high 1.93, xhigh 1.95 &mdash; 따라서 이 구간에서는 평평한 비용 막대가
         더 낮은 청구서도 더 나은 답도 사지 못했습니다.
         <strong>근거 경계:</strong> 셀당 N = 20, R = 3 반복이며, 오차 막대는 신뢰
         구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.
@@ -259,19 +245,19 @@
           <tr>
             <td>요청당 비용</td>
             <td>X축은 강도 수준, Y축은 요청당 평균 USD입니다.</td>
-            <td>none 강도 $0.000587, extra-high 강도 $0.000598, 기준선 $0.000665입니다.</td>
+            <td>none 강도 $0.000587, xhigh 강도 $0.000598, 기준선 $0.000665입니다.</td>
             <td>청구서는 평평하고 기준선보다 낮으므로, 더 높은 강도는 증명할 것이 없습니다.</td>
           </tr>
           <tr>
             <td>품질 가드레일</td>
-            <td>X축은 같은 강도 단계, Y축은 평균 평가 점수입니다.</td>
-            <td>none 강도 1.95, extra-high 강도 1.95, 기준선 1.90입니다.</td>
+            <td>X축은 같은 강도 단계, Y축은 평균 심판 점수입니다.</td>
+            <td>none 강도 1.95, xhigh 강도 1.95, 기준선 1.90입니다.</td>
             <td>품질은 평평하고 이미 기준선 이상입니다.</td>
           </tr>
           <tr>
             <td>지연 시간</td>
             <td>X축은 강도 수준, Y축은 평균 응답 지연 시간입니다.</td>
-            <td>none 강도 약 1.7s, extra-high 강도 약 1.4s이며, 단계 전반에 추세가 없습니다.</td>
+            <td>none 강도 약 1.7s, xhigh 강도 약 1.4s이며, 단계 전반에 추세가 없습니다.</td>
             <td>지연 시간은 noisy하며 강도의 비용이 아닙니다.</td>
           </tr>
           <tr>
@@ -283,7 +269,7 @@
           <tr>
             <td>토큰 형태 처리량</td>
             <td>X축은 강도 수준, Y축은 기준선 대비 처리량 계수입니다.</td>
-            <td>계수는 none에서 extra-high까지 0.99 안팎을 유지합니다.</td>
+            <td>계수는 none에서 xhigh까지 0.99 안팎을 유지합니다.</td>
             <td>트래픽 형태에는 추가 용량 여유가 필요 없습니다.</td>
           </tr>
         </tbody>
@@ -294,9 +280,9 @@
       <h2>관측된 결과</h2>
       <p>
         비용 곡선은 평평했습니다. none 강도는 요청당 평균 $0.000587,
-        extra-high 강도는 요청당 평균 $0.000598로 약 1.02x 폭이었고, 모든
+        xhigh 강도는 요청당 평균 $0.000598로 약 1.02x 폭이었고, 모든
         gpt-5.2 단계는 gpt-4o 기준선 $0.000665보다 낮았습니다. 짝지은 품질도
-        평평했습니다. 평균 평가 점수는 1.95 안팎에 머물렀고 기준선의 1.90 이상이었습니다.
+        평평했습니다. 평균 심판 점수는 1.95 안팎에 머물렀고 기준선의 1.90 이상이었습니다.
       </p>
       <p>
         이것은 추론이 나쁘다는 보편적 주장이 아닙니다. 워크로드 형태에 대한
@@ -305,11 +291,7 @@
         품질을 나란히 두기 때문에 그 사실을 보이게 합니다.
       </p>
       <p>
-        핵심 함정은 반대 직관입니다. 더 높은 강도가 반드시 더 안전하다는 생각입니다.
-        검토자가 답변 몇 개만 표본으로 본다면, extra-high 강도는 모델이 더 열심히
-        생각한 것처럼 보여 더 강하게 느껴질 수 있습니다. 차트는 그 직관이 정책이
-        되는 것을 막습니다. 품질 차이가 평평하므로 더 싼 설정이 느리거나 더 큰
-        청구서 없이 같은 답을 유지한다는 것을 보여주기 때문입니다.
+        핵심 함정은 반대쪽 직감입니다. 강도가 높을수록 반드시 더 안전하다는 생각입니다. 검토자가 답변 몇 개만 훑어보면 xhigh 강도는 모델이 더 열심히 생각한 것처럼 보여 더 든든하게 느껴질 수 있습니다. 차트는 그 직감이 곧바로 정책이 되는 일을 막습니다. 품질 차이가 평평하므로 더 싼 설정이 더 느리거나 더 큰 청구서 없이 같은 답을 유지한다는 사실을 보여 주기 때문입니다.
       </p>
     </section>
 
@@ -319,7 +301,7 @@
         <div>
           <h3>더 많은 추론은 기본값이 아님</h3>
           <p>
-            강도는 처치입니다. 한 작업 구간에 적용해 측정하고, 평가 점수에 의미
+            강도는 처치입니다. 한 작업 구간에 적용해 측정하고, 심판 점수에 의미
             있는 변화가 생길 때만 승격해야 합니다. 전역 기본값으로 다루면
             프로덕션 트래픽이 도착할 때까지 청구서가 드러나지 않습니다.
           </p>
@@ -371,8 +353,8 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값을 주장하지 않습니다.</li>
-        <li>[2] <strong>Tier 1 — PAYG 가격 스냅샷:</strong> 요청당 비용 수치(none 강도 $0.000587, extra-high 강도 $0.000598, 둘 다 $0.000665 기준선보다 낮음)는 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 2026-05-19 접근: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 수치도 달라집니다.</li>
-        <li>[3] <strong>Tier 2 — 짧은 사실형 작업 구간 측정:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>. 평평한 요청당 비용, 약 1.95의 평균 평가 점수(gpt-4o 기준선 1.9), 약 1409 ms에서 1713 ms 사이의 추세 없는 지연 시간, 0.99 근처를 유지하는 처리량 계수의 출처입니다.</li>
+        <li>[2] <strong>Tier 1 — PAYG 가격 스냅샷:</strong> 요청당 비용 수치(none 강도 $0.000587, xhigh 강도 $0.000598, 둘 다 $0.000665 기준선보다 낮음)는 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 2026-05-19 접근: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 수치도 달라집니다.</li>
+        <li>[3] <strong>Tier 2 — 짧은 사실형 작업 구간 측정:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>. 평평한 요청당 비용, 약 1.95의 평균 심판 점수(gpt-4o 기준선 1.9), 약 1409 ms에서 1713 ms 사이의 추세 없는 지연 시간, 0.99 근처를 유지하는 처리량 계수의 출처입니다.</li>
         <li>[4] <strong>Tier 2 — 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>)와 <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. 보이는 출력이 약 14.0에서 14.8 토큰으로만 움직이는 동안 추론 토큰이 거의 0에 머문 값(0.0 at none, 1.35 at high)의 출처입니다.</li>
         <li>[5] <strong>근거 대시보드:</strong> <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-01-cost_per_request">근거 대시보드</a>의 셀별 표와 렌더링된 원천 차트는 같은 산출물을 감사할 수 있는 형태입니다.</li>
       </ul>

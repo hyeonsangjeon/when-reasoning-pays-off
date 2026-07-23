@@ -106,7 +106,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
           <h2>入力 (in)</h2>
           <p><strong>実験定義:</strong> <code>experiments/exp001_short-factual_baseline.yaml</code>, <code>&hellip;_gpt4o.yaml</code>.<br>
           <strong>データセット:</strong> <code>benchmarks/01-short-factual/dataset.json</code> (SHA-256 で固定)。<br>
-          <strong>プロンプト:</strong> システムプロンプトを SHA-256 で指紋化 &mdash; 360セル全体に<em>単一の</em>プロンプトが使われたことを保証。ジャッジプロンプト SHA-256 も各採点 JSON に記録。</p>
+          <strong>プロンプト:</strong> システムプロンプトを SHA-256 で指紋化 &mdash; 360セル全体に<em>単一の</em>プロンプトが使われたことを保証。審判プロンプト SHA-256 も各採点 JSON に記録。</p>
         </section>
         <section class="summary-tile">
           <h2>成果物 (out)</h2>
@@ -144,8 +144,8 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <p>そして <code>none</code> の上では何も起きない。<code>low</code>&middot;<code>medium</code> は正答率が 96.7% と<em>一段高く見える</em>。しかし 60件中たった 1件の差だ。標本が小さい(N=20&middot;R=3、信頼区間なし)ので、ノイズと見るべき大きさである。<code>high</code> まで上げるとコストはむしろリクエスト当たり <strong>+3.6%</strong> 跳ね、正答率は 95% に戻る。結局 <strong><code>none</code> から <code>medium</code> まではほぼ平坦</strong>で、その上は品質なしにコストだけが乗る。</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別ジャッジスコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(実測コホート)。</figcaption>
-        <img src="../../../../../../assets/benchmark-01-quality.png" alt="ベンチマーク 01 の努力度別平均ジャッジスコアの棒グラフ。gpt-5.2 は none から xhigh まで 1.9~1.97 の間で平らで、gpt-4o は 1.90 でその下にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>平らな品質曲線、実測。</strong> 努力度別審判スコア(0&ndash;2)。gpt-5.2 は <code>none</code>(1.95)から <code>xhigh</code>(1.95)まで 1.9&ndash;1.97 の間で微動だにせず平らで、gpt-4o ベースライン(1.90)はそのすぐ下にある。努力度の梯子全体で最大の品質差は<strong>0.07点</strong>にすぎない。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(実測コホート)。</figcaption>
+        <img src="../../../../../../assets/benchmark-01-quality.png" alt="ベンチマーク 01 の努力度別平均審判スコアの棒グラフ。gpt-5.2 は none から xhigh まで 1.9~1.97 の間で平らで、gpt-4o は 1.90 でその下にある。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 

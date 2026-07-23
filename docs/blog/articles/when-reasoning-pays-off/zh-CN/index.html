@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
+  <meta name="article:source-article-sha256" content="e1d8ffe50bd0d8a7268c5ca5abf6702688cf4030acb4abf0d1416a252d6baa59">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -41,22 +41,22 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../zh-CN/">文章列表</a> / 概览文章 / 简体中文译文</p>
-    <p class="article-kicker">概览文章 · 推理强度、质量与支出</p>
+    <p class="article-kicker">概览文章：推理强度、质量与支出</p>
     <h1>什么时候推理值得付费：同样的 token 单价，不同的账单</h1>
     <p class="lede">
       团队打开一个推理模型，看到的还是那张和过去几乎一样的按 token 计价表，却注意到
-      一个新的控制项：推理强度。最自然的直觉就是先把推理强度调高——既然多想一点几乎是
+      一个新的控制项：推理强度。最自然的直觉就是先把推理强度调高：既然多想一点几乎是
       免费的，何不到处都争取更好的答案？可是，同一张价目表下，推理模型仍然可能产生
       差别巨大的账单，因为强度花掉的是在模型内部生成、像普通用量一样计费、却从不
       出现在回复里的 token。所以真正的问题不是“推理贵不贵”，而是“额外的强度在哪些地方能换来更好的答案，
-      又在哪些地方换来的只有隐藏的计算”——本系列就用数据来检验它。
+      又在哪些地方换来的只有隐藏的计算”。本系列就用数据来检验它。
     </p>
 
     <section class="article-section">
       <h2>我们为什么要检验这个</h2>
       <p>
         这个情形很常见。一次迁移把团队带到推理模型面前，配置里多了推理强度这个选项，
-        而按 token 计价看上去没什么变化——于是把强度调高，读起来就像一份防错的廉价
+        而按 token 计价看上去没什么变化，于是把强度调高，读起来就像一份防错的廉价
         保险。想到处都调高，是合理的直觉；缺的只是一个判断：多出来的思考究竟有没有
         到达读者，还是只到达了账单。
       </p>
@@ -64,7 +64,7 @@
         由此就有了一个干净、可以按不同任务类型逐一验证的假设：更高的推理强度到底是
         真的能换来更好的答案，还是主要换来隐藏 token、延迟和成本？听从直觉，就意味着
         上线一个偏高的默认值，为可能永远不改变输出的思考付费；先做测量，才能让我们
-        只在配对的质量信号真的动了的地方调高强度——在没动的地方则保持低位。
+        只在配对的质量信号真的动了的地方调高强度；在没动的地方则保持低位。
       </p>
       <p>
         于是我们动手做了实测。我们固定住提示词与工作负载切片，让短事实回答、
@@ -73,7 +73,7 @@
         再叠加一层建模出来的 PTU/PAYG 规划面。结果像好的证据应有的那样分化
         开来：在短事实工作上，再调高强度多半只会带来隐藏的推理 token，
         而不是更好的答案；不可见 token 的视角解释了为什么可见输出几乎没变、账单却动了；
-        多步工作在评审者真的动起来时可以值回成本；工具代理的质量常常撞上天花板，再加
+        多步工作在评审分数真的动起来时可以值回成本；工具代理的质量常常撞上天花板，再加
         强度只增加延迟；而 PTU/PAYG 交叉点始终是一个建模出来的规划阈值，而不是测得的
         容量结果。下面各节用各自的主题图把这些细节逐一展开，证据仪表盘则是每个数字
         背后的审计轨迹。
@@ -91,11 +91,11 @@
       </section>
       <section class="summary-tile">
         <h2>发现</h2>
-        <p>在短事实切片上，成本沿强度阶梯基本持平（每个 gpt-5.2 档位都低于 gpt-4o 基线），平均评审分保持在约 1.95，达到或高于基线。评估器真正发生变化的是多步切片，从 1.5 升到 2.0。</p>
+        <p>在短事实切片上，成本沿强度阶梯基本持平（每个 gpt-5.2 档位都低于 gpt-4o 基线），平均评审分保持在约 1.95，达到或高于基线。评审分数真正发生变化的是多步切片，从 1.5 升到 2.0。</p>
       </section>
       <section class="summary-tile">
         <h2>决策</h2>
-        <p>只有在评估结果真正变化时才提高推理强度；让证据仪表盘保留为文章背后的审计线索。</p>
+        <p>只有在评审结果真正变化时才提高推理强度；让证据仪表盘保留为文章背后的审计线索。</p>
       </section>
     </div>
 
@@ -116,10 +116,10 @@
     </p>
 
     <section class="article-section chart-reading-guide">
-      <p class="section-label">阅读约定 · 柱、坐标轴和表格</p>
+      <p class="section-label">阅读约定：柱、坐标轴和表格</p>
       <h2>如何阅读本文中的图表</h2>
       <p>
-        本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 extra-high。
+        本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 xhigh。
       </p>
       <div class="evidence-grid">
         <div><h3>X轴</h3><p>X轴是运营者可以调节的推理强度等级。从左到右表示允许模型消耗更多内部推理工作。</p></div>
@@ -130,8 +130,8 @@
     </section>
 
     <section id="short-factual" class="article-section">
-      <p class="section-label">主题 · 短事实回答</p>
-      <h2>短事实任务通常不值得增加推理</h2>
+      <p class="section-label">主题： 短事实回答</p>
+      <h2>短事实任务通常不必增加推理</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
           <strong>要读的图:</strong> 每个请求的平均成本，并与同一组短事实任务的评审分数图配对阅读。
@@ -166,7 +166,7 @@
         <div>
           <h3>它意味着什么</h3>
           <p>
-            在短事实切片中，无推理强度的平均成本是每个请求 $0.000587，extra-high 是 $0.000598——跨度持平，仅为 1.02x，且二者都低于 gpt-4o 基线的 $0.000665。
+            在短事实切片中，无推理强度的平均成本是每个请求 $0.000587，xhigh 是 $0.000598，跨度持平，仅为 1.02x，且二者都低于 gpt-4o 基线的 $0.000665。
             平均评审分保持在约 1.95，达到或高于基线的 1.90。
           </p>
         </div>
@@ -180,11 +180,11 @@
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">主题 · 不可见的计费面</p>
+      <p class="section-label">主题： 不可见的计费面</p>
       <h2>推理 token 解释了账单差异</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>要读的图:</strong> 按强度拆分的 token 构成 — 缓存输入、非缓存输入、可见输出和推理 token。
+          <strong>要读的图:</strong> 按强度拆分的 token 构成：缓存输入、非缓存输入、可见输出和推理 token。
         </figcaption>
         <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="堆叠 token 构成：X轴是 token 组件；Y轴是每个请求的平均 token 数。">
           <div class="mini-axis-row"><span>Y：每请求平均 token</span><span>X：token 组件</span></div>
@@ -206,7 +206,7 @@
         <div>
           <h3>它意味着什么</h3>
           <p>
-            在短事实切片中，每个强度层级的推理 token 都接近零——无推理强度为 0，即使到 high 也只有约 1.35——这正是账单保持平坦的原因。
+            在短事实切片中，每个强度层级的推理 token 都接近零：无推理强度为 0，即使到 high 也只有约 1.35。这正是账单保持平坦的原因。
             看不见的跃升反而出现在多步切片上：推理 token 随强度爬升，形成答案文本本身从不显露的成本差距。
           </p>
         </div>
@@ -220,7 +220,7 @@
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">主题 · 多步骤推理</p>
+      <p class="section-label">主题： 多步骤推理</p>
       <h2>多步骤任务中，推理可能值得付费</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
@@ -258,7 +258,7 @@
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">主题 · 使用工具的代理</p>
+      <p class="section-label">主题： 使用工具的代理</p>
       <h2>工具代理任务需要检查天花板效应</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
@@ -319,7 +319,7 @@
     </section>
 
     <section id="ptu-payg" class="article-section">
-      <p class="section-label">主题 · 容量规划</p>
+      <p class="section-label">主题： 容量规划</p>
       <h2>PTU/PAYG 交叉点是规划模型</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
@@ -346,7 +346,7 @@
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
           <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">规划阈值</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">非实测 · 建模值</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">非实测，建模值</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
@@ -361,7 +361,7 @@
         <div>
           <h3>它意味着什么</h3>
           <p>
-            对于短事实 extra-high 行，PTU/PAYG 交叉点是在 50 PTU 底线下得到的约 2748 rpm 建模假设。
+            对于短事实 xhigh 行，PTU/PAYG 交叉点是在 50 PTU 底线下得到的约 2748 rpm 建模假设。
             它不是实测 PTU 吞吐量。
           </p>
         </div>
@@ -377,7 +377,7 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">桥接文章 · 介于证据层与运营层之间</p>
+      <p class="section-label">桥接文章： 介于证据层与运营层之间</p>
       <h2>从测量到生产</h2>
       <p>
         证据文章回答的是一个测量问题：额外的推理 effort 在哪里换来质量，又在哪里
@@ -391,7 +391,7 @@
     </section>
 
     <section id="operations-next" class="article-section decision-box">
-      <p class="section-label">运营文章 · 生产层</p>
+      <p class="section-label">运营文章： 生产层</p>
       <h2>接下来的问题是运营优化</h2>
       <p>
         这篇概览解释推理 effort 何时改变成本和质量。这些运营文章把同样的证据阅读方式带向更接近
@@ -412,7 +412,7 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">来源 · 证据边界</p>
+      <p class="section-label">来源： 证据边界</p>
       <h2>来源与证据边界</h2>
       <p>
         这篇概览把五类任务里的成本、质量、延迟和 token 构成放在一起读。上面每一条
@@ -420,13 +420,13 @@
         两个 Tier 标明了：有文档记载的契约到哪里为止，运维推断又从哪里开始。
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — 方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提，并不在 N = 20 下主张 p 值。</li>
-        <li>[2] <strong>Tier 1 — PAYG 定价快照：</strong>PAYG 成本主张（每个请求的平均 USD）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
-        <li>[3] <strong>Tier 1 — PTU 定价快照：</strong>PTU 建模交叉点与 50 PTU 下限取自本仓库的 <code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — 预置吞吐量上手</a>（2026-05-19 访问）· <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。只要 PTU 时价或 PAYG 每 token 价格变动，交叉点就会移动。</li>
-        <li>[4] <strong>Tier 2 — 短事实任务的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是每请求成本从 $0.000587（无）到 $0.000598（extra-high）基本持平、且二者都低于 gpt-4o 基线 $0.000665，gpt-4o 平均评审分 1.9 对 gpt-5.2 无推理强度 1.95，以及推理 token 从 0.0（无）到 1.35（high）接近零的来源。</li>
-        <li>[5] <strong>Tier 2 — 多步任务的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是非推理基线 1.5 分、以及每个请求 $0.00125 下高强度 2.0 分的来源。</li>
-        <li>[6] <strong>Tier 2 — 工具代理任务的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是工具代理一节中所引天花板效应质量柱的来源。</li>
-        <li>[7] <strong>Tier 2 — 建模交叉点：</strong>短事实 extra-high 行在 50 PTU 下限下的约 2748 rpm，是叠在测得 token 形态之上的规划计算，而不是测得的 PTU 吞吐量结果。请把它当作容量规划指引来读，而不是容量证据。</li>
+        <li>[1] <strong>Tier 1：方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提，并不在 N = 20 下主张 p 值。</li>
+        <li>[2] <strong>Tier 1：PAYG 定价快照：</strong>PAYG 成本主张（每个请求的平均 USD）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）、 <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
+        <li>[3] <strong>Tier 1：PTU 定价快照：</strong>PTU 建模交叉点与 50 PTU 下限取自本仓库的 <code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn：预置吞吐量上手</a>（2026-05-19 访问）、 <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。只要 PTU 时价或 PAYG 每 token 价格变动，交叉点就会移动。</li>
+        <li>[4] <strong>Tier 2：短事实任务的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是每请求成本从 $0.000587（无）到 $0.000598（xhigh）基本持平、且二者都低于 gpt-4o 基线 $0.000665，gpt-4o 平均评审分 1.9 对 gpt-5.2 无推理强度 1.95，以及推理 token 从 0.0（无）到 1.35（high）接近零的来源。</li>
+        <li>[5] <strong>Tier 2：多步任务的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是非推理基线 1.5 分、以及每个请求 $0.00125 下高强度 2.0 分的来源。</li>
+        <li>[6] <strong>Tier 2：工具代理任务的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是工具代理一节中所引天花板效应质量柱的来源。</li>
+        <li>[7] <strong>Tier 2：建模交叉点：</strong>短事实 xhigh 行在 50 PTU 下限下的约 2748 rpm，是叠在测得 token 形态之上的规划计算，而不是测得的 PTU 吞吐量结果。请把它当作容量规划指引来读，而不是容量证据。</li>
         <li>[8] <strong>证据仪表盘：</strong><a href="../../../charts/?lang=zh-CN">证据仪表盘</a>里逐篇的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
@@ -456,13 +456,13 @@
       <p>
         <strong>下一篇：</strong>
         <a href="../topics/short-factual-work/zh-CN/">短事实回答：当额外推理换来的只是成本，而不是质量</a>
-        —— 如果任务大多只要短事实回答，更高的推理强度能不能把质量改善到足以正当化那张账单？
+        。如果任务大多只要短事实回答，更高的推理强度能不能把质量改善到足以正当化那张账单？
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 许可研究产物 · 公开数据仅包含已清洗或聚合后的数据。</p>
+    <p>MIT 许可研究产物：公开数据仅包含已清洗或聚合后的数据。</p>
   </footer>
 </body>
 </html>
