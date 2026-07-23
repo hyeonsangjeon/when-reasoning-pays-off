@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
+  <meta name="article:source-article-sha256" content="feb4f8ca7c29113653172dee266d6e55fb428d68548d9a0a591e19e0b53ce4fe">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -41,26 +41,26 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../ko/">글 목록</a> / 개요 글 / 한국어 번역</p>
-    <p class="article-kicker">개요 글 · 추론 강도, 품질, 지출</p>
+    <p class="article-kicker">개요 글: 추론 강도, 품질, 지출</p>
     <h1>추론이 비용을 정당화할 때: 같은 토큰 단가, 다른 청구서</h1>
     <p class="lede">
       어떤 팀이 추론 모델을 켜고 나서, 토큰 단가표는 예전과 똑같다는 걸
       확인합니다. 그런데 설정에 새로운 제어값이 하나 보입니다. 바로 추론
-      강도입니다. 자연스러운 직관은 그것을 올리는 쪽입니다 &mdash; 조금 더
+      강도입니다. 자연스럽게 손이 가는 쪽은 강도를 올리는 것입니다. 조금 더
       생각하는 비용이 거의 공짜라면, 어디서나 더 좋은 답이 나오지 않겠냐고
       여길 만합니다. 하지만 추론 모델은 같은 단가표를 쓰면서도 전혀 다른
       청구서를 만들어 낼 수 있습니다. 강도를 올리면 모델 내부에서 토큰이 더
       많이 생성되고, 이 토큰은 사용량으로 과금되지만 응답에는 나타나지 않기
       때문입니다. 그래서 진짜 질문은 “추론이 비싼가?”가 아니라 “추가 강도는
-      어디서 더 나은 답을 만들고, 어디서는 숨은 계산만 늘리는가?”입니다
-      &mdash; 이 시리즈는 그 질문을 데이터로 시험합니다.
+      어디서 더 나은 답을 만들고, 어디서는 숨은 계산만 늘리는가?”입니다.
+      이 시리즈는 그 질문을 데이터로 시험합니다.
     </p>
 
     <section class="article-section">
       <h2>이 직관을 시험한 이유</h2>
       <p>
         익숙한 상황입니다. 마이그레이션으로 팀이 추론 모델에 올라타면 설정에는
-        추론 강도가 노출되고, 토큰 단가는 그대로처럼 보입니다 &mdash;
+        추론 강도가 노출되고, 토큰 단가는 그대로처럼 보입니다.
         그래서 강도를 올리는 일은 오답에 대비하는 값싼 보험처럼 읽힙니다.
         어디서나 강도를 올리려는 직관은 합리적입니다. 빠진 것은 그 추가적인
         생각이 독자에게 닿는지, 아니면 청구서에만 닿는지입니다.
@@ -71,20 +71,20 @@
         늘어나는가? 직관을 그대로 따른다는 것은 기본값을 높게 내보낸다는
         뜻입니다. 그 생각이 끝내 출력을 바꾸지 못하더라도 비용은 이미 치른
         셈입니다. 반대로 먼저 측정한다는 것은, 짝지은 품질 신호가 실제로
-        움직이는 곳에서만 강도를 올리고 &mdash; 그렇지 않은 곳에서는 낮게
+        움직이는 곳에서만 강도를 올리고, 그렇지 않은 곳에서는 낮게
         유지한다는 뜻입니다.
       </p>
       <p>
         그래서 직접 측정했습니다. 프롬프트와 워크로드 구간은 고정한 채, 짧은
-        사실형 답변·다단계 추론·도구 사용 에이전트라는 세 구간에 같은 강도
+        사실형 답변, 다단계 추론, 도구 사용 에이전트라는 세 구간에 같은 강도
         단계를 순서대로 적용하며 토큰 구성, 지연 시간, 비용을 함께
         기록했습니다. 그런 다음 이렇게 측정한 토큰 형태 위에 모델링된
         PTU/PAYG 계획 표면을 얹었습니다. 결과는 좋은 근거가 그래야 하듯
         엇갈렸습니다. 짧은 사실형 작업에서는 강도를 올려도 더 나은 답은
         나오지 않고 숨은 추론 토큰만 늘었습니다. 보이지 않는 토큰 관점은
         보이는 출력이 거의 그대로인데도 청구서가 움직인 이유를
-        설명했습니다. 다단계 작업은 평가자가 실제로 움직일 때는 값을
-        했습니다. 도구 에이전트 품질은 강도를 더 올려도 지연 시간만 늘어나는
+        설명했습니다. 다단계 작업은 심판 점수가 실제로 움직일 때만 이득이
+        있었습니다. 도구 에이전트 품질은 강도를 더 올려도 지연 시간만 늘어나는
         천장에 자주 부딪혔습니다. PTU/PAYG 교차점은 측정된 용량 결과가
         아니라 모델링된 계획 임계값으로 남았습니다. 아래 절들은 주제별
         차트로 그 세부를 하나씩 보여 주고, 근거 대시보드는 모든 숫자 뒤의
@@ -99,15 +99,15 @@
       </section>
       <section class="summary-tile">
         <h2>근거</h2>
-        <p>공개 차트 데이터는 비용, 평가 점수, 토큰 구성, 지연 시간, 모델링된 예약 용량 교차점을 비교합니다.</p>
+        <p>공개 차트 데이터는 비용, 심판 점수, 토큰 구성, 지연 시간, 모델링된 예약 용량 교차점을 비교합니다.</p>
       </section>
       <section class="summary-tile">
         <h2>발견</h2>
-        <p>짧은 사실형 구간에서는 강도 사다리 전반에서 비용이 사실상 평평했고(모든 gpt-5.2 강도가 gpt-4o 기준선보다 낮았습니다), 평균 평가 점수는 약 1.95로 기준선과 같거나 그 이상이었습니다. 평가자가 실제로 움직인 곳은 다단계 구간으로, 1.5에서 2.0으로 올랐습니다.</p>
+        <p>짧은 사실형 구간에서는 강도 사다리 전반에서 비용이 사실상 평평했고(모든 gpt-5.2 강도가 gpt-4o 기준선보다 낮았습니다), 평균 심판 점수는 약 1.95로 기준선과 같거나 그 이상이었습니다. 심판 점수가 실제로 움직인 곳은 다단계 구간으로, 1.5에서 2.0으로 올랐습니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
-        <p>평가 점수가 의미 있게 변하는 곳에서만 추론 강도를 올리고, 근거 대시보드는 글 뒤의 검증 기록으로 유지합니다.</p>
+        <p>심판 점수가 의미 있게 변하는 곳에서만 추론 강도를 올리고, 근거 대시보드는 글 뒤의 검증 기록으로 유지합니다.</p>
       </section>
     </div>
 
@@ -129,31 +129,31 @@
     </p>
 
     <section class="article-section chart-reading-guide">
-      <p class="section-label">읽는 규칙 · 막대, 축, 표</p>
+      <p class="section-label">읽는 규칙: 막대, 축, 표</p>
       <h2>이 글의 차트를 읽는 법</h2>
       <p>
         이 글의 작은 막대 그림은 전체 원천 차트를 읽기 위한 길잡이입니다.
-        빈도 분포 히스토그램이 아니라, 각 막대가 하나의 강도 조합 — 기준선,
-        최소, 낮음, 중간, 높음, 매우 높음 — 의 집계 측정값을 뜻합니다.
+        빈도 분포 히스토그램이 아니라, 각 막대가 하나의 강도 조합(기준선,
+        최소, 낮음, 중간, 높음, 매우 높음)의 집계 측정값을 뜻합니다.
       </p>
       <div class="evidence-grid">
         <div><h3>X축</h3><p>X축은 운영자가 조절하는 추론 강도 단계입니다. 왼쪽에서 오른쪽으로 갈수록 모델이 내부 추론 작업을 더 많이 쓰도록 허용합니다.</p></div>
-        <div><h3>Y축</h3><p>Y축은 차트마다 다릅니다. 비용은 요청당 USD, 품질은 평가 점수, 지연시간은 밀리초, 토큰 구성은 토큰 수, 교차점은 모델링된 분당 요청 수입니다.</p></div>
-        <div><h3>막대</h3><p>막대가 높다고 항상 좋은 것은 아닙니다. 품질 막대가 높으면 좋을 수 있지만, 비용·지연시간·추론 토큰 막대가 높으면 그에 맞는 품질 향상이 필요합니다.</p></div>
+        <div><h3>Y축</h3><p>Y축은 차트마다 다릅니다. 비용은 요청당 USD, 품질은 심판 점수, 지연시간은 밀리초, 토큰 구성은 토큰 수, 교차점은 모델링된 분당 요청 수입니다.</p></div>
+        <div><h3>막대</h3><p>막대가 높다고 항상 좋은 것은 아닙니다. 품질 막대가 높으면 좋을 수 있지만, 비용, 지연시간, 추론 토큰 막대가 높으면 그에 맞는 품질 향상이 필요합니다.</p></div>
         <div><h3>원천 표</h3><p>정확한 값, 표준편차, 표본 수는 대시보드 표에서 확인합니다. 본문은 의사결정에 필요한 모양만 끌어옵니다.</p></div>
       </div>
     </section>
 
     <section id="short-factual" class="article-section">
-      <p class="section-label">주제 · 짧은 사실형 답변</p>
+      <p class="section-label">주제: 짧은 사실형 답변</p>
       <h2>짧은 사실형 작업: 추론이 비용을 정당화하지 못하는 경우</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
           <strong>읽을 차트:</strong> 요청당 평균 비용과 같은 짧은 사실형 구간의
-          평가 점수 차트를 함께 봅니다.
+          심판 점수 차트를 함께 봅니다.
         </figcaption>
         <div class="mini-chart labeled-mini-chart" role="img" aria-label="막대 차트: X축은 추론 강도이고, Y축은 짝지은 원천 차트에 따라 비용 또는 평가 점수입니다.">
-          <div class="mini-axis-row"><span>Y: 비용 / 평가 점수</span><span>각 막대: 강도 조합 하나</span></div>
+          <div class="mini-axis-row"><span>Y: 비용 / 심판 점수</span><span>각 막대: 강도 조합 하나</span></div>
           <div class="mini-plot">
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">기준선</b></div>
             <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">없음</b></div>
@@ -169,7 +169,7 @@
         <h3>이 막대 차트를 읽는 법</h3>
         <p>
           X축은 추론 강도입니다. 비용 차트의 Y축은 요청당 평균 USD이고,
-          짝지은 품질 차트의 Y축은 평균 평가 점수입니다. 따라서 이 막대의
+          짝지은 품질 차트의 Y축은 평균 심판 점수입니다. 따라서 이 막대의
           모양은 질문 하나를 던집니다. 더 높은 지출이 더 높은 점수로 이어졌는가,
           아니면 청구서만 키웠는가?
         </p>
@@ -204,11 +204,11 @@
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">주제 · 보이지 않는 과금 표면</p>
+      <p class="section-label">주제: 보이지 않는 과금 표면</p>
       <h2>청구서 차이를 설명하는 추론 토큰</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>읽을 차트:</strong> 강도 수준별 토큰 구성 — 캐시 입력, 비캐시
+          <strong>읽을 차트:</strong> 강도 수준별 토큰 구성: 캐시 입력, 비캐시
           입력, 보이는 출력, 추론 토큰입니다.
         </figcaption>
         <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="누적 토큰 구성: X축은 토큰 구성요소이고, Y축은 요청당 평균 토큰 수입니다.">
@@ -233,9 +233,9 @@
         <div>
           <h3>이 차트가 보여주는 것</h3>
           <p>
-            짧은 사실형 구간에서 추론 토큰은 모든 강도에서 0에 가깝습니다
-            &mdash; 강도 없음에서 0, 높음에서도 약 1.35 &mdash; 청구서가
-            평평하게 유지되는 이유가 바로 이것입니다. 보이지 않는 도약은
+            짧은 사실형 구간에서 추론 토큰은 모든 강도에서 0에 가깝습니다.
+            강도 없음에서 0, 높음에서도 약 1.35라서 청구서가
+            평평하게 유지됩니다. 보이지 않는 도약은
             오히려 다단계 구간에서 나타나며, 그곳에서는 추론 토큰이 강도에
             따라 늘며 답변 텍스트가 드러내지 않는 비용 격차를 만듭니다.
           </p>
@@ -251,7 +251,7 @@
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">주제 · 다단계 추론</p>
+      <p class="section-label">주제: 다단계 추론</p>
       <h2>다단계 작업: 추론이 비용을 정당화할 수 있는 경우</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
@@ -259,7 +259,7 @@
           비용 막대를 봅니다. 지출의 이유는 품질 차이입니다.
         </figcaption>
         <div class="mini-compare labeled-dot-chart" role="img" aria-label="비교 차트: X축은 기준선과 높은 강도를 비교하고, Y축은 평균 평가 점수입니다.">
-          <div class="mini-axis-row"><span>Y: 평균 평가 점수</span><span>점 크기: 품질 수준</span></div>
+          <div class="mini-axis-row"><span>Y: 평균 심판 점수</span><span>점 크기: 품질 수준</span></div>
           <div class="dot-plot">
             <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">기준선</b></div>
             <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">높은 강도</b></div>
@@ -285,7 +285,7 @@
         <div>
           <h3>운영 교훈</h3>
           <p>
-            추론은 평가 점수가 의미 있게 변할 때만 제값을 합니다. 비용보다
+            추론은 심판 점수가 의미 있게 변할 때만 돈값을 합니다. 비용보다
             품질을 먼저 읽고, 그다음 한계 지출이 정당한지 결정하세요.
           </p>
         </div>
@@ -293,7 +293,7 @@
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">주제 · 도구 사용 에이전트</p>
+      <p class="section-label">주제: 도구 사용 에이전트</p>
       <h2>도구 에이전트 작업: 천장 효과 확인</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
@@ -302,7 +302,7 @@
         </figcaption>
         <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
           <title id="ceil-svg-title">도구 에이전트 품질 천장 효과</title>
-          <desc id="ceil-svg-desc">품질 점수는 이미 루브릭 상한(천장) 근처에 평평하게 붙어 있어, 추론 강도를 더 올려도 점수는 그대로이고 지연·비용·내부 토큰만 늘어납니다.</desc>
+          <desc id="ceil-svg-desc">품질 점수는 이미 루브릭 상한(천장) 근처에 평평하게 붙어 있어, 추론 강도를 더 올려도 점수는 그대로이고 지연, 비용, 내부 토큰만 늘어납니다.</desc>
           <defs>
             <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#06d6a0"/>
@@ -343,7 +343,7 @@
         <div>
           <h3>이 차트가 보여주는 것</h3>
           <p>
-            이것은 benchmark-03 도구 에이전트 구간입니다. 천장은 평가 점수가
+            이것은 benchmark-03 도구 에이전트 구간입니다. 천장은 심판 점수가
             이미 루브릭 상한 근처에 붙어 있어서, 강도 단계를 올려도 점수는
             그대로이고 주로 내부 토큰과 지연 시간만 늘어나는 지점입니다.
             막대가 그렇게 평평해지면, 한계를 만드는 것은 더 이상 추론 품질이
@@ -362,7 +362,7 @@
     </section>
 
     <section id="ptu-payg" class="article-section">
-      <p class="section-label">주제 · 용량 계획</p>
+      <p class="section-label">주제: 용량 계획</p>
       <h2>PTU/PAYG 교차점: 측정값이 아니라 계획 모델</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
@@ -390,7 +390,7 @@
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
           <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">계획 임계값</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">측정값 아님 · 모델링 값</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">측정값 아님, 모델링 값</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
@@ -424,7 +424,7 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">브리지 에세이 · 근거 레이어와 운영 레이어 사이</p>
+      <p class="section-label">브리지 에세이: 근거 레이어와 운영 레이어 사이</p>
       <h2>측정에서 프로덕션으로</h2>
       <p>
         근거 에세이는 측정에 관한 질문에 답했습니다. 추가 추론 노력이 어디서
@@ -440,7 +440,7 @@
     </section>
 
     <section id="operations-next" class="article-section decision-box">
-      <p class="section-label">운영 에세이 · 프로덕션 레이어</p>
+      <p class="section-label">운영 에세이: 프로덕션 레이어</p>
       <h2>운영 에세이: 근거의 다음 층</h2>
       <p>
         이 개요 글은 추론 강도가 비용과 품질을 언제 바꾸는지 설명합니다.
@@ -450,7 +450,7 @@
       </p>
       <p>
         각 글은 공개 차트 근거와 공식 스펙 인용이 준비되고, 문서화된 동작과
-        운영 추론의 경계가 분명해진 뒤 본문으로 승격합니다.
+        운영 추론의 경계가 분명해진 뒤에만 본문으로 올립니다.
       </p>
       <p>
         <a class="button-link" href="../../ptu-retry-after-recovery/ko/">429 복구 글 읽기</a>
@@ -462,7 +462,7 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">출처 · 근거 경계</p>
+      <p class="section-label">출처: 근거 경계</p>
       <h2>출처와 근거 경계</h2>
       <p>
         이 개요는 다섯 구간에서 비용, 품질, 지연 시간, 토큰 구성을 함께
@@ -471,13 +471,13 @@
         운영적 추론이 시작되는 경계를 표시합니다.
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, N = 20에서 p-값을 주장하지 않습니다.</li>
-        <li>[2] <strong>Tier 1 — PAYG 가격 스냅샷:</strong> PAYG 비용 주장(요청당 평균 USD)은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 계산합니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 바뀌면 비율도 달라집니다.</li>
-        <li>[3] <strong>Tier 1 — PTU 가격 스냅샷:</strong> PTU 모델링 교차점과 50 PTU 바닥값은 이 저장소의 <code>pricing/azure-openai-ptu-2026-05.yaml</code>에서 가져옵니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 문서</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">아카이브</a>. PTU 시간당 요금이나 PAYG 토큰 단가가 움직이면 교차점도 이동합니다.</li>
-        <li>[4] <strong>Tier 2 — 짧은 사실형 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.json"><code>benchmarks/01-short-factual/analysis.json</code></a>. $0.000587에서 $0.000598로 사실상 평평한 요청당 비용(모두 gpt-4o 기준선 $0.000665보다 낮음), gpt-4o 1.9 대 gpt-5.2 강도 없음 1.95의 평균 평가 점수, 강도 없음 0.0에서 높음 1.35로 사실상 0에 가까운 추론 토큰의 출처입니다.</li>
-        <li>[5] <strong>Tier 2 — 다단계 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.json"><code>benchmarks/02-multi-step-reasoning/analysis.json</code></a>. 비추론 기준선 1.5점과 요청당 $0.00125에서의 높은 강도 2.0점의 출처입니다.</li>
-        <li>[6] <strong>Tier 2 — 도구 에이전트 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.json"><code>benchmarks/03-tool-using-agent/analysis.json</code></a>. 도구 에이전트 절에서 언급한 천장 효과 품질 막대의 출처입니다.</li>
-        <li>[7] <strong>Tier 2 — 모델링된 교차점:</strong> 짧은 사실형 매우 높은 강도 행의 50 PTU 바닥값 기준 약 2748 rpm은 측정된 토큰 형태 위에 얹은 계획 계산이며, 측정된 PTU 처리량 결과가 아닙니다. 용량 근거가 아니라 크기 산정 안내로 읽으세요. 모델링 산출물: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"><code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code></a>.</li>
+        <li>[1] <strong>Tier 1: 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, N = 20에서 p-값을 주장하지 않습니다.</li>
+        <li>[2] <strong>Tier 1: PAYG 가격 스냅샷:</strong> PAYG 비용 주장(요청당 평균 USD)은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 계산합니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근), <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 바뀌면 비율도 달라집니다.</li>
+        <li>[3] <strong>Tier 1: PTU 가격 스냅샷:</strong> PTU 모델링 교차점과 50 PTU 바닥값은 이 저장소의 <code>pricing/azure-openai-ptu-2026-05.yaml</code>에서 가져옵니다. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 문서</a> (2026-05-19 접근), <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">아카이브</a>. PTU 시간당 요금이나 PAYG 토큰 단가가 움직이면 교차점도 이동합니다.</li>
+        <li>[4] <strong>Tier 2: 짧은 사실형 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.json"><code>benchmarks/01-short-factual/analysis.json</code></a>. $0.000587에서 $0.000598로 사실상 평평한 요청당 비용(모두 gpt-4o 기준선 $0.000665보다 낮음), gpt-4o 1.9 대 gpt-5.2 강도 없음 1.95의 평균 심판 점수, 강도 없음 0.0에서 높음 1.35로 사실상 0에 가까운 추론 토큰의 출처입니다.</li>
+        <li>[5] <strong>Tier 2: 다단계 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.json"><code>benchmarks/02-multi-step-reasoning/analysis.json</code></a>. 비추론 기준선 1.5점과 요청당 $0.00125에서의 높은 강도 2.0점의 출처입니다.</li>
+        <li>[6] <strong>Tier 2: 도구 에이전트 구간 측정:</strong> 이 저장소, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.json"><code>benchmarks/03-tool-using-agent/analysis.json</code></a>. 도구 에이전트 절에서 언급한 천장 효과 품질 막대의 출처입니다.</li>
+        <li>[7] <strong>Tier 2: 모델링된 교차점:</strong> 짧은 사실형 매우 높은 강도 행의 50 PTU 바닥값 기준 약 2748 rpm은 측정된 토큰 형태 위에 얹은 계획 계산이며, 측정된 PTU 처리량 결과가 아닙니다. 용량 근거가 아니라 크기 산정 안내로 읽으세요. 모델링 산출물: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"><code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code></a>.</li>
         <li>[8] <strong>근거 대시보드:</strong> <a href="../../../charts/?lang=ko">근거 대시보드</a>의 글별 표와 렌더링된 원천 차트는 같은 산출물을 감사할 수 있는 형태로 제공합니다.</li>
       </ul>
       <p>
@@ -492,19 +492,19 @@
     <section id="decision" class="article-section decision-box">
       <h2>근거로 말할 수 있는 것</h2>
       <p>
-        이 개요는 다섯 구간에서 추론 강도가 비용·품질·지연 시간·토큰 형태를
-        어떻게 바꾸는지 함께 읽어, 추론은 답을 실제로 바꿀 때만 제값을
-        한다는 것을 보여줍니다.
+        이 개요는 다섯 구간에서 추론 강도가 비용, 품질, 지연 시간, 토큰 형태를
+        어떻게 바꾸는지 함께 읽어, 추론은 답을 실제로 바꿀 때만 쓸모가
+        있다는 것을 보여줍니다.
       </p>
       <h2>실무 규칙</h2>
       <ol>
         <li>짧은 사실형 작업은 낮은 추론 강도를 기본값으로 두세요.</li>
-        <li>다단계 작업은 평가 점수가 비용을 정당화할 만큼 변할 때만 추론 강도를 올리세요.</li>
+        <li>다단계 작업은 심판 점수가 비용을 정당화할 만큼 변할 때만 추론 강도를 올리세요.</li>
         <li>도구 에이전트 작업은 추론 강도를 더 올리기 전에 천장 효과를 확인하세요.</li>
-        <li>모든 비용 주장은 짝지은 품질·지연 시간·토큰 차트와 함께 읽으세요.</li>
+        <li>모든 비용 주장은 짝지은 품질, 지연 시간, 토큰 차트와 함께 읽으세요.</li>
       </ol>
       <p>
-        <strong>실무 규칙: 이 워크로드 형태에서 평가 점수가 실제로 변하는 곳에서만 추론 강도를 올리고, 프로덕션에 반영하기 전에 모든 비용 주장을 짝지은 품질·지연 시간·토큰 차트와 함께 읽으세요.</strong>
+        <strong>실무 규칙: 이 워크로드 형태에서 심판 점수가 실제로 변하는 곳에서만 추론 강도를 올리고, 프로덕션에 반영하기 전에 모든 비용 주장을 짝지은 품질, 지연 시간, 토큰 차트와 함께 읽으세요.</strong>
       </p>
       <p>
         근거 대시보드는 이 규칙 뒤의 검증 기록이고, 각 주제 구간은 그 규칙의
@@ -518,13 +518,13 @@
     <section id="next" class="article-section">
       <p>
         <strong>다음:</strong>
-        <a href="../topics/short-factual-work/ko/">짧은 사실형 작업: 추론이 비용을 정당화하지 못하는 경우 — 작업이 대부분 짧은 사실형 답변을 요구할 때, 추론 강도를 높이면 청구서를 정당화할 만큼 품질이 좋아질까요?</a>
+        <a href="../topics/short-factual-work/ko/">짧은 사실형 작업: 추론이 비용을 정당화하지 못하는 경우. 작업이 대부분 짧은 사실형 답변을 요구할 때, 추론 강도를 높이면 청구서를 정당화할 만큼 품질이 좋아질까요?</a>
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
+    <p>MIT 라이선스 연구 산출물: 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
   </footer>
 </body>
 </html>

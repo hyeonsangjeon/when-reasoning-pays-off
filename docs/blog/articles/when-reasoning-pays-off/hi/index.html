@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>रीज़निंग कब वाजिब ठहरती है | वही token price, अलग बिल</title>
+  <title>रीज़निंग कब लागत वसूल करती है | वही token price, अलग बिल</title>
   <meta name="description" content="चार्ट-आधारित सार्वजनिक लेख: reasoning effort कब अपनी लागत वसूल करती है, कब नहीं, और operators को इस evidence को कैसे पढ़ना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="ec4ada4bd47cda453c830bb91f2e35034498ba6202e5e5407e3490da244f6c55">
+  <meta name="article:source-article-sha256" content="feb4f8ca7c29113653172dee266d6e55fb428d68548d9a0a591e19e0b53ce4fe">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -26,7 +26,7 @@
         <a href="../../../../hi/">होम</a>
         <a href="../../hi/">लेख सूची</a>
         <a href="./" aria-current="page">अवलोकन निबंध</a>
-        <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
+        <a href="../../../charts/?lang=hi">evidence dashboard</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -41,8 +41,8 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख सूची</a> / अवलोकन लेख / हिन्दी रूपांतर</p>
-    <p class="article-kicker">अवलोकन लेख · reasoning effort, quality और खर्च</p>
-    <h1>रीज़निंग कब वाजिब ठहरती है: वही token price, अलग बिल</h1>
+    <p class="article-kicker">अवलोकन लेख: reasoning effort, quality और खर्च</p>
+    <h1>रीज़निंग कब लागत वसूल करती है: वही token price, अलग बिल</h1>
     <p class="lede">
       एक टीम reasoning model चालू करती है, देखती है कि per-token price पुरानी तरह ही
       दिख रहा है, और reasoning effort बदलने का नया विकल्प सामने आता है। सबसे पहले
@@ -52,11 +52,11 @@
       करता है। इनका bill usage की तरह लगता है, लेकिन ये response में दिखते नहीं।
       इसलिए असली सवाल &ldquo;reasoning महँगी है क्या?&rdquo; नहीं, बल्कि
       &ldquo;extra effort कहाँ जवाब सचमुच बेहतर करता है, और कहाँ सिर्फ़ hidden
-      computation बढ़ती है?&rdquo; है — और यह series उसी को data से जाँचती है।
+      computation बढ़ती है?&rdquo; है। यह series उसी को data से जाँचती है।
     </p>
 
     <section class="article-section" aria-label="हमने यह क्यों जाँचा">
-      <p class="section-label">हमने यह क्यों जाँचा · पहले मापो, फिर बढ़ाओ</p>
+      <p class="section-label">हमने यह क्यों जाँचा: पहले मापो, फिर बढ़ाओ</p>
       <h2>हमने यह क्यों जाँचा</h2>
       <p>
         स्थिति जानी-पहचानी है। किसी migration के बाद टीम reasoning model पर आ जाती
@@ -70,7 +70,7 @@
         ज़्यादा reasoning effort सचमुच जवाब बेहतर करती है, या ज़्यादातर hidden token,
         latency और cost ही बढ़ाती है? सिर्फ़ अंदाज़े पर चलना मतलब ऊँचा default भेजना
         और ऐसी सोच का bill भरना जो शायद output बदले ही नहीं। पहले मापने का मतलब है
-        effort सिर्फ़ वहीं बढ़ाना जहाँ साथ वाला quality signal सच में हिलता है — और
+        effort सिर्फ़ वहीं बढ़ाना जहाँ साथ वाला quality signal सच में हिलता है, और
         जहाँ नहीं हिलता, वहाँ इसे low रखना।
       </p>
     </section>
@@ -78,11 +78,11 @@
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>अतिरिक्त रीज़निंग एफर्ट कब मापने लायक गुणवत्ता देता है, और कब सिर्फ़ छिपी हुई आंतरिक गणना बढ़ाता है?</p>
+        <p>extra reasoning effort कब मापने लायक गुणवत्ता देता है, और कब सिर्फ़ छिपी हुई आंतरिक गणना बढ़ाता है?</p>
       </section>
       <section class="summary-tile">
         <h2>साक्ष्य</h2>
-        <p>सार्वजनिक chart-data वाले अलग-अलग cases में cost, judge score, token composition, latency और modeled reserved-capacity crossover की तुलना की गई है।</p>
+        <p>public chart-data slices में cost, judge score, token composition, latency और modeled reserved-capacity crossover की तुलना की गई है।</p>
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
@@ -90,31 +90,31 @@
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>effort सिर्फ़ वहीं बढ़ाएँ जहाँ evaluator हिलता है; साक्ष्य डैशबोर्ड को इस लेख के पीछे का सत्यापन रिकॉर्ड बनाए रखें।</p>
+        <p>effort सिर्फ़ वहीं बढ़ाएँ जहाँ evaluator हिलता है; evidence dashboard को इस लेख के पीछे का सत्यापन रिकॉर्ड बनाए रखें।</p>
       </section>
     </div>
 
     <section class="article-section" aria-label="इस सीरीज़ की संरचना">
-      <p class="section-label">इस सीरीज़ को कैसे पढ़ें · तीन परतें और एक पुल</p>
+      <p class="section-label">इस सीरीज़ को कैसे पढ़ें: तीन परतें और एक पुल</p>
       <h2>तीन परतों में यह सीरीज़</h2>
       <div class="article-summary-grid">
         <section class="summary-tile">
-          <h2>अवलोकन · प्रश्न</h2>
+          <h2>अवलोकन: प्रश्न</h2>
           <p>यह लेख सवाल तय करता है: extra reasoning effort कब अपनी लागत वसूल करती है?</p>
           <p><a href="./">आप यहाँ हैं</a></p>
         </section>
         <section class="summary-tile">
-          <h2>साक्ष्य · पाँच cases</h2>
+          <h2>साक्ष्य: पाँच cases</h2>
           <p>पाँच topic essays में हर एक workload case पर cost, quality, latency और token shape को मापा गया है।</p>
           <p><a href="../topics/short-factual-work/hi/">साक्ष्य परत से शुरू करें</a></p>
         </section>
         <section class="summary-tile">
-          <h2>पुल · मापन → प्रोडक्शन</h2>
+          <h2>पुल: मापन → प्रोडक्शन</h2>
           <p>एक लेख बताता है कि लेखन का स्वर क्यों बदलता है और evidence की कौन-सी आदतें operations तक साथ जाती हैं।</p>
           <p><a href="../topics/bridge-from-measurement-to-production/hi/">पुल-लेख पढ़ें</a></p>
         </section>
         <section class="summary-tile">
-          <h2>संचालन · प्रोडक्शन नीति</h2>
+          <h2>संचालन: प्रोडक्शन नीति</h2>
           <p>चार लेख वही audit discipline recovery, cache routing, retention और migration sizing पर लागू करते हैं।</p>
           <p><a href="../../ptu-retry-after-recovery/hi/">संचालन परत से शुरू करें</a></p>
         </section>
@@ -122,7 +122,7 @@
     </section>
 
     <nav class="article-outline" aria-label="इस अवलोकन के विषय">
-      <strong>इस overview के विषय:</strong>
+      <strong>इस overview में विषय:</strong>
       <a href="#short-factual">छोटे तथ्यात्मक जवाब</a>
       <a href="#reasoning-tokens">अदृश्य टोकन</a>
       <a href="#multi-step">Multi-step</a>
@@ -133,12 +133,12 @@
     <p class="banner">
       <strong>डेटा परिशिष्ट:</strong>
       पूरी तालिकाएँ और rendered source charts
-      <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> में देखे जा सकते हैं।
+      <a href="../../../charts/?lang=hi">evidence dashboard</a> में देखे जा सकते हैं।
       यह लेख बताता है कि हर chart क्यों मौजूद है और उसे कैसे पढ़ना है।
     </p>
 
     <section class="article-section chart-reading-guide">
-      <p class="section-label">पढ़ने की परिपाटी · बार, अक्ष और तालिका</p>
+      <p class="section-label">चार्ट पढ़ने का नियम: बार, अक्ष और तालिका</p>
       <h2>इस लेख के चार्ट कैसे पढ़ें</h2>
       <p>
         इस लेख के छोटे bar-figures पूरे source charts तक पहुँचने के संकेत हैं। ये
@@ -154,7 +154,7 @@
     </section>
 
     <section id="short-factual" class="article-section">
-      <p class="section-label">विषय · छोटे तथ्यात्मक जवाब</p>
+      <p class="section-label">विषय: छोटे तथ्यात्मक जवाब</p>
       <h2>छोटे factual काम में reasoning अक्सर फ़ायदा नहीं देती</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
@@ -194,7 +194,7 @@
           <h3>इसका अर्थ</h3>
           <p>
             छोटे factual slice में none effort का औसत प्रति-request $0.000587 रहा
-            और extra-high $0.000598 — एक flat 1.02x span, दोनों gpt-4o baseline
+            और extra-high $0.000598: एक flat 1.02x span, दोनों gpt-4o baseline
             $0.000665 से नीचे। mean judge score baseline के 1.90 पर या उससे ऊपर, क़रीब 1.95 पर टिका रहा।
           </p>
         </div>
@@ -210,11 +210,11 @@
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">विषय · छिपी billing surface</p>
+      <p class="section-label">विषय: छिपी billing surface</p>
       <h2>bill का फ़र्क़ reasoning tokens से समझ आता है</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>पढ़ने का चार्ट:</strong> effort के स्तर के हिसाब से token composition — cached input, non-cached input, visible output और reasoning tokens।
+          <strong>पढ़ने का चार्ट:</strong> effort के स्तर के हिसाब से token composition: cached input, non-cached input, visible output और reasoning tokens।
         </figcaption>
         <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="स्टैक्ड टोकन-संरचना: X-अक्ष टोकन-घटक; Y-अक्ष प्रति-request औसत टोकन।">
           <div class="mini-axis-row"><span>Y: औसत token/request</span><span>X: token component</span></div>
@@ -238,8 +238,8 @@
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे factual slice में reasoning tokens हर effort level पर लगभग zero रहते हैं —
-            none पर 0 और high पर भी क़रीब 1.35 — इसलिए bill flat रहता है।
+            छोटे factual slice में reasoning tokens हर effort level पर लगभग zero रहते हैं: none पर 0 और high पर भी क़रीब 1.35।
+            इसलिए bill flat रहता है।
             invisible jump इसके बजाय multi-step slice में दिखता है, जहाँ reasoning tokens effort के साथ चढ़ते हैं और ऐसा cost gap बनाते हैं जिसे answer text कभी नहीं दिखाता।
           </p>
         </div>
@@ -254,7 +254,7 @@
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">विषय · multi-step reasoning</p>
+      <p class="section-label">विषय: multi-step reasoning</p>
       <h2>Multi-step काम में reasoning फ़ायदा दे सकती है</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
@@ -295,7 +295,7 @@
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">विषय · tool-using agents</p>
+      <p class="section-label">विषय: tool-using agents</p>
       <h2>Tool-agent काम में ceiling जाँचना ज़रूरी है</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
@@ -362,7 +362,7 @@
     </section>
 
     <section id="ptu-payg" class="article-section">
-      <p class="section-label">विषय · क्षमता-योजना</p>
+      <p class="section-label">विषय: क्षमता-योजना</p>
       <h2>PTU/PAYG crossover एक planning model है</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
@@ -389,7 +389,7 @@
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
           <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">planning threshold</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured · modeled</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">not measured, modeled</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
@@ -422,7 +422,7 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">पुल-लेख · साक्ष्य और संचालन परतों के बीच</p>
+      <p class="section-label">पुल-लेख: साक्ष्य और संचालन परतों के बीच</p>
       <h2>मापन से प्रोडक्शन तक</h2>
       <p>
         evidence essays ने एक measurement सवाल का जवाब दिया: extra reasoning effort
@@ -438,7 +438,7 @@
     </section>
 
     <section id="operations-next" class="article-section decision-box">
-      <p class="section-label">संचालन-लेख · प्रोडक्शन परत</p>
+      <p class="section-label">संचालन-लेख: प्रोडक्शन परत</p>
       <h2>संचालन-लेख साक्ष्य की कहानी को आगे ले जाते हैं</h2>
       <p>
         यह overview बताता है कि reasoning effort कब cost और quality बदलती है।
@@ -462,7 +462,7 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">स्रोत · साक्ष्य-सीमा</p>
+      <p class="section-label">स्रोत: साक्ष्य-सीमा</p>
       <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
         यह overview पाँच cases में cost, quality, latency और token composition को
@@ -472,14 +472,14 @@
         कहाँ शुरू होती है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate case। chart-reading prose इसी fixed stance को मानता है और N = 20 पर p-value का दावा नहीं करता।</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> PAYG cost claims (प्रति-request औसत USD) इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> के आधार पर निकाले गए हैं। यह 2026-05-19 को लिया गया snapshot है। list pricing बदलने पर ratios भी बदलेंगे।</li>
-        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> PTU modeled crossover और 50 PTU floor इस repository की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU hourly rate या PAYG per-token price बदलने पर crossover भी बदलता है।</li>
-        <li>[4] <strong>Tier 2 — short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000587 (none) से $0.000598 (extra-high) तक essentially flat per-request cost का स्रोत, दोनों gpt-4o baseline $0.000665 से नीचे; gpt-4o 1.9 बनाम gpt-5.2 none 1.95 के mean judge score का स्रोत; और 0.0 (none) से 1.35 (high) तक near-zero reasoning tokens का स्रोत।</li>
-        <li>[5] <strong>Tier 2 — multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
-        <li>[6] <strong>Tier 2 — tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
-        <li>[7] <strong>Tier 2 — modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर क़रीब 2748 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
-        <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
+        <li>[1] <strong>Tier 1: methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate case। chart-reading prose इसी fixed stance को मानता है और N = 20 पर p-value का दावा नहीं करता।</li>
+        <li>[2] <strong>Tier 1: PAYG pricing snapshot:</strong> PAYG cost claims (प्रति-request औसत USD) इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> के आधार पर निकाले गए हैं। यह 2026-05-19 को लिया गया snapshot है। list pricing बदलने पर ratios भी बदलेंगे।</li>
+        <li>[3] <strong>Tier 1: PTU pricing snapshot:</strong> PTU modeled crossover और 50 PTU floor इस repository की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn: provisioned throughput onboarding</a> (2026-05-19 को लिया गया), <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU hourly rate या PAYG per-token price बदलने पर crossover भी बदलता है।</li>
+        <li>[4] <strong>Tier 2: short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000587 (none) से $0.000598 (extra-high) तक essentially flat per-request cost का स्रोत, दोनों gpt-4o baseline $0.000665 से नीचे; gpt-4o 1.9 बनाम gpt-5.2 none 1.95 के mean judge score का स्रोत; और 0.0 (none) से 1.35 (high) तक near-zero reasoning tokens का स्रोत।</li>
+        <li>[5] <strong>Tier 2: multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
+        <li>[6] <strong>Tier 2: tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
+        <li>[7] <strong>Tier 2: modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर क़रीब 2748 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
+        <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">evidence dashboard</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
       </ul>
       <p>
         यह overview क्या साबित करता है और क्या नहीं: यह इस benchmark sample पर पाँच
@@ -498,7 +498,7 @@
         साथ पढ़ें।</strong>
       </p>
       <p>
-        साक्ष्य डैशबोर्ड उस नियम के पीछे का सत्यापन रिकॉर्ड है; topic essays उसका
+        evidence dashboard उस नियम के पीछे का सत्यापन रिकॉर्ड है; topic essays उसका
         per-case रूप दिखाते हैं।
       </p>
       <p>
@@ -510,14 +510,14 @@
       <p>
         <strong>आगे:</strong>
         <a href="../topics/short-factual-work/hi/">छोटे factual काम: जब extra reasoning से cost बढ़ती है, quality नहीं</a>
-        &mdash; अगर काम ज़्यादातर छोटे factual जवाब माँगता है, तो क्या ऊँची reasoning
+        अगर काम ज़्यादातर छोटे factual जवाब माँगता है, तो क्या ऊँची reasoning
         effort quality में इतना सुधार करती है कि bill सही ठहरे?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · प्रकाशित data सिर्फ़ sanitized या aggregate रूप में है।</p>
+    <p>MIT-licensed research artifact: प्रकाशित data सिर्फ़ sanitized या aggregate रूप में है।</p>
   </footer>
 </body>
 </html>
