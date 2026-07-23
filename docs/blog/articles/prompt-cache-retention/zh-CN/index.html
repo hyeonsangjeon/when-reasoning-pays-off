@@ -41,16 +41,16 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../zh-CN/">文章列表</a> / 运维随笔 / 简体中文译文</p>
-    <p class="article-kicker">运维随笔 · 提示缓存留存</p>
+    <p class="article-kicker">运维随笔、提示缓存留存</p>
     <h1>留存是一项请求策略，而不是一个默认前提</h1>
     <p class="lede">
       因为支持的模型会默认缓存符合条件的前缀，提示缓存让人感觉是自动生效的。所以
-      人们很想靠在它上面——工作负载会在空闲间隙之后、跨越班次边界、在批处理暂停
+      人们很容易把它当作依靠：工作负载会在空闲间隙之后、跨越班次边界、在批处理暂停
       之后，或在后续的客户回合里复用共享前缀，而请求体只是省略了
-      <code>prompt_cache_retention</code>，相信那个窗口还在那儿。可"默认会被缓存"并不
-      等于"会保留到运维所假定的那么久"。当请求省略留存设置时，运维可能正指望着一个
-      它从未真正要求过的缓存窗口——所以运维上的问题不是"缓存有没有命中"，而是"这个
-      工作负载所依赖的复用窗口，请求到底有没有真的要求过"。
+      <code>prompt_cache_retention</code>，相信那个窗口还在那儿。可“默认会被缓存”并不
+      等于“会保留到运维所假定的那么久”。当请求省略留存设置时，运维可能正指望着一个
+      它从未真正要求过的缓存窗口。所以运维上的问题不是“缓存有没有命中”，而是“这个
+      工作负载所依赖的复用窗口，请求到底有没有真的要求过”。
     </p>
 
     <figure class="article-figure" id="figure-retention-one-pager">
@@ -58,7 +58,7 @@
         <strong>一眼看懂本文。</strong>提示缓存是自动的，但留存窗口是一项请求策略。
         Microsoft Learn 记录了可能在几分钟内被清除的 <code>in_memory</code> 默认值，以及
         显式的 <code>24h</code> 窗口。这张单页概览传达的就是这一条信息：如果你在意后续
-        复用，就把留存写明白——并标明边界。留存模式是官方规范；与它并排的首 token
+        复用，就把留存写明白，并标明边界。留存模式是官方规范；与它并排的首 token
         延迟形态，则是按量付费下测得、经脱敏的公开聚合，仅作描述。
         <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">打开缓存留存的单页概览 SVG</a>。
       </figcaption>
@@ -68,8 +68,8 @@
     <section id="why-retention" class="article-section">
       <h2>为什么要设置窗口，而不是假定它</h2>
       <p>
-        "默认就够了"的反射，假设缓存窗口能活得比工作负载在两次复用之间留出的间隔更长。
-        在接受这个假设之前，值得把两件事并排放一下。第一件是 Microsoft Learn 记录的：
+        “默认就够了”的反射，假设缓存窗口能活得比工作负载在两次复用之间留出的间隔更长。
+        在接受这个假设之前，值得先把两件事放在一起看。第一件是 Microsoft Learn 记录的：
         留存策略有两种，<code>in_memory</code> 与 <code>24h</code>。内存中的条目通常在非活动
         后 5～10 分钟内被清除，并且必定在最后一次使用后的 1 小时内被删除；而扩展留存可以
         把缓存前缀保持为可路由状态，最长到 24 小时。在 <code>gpt-5.4</code> 之前的模型上，
@@ -78,12 +78,12 @@
         <code>in_memory</code> 与 <code>24h</code> 下，首 token 延迟和缓存命中率实际是怎么动的。
       </p>
       <p>
-        值得停下来的，正是那个"成对"的部分。只看命中率会让人安心，但留存的选择体现在
+        真正值得停下来看的，是这个“成对”的部分。只看命中率会让人安心，但留存的选择体现在
         别处。在这类场景里，两种模式都保持高命中率（约 0.93～0.96），所以单看它，会以为
-        留存模式几乎不起作用。首 token 延迟的长尾，讲了另一半故事——在基数为 1 时，
+        留存模式几乎不起作用。首 token 延迟的长尾，讲了另一半故事：在基数为 1 时，
         <code>in_memory</code> 序列的 p95 约 106,000 ms，而 <code>24h</code> 序列约 9,900 ms。
-        所以留存的选择体现在延迟长尾，而不是命中率上。也正因如此，留存应当挨着缓存 token
-        占比、和延迟一起读：它不只是一个性能参数，而是一项请求策略，也是一个治理选择。
+        所以留存的选择体现在延迟长尾，而不是命中率上。也正因如此，留存应当把缓存 token
+        占比和延迟放在一起读：它不只是一个性能参数，而是一项请求策略，也是一个治理选择。
         两种留存模式、它们的寿命、<code>in_memory</code> 默认、相同的价格、扩展留存的同区域
         条件，是 Microsoft Learn 记录的；把延迟摆在命中率旁边的那组公开测量，则是本仓库
         愿意为之背书的源运行证据，而不是一条通用的延迟曲线。下面的图把这一对明示出来。
@@ -121,7 +121,7 @@
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">官方行为 · 两种留存模式</p>
+      <p class="section-label">官方行为、两种留存模式</p>
       <h2>自动缓存，并不等于显式的留存</h2>
       <p>
         Microsoft Learn 说明了两种提示缓存留存策略，<code>in_memory</code> 与
@@ -146,7 +146,7 @@
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">观测证据 · 稀疏的公开测量</p>
+      <p class="section-label">观测证据、稀疏的公开测量</p>
       <h2>延迟把留存的选择显形了</h2>
       <figure class="article-figure">
         <figcaption>
@@ -158,14 +158,14 @@
       </figure>
       <figure class="article-figure" id="figure-retention-ttft">
         <figcaption>
-          <strong>源图——按留存模式划分的首 token 延迟 p95。</strong>
+          <strong>源图：按留存模式划分的首 token 延迟 p95。</strong>
           <strong>X 轴：</strong>log2 刻度的桶基数（1，随后 8）。
           <strong>Y 轴：</strong>稳态下首 token 的 p95 时间（毫秒）。
-          <strong>线：</strong>本文比较的两种留存策略——<code>in_memory</code> 与 <code>24h</code>，
+          <strong>线：</strong>本文比较的两种留存策略：<code>in_memory</code> 与 <code>24h</code>，
           各 N&nbsp;=&nbsp;960 条记录。这是双序列折线图，不是频次直方图。
           <strong>读法：</strong>在基数为 1 时，<code>in_memory</code> 序列的 p95 约
-          106,000&nbsp;ms，而 <code>24h</code> 序列约 9,900&nbsp;ms——在这个配置里，留存的
-          选择体现在延迟长尾上——而当流量铺到 8 个桶时，两条序列彼此靠近。
+          106,000&nbsp;ms，而 <code>24h</code> 序列约 9,900&nbsp;ms。在这个配置里，留存的
+          选择体现在延迟长尾上；当流量铺到 8 个桶时，两条序列彼此靠近。
           <strong>证据边界：</strong>按量付费 gpt-5.2 下一份稀疏、经脱敏的公开聚合
           （不是 PTU）。它是源运行证据，不是通用的延迟规则。
           <strong>来源：</strong>
@@ -176,13 +176,13 @@
       </figure>
       <figure class="article-figure" id="figure-retention-hit-ratio">
         <figcaption>
-          <strong>配对源图——按留存模式划分的缓存命中率。</strong>
+          <strong>配对源图：按留存模式划分的缓存命中率。</strong>
           <strong>X 轴：</strong>同样的 log2 桶基数轴（1，随后 8）。
           <strong>Y 轴：</strong>稳态缓存命中率，0&ndash;1。
           <strong>线：</strong>同样的 <code>in_memory</code> 与 <code>24h</code> 序列，各
           N&nbsp;=&nbsp;960。<strong>读法：</strong>在这组测量里两条序列都保持高位（约
           0.93&ndash;0.96），在基数为 1 时 <code>24h</code> 序列略高。这里更大的留存差异
-          出现在上面的延迟面板，而不是命中率上——这正是为什么留存要挨着缓存 token 占比、
+          出现在上面的延迟面板，而不是命中率上。这正是为什么留存要挨着缓存 token 占比、
           和延迟一起读。<strong>证据边界：</strong>按量付费 gpt-5.2 下同一批稀疏、经脱敏的
           公开聚合（不是 PTU）。仅作描述，不是通用的缓存命中规则。<strong>来源：</strong>
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
@@ -219,11 +219,11 @@
     </section>
 
     <section id="policy" class="article-section">
-      <p class="section-label">运维策略 · 遇到歧义即失败关闭</p>
+      <p class="section-label">运维策略、遇到歧义即失败关闭</p>
       <h2>如果留存很重要，就让那个选择可观测</h2>
       <p>
         公开仓库里包含一个小小的留存策略助手：对那些有文档记载默认是 <code>in_memory</code>
-        的模型，它会拒绝省略该值。听起来很严格，但这正是为了防住一种常见的失败模式——
+        的模型，它会拒绝省略该值。听起来很严格，但这正是为了防住一种常见的失败模式：
         设计上假定了更长的缓存期，请求体却悄悄采用了短的默认值。
       </p>
       <div class="evidence-grid">
@@ -243,7 +243,7 @@
     </section>
 
     <section id="residency" class="article-section">
-      <p class="section-label">治理说明 · 留存不只关乎延迟</p>
+      <p class="section-label">治理说明、留存不只关乎延迟</p>
       <h2>更长的留存还需要一次治理核查</h2>
       <p>
         Microsoft Learn 表示，内存提示缓存与所有数据驻留区域都兼容；至于扩展留存，
@@ -258,35 +258,35 @@
 
     <section id="sources" class="article-section">
       <h2>来源与证据边界</h2>
-      <p><strong>Tier 1 — 服务契约（Microsoft Learn）。</strong>两种留存策略、内存的清除
+      <p><strong>Tier 1: 服务契约（Microsoft Learn）。</strong>两种留存策略、内存的清除
         与删除窗口、24 小时扩展留存上限、<code>gpt-5.4</code> 之前的 <code>in_memory</code>
         默认、两种策略相同的价格，以及数据驻留行为，都记录在这里。</p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — 记录了 <code>in_memory</code>
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: 记录了 <code>in_memory</code>
           与 <code>24h</code> 留存策略、非活动后 5～10 分钟内的内存清除与最后一次使用后 1
           小时内的删除、24 小时扩展留存上限、<code>gpt-5.4</code> 之前模型的 <code>in_memory</code>
           默认、两种留存策略相同的提示缓存价格，以及"只有在 Regional Standard 或 Regional
-          Provisioned 部署类型下扩展留存才把缓存数据保持在区域内"的数据驻留规则。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
+          Provisioned 部署类型下扩展留存才把缓存数据保持在区域内"的数据驻留规则。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 文档</a>（2026-06-04 访问）、<a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">存档</a>。</li>
       </ul>
-      <p><strong>Tier 2 — 运维推断（本仓库）。</strong>对默认 <code>in_memory</code> 的模型在
+      <p><strong>Tier 2: 运维推断（本仓库）。</strong>对默认 <code>in_memory</code> 的模型在
         省略该值时失败关闭的留存策略助手，以及稀疏的公开命中率与首 token 延迟测量，不是
         Learn 规范，而是本仓库的运维推断与源运行证据。</p>
       <ul>
         <li>[2] <strong>本仓库，<code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — 提示缓存键与留存的运维手册。§4 从有文档记载的逐模型默认推导出
+          : 提示缓存键与留存的运维手册。§4 从有文档记载的逐模型默认推导出
           <code>in_memory</code> 默认表，并规定显式声明 <code>prompt_cache_retention</code>。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">来源</a>。</li>
         <li>[3] <strong>本仓库，<code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
-          — 对有文档记载默认是 <code>in_memory</code> 的模型，在省略该值时抛出异常的
+          : 对有文档记载默认是 <code>in_memory</code> 的模型，在省略该值时抛出异常的
           <code>ensure_explicit</code> 助手。它是运维推断，而非 Learn 规范。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">来源</a>。</li>
         <li>[4] <strong>本仓库，<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 留存命中率与首 token 延迟表背后那一份稀疏的公开聚合测量。它是源运行证据，
+          : 留存命中率与首 token 延迟表背后那一份稀疏的公开聚合测量。它是源运行证据，
           不是通用的延迟规则。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">来源</a>。</li>
       </ul>
       <p>
         <strong>本文证明了什么、又没证明什么。</strong>它记录了截至访问日期 Microsoft Learn
-        明示的提示缓存留存契约——<code>in_memory</code> 与 <code>24h</code> 策略、内存的清除与
+        明示的提示缓存留存契约：<code>in_memory</code> 与 <code>24h</code> 策略、内存的清除与
         删除窗口、24 小时扩展上限、<code>gpt-5.4</code> 之前的 <code>in_memory</code> 默认、两种
-        策略相同的价格、扩展留存的同区域条件——以及本仓库的经验法则：显式声明
+        策略相同的价格、扩展留存的同区域条件，以及本仓库的经验法则：显式声明
         <code>prompt_cache_retention</code>，并在默认 <code>in_memory</code> 的模型上一旦省略就
         失败关闭。单个公开测量显示，在基数为 1 时留存把首 token 延迟显了形。那是源运行证据，
         而不是对所有模型、区域、流量形态都成立的通用延迟曲线的证明。
@@ -297,15 +297,14 @@
       <h2>实用准则</h2>
       <p><strong>实用准则：在可能回退到 <code>in_memory</code> 的模型上，如果你需要让缓存
         复用越过短暂的等待窗口活下来，就不要信任默认值，而要显式设置
-        <code>prompt_cache_retention</code>，保持可缓存的前缀稳定，并挨着缓存 token 占比读
-        首 token 延迟，来确认你要求到的窗口就是你实际拿到的窗口。</strong></p>
+        <code>prompt_cache_retention</code>，保持可缓存的前缀稳定，并把首 token 延迟和缓存 token 占比放在一起读，来确认你要求到的窗口就是你实际拿到的窗口。</strong></p>
       <p>下一篇从单个请求的缓存策略，转到把整套 GPT-4o 工作负载迁到 PTU 上的 GPT-5.x 时，容量计算会有什么变化。</p>
       <p><a class="button-link" href="../../reasoning-migration-sizing/zh-CN/">当 GPT-4o 流量迁到 PTU 上的 GPT-5.x 时，容量计算里到底有什么变化</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 许可的研究产物 · 公开数据均已脱敏或仅为聚合形式。</p>
+    <p>MIT 许可的研究产物、公开数据均已脱敏或仅为聚合形式。</p>
   </footer>
 </body>
 </html>

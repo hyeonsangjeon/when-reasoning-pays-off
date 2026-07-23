@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>保持期間はポリシーである | when reasoning pays off</title>
-  <meta name="description" content="キャッシュ保持期間を暗黙の前提にせず、prompt_cache_retention で明示することを扱う公開運用記事。">
+  <meta name="description" content="キャッシュ保持期間を暗黙の前提にせず、prompt_cache_retention で明示すことを扱う公開運用記事。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -41,31 +41,31 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 運用エッセイ / 日本語訳</p>
-    <p class="article-kicker">運用エッセイ · プロンプトキャッシュ保持期間</p>
+    <p class="article-kicker">運用エッセイ・プロンプトキャッシュ保持期間</p>
     <h1>保持期間は前提ではなく、リクエストのポリシーである</h1>
     <p class="lede">
       対応モデルは対象となるプレフィックスを既定でキャッシュするため、プロンプト
-      キャッシュは自動的に効くように感じられます。そのため、つい既定の挙動を当てに
-      しがちです——ワークロードはアイドル時間のあと、シフトの切れ目をまたいで、バッチ
+      キャッシュは自動的に効くように感じられる。そのため、つい既定の挙動を当てに
+      しがちである。ワークロードはアイドル時間のあと、シフトの切れ目をまたいで、バッチ
       の一時停止のあと、あるいは次の顧客ターンで共有プレフィックスを再利用する一方で、
       リクエストボディは単に <code>prompt_cache_retention</code> を省略したまま、
-      ウィンドウがまだ残っている前提で進めてしまいます。しかし「既定でキャッシュされる」
-      ことは、「運用が前提とする長さだけ保持される」ことと同じではありません。リクエストが保持期間を省略すると、運用は一度も
-      要求していないキャッシュウィンドウを当てにしているかもしれません——だから運用上の
+      ウィンドウがまだ残っている前提で進めてしまう。しかし「既定でキャッシュされる」
+      ことは、「運用が前提とする長さだけ保持される」ことと同じではない。リクエストが保持期間を省略すると、運用は一度も
+      要求していないキャッシュウィンドウを当てにしているかもしれない。だから運用上の
       問いは「キャッシュは効いているか」ではなく、「このワークロードが依存する再利用
-      ウィンドウを、リクエストは実際に要求したか」です。
+      ウィンドウを、リクエストは実際に要求したか」である。
     </p>
 
     <figure class="article-figure" id="figure-retention-one-pager">
       <figcaption>
-        <strong>ひと目で見るこの記事。</strong> プロンプトキャッシュは自動ですが、
-        保持ウィンドウはリクエストのポリシーです。Microsoft Learn は、数分でクリア
+        <strong>ひと目で見るこの記事。</strong> プロンプトキャッシュは自動であるが、
+        保持ウィンドウはリクエストのポリシーである。Microsoft Learn は、数分でクリア
         されうる <code>in_memory</code> 既定と、明示的な <code>24h</code> ウィンドウを
-        文書化しています。この1枚要約が伝えるのは一つだけです——後からの再利用が重要
-        なら保持期間を明示することです。あわせて、根拠の境界も示します。保持モードは
+        文書化している。この 1 枚要約が伝えるのは一つだけである。後からの再利用が重要
+        なら保持期間を明示すことである。あわせて、根拠の境界も示す。保持モードは
         公式仕様であり、
         その隣の初回トークンレイテンシの形は、従量課金で測定したサニタイズ済みの
-        公開集計を記述的に示したものです。
+        公開集計を記述的に示したものである。
         <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">キャッシュ保持期間の1枚要約 SVG を開く</a>。
       </figcaption>
       <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="プロンプトキャッシュ保持期間の1枚要約。インメモリ保持（短い既定の寿命）と、ウォームなプレフィックスをルーティング可能に保つ明示的な 24 時間ウィンドウを対比し、このソース実行では 24h モードの初回トークンレイテンシの裾が低いことを示す。中心メッセージ：保持ウィンドウは重要なので、明示的に設定する。文書化された保持モードと、サニタイズ済みの測定された集計を示し、記述的のみであることを示す。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -75,32 +75,32 @@
       <h2>なぜ前提にせず、ウィンドウを設定するのか</h2>
       <p>
         「既定で十分」という反射は、キャッシュのウィンドウが、ワークロードが再利用の
-        あいだに残す間隔より長く生き延びる、と仮定します。それを受け入れる前に、二つの
-        ことを並べておく価値があります。一つ目は Microsoft Learn が文書化していること
-        です。保持ポリシーは二つあり、<code>in_memory</code> と <code>24h</code> です。
+        あいだに残す間隔より長く生き延びる、と仮定する。それを受け入れる前に、二つの
+        ことを並べておく価値がある。一つ目は Microsoft Learn が文書化していること
+        である。保持ポリシーは二つあり、<code>in_memory</code> と <code>24h</code> である。
         インメモリのエントリは通常、非アクティブになってから 5〜10 分以内にクリアされ、
-        最後の使用から 1 時間以内には必ず削除されます。一方、拡張保持はキャッシュ済み
-        プレフィックスを最大 24 時間までルーティング可能に保てます。<code>gpt-5.4</code>
+        最後の使用から 1 時間以内には必ず削除される。一方、拡張保持はキャッシュ済み
+        プレフィックスを最大 24 時間までルーティング可能に保てる。<code>gpt-5.4</code>
         以前のモデルでは値の省略は <code>in_memory</code> を意味し、プロンプトキャッシュの
-        価格はどちらのポリシーでも同じです。二つ目は、本リポジトリのソース実行から取った、
+        価格はどちらのポリシーでも同じである。二つ目は、本リポジトリのソース実行から取った、
         保持モードでグループ化した疎なサニタイズ済みの公開集計で、<code>in_memory</code>
         と <code>24h</code> のもとで初回トークンのレイテンシとキャッシュヒット率が実際に
-        どう動いたかを記述的に示すために含めています。
+        どう動いたかを記述的に示すために含めている。
       </p>
       <p>
-        ここで注目したいのは、この組み合わせです。ヒット率だけを見ると安心材料に
-        読めますが、保持の選択は別のところに現れます。この測定区間では両モードとも高い
+        ここで注目したいのは、この組み合わせである。ヒット率だけを見ると安心材料に
+        読めるが、保持の選択は別のところに現れる。この測定区間では両モードとも高い
         ヒット率（約 0.93〜0.96）を保ったので、ヒット率だけを読めば保持モードはほとんど
-        効かないように見えてしまいます。初回トークンのレイテンシの裾が、もう半分の物語を
-        語ります——カーディナリティ 1 で <code>in_memory</code> 系列は約 106,000 ms の
-        p95 にあり、<code>24h</code> 系列は約 9,900 ms にありました。だから保持の選択は
-        ヒット率ではなくレイテンシの裾に現れました。だからこそ保持期間は、キャッシュ済み
+        効かないように見えてしまう。初回トークンのレイテンシの裾が、もう半分の物語を
+        語る。カーディナリティ 1 で <code>in_memory</code> 系列は約 106,000 ms の
+        p95 にあり、<code>24h</code> 系列は約 9,900 ms にあった。だから保持の選択は
+        ヒット率ではなくレイテンシの裾に現れた。だからこそ保持期間は、キャッシュ済み
         トークンの比率の隣でレイテンシとともに読むべきであり、単なる性能調整の設定ではなく
-        リクエストのポリシーでありガバナンスの選択なのです。二つの保持モード、その寿命、
+        リクエストのポリシーでありガバナンスの選択なのである。二つの保持モード、その寿命、
         <code>in_memory</code> の既定、同一の価格、拡張保持のリージョン内条件は
-        Microsoft Learn が文書化しているものです。レイテンシをヒット率の隣に置いた公開の
+        Microsoft Learn が文書化しているものである。レイテンシをヒット率の隣に置いた公開の
         測定データは、本リポジトリが示すソース実行の根拠であって、普遍的なレイテンシ曲線
-        ではありません。下のチャートがその対を明示します。
+        ではない。下のチャートがその対を明示す。
       </p>
     </section>
 
@@ -111,11 +111,11 @@
       </section>
       <section class="summary-tile">
         <h2>根拠</h2>
-        <p>Microsoft Learn が保持モードを定義し、本リポジトリが断片的な公開レイテンシとヒット率の根拠を補足します。</p>
+        <p>Microsoft Learn が保持モードを定義し、本リポジトリが断片的な公開レイテンシとヒット率の根拠を補足する。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
-        <p>保持期間を明示し、プレフィックスを安定させ、レイテンシをキャッシュ済みトークンの比率と並べて読みます。</p>
+        <p>保持期間を明示し、プレフィックスを安定させ、レイテンシをキャッシュ済みトークンの比率と並べて読みる。</p>
       </section>
     </div>
 
@@ -130,63 +130,63 @@
 
     <p class="banner">
       <strong>範囲に関する注記：</strong>
-      以下の公開計測値は、ソース実行から得た断片的な根拠です。これらは運用上の
-      チェックリストを支えるものであり、普遍的なレイテンシの主張ではありません。
+      以下の公開計測値は、ソース実行から得た断片的な根拠である。運用上の
+      チェックリストを支えるものであり、普遍的なレイテンシの主張ではない。
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">公式の挙動 · 2 つの保持モード</p>
+      <p class="section-label">公式の挙動・2 つの保持モード</p>
       <h2>自動キャッシュは、明示的な保持期間と同じではない</h2>
       <p>
         Microsoft Learn は 2 つのプロンプトキャッシュ保持ポリシー、
-        <code>in_memory</code> と <code>24h</code> を説明しています。インメモリの
+        <code>in_memory</code> と <code>24h</code> を説明している。インメモリの
         キャッシュエントリは、通常は非アクティブになってから 5〜10 分以内にクリア
-        され、最後の使用から 1 時間以内には必ず削除されます。拡張保持を使えば、
-        キャッシュ済みプレフィックスを最大 24 時間まで、より長くアクティブに保てます。
+        され、最後の使用から 1 時間以内には必ず削除される。拡張保持を使えば、
+        キャッシュ済みプレフィックスを最大 24 時間まで、より長くアクティブに保てる。
       </p>
       <div class="evidence-grid">
         <div>
           <h3>既定は短いことがある</h3>
-          <p><code>gpt-5.4</code> 以前のモデルでは、保持期間を省略すると <code>in_memory</code> を意味します。</p>
+          <p><code>gpt-5.4</code> 以前のモデルでは、保持期間を省略すると <code>in_memory</code> を意味する。</p>
         </div>
         <div>
-          <h3>長い再利用は明示する</h3>
-          <p>後からの再利用を見込む運用なら、対応している箇所で <code>prompt_cache_retention</code> を <code>24h</code> に設定します。</p>
+          <h3>長い再利用は明示す</h3>
+          <p>後からの再利用を見込む運用なら、対応している箇所で <code>prompt_cache_retention</code> を <code>24h</code> に設定する。</p>
         </div>
         <div>
           <h3>価格は判断材料にならない</h3>
-          <p>Microsoft Learn は、プロンプトキャッシュの価格はどちらの保持ポリシーでも同じだと述べています。</p>
+          <p>Microsoft Learn は、プロンプトキャッシュの価格はどちらの保持ポリシーでも同じだと述べている。</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">観測された根拠 · 断片的な公開測定区間</p>
+      <p class="section-label">観測された根拠・断片的な公開測定区間</p>
       <h2>レイテンシが保持期間の選択を可視化した</h2>
       <figure class="article-figure">
         <figcaption>
           <strong>読み取るチャート:</strong> 公開された集計済みの測定区間を、今回は
-          キャッシュキーではなく保持モード別にまとめたものです。左パネルは最初のトークン
-          までの時間の p95 を示します。右パネルはキャッシュヒット率を示します。
+          キャッシュキーではなく保持モード別にまとめたものである。左パネルは最初のトークン
+          までの時間の p95 を示す。右パネルはキャッシュヒット率を示す。
           各グループは同じカーディナリティについて <code>in_memory</code> と
-          <code>24h</code> を比較しています。
+          <code>24h</code> を比較している。
         </figcaption>
         <img src="../../../../assets/prompt-cache-retention-evidence.ja.svg" alt="TTFT p95 とキャッシュヒット率を比較するプロンプトキャッシュ保持期間の根拠チャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-retention-ttft">
         <figcaption>
-          <strong>元チャート——保持モード別の初回トークンレイテンシ p95。</strong>
+          <strong>元チャート：保持モード別の初回トークンレイテンシ p95。</strong>
           <strong>X 軸：</strong> log2 スケールのバケットのカーディナリティ（1、続いて 8）。
           <strong>Y 軸：</strong> 定常状態の初回トークンまでの p95 時間（ミリ秒）。
-          <strong>線：</strong> 本記事が比較する二つの保持ポリシー——<code>in_memory</code> と
+          <strong>線：</strong> 本記事が比較する二つの保持ポリシー、<code>in_memory</code> と
           <code>24h</code>、それぞれ N&nbsp;=&nbsp;960 レコード。二系列の折れ線グラフであって、
-          度数のヒストグラムではありません。 <strong>読み方：</strong> カーディナリティ 1 で
+          度数のヒストグラムではない。 <strong>読み方：</strong> カーディナリティ 1 で
           <code>in_memory</code> 系列は約 106,000&nbsp;ms の p95 にあり、<code>24h</code>
-          系列は約 9,900&nbsp;ms にありました——この設定では保持の選択がレイテンシの裾に
-          見えました——そしてトラフィックが 8 バケットに広がると二つの系列は近づきました。
+          系列は約 9,900&nbsp;ms にあった。この設定では保持の選択がレイテンシの裾に
+          見えた。そしてトラフィックが 8 バケットに広がると二つの系列は近づいた。
           <strong>根拠の境界：</strong> 従量課金の gpt-5.2 での一つの疎なサニタイズ済み公開
-          集計（PTU ではありません）。ソース実行の根拠であり、普遍的なレイテンシ規則では
-          ありません。 <strong>出典：</strong>
+          集計（PTU ではない）。ソース実行の根拠であり、普遍的なレイテンシ規則では
+          ない。 <strong>出典:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
           （<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">ソース CSV</a>）。
         </figcaption>
@@ -194,17 +194,17 @@
       </figure>
       <figure class="article-figure" id="figure-retention-hit-ratio">
         <figcaption>
-          <strong>対になる元チャート——保持モード別のキャッシュヒット率。</strong>
+          <strong>対になる元チャート：保持モード別のキャッシュヒット率。</strong>
           <strong>X 軸：</strong> 同じ log2 のバケットカーディナリティ軸（1、続いて 8）。
           <strong>Y 軸：</strong> 定常状態のキャッシュヒット率、0〜1。
           <strong>線：</strong> 同じ <code>in_memory</code> と <code>24h</code> 系列、
           それぞれ N&nbsp;=&nbsp;960。 <strong>読み方：</strong> この測定区間では両系列とも
           高いまま（約 0.93〜0.96）で、カーディナリティ 1 では <code>24h</code> 系列が
-          わずかに高くなりました。ここでのより大きな保持の差は、ヒット率ではなく上の
-          レイテンシのパネルに現れました——だからこそ保持期間は、キャッシュ済みトークンの
-          比率の隣でレイテンシとともに読むべきです。 <strong>根拠の境界：</strong> 従量
-          課金の gpt-5.2 での同じ疎なサニタイズ済み公開集計（PTU ではありません）。記述的
-          であり、普遍的なキャッシュヒット規則ではありません。 <strong>出典：</strong>
+          わずかに高くなった。ここでのより大きな保持の差は、ヒット率ではなく上の
+          レイテンシのパネルに現れた。だからこそ保持期間は、キャッシュ済みトークンの
+          比率の隣でレイテンシとともに読むべきである。 <strong>根拠の境界：</strong> 従量
+          課金の gpt-5.2 での同じ疎なサニタイズ済み公開集計（PTU ではない）。記述的
+          であり、普遍的なキャッシュヒット規則ではない。 <strong>出典:</strong>
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           （<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">ソース CSV</a>）。
         </figcaption>
@@ -232,22 +232,22 @@
         <h3>これが示すこと、示さないこと</h3>
         <p>
           この測定区間では、カーディナリティ 1 の設定が最初のトークンの
-          レイテンシにおいて保持期間を可視化しました。それはソース実行から得た
-          根拠であり、普遍的な規則ではありません。長く通用する教訓はもっと単純で、
-          保持モード・ヒット率・レイテンシをまとめて読む、ということです。
+          レイテンシにおいて保持期間を可視化した。それはソース実行から得た
+          根拠であり、普遍的な規則ではない。長く通用する教訓はもっと単純で、
+          保持モード・ヒット率・レイテンシをまとめて読む、ということである。
         </p>
       </div>
     </section>
 
     <section id="policy" class="article-section">
-      <p class="section-label">運用ポリシー · 曖昧なら安全側に倒す</p>
+      <p class="section-label">運用ポリシー・曖昧なら安全側に倒す</p>
       <h2>保持期間が重要なら、その選択を観測可能にする</h2>
       <p>
         公開リポジトリには、文書化された既定が <code>in_memory</code> である
         モデルに対して値の省略を拒否する、小さな保持ポリシーのヘルパーが含まれて
-        います。厳しく聞こえますが、これはよくある失敗パターンを防ぎます。設計は
+        いる。厳しく聞こえるが、これはよくある失敗パターンを防ぐ。設計は
         より長いキャッシュ期間を前提にしているのに、リクエストボディは黙って短い
-        既定を採用してしまう、という事態です。
+        既定を採用してしまう、という事態である。
       </p>
       <div class="evidence-grid">
         <div>
@@ -266,65 +266,65 @@
     </section>
 
     <section id="residency" class="article-section">
-      <p class="section-label">ガバナンスに関する注記 · 保持期間はレイテンシだけの話ではない</p>
+      <p class="section-label">ガバナンスに関する注記・保持期間はレイテンシだけの話ではない</p>
       <h2>長い保持期間にはガバナンスの確認も必要</h2>
       <p>
         Microsoft Learn は、インメモリのプロンプトキャッシュはすべてのデータ所在
-        リージョンと互換性があると述べています。拡張保持については、キャッシュ
+        リージョンと互換性があると述べている。拡張保持については、キャッシュ
         データがリージョン内にとどまるのは Regional Standard または Regional
-        Provisioned モードの場合のみだとしています。これにより保持期間は、
-        パフォーマンス上の判断であると同時にガバナンス上の判断にもなります。
+        Provisioned モードの場合のみだとしている。これにより保持期間は、
+        パフォーマンス上の判断であると同時にガバナンス上の判断にもなる。
       </p>
       <p>
         そのため、拡張保持を使うかどうかは、性能だけでなくガバナンスでも判断する必要が
-        あります。拡張ウィンドウに頼る前に、サービングモードがキャッシュデータをリージョン内に
-        保つことを確認し、その選択を既定値に委ねないようにしてください。
+        ある。拡張ウィンドウに頼る前に、サービングモードがキャッシュデータをリージョン内に
+        保つことを確認し、その選択を既定値に委ねないようにしてほしい。
       </p>
     </section>
 
     <section id="sources" class="article-section">
       <h2>出典と根拠の境界</h2>
-      <p><strong>Tier 1 — サービス契約（Microsoft Learn）。</strong> 二つの保持
+      <p><strong>Tier 1: サービス契約（Microsoft Learn）。</strong> 二つの保持
         ポリシー、インメモリのクリアと削除のウィンドウ、24 時間の拡張保持上限、
         <code>gpt-5.4</code> 以前の <code>in_memory</code> 既定、両ポリシーで同一の
-        価格、そしてデータ所在の挙動が、ここに文書化されています。</p>
+        価格、そしてデータ所在の挙動が、ここに文書化されている。</p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — <code>in_memory</code> と
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: <code>in_memory</code> と
           <code>24h</code> の保持ポリシー、非アクティブ後 5〜10 分以内のインメモリの
           クリアと最後の使用から 1 時間以内の削除、24 時間の拡張保持上限、
           <code>gpt-5.4</code> 以前のモデルでの <code>in_memory</code> 既定、両保持
           ポリシーで同一のプロンプトキャッシュ価格、そして拡張保持がキャッシュデータを
           リージョン内に保つのは Regional Standard または Regional Provisioned の
-          デプロイタイプの場合のみ、というデータ所在の規則を文書化しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）· <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
+          デプロイタイプの場合のみ、というデータ所在の規則を文書化している。出典:<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn ドキュメント</a>（2026-06-04 アクセス）・<a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">アーカイブ</a>。</li>
       </ul>
-      <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> <code>in_memory</code>
+      <p><strong>Tier 2: 運用上の推論（本リポジトリ）。</strong> <code>in_memory</code>
         既定のモデルで値が省略されたときに安全側へ倒す保持ポリシーのヘルパーと、疎な
         公開のヒット率と初回トークンレイテンシの測定データは、Learn の仕様ではなく本リポジトリの
-        運用上の推論でありソース実行の根拠です。</p>
+        運用上の推論でありソース実行の根拠である。</p>
       <ul>
         <li>[2] <strong>本リポジトリ、<code>docs/12-prompt-cache-key-policy.md</code></strong>
-          — プロンプトキャッシュキーと保持期間の運用手順書。§4 は文書化されたモデル別の
+          : プロンプトキャッシュキーと保持期間の運用手順書。§4 は文書化されたモデル別の
           既定から <code>in_memory</code> 既定の表を導き、<code>prompt_cache_retention</code>
-          を明示することを規定します。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">出典</a>。</li>
+          を明示すことを規定する。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">出典</a>。</li>
         <li>[3] <strong>本リポジトリ、<code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
-          — 文書化された既定が <code>in_memory</code> であるモデルで値が省略されたときに
+          : 文書化された既定が <code>in_memory</code> であるモデルで値が省略されたときに
           例外を投げる <code>ensure_explicit</code> ヘルパー。Learn の仕様ではなく運用上の
-          推論です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">出典</a>。</li>
+          推論である。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">出典</a>。</li>
         <li>[4] <strong>本リポジトリ、<code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          — 保持期間のヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の
-          測定区間。普遍的なレイテンシ規則ではなくソース実行の根拠です。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
+          : 保持期間のヒット率と初回トークンレイテンシの表の背後にある、疎な公開集計の
+          測定区間。普遍的なレイテンシ規則ではなくソース実行の根拠である。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">出典</a>。</li>
       </ul>
       <p>
         <strong>このトピックが証明するものとしないもの。</strong> アクセス日時点で
-        Microsoft Learn が明示するプロンプトキャッシュ保持の契約——<code>in_memory</code>
+        Microsoft Learn が明示すプロンプトキャッシュ保持の契約、<code>in_memory</code>
         と <code>24h</code> のポリシー、インメモリのクリアと削除のウィンドウ、24 時間の
         拡張上限、<code>gpt-5.4</code> 以前の <code>in_memory</code> 既定、両ポリシーで
-        同一の価格、拡張保持のリージョン内条件——と、<code>prompt_cache_retention</code> を
+        同一の価格、拡張保持のリージョン内条件、と、<code>prompt_cache_retention</code> を
         明示し、<code>in_memory</code> 既定のモデルで省略されたら安全側へ倒す、という本
-        リポジトリの経験則を文書化します。単一の測定区間の観測では、カーディナリティ 1 で保持
-        期間が初回トークンレイテンシに可視化されたことを示しました。それはソース実行の
+        リポジトリの経験則を文書化する。単一の測定区間の観測では、カーディナリティ 1 で保持
+        期間が初回トークンレイテンシに可視化されたことを示した。それはソース実行の
         根拠であって、すべてのモデル・リージョン・トラフィック形状にわたる普遍的な
-        レイテンシ曲線の証明ではありません。
+        レイテンシ曲線の証明ではない。
       </p>
     </section>
 
@@ -335,14 +335,14 @@
         信頼せず <code>prompt_cache_retention</code> を明示的に設定し、キャッシュ可能な
         プレフィックスを安定させ、要求したウィンドウが得られたウィンドウであることを
         確かめるために、キャッシュ済みトークンの比率の隣で初回トークンのレイテンシを
-        読んでください。</strong></p>
-      <p>次の記事は、単一リクエストのキャッシュポリシーから、GPT-4o のワークロード全体を PTU 上の GPT-5.x へリサイズするときに何が変わるかへと移ります。</p>
+        読む。</strong></p>
+      <p>次の記事は、単一リクエストのキャッシュポリシーから、GPT-4o のワークロード全体を PTU 上の GPT-5.x へリサイズするときに何が変わるかへと移りる。</p>
       <p><a class="button-link" href="../../reasoning-migration-sizing/ja/">GPT-4o のトラフィックが PTU 上の GPT-5.x へ移るとき、容量の計算で実際に何が変わるか</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT ライセンスのリサーチ成果物 · 公開データはサニタイズ済みまたは集計のみ。</p>
+    <p>MIT ライセンスのリサーチ成果物・公開データはサニタイズ済みまたは集計のみ。</p>
   </footer>
 </body>
 </html>
