@@ -47,7 +47,7 @@
 
     <figure class="article-figure" id="figure-ptu-payg-one-pager">
       <figcaption>
-        <strong>एक नज़र में यह विषय (modeled, measured नहीं)।</strong> PTU और PAYG का
+        <strong>एक नज़र में बात (modeled, measured नहीं)।</strong> PTU और PAYG का
         crossover break-even request rate पर निकाला गया हिसाब है। उसके नीचे PAYG सस्ता
         पड़ता है, उसके ऊपर committed PTU block। यह one-pager वही बात कहता है और modeled
         boundary दिखाता है। नीचे के section calculation और उसकी limits समझाते हैं।
@@ -66,7 +66,7 @@
     <div class="article-summary-grid" aria-label="विषय का सार">
       <section class="summary-tile"><h2>प्रश्न</h2><p>Modeled PTU/PAYG क्रॉसओवर हमें क्या बता सकता है, और उसे क्या दावा नहीं करना चाहिए?</p></section>
       <section class="summary-tile"><h2>साक्ष्य</h2><p>दो dated pricing snapshots — <code>pricing/azure-openai-payg-2026-05.yaml</code> और <code>pricing/azure-openai-ptu-2026-05.yaml</code> — को benchmark-01, -02, और -03 की measured per-request लागत और token-shape throughput factor के साथ जोड़ने वाली break-even calculation। इसका output crossover chart data में <code>modeled_break_even_rpm</code> series है, measured throughput नहीं।</p></section>
-      <section class="summary-tile"><h2>निष्कर्ष</h2><p>इस pricing snapshot पर modeled break-even वहीं आता है जहाँ per-request बिल और token shape उसे ले जाते हैं: benchmark-01 extra-high करीब 2,748 rpm, benchmark-02 none करीब 2,680 rpm, benchmark-03 low करीब 564 rpm — और यह सब $2.00/PTU-hour वाले 50 PTU floor के हिसाब से scale होता है। ये calculated figures हैं जो pricing snapshot और token-per-request mix बदलने पर बदल जाते हैं; ये measured saturation points नहीं हैं।</p></section>
+      <section class="summary-tile"><h2>निष्कर्ष</h2><p>इस pricing snapshot पर modeled break-even वहीं आता है जहाँ per-request बिल और token shape उसे ले जाते हैं: benchmark-01 xhigh करीब 2,748 rpm, benchmark-02 none करीब 2,680 rpm, benchmark-03 low करीब 564 rpm — और यह सब $2.00/PTU-hour वाले 50 PTU floor के हिसाब से scale होता है। ये calculated figures हैं जो pricing snapshot और token-per-request mix बदलने पर बदल जाते हैं; ये measured points जहाँ curve और नहीं बढ़ता नहीं हैं।</p></section>
       <section class="summary-tile"><h2>फ़ैसला</h2><p>क्रॉसओवर को planning line की तरह पढ़ें, जो टीम को बताती है कि इस workload shape पर capacity experiment कब चलाना चाहिए — इसे इस बात का फ़ैसला न मानें कि किसी setup को PTU चाहिए। pricing, token mix, या region बदलते ही इसे फिर से निकालें।</p></section>
     </div>
 
@@ -98,7 +98,7 @@
 
     <section id="s1" class="article-section">
       <h2>मॉडल किस सीमित सवाल का जवाब देता है</h2>
-      <p>यह crossover calculation mean प्रति-request लागत, token-shape throughput factor, public pricing snapshot, और 50 PTU floor को जोड़ती है। इसका output modeled break-even RPM होता है। उदाहरण के लिए benchmark-01 extra-high effort करीब 2,748 rpm पर आता है, benchmark-02 none करीब 2,680 rpm पर, और benchmark-03 low करीब 564 rpm पर।</p><p>ये संख्याएँ इसलिए काम की हैं क्योंकि ये दिखाती हैं कि workload shape planning की बातचीत को कैसे बदल देता है। लेकिन ये live-load measurements नहीं हैं। ये नहीं बतातीं कि 429 कहाँ शुरू होगा, saturation के पास cache कैसे behave करेगा, या कोई खास serving setup p95 latency पर क्या करेगा।</p>
+      <p>यह crossover calculation mean प्रति-request लागत, token-shape throughput factor, public pricing snapshot, और 50 PTU floor को जोड़ती है। इसका output modeled break-even RPM होता है। उदाहरण के लिए benchmark-01 xhigh effort करीब 2,748 rpm पर आता है, benchmark-02 none करीब 2,680 rpm पर, और benchmark-03 low करीब 564 rpm पर।</p><p>ये संख्याएँ इसलिए काम की हैं क्योंकि ये दिखाती हैं कि workload shape planning की बातचीत को कैसे बदल देता है। लेकिन ये live-load measurements नहीं हैं। ये नहीं बतातीं कि 429 कहाँ शुरू होगा, जहाँ curve और नहीं बढ़ता के पास cache कैसे behave करेगा, या कोई खास serving setup p95 latency पर क्या करेगा।</p>
     </section>
     <section id="s2" class="article-section">
       <h2>चार्ट को कैसे पढ़ें</h2>
@@ -106,7 +106,7 @@
     </section>
     <section id="s3" class="article-section">
       <h2>यह भेद क्यों ज़रूरी है</h2>
-      <p>यह भेद साफ़ न रहे तो crossover chart को वादे की तरह ग़लत पढ़ा जा सकता है। 564 rpm crossover वाली row को देखकर “इसे PTU चाहिए” कहना आसान है, और 2,700 rpm वाली row को देखकर “इसे PTU नहीं चाहिए” भी। लेकिन साक्ष्य इससे ज़्यादा सावधान है। चार्ट सिर्फ़ इतना बताता है कि modeled assumptions के तहत economics कैसा दिखता है। live system के लिए फिर भी latency, cache, retry, और saturation का अलग evidence चाहिए।</p><p>यह सावधानी कमज़ोरी नहीं है। यही बात चार्ट को उपयोगी बनाती है: यह टीम को बताता है कि capacity experiment कब चलाना है, यह नहीं कि उस experiment में क्या निकलेगा।</p>
+      <p>यह भेद साफ़ न रहे तो crossover chart को वादे की तरह ग़लत पढ़ा जा सकता है। 564 rpm crossover वाली row को देखकर “इसे PTU चाहिए” कहना आसान है, और 2,700 rpm वाली row को देखकर “इसे PTU नहीं चाहिए” भी। लेकिन साक्ष्य इससे ज़्यादा सावधान है। चार्ट सिर्फ़ इतना बताता है कि modeled assumptions के तहत economics कैसा दिखता है। live system के लिए फिर भी latency, cache, retry, और जहाँ curve और नहीं बढ़ता का अलग evidence चाहिए।</p><p>यह सावधानी कमज़ोरी नहीं है। यही बात चार्ट को उपयोगी बनाती है: यह टीम को बताता है कि capacity experiment कब चलाना है, यह नहीं कि उस experiment में क्या निकलेगा।</p>
     </section>
     <section id="s4" class="article-section">
       <h2>इसका मतलब क्या है</h2>
@@ -119,9 +119,9 @@
         <caption>चुने हुए crossover उदाहरण</caption>
         <thead><tr><th>साक्ष्य-पंक्ति</th><th>माप A</th><th>माप B</th><th>यह क्या जोड़ती है</th></tr></thead>
         <tbody>
-          <tr><td>benchmark-01 extra-high</td><td>Modeled 2,748 rpm</td><td>50 PTU floor</td><td>Late crossover: short-factual extra-high effort पर भी सस्ता रहता है।</td></tr>
+          <tr><td>benchmark-01 xhigh</td><td>Modeled 2,748 rpm</td><td>50 PTU floor</td><td>देर से crossover: short-factual xhigh effort पर भी सस्ता रहता है।</td></tr>
 <tr><td>benchmark-02 none</td><td>Modeled 2,680 rpm</td><td>50 PTU floor</td><td>Measured per-request लागत कम है, इसलिए crossover देर से आता है।</td></tr>
-<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>Early crossover: tool-agent के बड़े token shape से हर request महँगी हो जाती है।</td></tr>
+<tr><td>benchmark-03 low</td><td>Modeled 564 rpm</td><td>50 PTU floor</td><td>जल्दी crossover: tool-agent के बड़े token shape से हर request महँगी हो जाती है।</td></tr>
 <tr><td>साक्ष्य की सीमा</td><td>Modeled economics</td><td>live capacity नहीं</td><td>इसका उपयोग यह तय करने के लिए करें कि अगला test क्या होना चाहिए।</td></tr>
         </tbody>
       </table>
@@ -135,14 +135,14 @@
         रखकर निकाला गया है। नीचे के दो tier यह दिखाते हैं कि documented inputs कहाँ
         खत्म होते हैं और modeled output कहाँ शुरू होता है। 50 PTU floor पर 2,748 rpm
         crossover साधारण arithmetic से निकला है — यह measured throughput, 429 onset,
-        या saturation point नहीं है।
+        या point where the curve stops rising नहीं है।
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर combination पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate डेटा का मापा गया यह हिस्सा। per-request लागत inputs इसी frozen stance को मानते हैं; error bars standard deviation हैं, confidence intervals नहीं, और N = 20 पर किसी p-value का दावा नहीं किया गया है।</li>
         <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> यह repository, <code>pricing/azure-openai-payg-2026-05.yaml</code> — Azure OpenAI के सार्वजनिक pricing page का 2026-05-19 पर लिया गया frozen snapshot। यहाँ दिए गए per-1M-token rates (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output और reasoning $14.00/1M, gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) वही per-request बिल तय करते हैं जो formula में जाता है।</li>
         <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> यह repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a> (2026-05-19 को लिया गया, रीजन eastus2) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। formula का PTU पक्ष — $2.00 प्रति-PTU-घंटा, 50 PTU minimum (floor), और throughput factor के लिए इस्तेमाल होने वाला प्रति-PTU Input TPM (gpt-4o 2,500, gpt-5.2 3,400) — इसी snapshot से आता है। break-even में PAYG और PTU दोनों के दाम शामिल हैं: एक तरफ़ per-request PAYG बिल, दूसरी तरफ़ fixed $100/hour PTU floor (50 × $2.00)।</li>
         <li>[4] <strong>Tier 2 — measured per-request inputs:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, <code>benchmarks/03-tool-using-agent/analysis.json</code>। ये mean प्रति-request लागत और हर combination का token-per-request distribution देते हैं, जो gpt-4o baseline के मुकाबले throughput-gain factor में बदलता है।</li>
-        <li>[5] <strong>Tier 2 — modeled crossover output (measurement नहीं, calculation):</strong> यह repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>। चार्ट में दिखने वाली <code>modeled_break_even_rpm</code> series <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> से निकाली जाती है। benchmark-01 extra-high का 2,748 rpm, 50 PTU floor, और $2.00 PTU-hour rate — ये सब calculated या quoted inputs हैं; इन्हें MODELED के रूप में लेबल किया गया है, measured throughput के रूप में नहीं।</li>
+        <li>[5] <strong>Tier 2 — modeled crossover output (measurement नहीं, calculation):</strong> यह repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>। चार्ट में दिखने वाली <code>modeled_break_even_rpm</code> series <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code> से निकाली जाती है। benchmark-01 xhigh का 2,748 rpm, 50 PTU floor, और $2.00 PTU-hour rate — ये सब calculated या quoted inputs हैं; इन्हें MODELED के रूप में लेबल किया गया है, measured throughput के रूप में नहीं।</li>
         <li>[6] <strong>Evidence dashboard:</strong> रेंडर किया गया <a href="../../../../../charts/?lang=hi#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a> इन्हीं JSON artifacts का auditable रूप है।</li>
       </ul>
       <p>
