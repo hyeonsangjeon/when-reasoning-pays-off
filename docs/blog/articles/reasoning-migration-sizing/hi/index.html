@@ -46,10 +46,10 @@
     <p class="lede">
       एक टीम <code>gpt-4o</code> ट्रैफ़िक को GPT-5.x reasoning model पर ले जाना चाहती है
       और नई तैनाती के लिए PTU संख्या निकालनी है। पहली प्रतिक्रिया यही होती है कि जो
-      पहले काम कर रहा था, उसी को आगे बढ़ा दिया जाए — या तो पुराना <code>gpt-4o</code>
+      पहले काम कर रहा था, उसी को आगे बढ़ा दिया जाए: या तो पुराना <code>gpt-4o</code>
       PTU size जस का तस रख दें, या उस पर पूरे "5.x" परिवार का कोई multiplier लगा दें।
       यानी मान लिया जाता है कि model name ही resize करने के लिए काफ़ी है। लेकिन PTU
-      sizing model name से नहीं, token shape से तय होती है — prompt size, दिखने वाला
+      sizing model name से नहीं, token shape से तय होती है। prompt size, दिखने वाला
       output, छिपे reasoning tokens, cache hit rate, और response ceiling सब मिलकर
       नतीजा बदलते हैं। इसलिए असली संचालन-सवाल यह है: क्या सिर्फ़ model name काफ़ी है,
       या पहले request shape को दोबारा मापना पड़ेगा?
@@ -61,7 +61,7 @@
         modeled arithmetic है: recommended PTU = ceil(माँग &divide; density &divide;
         target&nbsp;utilization). बहुत ऊँची response ceiling (<code>max_output_tokens</code>)
         को यह repository documented platform behavior नहीं मानती, बल्कि जाँचने लायक
-        admission-risk hypothesis मानती है — यानी यह देखना होगा कि कहीं वही workload के
+        admission-risk hypothesis मानती है। यानी यह देखना होगा कि कहीं वही workload के
         reserve किए गए PTU पर हावी तो नहीं हो रही। यह one-pager इसी एक बात को साफ़ करता
         है और दायरा भी स्पष्ट रखता है: यह pinned pricing snapshots के साथ modeled
         workload पर बनाया गया synthetic worked example है, measured capacity नहीं।
@@ -83,25 +83,25 @@
         output-side tokens के रूप में document करता है जो
         <code>output_tokens_details.reasoning_tokens</code> में report होते हैं। दूसरी चीज़,
         इस repository का illustrative worked calculation है, जो उसी documented formula को
-        एक example call shape पर चलाकर size को बदलने वाले factors को साथ-साथ रखता है —
+        एक example call shape पर चलाकर size को बदलने वाले factors को साथ-साथ रखता है।
         यह किसी तैनाती का measurement नहीं है।
       </p>
       <p>
         यही साथ रखकर देखना सबसे अहम है। अगर आप सिर्फ़ visible output देखें, तो migration
-        संभालने लायक लग सकता है — वही prompt और वही visible answer नए model पर लगभग उसी
+        संभालने लायक लग सकता है: वही prompt और वही visible answer नए model पर लगभग उसी
         level पर, या थोड़ा हल्का भी, size हो सकता है। लेकिन visible answer पूरी request
         नहीं है। जैसे ही hidden reasoning output जुड़ता है, वही answer बहुत ज़्यादा
-        normalized TPM माँग सकता है। और इस repository की working hypothesis — documented
-        platform behavior नहीं, बल्कि test करने लायक admission risk — यह है कि बहुत बड़ा
+        normalized TPM माँग सकता है। और इस repository की working hypothesis documented
+        platform behavior नहीं, बल्कि test करने लायक admission risk है कि बहुत बड़ा
         <code>max_output_tokens</code> ceiling, चाहे वे tokens बने या न बनें, admission
         weight reserve कर सकता है। इसलिए असली सवाल “क्या नया model भारी है?” नहीं, बल्कि
-        “मापी गई request shape — visible output, reasoning output, cache rate, और response
-        ceiling — वास्तव में कितना reserve करती है?” है। normalized-TPM formula,
+        “मापी गई request shape, यानी visible output, reasoning output, cache rate, और response
+        ceiling, वास्तव में कितना reserve करती है?” है। normalized-TPM formula,
         per-model table, cache deduction, और reasoning-token accounting Microsoft Learn और
         OpenAI document करते हैं। बहुत बड़ा <code>max_output_tokens</code> PTU admission
-        risk हो सकता है — यह इस repository का operational inference है। नीचे दिया गया
+        risk हो सकता है। यह इस repository का operational inference है। नीचे दिया गया
         chart modeled workload पर pinned pricing snapshots के साथ एक synthetic worked
-        example है — यह measured capacity, live PTU throughput, या SLA नहीं है। नीचे का
+        example है। यह measured capacity, live PTU throughput, या SLA नहीं है। नीचे का
         chart size को प्रभावित करने वाले factors साफ़ दिखाता है।
       </p>
     </section>
@@ -139,7 +139,7 @@
 
     <section id="formula" class="article-section">
       <p class="section-label">आधिकारिक व्यवहार · normalized TPM</p>
-      <h2>साइज़िंग का सूत्र token shape पर टिका है</h2>
+      <h2>साइज़िंग का सूत्र token shape देखता है</h2>
       <p>
         Microsoft Learn traffic को normalized TPM में बदलकर PTU demand निकालता है।
         इनपुट हैं: peak RPM, average prompt tokens, average generated output tokens,
@@ -163,7 +163,7 @@
 
     <section id="drivers" class="article-section">
       <p class="section-label">ऑपरेशनल नज़रिया · migration में क्या बदलता है</p>
-      <h2>migration फिट होगा या नहीं, यह 4 चीज़ें तय करती हैं</h2>
+      <h2>migration फिट होगा या नहीं, 4 चीज़ें तय करती हैं</h2>
       <div class="evidence-grid">
         <div>
           <h3>1. output weighting</h3>
