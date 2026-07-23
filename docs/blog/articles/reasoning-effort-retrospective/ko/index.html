@@ -52,6 +52,14 @@
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
     <p class="lede">우리는 다단계 추론에서라면 높은 추론 강도(<code>reasoning_effort</code>)가 값을 할 거라고 <strong>사전 등록</strong>했다. 세 벤치마크에 걸쳐 1,080개 셀을 측정한 결과는 그 예측을 <strong>뒤집었다</strong>. 단답이든 다단계든 툴 에이전트든, 정답은 한 번도 <code>high</code>나 <code>xhigh</code>가 아니었다. 강도를 중간 위로 올리면 품질은 그대로인데 비용만 오르고 처리량만 떨어졌다. 이 글은 그 과정을 이야기하듯 되짚는 회고다. &ldquo;무엇을 예상했고, 무엇이 어긋났고, 그래서 무엇을 기본값으로 정했는가&rdquo;를 <strong>시간순(타임라인)</strong>과 <strong>질문순(질문별 회고)</strong>으로 짚는다. 결론만이 아니라 <em>지나온 길</em>까지 남긴다. 그리고 맨 아래가 아니라 <em>바로 지금</em>, 명령어 한 줄로 직접 재현할 수 있다.</p>
 
+    <section class="article-section">
+      <p class="section-label">왜 읽어야 하나</p>
+      <h2>그 손잡이, 언제 올려야 할까?</h2>
+      <p>요즘 모델에는 <strong>추론 강도(reasoning effort)</strong>라는 손잡이가 있다. 답을 내기 전에 모델이 속으로 얼마나 더 곱씹을지 정하는 값이다. 올릴수록 더 똑똑해질 것 같아서, 잘 모를 땐 일단 높여 두기 쉽다. 하지만 손잡이를 올리면 답이 좋아지든 아니든 <strong>돈과 시간은 확실히 더 든다.</strong> 그러니 &lsquo;일단 올려 두자&rsquo;라는 습관은 매달 청구서만 키울 수도 있다.</p>
+      <p>이 회고는 그 손잡이가 <strong>언제 값을 하고 언제 낭비인지</strong>를, 짐작이 아니라 실측으로 가른다. 작업을 성격에 따라 셋으로 나눠 다뤘다 &mdash; 한 번에 끝나는 <strong>단답</strong>, 여러 단계를 밟는 <strong>다단계</strong>, 도구를 부르는 <strong>툴 에이전트</strong>. 당신의 서비스가 하는 일도 대개 이 셋 중 하나에 든다.</p>
+      <p>모델과 강도를 골라 서비스에 올려야 하는 사람이라면, 여기서 <strong>기본값을 정하는 법</strong>을 가져갈 수 있다. 방법은 간단하다 &mdash; 먼저 품질 <strong>합격선</strong>을 정하고, 그 선을 넘긴 설정 중 가장 싸고 빠른 걸 고른다. 그 규칙이 세 실험에서 어떻게 같은 결론으로 모였는지, 예측과 반전을 따라가며 아래에서 하나씩 보여 준다.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저: 10초 재현</p>
       <h2>결론을 믿지 말고, 직접 돌려보세요</h2>

@@ -51,6 +51,14 @@
     <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
     <p class="lede">We <strong>pre-registered</strong> a prediction: for multi-step reasoning, a higher reasoning effort (<code>reasoning_effort</code>) would pay off. Measuring 1,080 cells across three benchmarks <strong>overturned</strong> that prediction. Short-factual, multi-step, or tool agent &mdash; the answer was never <code>high</code> or <code>xhigh</code>. Raise the effort above the middle and quality holds flat while cost rises and throughput drops. This retrospective retraces that path as a story. It follows &ldquo;what we expected, what broke, and what we therefore chose as the default&rdquo; both <strong>in time order (a timeline)</strong> and <strong>by question (a per-question retrospective)</strong>. It keeps not only the conclusions but <em>the road we walked</em>. And you can reproduce it yourself, <em>right now</em> rather than at the very bottom, with a single command.</p>
 
+    <section class="article-section">
+      <p class="section-label">Why read this</p>
+      <h2>That dial &mdash; when should you turn it up?</h2>
+      <p>Modern models come with a dial called <strong>reasoning effort</strong> &mdash; how much the model mulls things over before it answers. Turning it up feels like it should make the model smarter, so when you&rsquo;re unsure it&rsquo;s tempting to just crank it. But raising the dial <strong>reliably costs more money and time</strong> whether or not the answer improves. So the habit of &ldquo;just turn it up&rdquo; can quietly inflate the monthly bill.</p>
+      <p>This retrospective settles <strong>when that dial pays off and when it&rsquo;s waste</strong> &mdash; by measurement, not by guessing. We split the work into three shapes by character: <strong>short-factual</strong> that finishes in one shot, <strong>multi-step</strong> that walks through stages, and a <strong>tool agent</strong> that calls out to tools. Whatever your service does, it likely falls into one of these three.</p>
+      <p>If you have to pick a model and an effort level for production, you can take away <strong>how to set the default</strong>. The method is simple &mdash; set a quality <strong>passing bar</strong> first, then among the configs that clear it, pick the cheapest and fastest. Below, following each prediction and reversal, we show how all three experiments converged on the same conclusion.</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">First: reproduce in 10 seconds</p>
       <h2>Don&rsquo;t trust the conclusion &mdash; run it yourself</h2>

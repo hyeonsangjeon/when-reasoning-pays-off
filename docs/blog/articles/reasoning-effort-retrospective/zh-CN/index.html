@@ -48,6 +48,14 @@
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
     <p class="lede">我们曾<strong>预先登记</strong>一个预测：在多步推理中，更高的推理强度(<code>reasoning_effort</code>)会值得付出。跨三个基准测量 1,080 个单元后，结果<strong>推翻</strong>了这个预测。无论是短事实、多步，还是工具智能体，答案一次也不是 <code>high</code> 或 <code>xhigh</code>。把强度提到中档以上，质量保持不变，成本上升，吞吐下降。本文像讲故事一样回看这段路。它沿着&ldquo;曾经预期什么，哪里出了偏差，因此把什么设为默认值&rdquo;，既按<strong>时间顺序(时间线)</strong>，也按<strong>问题顺序(逐问题回顾)</strong>重走一遍。这里不只留下结论，也留下<em>我们走过的路</em>。而且不是到文末才说，你可以<em>现在就</em>用一行命令自己复现。</p>
 
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>那个旋钮，什么时候该调高？</h2>
+      <p>如今的模型里，常有一个叫 <strong>推理强度</strong> 的旋钮，用来决定模型给出答案前，先在心里多想多久。调高后好像会更聪明，所以拿不准时，很容易先设高一点。但只要调高旋钮，不管答案有没有变好，<strong>钱和时间都会实打实多花。</strong> 所以&ldquo;先调高再说&rdquo;这个习惯，可能只会把每月的账单越推越高。</p>
+      <p>这篇回顾要用实测、而不是猜测，来分清这个旋钮 <strong>什么时候值回成本、什么时候只是浪费。</strong> 我们按性质把工作分成三类 &mdash; 一次到位的 <strong>短事实</strong>、要走好几步的 <strong>多步</strong>、以及会调用工具的 <strong>工具智能体</strong>。你的服务在做的事，大多也落在这三类里。</p>
+      <p>如果你要为生产环境挑一个模型和强度，这里能带走 <strong>怎么定默认值</strong> 的办法。办法很简单 &mdash; 先定一条质量 <strong>门槛</strong>，再在越过这条线的配置里，挑最便宜也最快的。这条规则如何在三场实验里汇成同一个结论，下面会顺着预测和反转，一个一个讲给你看。</p>
+    </section>
+
     <section id="reproduce" class="article-section">
       <p class="section-label">先来：10 秒复现</p>
       <h2>不要相信结论，自己跑一遍</h2>
