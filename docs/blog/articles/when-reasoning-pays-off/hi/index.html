@@ -8,7 +8,7 @@
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="feb4f8ca7c29113653172dee266d6e55fb428d68548d9a0a591e19e0b53ce4fe">
+  <meta name="article:source-article-sha256" content="e1d8ffe50bd0d8a7268c5ca5abf6702688cf4030acb4abf0d1416a252d6baa59">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -143,7 +143,7 @@
       <p>
         इस लेख के छोटे bar-figures पूरे source charts तक पहुँचने के संकेत हैं। ये
         frequency histogram नहीं हैं। हर bar एक effort configuration का aggregate
-        measurement है: baseline, minimal, low, medium, high, या extra-high।
+        measurement है: baseline, minimal, low, medium, high, या xhigh।
       </p>
       <div class="evidence-grid">
         <div><h3>X-अक्ष</h3><p>X-अक्ष operator के effort के स्तर दिखाता है। बाएँ से दाएँ जाने का मतलब है मॉडल को ज़्यादा internal reasoning करने देना।</p></div>
@@ -194,7 +194,7 @@
           <h3>इसका अर्थ</h3>
           <p>
             छोटे factual slice में none effort का औसत प्रति-request $0.000587 रहा
-            और extra-high $0.000598: एक flat 1.02x span, दोनों gpt-4o baseline
+            और xhigh $0.000598: एक flat 1.02x span, दोनों gpt-4o baseline
             $0.000665 से नीचे। mean judge score baseline के 1.90 पर या उससे ऊपर, क़रीब 1.95 पर टिका रहा।
           </p>
         </div>
@@ -405,7 +405,7 @@
         <div>
           <h3>इसका अर्थ</h3>
           <p>
-            छोटे factual extra-high row में PTU/PAYG crossover 50 PTU floor पर
+            छोटे factual xhigh row में PTU/PAYG crossover 50 PTU floor पर
             क़रीब 2748 rpm का एक modeled hypothesis है। यह measured PTU throughput नहीं है।
           </p>
         </div>
@@ -475,10 +475,10 @@
         <li>[1] <strong>Tier 1: methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate case। chart-reading prose इसी fixed stance को मानता है और N = 20 पर p-value का दावा नहीं करता।</li>
         <li>[2] <strong>Tier 1: PAYG pricing snapshot:</strong> PAYG cost claims (प्रति-request औसत USD) इस repository की <code>pricing/azure-openai-payg-2026-05.yaml</code> के आधार पर निकाले गए हैं। यह 2026-05-19 को लिया गया snapshot है। list pricing बदलने पर ratios भी बदलेंगे।</li>
         <li>[3] <strong>Tier 1: PTU pricing snapshot:</strong> PTU modeled crossover और 50 PTU floor इस repository की <code>pricing/azure-openai-ptu-2026-05.yaml</code> से आते हैं। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn: provisioned throughput onboarding</a> (2026-05-19 को लिया गया), <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">आर्काइव</a>। PTU hourly rate या PAYG per-token price बदलने पर crossover भी बदलता है।</li>
-        <li>[4] <strong>Tier 2: short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000587 (none) से $0.000598 (extra-high) तक essentially flat per-request cost का स्रोत, दोनों gpt-4o baseline $0.000665 से नीचे; gpt-4o 1.9 बनाम gpt-5.2 none 1.95 के mean judge score का स्रोत; और 0.0 (none) से 1.35 (high) तक near-zero reasoning tokens का स्रोत।</li>
+        <li>[4] <strong>Tier 2: short-factual case measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। $0.000587 (none) से $0.000598 (xhigh) तक essentially flat per-request cost का स्रोत, दोनों gpt-4o baseline $0.000665 से नीचे; gpt-4o 1.9 बनाम gpt-5.2 none 1.95 के mean judge score का स्रोत; और 0.0 (none) से 1.35 (high) तक near-zero reasoning tokens का स्रोत।</li>
         <li>[5] <strong>Tier 2: multi-step case measurement:</strong> यह repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>। 1.5 non-reasoning baseline और प्रति-request $0.00125 पर 2.0 high-effort judge score का स्रोत।</li>
         <li>[6] <strong>Tier 2: tool-agent case measurement:</strong> यह repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>। tool-agent section में बताए गए ceiling-effect quality bars का स्रोत।</li>
-        <li>[7] <strong>Tier 2: modeled crossover:</strong> short-factual extra-high row के लिए 50 PTU floor पर क़रीब 2748 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
+        <li>[7] <strong>Tier 2: modeled crossover:</strong> short-factual xhigh row के लिए 50 PTU floor पर क़रीब 2748 rpm, measured token shape के ऊपर की planning calculation है; यह measured PTU throughput result नहीं है। इसे capacity evidence नहीं, sizing guidance की तरह पढ़ें।</li>
         <li>[8] <strong>Evidence dashboard:</strong> <a href="../../../charts/?lang=hi">evidence dashboard</a> की per-essay tables और rendered source charts उन्हीं artifacts का auditable रूप हैं।</li>
       </ul>
       <p>

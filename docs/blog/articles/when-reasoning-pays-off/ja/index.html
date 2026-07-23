@@ -8,7 +8,7 @@
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="feb4f8ca7c29113653172dee266d6e55fb428d68548d9a0a591e19e0b53ce4fe">
+  <meta name="article:source-article-sha256" content="e1d8ffe50bd0d8a7268c5ca5abf6702688cf4030acb4abf0d1416a252d6baa59">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -117,7 +117,7 @@
       <h2>この記事のチャートの読み方</h2>
       <p>
         この記事の小さな棒グラフは、完全な元チャートを読むための道しるべである。
-        頻度分布のヒストグラムではない。各棒は、baseline・minimal・low・medium・high・extra-high という各強度設定の集計値である。
+        頻度分布のヒストグラムではない。各棒は、baseline・minimal・low・medium・high・xhigh という各強度設定の集計値である。
       </p>
       <div class="evidence-grid">
         <div><h3>X軸</h3><p>X軸は運用者が変えられる推論強度の段階である。左から右に進むほど、モデルにより多くの内部推論作業を許す。</p></div>
@@ -166,7 +166,7 @@
         <div>
           <h3>何を意味するのか</h3>
           <p>
-            短い事実回答の測定区間では、なし強度でリクエストあたり平均 $0.000587、extra-high で $0.000598 でした。
+            短い事実回答の測定区間では、なし強度でリクエストあたり平均 $0.000587、xhigh で $0.000598 でした。
             これは横ばいの 1.02x 幅で、どちらも gpt-4o ベースラインの $0.000665 を下回る。
             平均審判スコアは 1.95 前後で、ベースラインの 1.90 以上を保ちました。
           </p>
@@ -365,7 +365,7 @@
         <div>
           <h3>何を意味するのか</h3>
           <p>
-            短い事実回答の extra-high 行では、PTU/PAYG の交点は 50 PTU の下限を置いた約 2748 rpm のモデル化された仮説である。
+            短い事実回答の xhigh 行では、PTU/PAYG の交点は 50 PTU の下限を置いた約 2748 rpm のモデル化された仮説である。
             測定された PTU スループットではありません。
           </p>
         </div>
@@ -427,10 +427,10 @@
         <li>[1] <strong>Tier 1：方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。強度設定あたり N = 20 のサンプル、R = 3 回の反復、公開集計の測定区間のみ。チャート読解の本文はこの固定された前提に立っており、N = 20 で p 値は主張しません。</li>
         <li>[2] <strong>Tier 1：PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定する。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）、 <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比率も変わる。</li>
         <li>[3] <strong>Tier 1：PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> による。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 アクセス）、 <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動する。</li>
-        <li>[4] <strong>Tier 2：短い事実回答の区間測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000587（なし）から $0.000598（extra-high）までの実質的に横ばいのリクエストあたりコスト、どちらも gpt-4o ベースラインの $0.000665 を下回ること、gpt-4o 1.9 に対する gpt-5.2 なし 1.95 の平均審判スコア、そして 0.0（なし）から 1.35（high）までのゼロ近辺の推論トークンの出典である。</li>
+        <li>[4] <strong>Tier 2：短い事実回答の区間測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000587（なし）から $0.000598（xhigh）までの実質的に横ばいのリクエストあたりコスト、どちらも gpt-4o ベースラインの $0.000665 を下回ること、gpt-4o 1.9 に対する gpt-5.2 なし 1.95 の平均審判スコア、そして 0.0（なし）から 1.35（high）までのゼロ近辺の推論トークンの出典である。</li>
         <li>[5] <strong>Tier 2：多段の区間測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高強度審判スコア 2.0 の出典である。</li>
         <li>[6] <strong>Tier 2：ツールエージェントの区間測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典である。</li>
-        <li>[7] <strong>Tier 2：モデル化されたクロスオーバー：</strong> 短い事実回答の extra-high 行の 50 PTU 下限における約 2748 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読む必要がある。</li>
+        <li>[7] <strong>Tier 2：モデル化されたクロスオーバー：</strong> 短い事実回答の xhigh 行の 50 PTU 下限における約 2748 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読む必要がある。</li>
         <li>[8] <strong>根拠ダッシュボード：</strong> <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じ成果物を監査できる形である。</li>
       </ul>
       <p>

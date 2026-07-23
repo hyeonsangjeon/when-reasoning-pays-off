@@ -196,7 +196,7 @@
         The small bar figures in this essay are guideposts for the full source
         charts. They are not frequency histograms. Each bar is an aggregate
         measurement for one effort cell: baseline, none, low, medium, high,
-        or extra-high.
+        or xhigh.
       </p>
       <div class="evidence-grid">
         <div>
@@ -257,13 +257,13 @@
         <figcaption>
           <strong>Source chart: short-factual cost per request (benchmark&nbsp;01).</strong>
           <strong>X-axis:</strong> the model and effort ladder: the gpt-4o baseline,
-          then gpt-5.2 at none, low, medium, high, and extra-high effort.
+          then gpt-5.2 at none, low, medium, high, and xhigh effort.
           <strong>Y-axis:</strong> mean pay-as-you-go USD per request.
           <strong>Bars:</strong> each bar is the mean cost of one effort cell; there is
           no line series, and the vertical whiskers show &plusmn;1 standard deviation
           across the repeated measurements.
           <strong>How to read it:</strong> cost stays essentially flat: about
-          $0.000587 at none effort and $0.000598 at extra-high, with every gpt-5.2 tier
+          $0.000587 at none effort and $0.000598 at xhigh, with every gpt-5.2 tier
           landing below the gpt-4o baseline of $0.000665, while the paired
           judge score holds around 1.95, at or above the baseline's 1.90, so climbing
           the ladder buys neither a lower bill nor a better answer.
@@ -277,7 +277,7 @@
           <a href="../../charts/?lang=en">evidence dashboard</a>
           (<a href="../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder: the gpt-4o baseline and gpt-5.2 none through extra-high, every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder: the gpt-4o baseline and gpt-5.2 none through xhigh, every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <div class="chart-reading-note">
         <h3>Reading this bar chart</h3>
@@ -301,7 +301,7 @@
           <h3>What it means</h3>
           <p>
             In the short-factual slice, none effort averaged $0.000587
-            per request and extra-high $0.000598, a flat 1.02x span that
+            per request and xhigh $0.000598, a flat 1.02x span that
             stays below the gpt-4o baseline of $0.000665, while the mean
             judge score held around 1.95, at or above the baseline's 1.90.
           </p>
@@ -600,7 +600,7 @@
         <li>[4] <strong>Tier 2: short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat $0.000587-to-$0.000598 gpt-5.2 cost band (every tier below the $0.000665 gpt-4o baseline, a 1.02x span), the ~1.95 mean judge score that matches or beats the 1.90 baseline, and the near-zero reasoning-token counts (0 at none, about 1.35 at high) across the effort ladder.</li>
         <li>[5] <strong>Tier 2: multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
         <li>[6] <strong>Tier 2: tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>
-        <li>[7] <strong>Tier 2: modeled crossover:</strong> 2748 rpm with a 50 PTU floor for the short-factual extra-high row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
+        <li>[7] <strong>Tier 2: modeled crossover:</strong> 2748 rpm with a 50 PTU floor for the short-factual xhigh row is a planning calculation on top of the measured token shape, not a measured PTU throughput result. Read as sizing guidance, not capacity evidence.</li>
         <li>[8] <strong>Evidence dashboard:</strong> the per-essay tables and rendered source charts at the <a href="../../charts/?lang=en">evidence dashboard</a> are the auditable form of the same artifacts.</li>
       </ul>
       <p>

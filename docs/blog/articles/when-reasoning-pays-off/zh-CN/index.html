@@ -8,7 +8,7 @@
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
-  <meta name="article:source-article-sha256" content="feb4f8ca7c29113653172dee266d6e55fb428d68548d9a0a591e19e0b53ce4fe">
+  <meta name="article:source-article-sha256" content="e1d8ffe50bd0d8a7268c5ca5abf6702688cf4030acb4abf0d1416a252d6baa59">
   <link rel="stylesheet" href="../../../../assets/styles.css">
   <link rel="canonical" href="./">
   <link rel="alternate" hreflang="en" href="../">
@@ -119,7 +119,7 @@
       <p class="section-label">阅读约定：柱、坐标轴和表格</p>
       <h2>如何阅读本文中的图表</h2>
       <p>
-        本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 extra-high。
+        本文中的小柱状图是完整源图表的导读，不是频率分布直方图。每个柱子表示一个强度单元的聚合测量值：baseline、minimal、low、medium、high 或 xhigh。
       </p>
       <div class="evidence-grid">
         <div><h3>X轴</h3><p>X轴是运营者可以调节的推理强度等级。从左到右表示允许模型消耗更多内部推理工作。</p></div>
@@ -166,7 +166,7 @@
         <div>
           <h3>它意味着什么</h3>
           <p>
-            在短事实切片中，无推理强度的平均成本是每个请求 $0.000587，extra-high 是 $0.000598，跨度持平，仅为 1.02x，且二者都低于 gpt-4o 基线的 $0.000665。
+            在短事实切片中，无推理强度的平均成本是每个请求 $0.000587，xhigh 是 $0.000598，跨度持平，仅为 1.02x，且二者都低于 gpt-4o 基线的 $0.000665。
             平均评审分保持在约 1.95，达到或高于基线的 1.90。
           </p>
         </div>
@@ -361,7 +361,7 @@
         <div>
           <h3>它意味着什么</h3>
           <p>
-            对于短事实 extra-high 行，PTU/PAYG 交叉点是在 50 PTU 底线下得到的约 2748 rpm 建模假设。
+            对于短事实 xhigh 行，PTU/PAYG 交叉点是在 50 PTU 底线下得到的约 2748 rpm 建模假设。
             它不是实测 PTU 吞吐量。
           </p>
         </div>
@@ -423,10 +423,10 @@
         <li>[1] <strong>Tier 1：方法论契约：</strong>本仓库，<code>docs/05-methodology.md</code>（v1.0）。每个组合 N = 20 个人工编写样本、R = 3 次重复、仅取公开聚合结果。图表解读正文都立足于这组冻结前提，并不在 N = 20 下主张 p 值。</li>
         <li>[2] <strong>Tier 1：PAYG 定价快照：</strong>PAYG 成本主张（每个请求的平均 USD）按本仓库的 <code>pricing/azure-openai-payg-2026-05.yaml</code> 算出。来源：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 定价页</a>（2026-05-19 访问）、 <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">存档</a>。标价一动，倍率也随之变化。</li>
         <li>[3] <strong>Tier 1：PTU 定价快照：</strong>PTU 建模交叉点与 50 PTU 下限取自本仓库的 <code>pricing/azure-openai-ptu-2026-05.yaml</code>。来源：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn：预置吞吐量上手</a>（2026-05-19 访问）、 <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">存档</a>。只要 PTU 时价或 PAYG 每 token 价格变动，交叉点就会移动。</li>
-        <li>[4] <strong>Tier 2：短事实任务的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是每请求成本从 $0.000587（无）到 $0.000598（extra-high）基本持平、且二者都低于 gpt-4o 基线 $0.000665，gpt-4o 平均评审分 1.9 对 gpt-5.2 无推理强度 1.95，以及推理 token 从 0.0（无）到 1.35（high）接近零的来源。</li>
+        <li>[4] <strong>Tier 2：短事实任务的测量：</strong>本仓库，<code>benchmarks/01-short-factual/analysis.json</code>。它是每请求成本从 $0.000587（无）到 $0.000598（xhigh）基本持平、且二者都低于 gpt-4o 基线 $0.000665，gpt-4o 平均评审分 1.9 对 gpt-5.2 无推理强度 1.95，以及推理 token 从 0.0（无）到 1.35（high）接近零的来源。</li>
         <li>[5] <strong>Tier 2：多步任务的测量：</strong>本仓库，<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。它是非推理基线 1.5 分、以及每个请求 $0.00125 下高强度 2.0 分的来源。</li>
         <li>[6] <strong>Tier 2：工具代理任务的测量：</strong>本仓库，<code>benchmarks/03-tool-using-agent/analysis.json</code>。它是工具代理一节中所引天花板效应质量柱的来源。</li>
-        <li>[7] <strong>Tier 2：建模交叉点：</strong>短事实 extra-high 行在 50 PTU 下限下的约 2748 rpm，是叠在测得 token 形态之上的规划计算，而不是测得的 PTU 吞吐量结果。请把它当作容量规划指引来读，而不是容量证据。</li>
+        <li>[7] <strong>Tier 2：建模交叉点：</strong>短事实 xhigh 行在 50 PTU 下限下的约 2748 rpm，是叠在测得 token 形态之上的规划计算，而不是测得的 PTU 吞吐量结果。请把它当作容量规划指引来读，而不是容量证据。</li>
         <li>[8] <strong>证据仪表盘：</strong><a href="../../../charts/?lang=zh-CN">证据仪表盘</a>里逐篇的表与渲染后的源图，是审计同一批产物的可核查形态。</li>
       </ul>
       <p>
