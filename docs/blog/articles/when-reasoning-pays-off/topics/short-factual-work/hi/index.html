@@ -42,23 +42,15 @@
   <main class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">reasoning कब वसूल होता है</a> / विषय विवरण</p>
     <p class="article-kicker">विषय-लेख · benchmark-01 छोटे तथ्यात्मक काम</p>
-    <h1>छोटे तथ्यात्मक काम: जब ज़्यादा reasoning से गुणवत्ता नहीं बढ़ती, सिर्फ़ लागत बढ़ती है</h1>
+    <h1>छोटे तथ्यात्मक काम: जब ज़्यादा reasoning गुणवत्ता नहीं, सिर्फ़ लागत बढ़ाती है</h1>
     <p class="lede">
-      जब कोई टीम पहली बार reasoning model अपनाती है, तो छोटे तथ्यात्मक सवाल वह आसान
-      जगह लगते हैं जहाँ effort बढ़ाकर देखा जा सकता है। जवाब छोटा होता है, ग़लती जल्दी
-      पकड़ में आ जाती है, और थोड़ा ज़्यादा सोचने देना सस्ते बीमे जैसा लगता है। इसलिए
-      सबसे पहले reasoning effort बढ़ाने का मन करता है। लेकिन यह shipping policy नहीं,
-      जाँचने लायक़ hypothesis है — और यह लेख उसे डेटा के साथ परखता है।
+      जब कोई टीम पहली बार reasoning model अपनाती है, तो छोटे तथ्यात्मक सवाल effort की घुंडी घुमाने की सबसे सुरक्षित जगह लगते हैं। जवाब छोटा होता है, ग़लती जल्दी पकड़ में आती है, और “थोड़ा और सोचने दो” सस्ते बीमे जैसा सुनाई देता है। इसलिए सबसे पहले reasoning effort बढ़ाने का मन करता है। लेकिन यह shipping policy नहीं, जाँचने लायक़ hypothesis है; यह लेख उसे डेटा से परखता है।
     </p>
 
     <section class="article-section">
       <h2>इस सहज धारणा को क्यों जाँचा</h2>
       <p>
-        यह स्थिति परिचित है। migration के बाद टीम reasoning model पर आ जाती है,
-        configuration में reasoning effort बदलने का विकल्प दिखता है, और छोटे तथ्यात्मक
-        सवाल सबसे सुरक्षित केस लगते हैं। output छोटा है, ग़लती साफ़ दिखती है, और
-        "थोड़ा और सोचने दो" सस्ते बीमे जैसा सुनाई देता है — इसलिए डिफ़ॉल्ट भी यहीं
-        बढ़ाना लगभग मुफ़्त लगता है।
+        यह दृश्य जाना-पहचाना है। migration के बाद टीम reasoning model पर आती है, configuration में reasoning effort की घुंडी दिखती है, और छोटे तथ्यात्मक सवाल सबसे सुरक्षित case लगते हैं। output छोटा है, ग़लती साफ़ दिखती है, और “थोड़ा और सोचने दो” सस्ते बीमे जैसा सुनाई देता है; इसलिए default भी यहीं बढ़ाना लगभग मुफ़्त लगता है।
       </p>
       <p>
         इससे एक साफ़ hypothesis बनती है। छोटे तथ्यात्मक काम में, क्या ज़्यादा
@@ -69,7 +61,7 @@
       <p>
         इसलिए हमने इसे मापा। workload shape वही रखा — छोटे तथ्यात्मक काम का यही मापा
         गया हिस्सा — और effort के स्तरों को एक-एक करके देखा। हर स्तर पर प्रति-request
-        लागत, latency, दिखने वाला जवाब, छिपे reasoning tokens और judge score की
+        लागत, latency, दिखने वाला जवाब, छिपे reasoning tokens और जज स्कोर की
         तुलना की। इस केस में नतीजा इतना साफ़ था कि default बदलने की बात की जा सके:
         effort ने लागत, latency और hidden tokens खरीदे, लेकिन बेहतर जवाब नहीं खरीदा।
         नीचे का one-pager यही बात एक फ़्रेम में कहता है, और आगे के section मापा हुआ
@@ -81,12 +73,12 @@
       <figcaption>
         <strong>एक नज़र में यह विषय।</strong> छोटे तथ्यात्मक काम के इस मापे गए हिस्से में
         reasoning effort के स्तर बढ़ाने पर प्रति-request लागत लगभग सपाट रही, औसत
-        judge score 1.95 के आसपास रहा — और हर gpt-5.2 tier gpt-4o baseline से नीचे था।
+        जज स्कोर 1.95 के आसपास रहा — और हर gpt-5.2 tier gpt-4o baseline से नीचे था।
         यह one-pager वही संदेश देता है और evidence boundary भी दिखाता है। नीचे के section
         उसका मापा हुआ detail जोड़ते हैं।
         <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">छोटे तथ्यात्मक काम का one-pager SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का one-pager। none से extra-high तक reasoning effort के स्तर बढ़ने पर प्रति-request लागत लगभग सपाट रहती है, हर gpt-5.2 tier gpt-4o baseline से नीचे रहता है, और judge quality 1.95 के आसपास रहती है। मुख्य संदेश: छोटे तथ्यात्मक काम में effort ladder चढ़ने पर cost और quality flat रहीं और gpt-5.2 पहले से gpt-4o baseline से मेल खा रहा था। यह N=20, R=3 का मापा गया aggregate है, और cost per request के रूप में दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का one-pager। none से xhigh तक reasoning effort के स्तर बढ़ने पर प्रति-request लागत लगभग सपाट रहती है, हर gpt-5.2 tier gpt-4o baseline से नीचे रहता है, और judge quality 1.95 के आसपास रहती है। मुख्य संदेश: छोटे तथ्यात्मक काम में effort ladder चढ़ने पर cost और quality flat रहीं और gpt-5.2 पहले से gpt-4o baseline से मेल खा रहा था। यह N=20, R=3 का मापा गया aggregate है, और cost per request के रूप में दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="विषय का सार">
@@ -100,7 +92,7 @@
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
-        <p>इस हिस्से में प्रति-request लागत लगभग सपाट रही &mdash; none से extra-high तक लगभग 1.02x, और हर gpt-5.2 tier gpt-4o baseline से नीचे था &mdash; जबकि औसत judge score 1.95 के आसपास रहा।</p>
+        <p>इस हिस्से में प्रति-request लागत लगभग सपाट रही: none से xhigh तक लगभग 1.02x, और हर gpt-5.2 tier gpt-4o baseline से नीचे था। औसत जज स्कोर 1.95 के आसपास रहा।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
@@ -119,17 +111,14 @@
       <p>
         hypothesis यह थी कि ज़्यादा effort पर जवाब ज़्यादा सुरक्षित होगा। डेटा ने ऐसा
         नहीं दिखाया। cost bars लगभग सपाट रहती हैं &mdash; none effort पर $0.000587 और
-        extra-high पर $0.000598, यानी लगभग 1.02x span, और हर gpt-5.2 tier gpt-4o
+        xhigh पर $0.000598, यानी लगभग 1.02x span, और हर gpt-5.2 tier gpt-4o
         baseline $0.000665 से नीचे है &mdash; quality bars भी उतनी ही सपाट हैं: औसत
-        judge score ladder पर लगभग 1.95 है, baseline के 1.90 के बराबर या ऊपर। latency में
+        जज स्कोर ladder पर लगभग 1.95 है, baseline के 1.90 के बराबर या ऊपर। latency में
         भी trend नहीं है (बिना climb के लगभग 1.4s से 1.7s), और token-shape throughput
         factor 0.99 के आसपास रहता है।
       </p>
       <p>
-        यानी न cost bars effort के साथ चलीं, न quality bars — chart की पूरी बात बस इतनी है।
-        reasoning पर ज़्यादा खर्च करने से न सस्ता bill मिला, न बेहतर जवाब, और सबसे कम setting
-        पर gpt-5.2 पहले ही gpt-4o baseline से match या beat कर रहा था। इस workload shape में
-        ऊँचा effort default नहीं, experimental setting रहना चाहिए।
+        यानी न cost bars effort के साथ चलीं, न quality bars। chart की पूरी बात बस इतनी है। reasoning पर ज़्यादा खर्च करने से न सस्ता bill मिला, न बेहतर जवाब; और सबसे कम setting पर gpt-5.2 पहले ही gpt-4o baseline से match या beat कर रहा था। इस workload shape में ऊँचा effort default नहीं, experimental setting रहना चाहिए।
       </p>
     </section>
 
@@ -144,9 +133,9 @@
         सिर्फ़ छिपे tokens बढ़ते हैं।
       </p>
       <p>
-        यही pattern इस हिस्से में दिखता है। judge score effort के साथ नहीं बढ़ता; वह
-        1.95 के आसपास रहता है, जबकि cost, latency और reasoning tokens भी लगभग सपाट रहते हैं।
-        यहाँ pay करने लायक hidden thinking लगभग नहीं है &mdash; इसलिए इस हिस्से में ऊँचा default
+        यही pattern इस हिस्से में दिखता है। जज स्कोर effort के साथ नहीं बढ़ता; वह
+        1.95 के आसपास रहता है, और cost, latency, reasoning tokens भी लगभग सपाट रहते हैं।
+        यहाँ pay करने लायक hidden thinking लगभग नहीं है। इसलिए इस हिस्से में ऊँचा default
         वह कुछ नहीं खरीदता जो सस्ती setting पहले से न दे रही हो।
       </p>
     </section>
@@ -163,14 +152,14 @@
           <h3>X-अक्ष</h3>
           <p>
             bars reasoning effort के स्तर बाएँ से दाएँ दिखाती हैं — baseline, none,
-            low, medium, high, extra-high। इसे वही setting समझें जिसे operator बदल सकता है।
+            low, medium, high, xhigh। इसे वही setting समझें जिसे operator बदल सकता है।
           </p>
         </div>
         <div>
           <h3>Y-अक्ष</h3>
           <p>
             cost chart में bar height का मतलब mean USD per request है। quality chart में
-            bar height mean judge score है। इन्हें अलग-अलग नहीं, जोड़ी में पढ़ें।
+            bar height mean जज स्कोर है। इन्हें अलग-अलग नहीं, जोड़ी में पढ़ें।
           </p>
         </div>
         <div>
@@ -188,14 +177,14 @@
       <figcaption>
         <strong>मूल चार्ट &mdash; छोटे तथ्यात्मक काम की प्रति-request लागत (benchmark&nbsp;01)।</strong>
         <strong>X-अक्ष:</strong> model और effort के स्तर — gpt-4o baseline, फिर gpt-5.2
-        का none, low, medium, high और extra-high।
+        का none, low, medium, high और xhigh।
         <strong>Y-अक्ष:</strong> mean PAYG USD per request।
         <strong>Bars:</strong> हर bar एक effort configuration की औसत लागत दिखाती है — यह
         frequency histogram नहीं, aggregate comparison है — और vertical whiskers दोहराए गए
         measurement पर &plusmn;1 standard deviation दिखाती हैं।
-        <strong>इसे कैसे पढ़ें:</strong> लागत none effort के $0.000587 से extra-high पर
+        <strong>इसे कैसे पढ़ें:</strong> लागत none effort के $0.000587 से xhigh पर
         $0.000598 तक लगभग सपाट रहती है — लगभग 1.02x span, हर gpt-5.2 tier $0.000665
-        baseline से नीचे — जबकि नीचे वाला paired judge score 1.95 के आसपास रहता है।
+        baseline से नीचे — जबकि नीचे वाला paired जज स्कोर 1.95 के आसपास रहता है।
         <strong>Evidence boundary:</strong> हर configuration में N = 20 authored sample,
         R = 3 repeats, छोटे तथ्यात्मक काम का यही एक हिस्सा, और pricing एक dated PAYG
         snapshot पर एक ही Azure OpenAI tenant और region के लिए है। यह दूसरे workload,
@@ -205,20 +194,20 @@
         से आती हैं; इसे <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a>
         (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>) के साथ पढ़ें।
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का bar chart, जिसमें effort ladder पर mean PAYG प्रति-request लागत लगभग सपाट रहती है, gpt-4o baseline और gpt-5.2 none से extra-high तक दिखते हैं, और हर gpt-5.2 tier baseline से नीचे है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का bar chart, जिसमें effort ladder पर mean PAYG प्रति-request लागत लगभग सपाट रहती है, gpt-4o baseline और gpt-5.2 none से xhigh तक दिखते हैं, और हर gpt-5.2 tier baseline से नीचे है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
       <figcaption>
-        <strong>जोड़ा हुआ मूल चार्ट &mdash; छोटे तथ्यात्मक काम का judge score (benchmark&nbsp;01)।</strong>
+        <strong>जोड़ा हुआ मूल चार्ट &mdash; छोटे तथ्यात्मक काम का जज स्कोर (benchmark&nbsp;01)।</strong>
         <strong>X-अक्ष:</strong> वही model और effort के स्तर।
-        <strong>Y-अक्ष:</strong> 0&ndash;2 rubric पर mean judge score (quality guardrail)।
+        <strong>Y-अक्ष:</strong> 0&ndash;2 rubric पर mean जज स्कोर (quality guardrail)।
         <strong>Bars:</strong> हर bar एक effort configuration का mean score दिखाती है —
         यह frequency histogram नहीं, aggregate comparison है — और whiskers &plusmn;1 standard
         deviation दिखाते हैं।
         <strong>इसे कैसे पढ़ें:</strong> quality bars flat और baseline से थोड़ा ऊपर रहती हैं —
         gpt-4o baseline 1.90, gpt-5.2 none 1.95, low 1.97, medium 1.97, high 1.93,
-        extra-high 1.95 — यानी इस हिस्से में flat cost bars ने न कम bill खरीदा, न बेहतर जवाब।
+        xhigh 1.95 — यानी इस हिस्से में flat cost bars ने न कम bill खरीदा, न बेहतर जवाब।
         <strong>Evidence boundary:</strong> हर configuration में N = 20, R = 3 repeats;
         error bars confidence interval नहीं, standard deviation हैं, और N = 20 पर p-value
         claim नहीं किया गया है।
@@ -253,19 +242,19 @@
           <tr>
             <td>Cost per request</td>
             <td>X-अक्ष effort level है; Y-अक्ष mean USD per request है।</td>
-            <td>none effort पर $0.000587; extra-high effort पर $0.000598; baseline $0.000665।</td>
+            <td>none effort पर $0.000587; xhigh effort पर $0.000598; baseline $0.000665।</td>
             <td>bill flat और baseline से नीचे रहता है, इसलिए higher effort को कुछ prove नहीं करना।</td>
           </tr>
           <tr>
             <td>Quality guardrail</td>
-            <td>X-अक्ष वही effort levels हैं; Y-अक्ष mean judge score है।</td>
-            <td>none effort पर 1.95; extra-high effort पर 1.95; baseline 1.90।</td>
+            <td>X-अक्ष वही effort levels हैं; Y-अक्ष mean जज स्कोर है।</td>
+            <td>none effort पर 1.95; xhigh effort पर 1.95; baseline 1.90।</td>
             <td>quality flat है और पहले से baseline के बराबर या ऊपर है।</td>
           </tr>
           <tr>
             <td>Latency</td>
             <td>X-अक्ष effort level है; Y-अक्ष mean response latency है।</td>
-            <td>none effort पर लगभग 1.7s; extra-high effort पर लगभग 1.4s, ladder में कोई trend नहीं।</td>
+            <td>none effort पर लगभग 1.7s; xhigh effort पर लगभग 1.4s, ladder में कोई trend नहीं।</td>
             <td>latency noisy है, effort की cost नहीं।</td>
           </tr>
           <tr>
@@ -277,7 +266,7 @@
           <tr>
             <td>Token-shape throughput</td>
             <td>X-अक्ष effort level है; Y-अक्ष baseline के मुक़ाबले throughput factor है।</td>
-            <td>factor none से extra-high तक 0.99 के आसपास रहता है।</td>
+            <td>factor none से xhigh तक 0.99 के आसपास रहता है।</td>
             <td>traffic shape को extra capacity headroom नहीं चाहिए।</td>
           </tr>
         </tbody>
@@ -288,9 +277,9 @@
       <h2>क्या हुआ</h2>
       <p>
         लागत-रेखा सपाट रही। none effort पर औसत $0.000587 per request था,
-        extra-high effort पर औसत $0.000598 per request — लगभग 1.02x span — और हर
+        xhigh effort पर औसत $0.000598 per request — लगभग 1.02x span — और हर
         gpt-5.2 tier gpt-4o baseline $0.000665 से नीचे था। paired quality भी flat थी:
-        औसत judge score 1.95 के आसपास रहा, baseline के 1.90 के बराबर या ऊपर।
+        औसत जज स्कोर 1.95 के आसपास रहा, baseline के 1.90 के बराबर या ऊपर।
       </p>
       <p>
         यह "reasoning बुरी है" जैसा सार्वभौमिक दावा नहीं है। यह सिर्फ़ workload shape
@@ -300,7 +289,7 @@
       </p>
       <p>
         सबसे बड़ा trap उलटी intuition है: higher effort ज़रूर safer होगा। अगर reviewer सिर्फ़ कुछ
-        जवाब देखे, तो extra-high effort ज़्यादा सुरक्षित महसूस हो सकता है क्योंकि model
+        जवाब देखे, तो xhigh effort ज़्यादा सुरक्षित महसूस हो सकता है क्योंकि model
         ज़्यादा सोचता हुआ लगता है। chart इसी intuition को policy बनने से रोकता है: वह दिखाता है
         कि quality delta flat है, इसलिए सस्ती setting धीमे या बड़े bill के बिना वही जवाब रखती है।
       </p>
@@ -364,8 +353,8 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate डेटा। चार्ट की व्याख्या इसी fixed stance पर आधारित है; error bars standard deviation हैं, confidence interval नहीं, और N = 20 पर p-value claim नहीं किया गया है।</li>
-        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (none effort का $0.000587, extra-high effort का $0.000598, दोनों $0.000665 baseline से नीचे) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है। accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>। list pricing बदलने पर figures बदलेंगे।</li>
-        <li>[3] <strong>Tier 2 — short-factual measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से flat per-request cost, लगभग 1.95 mean judge score (gpt-4o baseline 1.9), लगभग 1409 ms और 1713 ms के बीच no-trend latency, और throughput factor का 0.99 के पास रहना मिलता है।</li>
+        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (none effort का $0.000587, xhigh effort का $0.000598, दोनों $0.000665 baseline से नीचे) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है। accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>। list pricing बदलने पर figures बदलेंगे।</li>
+        <li>[3] <strong>Tier 2 — short-factual measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से flat per-request cost, लगभग 1.95 mean जज स्कोर (gpt-4o baseline 1.9), लगभग 1409 ms और 1713 ms के बीच no-trend latency, और throughput factor का 0.99 के पास रहना मिलता है।</li>
         <li>[4] <strong>Tier 2 — rendered chart डेटा:</strong> यह repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। यहीं से near-zero reasoning tokens (none पर 0.0, high पर 1.35) और visible output का सिर्फ़ लगभग 14.0 से 14.8 tokens तक बदलना दिखता है।</li>
         <li>[5] <strong>Evidence dashboard:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> की per-configuration tables और rendered source charts इन्हीं artifact का auditable रूप हैं।</li>
       </ul>

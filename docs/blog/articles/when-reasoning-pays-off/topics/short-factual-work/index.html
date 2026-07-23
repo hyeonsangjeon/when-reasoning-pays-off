@@ -42,22 +42,13 @@
     <p class="article-kicker">Topic essay · benchmark-01 short factual work</p>
     <h1>Short factual work: when extra reasoning buys cost, not quality</h1>
     <p class="lede">
-      When a team first adopts reasoning models, short factual questions feel
-      like the easy place to turn effort up: the answer is short, a mistake is
-      easy to spot, and a little extra thinking feels like cheap insurance. So
-      the instinct is to raise reasoning effort here first. That instinct is a
-      hypothesis worth testing, not a policy worth shipping — and this essay
-      tests it with data.
+      When a team first adopts reasoning models, short factual questions look like the harmless place to turn the effort dial up. The answer is short, mistakes are easy to spot, and “let it think a little longer” sounds like cheap insurance. So the instinct is to raise reasoning effort here first. That instinct is a hypothesis to test, not a policy to ship, and this essay tests it with data.
     </p>
 
     <section class="article-section">
       <h2>Why we tested this</h2>
       <p>
-        The situation is familiar. A migration lands the team on a reasoning
-        model, the configuration exposes a reasoning-effort dial, and short
-        factual questions look like the safest place to turn it up. The output
-        is brief, an error is obvious, and "let it think a bit more" sounds like
-        cheap insurance — so raising the default here feels almost free.
+        The pattern is familiar. After a migration, the team lands on a reasoning model, the configuration exposes a reasoning-effort dial, and short factual questions look like the safest place to turn it. The output is brief, errors are obvious, and “let it think a bit more” sounds like cheap insurance. Raising the default here feels almost free.
       </p>
       <p>
         That gives us a clean hypothesis to check: on short factual work, does
@@ -66,14 +57,7 @@
         thinking that never reaches the reader.
       </p>
       <p>
-        So we tested it. We held the workload shape fixed — the same short
-        factual slice — and walked the effort ladder one step at a time,
-        comparing cost per request, latency, the visible answer text, the hidden
-        reasoning tokens, and the judge score at each level. In this slice the
-        result was the kind that should move a default: effort bought cost,
-        latency, and hidden tokens, but not a better answer. The one-pager below
-        states that in a single frame, and the sections after it show the
-        measured detail.
+        So we measured it. We held the workload shape fixed, using the same short-factual slice, and walked the effort ladder one step at a time. At each level we compared cost per request, latency, visible answer text, hidden reasoning tokens, and judge score. In this slice, the result was the kind that should move a default: effort bought extra cost, latency, and hidden tokens, but not a better answer. The one-pager below states that in a single frame, and the sections after it show the measured detail.
       </p>
     </section>
 
@@ -87,7 +71,7 @@
         the measured detail.
         <a href="../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">Open the short-factual one-pager SVG</a>.
       </figcaption>
-      <img src="../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="One-pager for short factual work. It shows cost per request staying essentially flat across the reasoning-effort ladder from none to extra-high, every gpt-5.2 tier below the gpt-4o baseline, while judge quality stays around 1.95. Headline message: on short factual work, climbing the effort ladder left cost and quality flat and gpt-5.2 already matched the gpt-4o baseline. Marked as a measured aggregate, N=20, R=3, with cost shown per request." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="One-pager for short factual work. It shows cost per request staying essentially flat across the reasoning-effort ladder from none to xhigh, every gpt-5.2 tier below the gpt-4o baseline, while judge quality stays around 1.95. Headline message: on short factual work, climbing the effort ladder left cost and quality flat and gpt-5.2 already matched the gpt-4o baseline. Marked as a measured aggregate, N=20, R=3, with cost shown per request." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="Topic summary">
@@ -101,7 +85,7 @@
       </section>
       <section class="summary-tile">
         <h2>Finding</h2>
-        <p>On this slice, cost per request stayed essentially flat &mdash; about 1.02x from none to extra-high, every gpt-5.2 tier below the gpt-4o baseline &mdash; and the mean judge score held around 1.95.</p>
+        <p>On this slice, cost per request stayed essentially flat: about 1.02x from none to xhigh, with every gpt-5.2 tier below the gpt-4o baseline. The mean judge score held around 1.95.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
@@ -120,7 +104,7 @@
       <p>
         The hypothesis predicted a safer answer at higher effort. The data did
         not deliver one. The cost bars stay essentially flat &mdash; $0.000587 at
-        none effort and $0.000598 at extra-high, about a 1.02x span, with every
+        none effort and $0.000598 at xhigh, about a 1.02x span, with every
         gpt-5.2 tier below the gpt-4o baseline of $0.000665 &mdash; and the quality
         bars are just as flat: the mean judge score is about 1.95 across the
         ladder, at or above the baseline's 1.90. Latency shows no trend either
@@ -128,12 +112,7 @@
         factor holds around 0.99.
       </p>
       <p>
-        So neither the cost bars nor the quality bars moved with effort &mdash; that is
-        the whole story the chart is trying to tell. Spending more on reasoning
-        bought no cheaper bill and no better answer, and gpt-5.2 at its lowest
-        setting already matched or beat the gpt-4o baseline. For this workload
-        shape, higher effort should stay experimental rather than become the
-        default.
+        Neither the cost bars nor the quality bars moved with effort. That is the whole story the chart is trying to tell. Spending more on reasoning bought neither a cheaper bill nor a better answer, and gpt-5.2 at its lowest setting already matched or beat the gpt-4o baseline. For this workload shape, higher effort should stay experimental rather than become the default.
       </p>
     </section>
 
@@ -169,7 +148,7 @@
           <h3>X-axis</h3>
           <p>
             The bars move left to right across reasoning effort levels: baseline,
-            none, low, medium, high, and extra-high. Treat this as the
+            none, low, medium, high, and xhigh. Treat this as the
             control knob the operator can change.
           </p>
         </div>
@@ -196,13 +175,13 @@
       <figcaption>
         <strong>Source chart &mdash; short-factual cost per request (benchmark&nbsp;01).</strong>
         <strong>X-axis:</strong> the model and effort ladder &mdash; the gpt-4o baseline,
-        then gpt-5.2 at none, low, medium, high, and extra-high effort.
+        then gpt-5.2 at none, low, medium, high, and xhigh effort.
         <strong>Y-axis:</strong> mean pay-as-you-go USD per request.
         <strong>Bars:</strong> each bar is the mean cost of one effort cell &mdash; an
         aggregate comparison, not a frequency histogram &mdash; and the vertical whiskers
         show &plusmn;1 standard deviation across the repeated measurements.
         <strong>How to read it:</strong> cost stays essentially flat from $0.000587 at none effort to
-        $0.000598 at extra-high &mdash; about a 1.02x span, every gpt-5.2 tier below the
+        $0.000598 at xhigh &mdash; about a 1.02x span, every gpt-5.2 tier below the
         $0.000665 baseline &mdash; while the paired judge score below stays around 1.95.
         <strong>Evidence boundary:</strong> N = 20 authored samples per cell, R = 3
         repeats, this one short-factual slice, priced against a single dated PAYG
@@ -214,7 +193,7 @@
         <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a>
         (<a href="../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>).
       </figcaption>
-      <img class="wide-chart" src="../../../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder, with the gpt-4o baseline and gpt-5.2 none through extra-high and every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../assets/benchmark-01-cost-per-request.png" alt="Bar chart of benchmark-01 mean pay-as-you-go cost per request holding essentially flat across the effort ladder, with the gpt-4o baseline and gpt-5.2 none through xhigh and every gpt-5.2 tier below the baseline, with standard-deviation whiskers." style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
@@ -228,7 +207,7 @@
         &plusmn;1 standard deviation.
         <strong>How to read it:</strong> the quality bars stay flat and slightly above
         the baseline &mdash; gpt-4o baseline 1.90, gpt-5.2 none 1.95, low 1.97,
-        medium 1.97, high 1.93, extra-high 1.95 &mdash; so on this slice the
+        medium 1.97, high 1.93, xhigh 1.95 &mdash; so on this slice the
         flat cost bars bought neither a lower bill nor a better answer.
         <strong>Evidence boundary:</strong> N = 20 per cell, R = 3 repeats; error bars are
         standard deviation, not confidence intervals, and no p-values are claimed at
@@ -265,19 +244,19 @@
           <tr>
             <td>Cost per request</td>
             <td>X-axis is effort level; Y-axis is mean USD per request.</td>
-            <td>$0.000587 at none effort; $0.000598 at extra-high effort; baseline $0.000665.</td>
+            <td>$0.000587 at none effort; $0.000598 at xhigh effort; baseline $0.000665.</td>
             <td>The bill stays flat and below baseline, so higher effort has nothing to prove.</td>
           </tr>
           <tr>
             <td>Quality guardrail</td>
             <td>X-axis is the same effort ladder; Y-axis is mean judge score.</td>
-            <td>1.95 at none effort; 1.95 at extra-high effort; baseline 1.90.</td>
+            <td>1.95 at none effort; 1.95 at xhigh effort; baseline 1.90.</td>
             <td>Quality is flat and already at or above the baseline.</td>
           </tr>
           <tr>
             <td>Latency</td>
             <td>X-axis is effort level; Y-axis is mean response latency.</td>
-            <td>About 1.7s at none effort; about 1.4s at extra-high effort, with no trend across the ladder.</td>
+            <td>About 1.7s at none effort; about 1.4s at xhigh effort, with no trend across the ladder.</td>
             <td>Latency is noisy, not a cost of effort.</td>
           </tr>
           <tr>
@@ -289,7 +268,7 @@
           <tr>
             <td>Token-shape throughput</td>
             <td>X-axis is effort level; Y-axis is throughput factor versus baseline.</td>
-            <td>The factor holds around 0.99 from none to extra-high effort.</td>
+            <td>The factor holds around 0.99 from none to xhigh effort.</td>
             <td>The traffic shape needs no extra capacity headroom.</td>
           </tr>
         </tbody>
@@ -300,7 +279,7 @@
       <h2>What happened</h2>
       <p>
         The cost curve stayed flat. None effort averaged $0.000587 per
-        request; extra-high effort averaged $0.000598 per request, about a 1.02x
+        request; xhigh effort averaged $0.000598 per request, about a 1.02x
         span, and every gpt-5.2 tier sat below the gpt-4o baseline of $0.000665.
         The paired quality was flat too: the mean judge score held around 1.95,
         at or above the baseline's 1.90.
@@ -313,12 +292,7 @@
         quality are kept side by side.
       </p>
       <p>
-        The key trap is the opposite intuition: that higher effort must be safer.
-        If a reviewer only samples a few answers, extra-high effort may feel
-        stronger because the model seems to have thought harder. The chart
-        prevents that intuition from becoming policy: it shows the quality delta
-        is flat, so the cheaper setting keeps the same answer without a slower or
-        larger bill.
+        The trap is the opposite intuition: higher effort must be safer. If a reviewer samples only a few answers, xhigh effort can feel stronger because the model seems to have thought harder. The chart keeps that feeling from becoming policy: the quality delta is flat, so the cheaper setting keeps the same answer without a slower response or a larger bill.
       </p>
     </section>
 
@@ -381,7 +355,7 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at extra-high effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at xhigh effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
         <li>[3] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat per-request cost, the mean judge score of about 1.95 (gpt-4o baseline 1.9), the no-trend latency between about 1409 ms and 1713 ms, and the throughput factor holding near 0.99.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the near-zero reasoning tokens (0.0 at none, 1.35 at high) against visible output that moves only from about 13.98 to 14.78 tokens.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>
