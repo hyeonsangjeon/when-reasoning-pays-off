@@ -153,6 +153,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <h2>下一次判断 · 下一项实验</h2>
       <p><strong>下一次判断。</strong> 这个结论只在&ldquo;已测量的任务形态&rdquo;内有效。如果链条更长，或真实工具进入，曲线可能再次移动；因此规则是：工作负载形态改变时就重新测量。</p>
       <p><strong>下一项实验。</strong> 这里的 PTU 数字是基于 token 的估算(不是实时负载)。下一项实验是在真实 PTU 部署上的负载测试 &mdash; 限速调节 · 排队 · 并行批处理如何作用于吞吐。</p>
+      <p><strong>第一份结果已经出来。</strong> <a href="../experiments/exp004-spillover-simulation/zh-CN/">exp004 &mdash; PTU 溢出策略模拟(Phase 1)</a>把 proactive 溢出策略和 reactive 放到一起，检验饱和负载下谁更能保护缓存。答案接近平手：proactive 的稳态缓存反而<strong>低 0.1657 pp</strong>，而且一次也没有触发溢出。真正的判决要交给物理分离的双部署负载测试(Phase 2)。</p>
       <p>
         <strong>接着读：</strong>
         <a href="../../ptu-retry-after-recovery/zh-CN/">429 不是错误，而是恢复信号</a>

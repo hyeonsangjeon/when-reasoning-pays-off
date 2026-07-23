@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/04-spillover-simulation/analysis.md and analysis.json, not
+  re-derived. No internal task IDs.
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp004 · スピルオーバーは先回りすればキャッシュを守れたのか | when reasoning pays off</title>
+  <meta name="description" content="PTU スピルオーバーポリシーシミュレーション(Phase 1) exp004 の実験ノート。持続的な飽和近傍の負荷で、先回りする proactive スピルオーバーは事後対応の reactive よりプロンプトキャッシュを守れるのか。二つの live gpt-5.2 実行の答えは、ほぼ引き分けだった。proactive の定常状態キャッシュはむしろ 0.1657 pp 低く、スピルオーバーを一度も発動しなかった。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="記事ナビゲーション">
+        <a href="../../../../../../ja/">ホーム</a>
+        <a href="../../../../ja/">記事一覧</a>
+        <a href="../../../ja/">実験回顧(ハブ)</a>
+        <a href="../../../../../charts/?lang=ja">根拠ダッシュボード</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート · exp004</p>
+    <p class="article-kicker">実験ノート · exp004 · PTU スピルオーバーポリシーシミュレーション(Phase 1) · 賢いポリシーは割に合ったのか</p>
+    <h1>exp004 &mdash; スピルオーバーは先回りすれば割に合ったのか</h1>
+    <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">前の三つのベンチマークは、どれも &ldquo;推論努力度のつまみをどこまで上げるか&rdquo; の話だった。今回は軸が変わる。モデルではなく、<strong>デプロイ</strong>である。PTU(固定容量)デプロイが飽和に近づくとき、トラフィックの一部を予備経路へ逃がす<strong>スピルオーバー</strong>ポリシー二つを、同じ負荷で競わせた。</p>
+    <p class="lede">私たちは<strong>予測を事前に書いておいた</strong>。遅延が上がる気配を見て<em>先回りする</em>(proactive)ポリシーは、タイムアウトや 429 が起きてから逃がす<em>事後対応</em>(reactive)ポリシーより、飽和区間でのキャッシュ低下が小さいはずだ。誰もが抱く直感である。早めに手を打つほうがよいはずだ、と。</p>
+    <p class="lede">測定は、その直感を静かにひっくり返した。飽和区間の定常状態キャッシュヒットは <strong>reactive 99.2337%, proactive 99.0680%</strong> &mdash; 先回りした側がむしろ <strong>0.1657 pp 低かった</strong>。しかも reactive は持続区間をずっとスピルオーバーで走った一方、proactive は<em>一度も発動しなかった</em>。このノートでは、その 22分を<em>設計 → 入力 → 予測対実測 → 二つの曲線 → 判断</em>としてたどる。exp001 が &ldquo;易しい仕事では推論は割に合わない&rdquo; だったように、ここでは &ldquo;この条件では賢いポリシーは割に合わない&rdquo; である。</p>
+
+    <section class="article-section">
+      <p class="section-label">なぜ読むのか</p>
+      <h2>PTU が飽和に近づくと何が起きるのか</h2>
+      <p>固定容量(PTU)でモデルをデプロイすると、トラフィックがその容量上限に<strong>近づく瞬間</strong>が来る。そこでプロンプトキャッシュが揺らぐと、応答は遅くなり、費用も漏れる。同じプロンプトをもう一度計算するぶん、請求が増えるからだ。</p>
+      <p>その揺らぎに対する緩衝材が<strong>スピルオーバー</strong>である。あふれそうなら、トラフィックの一部を予備経路へ逃がす。やり方は二つある。<strong>事後対応</strong>(reactive)はタイムアウトや 429 が<em>出てから</em>逃がす。<strong>先回り</strong>(proactive)は p95 遅延がじわじわ上がる気配を見て、<em>早めに</em>少しずつ逃がす。</p>
+      <p><strong>PTU デプロイ</strong>を運用していて、トラフィックが飽和にたびたび触れるなら、このノートは近い。&ldquo;より賢いポリシーを入れれば、キャッシュをもっと守れるのか?&rdquo; という、運用者なら一度は持つ問いに、この実験は一つの<strong>実測の答え</strong>を返す。そしてその答えは、おそらく予想と違う。</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">まず、10秒</p>
+      <h2>結論を信じず、数字から自分で出してください</h2>
+      <p>トークン消費は 0 です。最初の二行は二つのポリシーの入力&middot;変数&middot;成果物カードをそのまま出力し、最後の一行は公開済み集計から見出しの数字を再計算して、このノートと照合します(ネットワークも資格情報も不要です)。</p>
+      <pre class="code-block"><code># 두 정책(reactive · proactive)의 입력 → 변수 → 산출물 카드를 출력 (네트워크 없음)
+python3 -c "import experiments; print(experiments.describe('exp004_spillover_baseline_reactive.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp004_spillover_proactive.yaml').summary())"
+
+# 게시된 집계에서 포화 구간 캐시 히트를 다시 찍어 노트와 대조 (토큰 0)
+python3 -c "import json; s=json.load(open('benchmarks/04-spillover-simulation/analysis.json'))['per_policy_stats']; print('sustain cache-hit  reactive=%.4f%%  proactive=%.4f%%  gap=%+.4f pp' % (s['reactive']['sustain']['cache_hit_ratio']*100, s['proactive']['sustain']['cache_hit_ratio']*100, (s['proactive']['sustain']['cache_hit_ratio']-s['reactive']['sustain']['cache_hit_ratio'])*100))"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
+      <p class="muted-note">実際の live 負荷を再現するには Azure 資格情報と実課金が必要です &mdash; これは本物の負荷テストです。資格情報なしでたどる道(公開済みの生 JSONL から <code>analysis.json</code> を再導出する手順)は、<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> の再現フッターに整理されています。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="このノートの構成">
+      <strong>読む順序 &mdash; 正直な結論を先に、メカニズムはその次:</strong>
+      <a href="#design">今回は努力度ではなくデプロイである</a>
+      <a href="#predict">予測は外れた</a>
+      <a href="#result">賢いポリシーは勝たなかった</a>
+      <a href="#mechanism">なぜ引き分けたのか &mdash; 片方は逃がす必要すらなかった</a>
+      <a href="#limits">どこまで信じられるか</a>
+      <a href="#decision">だから何をデフォルトにするか</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">設計</p>
+      <h2>今回は努力度ではなくデプロイである</h2>
+      <p><strong>なぜこれを測ったのか。</strong> 前の三つのノートは、推論努力度をどこまで上げるかを問うていた。だが努力度を決めると、次の壁が来る。その設定にトラフィックが集まったとき、<strong>デプロイが持つのか</strong>である。PTU デプロイが飽和に近づくとプロンプトキャッシュが揺らぐことがあり、その緩衝材がスピルオーバーだ。よくある直感は &ldquo;先回りするポリシーは事後対応よりよい&rdquo; だが、本当にそうかを勘ではなく実測で切り分けたかった。</p>
+      <p><strong>だから &lsquo;先回りのほうがよい&rsquo; を仮説にした。</strong> 文にするとこうだ &mdash; <em>持続的な飽和負荷では、先回りする(proactive)ポリシーは事後対応(reactive)より、飽和区間のキャッシュヒット低下が小さい。</em> この仮説にも壊れる線がある。<strong>proactive が飽和キャッシュで reactive をはっきり上回れば &lsquo;先回りがよい&rsquo; は支えられる。勝てないか、むしろ低ければ、少なくともこの条件ではその直感は割に合わない。</strong></p>
+      <p><strong>原因究明ではなく、緩和策の比較である。</strong> &ldquo;スピルオーバー自体がキャッシュ低下の根本原因だ&rdquo; という強い主張は、すでに現場観察で弱くなっていた。だからこの実験は原因を掘る場ではない。二つの緩和ポリシーのうち、<strong>どちらがよいか</strong>だけを競わせる場である。野心を狭めたぶん、答えも狭く、はっきりしている。</p>
+      <p><strong>なぜシミュレーションから始めるのか。</strong> Phase 1 は gpt-5.2 デプロイ<em>一つ</em>の上で、スピルオーバー状態だけを内部的にまねる。物理的に分かれたキャッシュプールではない。だから絶対値ではなく、<strong>ポリシー間の差の向き</strong>を見る。プライマリ/予備のキャッシュプールが本当に分かれる 2デプロイ負荷テストは Phase 2 の仕事である。このノートは、その床を先に作る。</p>
+      <p><strong>問いは一つだ。</strong> 持続的な飽和近傍の ReAct 負荷で、先回りするスピルオーバーは事後対応よりキャッシュを守るのか。</p>
+      <p><strong>設計(負荷)。</strong> 同じ 22分の負荷を、二つのポリシーに同じように流す(原資料ラベルでは 22-min / 2-min / 10-min / 10-min) &mdash; <strong>ウォームアップ 2-min</strong>(0.3 TPS) → <strong>ランプ 10-min</strong>(0.5→2.5 TPS) → <strong>持続 10-min</strong>(2.0 TPS)。gpt-5.2 の 1デプロイ、<code>effort=low</code>、約 <strong>30K tokens</strong> のシステムプロンプト(二つの実行がバイトまで同一になるよう SHA-256 で固定、<code>corpus_seed 4242</code>)。内部スロットルしきい値は <strong>90,000 TPM</strong>。各ポリシーが <strong>2,136</strong> リクエスト(warmup 36 / ramp 900 / sustain 1,200)を走らせる。</p>
+      <p><strong>変える軸は一つだけ</strong> &mdash; <code>policy.type</code> を <code>reactive</code> と <code>proactive</code> で切り替える。プロンプト&middot;負荷&middot;モデル&middot;努力度&middot;しきい値はすべて固定なので、二つの成果物の差はポリシーだけから来る。</p>
+      <div class="article-summary-grid" aria-label="事前登録予測と役割">
+        <section class="summary-tile"><h2>事前登録予測</h2><p>先回りする(<code>proactive</code>)ポリシーは飽和区間のキャッシュ低下が小さく、事後対応(<code>reactive</code>)より定常状態キャッシュヒットが<strong>高い</strong>はずである。</p></section>
+        <section class="summary-tile"><h2>この実験の役割</h2><p>努力度三部作(01&middot;02&middot;03)のあと、決めた設定が<strong>飽和負荷で持つのか</strong>を確かめる最初の運用実験。ただし、物理的なキャッシュ分離のない <em>Phase 1 の床</em>である。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">入力と成果物</p>
+      <h2>何を食べ、何を残したか</h2>
+      <p>この実験が使ったものも残したものも、手書きの要約ではない。リポジトリにある実ファイルである。だから入力から出力まで、一行でたどれる。</p>
+      <div class="article-summary-grid" aria-label="入力と成果物">
+        <section class="summary-tile">
+          <h2>入力 (in)</h2>
+          <p><strong>ポリシー定義:</strong> <code>experiments/exp004_spillover_baseline_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (<code>policy.type</code> だけが異なる)。<br>
+          <strong>プロンプト:</strong> システムプロンプトコーパス(<code>corpus_seed 4242</code>)とユーザープロンプト。<br>
+          <strong>固定:</strong> 二つの実行のシステムプロンプトを SHA-256(<code>98d3a5&hellip;088a</code>)で固定 &mdash; 両ポリシーが<em>バイトまで同じ</em>プロンプトを受け取ったことを保証する。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>成果物 (out)</h2>
+          <p><strong>生呼び出し:</strong> <code>runs/*.jsonl</code> (+ リクエストごとの <code>*.summary.json</code>)。<br>
+          <strong>集計:</strong> <code>analysis.json</code> · <code>analysis.md</code>。<br>
+          <strong>回復曲線:</strong> <code>results/spillover-recovery-curves/*.png</code>&middot;<code>.csv</code> (時間に沿ったキャッシュヒット)。</p>
+        </section>
+      </div>
+      <p><strong>各ポリシーは 2,136 リクエストを最後まで走らせた</strong>(completed=scheduled=2,136、<code>dry_run=false</code>、<code>dirty=false</code>、中断なし)。実際の 429 は両側とも <strong>0</strong> 件。<code>fixture</code> マーカーは一つもない &mdash; すべて実 Azure 呼び出しである。<strong>落とした行はない</strong>。外れ値候補 9件(reactive 1 &middot; proactive 8)は除外規則(3σ レイテンシ + ログイベント同時発生)を一つも満たさなかったため全て残し、0トークン&middot;キャッシュミスの異常行 5件も生の使用量フィールドのまま集計に入れた。何をなぜ残したかは下の <a href="#transparency">透明性</a>で扱う。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">予測対実測</p>
+      <h2>予測は外れた</h2>
+      <div class="article-summary-grid" aria-label="予測対実測">
+        <section class="summary-tile"><h2>何を予測したか</h2><p>先回りする(<code>proactive</code>)ポリシーは飽和区間のキャッシュ低下が小さい。要するに、&ldquo;先回りは事後対応よりよい&rdquo; である。</p></section>
+        <section class="summary-tile"><h2>何が出たか</h2><p>飽和キャッシュヒットは <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>99.0680%</strong> &mdash; 先回りした側がむしろ <strong>0.1657 pp 低かった</strong>。しかも reactive は持続区間をずっとスピルオーバーで走った(99.9%)一方、proactive は<strong>一度も発動しなかった</strong>(0%)。</p></section>
+      </div>
+      <p><strong>判定: この条件では、先回りは割に合わなかった。</strong> 事前登録した仮説(proactive 優位)は、この単一エンドポイントシミュレーターでは支えられなかった。ただし差はとても小さく、技術的なものだ。曲線がはっきり分かれたのではなく、proactive 側の<strong>キャッシュミス二件</strong>が平均を押し下げた結果である。exp001 で &ldquo;易しい仕事では推論は割に合わない&rdquo; と分かったように、ここでは &ldquo;この条件では賢いポリシーは割に合わない&rdquo;。予測が外れた実験も、根拠として残す。</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">第一の合図</p>
+      <h2>賢いポリシーは勝たなかった</h2>
+      <p>下の表は<strong>持続(sustain) 10分の定常状態</strong>である。負荷が目標に張りつき、仮説が生きる区間だ。数字は公開済み集計 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>analysis.md</code></a> §7 から再引用した。</p>
+      <pre class="code-block"><code>정책        포화 스필오버   포화 캐시 히트(분당 평균 ± 표준편차)   비고
+reactive    99.9% 켜짐      99.2337%  (±0.0033%p)               기준선 · 포화 내내 스필오버
+proactive   0% (안 켬)      99.0680%  (±1.2802%p)               캐시 미스 2건이 평균을 끌어내림
+차이(pro−re)   —            −0.1657%p                            사실상 평평, 방향만 반대</code></pre>
+      <p>二つの曲線はどちらも <strong>99.23% 付近でほぼ平ら</strong>である。reactive は標準偏差 0.0033 pp で岩のように安定し、proactive もほとんどの分(minute)で同じ高さにいる。ただし持続区間の<strong>リクエスト 1307 と 1959</strong>の二件がキャッシュを外し(入力 21,153 トークンが全額課金)、その分に目立つ谷を作った。これが標準偏差を 1.2802 pp へ膨らませ、集計平均を下へ引いた。つまり proactive が<em>継続的に</em>負けたのではない。<strong>ちょうど二回のミス</strong>が数字を分けた。</p>
+      <p>全区間(ウォームアップ + ランプ + 持続)へ広げると、向きはむしろ反転する &mdash; <code>reactive</code> 99.0478% vs <code>proactive</code> 99.0942% で、proactive が <strong>0.0464 pp 高い</strong>。どの窓で見ても、差は爪の先ほどである。</p>
+
+      <figure class="article-figure" id="figure-exp004-recovery">
+        <figcaption><strong>60秒ローリングキャッシュヒット曲線(二つのポリシー)。</strong> 横軸は相対経過時間(秒)、縦軸はキャッシュヒット率である。二つの曲線はいずれも 99.2% 付近でほぼ平らだ &mdash; reactive は持続区間をずっとスピルオーバー経路に乗って滑らかに走り、proactive はプライマリ経路にとどまったまま、持続区間で二度だけ短く落ちる(リクエスト 1307&middot;1959 のキャッシュミス)。定常状態は reactive 99.2337%、proactive 99.0680%。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/spillover-recovery-curves/policy_comparison.png"><code>results/spillover-recovery-curves/policy_comparison.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-04-recovery.png" alt="reactive と proactive の 60秒ローリングキャッシュヒット率の時系列。二つの曲線はいずれも約 99.2% で平らで、proactive だけが持続区間の二点で短く下がる。持続定常状態は reactive 99.2337%、proactive 99.0680% で、差は 0.1657 pp。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">第二の合図</p>
+      <h2>なぜ引き分けたのか &mdash; 片方は逃がす必要すらなかった</h2>
+      <p>表面上、二つのポリシーは<strong>正反対に動いたのに、結果は同じ場所へ着地した</strong>。ここがこの実験の核心である。reactive はウォームアップ最初のリクエストからスピルオーバーを発動し、持続区間のあいだずっと(99.9%)予備経路にいた。状態遷移五回はすべて reactive 側で起きた &mdash; requests 1/91/92/1478/1479 であり、リクエスト 1 で介入し、91/92 のあたりで一瞬プライマリへ戻って再介入し、1478/1479 で持続中にもう一度切り替わった。対して proactive は p95 遅延がしきい値を超えず、スピルオーバーを<strong>一度も発動しなかった</strong>(0%)。逃がす必要がなかったのである。</p>
+      <p><strong>それでもキャッシュはほぼ同じだった。</strong> 理由は設計にある。Phase 1 は一つのデプロイ上で、スピルオーバーを状態ラベルとしてまねるだけだ。プライマリ経路でも予備経路でも、見ているのは<em>同じキャッシュ</em>である。だから &ldquo;どの経路に送ったか&rdquo; はキャッシュヒットにほとんど刻まれない。実際、キャッシュ済みトークンは二つのポリシーで正確に <strong>44,733,952</strong> と同じだった。</p>
+      <p><strong>遅延&middot;費用&middot;処理量も引き分けである。</strong> 持続 TTFT は proactive のほうがむしろ少し速い(p50 7,620.9ms 対 8,490.6ms、p95 12,107.8ms 対 13,617.5ms)。しかしこれは事前登録したキャッシュ指標ではなく、予備経路に乗らなかった proactive の遅延分布が狭かったという副次観察に近い。全区間費用は <code>reactive</code> $17.883347 vs <code>proactive</code> $17.924671 &mdash; proactive が <strong>$0.041324</strong> 高い。総トークンは proactive のほうが少し少ないのに(45,812,897 対 45,828,455)高いのは、出力&middot;推論トークンの比率が少し高かったためだ。PTU トークン圧力に換算した処理量利得係数は <strong>1.000340×</strong> &mdash; 事実上平らである。</p>
+      <p><strong>まとめると:</strong> 二つのポリシーは正反対に振る舞ったが、共有キャッシュの上ではその差がキャッシュ&middot;費用&middot;処理量のどこにも<em>意味のある形では</em>刻まれなかった。この条件では、ポリシーを賢くした代金は請求書に現れなかった。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明性</p>
+      <h2>数字に残った汚れまでそのまま</h2>
+      <p>どんな測定も完全にきれいではない。この実験が残した跡を、消さずにそのまま書いておく。隠すと、次の人が同じ場所でつまずくからだ。</p>
+      <ul>
+        <li><strong>除外した外れ値 0件。</strong> 外れ値規則は、持続区間でレイテンシが平均+3σを超え、同時に実 429&middot;リトライ&middot;経路遷移&middot;スピルオーバー介入のようなログイベントが重なったときだけ除外する。候補は reactive 1件&middot;proactive 8件あったが、どれもそのログイベントと重ならなかったため、<strong>全て残した</strong>。</li>
+        <li><strong>残した異常行 5件。</strong> reactive に 0トークンの持続行 1件(リクエスト 1276)、proactive に 0トークン行 2件(1306&middot;1934)とキャッシュミス行 2件(1307&middot;1959)がある。除外規則を満たさないため生データのまま集計に入れた。<strong>proactive の低い持続平均は、まさにこのキャッシュミス二件から来た</strong>。隠さない。</li>
+        <li><strong>見出しは持続定常状態である。</strong> ランプ&middot;ウォームアップの過渡期を混ぜるとポリシー効果がぼやけるため、仮説が生きる持続 10分を代表値にした。全区間の数字も §7 に併記し、どの窓でも差が爪の先ほどだと確認できるようにした。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限界</p>
+      <h2>どこまで信じられるか</h2>
+      <p>この結果は、単一エンドポイントシミュレーター、一つの負荷プロファイル、一回の実行から出た小さな比較値である。数字そのものより、<strong>方法と向き</strong>を持ち帰るほうが安全である。</p>
+      <ul>
+        <li><strong>スピルオーバーはシミュレーションである。</strong> プライマリ/予備経路は一つのデプロイ上のルーティングラベルにすぎず、物理的に分かれたキャッシュプールではない。だから絶対キャッシュ値は本物の 2デプロイ環境へそのまま移らない &mdash; ポリシー間の<em>差の向き</em>だけを読むべきである。</li>
+        <li><strong>Phase 1 の床。</strong> このシミュレーターはポリシー層だけを切り出して見る場所である。物理的に分離されたキャッシュプールでの高忠実度の再測定は Phase 2 の仕事だ。容量&middot;費用計画にこの大きさを使う前に、Phase 2 を先に見る必要がある。</li>
+        <li><strong>負荷と標本。</strong> 22分の一回、ポリシーごとに 2,136 リクエスト。この大きさでは信頼区間や統計的有意性は主張しない。向きは堅いが、絶対値は小標本として注意する。</li>
+        <li><strong>実際の 429 は 0。</strong> スロットルは内部しきい値(90,000 TPM)でまねた。実 429 が混ざる環境では、違う動きをする可能性がある。</li>
+        <li><strong>課金は PAYG スナップショット。</strong> 処理量はトークンで計算した推定であり、実際の PTU スロットルーティングや PTU 課金をモデル化していない。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>だから何をデフォルトにするか</h2>
+      <p><strong>現時点の根拠では、複雑な先回り(<code>proactive</code>)スピルオーバーを導入する理由はない。この単一エンドポイント条件では、先回りは事後対応よりキャッシュを守れず(−0.1657 pp)、費用も少し高かった(+$0.041324)。差は爪の先ほどで、共有キャッシュ設計に縛られている。だから単純な事後対応(<code>reactive</code>)で十分である。本当の審判は、プライマリ/予備キャッシュプールが物理的に分かれる環境で、Phase 2 が下す。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">つなぐ</p>
+      <h2>次の人が迷いにくいように</h2>
+      <p>根拠を残す仕事は、勝った結果だけを書くことではない。予測が外れた実験も、なぜ外れ、どこまで信じられるのかまで残ってこそ、次の判断にもう一度使える。だからこのノートは回顧と前の実験へ戻ってつながる。</p>
+      <ul>
+        <li><strong>回顧本文 →</strong> ハブの <a href="../../../ja/#next">次の判断 &middot; 次の実験</a>が予告した &ldquo;live PTU 負荷テスト&rdquo; が、この実験である。トークンベースの PTU <em>推定</em>の後に来た、最初の<em>実測</em>負荷結果。</li>
+        <li><strong>予告したノート →</strong> <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツールエージェント</a>は最後に &ldquo;次はライブ検索と実際の PTU 負荷テスト&rdquo; と書いた。このノートが、その負荷テストの <strong>Phase 1</strong> である。</li>
+        <li><strong>原資料 →</strong> 二つのポリシー定義は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a>、分析は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> にある。</li>
+      </ul>
+      <p><strong>次の実験。</strong> Phase 1 は一つのデプロイ上でスピルオーバーをまねた。次は<strong>物理的に分離された二つのデプロイ</strong>に実際の TPM スロットルをかけ、同じ負荷を流す高忠実度の再測定である。プライマリ/予備キャッシュプールが本当に分かれたときも、ポリシー差はなお爪の先ほどなのかを見る。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">出典 · 根拠の境界</p>
+      <h2>出典 &amp; 根拠の境界</h2>
+      <p>このノートも新しい測定は足していない。公開済みの集計を再引用した。単一エンドポイントシミュレーターという境界まで含めて、根拠と限界を下に置く。</p>
+      <ul>
+        <li>この実験の分析: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a>(§1 問い&middot;設計, §3 来歴, §5 ヘッドライン, §6 回復曲線, §7 ポリシー別集計, §8 消費モデル, §9 外れ値, §10 限界, §11 結論)。すべての数値はここから再引用。</li>
+        <li>ポリシー定義: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_baseline_reactive.yaml"><code>experiments/exp004_spillover_baseline_reactive.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a>(<code>policy.type</code> だけが異なる)。</li>
+        <li>方法論: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(効果量&middot;向きで判断し、統計的有意性では判断しない)。</li>
+        <li>価格: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。gpt-5.2 = 1M トークン当たり入力 $1.75 / キャッシュ入力 $0.175 / 推論 $14.00 / 出力 $14.00。</li>
+        <li>境界: 単一エンドポイントシミュレーター &middot; スピルオーバーはルーティングラベル(物理キャッシュ分離なし) &middot; 22分 1回 &middot; ポリシーごとに 2,136 リクエスト &middot; 信頼区間なし &middot; 実 429 は内部しきい値でシミュレーション &middot; PTU はトークン圧力推定。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT ライセンスの研究アーティファクト · 公開データには編集済みまたは集計済みの形だけを含みます。</p></footer>
+</body>
+</html>
