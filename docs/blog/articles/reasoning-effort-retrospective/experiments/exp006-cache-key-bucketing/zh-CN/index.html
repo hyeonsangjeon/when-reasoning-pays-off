@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/06-cache-key-bucketing/analysis.md and
+  results/cache-key-bucketing/*.csv, not re-derived. No internal task IDs.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp006 · 把缓存键切成更多桶，缓存几乎没变 | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_key 桶基数测量实验笔记 exp006。在一个真实 gpt-5.2 PAYG 部署上，把缓存键从 1 个桶拆到 8 个，是否能保护缓存命中率？即使单键跑到 30 RPM，是文档所述每桶约 15 req/min 上限的 2 倍，稳态缓存命中仍保持 93.34%(in_memory) / 96.12%(24h)，拆成 8 个只带来 +2.52%p / −0.00%p。真正的杠杆不是基数，而是保留策略：24h 保留把尾部延迟(TTFT p95)从 106 秒降到 10 秒。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="文章导航">
+        <a href="../../../../../../zh-CN/">首页</a>
+        <a href="../../../../zh-CN/">文章列表</a>
+        <a href="../../../zh-CN/">实验回顾(枢纽)</a>
+        <a href="../../../../../charts/?lang=zh-CN">证据看板</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">实验回顾</a> / 实验笔记 · exp006</p>
+    <p class="article-kicker">实验笔记 · exp006 · <code>prompt_cache_key</code> 分桶测量 · 文档里的“每桶上限”在真实运行中到底有多硬</p>
+    <h1>exp006 &mdash; 把缓存键切成更多桶，缓存几乎没变</h1>
+    <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">Azure prompt caching 会把请求里<strong>相同的前半段(前缀)</strong>便宜地复用。但文档旁边也放了一个提醒：如果太多请求挤到同一个缓存键上，超过<strong>每个(前缀哈希、缓存键) ~15 req/min</strong> 后就会溢出，缓存会变冷。常见处方是<em>把缓存键拆成多个桶</em>，也就是提高 <code>prompt_cache_key</code> 的基数。本文在一个真实 <code>gpt-5.2</code> PAYG 部署上，测这条处方是否真的能保护缓存。</p>
+    <p class="lede">所以，一个<strong>预测</strong>很自然：只用一个键(基数 1)会越过文档上限，缓存变冷；拆成 8 个(基数 8)后，每个桶的流量变薄、落回上限以下，缓存命中应该<em>明显</em>恢复。预先登记的读法有两条：如果 1→8 之后命中<strong>大幅上升</strong>，说明分桶是真正的杠杆；如果<strong>几乎不动</strong>，说明这个上限在本部署上偏软。</p>
+    <p class="lede">测量选择了第二条。把<strong>每分钟 30 个请求</strong>(文档上限的 2 倍)都压到一个键上，稳态缓存命中仍然守住 <strong>in_memory 93.34%, 24h 96.12%</strong>；拆成 8 个，也只移动了 <strong>+2.52%p(in_memory)、−0.00%p(24h)</strong>。文档画出的悬崖在原理上存在，但在这个部署里，更像是<strong>撞上也不太会塌的低矮的门槛</strong>。真正拉开差距的轴不是基数，而是<strong>保留策略</strong>：同样速率下，<code>24h</code> 保留把尾部延迟(TTFT p95)从 <strong>106 秒降到 10 秒</strong>。本文按<em>设计 → 输入 → 预测对实测 → 曲线 → 决定</em>回看这次测量。</p>
+
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>只看文档来决定缓存键拆几份之前</h2>
+      <p>Prompt caching 会便宜地处理前缀相同的请求，所以把长系统提示放在前面，后续请求就能按缓存费率运行。问题出在<strong>流量挤到一个键</strong>的时候。文档说，一个(前缀哈希、缓存键)超过每分钟约 15 个请求会溢出，并建议把 <code>prompt_cache_key</code> 拆成多个桶来分散流量。</p>
+      <p>但拆分也有代价。把键拆成 8 个，每个桶收到的速率会降到八分之一，可是<em>每个桶也会因此更少被加热</em>。也就是说，为了避开上限而做的拆分，反而可能让缓存变冷。哪一边占上风，文档不会替你回答，必须实测。</p>
+      <p>如果你正在犹豫该用 <code>prompt_cache_key</code> 把流量分成几路，这篇很贴近你的问题。“为了避开文档上限，把键切得更细，会保护缓存命中，还是会因为冷启动而亏？”这个实验给出一个来自真实部署的<strong>实测答案</strong>：至少在这里，不必只因为文档上限就急着拆。</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">先来，10 秒</p>
+      <h2>不要相信结论，先自己把数字打出来</h2>
+      <p>token 消耗为 0。前两行原样打印两种保留模式的输入、变量与产物卡片，最后一行从已发布汇总 CSV 重新计算基数 1→8 的缓存命中率，并与本文对照(无需网络，也无需凭据)。</p>
+      <pre class="code-block"><code># 打印两种保留模式(in_memory、24h)的输入 → 变量 → 产物卡片(无网络)
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_inmemory.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_24h.yaml').summary())"
+
+# 从已发布汇总 CSV 重新打印基数 1→8 的缓存命中率，并与本文对照(token 为 0)
+python3 -c "import csv; r=list(csv.DictReader(open('results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv'))); d={(x['retention'],x['cardinality']):x for x in r}; [print('%-9s card1=%.4f%% (%.1f RPM/bucket)  card8=%.4f%% (%.1f RPM/bucket)  gap=%+.4f pp' % (ret, float(d[(ret,'1')]['cache_hit_ratio'])*100, float(d[(ret,'1')]['realized_admitted_per_bucket_rpm']), float(d[(ret,'8')]['cache_hit_ratio'])*100, float(d[(ret,'8')]['realized_admitted_per_bucket_rpm']), (float(d[(ret,'8')]['cache_hit_ratio'])-float(d[(ret,'1')]['cache_hit_ratio']))*100)) for ret in ('in_memory','24h')]"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
+      <p class="muted-note">复现真实现场负载需要 Azure 凭据，也会产生实际费用 &mdash; 这是真正向真实部署发请求的负载测试。不用凭据的回看路径(从已发布的原始 summary JSON 重新导出曲线与 CSV)写在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> 的图表复现小节，以及 <code>scripts/plot_cache_key_bucketing.py</code> 中。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="本文结构">
+      <strong>阅读顺序 &mdash; 先看诚实结论，再看机制：</strong>
+      <a href="#design">这次只改缓存键拆成几份</a>
+      <a href="#predict">预测是“拆了就活” &mdash; 实测几乎不动</a>
+      <a href="#result">拆了，缓存也几乎没变</a>
+      <a href="#mechanism">为什么偏软 &mdash; 一个热键已经足够热</a>
+      <a href="#limits">可以相信到哪里</a>
+      <a href="#decision">所以默认值是什么</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">设计</p>
+      <h2>这次只改缓存键拆成几份</h2>
+      <p><strong>为什么测这个。</strong> 文档的处方很清楚：一个缓存键超过每分钟约 15 个请求会溢出，所以把键拆成多个桶，把流量散开。但拆开也带着反作用，每个桶会更少被加热。到底是“拆分收益”更大，还是“变冷损失”更大，只看文档看不出来。这个实验就在真实部署上把两边放上秤。</p>
+      <p><strong>所以判定押在“差距大小”上。</strong> 预先登记的读法分两条：<em>如果基数 1→8 后缓存命中明显上升，分桶就是真正的容量杠杆；如果几乎不动，说明文档上限在这个部署里小于策略选择这个因素。</em> 无论哪边，<strong>实测来选答案</strong>。旁边还放了一个副问题：<code>24h</code> 保留是否会把 <code>in_memory</code> 默认值看到的上限重新画一遍。</p>
+      <p><strong>为了真的撞到上限，我们先修自己的装置。</strong> 这个实验经历过两次空转，记录不隐藏。第一次，请求按<em>一条线串行</em>发送，实际到达速率掉到每分钟约 7 个，连文档上限(约 15 个)都<strong>没有碰到</strong>。第二次，并发上限设得太低，待发送请求在<em>调度器队列</em>里堆起来，预先登记的 backlog gate 正确中止了实验。两次都从证据中<strong>隔离</strong>，最后一次才把队列上限调高到足够宽，即使真实响应变慢也不会堵住，计划中的 <strong>30 RPM</strong> 才真正实现。下面的数字都来自最后这一轮。</p>
+      <p><strong>为什么是一个真实部署。</strong> 这不是模拟，也不是 PTU(预留容量)证据，而是 PAYG(按量付费)测量，每个请求都打到一个真实 Azure <code>gpt-5.2</code> 部署(<strong>500,000 TPM</strong>)。文档所说约 15 RPM 的上限属于 PAYG 模型，所以应当在 PAYG 上测。负载是 <code>effort=low</code>，系统提示约 <strong>9.5K tokens</strong>(为了让两种保留模式拿到字节级相同的提示，用 SHA-256 <code>329a94&hellip;2a99</code> 固定，<code>corpus_seed 4242</code>)，<code>max_output_tokens=512</code>。请求以 <strong>0.5/sec</strong> 稳定流入，去掉 warmup 后的稳态区间作为代表。</p>
+      <p><strong>只改变两条轴线</strong>：<code>sweep.bucket_cardinality</code> 取 <strong>{1, 8}</strong>，<code>prompt_cache_retention</code> 取 <strong>{in_memory, 24h}</strong>。提示、负载、模型、强度、部署上限都固定，所以产物差异只能来自这两条轴。每种保留模式跑 <strong>480×2 cells</strong>。</p>
+      <p><strong>问题只有一个。</strong> 把流量拆到多个缓存键之后，是否会落到文档提醒的上限之下，从而更好地保护缓存命中？</p>
+      <div class="article-summary-grid" aria-label="预先登记预测与作用">
+        <section class="summary-tile"><h2>预先登记预测</h2><p>拆分桶会让缓存活回来。预先登记的判定线是<strong>基数 1→8 的缓存命中差距大小</strong> &mdash; 明显上升说明分桶是真杠杆，几乎不动说明这个上限在本部署上只是小因素。</p></section>
+        <section class="summary-tile"><h2>本实验的作用</h2><p>在真实 PAYG 部署上，第一次可靠地量出<strong>文档所述缓存键上限到底有多硬</strong>的基线。它确认基数与保留策略是否<em>真的</em>写进缓存与延迟。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">输入与产物</p>
+      <h2>吃进什么，留下什么</h2>
+      <p>这个实验吃进和留下的不是手写摘要，而是仓库里的真实文件。所以你可以从输入一路追到输出。</p>
+      <div class="article-summary-grid" aria-label="输入与产物">
+        <section class="summary-tile">
+          <h2>输入 (in)</h2>
+          <p><strong>实验定义：</strong> <code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code>, <code>&hellip;_24h.yaml</code> (只在 <code>prompt_cache_retention</code> 上不同)。<br>
+          <strong>语料：</strong> <code>system_prompt_corpus.json</code>(约 9.5K tokens)、<code>user_prompts.json</code>。<br>
+          <strong>固定：</strong> 两次运行的系统提示用 SHA-256(<code>329a94&hellip;2a99</code>)固定 &mdash; 保证两种保留模式收到的是<em>字节级相同</em>的提示。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>产物 (out)</h2>
+          <p><strong>原始调用：</strong> <code>runs/*.jsonl</code> (+ 每个 cell 的 <code>*.summary.json</code>，包含 admitted 时刻遥测)。<br>
+          <strong>汇总：</strong> <code>analysis.md</code>。<br>
+          <strong>曲线：</strong> <code>results/cache-key-bucketing/*.png</code>&middot;<code>.csv</code> (按基数的缓存命中、TTFT p95)。</p>
+        </section>
+      </div>
+      <p><strong>每种保留模式都完整跑完 480 个请求 × 2 个 cell</strong>(基数 1、8 各一个 cell)。去掉 warmup 的稳态样本，每个 cell 约 <strong>388&ndash;390</strong> 条。证据运行中<strong>1,920 sends 里只有 1 failure</strong>，是上游某一瞬吐出一次 <code>500</code>，cell 隔离保护了其余数据，汇总没有受损。实际 <strong>429=0</strong>，没有任何 cell 堵住调度器队列(四个 cell 都是 <code>backlog_excessive=false</code>)。没有删掉任何行 &mdash; 保留了什么、为什么保留，下面的<a href="#transparency">透明度</a>会说明。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">预测对实测</p>
+      <h2>预测是“拆了就活” &mdash; 实测几乎不动</h2>
+      <div class="article-summary-grid" aria-label="预测对实测">
+        <section class="summary-tile"><h2>预测了什么</h2><p>挤到一个键上会越过文档上限，让缓存变冷；拆成 8 个后落到上限以下，缓存命中会<strong>明显</strong>上升。至少，1→8 应该能看到清楚的台阶。</p></section>
+        <section class="summary-tile"><h2>结果是什么</h2><p>稳态缓存命中从基数 1 到 8，<code>in_memory</code> 是 <strong>93.34% → 95.86%</strong>(<strong>+2.52%p</strong>)，<code>24h</code> 是 <strong>96.12% → 96.12%</strong>(<strong>−0.00%p</strong>)。一个键已经承受<strong>每分钟 30 个请求</strong>(文档上限的 2 倍)，仍然守住了。</p></section>
+      </div>
+      <p><strong>判定：分桶在这个部署上是弱杠杆。</strong> 预先登记的两条读法里，实测选择了<strong>“差距几乎没有”</strong>，也就是说，文档画出的约 15 RPM 悬崖在原理上存在，但在这个 PAYG 部署上，更像是<em>以 2 倍速度撞上也不太会塌的低矮的门槛</em>。“为了避开上限，我是不是必须拆键？”这个担心，在这里有了答案：至少在这个规模下，没什么理由急着拆。</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">第一个信号</p>
+      <h2>拆了，缓存也几乎没变</h2>
+      <p>下表看的是<strong>稳态(去掉 warmup)</strong>区间，也就是负载稳定在每秒 0.5 个请求、假设真正成立或失败的区间。数字从已发布汇总 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>analysis.md</code></a> 与 <code>results/cache-key-bucketing/*.csv</code> 重新引用。</p>
+      <pre class="code-block"><code>保留模式    카디널리티     버킷당 RPM   稳态缓存命中      TTFT p95      备注
+in_memory   1 (한 키)      30.65        93.34%              106,390ms     单一键承载、文档上限 2 倍速度
+in_memory   8 (쪼갬)       4.00         95.86%               16,624ms     +2.52%p (几乎没升)
+24h         1 (한 키)      30.73        96.12%                9,900ms     24h 保留、尾部延迟短 10 倍
+24h         8 (쪼갬)       4.00         96.12%               15,549ms     −0.00%p (没有变化)</code></pre>
+      <p>四个点都紧紧落在 <strong>93&ndash;96% 区间</strong>里。画成图，基数从 1 到 8 的线几乎是<em>水平</em>的：为了避开文档上限，我们把流量稀释到八分之一，但缓存命中得到的收益只有 in_memory 的 <strong>2.52%p</strong>，24h 则<strong>基本为 0</strong>。关键在基数 1 这一侧：那个键已经收到每分钟 <strong>30 个请求</strong>(30.65 / 30.73)，是文档所述约 15 个请求上限的<strong>2 倍</strong>。即便如此，缓存命中仍保持在 <strong>93.34% / 96.12%</strong>。</p>
+      <p><strong>真正明显分开的，是另一条轴：保留策略。</strong> 同样是 30 RPM、基数 1，尾部延迟(TTFT p95)在 <code>in_memory</code> 下是 <strong>106,390ms</strong>，在 <code>24h</code> 下是 <strong>9,900ms</strong>，接近<strong>10 倍</strong>差距。缓存命中相似，但第一个 token 能否及时出来，完全由保留窗口拉开。</p>
+
+      <figure class="article-figure" id="figure-exp006-cardinality">
+        <figcaption><strong>按基数划分的稳态缓存命中(两种保留模式)。</strong> 横轴是 <code>bucket_cardinality</code>(log2)，纵轴是稳态缓存命中率。两条线(<code>in_memory</code>、<code>24h</code>)从基数 1 到 8 都<strong>几乎水平</strong>：一个键以文档上限 2 倍(每分钟 30 个请求)运行，仍保持 93&ndash;96%；拆成 8 个带来的收益只有 in_memory +2.52%p、24h −0.00%p。每个点来自稳态 480 个请求中去掉 warmup 后的样本(N=960/保留)。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png"><code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png</code></a>。</figcaption>
+        <img src="../../../../../../assets/benchmark-06-cache-key-bucketing.png" alt="基数(1, 8)对应的稳态缓存命中率。in_memory 和 24h 两条线都在 93~96% 区间内几乎水平；从基数 1 到 8，in_memory 只从 93.34% 升到 95.86%，增加 2.52%p，24h 维持 96.12%，没有变化。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA"></figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">第二个信号</p>
+      <h2>为什么偏软 &mdash; 一个热键已经足够热</h2>
+      <p>悬崖之所以偏软，原因很简单：<strong>一个键已经足够热。</strong> 在基数 1 下，全部流量进入<em>同一个</em>公共前缀。每分钟 30 个请求是文档上限的 2 倍，但这个热键的请求间隔足够短，缓存没有机会变冷，持续保持热度，所以得到 93&ndash;96%。拆成 8 个后，每桶速率降到每分钟 <strong>4 个请求</strong>。它确实安全落到上限以下，同时<em>每个桶也更少被加热</em>。于是“避开溢出的收益”和“桶变冷的损失”互相抵消，净效果只剩 in_memory 2.52%p、24h 0。</p>
+      <p><strong>保留模式拉开差距，是因为保温窗口大小不同。</strong> <code>24h</code> 保留会在整个 cell 内抱住更宽的键窗口，让它保持温热。所以即便真实响应一时变慢，也很少需要重新计算前缀，基数 1 的尾部延迟(TTFT p95)能保持在 <strong>9,900ms</strong>。相反，<code>in_memory</code> 每逢这种时刻都要重新加热前缀，同一位置的尾部被拉长到 <strong>106,390ms</strong>。缓存<em>命中率</em>两者相似，但命中能否<em>及时</em>给出，由保留窗口决定。</p>
+      <p><strong>成本没有支持任何一边。</strong> 证据运行成本是 <code>in_memory</code> $4.997211、<code>24h</code> $4.848757，两者相近(合计约 $9.85)；基数之间的缓存命中差距太小，没有把足够多输入 token 推回正价，形成明显美元差异。没有 cell 堵住队列(四个 cell 都是 <code>backlog_excessive=false</code>)，并发最高只到 <strong>33</strong>，远低于上限 96。换句话说，这些数字不是装置堵住的产物，而是在计划速率真实实现之后得到的。</p>
+      <p><strong>总结起来：</strong> 文档上限在原理上是悬崖，但在这个真实 PAYG 部署里，更像是<strong>以 2 倍速度撞上也不太会塌的低矮的门槛</strong>。把缓存键切得更细这张“处方”，在这里几乎没有值回成本；真正的杠杆是<strong>保留策略</strong>。如果目标是压住尾部延迟，打开 <code>24h</code> 比调整基数更有力。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明度</p>
+      <h2>连数字上的污点也原样留下</h2>
+      <p>任何测量都不可能完全干净。这个实验留下的痕迹，我们不擦掉，而是写出来；藏起来，只会让后来的人在同一个地方踩空。</p>
+      <ul>
+        <li><strong>删掉的行 0 个。</strong> 证据运行 1,920 次发送中，失败只有 <strong>1 个</strong>(in_memory 基数 1)。上游某一瞬返回一次 <code>500</code>，脚本的逐请求失败隔离保护了其余 cell。那个 cell 也通过了队列 gate(<code>backlog_excessive=false</code>)和并发上限检查(<strong>33 &lt; 96</strong>)。原始数据照样留在汇总里。</li>
+        <li><strong>两次空转已从证据中隔离。</strong> 在此之前，这个实验两次败在自己的装置上：第一次串行发送请求，实际速率<em>没有碰到</em>文档上限；第二次并发上限太低，待发送请求堆进调度器队列，触发了预先登记的 backlog gate。两次都放进单独文件夹并标明不能作为证据引用，上面的数字来自修好问题后的最后一轮。不隐藏。</li>
+        <li><strong>头部数字采用稳态。</strong> 如果混入 warmup 的过渡期，缓存早期加热会冲淡策略效果，所以本文把去掉 warmup 的稳态区间(每个 cell 约 388&ndash;390 条)作为代表数字。</li>
+        <li><strong>这次没有速率限制。</strong> 部署给了充足的 500,000 TPM，负载也在其中(按计算约 ~330K TPM)，所以四个 cell 的实际 429 都是 <strong>0</strong>。本文所说的“上限”不是速率限制，而是<em>缓存</em>上限。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限制</p>
+      <h2>可以相信到哪里</h2>
+      <p>这个结果来自一个部署、一个容量等级、两个基数、一个负载形态和一次运行。比起直接拿走数字，更稳妥的是带走<strong>方法和方向</strong>。</p>
+      <ul>
+        <li><strong>这是 PAYG，不是 PTU。</strong> 文档所说约 15 RPM 的上限属于 PAYG(按量付费)模型。PTU(预留容量)的接纳方式不同，所以不能把这个结果直接搬到 PTU 上，本实验没有测 PTU。</li>
+        <li><strong>单一部署。</strong> 没有比较两个部署，也没有溢出路由。它只在真实部署上瞄准一个杠杆：缓存键基数。</li>
+        <li><strong>绝对数值不能迁移。</strong> 缓存命中和延迟会随租户、区域、时间段波动。Azure 部署负载跟着时钟走，所以应读基数之间<em>差异的方向</em>，不要照搬绝对值。</li>
+        <li><strong>尾部延迟波动很大。</strong> 如果真实部署的 TTFT 分布在运行中摆动，数字也会跟着动。因此每个 cell 都留下并发量(<code>max_in_flight_observed</code>)，方便确认这些值不是装置堵住导致的。</li>
+        <li><strong>负载与样本。</strong> 每种保留模式两个基数点，每个 cell 480 个请求。在这个规模下不主张置信区间或统计显著性；方向稳健，但绝对幅度要按小样本谨慎解读。没有给响应质量打分。</li>
+        <li><strong>24h cell 隔离。</strong> <code>24h</code> 保留无法在 cell 之间清洗缓存，因此隔离完全依靠每个 cell 的命名空间(UUID 8 字符后缀)。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>所以默认值是什么</h2>
+      <p><strong>不要只因为文档里的“每桶约 15 个请求”上限，就急着把缓存键切得很细。在这个真实 PAYG 部署上，把 2 倍上限(每分钟 30 个请求)压到一个键上，稳态缓存命中仍保持 93&ndash;96%；拆成 8 个只在 in_memory 上得到 2.52%p，在 24h 上几乎为 0。如果目标是压住尾部延迟，先动保留策略，不要先动基数：<code>24h</code> 保留在同样速率下把 TTFT p95 从 106 秒降到 10 秒。把基数拆分留作真正观察到溢出时再打出的牌；工作负载形态变了，就在你的部署上重测。也不要把这个结论搬到 PTU 上，预留容量的接纳方式不同。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">继续连接</p>
+      <h2>让后来的人少绕弯</h2>
+      <p>记录证据不只是写下赢了的结果。预测落空的实验，也要把为什么落空、可以相信到哪里留下来，下一次决策才用得上。所以这篇笔记会回连到溢出系列，也会接到之后的 PTU 测量。</p>
+      <ul>
+        <li><strong>溢出系列 →</strong> <a href="../../exp004-spillover-simulation/zh-CN/">exp004</a>、<a href="../../exp005-dual-spillover/zh-CN/">exp005</a> 在负载下比较<em>送到哪个部署</em>(路由)，本文比较<em>送到哪个缓存键</em>(分桶)。两者都是“如何让缓存保持温热”这同一问题的不同手柄。</li>
+        <li><strong>回顾正文 →</strong> 枢纽里的<a href="../../../zh-CN/#next">下一次判断 · 下一项实验</a>所预告的缓存调优手柄测量，就是本实验。</li>
+        <li><strong>原始材料 →</strong> 两个实验定义在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_*.yaml</code></a>，分析在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>。</li>
+      </ul>
+      <p><strong>下一项实验。</strong> 这次测的是 PAYG 模型上的缓存键上限。下一步要在 <strong>PTU(预留容量)</strong> 上看同一个手柄；PTU 的接纳方式不同，PAYG 里偏软的低矮的门槛到了那里是否仍然偏软，必须重新测。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">来源 · 证据边界</p>
+      <h2>来源 &amp; 证据边界</h2>
+      <p>本文同样没有新的测量，只重新引用已发布的汇总。连单一 PAYG 部署这个边界，也和证据、限制一起列在下面。</p>
+      <ul>
+        <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>(设计摘要、证据阶段结果、头部表、上限是否实际可触达、限制)。所有数字都从这里和 <code>results/cache-key-bucketing/*.csv</code> 重新引用。</li>
+        <li>实验定义：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_24h.yaml"><code>&hellip;_24h.yaml</code></a>(只在 <code>prompt_cache_retention</code> 上不同)。</li>
+        <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(按效果大小与方向判断，不主张统计显著性)。</li>
+        <li>Azure 文档：<a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching">Prompt caching</a>(<code>prompt_cache_key</code> 与前缀哈希会影响路由；每个(前缀哈希、缓存键)每分钟约 15 个请求的溢出上限；<code>24h</code> 保留；<code>in_memory</code> 默认值，访问日 2026-05-29) · <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota">速率限制与配额</a>。</li>
+        <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure，访问日 2026-05-19)。gpt-5.2 = 每 1M token 输入 $1.75 / 缓存输入 $0.175 / 推理 $14.00 / 输出 $14.00。</li>
+        <li>边界：一个真实 <code>gpt-5.2</code> 单一部署(500,000 TPM) &middot; PAYG(不是 PTU) &middot; 自定义 sweep harness &middot; 2 个基数 × 2 种保留模式 &middot; 每个 cell 480 个请求 &middot; 无置信区间 &middot; 未做质量评分。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 许可研究工件 · 发布数据仅包含经清理或聚合的形式。</p></footer>
+</body>
+</html>

@@ -155,6 +155,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p><strong>下一项实验。</strong> 这里的 PTU 数字是基于 token 的估算(不是实时负载)。下一项实验是在真实 PTU 部署上的负载测试 &mdash; 限速调节 · 排队 · 并行批处理如何作用于吞吐。</p>
       <p><strong>第一份结果已经出来。</strong> <a href="../experiments/exp004-spillover-simulation/zh-CN/">exp004 &mdash; PTU 溢出策略模拟(Phase 1)</a>把 proactive 溢出策略和 reactive 放到一起，检验饱和负载下谁更能保护缓存。答案接近平手：proactive 的稳态缓存反而<strong>低 0.1657 pp</strong>，而且一次也没有触发溢出。真正的判决要交给物理分离的双部署负载测试(Phase 2)。</p>
       <p><strong>而这个判决已经出来。</strong> <a href="../experiments/exp005-dual-spillover/zh-CN/">exp005 &mdash; 双部署溢出测试(Phase 2)</a>在两个拥有物理独立缓存的在线部署上，把同一个问题重新跑了一遍。这一次差距反而拉大了 &mdash; proactive 的稳态缓存<strong>低 0.9923 pp</strong>(约为 Phase 1 的 6 倍)，成本也更高，因为把流量一分为二，会让你原本焐热的那个缓存池重新变冷。两个 Phase 得出了同一个结论 &mdash; 当缓存在物理上彼此独立时，reactive 更胜一筹。</p>
+      <p><strong>然后我们拆的不是部署，而是“键”。</strong> <a href="../experiments/exp006-cache-key-bucketing/zh-CN/">exp006 &mdash; 缓存键切得再细，缓存也几乎没变</a>在一个部署内追问：把 <code>prompt_cache_key</code> 从 1 个拆到 8 个，缓存会不会活回来。答案仍是“几乎没变”：即使把文档上限 2 倍的流量(30 requests/min)压到一个键上，稳态缓存命中仍保持 <strong>93–96%</strong>；拆成 8 个的收益最多只有 <strong>2.52pp</strong>。真正拉开差距的不是基数，而是 <strong>保留策略</strong>，<code>24h</code> 保留把尾部延迟(TTFT p95)从 106s→10s。</p>
       <p>
         <strong>接着读：</strong>
         <a href="../../ptu-retry-after-recovery/zh-CN/">429 不是错误，而是恢复信号</a>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--
+  DRAFT · 한국어 정본(canonical) 실험 노트 · exp006 (prompt_cache_key 버킷 카디널리티 측정).
+  이 시리즈(reasoning-effort-retrospective)는 한국어를 원본 언어로 삼습니다.
+  본문이 이야기로 짚은 판단을 여기서는 원자료와 재현 커맨드로 확인합니다.
+  승인 후: en/ja/zh-CN/hi 번역본을 KO 원본에서 파생하고 i18n-parity.json 추가.
+  수치는 모두 benchmarks/06-cache-key-bucketing/analysis.md 및
+  results/cache-key-bucketing/*.csv 에서 재인용하며 재유도하지 않습니다.
+  내부 태스크 ID는 절대 포함하지 않습니다.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp006 · 캐시 키를 잘게 쪼개도 캐시는 거의 그대로였다 | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_key 버킷 카디널리티 측정 실험 노트 exp006. 라이브 gpt-5.2 PAYG 배포 하나에서, 캐시 키를 1개에서 8개로 쪼개면 캐시 히트가 지켜지는지 잰다. 문서가 그은 (프리픽스 해시, 캐시 키)당 분당 약 15요청 한도를 2배로 밟아도(30 RPM) 정상상태 캐시 히트는 93.34%(in_memory)·96.12%(24h)로 버텼고, 8개로 쪼개도 +2.52%p·−0.00%p밖에 안 올랐다. 진짜 지렛대는 카디널리티가 아니라 보존 정책이었다 — 24h 보존이 꼬리 지연(TTFT p95)을 106초에서 10초로 줄였다.">
+  <meta name="article:locale" content="ko">
+  <meta name="article:translation-status" content="canonical">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ko/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="글 탐색">
+        <a href="../../../../../../ko/">홈</a>
+        <a href="../../../../ko/">글 목록</a>
+        <a href="../../../ko/">실험 회고(허브)</a>
+        <a href="../../../../../charts/?lang=ko">근거 대시보드</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="언어">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko" aria-current="true">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp006</p>
+    <p class="article-kicker">실험 노트 · exp006 · <code>prompt_cache_key</code> 버킷 쪼개기 측정 · 문서가 그은 &lsquo;버킷당 한도&rsquo;는 실제로 얼마나 단단한가</p>
+    <h1>exp006 &mdash; 캐시 키를 잘게 쪼개도, 캐시는 거의 그대로였다</h1>
+    <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">Azure 프롬프트 캐시는 요청들이 <strong>같은 앞부분(프리픽스)</strong>을 공유하면 그 부분을 싸게 재사용해 준다. 그런데 문서에는 경고가 하나 붙어 있다 &mdash; 한 캐시 키에 요청을 너무 몰면 <strong>(프리픽스 해시, 캐시 키)당 분당 약 15요청</strong>에서 넘쳐서 캐시가 식는다는 것. 그래서 흔한 처방이 <em>캐시 키를 여러 개로 쪼개는 것</em>(<code>prompt_cache_key</code> 버킷 늘리기)이다. 이 노트는 라이브 <code>gpt-5.2</code> PAYG 배포 하나에서 그 처방이 진짜로 캐시를 지키는지 잰다.</p>
+    <p class="lede">그래서 이런 <strong>예측</strong>이 자연스러웠다 &mdash; 키를 하나만 쓰면(카디널리티 1) 문서 한도를 넘겨 캐시가 식고, 8개로 쪼개면(카디널리티 8) 버킷마다 트래픽이 옅어져 한도 아래로 내려가니 캐시 히트가 <em>눈에 띄게</em> 살아날 것이다. 사전 등록한 읽기는 두 갈래였다: 1→8에서 히트가 <strong>많이 오르면</strong> 버킷 쪼개기가 진짜 지렛대라는 뜻, <strong>거의 안 오르면</strong> 그 한도가 이 배포에선 물렁하다는 뜻.</p>
+    <p class="lede">측정은 두 번째를 골랐다. 키 하나에 <strong>분당 30요청</strong>(문서 한도의 2배)을 몰아넣어도 정상상태 캐시 히트는 <strong>in_memory 93.34%, 24h 96.12%</strong>로 버텼고, 8개로 쪼개도 <strong>+2.52%p(in_memory) · −0.00%p(24h)</strong>밖에 안 움직였다. 문서가 그은 절벽은 원리로는 있지만, 이 배포에선 <strong>부딪혀도 잘 안 무너지는 낮은 턱</strong>에 가까웠다. 정작 크게 갈린 축은 카디널리티가 아니라 <strong>보존 정책</strong>이었다 &mdash; 같은 속도에서 <code>24h</code> 보존이 꼬리 지연(TTFT p95)을 <strong>106초에서 10초로</strong> 줄였다. 이 노트는 그 측정을 <em>설계 → 입력 → 예측 대 실측 → 곡선 → 결정</em>으로 되짚는다.</p>
+
+    <section class="article-section">
+      <p class="section-label">왜 읽어야 하나</p>
+      <h2>캐시 키를 몇 개로 나눌지, 문서만 보고 정하기 전에</h2>
+      <p>프롬프트 캐시는 앞부분이 같은 요청을 싸게 처리해 준다 &mdash; 그래서 긴 시스템 프롬프트를 앞에 두면 뒤따르는 요청들이 캐시 요율로 굴러간다. 문제는 <strong>한 키에 몰릴 때</strong>다. 문서는 (프리픽스 해시, 캐시 키) 하나당 분당 약 15요청을 넘기면 넘친다고 말하고, 그 처방으로 <code>prompt_cache_key</code>를 여러 개로 나눠 트래픽을 분산하라고 안내한다.</p>
+      <p>그런데 쪼개는 데는 값이 따른다. 키를 8개로 나누면 버킷 하나가 받는 속도는 8분의 1로 떨어지지만, <em>각 버킷이 그만큼 덜 데워진다</em>. 즉 &lsquo;한도를 피하려 쪼갠 것&rsquo;이 오히려 캐시를 식힐 수도 있다. 어느 쪽이 이길지는 문서가 답해 주지 않는다 &mdash; 재 봐야 안다.</p>
+      <p>당신이 <code>prompt_cache_key</code>로 트래픽을 몇 갈래로 나눌지 고민 중이라면 이 글이 가깝다. &ldquo;문서 한도를 피하려 키를 잘게 쪼개면 캐시 히트가 지켜질까, 아니면 콜드 스타트로 오히려 손해일까?&rdquo;라는 질문에, 이 실험이 라이브 배포에서 나온 <strong>실측 답</strong> 하나를 준다 &mdash; 그리고 그 답은 &lsquo;문서 한도만 보고 서둘러 쪼갤 필요는 없다&rsquo;에 가깝다.</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">먼저, 10초</p>
+      <h2>결론을 믿지 말고 숫자부터 직접 찍어 보세요</h2>
+      <p>토큰 소비는 0입니다. 첫 두 줄은 두 보존 모드의 입력&middot;변수&middot;산출물 카드를 그대로 출력하고, 마지막 줄은 게시된 집계 CSV에서 카디널리티 1→8의 캐시 히트를 다시 계산해 이 노트와 맞는지 대조합니다(네트워크&middot;자격증명 없음).</p>
+      <pre class="code-block"><code># 두 보존 모드(in_memory · 24h)의 입력 → 변수 → 산출물 카드를 출력 (네트워크 없음)
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_inmemory.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_24h.yaml').summary())"
+
+# 게시된 집계 CSV에서 카디널리티 1→8 캐시 히트를 다시 찍어 노트와 대조 (토큰 0)
+python3 -c "import csv; r=list(csv.DictReader(open('results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv'))); d={(x['retention'],x['cardinality']):x for x in r}; [print('%-9s card1=%.4f%% (%.1f RPM/bucket)  card8=%.4f%% (%.1f RPM/bucket)  gap=%+.4f pp' % (ret, float(d[(ret,'1')]['cache_hit_ratio'])*100, float(d[(ret,'1')]['realized_admitted_per_bucket_rpm']), float(d[(ret,'8')]['cache_hit_ratio'])*100, float(d[(ret,'8')]['realized_admitted_per_bucket_rpm']), (float(d[(ret,'8')]['cache_hit_ratio'])-float(d[(ret,'1')]['cache_hit_ratio']))*100)) for ret in ('in_memory','24h')]"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 레포 열기 &amp; ⭐</a></p>
+      <p class="muted-note">실제 라이브 부하 재현은 Azure 자격증명과 실제 과금이 필요합니다 &mdash; 이건 진짜 라이브 배포에 요청을 쏘는 부하 테스트입니다. 자격증명 없이 되짚는 길(게시된 원시 요약 JSON에서 곡선&middot;CSV를 다시 유도하는 절차)은 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>의 차트 재현 절과 <code>scripts/plot_cache_key_bucketing.py</code>에 정리되어 있습니다.</p>
+    </section>
+
+    <nav class="article-outline" aria-label="이 노트의 구성">
+      <strong>읽는 순서 &mdash; 정직한 결론을 먼저, 메커니즘은 그다음:</strong>
+      <a href="#design">이번엔 캐시 키를 몇 개로 나누느냐만 바꾼다</a>
+      <a href="#predict">예측은 &lsquo;쪼개면 산다&rsquo;였다 &mdash; 실측은 거의 안 움직였다</a>
+      <a href="#result">쪼개도 캐시는 거의 그대로였다</a>
+      <a href="#mechanism">왜 물렁했나 &mdash; 키 하나도 충분히 뜨거웠다</a>
+      <a href="#limits">어디까지 믿을 수 있나</a>
+      <a href="#decision">그래서 무엇을 기본값으로</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">설계</p>
+      <h2>이번엔 캐시 키를 몇 개로 나누느냐만 바꾼다</h2>
+      <p><strong>왜 이걸 쟀나.</strong> 문서의 처방은 명료하다 &mdash; 한 캐시 키가 분당 약 15요청을 넘기면 넘치니, 키를 여러 개로 쪼개 트래픽을 흩으라는 것. 하지만 쪼개면 각 버킷이 덜 데워진다는 반대급부가 따른다. 그래서 &lsquo;쪼개는 이득&rsquo;과 &lsquo;식는 손해&rsquo; 중 어느 쪽이 큰지는 문서만 봐선 알 수 없다. 이 실험은 바로 그 저울질을 라이브 배포에서 실제로 재 본다.</p>
+      <p><strong>그래서 가설은 &lsquo;격차의 크기&rsquo;에 걸었다.</strong> 사전 등록한 읽기는 두 갈래다 &mdash; <em>카디널리티 1→8에서 캐시 히트가 뚜렷이 오르면, 버킷 쪼개기는 진짜 용량 지렛대라는 뜻. 거의 안 오르면, 문서 한도가 이 배포에선 정책 선택보다 작은 요인이라는 뜻.</em> 어느 쪽이든 <strong>실측이 답을 고른다</strong>. 여기에 곁가지 하나를 더 걸었다: <code>24h</code> 보존이 <code>in_memory</code> 기본값과 다르게 그 한도를 다시 그리는가.</p>
+      <p><strong>한도에 진짜로 부딪히도록, 먼저 우리 장비부터 고쳤다.</strong> 이 실험은 두 번의 헛발을 지나왔고, 그 기록을 감추지 않는다. 처음엔 요청을 <em>한 줄로(직렬)</em> 보내는 방식이라 실제 도달 속도가 분당 약 7요청까지 주저앉아, 문서 한도(약 15요청)에 <strong>닿지도 못했다</strong>. 다음엔 동시 처리 한도를 너무 낮게 잡아, 보낼 요청이 <em>디스패처 대기줄</em>에 밀리면서 사전 등록해 둔 백로그 게이트가 옳게 실험을 멈춰 세웠다. 두 판 모두 근거에서 <strong>격리</strong>했고, 마지막 판에서야 대기줄 상한을 넉넉히 올려(라이브 응답이 느려도 막히지 않게) 계획한 <strong>30 RPM</strong>이 진짜로 실현됐다. 아래 숫자는 그 마지막 판의 것이다.</p>
+      <p><strong>왜 라이브 단일 배포인가.</strong> 이건 시뮬레이션도, PTU(예약 용량) 근거도 아니다 &mdash; 매 요청이 실제 Azure <code>gpt-5.2</code> 배포(<strong>500,000 TPM</strong>)에 날아가는 PAYG(쓴 만큼 과금) 측정이다. 문서가 말하는 약 15 RPM 한도는 PAYG 모델의 것이라, 그 위에서 재는 게 맞다. 부하는 <code>effort=low</code>, 시스템 프롬프트 약 <strong>9.5K 토큰</strong>(두 보존 모드가 바이트까지 같은 프롬프트를 받도록 SHA-256 <code>329a94&hellip;2a99</code>로 고정, <code>corpus_seed 4242</code>), <code>max_output_tokens=512</code>. 초당 <strong>0.5요청</strong>으로 꾸준히 흘리고, 웜업을 뺀 정상상태 구간을 대표로 삼는다.</p>
+      <p><strong>변하는 축은 딱 둘</strong> &mdash; <code>sweep.bucket_cardinality</code>를 <strong>{1, 8}</strong>로, <code>prompt_cache_retention</code>을 <strong>{in_memory, 24h}</strong>로 바꾼다. 프롬프트&middot;부하&middot;모델&middot;강도&middot;배포 상한은 모두 고정이라, 산출물의 차이는 오직 이 두 축에서 온다. 보존 모드마다 <strong>480요청 × 2셀</strong>을 돌렸다.</p>
+      <p><strong>질문은 하나다.</strong> 트래픽을 여러 캐시 키로 쪼개면, 문서가 겁준 한도 아래로 내려가 캐시 히트를 더 지키는가?</p>
+      <div class="article-summary-grid" aria-label="미리 적어둔 예측과 역할">
+        <section class="summary-tile"><h2>미리 적어둔 예측</h2><p>버킷을 쪼개면 캐시가 살아날 것이다. 사전 등록한 판정선은 <strong>1→8 캐시 히트 격차의 크기</strong> &mdash; 뚜렷이 오르면 버킷 쪼개기가 진짜 지렛대, 거의 안 오르면 한도가 이 배포에선 작은 요인.</p></section>
+        <section class="summary-tile"><h2>이 실험의 역할</h2><p>문서가 제시한 캐시 키 한도가 <strong>실제로 얼마나 단단한지</strong> 라이브 PAYG 배포에서 처음으로 믿을 만하게 재는 기준선. 카디널리티와 보존 정책이 캐시&middot;지연에 <em>진짜로</em> 새겨지는지 확인한다.</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">입력과 산출물</p>
+      <h2>무엇을 먹고 무엇을 남겼나</h2>
+      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 그래서 입력에서 출력까지 한 줄로 되짚을 수 있습니다.</p>
+      <div class="article-summary-grid" aria-label="입력과 산출물">
+        <section class="summary-tile">
+          <h2>입력 (in)</h2>
+          <p><strong>실험 정의:</strong> <code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code>, <code>&hellip;_24h.yaml</code> (<code>prompt_cache_retention</code>만 다름).<br>
+          <strong>말뭉치:</strong> <code>system_prompt_corpus.json</code>(약 9.5K 토큰) · <code>user_prompts.json</code>.<br>
+          <strong>고정:</strong> 두 런의 시스템 프롬프트를 SHA-256(<code>329a94&hellip;2a99</code>)으로 고정 &mdash; 두 보존 모드가 <em>바이트까지 같은</em> 프롬프트를 받았음을 보증.</p>
+        </section>
+        <section class="summary-tile">
+          <h2>산출물 (out)</h2>
+          <p><strong>원시 호출:</strong> <code>runs/*.jsonl</code> (+ 셀별 <code>*.summary.json</code>, admitted 시각 텔레메트리 포함).<br>
+          <strong>집계:</strong> <code>analysis.md</code>.<br>
+          <strong>곡선:</strong> <code>results/cache-key-bucketing/*.png</code>&middot;<code>.csv</code> (카디널리티별 캐시 히트, TTFT p95).</p>
+        </section>
+      </div>
+      <p><strong>보존 모드마다 480요청 × 2셀을 끝까지 돌렸다</strong>(카디널리티 1·8 각 한 셀). 웜업을 뺀 정상상태 표본은 셀마다 약 <strong>388&ndash;390건</strong>이다. 근거 런 <strong>1,920번 발사 중 실패는 1건</strong> &mdash; 업스트림 한 번이 순간적으로 <code>500</code>을 뱉은 것으로, 셀 격리가 나머지를 지켜 집계는 멀쩡하다. 실제 <strong>429(속도 제한)는 0건</strong>, 디스패처 대기줄이 막힌 셀도 <strong>0건</strong>(네 셀 모두 <code>backlog_excessive=false</code>). 지운 행은 없다 &mdash; 무엇을 왜 남겼는지는 아래 <a href="#transparency">투명성</a>에서 짚는다.</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">예측 대 실측</p>
+      <h2>예측은 &lsquo;쪼개면 산다&rsquo;였다 &mdash; 실측은 거의 안 움직였다</h2>
+      <div class="article-summary-grid" aria-label="예측 대 실측">
+        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>키 하나에 몰면 문서 한도를 넘겨 캐시가 식고, 8개로 쪼개면 한도 아래로 내려가 캐시 히트가 <strong>눈에 띄게</strong> 오른다. 최소한 1→8에서 뚜렷한 계단이 보일 자리였다.</p></section>
+        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>정상상태 캐시 히트는 카디널리티 1→8에서 <code>in_memory</code> <strong>93.34% → 95.86%</strong>(<strong>+2.52%p</strong>), <code>24h</code> <strong>96.12% → 96.12%</strong>(<strong>−0.00%p</strong>). 키 하나가 이미 분당 <strong>30요청</strong>(문서 한도의 2배)을 받고도 버텼다.</p></section>
+      </div>
+      <p><strong>판정: 버킷 쪼개기는 이 배포에선 약한 지렛대였다.</strong> 사전 등록한 두 갈래 중, 실측은 <strong>&lsquo;격차가 거의 없다&rsquo;</strong>를 골랐다 &mdash; 즉 문서가 그은 약 15 RPM 절벽은 원리로는 존재하되, 이 PAYG 배포에선 <em>2배로 밟아도 캐시가 잘 안 무너지는 낮은 턱</em>이었다. &ldquo;한도를 피하려 키를 쪼개야 하나?&rdquo; 하던 걱정은 여기선 답이 났다 &mdash; 적어도 이 규모에선, 서둘러 쪼갤 이유가 크지 않다.</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">첫 번째 신호</p>
+      <h2>쪼개도 캐시는 거의 그대로였다</h2>
+      <p>아래 표는 <strong>정상상태(웜업 제외)</strong> 구간이다 &mdash; 부하가 초당 0.5요청에 눌러앉은, 가설이 사는 구간이다. 숫자는 게시된 집계 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>analysis.md</code></a>와 <code>results/cache-key-bucketing/*.csv</code>에서 재인용했다.</p>
+      <pre class="code-block"><code>보존 모드    카디널리티     버킷당 RPM   정상상태 캐시 히트   TTFT p95      비고
+in_memory   1 (한 키)      30.65        93.34%              106,390ms     한 키에 몰림 · 문서 한도의 2배 속도
+in_memory   8 (쪼갬)       4.00         95.86%               16,624ms     +2.52%p (거의 안 오름)
+24h         1 (한 키)      30.73        96.12%                9,900ms     24h 보존 · 꼬리 지연이 10배 짧다
+24h         8 (쪼갬)       4.00         96.12%               15,549ms     −0.00%p (변화 없음)</code></pre>
+      <p>네 점이 모두 <strong>93&ndash;96% 띠</strong> 안에 촘촘히 붙어 있다. 그래프로 그리면 카디널리티 1에서 8로 가는 선이 <em>거의 수평</em>이다 &mdash; 문서 한도를 피하려 트래픽을 8분의 1로 옅게 흩었는데도, 캐시 히트가 받은 이득은 in_memory에서 <strong>2.52%p</strong>, 24h에서는 <strong>사실상 0</strong>이었다. 결정적인 대목은 카디널리티 1 쪽이다: 그 한 키는 이미 분당 <strong>30요청</strong>(30.65 / 30.73)을 받았는데, 이는 문서가 그은 약 15요청 한도의 <strong>2배</strong>다. 그런데도 캐시 히트는 <strong>93.34% / 96.12%</strong>로 버텼다.</p>
+      <p><strong>정작 눈에 띄게 갈린 건 다른 축, 보존 정책이었다.</strong> 같은 30 RPM 카디널리티 1에서 꼬리 지연(TTFT p95)은 <code>in_memory</code> <strong>106,390ms</strong>인데 <code>24h</code>는 <strong>9,900ms</strong> &mdash; 거의 <strong>10배</strong> 차이다. 캐시 히트는 비슷했지만, 응답이 처음 나오기까지의 <em>꼬리</em>는 보존 모드가 완전히 갈라놓았다.</p>
+
+      <figure class="article-figure" id="figure-exp006-cardinality">
+        <figcaption><strong>카디널리티별 정상상태 캐시 히트(두 보존 모드).</strong> 가로축은 <code>bucket_cardinality</code>(log2), 세로축은 정상상태 캐시 히트 비율이다. 두 선(<code>in_memory</code>·<code>24h</code>) 모두 카디널리티 1에서 8로 가도 <strong>거의 수평</strong>이다 &mdash; 키 하나가 문서 한도의 2배(분당 30요청)를 받고도 93&ndash;96%를 유지했고, 8개로 쪼갠 이득은 in_memory +2.52%p, 24h −0.00%p에 그쳤다. 각 점은 정상상태 480요청 중 웜업을 뺀 표본(N=960/보존)이다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png"><code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-06-cache-key-bucketing.png" alt="카디널리티(1, 8)에 따른 정상상태 캐시 히트 비율. in_memory와 24h 두 선이 모두 93~96% 띠에서 거의 수평이며, 카디널리티 1에서 8로 가도 in_memory는 93.34%에서 95.86%로 2.52%p만 오르고 24h는 96.12%로 변화가 없다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA"></figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">두 번째 신호</p>
+      <h2>왜 물렁했나 &mdash; 키 하나도 충분히 뜨거웠다</h2>
+      <p>절벽이 물렁했던 이유는 단순하다 &mdash; <strong>키 하나가 이미 충분히 뜨거웠다.</strong> 카디널리티 1에서는 모든 트래픽이 <em>하나의</em> 공통 프리픽스로 들어간다. 분당 30요청이면 문서 한도의 2배지만, 그 한 키는 요청 사이 간격이 짧아 캐시가 식을 틈 없이 계속 데워졌다 &mdash; 그래서 93&ndash;96%가 나왔다. 여기서 8개로 쪼개면 버킷당 속도는 분당 <strong>4요청</strong>으로 뚝 떨어진다. 한도 아래로는 확실히 내려가지만, 동시에 <em>각 버킷이 덜 데워진다</em>. &lsquo;넘침을 피한 이득&rsquo;과 &lsquo;버킷이 식은 손해&rsquo;가 맞비겨, 순효과는 in_memory 2.52%p, 24h 0에 그쳤다.</p>
+      <p><strong>보존 모드가 갈린 건 데워 두는 &lsquo;창&rsquo;의 크기 때문이다.</strong> <code>24h</code> 보존은 더 넓은 키 창을 셀 내내 따뜻하게 안고 간다. 그래서 라이브 응답이 순간 느려지는 구간에서도 프리픽스를 다시 계산할 일이 적어, 꼬리 지연(TTFT p95)이 카디널리티 1에서 <strong>9,900ms</strong>로 짧다. 반대로 <code>in_memory</code>는 그런 순간마다 프리픽스를 다시 데워야 해서, 같은 자리 꼬리가 <strong>106,390ms</strong>까지 늘어졌다. 캐시 <em>히트율</em>은 둘이 비슷해도, 히트를 <em>제때</em> 내주느냐는 보존 창이 갈랐다.</p>
+      <p><strong>비용은 어느 쪽도 흔들지 않았다.</strong> 근거 런 비용은 <code>in_memory</code> $4.997211, <code>24h</code> $4.848757로 둘 다 비슷하고(합쳐 약 $9.85), 카디널리티 사이 캐시 히트 차이가 워낙 작아 달러에 남을 만큼 입력 토큰을 정가로 밀어내지 않았다. 대기줄이 막힌 셀은 없었고(네 셀 <code>backlog_excessive=false</code>), 동시 처리량은 최대 <strong>33</strong>까지만 올라 상한 96에 한참 못 미쳤다 &mdash; 즉 이 숫자는 장비가 막혀서 나온 게 아니라, 계획한 속도가 진짜로 실현된 위에서 나온 것이다.</p>
+      <p><strong>정리하면:</strong> 문서 한도는 원리로는 절벽이지만, 이 라이브 PAYG 배포에선 <strong>2배로 밟아도 잘 안 무너지는 낮은 턱</strong>이었다. 캐시 키를 잘게 쪼개는 &lsquo;처방&rsquo;은 여기선 값을 거의 못 했고, 진짜 지렛대는 <strong>보존 정책</strong> &mdash; 꼬리 지연을 잡고 싶다면 <code>24h</code>를 켜는 편이 카디널리티를 만지는 것보다 훨씬 크게 먹혔다.</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">투명성</p>
+      <h2>숫자에 남긴 얼룩까지 그대로</h2>
+      <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 실험이 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
+      <ul>
+        <li><strong>지운 행 0건.</strong> 근거 런 1,920번 발사 중 실패는 <strong>1건</strong>뿐이다(in_memory 카디널리티 1). 업스트림 한 번이 순간적으로 <code>500</code>을 뱉은 것으로, 스크립트의 요청별 실패 격리가 나머지 셀을 지켰다. 그 셀도 대기줄 게이트(<code>backlog_excessive=false</code>)와 동시 처리 상한(<strong>33 &lt; 96</strong>)을 통과했다. 원자료 그대로 집계에 남겼다.</li>
+        <li><strong>헛발 두 판은 근거에서 격리했다.</strong> 앞서 두 번 이 실험은 자기 장비 때문에 실패했다 &mdash; 처음엔 요청을 직렬로 보내 도달 속도가 문서 한도에 <em>닿지 못했고</em>, 다음엔 동시 처리 한도가 너무 낮아 보낼 요청이 디스패처 대기줄에 밀려 사전 등록한 백로그 게이트가 실험을 멈췄다. 두 판 모두 별도 폴더에 &lsquo;근거로 인용 금지&rsquo; 딱지와 함께 격리해 두었고, 위 숫자는 그 문제를 고친 마지막 판의 것이다. 감추지 않는다.</li>
+        <li><strong>헤드라인은 정상상태다.</strong> 웜업의 과도기를 섞으면 캐시가 데워지는 초반이 정책 효과를 흐리므로, 웜업을 뺀 정상상태 구간(셀당 약 388&ndash;390건)을 대표 숫자로 삼았다.</li>
+        <li><strong>속도 제한은 이번엔 없었다.</strong> 배포에 넉넉한 500,000 TPM을 두었고 부하가 그 안(계산상 분당 33만 토큰)에 있어, 실제 429는 네 셀 모두 <strong>0건</strong>이다. 이 노트의 한도 이야기는 &lsquo;속도 제한&rsquo;이 아니라 <em>캐시</em> 한도에 관한 것이다.</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">한계</p>
+      <h2>어디까지 믿을 수 있나</h2>
+      <p>이 결과는 한 배포, 하나의 용량 등급, 두 개의 카디널리티, 하나의 부하 프로파일, 한 번의 실행에서 나온 값입니다. 숫자 자체보다 <strong>방법과 방향을 가져가는 편</strong>이 안전합니다.</p>
+      <ul>
+        <li><strong>PAYG이지 PTU가 아니다.</strong> 문서가 말한 약 15 RPM 한도는 PAYG(쓴 만큼 과금) 모델의 것이다. PTU(예약 용량)는 자리 배정 방식이 달라, 이 결과를 PTU 근거로 옮겨선 안 된다 &mdash; 이 실험은 PTU를 재지 않았다.</li>
+        <li><strong>단일 배포다.</strong> 두 배포 비교도, 스필오버 라우팅도 없다. 캐시 키 카디널리티라는 <em>한 지렛대</em>만 라이브에서 겨눈다.</li>
+        <li><strong>절대 수치는 이전 안 된다.</strong> 캐시 히트와 지연은 테넌트&middot;리전&middot;시간대에 따라 흔들린다. Azure 배포 부하는 시간대를 타므로, 카디널리티 사이 <em>차이의 방향</em>을 읽어야 한다.</li>
+        <li><strong>꼬리 지연 변동이 크다.</strong> 라이브 배포의 TTFT 분포가 실행 중 출렁이면 숫자도 함께 움직인다. 그래서 동시 처리량(<code>max_in_flight_observed</code>)을 매 셀에 남겨, 장비가 막혀서 생긴 값이 아님을 확인할 수 있게 했다.</li>
+        <li><strong>부하&middot;표본.</strong> 보존 모드당 카디널리티 두 점, 셀당 480요청. 이 크기에서는 신뢰구간이나 통계적 유의성을 주장하지 않는다 &mdash; 방향은 견고하나 절대 크기는 소표본 주의. 응답 품질은 채점하지 않았다.</li>
+        <li><strong>24h 셀 격리.</strong> <code>24h</code> 보존은 셀 사이 캐시를 씻어내지 못해, 격리는 전적으로 셀별 네임스페이스(UUID 8자 접미사)에 기댄다.</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>그래서 무엇을 기본값으로</h2>
+      <p><strong>문서의 &lsquo;버킷당 약 15요청&rsquo; 한도만 보고 캐시 키를 서둘러 잘게 쪼개지 마라. 이 라이브 PAYG 배포에서는, 키 하나에 그 한도의 2배(분당 30요청)를 몰아넣어도 정상상태 캐시 히트가 93&ndash;96%로 버텼고, 8개로 쪼갠 이득은 in_memory에서 2.52%p·24h에서 사실상 0에 그쳤다. 꼬리 지연을 잡는 게 목표라면 카디널리티가 아니라 보존 정책을 만져라 &mdash; <code>24h</code> 보존이 같은 속도에서 TTFT p95를 106초에서 10초로 줄였다. 카디널리티 쪼개기는 넘침이 실제로 관측될 때 꺼내 드는 카드로 남겨 두고, 워크로드 형태가 바뀌면 당신의 배포에서 다시 측정하라. 그리고 이 결론을 PTU로 옮기지 마라 &mdash; 예약 용량의 자리 배정은 다르다.</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">이어짓기</p>
+      <h2>다음 사람이 덜 헤매도록</h2>
+      <p>근거를 남기는 일은 이긴 결과만 적는 게 아닙니다. 예측이 빗나간 실험도, 왜 빗나갔고 어디까지 믿을 수 있는지까지 남아야 다음 결정에 다시 쓸 수 있습니다. 그래서 이 노트는 스필오버 연작과 앞으로의 PTU 측정으로 연결됩니다.</p>
+      <ul>
+        <li><strong>스필오버 연작 →</strong> <a href="../../exp004-spillover-simulation/ko/">exp004</a>&middot;<a href="../../exp005-dual-spillover/ko/">exp005</a>는 부하 아래에서 <em>어느 배포로 보내느냐</em>(라우팅)를 겨뤘고, 이 노트는 <em>어느 캐시 키로 보내느냐</em>(버킷)를 겨눴다. 둘 다 &lsquo;캐시를 어떻게 데워 두는가&rsquo;라는 같은 질문의 다른 손잡이다.</li>
+        <li><strong>회고 본문 →</strong> 허브의 <a href="../../../ko/#next">다음 판단 &middot; 다음 실험</a>이 예고한 캐시 튜닝 손잡이 측정이 바로 이 실험이다.</li>
+        <li><strong>원자료 →</strong> 두 실험 정의는 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_*.yaml</code></a>, 분석은 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>에 있다.</li>
+      </ul>
+      <p><strong>다음 실험.</strong> 이번엔 PAYG 모델에서 캐시 키 한도를 쟀다. 다음은 같은 손잡이를 <strong>PTU(예약 용량)</strong> 위에서 봐야 한다 &mdash; PTU는 자리 배정 방식이 달라, PAYG의 물렁한 턱이 거기서도 물렁할지는 다시 재 봐야 안다.</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">출처 · 근거 경계</p>
+      <h2>출처 &amp; 근거 경계</h2>
+      <p>이 노트도 새 측정 없이 게시된 집계를 다시 인용했다. 단일 PAYG 배포라는 경계까지, 근거와 한계를 아래에 둔다.</p>
+      <ul>
+        <li>이 실험 분석: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>(설계 요약, 근거 단계 결과, 헤드라인 표, 한도의 실효성, 한계). 모든 수치는 여기와 <code>results/cache-key-bucketing/*.csv</code>에서 재인용.</li>
+        <li>실험 정의: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_24h.yaml"><code>&hellip;_24h.yaml</code></a>(<code>prompt_cache_retention</code>만 다름).</li>
+        <li>방법론: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(효과 크기&middot;방향으로 판단, 통계적 유의성 아님).</li>
+        <li>Azure 문서: <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching">프롬프트 캐시</a>(<code>prompt_cache_key</code>와 프리픽스 해시가 라우팅에 영향, (프리픽스 해시, 캐시 키)당 분당 약 15요청 넘침 한도, <code>24h</code> 보존, <code>in_memory</code> 기본값 · 접근일 2026-05-29) · <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota">속도 제한&middot;쿼터</a>.</li>
+        <li>가격: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 접근일 2026-05-19). gpt-5.2 = 1M 토큰당 입력 $1.75 / 캐시 입력 $0.175 / 추론 $14.00 / 출력 $14.00.</li>
+        <li>경계: 라이브 <code>gpt-5.2</code> 단일 배포(500,000 TPM) &middot; PAYG(PTU 아님) &middot; 커스텀 스윕 하니스 &middot; 카디널리티 2점 × 보존 2모드 &middot; 셀당 480요청 &middot; 신뢰구간 없음 &middot; 품질 채점 없음.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 라이선스 연구 아티팩트 · 게시 데이터는 정제 또는 집계본만 포함합니다.</p></footer>
+</body>
+</html>

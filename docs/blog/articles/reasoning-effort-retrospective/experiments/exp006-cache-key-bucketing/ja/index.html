@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/06-cache-key-bucketing/analysis.md and
+  results/cache-key-bucketing/*.csv, not re-derived. No internal task IDs.
+-->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp006 ・ キャッシュキーを細かく分けても、キャッシュはほぼそのままだった | when reasoning pays off</title>
+  <meta name="description" content="prompt_cache_key バケットカーディナリティ測定の実験ノート exp006。一つのライブ gpt-5.2 PAYG デプロイで、キャッシュキーを 1個から 8個へ分けるとキャッシュヒットは守られるのかを測る。文書が示すバケットあたり約 15 req/min のあふれ上限を 2倍(30 RPM)で踏んでも、定常状態キャッシュヒットは 93.34%(in_memory)・96.12%(24h)で持ちこたえ、8個に分けても +2.52%p・−0.00%p しか動かなかった。真のレバーはカーディナリティではなく保持ポリシーだった — 24h 保持が尾部レイテンシ(TTFT p95)を 106秒から 10秒へ縮めた。">
+  <meta name="article:locale" content="ja">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../ja/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="記事ナビゲーション">
+        <a href="../../../../../../ja/">ホーム</a>
+        <a href="../../../../ja/">記事一覧</a>
+        <a href="../../../ja/">実験回顧(ハブ)</a>
+        <a href="../../../../../charts/?lang=ja">根拠ダッシュボード</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="言語">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja" aria-current="true">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート ・ exp006</p>
+    <p class="article-kicker">実験ノート ・ exp006 ・ <code>prompt_cache_key</code> バケット分割測定 ・ 文書上の&lsquo;バケットあたり上限&rsquo;は実運用でどれほど固いのか</p>
+    <h1>exp006 &mdash; キャッシュキーを細かく分けても、キャッシュはほぼそのままだった</h1>
+    <p class="muted-note">文 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">Azure のプロンプトキャッシュは、リクエスト群が<strong>同じ前半(プレフィックス)</strong>を共有すると、その部分を安く再利用してくれる。ただし文書には一つ注意書きがある &mdash; 一つのキャッシュキーへリクエストを寄せすぎると、<strong>(プレフィックスハッシュ, キャッシュキー)あたり ~15 req/min</strong>を越えたところであふれ、キャッシュが冷めるというものだ。そこでよくある処方が、<em>キャッシュキーを複数に分けること</em>(<code>prompt_cache_key</code> バケットを増やすこと)である。このノートは、一つのライブ <code>gpt-5.2</code> PAYG デプロイで、その処方が本当にキャッシュを守るのかを測る。</p>
+    <p class="lede">自然な<strong>予測</strong>はこうだった &mdash; キーを一つだけ使えば(カーディナリティ 1)文書上限を越えてキャッシュが冷め、8個に分ければ(カーディナリティ 8)各バケットのトラフィックが薄まり上限を下回るため、キャッシュヒットは<em>目に見えて</em>戻るはずだ。事前に決めた読みは二つ。1→8でヒットが<strong>大きく上がれば</strong>バケット分割は本物のレバー、<strong>ほとんど上がらなければ</strong>その上限はこのデプロイでは柔らかい、という読みである。</p>
+    <p class="lede">測定は後者を選んだ。キー一つへ<strong>分あたり 30リクエスト</strong>(文書上限の 2倍)を寄せても、定常状態キャッシュヒットは <strong>in_memory 93.34%, 24h 96.12%</strong> で持ちこたえ、8個へ分けても <strong>+2.52%p(in_memory)・−0.00%p(24h)</strong> しか動かなかった。文書が描く崖は原理としてはあるが、このデプロイでは<strong>ぶつかってもあまり崩れない低い段差</strong>に近かった。大きく分けた軸はカーディナリティではなく<strong>保持ポリシー</strong>だった &mdash; 同じ速度で <code>24h</code> 保持が尾部レイテンシ(TTFT p95)を<strong>106秒から 10秒へ</strong>縮めた。このノートでは、その測定を<em>設計 → 入力 → 予測対実測 → 曲線 → 判断</em>としてたどる。</p>
+
+    <section class="article-section">
+      <p class="section-label">なぜ読むのか</p>
+      <h2>キャッシュキーを何個に分けるか、文書だけで決める前に</h2>
+      <p>プロンプトキャッシュは前半が同じリクエストを安く処理する &mdash; だから長いシステムプロンプトを前に置くと、その後ろのリクエスト群がキャッシュ料金で回る。問題は<strong>一つのキーへ寄るとき</strong>だ。文書は、(プレフィックスハッシュ, キャッシュキー)一つあたり ~15 req/min を越えるとあふれると言い、その処方として <code>prompt_cache_key</code> を複数に分けてトラフィックを分散するよう案内している。</p>
+      <p>しかし分けることには代価がある。キーを 8個に分ければ、バケット一つが受ける速度は 8分の1に落ちるが、<em>各バケットはそのぶん温まりにくくなる</em>。つまり、&lsquo;上限を避けるために分けたこと&rsquo;が、逆にキャッシュを冷ますこともある。どちらが勝つかは文書からは読めない &mdash; 測るしかない。</p>
+      <p><code>prompt_cache_key</code> でトラフィックを何方向へ分けるか悩んでいるなら、このノートは近い。&ldquo;文書上限を避けるためキーを細かく分ければキャッシュヒットは守られるのか、それともコールドスタートでむしろ損をするのか?&rdquo; という問いに、この実験はライブデプロイからの<strong>実測の答え</strong>を一つ返す &mdash; そしてその答えは、&lsquo;文書上限だけを見て急いで分ける必要はない&rsquo;に近い。</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">まず、10秒</p>
+      <h2>結論を信じず、数字から自分で出してください</h2>
+      <p>トークン消費は 0 です。最初の二行は二つの保持モードの入力&middot;変数&middot;成果物カードをそのまま出力し、最後の一行は公開済み集計 CSV からカーディナリティ 1→8 のキャッシュヒットを再計算して、このノートと照合します(ネットワークも資格情報も不要です)。</p>
+      <pre class="code-block"><code># 二つの保持モード(in_memory ・ 24h)の入力 → 変数 → 成果物カードを出力 (ネットワークなし)
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_inmemory.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_24h.yaml').summary())"
+
+# 公開済み集計 CSV からカーディナリティ 1→8 のキャッシュヒットをもう一度出し、ノートと照合 (トークン 0)
+python3 -c "import csv; r=list(csv.DictReader(open('results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv'))); d={(x['retention'],x['cardinality']):x for x in r}; [print('%-9s card1=%.4f%% (%.1f RPM/bucket)  card8=%.4f%% (%.1f RPM/bucket)  gap=%+.4f pp' % (ret, float(d[(ret,'1')]['cache_hit_ratio'])*100, float(d[(ret,'1')]['realized_admitted_per_bucket_rpm']), float(d[(ret,'8')]['cache_hit_ratio'])*100, float(d[(ret,'8')]['realized_admitted_per_bucket_rpm']), (float(d[(ret,'8')]['cache_hit_ratio'])-float(d[(ret,'1')]['cache_hit_ratio']))*100)) for ret in ('in_memory','24h')]"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub でリポジトリを開く &amp; ⭐</a></p>
+      <p class="muted-note">実際のライブ負荷を再現するには Azure 資格情報と実課金が必要です &mdash; これは本物のライブデプロイへリクエストを送る負荷テストです。資格情報なしでたどる道(公開済みの生サマリ JSON から曲線&middot;CSV を再導出する手順)は、<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> のチャート再現節と <code>scripts/plot_cache_key_bucketing.py</code> に整理されています。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="このノートの構成">
+      <strong>読む順序 &mdash; 正直な結論を先に、メカニズムはその次:</strong>
+      <a href="#design">今回はキャッシュキーを何個に分けるかだけを変える</a>
+      <a href="#predict">予測は&lsquo;分ければ助かる&rsquo;だった &mdash; 実測はほとんど動かなかった</a>
+      <a href="#result">分けてもキャッシュはほぼそのままだった</a>
+      <a href="#mechanism">なぜ柔らかかったのか &mdash; キー一つでも十分熱かった</a>
+      <a href="#limits">どこまで信じられるか</a>
+      <a href="#decision">だから何をデフォルトにするか</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">設計</p>
+      <h2>今回はキャッシュキーを何個に分けるかだけを変える</h2>
+      <p><strong>なぜこれを測ったのか。</strong> 文書の処方は明快である &mdash; 一つのキャッシュキーが ~15 req/min を越えるとあふれるので、キーを複数に分けてトラフィックを散らす、というものだ。ただし分ければ各バケットは温まりにくくなる。そのため、&lsquo;分ける利得&rsquo;と&lsquo;冷める損失&rsquo;のどちらが大きいかは文書だけではわからない。この実験は、その秤をライブデプロイで実際に量る。</p>
+      <p><strong>だから読みは&lsquo;差の大きさ&rsquo;に置いた。</strong> 事前に決めた読みは二つである &mdash; <em>カーディナリティ 1→8 でキャッシュヒットがはっきり上がれば、バケット分割は本物の容量レバー。ほとんど動かなければ、文書上限はこのデプロイではポリシー選択より小さい要因。</em> どちらにせよ<strong>実測が答えを選ぶ</strong>。さらに枝葉を一つ置いた。<code>24h</code> 保持は <code>in_memory</code> 既定値と違う形で、その上限を描き直すのか。</p>
+      <p><strong>本当に上限へぶつけるため、まずこちらの装置を直した。</strong> この実験は二度の空振りを経ており、その記録は隠さない。最初はリクエストを<em>一列に(直列で)</em>送っていたため、実到達速度が分あたり約 7リクエストまで落ち、文書上限(~15 req/min)に<strong>届きもしなかった</strong>。次は同時処理上限を低く設定しすぎ、送るべきリクエストが<em>ディスパッチャの待ち行列</em>へたまり、事前登録済みのバックログゲートが正しく実験を止めた。どちらの回も根拠から<strong>隔離</strong>し、最後の回でようやく待ち行列上限を十分に上げて(ライブ応答が遅くても詰まらないようにして)、計画した <strong>30 RPM</strong> が本当に実現した。以下の数字はその最後の回のものである。</p>
+      <p><strong>なぜライブ単一デプロイなのか。</strong> これはシミュレーションでも、PTU(予約容量)の根拠でもない &mdash; 各リクエストが実際の Azure <code>gpt-5.2</code> デプロイ(<strong>500,000 TPM</strong>)へ飛ぶ PAYG(使った分だけ課金)測定である。文書が示す約 15 RPM 上限は PAYG モデルのものなので、その上で測るのが正しい。負荷は <code>effort=low</code>、システムプロンプトは約 <strong>9.5K トークン</strong>(二つの保持モードがバイトまで同じプロンプトを受け取るよう SHA-256 <code>329a94&hellip;2a99</code> で固定、<code>corpus_seed 4242</code>)、<code>max_output_tokens=512</code>。<strong>0.5/sec</strong> で一定に流し、ウォームアップを除いた定常状態区間を代表にする。</p>
+      <p><strong>変える軸は二つだけ</strong> &mdash; <code>sweep.bucket_cardinality</code> を <strong>{1, 8}</strong> に、<code>prompt_cache_retention</code> を <strong>{in_memory, 24h}</strong> に変える。プロンプト&middot;負荷&middot;モデル&middot;強度&middot;デプロイ上限はすべて固定なので、成果物の差はこの二軸だけから来る。保持モードごとに <strong>480リクエスト × 2セル</strong> を回した。</p>
+      <p><strong>問いは一つである。</strong> トラフィックを複数のキャッシュキーへ分けると、文書が警告する上限の下へ降り、キャッシュヒットをより守れるのか。</p>
+      <div class="article-summary-grid" aria-label="事前登録予測と役割">
+        <section class="summary-tile"><h2>事前登録予測</h2><p>バケットを分ければキャッシュが戻る。事前に決めた判定線は<strong>1→8 のキャッシュヒット差の大きさ</strong> &mdash; はっきり上がればバケット分割は本物のレバー、ほとんど動かなければ上限はこのデプロイでは小さい要因。</p></section>
+        <section class="summary-tile"><h2>この実験の役割</h2><p>文書が示したキャッシュキー上限が<strong>実際にどれほど固いか</strong>を、ライブ PAYG デプロイで初めて信頼できる形で測る基準線。カーディナリティと保持ポリシーがキャッシュ&middot;レイテンシに<em>本当に</em>刻まれるかを確認する。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">入力と成果物</p>
+      <h2>何を食べ、何を残したか</h2>
+      <p>この実験が使ったものも残したものも、手書きの要約ではなくリポジトリの実ファイルです。だから入力から出力まで、一行でたどれます。</p>
+      <div class="article-summary-grid" aria-label="入力と成果物">
+        <section class="summary-tile">
+          <h2>入力</h2>
+          <p><strong>実験定義:</strong> <code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code>, <code>&hellip;_24h.yaml</code> (<code>prompt_cache_retention</code>だけが異なる)。<br>
+          <strong>コーパス:</strong> <code>system_prompt_corpus.json</code>(約 9.5K トークン) ・ <code>user_prompts.json</code>。<br>
+          <strong>固定:</strong> 二つの実行のシステムプロンプトを SHA-256(<code>329a94&hellip;2a99</code>)で固定 &mdash; 二つの保持モードが<em>バイトまで同じ</em>プロンプトを受け取ったことを保証する。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>成果物</h2>
+          <p><strong>生呼び出し:</strong> <code>runs/*.jsonl</code> (+ セルごとの <code>*.summary.json</code>, admitted 時刻テレメトリを含む)。<br>
+          <strong>集計:</strong> <code>analysis.md</code>。<br>
+          <strong>曲線:</strong> <code>results/cache-key-bucketing/*.png</code>&middot;<code>.csv</code> (カーディナリティ別キャッシュヒット、TTFT p95)。</p>
+        </section>
+      </div>
+      <p><strong>保持モードごとに 480リクエスト × 2セルを最後まで走らせた</strong>(カーディナリティ 1・8 が各一セル)。ウォームアップを除いた定常状態標本はセルごとに約 <strong>388&ndash;390件</strong>である。根拠実行では<strong>1,920 sends のうち失敗は 1件</strong> &mdash; 上流が一瞬だけ <code>500</code> を返したもので、セル隔離が残りを守り、集計は崩れていない。実際の <strong>429(レート制限)は 0件</strong>、ディスパッチャの待ち行列が詰まったセルも <strong>0件</strong>(四セルすべて <code>backlog_excessive=false</code>)。削除した行はない &mdash; 何をなぜ残したかは下の <a href="#transparency">透明性</a>で扱う。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">予測対実測</p>
+      <h2>予測は&lsquo;分ければ助かる&rsquo;だった &mdash; 実測はほとんど動かなかった</h2>
+      <div class="article-summary-grid" aria-label="予測対実測">
+        <section class="summary-tile"><h2>何を予測したか</h2><p>キー一つへ寄せると文書上限を越えてキャッシュが冷め、8個に分けると上限の下へ下がるため、キャッシュヒットは<strong>目に見えて</strong>上がる。少なくとも 1→8 ではっきりした段差が見えるはずの場所だった。</p></section>
+        <section class="summary-tile"><h2>何が出たか</h2><p>定常状態キャッシュヒットはカーディナリティ 1→8 で <code>in_memory</code> <strong>93.34% → 95.86%</strong>(<strong>+2.52%p</strong>)、<code>24h</code> <strong>96.12% → 96.12%</strong>(<strong>−0.00%p</strong>)。キー一つがすでに分あたり<strong>30リクエスト</strong>(文書上限の 2倍)を受けても持ちこたえた。</p></section>
+      </div>
+      <p><strong>判定: バケット分割はこのデプロイでは弱いレバーだった。</strong> 事前に決めた二つの読みのうち、実測は<strong>&lsquo;差はほとんどない&rsquo;</strong>を選んだ &mdash; つまり、文書が描く約 15 RPM の崖は原理として存在するが、この PAYG デプロイでは<em>2倍で踏んでもキャッシュがあまり崩れない低い段差</em>だった。&ldquo;上限を避けるためキーを分けるべきか?&rdquo; という心配には、ここでは答えが出た &mdash; 少なくともこの規模では、急いで分ける理由は大きくない。</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">第一の合図</p>
+      <h2>分けてもキャッシュはほぼそのままだった</h2>
+      <p>下の表は<strong>定常状態(ウォームアップ除外)</strong>の区間である &mdash; 負荷が秒あたり 0.5リクエストに落ち着き、予測が生きる区間だ。数字は公開済み集計 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>analysis.md</code></a> と <code>results/cache-key-bucketing/*.csv</code> から再引用した。</p>
+      <pre class="code-block"><code>保持モード   カーディナリティ   バケットあたりRPM   定常キャッシュヒット   TTFT p95      備考
+in_memory   1 (一つのキー)     30.65        93.34%              106,390ms     一つのキーへ集中 ・ 文書上限の 2倍速
+in_memory   8 (分割)          4.00         95.86%               16,624ms     +2.52%p (ほとんど上がらず)
+24h         1 (一つのキー)     30.73        96.12%                9,900ms     24h 保持 ・ 尾部レイテンシが 10倍短い
+24h         8 (分割)          4.00         96.12%               15,549ms     −0.00%p (変化なし)</code></pre>
+      <p>四つの点はすべて <strong>93&ndash;96% 帯</strong>の中に密集している。グラフにすると、カーディナリティ 1 から 8 へ向かう線は<em>ほぼ水平</em>である &mdash; 文書上限を避けようとトラフィックを 8分の1に薄く散らしたのに、キャッシュヒットの利得は in_memory で <strong>2.52%p</strong>、24h では<strong>事実上 0</strong>だった。決定的なのはカーディナリティ 1 側である。その一つのキーはすでに分あたり<strong>30リクエスト</strong>(30.65 / 30.73)を受けており、文書が示す約 15リクエスト上限の<strong>2倍</strong>である。それでもキャッシュヒットは <strong>93.34% / 96.12%</strong> で持ちこたえた。</p>
+      <p><strong>目に見えて分かれたのは別の軸、保持ポリシーだった。</strong> 同じ 30 RPM のカーディナリティ 1 で、尾部レイテンシ(TTFT p95)は <code>in_memory</code> が <strong>106,390ms</strong>、<code>24h</code> は <strong>9,900ms</strong> &mdash; ほぼ<strong>10倍</strong>の差である。キャッシュヒットは似ていたが、応答が最初に出るまでの<em>尾</em>は保持モードが完全に分けた。</p>
+
+      <figure class="article-figure" id="figure-exp006-cardinality">
+        <figcaption><strong>カーディナリティ別の定常状態キャッシュヒット(二つの保持モード)。</strong> 横軸は <code>bucket_cardinality</code>(log2)、縦軸は定常状態キャッシュヒット率である。二つの線(<code>in_memory</code>・<code>24h</code>)はいずれもカーディナリティ 1 から 8 へ進んでも<strong>ほぼ水平</strong>である &mdash; キー一つが文書上限の 2倍(分あたり 30リクエスト)を受けても 93&ndash;96% を保ち、8個に分けた利得は in_memory +2.52%p、24h −0.00%p にとどまった。各点は定常状態 480リクエストからウォームアップを除いた標本(N=960/保持)である。出典: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png"><code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-06-cache-key-bucketing.png" alt="カーディナリティ(1, 8)に対する定常状態キャッシュヒット率。in_memory と 24h の二つの線はいずれも 93~96% 帯でほぼ水平で、カーディナリティ 1 から 8 へ進んでも in_memory は 93.34% から 95.86% へ 2.52%p だけ上がり、24h は 96.12% のまま変化しない。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA"></figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">第二の合図</p>
+      <h2>なぜ柔らかかったのか &mdash; キー一つでも十分熱かった</h2>
+      <p>崖が柔らかかった理由は単純である &mdash; <strong>キー一つがすでに十分熱かった。</strong> カーディナリティ 1 では、すべてのトラフィックが<em>一つの</em>共通プレフィックスに入る。分あたり 30リクエストは文書上限の 2倍だが、その一つのキーはリクエスト間隔が短く、キャッシュが冷める隙なく温まり続けた &mdash; だから 93&ndash;96% が出た。ここで 8個に分けると、バケットあたりの速度は分あたり<strong>4リクエスト</strong>へ落ちる。上限の下には確実に下がるが、同時に<em>各バケットは温まりにくくなる</em>。&lsquo;あふれを避けた利得&rsquo;と&lsquo;バケットが冷めた損失&rsquo;が釣り合い、純効果は in_memory 2.52%p、24h 0 にとどまった。</p>
+      <p><strong>保持モードが分かれたのは、温めておく&lsquo;窓&rsquo;の大きさが違うからである。</strong> <code>24h</code> 保持は、セル全体を通じてより広いキー窓を温かく抱えていく。そのためライブ応答が一時的に遅くなる区間でも、プレフィックスを再計算する場面が少なく、カーディナリティ 1 の尾部レイテンシ(TTFT p95)は <strong>9,900ms</strong> と短い。逆に <code>in_memory</code> はそうした瞬間ごとにプレフィックスを温め直す必要があり、同じ場所の尾が <strong>106,390ms</strong> まで伸びた。キャッシュ<em>ヒット率</em>は似ていても、ヒットを<em>時間どおり</em>返せるかは保持窓が分けた。</p>
+      <p><strong>費用はどちらにも振れなかった。</strong> 根拠実行の費用は <code>in_memory</code> $4.997211、<code>24h</code> $4.848757 でどちらも似ており(合計で約 $9.85)、カーディナリティ間のキャッシュヒット差が小さすぎて、ドルに残るほど入力トークンを定価へ押し戻さなかった。待ち行列が詰まったセルはなく(四セル <code>backlog_excessive=false</code>)、同時処理量は最大<strong>33</strong>までしか上がらず上限 96 には遠かった &mdash; つまりこの数字は装置が詰まって出たのではなく、計画した速度が本当に実現した上で出たものである。</p>
+      <p><strong>まとめると:</strong> 文書上限は原理としては崖だが、このライブ PAYG デプロイでは<strong>2倍で踏んでもあまり崩れない低い段差</strong>だった。キャッシュキーを細かく分ける&lsquo;処方&rsquo;はここではほとんど効かず、真のレバーは<strong>保持ポリシー</strong> &mdash; 尾部レイテンシを抑えたいなら、カーディナリティを触るより <code>24h</code> を有効にするほうがはるかに大きく効いた。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明性</p>
+      <h2>数字に残った汚れまでそのまま</h2>
+      <p>どんな測定も完全にきれいではない。この実験が残した跡を、消さずにそのまま書いておく &mdash; 隠すと次の人が同じ場所でつまずくからだ。</p>
+      <ul>
+        <li><strong>削除した行 0件。</strong> 根拠実行 1,920 sends のうち失敗は<strong>1件</strong>だけである(in_memory カーディナリティ 1)。上流が一瞬だけ <code>500</code> を返したもので、スクリプトのリクエストごとの失敗隔離が残りのセルを守った。そのセルも待ち行列ゲート(<code>backlog_excessive=false</code>)と同時処理上限(<strong>33 &lt; 96</strong>)を通過した。原資料のまま集計に残した。</li>
+        <li><strong>空振り二回は根拠から隔離した。</strong> これ以前に、この実験は二度、自分の装置のせいで失敗した &mdash; 最初はリクエストを直列で送り、到達速度が文書上限に<em>届かなかった</em>。次は同時処理上限が低すぎ、送るべきリクエストがディスパッチャの待ち行列にたまって、事前登録済みのバックログゲートが実験を止めた。どちらも別フォルダへ隔離し、根拠としては使わない印を付けた。上の数字はその問題を直した最後の回のものだ。隠さない。</li>
+        <li><strong>見出しは定常状態である。</strong> ウォームアップの過渡期を混ぜると、キャッシュが温まる序盤がポリシー効果をぼかすため、ウォームアップを除いた定常状態区間(セルあたり約 388&ndash;390件)を代表値にした。</li>
+        <li><strong>今回はレート制限はなかった。</strong> デプロイには十分な 500,000 TPM を置き、負荷はその中(計算上 ~330K TPM)に収まったため、実際の 429 は四セルすべてで<strong>0件</strong>である。このノートでいう上限は&lsquo;レート制限&rsquo;ではなく、<em>キャッシュ</em>上限の話である。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限界</p>
+      <h2>どこまで信じられるか</h2>
+      <p>この結果は、一つのデプロイ、一つの容量等級、二つのカーディナリティ、一つの負荷プロファイル、一回の実行から出た値です。数字そのものより、<strong>方法と向き</strong>を持ち帰るほうが安全です。</p>
+      <ul>
+        <li><strong>PAYG であり PTU ではない。</strong> 文書が示す約 15 RPM 上限は PAYG(使った分だけ課金)モデルのものである。PTU(予約容量)は受付の仕組みが違うため、この結果を PTU の根拠へ移してはいけない &mdash; この実験は PTU を測っていない。</li>
+        <li><strong>単一デプロイである。</strong> 二つのデプロイ比較も、スピルオーバールーティングもない。キャッシュキーカーディナリティという<em>一つのレバー</em>だけをライブで狙う。</li>
+        <li><strong>絶対値は移植できない。</strong> キャッシュヒットとレイテンシはテナント&middot;リージョン&middot;時間帯で揺れる。Azure デプロイ負荷は時刻に左右されるため、カーディナリティ間の<em>差の向き</em>を読むべきである。</li>
+        <li><strong>尾部レイテンシの変動は大きい。</strong> ライブデプロイの TTFT 分布が実行中に揺れれば、数字も一緒に動く。そのため同時処理量(<code>max_in_flight_observed</code>)を各セルに残し、装置が詰まって生じた値ではないと確認できるようにした。</li>
+        <li><strong>負荷と標本。</strong> 保持モードごとにカーディナリティ二点、セルごとに 480リクエスト。この大きさでは信頼区間や統計的有意性は主張しない &mdash; 向きは堅いが、絶対量は小標本として注意する。応答品質は採点していない。</li>
+        <li><strong>24h セル隔離。</strong> <code>24h</code> 保持ではセル間のキャッシュを洗い流せないため、隔離はセル別ネームスペース(UUID 8文字サフィックス)に全面的に依存する。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>だから何をデフォルトにするか</h2>
+      <p><strong>文書の&lsquo;バケットあたり約 15リクエスト&rsquo;上限だけを見て、キャッシュキーを急いで細かく分けてはいけない。このライブ PAYG デプロイでは、キー一つへその上限の 2倍(分あたり 30リクエスト)を寄せても定常状態キャッシュヒットは 93&ndash;96% で持ちこたえ、8個に分けた利得は in_memory で 2.52%p、24h で事実上 0 にとどまった。尾部レイテンシを抑えることが目的なら、カーディナリティではなく保持ポリシーを触るべきである &mdash; <code>24h</code> 保持は同じ速度で TTFT p95 を 106秒から 10秒へ縮めた。カーディナリティ分割は、あふれが実際に観測されたときに切るカードとして残し、ワークロードの形が変われば自分のデプロイで測り直すこと。そしてこの結論を PTU へ持ち込んではいけない &mdash; 予約容量の受付は違う。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">つなぐ</p>
+      <h2>次の人が迷いにくいように</h2>
+      <p>根拠を残す仕事は、勝った結果だけを書くことではない。予測が外れた実験も、なぜ外れ、どこまで信じられるのかまで残ってこそ、次の判断にもう一度使える。だからこのノートはスピルオーバー連作と、これからの PTU 測定へつながる。</p>
+      <ul>
+        <li><strong>スピルオーバー連作 →</strong> <a href="../../exp004-spillover-simulation/ja/">exp004</a>&middot;<a href="../../exp005-dual-spillover/ja/">exp005</a> は負荷の下で<em>どのデプロイへ送るか</em>(ルーティング)を競わせ、このノートは<em>どのキャッシュキーへ送るか</em>(バケット)を狙った。どちらも&lsquo;キャッシュをどう温めておくか&rsquo;という同じ問いの別の取っ手である。</li>
+        <li><strong>回顧本文 →</strong> ハブの <a href="../../../ja/#next">次の判断 &middot; 次の実験</a> が予告したキャッシュチューニングの取っ手測定が、まさにこの実験である。</li>
+        <li><strong>原資料 →</strong> 二つの実験定義は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_*.yaml</code></a>、分析は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> にある。</li>
+      </ul>
+      <p><strong>次の実験。</strong> 今回は PAYG モデルでキャッシュキー上限を測った。次は同じ取っ手を <strong>PTU(予約容量)</strong> の上で見る必要がある &mdash; PTU は受付の仕組みが違うため、PAYG の柔らかい段差がそこでも柔らかいかは測り直さなければわからない。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自分で再現して ⭐ を残す</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">出典 ・ 根拠の境界</p>
+      <h2>出典 &amp; 根拠の境界</h2>
+      <p>このノートも新しい測定は足していない。公開済みの集計を再引用した。単一 PAYG デプロイという境界まで含めて、根拠と限界を下に置く。</p>
+      <ul>
+        <li>この実験の分析: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>(設計要約、根拠段階の結果、見出し表、上限の実効性、限界)。すべての数値はここ、および <code>results/cache-key-bucketing/*.csv</code> から再引用。</li>
+        <li>実験定義: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_24h.yaml"><code>&hellip;_24h.yaml</code></a>(<code>prompt_cache_retention</code>だけが異なる)。</li>
+        <li>方法論: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(効果量&middot;向きで判断し、統計的有意性では判断しない)。</li>
+        <li>Azure 文書: <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching">プロンプトキャッシュ</a>(<code>prompt_cache_key</code> とプレフィックスハッシュがルーティングに影響、(プレフィックスハッシュ, キャッシュキー)あたり分あたり約 15リクエストのあふれ上限、<code>24h</code> 保持、<code>in_memory</code> 既定値 ・ アクセス日 2026-05-29) ・ <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota">レート制限&middot;クォータ</a>。</li>
+        <li>価格: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。gpt-5.2 = 1M トークン当たり入力 $1.75 / キャッシュ入力 $0.175 / 推論 $14.00 / 出力 $14.00。</li>
+        <li>境界: ライブ <code>gpt-5.2</code> 単一デプロイ(500,000 TPM) &middot; PAYG(PTU ではない) &middot; カスタムスイープハーネス &middot; カーディナリティ 2点 × 保持 2モード &middot; セルごとに 480リクエスト &middot; 信頼区間なし &middot; 品質採点なし。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT ライセンスの研究アーティファクト ・ 公開データには編集済みまたは集計済みの形だけを含みます。</p></footer>
+</body>
+</html>
