@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/05-dual-spillover/analysis.md and analysis.json, not
+  re-derived. No internal task IDs.
+  SHA fragment 98d3a5…088a is preserved for invariant checking.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp005 · 真正拆分缓存池后，聪明策略输得更明显 | when reasoning pays off</title>
+  <meta name="description" content="PTU 双部署溢出测量(Phase 2)实验笔记 exp005。在缓存池物理分离的两个真实 gpt-5.2 部署上，提前准备的 proactive 溢出是否比事后反应的 reactive 更能保护缓存？不同于 Phase 1 的平手，这次 proactive 的稳态缓存低 0.9923 pp，在 throttled 主部署上实际遭遇 167 次 429，成本也多出 0.910366 美元。">
+  <meta name="article:locale" content="zh-CN">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../zh-CN/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="文章导航">
+        <a href="../../../../../../zh-CN/">首页</a>
+        <a href="../../../../zh-CN/">文章列表</a>
+        <a href="../../../zh-CN/">实验回顾(枢纽)</a>
+        <a href="../../../../../charts/?lang=zh-CN">证据看板</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="语言">
+        <a href="../" data-locale="en">English</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN" aria-current="true">简体中文</a>
+        <a href="../hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">实验回顾</a> / 实验笔记 · exp005</p>
+    <p class="article-kicker">实验笔记 · exp005 · PTU 双部署溢出测量(Phase 2) · 当缓存池真的被拆开</p>
+    <h1>exp005 &mdash; 真正拆分缓存池后，聪明策略输得更明显</h1>
+    <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">上一篇笔记(<a href="../../exp004-spillover-simulation/zh-CN/">exp004</a>)在<em>一个</em>部署上模拟了溢出(提前防溢)。两种策略几乎平手(<strong>&minus;0.1657 pp</strong>)，我们当时写下：&ldquo;真正的判决要交给 Phase 2。&rdquo; 现在就是 Phase 2。部署变成了<strong>两个</strong>，限流是<em>真实</em>的，主部署与备用部署的<strong>缓存池也物理分离</strong>。</p>
+    <p class="lede">所以，一个<strong>预测</strong>很自然 &mdash; 如果缓存池真的分开，提前保护主部署的<em>预先准备</em>(proactive)策略，这次也许会值回成本。预先登记的读法有两条：如果差距<strong>变大</strong>，说明&ldquo;缓存重建成本&rdquo;是真的；如果<strong>差不多</strong>，说明缓存池分离不是主要因素。</p>
+    <p class="lede">这次测量把直觉推翻得<strong>更重</strong>。饱和稳态缓存命中率是 <strong>reactive 99.2337%, proactive 98.2414%</strong> &mdash; 提前行动的一侧反而<strong>低了 0.9923 pp</strong>(约为 Phase 1 差距的 6 倍)。而且 proactive 还执着于 throttled 主部署，实际遭遇了 <strong>167</strong> 次 429(&ldquo;现在不行&rdquo;信号)(reactive 为 <strong>0</strong>)，成本也多花 <strong>$0.910366</strong>。本文按<em>设计 → 输入 → 预测对实测 → 两条曲线 → 决定</em>回看这 22 分钟 &mdash; 一旦拆开缓存池，聪明策略<strong>输得更明显</strong>。</p>
+
+    <section class="article-section">
+      <p class="section-label">为什么值得读</p>
+      <h2>主部署和备用部署真的分开用，会发生什么？</h2>
+      <p>PTU(固定容量)部署接近上限时，把一部分流量导向<strong>备用部署</strong>，这就是溢出。Phase 1 只是在一个部署里用<em>标签</em>模拟这条备用路径 &mdash; 无论走主路径还是备用路径，看到的都是同一个缓存(重复利用提示、节省计算的存储池)。所以策略差异几乎没有写进缓存。</p>
+      <p>Phase 2 去掉这个疑点。把主部署和备用部署放成<strong>真正不同的部署</strong>时，按 Azure 设计，<strong>缓存池也会分开</strong>。现在&ldquo;送到哪个部署&rdquo;会直接写进缓存温度。只往一边打，那一个池会保持热；分成两边打，<em>两边都会变温</em>。</p>
+      <p>如果你在物理上分开运营<strong>主部署 + 备用部署</strong>，这篇就很贴近你的场景。&ldquo;为了保护主部署，提前把流量一点点分出去，会不会更保护缓存？&rdquo;这个问题，实验给出一个<strong>实测答案</strong> &mdash; 而答案更接近&ldquo;别分&rdquo;。</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">先来，10 秒</p>
+      <h2>不要相信结论，先自己把数字打出来</h2>
+      <p>token 消耗为 0。前两行原样打印两种策略的输入、变量与产物卡片，最后一行从已发布汇总中重新计算头部数字，检查是否与本文一致(无需网络，也无需凭据)。</p>
+      <pre class="code-block"><code># 打印两种策略(reactive · proactive)的输入 → 变量 → 产物卡片(无网络)
+python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_reactive.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_proactive.yaml').summary())"
+
+# 从已发布汇总重新打印持续阶段缓存命中率，并与本文对照(token 为 0)
+python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis.json'))['per_policy_stats']; print('sustain cache-hit  reactive=%.4f%%  proactive=%.4f%%  gap=%+.4f pp' % (s['reactive']['sustain']['cache_hit_ratio']*100, s['proactive']['sustain']['cache_hit_ratio']*100, (s['proactive']['sustain']['cache_hit_ratio']-s['reactive']['sustain']['cache_hit_ratio'])*100))"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">在 GitHub 打开仓库 &amp; ⭐</a></p>
+      <p class="muted-note">复现真实现场负载需要 Azure 凭据，也会产生实际费用 &mdash; 这是真正的双部署负载测试。不用凭据的回看路径(从已发布的原始 JSONL 重新导出 <code>analysis.json</code>)写在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a> 的复现页脚里。</p>
+    </section>
+
+    <nav class="article-outline" aria-label="本文结构">
+      <strong>阅读顺序 &mdash; 先看诚实结论，再看机制：</strong>
+      <a href="#design">这次真的拆分缓存池</a>
+      <a href="#predict">预测又落空了 &mdash; 而且更重</a>
+      <a href="#result">聪明策略输得更明显</a>
+      <a href="#mechanism">为什么分叉 &mdash; 一分流，两边都变冷</a>
+      <a href="#limits">可以相信到哪里</a>
+      <a href="#decision">所以默认值是什么</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">设计</p>
+      <h2>这次真的拆分缓存池</h2>
+      <p><strong>为什么测这个。</strong> Phase 1 的平手有一个缺口 &mdash; 只有一个部署，所以缓存池是共享的。于是我们无法分辨，究竟是&ldquo;策略差异本来就写不进去&rdquo;，还是&ldquo;因为共享缓存才写不进去&rdquo;。Phase 2 堵上这个缺口。把缓存池<strong>真正拆开</strong>，再看判决是否相同。</p>
+      <p><strong>所以假设押在&ldquo;差距大小&rdquo;上。</strong> 预先登记的读法分两条 &mdash; <em>如果 Phase 2 的差距明显大于 Phase 1，说明缓存池分开时分流的代价(缓存重建成本)是真的。如果差不多，说明缓存池分离小于策略时机这个因素。</em> 无论哪边，<strong>实测来选答案</strong>。</p>
+      <p><strong>这是缓解策略比较，不是根因追捕。</strong> &ldquo;溢出是缓存下降根因&rdquo;这个强说法，已经在现场观察里失去力量。本实验不是挖根因，而只是比较两种缓解策略<strong>哪一个更好</strong>。</p>
+      <p><strong>为什么双部署。</strong> 我们有意给主部署(<code>ptu-deploy-throttled</code>)设下 <strong>60,000 TPM</strong>(每分钟 token 上限)的低上限，让约 30K token 的负载<strong>真的吐出 429</strong>。备用部署(<code>gpt-5.2</code>)则给足 <strong>500,000 TPM</strong> 的余量。部署名不同，缓存池也不同 &mdash; Phase 1 只是模拟的&ldquo;物理分离&rdquo;，这里是真的。</p>
+      <p><strong>问题只有一个。</strong> 在缓存池物理分离之上，提前准备的溢出是否比事后反应更保护缓存？</p>
+      <p><strong>设计(负载)。</strong> 与 Phase 1 <em>字节级相同</em>的 22 分钟负载，原样流过两种策略 &mdash; <strong>warmup 2 分钟</strong>(0.3 TPS) → <strong>ramp 10 分钟</strong>(0.5→2.5 TPS) → <strong>sustain 10 分钟</strong>(2.5 TPS)。<code>effort=low</code>，系统提示约 <strong>30K token</strong>(为保证两次运行字节级一致，用 SHA-256 <code>98d3a5&hellip;088a</code> 固定，<code>corpus_seed 4242</code>)。计划请求为每种策略 <strong>2,136</strong> 个(warmup 36 · ramp 900 · sustain 1,200)。</p>
+      <p><strong>只改一条轴线</strong> &mdash; 把 <code>policy.type</code> 在 <code>reactive</code> 与 <code>proactive</code> 之间切换。提示、负载、模型、强度、两个部署上限全部固定，因此两个产物的差异只来自策略。</p>
+      <div class="article-summary-grid" aria-label="预先登记预测与作用">
+        <section class="summary-tile"><h2>预先登记预测</h2><p>缓存池真的分开后，<code>proactive</code> 也许会值回成本。预先登记的判定线是<strong>差距大小</strong> &mdash; 大于 Phase 1 说明缓存重建成本是真的；差不多说明分离只是小因素。</p></section>
+        <section class="summary-tile"><h2>本实验的作用</h2><p>继 Phase 1(共享缓存地板)之后的<strong>高保真重测</strong>。当主/备用缓存池物理分离时，确认策略差异是否<em>真的</em>写进缓存、成本与 429。</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">输入与产物</p>
+      <h2>吃进什么，留下什么</h2>
+      <p>这个实验吃进和留下的不是手写摘要，而是仓库里的真实文件。所以你可以从输入一路追到输出。</p>
+      <div class="article-summary-grid" aria-label="输入与产物">
+        <section class="summary-tile">
+          <h2>输入 (in)</h2>
+          <p><strong>策略定义：</strong> <code>experiments/exp005_dual_spillover_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (只在 <code>policy.type</code> 上不同)。<br>
+          <strong>两个部署：</strong> 主 <code>ptu-deploy-throttled</code>(60,000 TPM) · 备用 <code>gpt-5.2</code>(500,000 TPM)。<br>
+          <strong>固定：</strong> 两次运行的系统提示用 SHA-256(<code>98d3a5&hellip;088a</code>)固定 &mdash; 保证两种策略收到的是<em>字节级相同</em>的提示。</p>
+        </section>
+        <section class="summary-tile">
+          <h2>产物 (out)</h2>
+          <p><strong>原始调用：</strong> <code>runs/*.jsonl</code> (+ 每个请求的 <code>*.summary.json</code>，包含每个响应的溢出 header)。<br>
+          <strong>汇总：</strong> <code>analysis.json</code> · <code>analysis.md</code>。<br>
+          <strong>曲线：</strong> <code>results/dual-spillover-curves/*.png</code>&middot;<code>.csv</code> (按部署与汇总的缓存命中、实际 429 时间线)。</p>
+        </section>
+      </div>
+      <p><strong>reactive 完整跑完了 2,136 个请求</strong>(完成=计划=2,136)。<strong>proactive 完成 2,303 / 计划 2,136</strong> &mdash; 多出的 <strong>167</strong> 条，是实际 429 各自记录为一行失败，因此 token 为 0，不影响汇总。实际 429 为 <strong>reactive 0 · proactive 167</strong>(全部来自 throttled 主部署)。<code>dry_run=false</code>、<code>dirty=false</code>，没有中断。<strong>没有删掉任何行</strong> &mdash; 保留了什么、为什么保留，下面的<a href="#transparency">透明度</a>会说明。</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">预测对实测</p>
+      <h2>预测又落空了 &mdash; 而且更重</h2>
+      <div class="article-summary-grid" aria-label="预测对实测">
+        <section class="summary-tile"><h2>预测了什么</h2><p>如果缓存池真的分开，提前准备的(<code>proactive</code>)策略这次也许会值回成本。至少，这是一个可能让差距方向反转的位置。</p></section>
+        <section class="summary-tile"><h2>结果是什么</h2><p>饱和缓存命中率是 <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>98.2414%</strong> &mdash; 提前行动的一侧<strong>低了 0.9923 pp</strong>(约为 Phase 1 的 &minus;0.1657 pp 的 6 倍)。实际 429 是 <strong>0 对 167</strong>。</p></section>
+      </div>
+      <p><strong>判定：缓存池一分开，提前准备更明显地没有值回成本。</strong> 预先登记的两条读法里，实测选择了<strong>&ldquo;差距变大&rdquo;</strong> &mdash; 也就是说，缓存池分开时提前分流的代价(缓存重建成本)是真的，而且这笔账记在了 <code>proactive</code> 头上。Phase 1 里&ldquo;是不是因为共享缓存所以写不进去？&rdquo;的疑问，现在有了答案 &mdash; 缓存<em>真的</em>一分开，分流策略就吃亏。</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">第一个信号</p>
+      <h2>聪明策略输得更明显</h2>
+      <p>下表看的是<strong>持续(sustain) 10 分钟稳态</strong> &mdash; 负载已经压到目标上、假设真正成立或失败的区间。数字从已发布汇总 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>analysis.md</code></a> §5 与 §7 重新引用。</p>
+      <pre class="code-block"><code>策略        饱和溢出       饱和缓存命中(每分钟均值 ± 标准差)   实际 429   备注
+reactive    98.75% 触发    99.2337%  (±0.0026 pp)           0         基线 · 集中到一个备用池并保持热
+proactive   67.95% 触发    98.2414%  (±4.3726 pp)           167       主+备用分流，两边都变冷
+差值(pro−re)  —            −0.9923 pp                        +167      约为 Phase 1(−0.1657 pp)的 6 倍</code></pre>
+      <p>两条曲线大体都经过 <strong>99.2%</strong> 附近。reactive 的标准差只有 0.0026 pp，稳得像石头 &mdash; 因为流量被集中到一个备用部署，那个池始终保持热。相反，proactive 的标准差高达 <strong>4.3726 pp</strong>，明显摇晃。原因有两个：throttled 主部署吐出的<strong>持续阶段 429 共 154</strong> 条(token 为 0 的失败行)，以及流量拆到两个池后形成的<strong>缓存 miss 12</strong> 条(主部署 7 · 备用部署 5)，逐分钟挖出凹口，这些凹口把汇总均值拉到 <strong>98.2414%</strong>。</p>
+      <p>把窗口扩到全程(warmup+ramp+sustain)，方向也一样 &mdash; <code>reactive</code> <strong>99.0479%</strong> vs <code>proactive</code> <strong>98.2112%</strong>，reactive <strong>高 0.8367 pp</strong>。Phase 1 中窗口放大后方向会反转，但 Phase 2 中<strong>无论看哪个窗口，reactive 都领先</strong>。</p>
+
+      <figure class="article-figure" id="figure-exp005-recovery">
+        <figcaption><strong>60 秒滚动缓存命中曲线(两种策略，汇总)。</strong> 横轴是请求进程，纵轴是缓存命中率。reactive(兄弟运行)集中到一个备用池，平滑地保持在 99.2% 附近；proactive(本次运行)分到主+备用，更频繁、更深地下探 &mdash; throttled 主部署的实际 429 与两个池的缓存 miss 穿透了曲线。稳态为 reactive 99.2337%、proactive 98.2414%，差距 0.9923 pp。来源：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/dual-spillover-curves/policy_comparison_aggregate.png"><code>results/dual-spillover-curves/policy_comparison_aggregate.png</code></a>。</figcaption>
+        <img src="../../../../../../assets/benchmark-05-dual-spillover.png" alt="reactive 和 proactive 两种策略的滚动缓存命中率时间序列。reactive 曲线在 99.2% 附近平滑，proactive 曲线更频繁也更深地下探。持续稳态为 reactive 99.2337%、proactive 98.2414%，差距为 0.9923 pp。" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">第二个信号</p>
+      <h2>为什么分叉 &mdash; 一分流，两边都变冷</h2>
+      <p>这一次，两种策略在缓存上留下了<strong>真正不同的痕迹</strong> &mdash; 这正是它和 Phase 1 分开的地方。reactive 从 warmup 第一个请求开始就转到备用部署，在整个饱和阶段把 <strong>98.75%</strong> 的流量集中到那<em>一个</em>池里。只持续加热一个池，所以持续阶段缓存 miss 为 <strong>0</strong>，池也保持在 <strong>99.2336%</strong> 的热度。实际 429 也是 0 &mdash; 因为几乎不碰 throttled 主部署。</p>
+      <p><strong>proactive 的动作正相反，也正是这里绊倒了它。</strong> 为了保护主部署，它把流量拆开，饱和阶段溢出比例只有 <strong>67.95%</strong> &mdash; 剩下<strong>约 43%</strong>仍然走 throttled 主部署。那个部署扛不住 30K token 负载，实际吐出 <strong>167</strong> 次 429；流量散进两个池后，<em>哪一边</em>都没有 reactive 的单一池那么热 &mdash; 持续缓存为主部署 <strong>96.7534%</strong>、备用部署 <strong>98.6942%</strong>，<em>两边</em>都低于 reactive 的 99.2336%。</p>
+      <p><strong>成本与延迟也指向同一边。</strong> 两次运行总 token 几乎相同(reactive 45,850,205 · proactive 45,851,851)，但全程成本是 <code>reactive</code> $17.895660 vs <code>proactive</code> $18.806026 &mdash; proactive <strong>多出 $0.910366</strong>。原因纯粹是缓存温度：proactive 更低的缓存命中，把约 38 万输入 token 从缓存费率($0.175/1M)推到正价($1.75/1M)。持续阶段首 token 延迟(TTFT)也是 reactive 更快(p50 7,153.9ms 对 7,926.6ms)，全程 p95 则让 proactive 飙到 <strong>34,631.71ms</strong> &mdash; 因为 429 backoff 叠在了真实延迟之上。</p>
+      <p><strong>总结起来：</strong> 缓存池真的分开后，&ldquo;为了保护主部署而分流&rdquo;这个聪明想法，结果变成<strong>缓存要重新加热两次</strong>，还要吃 throttle 罚分(429)。真正值回成本的是<strong>简单</strong> &mdash; 集中到一个池、保持热的 reactive。</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">透明度</p>
+      <h2>连数字上的污点也原样留下</h2>
+      <p>任何测量都不可能完全干净。这个实验留下的痕迹，我们不擦掉，而是写出来；藏起来，只会让后来的人在同一个地方踩空。</p>
+      <ul>
+        <li><strong>排除异常值 0 个。</strong> 异常规则只有在&ldquo;持续阶段延迟超过均值+3σ，并且同时出现实际 429、重试、路径切换等日志事件&rdquo;时，才排除一行。候选有 reactive 6 条、proactive 18 条，其中一部分与事件重合，但即使去掉这些候选，持续 TTFT 的变化也小于 1%，所以<strong>全部保留</strong>。</li>
+        <li><strong>保留异常行。</strong> proactive 有 0 token 持续行 <strong>154</strong> 条(实际 429 的失败尝试)和缓存 miss 行 <strong>12</strong> 条，reactive 两者都是 0 条。这不是测量错误，而是<em>这个基准本来要测的现象</em>本身，所以按原始数据进入汇总 &mdash; <strong>proactive 较低的持续均值，正是来自这些 429 和缓存 miss</strong>。不隐藏。</li>
+        <li><strong>头部数字采用持续稳态。</strong> 如果把 ramp、warmup 的过渡期混进去，策略效果会被冲淡，所以本文把假设所在的持续 10 分钟作为代表数字。全程数字也放在旁边，方便确认无论哪个窗口，reactive 都领先。</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">限制</p>
+      <h2>可以相信到哪里</h2>
+      <p>这个结果来自一个 Foundry 资源内的两个部署、各自一种容量等级、一条负载曲线和一次运行。比起直接拿走数字，更稳妥的是带走<strong>方法和方向</strong>。</p>
+      <ul>
+        <li><strong>绝对数值不能迁移。</strong> 两个部署在同一个资源内，各自只有一个容量等级。缓存命中和美元数不会原样迁移到其他租户、区域或容量计划 &mdash; 应该读策略之间<em>差异的方向</em>。</li>
+        <li><strong>这是自定义路由器。</strong> 溢出由 Python 客户端路由器执行。它可能不同于 Azure <em>原生</em>溢出(<code>spilloverDeploymentName</code> 方式)，所以我们保留了每个响应的溢出 header，方便之后与原生方式对照。</li>
+        <li><strong>这是缓解策略比较，不是根因追捕。</strong> 本实验不能指认某个现场缓存下降的根因。强形式假设已经被现场测量否定。</li>
+        <li><strong>负载与样本。</strong> 一次 22 分钟运行，每种策略 2,136 个计划请求。在这个规模下不主张置信区间或统计显著性 &mdash; 方向稳健，但绝对幅度要按小样本谨慎解读。</li>
+        <li><strong>范围之外。</strong> 没有给响应质量打分，也没有触碰把 <code>max_output_tokens</code> 当作 PTU 预留来用的效果(另一个假设)。</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>所以默认值是什么</h2>
+      <p><strong>如果主部署会 throttle，而你有一个余量充足的备用池，就把简单的事后反应(<code>reactive</code>)作为默认值。把失败请求及后续几次请求集中送到备用池，并让那一个池保持热，这条简单规则胜过了为了保护主部署而提前分流的 <code>proactive</code> &mdash; 它多保护了 0.9923 pp 的缓存(持续阶段)，少花 $0.910366，实际 429 是 0 次而不是 167 次。缓存池物理分离时，分流就是让两边池一起变冷的罚分。工作负载形态变了，就重新测。</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">继续连接</p>
+      <h2>让后来的人少绕弯</h2>
+      <p>记录证据不只是写下赢了的结果。预测落空的实验，也要把为什么落空、可以相信到哪里留下来，下一次决策才用得上。所以这篇笔记会回连到 Phase 1 和前面的实验。</p>
+      <ul>
+        <li><strong>Phase 1 →</strong> <a href="../../exp004-spillover-simulation/zh-CN/">exp004 &mdash; 溢出策略模拟(Phase 1)</a>在一个部署(共享缓存)上比较同样两种策略，结果是平手(&minus;0.1657 pp)。这篇笔记在<strong>真实缓存分离之上</strong>完成了那次判决。</li>
+        <li><strong>回顾正文 →</strong> 枢纽里的<a href="../../../zh-CN/#next">下一次判断 · 下一项实验</a>所预告的&ldquo;物理分离的 2 部署负载测试&rdquo;，就是本实验。</li>
+        <li><strong>原始材料 →</strong> 两个策略定义在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>experiments/exp005_dual_spillover_*.yaml</code></a>，分析在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>。</li>
+      </ul>
+      <p><strong>下一项实验。</strong> 这次用自定义路由器执行溢出。下一步是把<strong>Azure 原生溢出</strong>放到同一段负载下，并用每个响应保留下来的溢出 header，对照它与自定义路由器的<em>行为是否相同</em>。</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">自己复现并留下 ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">来源 · 证据边界</p>
+      <h2>来源 &amp; 证据边界</h2>
+      <p>本文同样没有新的测量，只重新引用已发布的汇总。连两个部署、一个资源这个边界，也和证据、限制一起列在下面。</p>
+      <ul>
+        <li>本实验分析：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>(§1 question·design, §3 provenance, §5 headline, §6 recovery curve, §7 per-policy aggregates, §8 consumption model, §9 outliers, §10 limits, §11 conclusion)。所有数字都从这里重新引用。</li>
+        <li>策略定义：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_reactive.yaml"><code>experiments/exp005_dual_spillover_reactive.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a>(只在 <code>policy.type</code> 上不同)。</li>
+        <li>方法论：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(按效果大小与方向判断，不主张统计显著性)。</li>
+        <li>价格：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure，访问日 2026-05-19)。gpt-5.2 = 每 1M token 输入 $1.75 / 缓存输入 $0.175 / 推理 $14.00 / 输出 $14.00。</li>
+        <li>边界：一个 Foundry 资源内的两个部署 &middot; 自定义路由器(不是原生溢出) &middot; 一次 22 分钟运行 &middot; 每种策略 2,136 个计划请求 &middot; 无置信区间 &middot; 实际 429 由主部署 60,000 TPM 上限触发 &middot; 未做质量评分。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT 许可研究工件 · 发布数据仅包含经清理或聚合的形式。</p></footer>
+</body>
+</html>
