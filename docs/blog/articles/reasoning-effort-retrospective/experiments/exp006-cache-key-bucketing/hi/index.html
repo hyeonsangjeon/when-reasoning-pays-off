@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--
+  अनुवाद कोरियाई मानक स्रोत (ko/index.html) से निकला है।
+  यह शृंखला (reasoning-effort-retrospective) कोरियाई को स्रोत भाषा मानती है।
+  सभी आँकड़े benchmarks/06-cache-key-bucketing/analysis.md और
+  results/cache-key-bucketing/*.csv से फिर उद्धृत हैं; फिर से निकाले नहीं गए। कोई अंदरूनी कार्य आईडी नहीं।
+-->
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp006 · कैश कुंजी को बारीक बाँटने पर भी कैश लगभग वैसा ही रहा | जब तर्क काम आता है</title>
+  <meta name="description" content="prompt_cache_key बकेट कार्डिनैलिटी मापन प्रयोग नोट exp006। एक लाइव gpt-5.2 PAYG तैनाती पर जाँचा कि कैश कुंजी को 1 से 8 बकेट में बाँटने से कैश हिट बचता है या नहीं। दस्तावेज़ में कही गई प्रति (प्रिफिक्स हैश, कैश कुंजी) प्रति मिनट लगभग 15 अनुरोध सीमा को 2 गुना पार करने पर भी (30 RPM) स्थिर-अवस्था कैश हिट 93.34%(in_memory)·96.12%(24h) रहा, और 8 में बाँटने से केवल +2.52%p·−0.00%p बदलाव आया। असली लीवर कार्डिनैलिटी नहीं, संरक्षण नीति थी — 24h संरक्षण ने पूँछ विलंब (TTFT p95) को 106 सेकंड से 10 सेकंड किया।">
+  <meta name="article:locale" content="hi">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="ko" href="../ko/">
+  <link rel="alternate" hreflang="ja" href="../ja/">
+  <link rel="alternate" hreflang="zh-CN" href="../zh-CN/">
+  <link rel="alternate" hreflang="hi" href="../hi/">
+  <link rel="alternate" hreflang="x-default" href="../">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../../hi/">जब तर्क काम आता है</a>
+      <nav class="site-links" aria-label="लेख नेविगेशन">
+        <a href="../../../../../../hi/">होम</a>
+        <a href="../../../../hi/">लेख सूची</a>
+        <a href="../../../hi/">प्रयोग-पुनरावलोकन (केंद्र)</a>
+        <a href="../../../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="भाषा">
+        <a href="../" data-locale="en">अंग्रेज़ी</a>
+        <a href="../ko/" data-locale="ko">한국어</a>
+        <a href="../ja/" data-locale="ja">日本語</a>
+        <a href="../zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="../hi/" data-locale="hi" aria-current="true">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">प्रयोग-पुनरावलोकन</a> / प्रयोग नोट, exp006</p>
+    <p class="article-kicker">प्रयोग नोट, exp006, <code>prompt_cache_key</code> बकेट बाँटने का मापन, दस्तावेज़ की &lsquo;प्रति-बकेट सीमा&rsquo; असल में कितनी सख्त है</p>
+    <h1>exp006 &mdash; कैश कुंजी को बारीक बाँटने पर भी कैश लगभग वैसा ही रहा</h1>
+    <p class="muted-note">लेखक Hyeonsang Jeon &middot; ग्लोबल ब्लैक बेल्ट, क्लाउड &amp; एआई ऐप्स</p>
+
+    <p class="lede">Azure प्रॉम्प्ट कैशिंग अनुरोधों का <strong>एक-सा आगे का हिस्सा (प्रिफिक्स)</strong> सस्ते में फिर इस्तेमाल कराती है। दस्तावेज़ में एक चेतावनी भी है: एक कैश कुंजी पर बहुत अनुरोध जमा करें तो <strong>(प्रिफिक्स हैश, कैश कुंजी) प्रति मिनट लगभग 15 अनुरोध</strong> के बाद बहाव बढ़ता है और कैश ठंडा पड़ सकता है। इसलिए आम नुस्खा <em>कैश कुंजी को कई बकेट में बाँटना</em> (<code>prompt_cache_key</code> बकेट बढ़ाना) है। यह नोट एक लाइव <code>gpt-5.2</code> PAYG तैनाती पर मापता है कि यह नुस्खा सच में कैश बचाता है या नहीं।</p>
+    <p class="lede">इसलिए यह <strong>पूर्वानुमान</strong> स्वाभाविक था: केवल एक कुंजी रखें (कार्डिनैलिटी 1) तो दस्तावेज़ सीमा पार होगी और कैश ठंडा होगा; 8 में बाँटें (कार्डिनैलिटी 8) तो हर बकेट का यातायात सीमा से नीचे आएगा और कैश हिट <em>साफ</em> सुधरेगा। पहले से दर्ज पढ़ाई दो शाखाओं में थी: 1→8 पर हिट <strong>काफी बढ़े</strong> तो बकेट बाँटना असली लीवर है; <strong>मुश्किल से बढ़े</strong> तो इस तैनाती पर वह सीमा मुलायम है।</p>
+    <p class="lede">माप ने दूसरी शाखा चुनी। एक कुंजी पर <strong>प्रति मिनट 30 अनुरोध</strong> (दस्तावेज़ सीमा का 2 गुना) डालने पर भी स्थिर-अवस्था कैश हिट <strong>in_memory 93.34%, 24h 96.12%</strong> रहा, और 8 में बाँटने पर केवल <strong>+2.52%p(in_memory) · −0.00%p(24h)</strong> हिला। दस्तावेज़ की खींची खाई सिद्धांत में है, पर इस तैनाती में वह <strong>टकराने पर भी आसानी से न टूटने वाली नीची मुंडेर</strong> जैसी निकली। असल में बड़ा अंतर कार्डिनैलिटी से नहीं, <strong>संरक्षण नीति</strong> से आया &mdash; उसी गति पर <code>24h</code> संरक्षण ने पूँछ विलंब (TTFT p95) को <strong>106 सेकंड से 10 सेकंड</strong> कर दिया। यह नोट उस मापन को <em>डिज़ाइन → इनपुट → पूर्वानुमान बनाम माप → वक्र → निर्णय</em> के क्रम में फिर पढ़ता है।</p>
+
+    <section class="article-section">
+      <p class="section-label">क्यों पढ़ें</p>
+      <h2>कैश कुंजी कितनी बाँटनी है, केवल दस्तावेज़ देखकर तय करने से पहले</h2>
+      <p>प्रॉम्प्ट कैशिंग एक-से प्रिफिक्स वाले अनुरोध सस्ते में चलाती है &mdash; इसलिए लंबा सिस्टम प्रॉम्प्ट आगे रखने पर पीछे के अनुरोध कैश दर पर चलते हैं। समस्या <strong>एक कुंजी पर जमा होने</strong> से शुरू होती है। दस्तावेज़ कहता है कि (प्रिफिक्स हैश, कैश कुंजी) एक पर प्रति मिनट लगभग 15 अनुरोध से ऊपर बहाव होता है, और नुस्खे के रूप में <code>prompt_cache_key</code> को कई बकेट में बाँटकर यातायात फैलाने को कहता है।</p>
+      <p>बाँटने की भी कीमत है। कुंजी को 8 में बाँटें तो हर बकेट की गति 8वें हिस्से पर गिरती है, पर <em>हर बकेट उतना ही कम गरम होता है</em>। यानी &lsquo;सीमा से बचने के लिए बाँटना&rsquo; उल्टे कैश को ठंडा भी कर सकता है। कौन-सा पक्ष जीतेगा, इसका जवाब दस्तावेज़ नहीं देता &mdash; मापना पड़ता है।</p>
+      <p>अगर आप <code>prompt_cache_key</code> से यातायात कितने रास्तों में बाँटना है, इस पर सोच रहे हैं, तो यह लेख पास है। &ldquo;दस्तावेज़ सीमा से बचने के लिए कुंजी को बारीक बाँटूँ तो कैश हिट बचेगा, या ठंडी शुरुआत से उल्टा नुकसान होगा?&rdquo; इस सवाल पर यह प्रयोग लाइव तैनाती से निकला <strong>मापा हुआ जवाब</strong> देता है &mdash; और वह जवाब &lsquo;केवल दस्तावेज़ सीमा देखकर जल्दी बाँटने की जरूरत नहीं&rsquo; के करीब है।</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">पहले, 10 सेकंड</p>
+      <h2>निष्कर्ष पर भरोसा न करें, पहले अंक खुद छापें</h2>
+      <p>टोकन खर्च 0 है। पहली दो पंक्तियाँ दोनों संरक्षण मोड के इनपुट, चर और उपज कार्ड जस के तस छापती हैं; आखिरी पंक्ति प्रकाशित कुल-जोड़ CSV से कार्डिनैलिटी 1→8 का कैश हिट फिर गिनकर इस नोट से मिलाती है, बिना नेटवर्क और बिना प्रमाण-पत्र।</p>
+      <pre class="code-block"><code># दोनों संरक्षण मोड(in_memory · 24h) के इनपुट → चर → उपज कार्ड छापें (नेटवर्क नहीं)
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_inmemory.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_24h.yaml').summary())"
+
+# प्रकाशित कुल-जोड़ CSV से कार्डिनैलिटी 1→8 कैश हिट फिर छापकर नोट से मिलाएँ (टोकन 0)
+python3 -c "import csv; r=list(csv.DictReader(open('results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv'))); d={(x['retention'],x['cardinality']):x for x in r}; [print('%-9s card1=%.4f%% (%.1f RPM/bucket)  card8=%.4f%% (%.1f RPM/bucket)  gap=%+.4f pp' % (ret, float(d[(ret,'1')]['cache_hit_ratio'])*100, float(d[(ret,'1')]['realized_admitted_per_bucket_rpm']), float(d[(ret,'8')]['cache_hit_ratio'])*100, float(d[(ret,'8')]['realized_admitted_per_bucket_rpm']), (float(d[(ret,'8')]['cache_hit_ratio'])-float(d[(ret,'1')]['cache_hit_ratio']))*100)) for ret in ('in_memory','24h')]"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर रेपो खोलें &amp; ⭐</a></p>
+      <p class="muted-note">वास्तविक लाइव भार फिर चलाने के लिए Azure प्रमाण-पत्र और असली बिलिंग चाहिए &mdash; यह सचमुच लाइव तैनाती पर अनुरोध भेजने वाला भार-परीक्षण है। प्रमाण-पत्रों के बिना वापस जाँचने का रास्ता, यानी प्रकाशित कच्चे सारांश JSON से वक्र और CSV फिर निकालने की प्रक्रिया, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> के चार्ट पुनरुत्पादन खंड और <code>scripts/plot_cache_key_bucketing.py</code> में दी है।</p>
+    </section>
+
+    <nav class="article-outline" aria-label="इस नोट की संरचना">
+      <strong>पढ़ने का क्रम &mdash; पहले ईमानदार निष्कर्ष, क्रिया-विधि बाद में:</strong>
+      <a href="#design">इस बार केवल कैश कुंजी की संख्या बदलती है</a>
+      <a href="#predict">पूर्वानुमान था &lsquo;बाँटेंगे तो बचेगा&rsquo; &mdash; माप मुश्किल से हिला</a>
+      <a href="#result">बाँटने पर भी कैश लगभग वैसा ही रहा</a>
+      <a href="#mechanism">क्यों मुलायम था &mdash; एक ही कुंजी काफी गरम रही</a>
+      <a href="#limits">कहाँ तक भरोसा करें</a>
+      <a href="#decision">तो मूल मान क्या रखें</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">डिज़ाइन</p>
+      <h2>इस बार केवल कैश कुंजी की संख्या बदलती है</h2>
+      <p><strong>इसे क्यों मापा।</strong> दस्तावेज़ का नुस्खा साफ है &mdash; एक कैश कुंजी प्रति मिनट लगभग 15 अनुरोध से ऊपर बहती है, इसलिए कुंजी को कई बकेट में बाँटकर यातायात फैलाएँ। लेकिन बाँटने का उल्टा बोझ भी है: हर बकेट कम गरम होता है। इसलिए &lsquo;बाँटने का लाभ&rsquo; बड़ा है या &lsquo;ठंडा होने की लागत&rsquo;, यह दस्तावेज़ से नहीं पढ़ा जा सकता। यह प्रयोग उसी तराजू को लाइव तैनाती पर सचमुच तौलता है।</p>
+      <p><strong>इसलिए पढ़ाई &lsquo;अंतर के आकार&rsquo; पर टिकी थी।</strong> पहले से दर्ज पढ़ाई दो शाखाओं में थी &mdash; <em>कार्डिनैलिटी 1→8 पर कैश हिट साफ बढ़े तो बकेट बाँटना असली क्षमता लीवर है। मुश्किल से हिले तो दस्तावेज़ सीमा इस तैनाती पर नीति-चयन से छोटा कारण है।</em> किसी भी तरफ <strong>माप ही जवाब चुनेगा</strong>। साथ में एक और सवाल रखा: क्या <code>24h</code> संरक्षण <code>in_memory</code> मूल मान से अलग तरह से उस सीमा को फिर खींचता है।</p>
+      <p><strong>सीमा तक सचमुच पहुँचने के लिए पहले अपना औज़ार सुधारा।</strong> यह प्रयोग दो गलत शुरुआतों से गुजरा, और हम वह रिकॉर्ड नहीं छिपाते। पहली बार अनुरोध <em>एक कतार में, क्रम से</em> भेजे गए, इसलिए वास्तविक गति प्रति मिनट लगभग 7 अनुरोध तक गिर गई और दस्तावेज़ सीमा (लगभग 15 अनुरोध) को <strong>छू भी नहीं सकी</strong>। अगली कोशिश में समांतरता सीमा बहुत कम रखी गई; भेजे जाने वाले अनुरोध <em>डिस्पैचर कतार</em> में अटकने लगे और पहले से दर्ज बैकलॉग गेट ने सही ढंग से प्रयोग रोक दिया। दोनों दौर साक्ष्य से <strong>अलग</strong> रखे गए। अंतिम दौर में ही कतार की छत पर्याप्त ऊँची की गई, ताकि लाइव उत्तर धीमे हों तो भी रास्ता न रुके, और नियोजित <strong>30 RPM</strong> सच में मिला। नीचे के अंक उसी अंतिम दौर के हैं।</p>
+      <p><strong>लाइव एकल तैनाती क्यों।</strong> यह न सिमुलेशन है, न PTU(आरक्षित क्षमता) का साक्ष्य &mdash; यह PAYG(जितना इस्तेमाल, उतना भुगतान) मापन है, जहाँ हर अनुरोध वास्तविक Azure <code>gpt-5.2</code> तैनाती (<strong>500,000 TPM</strong>) पर जाता है। दस्तावेज़ की लगभग 15 RPM सीमा PAYG मॉडल की है, इसलिए उसी पर मापना सही है। भार <code>effort=low</code>, सिस्टम प्रॉम्प्ट लगभग <strong>9.5K टोकन</strong> (दोनों संरक्षण मोड को बाइट तक वही प्रॉम्प्ट मिले, इसलिए SHA-256 <code>329a94&hellip;2a99</code> से स्थिर, <code>corpus_seed 4242</code>), <code>max_output_tokens=512</code>। अनुरोध <strong>0.5/sec</strong> पर लगातार बहते हैं, और गरमाहट हटाने के बाद का स्थिर-अवस्था खंड प्रतिनिधि माना गया।</p>
+      <p><strong>बदलने वाली धुरी सिर्फ दो</strong> &mdash; <code>sweep.bucket_cardinality</code> को <strong>{1, 8}</strong> और <code>prompt_cache_retention</code> को <strong>{in_memory, 24h}</strong> में बदला गया। प्रॉम्प्ट, भार, मॉडल, प्रयास और तैनाती सीमा सब स्थिर हैं, इसलिए उपज का अंतर केवल इन दो धुरियों से आता है। हर संरक्षण मोड में <strong>480 अनुरोध × 2 सेल</strong> चलाए गए।</p>
+      <p><strong>सवाल एक है।</strong> यातायात को कई कैश कुंजियों में बाँटें तो क्या दस्तावेज़ की डराई सीमा से नीचे जाकर कैश हिट बेहतर बचता है?</p>
+      <div class="article-summary-grid" aria-label="पहले से लिखे पूर्वानुमान और भूमिका">
+        <section class="summary-tile"><h2>पहले से लिखा पूर्वानुमान</h2><p>बकेट बाँटने से कैश फिर बचेगा। पहले से दर्ज फैसला-रेखा <strong>1→8 कैश हिट अंतर का आकार</strong> थी &mdash; साफ बढ़े तो बकेट बाँटना असली लीवर, मुश्किल से हिले तो सीमा इस तैनाती पर छोटा कारण।</p></section>
+        <section class="summary-tile"><h2>इस प्रयोग की भूमिका</h2><p>दस्तावेज़ में दी कैश-कुंजी सीमा <strong>असल में कितनी सख्त है</strong>, इसे लाइव PAYG तैनाती पर पहली भरोसेमंद आधाररेखा की तरह मापना। कार्डिनैलिटी और संरक्षण नीति कैश तथा विलंब पर <em>सचमुच</em> दर्ज होते हैं या नहीं, यह जाँचना।</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">इनपुट और उपज</p>
+      <h2>क्या खाया और क्या छोड़ा</h2>
+      <p>इस प्रयोग ने जो खाया और जो छोड़ा, वह हाथ से लिखी सारांश कथा नहीं बल्कि रेपो की असली फाइलें हैं। इसलिए इनपुट से आउटपुट तक एक पंक्ति में वापस चला जा सकता है।</p>
+      <div class="article-summary-grid" aria-label="इनपुट और उपज">
+        <section class="summary-tile">
+          <h2>इनपुट (in)</h2>
+          <p><strong>प्रयोग परिभाषाएँ:</strong> <code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code>, <code>&hellip;_24h.yaml</code> (केवल <code>prompt_cache_retention</code> अलग)।<br>
+          <strong>कॉर्पस:</strong> <code>system_prompt_corpus.json</code>(लगभग 9.5K टोकन) · <code>user_prompts.json</code>.<br>
+          <strong>स्थिर:</strong> दोनों रन का सिस्टम प्रॉम्प्ट SHA-256(<code>329a94&hellip;2a99</code>) से स्थिर &mdash; यह प्रमाण कि दोनों संरक्षण मोड को <em>बाइट तक एक-सा</em> प्रॉम्प्ट मिला।</p>
+        </section>
+        <section class="summary-tile">
+          <h2>उपज (out)</h2>
+          <p><strong>कच्ची कॉल:</strong> <code>runs/*.jsonl</code> (+ सेल-वार <code>*.summary.json</code>, प्रवेश-समय टेलीमेट्री सहित)।<br>
+          <strong>कुल-जोड़:</strong> <code>analysis.md</code>.<br>
+          <strong>वक्र:</strong> <code>results/cache-key-bucketing/*.png</code>&middot;<code>.csv</code> (कार्डिनैलिटी-वार कैश हिट, TTFT p95)।</p>
+        </section>
+      </div>
+      <p><strong>हर संरक्षण मोड में 480 अनुरोध × 2 सेल अंत तक चले</strong>(कार्डिनैलिटी 1 और 8 पर एक-एक सेल)। गरमाहट हटाने के बाद स्थिर-अवस्था नमूना हर सेल में लगभग <strong>388&ndash;390</strong> है। साक्ष्य रन के <strong>1,920 sends में विफलता 1</strong> &mdash; ऊपर की ओर से एक पल के लिए <code>500</code> आया, पर सेल अलगाव ने बाकी को बचाया और कुल-जोड़ ठीक रहे। वास्तविक <strong>429(गति सीमा) 0</strong>, डिस्पैचर कतार में अटका सेल भी <strong>0</strong>(चारों सेल <code>backlog_excessive=false</code>)। कोई पंक्ति हटाई नहीं गई &mdash; क्या और क्यों रखा, नीचे <a href="#transparency">पारदर्शिता</a> में है।</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">पूर्वानुमान बनाम माप</p>
+      <h2>पूर्वानुमान था &lsquo;बाँटेंगे तो बचेगा&rsquo; &mdash; माप मुश्किल से हिला</h2>
+      <div class="article-summary-grid" aria-label="पूर्वानुमान बनाम माप">
+        <section class="summary-tile"><h2>क्या पूर्वानुमान था</h2><p>एक कुंजी पर जमा करें तो दस्तावेज़ सीमा पार होगी और कैश ठंडा होगा; 8 में बाँटें तो सीमा के नीचे आकर कैश हिट <strong>साफ</strong> बढ़ेगा। कम से कम 1→8 पर एक साफ सीढ़ी दिखने की जगह थी।</p></section>
+        <section class="summary-tile"><h2>क्या निकला</h2><p>स्थिर-अवस्था कैश हिट कार्डिनैलिटी 1→8 पर <code>in_memory</code> <strong>93.34% → 95.86%</strong>(<strong>+2.52%p</strong>), <code>24h</code> <strong>96.12% → 96.12%</strong>(<strong>−0.00%p</strong>) रहा। एक ही कुंजी प्रति मिनट <strong>30 अनुरोध</strong>(दस्तावेज़ सीमा का 2 गुना) लेकर भी टिकी रही।</p></section>
+      </div>
+      <p><strong>फैसला: बकेट बाँटना इस तैनाती पर कमजोर लीवर था।</strong> पहले से दर्ज दो शाखाओं में, माप ने <strong>&lsquo;अंतर लगभग नहीं है&rsquo;</strong> चुना &mdash; यानी दस्तावेज़ की लगभग 15 RPM खाई सिद्धांत में मौजूद है, पर इस PAYG तैनाती पर <em>2 गुना रौंदने पर भी कैश आसानी से न टूटने वाली नीची मुंडेर</em> थी। &ldquo;सीमा से बचने के लिए क्या कुंजी बाँटनी होगी?&rdquo; इस चिंता का यहाँ जवाब मिल गया &mdash; कम से कम इस आकार पर जल्दी बाँटने की वजह बड़ी नहीं है।</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">पहला संकेत</p>
+      <h2>बाँटने पर भी कैश लगभग वैसा ही रहा</h2>
+      <p>नीचे की तालिका <strong>स्थिर-अवस्था(गरमाहट छोड़कर)</strong> खंड है &mdash; वही खिड़की जहाँ भार 0.5 अनुरोध प्रति सेकंड पर बैठा और पूर्वानुमान रहता है। अंक प्रकाशित कुल-जोड़ <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>analysis.md</code></a> और <code>results/cache-key-bucketing/*.csv</code> से फिर उद्धृत हैं।</p>
+      <pre class="code-block"><code>संरक्षण मोड  कार्डिनैलिटी  प्रति-बकेट RPM  स्थिर कैश हिट       TTFT p95      टिप्पणी
+in_memory   1 (एक कुंजी)   30.65        93.34%              106,390ms     एक कुंजी पर जमा · दस्तावेज़ सीमा की 2 गुना गति
+in_memory   8 (बँटा)       4.00         95.86%               16,624ms     +2.52%p (मुश्किल से बढ़ता)
+24h         1 (एक कुंजी)   30.73        96.12%                9,900ms     24h संरक्षण · पूँछ विलंब 10 गुना छोटा
+24h         8 (बँटा)       4.00         96.12%               15,549ms     −0.00%p (बदलाव नहीं)</code></pre>
+      <p>चारों बिंदु <strong>93&ndash;96% पट्टी</strong> में कसकर बैठे हैं। ग्राफ पर कार्डिनैलिटी 1 से 8 की रेखा <em>लगभग सपाट</em> है &mdash; दस्तावेज़ सीमा से बचने के लिए यातायात को 8वें हिस्से तक पतला फैलाने पर भी कैश हिट का लाभ in_memory में <strong>2.52%p</strong>, 24h में <strong>लगभग 0</strong> रहा। निर्णायक जगह कार्डिनैलिटी 1 है: वह एक कुंजी पहले ही प्रति मिनट <strong>30 अनुरोध</strong>(30.65 / 30.73) ले रही थी, जो दस्तावेज़ की लगभग 15 अनुरोध सीमा का <strong>2 गुना</strong> है। फिर भी कैश हिट <strong>93.34% / 96.12%</strong> पर टिक गया।</p>
+      <p><strong>असल में साफ अलग हुई धुरी दूसरी थी: संरक्षण नीति।</strong> वही 30 RPM कार्डिनैलिटी 1 पर पूँछ विलंब(TTFT p95) <code>in_memory</code> में <strong>106,390ms</strong> था, पर <code>24h</code> में <strong>9,900ms</strong> &mdash; लगभग <strong>10 गुना</strong> अंतर। कैश हिट मिलते-जुलते थे, लेकिन पहला उत्तर आने तक की <em>पूँछ</em> संरक्षण मोड ने पूरी तरह अलग कर दी।</p>
+
+      <figure class="article-figure" id="figure-exp006-cardinality">
+        <figcaption><strong>कार्डिनैलिटी-वार स्थिर-अवस्था कैश हिट(दो संरक्षण मोड)।</strong> क्षैतिज अक्ष <code>bucket_cardinality</code>(log2), ऊर्ध्वाधर अक्ष स्थिर-अवस्था कैश हिट अनुपात है। दोनों रेखाएँ(<code>in_memory</code>·<code>24h</code>) कार्डिनैलिटी 1 से 8 जाने पर भी <strong>लगभग सपाट</strong> हैं &mdash; एक कुंजी ने दस्तावेज़ सीमा का 2 गुना(प्रति मिनट 30 अनुरोध) लेकर भी 93&ndash;96% बनाए रखा, और 8 में बाँटने का लाभ in_memory +2.52%p, 24h −0.00%p ही रहा। हर बिंदु स्थिर-अवस्था 480 अनुरोध में से गरमाहट हटाने के बाद का नमूना(N=960/संरक्षण) है। स्रोत: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png"><code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png</code></a>।</figcaption>
+        <img src="../../../../../../assets/benchmark-06-cache-key-bucketing.png" alt="कार्डिनैलिटी(1, 8) के अनुसार स्थिर-अवस्था कैश हिट अनुपात। in_memory और 24h दोनों रेखाएँ 93~96% पट्टी में लगभग सपाट हैं; कार्डिनैलिटी 1 से 8 जाने पर in_memory केवल 93.34% से 95.86% तक 2.52%p बढ़ता है और 24h 96.12% पर बिना बदलाव रहता है।" style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA"></figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">दूसरा संकेत</p>
+      <h2>क्यों मुलायम था &mdash; एक ही कुंजी काफी गरम रही</h2>
+      <p>खाई मुलायम रहने की वजह सरल है &mdash; <strong>एक ही कुंजी काफी गरम रही।</strong> कार्डिनैलिटी 1 में सारा यातायात <em>एक</em> साझा प्रिफिक्स में जाता है। प्रति मिनट 30 अनुरोध दस्तावेज़ सीमा का 2 गुना है, पर उस एक कुंजी पर अनुरोधों के बीच दूरी इतनी छोटी रही कि कैश को ठंडा होने का मौका नहीं मिला &mdash; इसलिए 93&ndash;96% मिला। यहाँ 8 में बाँटने पर प्रति-बकेट गति <strong>4 अनुरोध</strong> प्रति मिनट तक गिरती है। सीमा के नीचे तो निश्चित जाती है, पर साथ में <em>हर बकेट कम गरम होता है</em>। &lsquo;बहाव से बचने का लाभ&rsquo; और &lsquo;बकेट ठंडा होने का नुकसान&rsquo; आमने-सामने आ गए, इसलिए शुद्ध असर in_memory 2.52%p और 24h 0 रह गया।</p>
+      <p><strong>संरक्षण मोड अलग हुआ क्योंकि गरम रखने वाली &lsquo;खिड़की&rsquo; का आकार अलग था।</strong> <code>24h</code> संरक्षण पूरे सेल में चौड़ी कुंजी खिड़की गरम रखता है। इसलिए लाइव उत्तर क्षण भर धीमा हो तब भी प्रिफिक्स फिर गिनना कम पड़ता है, और कार्डिनैलिटी 1 पर पूँछ विलंब(TTFT p95) <strong>9,900ms</strong> पर छोटा रहता है। उलट, <code>in_memory</code> को ऐसे हर पल प्रिफिक्स फिर गरम करना पड़ता है, इसलिए उसी जगह पूँछ <strong>106,390ms</strong> तक बढ़ी। कैश <em>हिट दर</em> दोनों में मिलती-जुलती हो सकती है, पर हिट <em>समय पर</em> मिलती है या नहीं, यह संरक्षण खिड़की ने तय किया।</p>
+      <p><strong>लागत ने किसी ओर धक्का नहीं दिया।</strong> साक्ष्य रन लागत <code>in_memory</code> $4.997211, <code>24h</code> $4.848757 रही; दोनों करीब हैं(मिलाकर लगभग $9.85), और कार्डिनैलिटी के बीच कैश हिट अंतर इतना छोटा था कि डॉलर में दिखने लायक इनपुट टोकन पूरी दर पर नहीं गए। कतार में अटका कोई सेल नहीं था(चारों सेल <code>backlog_excessive=false</code>), और समांतरता अधिकतम <strong>33</strong> तक ही गई, सीमा 96 से काफी नीचे &mdash; यानी ये अंक औज़ार अटकने से नहीं, बल्कि नियोजित गति सचमुच मिलने पर निकले।</p>
+      <p><strong>सार:</strong> दस्तावेज़ सीमा सिद्धांत में खाई है, पर इस लाइव PAYG तैनाती पर <strong>2 गुना रौंदने पर भी आसानी से न टूटने वाली नीची मुंडेर</strong> थी। कैश कुंजी को बारीक बाँटने वाला &lsquo;नुस्खा&rsquo; यहाँ मुश्किल से काम आया, और असली लीवर <strong>संरक्षण नीति</strong> था &mdash; पूँछ विलंब साधना हो तो <code>24h</code> चालू करना कार्डिनैलिटी छूने से कहीं अधिक असरदार निकला।</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">पारदर्शिता</p>
+      <h2>अंकों पर लगे धब्बे भी जस के तस</h2>
+      <p>कोई मापन पूरी तरह साफ नहीं होता। इस प्रयोग के निशान मिटाने की जगह हम उन्हें जस का तस लिखते हैं &mdash; छिपे निशान अगले व्यक्ति को उसी जगह भटका देते हैं।</p>
+      <ul>
+        <li><strong>हटाई गई पंक्तियाँ 0।</strong> साक्ष्य रन के 1,920 प्रेषणों में विफलता केवल <strong>1</strong> है(in_memory कार्डिनैलिटी 1)। ऊपर की ओर से एक पल के लिए <code>500</code> लौटा, और स्क्रिप्ट के अनुरोध-वार विफलता अलगाव ने बाकी सेल को बचाया। वह सेल भी कतार गेट(<code>backlog_excessive=false</code>) और समांतरता सीमा(<strong>33 &lt; 96</strong>) से गुजरा। उसे कच्चे रूप में कुल-जोड़ में रखा।</li>
+        <li><strong>दो गलत शुरुआतें साक्ष्य से अलग रखी गईं।</strong> इससे पहले यह प्रयोग अपने औज़ार के कारण दो बार चूका &mdash; पहली बार अनुरोध क्रम से भेजे गए और दस्तावेज़ सीमा तक <em>पहुँचे ही नहीं</em>; दूसरी बार समांतरता सीमा बहुत कम थी, इसलिए भेजे जाने वाले अनुरोध डिस्पैचर कतार में अटक गए और पहले से दर्ज बैकलॉग गेट ने प्रयोग रोक दिया। दोनों दौर अलग फोल्डरों में साक्ष्य के रूप में उद्धृत न करने की पट्टी के साथ रखे गए, और ऊपर के अंक उस समस्या को सुधारे अंतिम दौर के हैं। हम उन्हें छिपाते नहीं।</li>
+        <li><strong>मुख्य अंक स्थिर-अवस्था है।</strong> गरमाहट की गुजरती अवस्था मिलाने से शुरुआती कैश गरम होने का समय नीति असर को धुँधला करता, इसलिए गरमाहट हटाकर स्थिर-अवस्था खंड(हर सेल लगभग 388&ndash;390) को प्रतिनिधि अंक माना।</li>
+        <li><strong>गति सीमा इस बार नहीं लगी।</strong> तैनाती में भरपूर 500,000 TPM रखा गया और भार उसके भीतर था(गणना से ~330K TPM), इसलिए वास्तविक 429 चारों सेल में <strong>0</strong> रहे। इस नोट की सीमा-कथा &lsquo;गति सीमा&rsquo; नहीं, <em>कैश</em> सीमा के बारे में है।</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">सीमाएँ</p>
+      <h2>कहाँ तक भरोसा करें</h2>
+      <p>यह परिणाम एक तैनाती, एक क्षमता श्रेणी, दो कार्डिनैलिटी, एक भार रूपरेखा और एक रन से निकला है। अंकों से अधिक <strong>तरीका और दिशा</strong> साथ ले जाना सुरक्षित है।</p>
+      <ul>
+        <li><strong>PAYG है, PTU नहीं।</strong> दस्तावेज़ की लगभग 15 RPM सीमा PAYG(जितना इस्तेमाल, उतना भुगतान) मॉडल की है। PTU(आरक्षित क्षमता) में सीट बाँटने का तरीका अलग है, इसलिए इस परिणाम को PTU साक्ष्य में न ले जाएँ &mdash; इस प्रयोग ने PTU नहीं मापा।</li>
+        <li><strong>एकल तैनाती है।</strong> दो तैनातियों की तुलना नहीं, स्पिलओवर राउटिंग नहीं। यह लाइव में कैश कुंजी कार्डिनैलिटी नाम के <em>एक लीवर</em> को निशाना बनाता है।</li>
+        <li><strong>निरपेक्ष अंक सीधे नहीं ले जाए जा सकते।</strong> कैश हिट और विलंब किरायेदार, क्षेत्र और समय से हिलते हैं। Azure तैनाती भार समय से बदलता है, इसलिए कार्डिनैलिटी के बीच <em>अंतर की दिशा</em> पढ़ें।</li>
+        <li><strong>पूँछ विलंब में उतार-चढ़ाव बड़ा है।</strong> लाइव तैनाती का TTFT वितरण रन के दौरान डोले तो अंक भी डोलेंगे। इसलिए हर सेल में समांतरता(<code>max_in_flight_observed</code>) छोड़ी गई, ताकि यह जाँचा जा सके कि अंक औज़ार अटकने से नहीं आए।</li>
+        <li><strong>भार और नमूना।</strong> हर संरक्षण मोड में दो कार्डिनैलिटी बिंदु, हर सेल 480 अनुरोध। इस आकार पर भरोसा-अंतराल या सांख्यिकीय महत्त्व का दावा नहीं है &mdash; दिशा मजबूत है, पर निरपेक्ष आकार छोटे-नमूने की सावधानी से पढ़ें। उत्तर गुणवत्ता नहीं आँकी गई।</li>
+        <li><strong>24h सेल अलगाव।</strong> <code>24h</code> संरक्षण सेल के बीच कैश धो नहीं सकता, इसलिए अलगाव पूरी तरह सेल-वार नेमस्पेस(UUID 8-अक्षर प्रत्यय) पर निर्भर है।</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>तो मूल मान क्या रखें</h2>
+      <p><strong>दस्तावेज़ की &lsquo;प्रति-बकेट लगभग 15 अनुरोध&rsquo; सीमा देखकर कैश कुंजी को जल्दी बारीक मत बाँटें। इस लाइव PAYG तैनाती में, एक कुंजी पर उस सीमा का 2 गुना(प्रति मिनट 30 अनुरोध) डालने पर भी स्थिर-अवस्था कैश हिट 93&ndash;96% रहा, और 8 में बाँटने का लाभ in_memory में 2.52%p तथा 24h में लगभग 0 रहा। लक्ष्य पूँछ विलंब साधना हो तो कार्डिनैलिटी नहीं, संरक्षण नीति छुएँ &mdash; <code>24h</code> संरक्षण ने उसी गति पर TTFT p95 को 106 सेकंड से 10 सेकंड किया। कार्डिनैलिटी बाँटना उस पत्ते की तरह रखें जिसे बहाव सचमुच दिखे तब खेलें; कार्यभार रूप बदले तो अपनी तैनाती पर फिर मापें। और इस निष्कर्ष को PTU पर न ले जाएँ &mdash; आरक्षित क्षमता का सीट बाँटना अलग है।</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">आगे जोड़ना</p>
+      <h2>ताकि अगला व्यक्ति कम भटके</h2>
+      <p>साक्ष्य छोड़ना केवल जीते हुए परिणाम लिखना नहीं है। पूर्वानुमान चूकने वाले प्रयोग को भी यह छोड़ना चाहिए कि वह क्यों चूका और कहाँ तक भरोसा किया जा सकता है, ताकि अगला निर्णय उसे फिर इस्तेमाल कर सके। इसलिए यह नोट स्पिलओवर शृंखला और आगे के PTU मापन से जुड़ता है।</p>
+      <ul>
+        <li><strong>स्पिलओवर शृंखला →</strong> <a href="../../exp004-spillover-simulation/hi/">exp004</a>&middot;<a href="../../exp005-dual-spillover/hi/">exp005</a> ने भार के नीचे <em>किस तैनाती को भेजना है</em>(राउटिंग) पर मुकाबला किया, और यह नोट <em>किस कैश कुंजी को भेजना है</em>(बकेट) पर है। दोनों &lsquo;कैश को कैसे गरम रखें&rsquo; इसी सवाल के अलग हैंडल हैं।</li>
+        <li><strong>पुनरावलोकन लेख →</strong> केंद्र के <a href="../../../hi/#next">अगला फैसला &middot; अगला प्रयोग</a> ने जिस कैश ट्यूनिंग हैंडल मापन का इशारा किया था, वही यह प्रयोग है।</li>
+        <li><strong>कच्चा आधार →</strong> दोनों प्रयोग परिभाषाएँ <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_*.yaml</code></a> में हैं, और विश्लेषण <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> में।</li>
+      </ul>
+      <p><strong>अगला प्रयोग।</strong> इस बार PAYG मॉडल पर कैश कुंजी सीमा मापी गई। अगला कदम यही हैंडल <strong>PTU(आरक्षित क्षमता)</strong> पर देखना है &mdash; PTU में सीट बाँटने का तरीका अलग है, इसलिए PAYG की मुलायम मुंडेर वहाँ भी मुलायम रहेगी या नहीं, फिर मापना होगा।</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">खुद पुनरुत्पादित करें और ⭐ छोड़ें</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">स्रोत · साक्ष्य सीमा</p>
+      <h2>स्रोत &amp; साक्ष्य सीमा</h2>
+      <p>यह नोट भी कोई नया मापन नहीं करता, बल्कि प्रकाशित कुल-जोड़ को फिर उद्धृत करता है। एकल PAYG तैनाती की सीमा सहित, साक्ष्य और सीमाएँ नीचे हैं।</p>
+      <ul>
+        <li>इस प्रयोग का विश्लेषण: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>(डिज़ाइन सारांश, साक्ष्य चरण परिणाम, मुख्य तालिका, सीमा की क्रियात्मकता, सीमाएँ)। सभी अंक यहीं और <code>results/cache-key-bucketing/*.csv</code> से फिर उद्धृत।</li>
+        <li>प्रयोग परिभाषाएँ: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_24h.yaml"><code>&hellip;_24h.yaml</code></a>(केवल <code>prompt_cache_retention</code> अलग)।</li>
+        <li>कार्यविधि: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(प्रभाव आकार और दिशा से निर्णय, सांख्यिकीय महत्त्व नहीं)।</li>
+        <li>Azure दस्तावेज़: <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching">प्रॉम्प्ट कैशिंग</a>(<code>prompt_cache_key</code> और प्रिफिक्स हैश राउटिंग पर असर डालते हैं, (प्रिफिक्स हैश, कैश कुंजी) प्रति मिनट लगभग 15 अनुरोध बहाव सीमा, <code>24h</code> संरक्षण, <code>in_memory</code> मूल मान · पहुँच दिन 2026-05-29) · <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota">गति सीमा और कोटा</a>।</li>
+        <li>मूल्य: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, पहुँच दिन 2026-05-19)। gpt-5.2 = प्रति 1M टोकन इनपुट $1.75 / कैश इनपुट $0.175 / तर्क $14.00 / आउटपुट $14.00।</li>
+        <li>सीमा: लाइव <code>gpt-5.2</code> एकल तैनाती(500,000 TPM) &middot; PAYG(PTU नहीं) &middot; कस्टम स्वीप हार्नेस &middot; कार्डिनैलिटी 2 बिंदु × संरक्षण 2 मोड &middot; प्रति सेल 480 अनुरोध &middot; भरोसा-अंतराल नहीं &middot; गुणवत्ता स्कोरिंग नहीं।</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>एमआईटी-लाइसेंस वाला शोध आर्टिफ़ैक्ट · प्रकाशित डेटा में केवल संपादित या कुल-जोड़ रूप शामिल हैं।</p></footer>
+</body>
+</html>

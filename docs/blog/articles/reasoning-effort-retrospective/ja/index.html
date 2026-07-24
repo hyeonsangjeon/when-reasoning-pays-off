@@ -155,6 +155,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p><strong>次の実験。</strong> ここでの PTU 数値はトークンベースの推定です(ライブ負荷ではありません)。次の実験は実際の PTU デプロイでの負荷テスト &mdash; レート制限の調整 · キューイング · 並列バッチがスループットにどう作用するかです。</p>
       <p><strong>その最初の結果が出た。</strong> <a href="../experiments/exp004-spillover-simulation/ja/">exp004 &mdash; スピルオーバーポリシーシミュレーション(Phase 1)</a>では、飽和負荷で先回りする(proactive)スピルオーバーが事後対応(reactive)よりキャッシュを守れるのかを競わせた。答えはほぼ引き分けだった &mdash; 先回りした側の定常状態キャッシュはむしろ <strong>0.1657 pp 低く</strong>、スピルオーバーを一度も発動しなかった。本当の審判は、物理的に分離された 2デプロイ負荷テスト(Phase 2)の仕事である。</p>
       <p><strong>そしてその審判が出た。</strong> <a href="../experiments/exp005-dual-spillover/ja/">exp005 &mdash; デュアルデプロイのスピルオーバー検証(Phase 2)</a>では、物理的に分離されたキャッシュを持つ二つのライブデプロイで同じ問いを再現した。今回は差がむしろ広がった &mdash; 先回りした側の定常状態キャッシュは <strong>0.9923 pp 低く</strong>(Phase 1 の約 6 倍)、コストも高くついた。トラフィックを二つに分けると、温めておいたプールが冷めてしまうからだ。二つの Phase はどちらも同じ結論に達した &mdash; キャッシュが物理的に分かれていれば、事後対応(reactive)の方が勝つ。</p>
+      <p><strong>そしてデプロイではなく「キー」を分けてみた。</strong> <a href="../experiments/exp006-cache-key-bucketing/ja/">exp006 &mdash; キャッシュキーを細かく分けてもキャッシュはほぼそのまま</a>は、一つのデプロイの中で <code>prompt_cache_key</code> を 1個から 8個へ分けるとキャッシュが戻るのかを問うた。答えはまた「ほぼそのまま」だった &mdash; キー一つへ文書上限の 2倍(30 requests/min)を寄せても定常状態キャッシュヒットは <strong>93–96%</strong> で持ちこたえ、8個に分けた利得は最大 <strong>2.52%p</strong> にとどまった。大きく分かれた軸はカーディナリティではなく<strong>保持ポリシー</strong>だった &mdash; <code>24h</code> 保持が尾部レイテンシ(TTFT p95)を 106s→10s へ引き下げた。</p>
       <p>
         <strong>続けて:</strong>
         <a href="../../ptu-retry-after-recovery/ja/">429 はエラーではなく回復シグナル</a>

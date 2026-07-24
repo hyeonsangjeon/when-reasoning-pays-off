@@ -121,6 +121,11 @@
         <p><a href="reasoning-effort-retrospective/experiments/exp005-dual-spillover/">Read the experiment note</a></p>
       </article>
       <article class="card">
+        <h3>exp006: Cache-key bucketing</h3>
+        <p>On a live <code>gpt-5.2</code> PAYG deployment, does splitting <code>prompt_cache_key</code> from 1 bucket into 8 protect the cache-hit ratio? The docs' &ldquo;~15 requests/min per bucket&rdquo; limit proved soft, and the real lever turned out to be retention, not cardinality.</p>
+        <p><a href="reasoning-effort-retrospective/experiments/exp006-cache-key-bucketing/">Read the experiment note</a></p>
+      </article>
+      <article class="card">
         <h3>10-second reproduce</h3>
         <p>Verify the experiment catalog, pure functions, and a runner dry-run in one line, with no credentials.</p>
         <p><a href="reasoning-effort-retrospective/#reproduce">See how to reproduce</a></p>

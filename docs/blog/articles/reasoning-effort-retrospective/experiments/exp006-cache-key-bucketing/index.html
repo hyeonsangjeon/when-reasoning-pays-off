@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/06-cache-key-bucketing/analysis.md and
+  results/cache-key-bucketing/*.csv, not re-derived. No internal task IDs.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp006 · Splitting the cache key into many buckets barely moved the cache | when reasoning pays off</title>
+  <meta name="description" content="The experiment note for exp006, a prompt_cache_key bucket-cardinality measurement. On one live gpt-5.2 PAYG deployment, does splitting the cache key from 1 into 8 buckets protect the cache-hit ratio? Even at twice the docs-stated ~15 requests/min per-bucket limit (30 RPM), steady-state cache hit held at 93.34% (in_memory) / 96.12% (24h), and splitting into 8 gained only +2.52 pp / -0.00 pp. The real lever was not cardinality but retention: 24h retention cut tail latency (TTFT p95) from 106 s to 10 s.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="Article navigation">
+        <a href="../../../../../en/">Home</a>
+        <a href="../../../">Articles</a>
+        <a href="../../">Experiment retrospective (hub)</a>
+        <a href="../../../../charts/?lang=en">Evidence dashboard</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">Experiment retrospective</a> / Experiment note · exp006</p>
+    <p class="article-kicker">Experiment note · exp006 · <code>prompt_cache_key</code> bucket-splitting measurement · how hard is the docs-stated &lsquo;per-bucket limit&rsquo; in practice</p>
+    <h1>exp006 &mdash; Splitting the cache key into many buckets barely moved the cache</h1>
+    <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">Azure prompt caching reuses the shared <strong>front part (the prefix)</strong> of your requests cheaply. But the docs attach a warning: pile too many requests onto one cache key and it overflows past <strong>roughly 15 requests per minute per (prefix hash, cache key)</strong>, and the cache goes cold. The common remedy is to <em>split the cache key into several buckets</em> (raising <code>prompt_cache_key</code> cardinality). This note measures whether that remedy actually protects the cache, on one live <code>gpt-5.2</code> PAYG deployment.</p>
+    <p class="lede">We predicted it would. Send everything to one key (cardinality 1) and you cross the docs limit and the cache cools; split into 8 (cardinality 8) and each bucket drops below the limit, so cache hit should recover <em>visibly</em>. Our pre-registered reading had two branches: if the hit ratio climbs a lot from 1 to 8, bucket-splitting is a real lever; if it barely moves, the limit is soft on this deployment.</p>
+    <p class="lede">The measurement chose the second branch. Piling <strong>30 requests per minute</strong> onto a single key &mdash; twice the docs limit &mdash; still held steady-state cache hit at <strong>93.34% (in_memory) and 96.12% (24h)</strong>, and splitting into 8 moved it only <strong>+2.52 pp (in_memory) and &minus;0.00 pp (24h)</strong>. The cliff the docs draw exists in principle, but on this deployment it was a low curb you can hit at twice the rate without much falling in. The axis that really split the results was not cardinality but <strong>retention</strong>: at the same rate, <code>24h</code> retention cut tail latency (TTFT p95) from <strong>106 seconds to 10</strong>. This note retraces that measurement as <em>design &rarr; inputs &rarr; prediction vs. measurement &rarr; the curve &rarr; decision</em>.</p>
+
+    <section class="article-section">
+      <p class="section-label">Why read this</p>
+      <h2>Before you decide how many cache keys to split into on the docs alone</h2>
+      <p>Prompt caching serves same-prefix requests cheaply, so putting a long system prompt up front lets the requests behind it run at the cache rate. The trouble starts when they <strong>pile onto one key</strong>. The docs say one (prefix hash, cache key) overflows past roughly 15 requests per minute, and they steer you toward splitting <code>prompt_cache_key</code> into several buckets to spread the traffic.</p>
+      <p>But splitting has a price. Divide the key into 8 and each bucket's rate drops to an eighth, yet <em>each bucket warms up that much less</em>. In other words, the very split you made to dodge the limit can cool the cache instead. Which side wins is not something the docs answer &mdash; you have to measure it.</p>
+      <p>If you are weighing how many ways to split traffic with <code>prompt_cache_key</code>, this note is the closest. To the question &mdash; &ldquo;will splitting the key finely to dodge the docs limit protect the cache hit, or cost me in cold starts?&rdquo; &mdash; this experiment gives one measured answer from a live deployment, and it is closer to &lsquo;don't rush to split on the docs limit alone.&rsquo;</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">First, 10 seconds</p>
+      <h2>Don't take the conclusion on faith &mdash; print the numbers yourself</h2>
+      <p>Token spend is zero. The first two lines print each retention mode's inputs, variables, and artifacts verbatim; the last line recomputes cache hit from cardinality 1 to 8 out of the published aggregate CSV and checks it against this note (no network, no credentials).</p>
+      <pre class="code-block"><code># Print each retention mode's (in_memory · 24h) input -> variable -> artifact card (no network)
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_inmemory.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp006_cache_key_bucketing_24h.yaml').summary())"
+
+# Recompute cardinality 1->8 cache hit from the published aggregate CSV and check it against this note (zero tokens)
+python3 -c "import csv; r=list(csv.DictReader(open('results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv'))); d={(x['retention'],x['cardinality']):x for x in r}; [print('%-9s card1=%.4f%% (%.1f RPM/bucket)  card8=%.4f%% (%.1f RPM/bucket)  gap=%+.4f pp' % (ret, float(d[(ret,'1')]['cache_hit_ratio'])*100, float(d[(ret,'1')]['realized_admitted_per_bucket_rpm']), float(d[(ret,'8')]['cache_hit_ratio'])*100, float(d[(ret,'8')]['realized_admitted_per_bucket_rpm']), (float(d[(ret,'8')]['cache_hit_ratio'])-float(d[(ret,'1')]['cache_hit_ratio']))*100)) for ret in ('in_memory','24h')]"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
+      <p class="muted-note">Reproducing the live load needs Azure credentials and real spend &mdash; this is a genuine load test firing requests at a live deployment. The credential-free path (re-deriving the curves and CSVs from the published raw summary JSON) is written up in the chart-reproduction section of <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> and in <code>scripts/plot_cache_key_bucketing.py</code>.</p>
+    </section>
+
+    <nav class="article-outline" aria-label="How this note is organized">
+      <strong>Reading order &mdash; the honest conclusion first, mechanism second:</strong>
+      <a href="#design">This time only the number of cache keys changes</a>
+      <a href="#predict">The prediction was &lsquo;split and it survives&rsquo; &mdash; it barely moved</a>
+      <a href="#result">Splitting barely moved the cache</a>
+      <a href="#mechanism">Why it was soft &mdash; one key was already hot enough</a>
+      <a href="#limits">How far to trust this</a>
+      <a href="#decision">So what should the default be</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">Design</p>
+      <h2>This time only the number of cache keys changes</h2>
+      <p><strong>Why we measured this.</strong> The docs prescription is clear: one cache key overflows past about 15 requests per minute, so split the key into several buckets and spread the traffic. But splitting carries a counterweight &mdash; each bucket warms up less. Whether the &lsquo;splitting gain&rsquo; or the &lsquo;cooling cost&rsquo; is larger is not something you can read off the docs. This experiment actually weighs the two on a live deployment.</p>
+      <p><strong>So the hypothesis rides on the size of the gap.</strong> The pre-registered reading has two branches &mdash; <em>if cache hit climbs clearly from cardinality 1 to 8, bucket-splitting is a real capacity lever; if it barely moves, the docs limit is a smaller factor than policy choice on this deployment.</em> Either way, <strong>the measurement picks the answer</strong>. We staked one side question on top: does <code>24h</code> retention redraw that limit differently from the <code>in_memory</code> default?</p>
+      <p><strong>To actually reach the limit, we first fixed our own rig.</strong> This experiment came through two false starts, and we are not hiding the record. The first sent requests <em>serially</em>, so the achieved rate sagged to about 7 per minute &mdash; it never even reached the docs limit of ~15. The second set the concurrency ceiling too low, so requests waiting to dispatch backed up in the <em>dispatcher queue</em> and a pre-registered backlog gate correctly aborted the run. Both attempts were <strong>quarantined</strong> out of the evidence, and only the final run &mdash; with the queue ceiling raised enough that a slow live response no longer clogs it &mdash; realized the planned <strong>30 RPM</strong>. The numbers below are from that final run.</p>
+      <p><strong>Why one live deployment.</strong> This is neither a simulation nor PTU (reserved-capacity) evidence &mdash; it is a PAYG (pay-as-you-go) measurement where every request hits a real Azure <code>gpt-5.2</code> deployment (<strong>500,000 TPM</strong>). The docs limit of ~15 RPM is on the PAYG model, so PAYG is the right place to measure it. The load is <code>effort=low</code>, a system prompt of about <strong>9.5K tokens</strong> (pinned byte-for-byte across both retention modes with SHA-256 <code>329a94&hellip;2a99</code>, <code>corpus_seed 4242</code>), <code>max_output_tokens=512</code>. Requests flow steadily at <strong>0.5 per second</strong>, and the steady-state slice (warmup excluded) is the representative window.</p>
+      <p><strong>Exactly two axes vary</strong> &mdash; <code>sweep.bucket_cardinality</code> across <strong>{1, 8}</strong> and <code>prompt_cache_retention</code> across <strong>{in_memory, 24h}</strong>. Prompt, load, model, effort, and the deployment ceiling are all fixed, so the difference in artifacts comes only from those two axes. Each retention mode ran <strong>480 requests &times; 2 cells</strong>.</p>
+      <p><strong>There is one question.</strong> If you split traffic across several cache keys, do you drop below the limit the docs warn about and protect cache hit better?</p>
+      <div class="article-summary-grid" aria-label="The pre-registered prediction and role">
+        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>Splitting the buckets will revive the cache. The registered decision line is the <strong>size of the cardinality 1&rarr;8 cache-hit gap</strong> &mdash; a clear climb means bucket-splitting is a real lever; barely moving means the limit is a minor factor on this deployment.</p></section>
+        <section class="summary-tile"><h2>This experiment's role</h2><p>The first reliable baseline of <strong>how hard the docs-stated cache-key limit really is</strong> on a live PAYG deployment. It checks whether cardinality and retention <em>actually</em> register on cache and latency.</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">Inputs and artifacts</p>
+      <h2>What it consumed and what it left behind</h2>
+      <p>What this experiment consumed and produced isn't a hand-written summary but the repo's actual files. So you can retrace it from input to output in a single line.</p>
+      <div class="article-summary-grid" aria-label="Inputs and artifacts">
+        <section class="summary-tile">
+          <h2>Input (in)</h2>
+          <p><strong>Experiment definitions:</strong> <code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code>, <code>&hellip;_24h.yaml</code> (only <code>prompt_cache_retention</code> differs).<br>
+          <strong>Corpus:</strong> <code>system_prompt_corpus.json</code> (about 9.5K tokens) · <code>user_prompts.json</code>.<br>
+          <strong>Pinned:</strong> both runs' system prompt fixed by SHA-256 (<code>329a94&hellip;2a99</code>) &mdash; guaranteeing both retention modes got a <em>byte-for-byte</em> identical prompt.</p>
+        </section>
+        <section class="summary-tile">
+          <h2>Artifacts (out)</h2>
+          <p><strong>Raw calls:</strong> <code>runs/*.jsonl</code> (+ per-cell <code>*.summary.json</code>, with admitted-time telemetry).<br>
+          <strong>Aggregate:</strong> <code>analysis.md</code>.<br>
+          <strong>Curves:</strong> <code>results/cache-key-bucketing/*.png</code>&middot;<code>.csv</code> (cache hit per cardinality, TTFT p95).</p>
+        </section>
+      </div>
+      <p><strong>Each retention mode ran 480 requests &times; 2 cells to completion</strong> (one cell each at cardinality 1 and 8). The steady-state sample with warmup removed is about <strong>388&ndash;390 records</strong> per cell. Across <strong>1,920 sends in the evidence run, exactly 1 failed</strong> &mdash; a single upstream <code>500</code> for one instant, which cell isolation contained so the aggregates held. Real <strong>429s (rate limits) were zero</strong>, and no cell backed up its dispatcher queue (all four report <code>backlog_excessive=false</code>). No rows were dropped &mdash; what was kept and why is covered under <a href="#transparency">Transparency</a> below.</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">Prediction vs. measurement</p>
+      <h2>The prediction was &lsquo;split and it survives&rsquo; &mdash; it barely moved</h2>
+      <div class="article-summary-grid" aria-label="Prediction vs. measurement">
+        <section class="summary-tile"><h2>What we predicted</h2><p>Pile onto one key and it overflows the docs limit and cools; split into 8 and it drops below the limit, so cache hit rises <strong>visibly</strong>. At minimum, a place where a clear step from 1 to 8 should show.</p></section>
+        <section class="summary-tile"><h2>What came out</h2><p>Steady-state cache hit from cardinality 1 to 8 went <code>in_memory</code> <strong>93.34% &rarr; 95.86%</strong> (<strong>+2.52 pp</strong>) and <code>24h</code> <strong>96.12% &rarr; 96.12%</strong> (<strong>&minus;0.00 pp</strong>). A single key already took <strong>30 requests per minute</strong> (twice the docs limit) and held.</p></section>
+      </div>
+      <p><strong>Verdict: bucket-splitting was a weak lever on this deployment.</strong> Of the two pre-registered branches, the measurement chose <strong>&lsquo;the gap is negligible.&rsquo;</strong> The ~15 RPM cliff the docs draw exists in principle, but on this PAYG deployment it was a <em>low curb you can hit at twice the rate without much falling in</em>. The worry &mdash; &ldquo;do I have to split the key to dodge the limit?&rdquo; &mdash; has an answer here: at least at this scale, there is little reason to rush.</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">First signal</p>
+      <h2>Splitting barely moved the cache</h2>
+      <p>The table below is the <strong>steady-state slice (warmup excluded)</strong> &mdash; the window where the hypothesis lives, with load settled at 0.5 requests per second. The numbers are re-cited from the published aggregate <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>analysis.md</code></a> and <code>results/cache-key-bucketing/*.csv</code>.</p>
+      <pre class="code-block"><code>retention   cardinality    RPM/bucket   steady cache hit    TTFT p95      note
+in_memory   1 (one key)    30.65        93.34%              106,390ms     concentrated on one key · 2x the docs limit
+in_memory   8 (split)      4.00         95.86%               16,624ms     +2.52 pp (barely rises)
+24h         1 (one key)    30.73        96.12%                9,900ms     24h retention · tail latency 10x shorter
+24h         8 (split)      4.00         96.12%               15,549ms     -0.00 pp (no change)</code></pre>
+      <p>All four points sit packed inside the <strong>93&ndash;96% band</strong>. Plotted, the line from cardinality 1 to 8 is <em>nearly flat</em> &mdash; even though we thinned the traffic to an eighth to dodge the docs limit, the cache hit gained just <strong>2.52 pp</strong> in in_memory and <strong>essentially zero</strong> in 24h. The decisive point is the cardinality-1 side: that one key already took <strong>30 requests per minute</strong> (30.65 / 30.73), which is <strong>twice</strong> the docs-stated ~15, and cache hit still held at <strong>93.34% / 96.12%</strong>.</p>
+      <p><strong>What did split visibly was the other axis, retention.</strong> At the same 30 RPM on cardinality 1, tail latency (TTFT p95) was <strong>106,390 ms</strong> under <code>in_memory</code> but <strong>9,900 ms</strong> under <code>24h</code> &mdash; nearly a <strong>10&times;</strong> difference. Cache hit was similar, but whether the hit arrived <em>on time</em> was decided entirely by the retention window.</p>
+
+      <figure class="article-figure" id="figure-exp006-cardinality">
+        <figcaption><strong>Steady-state cache hit by cardinality (two retention modes).</strong> The x-axis is <code>bucket_cardinality</code> (log2), the y-axis the steady-state cache-hit ratio. Both lines (<code>in_memory</code> · <code>24h</code>) stay <strong>nearly flat</strong> from cardinality 1 to 8 &mdash; a single key held 93&ndash;96% while taking twice the docs limit (30 requests per minute), and splitting into 8 gained only +2.52 pp for in_memory and &minus;0.00 pp for 24h. Each point is the warmup-excluded sample of the steady-state 480 requests (N=960/retention). Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png"><code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.png</code></a>.</figcaption>
+        <img src="../../../../../assets/benchmark-06-cache-key-bucketing.png" alt="Steady-state cache-hit ratio against cardinality (1, 8). Both the in_memory and 24h lines stay nearly flat in the 93-96% band; from cardinality 1 to 8, in_memory rises only from 93.34% to 95.86% (+2.52 pp) and 24h stays at 96.12%." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA"></figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">Second signal</p>
+      <h2>Why it was soft &mdash; one key was already hot enough</h2>
+      <p>The reason the cliff was soft is simple: <strong>one key was already hot enough.</strong> At cardinality 1, all traffic enters a <em>single</em> common prefix. Thirty requests per minute is twice the docs limit, but that one key had short enough gaps between requests to stay warm without a chance to cool &mdash; hence the 93&ndash;96%. Split it into 8 and each bucket's rate drops to <strong>4 requests per minute</strong>. That falls safely below the limit, but at the same time <em>each bucket warms up less</em>. The &lsquo;gain from dodging overflow&rsquo; and the &lsquo;loss from cooler buckets&rsquo; roughly cancel, so the net was 2.52 pp for in_memory and zero for 24h.</p>
+      <p><strong>Retention split because of the size of the window it keeps warm.</strong> <code>24h</code> retention carries a wider key window warm across the whole cell. So even when a live response slows for a moment, it rarely has to recompute the prefix, and tail latency (TTFT p95) at cardinality 1 stays short at <strong>9,900 ms</strong>. <code>in_memory</code>, by contrast, has to re-warm the prefix at each such moment, stretching the tail at the same point to <strong>106,390 ms</strong>. The hit <em>ratio</em> was similar for both, but whether a hit was served <em>promptly</em> was decided by the retention window.</p>
+      <p><strong>Cost moved neither way.</strong> The evidence run cost <code>in_memory</code> $4.997211 and <code>24h</code> $4.848757 &mdash; both similar (about $9.85 combined) &mdash; because the cache-hit difference across cardinality was too small to push meaningful input tokens back to full price. No cell backed up its queue (all four <code>backlog_excessive=false</code>), and concurrency peaked at just <strong>33</strong>, far under the ceiling of 96. In other words these numbers came not from a clogged rig but from the planned rate actually being realized.</p>
+      <p><strong>In short:</strong> the docs limit is a cliff in principle, but on this live PAYG deployment it was a <strong>low curb you can hit at twice the rate without much falling in</strong>. Splitting the cache key finely, the &lsquo;remedy,&rsquo; paid off little here; the real lever was <strong>retention</strong> &mdash; if you want to tame tail latency, turning on <code>24h</code> worked far harder than touching cardinality.</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">Transparency</p>
+      <h2>The smudges left in the numbers, kept as they are</h2>
+      <p>No measurement is perfectly clean. We write down the marks this experiment left without erasing them &mdash; hidden, they only trip the next person at the same spot.</p>
+      <ul>
+        <li><strong>Zero rows dropped.</strong> Across 1,920 sends in the evidence run, exactly <strong>1 failed</strong> (in_memory cardinality 1). One upstream returned a <code>500</code> for an instant, and the script's per-request failure isolation protected the rest of the cell. That cell still cleared the queue gate (<code>backlog_excessive=false</code>) and the concurrency ceiling (<strong>33 &lt; 96</strong>). We left it in the aggregates as-is.</li>
+        <li><strong>Two false starts were quarantined out of the evidence.</strong> Twice before, this experiment failed on its own rig &mdash; first it sent requests serially and <em>never reached</em> the docs limit, then its concurrency ceiling was too low and requests waiting to dispatch backed up the dispatcher queue, tripping a pre-registered backlog gate. Both were quarantined in separate folders with a &lsquo;do not cite as evidence&rsquo; label, and the numbers above are from the fixed final run. We are not hiding them.</li>
+        <li><strong>The headline is steady-state.</strong> Mixing in the warmup transient, where the cache is still heating early on, would blur the policy effect &mdash; so we took the warmup-excluded steady-state slice (about 388&ndash;390 records per cell) as the representative number.</li>
+        <li><strong>No rate limits this time.</strong> The deployment had a roomy 500,000 TPM and the load stayed inside it (about 330K tokens per minute by the math), so real 429s were <strong>zero</strong> across all four cells. This note's talk of a &lsquo;limit&rsquo; is about the <em>cache</em> limit, not rate limits.</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">Limits</p>
+      <h2>How far to trust this</h2>
+      <p>This result comes from one deployment, one capacity class, two cardinalities, one load profile, one run. It is safer to carry the method and the direction than the numbers themselves.</p>
+      <ul>
+        <li><strong>PAYG, not PTU.</strong> The docs limit of ~15 RPM is on the PAYG (pay-as-you-go) model. PTU (reserved capacity) admits requests differently, so this result should not be carried over to PTU &mdash; this experiment did not measure PTU.</li>
+        <li><strong>Single deployment.</strong> No dual-deployment comparison, no spillover routing. It aims one lever &mdash; cache-key cardinality &mdash; on a live deployment.</li>
+        <li><strong>Absolute numbers don't transfer.</strong> Cache hit and latency shift with tenant, region, and time of day. Azure deployment load follows the clock, so read the <em>direction of the difference</em> across cardinality, not the absolute value.</li>
+        <li><strong>Tail latency varies widely.</strong> If the live deployment's TTFT distribution swings during a run, the numbers swing with it. We logged concurrency (<code>max_in_flight_observed</code>) on every cell so you can confirm the values did not come from a clogged rig.</li>
+        <li><strong>Load and sample.</strong> Two cardinality points per retention mode, 480 requests per cell. At this size we claim no confidence intervals or statistical significance &mdash; the direction is solid, but the absolute magnitude carries small-sample caution. Response quality was not scored.</li>
+        <li><strong>24h cell isolation.</strong> <code>24h</code> retention cannot wash the cache between cells, so isolation rests entirely on the per-cell namespace (an 8-char UUID suffix).</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>So what should the default be</h2>
+      <p><strong>Don't rush to split the cache key finely on the docs' &lsquo;about 15 requests per bucket&rsquo; limit alone. On this live PAYG deployment, piling twice that limit (30 requests per minute) onto a single key still held steady-state cache hit at 93&ndash;96%, and splitting into 8 gained only 2.52 pp for in_memory and essentially zero for 24h. If your goal is to tame tail latency, reach for retention, not cardinality &mdash; <code>24h</code> retention cut TTFT p95 from 106 seconds to 10 at the same rate. Keep cardinality splitting as the card you play when overflow is actually observed, and re-measure on your own deployment when the workload shape changes. And do not carry this conclusion to PTU &mdash; reserved capacity admits requests differently.</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">Building on</p>
+      <h2>So the next person wanders less</h2>
+      <p>Leaving evidence isn't only about recording the wins. An experiment whose prediction missed also has to leave why it missed and how far to trust it, so the next decision can reuse it. That's why this note connects back to the spillover series and forward to a PTU measurement.</p>
+      <ul>
+        <li><strong>Spillover series &rarr;</strong> <a href="../exp004-spillover-simulation/">exp004</a> and <a href="../exp005-dual-spillover/">exp005</a> raced <em>which deployment to route to</em> under load; this note aimed at <em>which cache key to route to</em> (the bucket). Both are different handles on the same question &mdash; how do you keep the cache warm?</li>
+        <li><strong>Retrospective body &rarr;</strong> the hub's <a href="../../#next">next verdict · next experiment</a> previewed exactly this cache-tuning-handle measurement.</li>
+        <li><strong>Raw data &rarr;</strong> the two experiment definitions live in <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_*.yaml</code></a>, and the analysis in <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a>.</li>
+      </ul>
+      <p><strong>Next experiment.</strong> This time we measured the cache-key limit on the PAYG model. Next it has to be seen on <strong>PTU (reserved capacity)</strong> &mdash; PTU admits requests differently, so whether PAYG's soft curb stays soft there is something you have to measure again.</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">Sources · evidence boundary</p>
+      <h2>Sources &amp; evidence boundary</h2>
+      <p>This note, too, re-cites the published aggregate with no new measurement. Down to the single-PAYG-deployment boundary, the evidence and limits are below.</p>
+      <ul>
+        <li>This experiment's analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/06-cache-key-bucketing/analysis.md"><code>benchmarks/06-cache-key-bucketing/analysis.md</code></a> (design summary, evidence-stage results, headline table, whether the limit is operationally reachable, limits). All figures are re-cited from there and from <code>results/cache-key-bucketing/*.csv</code>.</li>
+        <li>Experiment definitions: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_inmemory.yaml"><code>experiments/exp006_cache_key_bucketing_inmemory.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp006_cache_key_bucketing_24h.yaml"><code>&hellip;_24h.yaml</code></a> (only <code>prompt_cache_retention</code> differs).</li>
+        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8 (judge by effect size and direction, not statistical significance).</li>
+        <li>Azure docs: <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/prompt-caching">Prompt caching</a> (<code>prompt_cache_key</code> and the prefix hash influence routing; overflow limit of about 15 requests/min per (prefix hash, cache key); <code>24h</code> retention; <code>in_memory</code> default · accessed 2026-05-29) · <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/quota">Rate limits &amp; quota</a>.</li>
+        <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19). gpt-5.2 = per 1M tokens input $1.75 / cached input $0.175 / reasoning $14.00 / output $14.00.</li>
+        <li>Boundary: one live <code>gpt-5.2</code> deployment (500,000 TPM) &middot; PAYG (not PTU) &middot; custom sweep harness &middot; 2 cardinalities &times; 2 retention modes &middot; 480 requests per cell &middot; no confidence intervals &middot; no quality scoring.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · published data contains only cleaned or aggregated results.</p></footer>
+</body>
+</html>

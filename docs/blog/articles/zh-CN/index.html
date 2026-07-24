@@ -114,6 +114,11 @@
         <p><a href="../reasoning-effort-retrospective/experiments/exp005-dual-spillover/zh-CN/">阅读实验笔记</a></p>
       </article>
       <article class="card">
+        <h3>exp006、缓存键分桶</h3>
+        <p>在真实 <code>gpt-5.2</code> PAYG 上追问：把 <code>prompt_cache_key</code> 从 1 个拆到 8 个，缓存命中会不会活回来？文档里的“每桶约 15 个请求”上限偏软，真正的杠杆不是基数，而是保留策略。</p>
+        <p><a href="../reasoning-effort-retrospective/experiments/exp006-cache-key-bucketing/zh-CN/">阅读实验笔记</a></p>
+      </article>
+      <article class="card">
         <h3>10 秒复现</h3>
         <p>无需凭据，用一行命令验证实验目录、纯函数和 runner dry-run。</p>
         <p><a href="../reasoning-effort-retrospective/zh-CN/#reproduce">查看复现方法</a></p>
