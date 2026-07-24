@@ -22,7 +22,13 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
-    "ruff>=0.4",
+    # Cap ruff below 0.16: ruff 0.16.0 broadened its default rule set and
+    # now flags 500+ pre-existing findings across batch-runner/ and scripts/
+    # (E402/E501/I001/RUF100/PLC0415/TRY004/UP*/SLF001 ...) that predate it.
+    # The CI ruff gate is scoped to keep NEW code clean (see the
+    # per-file-ignores note below), so pin to the 0.15.x line the repo was
+    # validated against until those pre-existing findings are triaged.
+    "ruff>=0.4,<0.16",
     "jsonschema>=4.0",
 ]
 
