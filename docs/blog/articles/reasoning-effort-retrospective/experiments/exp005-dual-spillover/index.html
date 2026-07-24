@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--
+  Translation derived from the Korean canonical source (ko/index.html).
+  This series (reasoning-effort-retrospective) takes Korean as its source
+  language; en/ja/zh-CN/hi are translations. All figures are re-cited from
+  benchmarks/05-dual-spillover/analysis.md and analysis.json, not
+  re-derived. No internal task IDs.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>exp005 · Splitting the cache pool for real made the clever policy lose by more | when reasoning pays off</title>
+  <meta name="description" content="The experiment note for exp005, a Phase 2 PTU dual-deployment spillover measurement. With two live gpt-5.2 deployments whose cache pools are physically separate, does a proactive spillover policy protect the cache better than a reactive one? Unlike Phase 1's near-tie, the proactive policy's steady-state cache was 0.9923 pp lower, it took 167 real 429s on the throttled primary, and it cost $0.91 more.">
+  <meta name="article:locale" content="en">
+  <meta name="article:translation-status" content="translated">
+  <link rel="stylesheet" href="../../../../../assets/styles.css">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="ko" href="ko/">
+  <link rel="alternate" hreflang="ja" href="ja/">
+  <link rel="alternate" hreflang="zh-CN" href="zh-CN/">
+  <link rel="alternate" hreflang="hi" href="hi/">
+  <link rel="alternate" hreflang="x-default" href="./">
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <a class="brand" href="../../../../../en/">when reasoning pays off</a>
+      <nav class="site-links" aria-label="Article navigation">
+        <a href="../../../../../en/">Home</a>
+        <a href="../../../">Articles</a>
+        <a href="../../">Experiment retrospective (hub)</a>
+        <a href="../../../../charts/?lang=en">Evidence dashboard</a>
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
+      </nav>
+      <nav class="lang" aria-label="Language">
+        <a href="./" data-locale="en" aria-current="true">English</a>
+        <a href="ko/" data-locale="ko">한국어</a>
+        <a href="ja/" data-locale="ja">日本語</a>
+        <a href="zh-CN/" data-locale="zh-CN">简体中文</a>
+        <a href="hi/" data-locale="hi">हिन्दी</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="article-content" class="article-page topic-page">
+    <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">Experiment retrospective</a> / Experiment note · exp005</p>
+    <p class="article-kicker">Experiment note · exp005 · PTU dual-deployment spillover measurement (Phase 2) · what happens when the cache pool is really split</p>
+    <h1>exp005 &mdash; Split the cache pool for real, and the clever policy lost by more</h1>
+    <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
+
+    <p class="lede">The previous note (<a href="../exp004-spillover-simulation/">exp004</a>) simulated spillover on a <em>single</em> deployment. The two policies came out essentially tied (<strong>&minus;0.1657 pp</strong>), and we wrote this down at the time: &ldquo;the real verdict belongs to Phase 2.&rdquo; This is that Phase 2. Now there are <strong>two</strong> deployments, the throttling is <em>real</em>, and the primary and spillover routes hold <strong>physically separate cache pools</strong>.</p>
+    <p class="lede">So this <strong>prediction</strong> felt natural: once the cache pools are really split, the <em>proactive</em> policy that protects the primary ahead of time might finally pay off. Our pre-registered reading had two branches: if the gap <strong>widens</strong>, the cache-rebuild cost is real; if it stays <strong>similar</strong>, cache-pool separation is a smaller factor than policy timing.</p>
+    <p class="lede">The measurement overturned it <strong>harder</strong> this time. Sustained-phase steady-state cache hit was <strong>reactive 99.2337%, proactive 98.2414%</strong> &mdash; the proactive policy was <strong>0.9923 pp lower</strong> (about six times the Phase 1 gap). On top of that, proactive kept clinging to the throttled primary and took <strong>167</strong> real 429s (&ldquo;not right now&rdquo; signals) to reactive's <strong>zero</strong>, and it cost <strong>$0.91</strong> more. This note retraces those 22 minutes as <em>design &rarr; inputs &rarr; prediction vs. measurement &rarr; the two curves &rarr; decision</em> &mdash; split the cache pool, and the clever policy lost by <strong>more</strong>.</p>
+
+    <section class="article-section">
+      <p class="section-label">Why read this</p>
+      <h2>What happens when the primary and spillover deployments are really separate?</h2>
+      <p>When a PTU (fixed-capacity) deployment nears its ceiling, spillover sheds some traffic to a <strong>fallback deployment</strong>. Phase 1 faked that fallback route inside a single deployment, as a <em>label</em> &mdash; the primary and fallback routes saw the same cache (the store that reuses prompts to save cost). So the policy difference barely registered on the cache.</p>
+      <p>Phase 2 removes that doubt. Make the primary and fallback <strong>genuinely different deployments</strong> and, by Azure design, their <strong>cache pools split too</strong>. Now &ldquo;which deployment did you route to&rdquo; registers directly on cache temperature. Concentrate on one, and that pool stays hot; split across two, and <em>both go lukewarm</em>.</p>
+      <p>If you run a <strong>separate primary + fallback</strong> deployment pair, this note is the closest. To the question &mdash; &ldquo;will splitting traffic early to protect the primary keep the cache warmer?&rdquo; &mdash; this experiment gives one <strong>measured answer</strong>, and the answer is closer to &lsquo;don't split.&rsquo;</p>
+    </section>
+
+    <section id="reproduce" class="article-section">
+      <p class="section-label">First, 10 seconds</p>
+      <h2>Don't take the conclusion on faith &mdash; print the numbers yourself</h2>
+      <p>Token spend is zero. The first two lines print each policy's inputs, variables, and artifacts verbatim; the last line recomputes the headline number from the published aggregate and checks it against this note (no network, no credentials).</p>
+      <pre class="code-block"><code># Print each policy's (reactive · proactive) input -> variable -> artifact card (no network)
+python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_reactive.yaml').summary())"
+python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_proactive.yaml').summary())"
+
+# Recompute sustain-phase cache hit from the published aggregate and check it against this note (zero tokens)
+python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis.json'))['per_policy_stats']; print('sustain cache-hit  reactive=%.4f%%  proactive=%.4f%%  gap=%+.4f pp' % (s['reactive']['sustain']['cache_hit_ratio']*100, s['proactive']['sustain']['cache_hit_ratio']*100, (s['proactive']['sustain']['cache_hit_ratio']-s['reactive']['sustain']['cache_hit_ratio'])*100))"</code></pre>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Open the repo on GitHub &amp; ⭐</a></p>
+      <p class="muted-note">Reproducing the live load needs Azure credentials and real spend &mdash; this is a genuine dual-deployment load test. The credential-free path (re-deriving <code>analysis.json</code> from the published raw JSONL) is written up in the reproducibility footer of <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>.</p>
+    </section>
+
+    <nav class="article-outline" aria-label="How this note is organized">
+      <strong>Reading order &mdash; the honest conclusion first, mechanism second:</strong>
+      <a href="#design">This time the cache pool is really split</a>
+      <a href="#predict">The prediction missed again &mdash; harder</a>
+      <a href="#result">The clever policy lost by more</a>
+      <a href="#mechanism">Why they split &mdash; splitting cools both pools</a>
+      <a href="#limits">How far to trust this</a>
+      <a href="#decision">So what should the default be</a>
+    </nav>
+
+    <section id="design" class="article-section">
+      <p class="section-label">Design</p>
+      <h2>This time the cache pool is really split</h2>
+      <p><strong>Why we measured this.</strong> Phase 1's tie left one escape hatch: with a single deployment, the cache pool was shared. So we couldn't tell whether the policy difference &lsquo;never registers&rsquo; or &lsquo;didn't register because the cache was shared.&rsquo; Phase 2 closes that hatch. It <strong>genuinely splits</strong> the cache pool and checks whether the verdict still holds.</p>
+      <p><strong>So the hypothesis rides on the size of the gap.</strong> The pre-registered reading has two branches &mdash; <em>if the Phase 2 gap grows clearly larger than Phase 1, the cost of splitting traffic when cache pools are separate (cache-rebuild cost) is real; if it stays similar, cache-pool separation is a smaller factor than policy timing.</em> Either way, <strong>the measurement picks the answer</strong>.</p>
+      <p><strong>This is a mitigation comparison, not a root-cause hunt.</strong> The strong claim that &lsquo;spillover itself causes cache decay&rsquo; already lost force in field observation. This experiment isn't the place to find the cause &mdash; only to race the two mitigation policies and see <strong>which is better</strong>.</p>
+      <p><strong>Why dual deployment.</strong> The primary (<code>ptu-deploy-throttled</code>) gets a deliberately low ceiling of <strong>60,000 TPM</strong> (tokens per minute) so the ~30K-token load emits <strong>real 429s</strong>. The spillover (<code>gpt-5.2</code>) gets a roomy <strong>500,000 TPM</strong>. Different deployment name means a different cache pool &mdash; the &lsquo;physical separation&rsquo; Phase 1 only faked is real here.</p>
+      <p><strong>There is one question.</strong> On top of physically separate cache pools, does proactive spillover protect the cache better than reactive?</p>
+      <p><strong>Design (load).</strong> The same 22-minute load Phase 1 used, byte-for-byte, flows to both policies &mdash; <strong>warmup 2 min</strong> (0.3 TPS) &rarr; <strong>ramp 10 min</strong> (0.5&rarr;2.5 TPS) &rarr; <strong>sustain 10 min</strong> (2.5 TPS). <code>effort=low</code>, a system prompt of about <strong>30K tokens</strong> (pinned byte-for-byte across both runs with SHA-256 <code>98d3a5&hellip;088a</code>, <code>corpus_seed 4242</code>). Scheduled requests are <strong>2,136</strong> per policy (warmup 36 · ramp 900 · sustain 1,200).</p>
+      <p><strong>Exactly one axis varies</strong> &mdash; <code>policy.type</code> flips between <code>reactive</code> and <code>proactive</code>. Prompt, load, model, effort, and both deployment ceilings are fixed, so the difference in the two artifacts comes only from the policy.</p>
+      <div class="article-summary-grid" aria-label="The pre-registered prediction and role">
+        <section class="summary-tile"><h2>Pre-registered prediction</h2><p>If the cache pools are really split, <code>proactive</code> might pay off. The registered decision line is the <strong>size of the gap</strong> &mdash; larger than Phase 1 means the cache-rebuild cost is real; similar means separation is a minor factor.</p></section>
+        <section class="summary-tile"><h2>This experiment's role</h2><p>The <strong>high-fidelity re-measurement</strong> after Phase 1's shared-cache floor. When the primary/spillover cache pools physically split, does the policy difference <em>really</em> register on cache, cost, and 429s?</p></section>
+      </div>
+    </section>
+
+    <section id="io" class="article-section">
+      <p class="section-label">Inputs and artifacts</p>
+      <h2>What it consumed and what it left behind</h2>
+      <p>What this experiment consumed and produced isn't a hand-written summary but the repo's actual files. So you can retrace it from input to output in a single line.</p>
+      <div class="article-summary-grid" aria-label="Inputs and artifacts">
+        <section class="summary-tile">
+          <h2>Input (in)</h2>
+          <p><strong>Policy definitions:</strong> <code>experiments/exp005_dual_spillover_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (only <code>policy.type</code> differs).<br>
+          <strong>Two deployments:</strong> primary <code>ptu-deploy-throttled</code> (60,000 TPM) · spillover <code>gpt-5.2</code> (500,000 TPM).<br>
+          <strong>Pinned:</strong> both runs' system prompt fixed by SHA-256 (<code>98d3a5&hellip;088a</code>) &mdash; guaranteeing both policies got a <em>byte-for-byte</em> identical prompt.</p>
+        </section>
+        <section class="summary-tile">
+          <h2>Artifacts (out)</h2>
+          <p><strong>Raw calls:</strong> <code>runs/*.jsonl</code> (+ per-request <code>*.summary.json</code>, with per-response spillover headers).<br>
+          <strong>Aggregate:</strong> <code>analysis.json</code> · <code>analysis.md</code>.<br>
+          <strong>Curves:</strong> <code>results/dual-spillover-curves/*.png</code>&middot;<code>.csv</code> (per-endpoint and aggregate cache hit, real-429 timeline).</p>
+        </section>
+      </div>
+      <p><strong>Reactive ran all 2,136 requests to completion</strong> (completed = scheduled = 2,136). <strong>Proactive completed 2,303 / scheduled 2,136</strong> &mdash; the extra <strong>167</strong> are real 429s, each logged as its own failed-attempt row, carrying zero tokens and not affecting aggregates. Real 429s were <strong>0 for reactive · 167 for proactive</strong> (all on the throttled primary). <code>dry_run=false</code>, <code>dirty=false</code>, no halt. <strong>No rows were dropped</strong> &mdash; what was kept and why is covered under <a href="#transparency">Transparency</a> below.</p>
+    </section>
+
+    <section id="predict" class="article-section">
+      <p class="section-label">Prediction vs. measurement</p>
+      <h2>The prediction missed again &mdash; harder</h2>
+      <div class="article-summary-grid" aria-label="Prediction vs. measurement">
+        <section class="summary-tile"><h2>What we predicted</h2><p>Once the cache pools are really split, the proactive (<code>proactive</code>) policy might finally pay off &mdash; at minimum, a place where the gap's direction could flip.</p></section>
+        <section class="summary-tile"><h2>What came out</h2><p>Sustain cache hit was <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>98.2414%</strong> &mdash; proactive was <strong>0.9923 pp lower</strong> (about six times the Phase 1 gap of &minus;0.1657 pp). Real 429s were <strong>0 vs 167</strong>.</p></section>
+      </div>
+      <p><strong>Verdict: splitting the cache pool made proactive pay off even less.</strong> Of the two pre-registered branches, the measurement chose <strong>&lsquo;the gap widens.&rsquo;</strong> That is, when cache pools split, the cost of splitting traffic ahead of time (cache-rebuild cost) was <em>real</em>, and it was billed to <code>proactive</code>. The Phase 1 doubt &mdash; &ldquo;did it not register because the cache was shared?&rdquo; &mdash; now has an answer: split the cache <em>for real</em>, and the policy that splits traffic loses.</p>
+    </section>
+
+    <section id="result" class="article-section">
+      <p class="section-label">First signal</p>
+      <h2>The clever policy lost by more</h2>
+      <p>The table below is the <strong>sustain 10-minute steady state</strong> &mdash; where load settles onto its target, the window the hypothesis lives in. The numbers are re-cited from the published aggregate <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>analysis.md</code></a> §5 and §7.</p>
+      <pre class="code-block"><code>Policy      Sustain spillover   Sustain cache hit (per-min mean ± std)   Real 429   Note
+reactive    98.75% engaged      99.2337%  (±0.0026 pp)                   0          Baseline · concentrated on one hot pool
+proactive   67.95% engaged      98.2414%  (±4.3726 pp)                   167        Split across two → both went lukewarm
+Delta(pro−re)   —               −0.9923 pp                               +167       ~6x the Phase 1 gap (−0.1657 pp)</code></pre>
+      <p>Both curves mostly ride near <strong>99.2%</strong>. Reactive is rock-steady at std 0.0026 pp &mdash; it concentrated into a single spillover pool that stayed hot the whole time. Proactive, by contrast, swings with std <strong>4.3726 pp</strong>. Two things cause it: <strong>154 sustain 429s</strong> from the throttled primary (zero-token failure rows) and <strong>12 cache misses</strong> (primary 7 · spillover 5) from splitting traffic across two pools &mdash; those dig per-minute troughs that drag the aggregate down to <strong>98.2414%</strong>.</p>
+      <p>Widen to the full run (warmup+ramp+sustain) and the direction holds &mdash; <code>reactive</code> <strong>99.0479%</strong> vs <code>proactive</code> <strong>98.2112%</strong>, reactive <strong>0.8367 pp higher</strong>. In Phase 1 widening the window flipped the sign; in Phase 2 <strong>reactive leads in every window</strong>.</p>
+
+      <figure class="article-figure" id="figure-exp005-recovery">
+        <figcaption><strong>60-second rolling cache-hit curves (both policies, aggregate).</strong> The x-axis is request progress; the y-axis is cache-hit ratio. Reactive (the sibling run) concentrates on one pool and holds a smooth line near 99.2%, while proactive (this run) is split across primary and spillover and dips more often and more deeply &mdash; the throttled primary's real 429s and the two pools' cache misses punch through the curve. Steady state is reactive 99.2337%, proactive 98.2414%, a 0.9923 pp gap. Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/dual-spillover-curves/policy_comparison_aggregate.png"><code>results/dual-spillover-curves/policy_comparison_aggregate.png</code></a>.</figcaption>
+        <img src="../../../../../assets/benchmark-05-dual-spillover.png" alt="Rolling cache-hit ratio time series for the reactive and proactive policies. The reactive curve is smooth near 99.2%, while the proactive curve dips more often and more deeply. Sustain steady state is reactive 99.2337%, proactive 98.2414%, a gap of 0.9923 pp." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      </figure>
+    </section>
+
+    <section id="mechanism" class="article-section">
+      <p class="section-label">Second signal</p>
+      <h2>Why they split &mdash; splitting cools both pools</h2>
+      <p>This time the two policies left <strong>genuinely different marks</strong> on the cache &mdash; and that's exactly where Phase 2 parts from Phase 1. Reactive crossed to the spillover deployment on the first warmup request and, through the whole sustain window, poured <strong>98.75%</strong> of traffic into that <em>one</em> pool. Keep one pool warm, and sustain cache misses are <strong>zero</strong> and the pool holds at <strong>99.2336%</strong>. Real 429s are zero too &mdash; it barely touched the throttled primary.</p>
+      <p><strong>Proactive did the opposite, and that's what tripped it.</strong> Trying to protect the primary, it split traffic, so sustain spillover engagement stalled at <strong>67.95%</strong> &mdash; the other <strong>~43%</strong> kept going to the throttled primary. That deployment couldn't take the 30K-token load and emitted <strong>167</strong> real 429s, and with traffic scattered across two pools <em>neither</em> got as warm as reactive's single pool &mdash; sustain cache was <strong>96.7534%</strong> on the primary and <strong>98.6942%</strong> on the spillover, <em>both</em> cooler than reactive's 99.2336%.</p>
+      <p><strong>Cost and latency point the same way.</strong> The two runs used nearly identical total tokens (reactive 45,850,205 · proactive 45,851,851), yet full-run cost was <code>reactive</code> $17.895660 vs <code>proactive</code> $18.806026 &mdash; proactive is <strong>$0.910366</strong> more. The reason is purely cache temperature: proactive's lower cache hit pushed about 380K input tokens from the cached rate ($0.175/1M) to the full rate ($1.75/1M). Sustain time-to-first-token is faster for reactive too (p50 7,153.9 ms vs 7,926.6 ms), and the full-run p95 spikes to <strong>34,631.71 ms</strong> for proactive &mdash; 429 backoffs stacking on top of real latency.</p>
+      <p><strong>In short:</strong> once the cache pools really split, the clever idea &mdash; &lsquo;split traffic to protect the primary&rsquo; &mdash; turned into <strong>rebuilding cache twice</strong> and paying the throttle penalty (429s) on top. What paid off was <strong>simplicity</strong> &mdash; reactive, concentrating on one pool and keeping it hot.</p>
+    </section>
+
+    <section id="transparency" class="article-section">
+      <p class="section-label">Transparency</p>
+      <h2>Every smudge on the numbers, left in</h2>
+      <p>No measurement is perfectly clean. We write down the marks this experiment left, without erasing them &mdash; hide them and the next person stumbles in the same spot.</p>
+      <ul>
+        <li><strong>Zero outliers removed.</strong> The outlier rule excludes only when sustain latency exceeds mean+3&sigma; <em>and</em> a logged event (real 429, retry, route transition) coincides. There were 6 candidates for reactive and 18 for proactive, some coinciding with events, but removing them shifts sustain TTFT by under 1%, so <strong>all were retained</strong>.</li>
+        <li><strong>Anomalous rows kept.</strong> Proactive has <strong>154</strong> zero-token sustain rows (the real-429 failed attempts) and <strong>12</strong> cache-miss rows; reactive has zero of either. These aren't measurement faults &mdash; they're <em>the very phenomenon this benchmark exists to measure</em>, so they go into the aggregates as raw data. <strong>Proactive's lower sustain mean comes precisely from those 429s and cache misses.</strong> Nothing hidden.</li>
+        <li><strong>The headline is sustain steady state.</strong> Mixing in the ramp/warmup transients blurs the policy effect, so we take the sustain 10 minutes, where the hypothesis lives, as the representative number. Full-run figures sit alongside so you can confirm reactive leads in every window.</li>
+      </ul>
+    </section>
+
+    <section id="limits" class="article-section">
+      <p class="section-label">Limits</p>
+      <h2>How far to trust this</h2>
+      <p>This result comes from two deployments in one Foundry resource, one capacity tier each, one load profile, one run. It's safer to take the method and direction than the numbers themselves.</p>
+      <ul>
+        <li><strong>Absolute numbers don't transfer.</strong> Two deployments in one resource, one capacity tier each. Cache-hit and dollar figures don't carry over to another tenant, region, or capacity plan &mdash; read the <em>direction</em> of the policy difference.</li>
+        <li><strong>It's a custom router.</strong> Spillover ran through a Python-client router. It may differ from Azure <em>native</em> spillover (the <code>spilloverDeploymentName</code> path), so per-response spillover headers are kept for a later comparison against the native path.</li>
+        <li><strong>Mitigation comparison, not root cause.</strong> This experiment can't identify the root cause of any field cache drop. The strong form of the hypothesis was already rejected by field measurement.</li>
+        <li><strong>Load &amp; sample.</strong> 22 minutes once, 2,136 scheduled requests per policy. At this size we claim no confidence intervals or statistical significance &mdash; the direction is robust, the absolute size is small-sample.</li>
+        <li><strong>Out of scope.</strong> Response quality wasn't scored, and the effect of using <code>max_output_tokens</code> as a PTU reservation (a separate hypothesis) isn't touched here.</li>
+      </ul>
+    </section>
+
+    <section id="decision" class="article-section decision-box">
+      <h2>So what should the default be</h2>
+      <p><strong>When the primary is throttled and a roomy spillover pool exists, make simple reactive (<code>reactive</code>) the default. The simple rule &mdash; pour the failed request and the next few into the spillover pool and keep that one pool hot &mdash; beat the <code>proactive</code> policy that splits traffic early to protect the primary: it protected 0.9923 pp more cache (sustain), cost $0.910366 less, and took 0 real 429s instead of 167. When cache pools are physically separate, splitting traffic is a penalty that cools both pools at once. Re-measure if the workload shape changes.</strong></p>
+    </section>
+
+    <section id="forward" class="article-section">
+      <p class="section-label">Building on</p>
+      <h2>So the next person stumbles less</h2>
+      <p>Leaving evidence isn't only recording the wins. A missed prediction &mdash; why it missed and how far to trust it &mdash; also has to survive so it can be reused in the next decision. So this note connects back to Phase 1 and the earlier experiments.</p>
+      <ul>
+        <li><strong>Phase 1 &rarr;</strong> <a href="../exp004-spillover-simulation/">exp004 &mdash; spillover-policy simulation (Phase 1)</a> raced the same two policies on a single deployment (shared cache) and tied (&minus;0.1657 pp). This note settles that verdict <strong>on a real cache split</strong>.</li>
+        <li><strong>Retrospective &rarr;</strong> the <a href="../../#next">next call &middot; next experiment</a> in the hub previewed exactly this &lsquo;physically separate two-deployment load test.&rsquo;</li>
+        <li><strong>Raw data &rarr;</strong> the two policy definitions are in <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>experiments/exp005_dual_spillover_*.yaml</code></a>, the analysis in <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>.</li>
+      </ul>
+      <p><strong>Next experiment.</strong> This run drove spillover with a custom router. Next is putting <strong>Azure native spillover</strong> under the same load and, using the per-response spillover headers we saved, checking whether it <em>behaves the same</em> as the custom router.</p>
+      <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Reproduce it yourself and leave a ⭐</a></p>
+    </section>
+
+    <section id="sources" class="article-section">
+      <p class="section-label">Sources · evidence boundary</p>
+      <h2>Sources &amp; evidence boundary</h2>
+      <p>This note, too, re-cites published aggregates with no new measurement. Down to the two-deployment, one-resource boundary, the evidence and limits are below.</p>
+      <ul>
+        <li>This experiment's analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a> (§1 question &amp; design, §3 provenance, §5 headline, §6 recovery curves, §7 per-policy aggregates, §8 consumption model, §9 outliers, §10 limits, §11 conclusion). Every figure re-cited from here.</li>
+        <li>Policy definitions: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_reactive.yaml"><code>experiments/exp005_dual_spillover_reactive.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a> (only <code>policy.type</code> differs).</li>
+        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8 (judge by effect size and direction, not statistical significance).</li>
+        <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19). gpt-5.2 = per 1M tokens, input $1.75 / cached input $0.175 / reasoning $14.00 / output $14.00.</li>
+        <li>Boundary: two deployments in one Foundry resource &middot; custom router (not native spillover) &middot; 22 minutes once &middot; 2,136 scheduled requests per policy &middot; no confidence intervals &middot; real 429s induced by the primary's 60,000 TPM ceiling &middot; no quality scoring.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site"><p>MIT-licensed research artifact · published data contains only cleaned or aggregated results.</p></footer>
+</body>
+</html>
