@@ -28,7 +28,7 @@ dev = [
     # The CI ruff gate is scoped to keep NEW code clean (see the
     # per-file-ignores note below), so pin to the 0.15.x line the repo was
     # validated against until those pre-existing findings are triaged.
-    "ruff>=0.4,<0.16",
+    "ruff>=0.4,<0.17",
     "jsonschema>=4.0",
 ]
 
