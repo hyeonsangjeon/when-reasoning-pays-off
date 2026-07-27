@@ -14,6 +14,14 @@ updates:
     commit-message:
       prefix: "pip"
       include: "scope"
+    # Ruff is deliberately capped at <0.16 in pyproject.toml: ruff 0.16
+    # broadened its default rule set and flags 500+ pre-existing findings
+    # that break the CI `ruff check .` gate (verified locally). Ignore
+    # 0.16+ until that backlog is triaged so Dependabot stops reopening
+    # the ceiling-widening PR every week.
+    ignore:
+      - dependency-name: "ruff"
+        versions: [">=0.16"]
     groups:
       pytest:
         patterns:
