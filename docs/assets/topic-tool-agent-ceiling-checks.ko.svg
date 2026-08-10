@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
   <title id="title">도구 에이전트 품질은 지연보다 먼저 천장에 도달했다</title>
-  <desc id="desc">benchmark-03: effort별 지연. 각 막대 아래에 평균 평가 점수를 표시.</desc>
+  <desc id="desc">benchmark-03: 추론 강도별 지연 시간. 각 막대 아래에는 평균 심판 점수를 표시.</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
   <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">도구 에이전트 품질은 지연보다 먼저 천장에 도달했다</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-03: effort별 지연. 각 막대 아래에 평균 평가 점수를 표시.</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-03: 추론 강도별 지연 시간. 각 막대 아래에는 평균 심판 점수를 표시.</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -44,7 +44,7 @@
   <text x="855.8" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">점수 2.00</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
   <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">품질이 이미 포화됐는지 확인한 뒤 지연을 읽으세요.</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">더 높은 지연 막대는 작업에 추가 품질이 여전히 필요할 때만 허용됩니다.</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공개 집계 차트 데이터. 서술적 근거일 뿐입니다.</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">품질이 이미 천장에 닿았는지 먼저 확인한 다음 지연을 읽으세요.</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">품질을 더 높여야 할 때만 지연 증가를 감수하세요.</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공개 집계 차트 데이터. 설명용 근거일 뿐입니다.</text>
 </svg>

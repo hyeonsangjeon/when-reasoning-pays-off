@@ -41,9 +41,9 @@
     <p class="article-kicker">블로그 / 근거 노트</p>
     <h1>글</h1>
     <p class="lede">
-      근거 대시보드는 검증 기록이고, 글은 의사결정 이야기입니다. 각 글은
-      질문으로 시작해, 그 질문에 답하는 데 사용한 차트를 밝히고, 운영자를 위한
-      시사점으로 마무리합니다. 순서대로 읽거나 필요한 계층으로 바로 이동하세요.
+      근거 대시보드는 검증 기록이고 글은 의사결정 과정을 설명합니다. 각 글은
+      질문으로 시작해 답에 근거가 된 차트를 제시하고 운영자를 위한
+      시사점으로 마무리합니다. 순서대로 읽어도 되고 필요한 계층으로 바로 이동해도 됩니다.
     </p>
 
     <nav class="article-outline" aria-label="읽기 경로">
@@ -57,13 +57,13 @@
     </nav>
 
     <p>
-      흐름은 주장에서 실무로 이어집니다. <strong>개요</strong> 글은 하나의
+      글의 흐름은 주장부터 실무까지 이어집니다. <strong>개요</strong> 글은 하나의
       메시지와 근거의 경계를 먼저 잡습니다. <strong>실험 회고</strong>는 그 근거가
       어떻게 만들어졌는지를 타임라인과 질문별 이야기로 풀어냅니다.
       <strong>근거 토픽</strong>은 측정한 각 구간을 하나씩 엽니다.
-      <strong>브리지</strong> 글은 서술 관점이 측정에서 프로덕션으로 옮겨 가는
-      지점을 짚습니다. <strong>운영</strong> 글은 같은 측정 습관을 일상 운영으로
-      가져갑니다: 복구, 캐시 라우팅, 보존, 마이그레이션 사이징. 이 모든 것의 밑바탕에는
+      <strong>브리지</strong> 글은 측정을 다루던 서술이 프로덕션 운영으로 넘어가는
+      지점을 짚습니다. <strong>운영</strong> 글은 같은 측정 습관을 복구, 캐시 라우팅,
+      보존, 마이그레이션 사이징 같은 일상 운영에 적용합니다. 이 모든 글의 밑바탕에는
       <a href="../../charts/?lang=ko">근거 대시보드</a>가 있어, 모든 주장이
       근거로 삼은 정리된 테이블과 소스 차트를 담고 있습니다.
     </p>
@@ -71,8 +71,8 @@
     <section id="overview" class="series-hero">
       <h2>개요 글: 같은 토큰 단가, 다른 청구서</h2>
       <p>
-        공개 차트 데이터 스냅샷을 안내를 따라 읽습니다. 추론 강도가 어디서
-        지출을 낭비하고, 어디서 시도할 가치를 얻는지, 그리고 왜 숨은 추론
+        안내에 따라 공개 차트 데이터 스냅샷을 읽습니다. 추론 강도가 어디서
+        지출을 낭비하고 어디서 시도할 가치가 있는지, 또 왜 숨은 추론
         토큰을 명시적으로 예산에 넣어야 하는지를 봅니다.
       </p>
       <p><a class="button-link" href="../when-reasoning-pays-off/ko/">개요 글 읽기</a></p>
@@ -80,10 +80,10 @@
 
     <h2 id="retrospective">실험 회고: 숫자가 나오기까지</h2>
     <p class="muted-note">
-      사다리를 따라 계층별로 읽기 전에, 세 실험 전체를 하나의 이야기로 볼 수
+      계층별로 읽기 전에 세 실험 전체를 하나의 이야기로 살펴볼 수
       있습니다. <a href="../reasoning-effort-retrospective/ko/">회고 허브</a>는
       <strong>타임라인</strong>(언제 무엇이 어긋났나)과 <strong>질문별 회고</strong>(왜
-      실험했고 무엇을 배웠나) 두 축으로 근거를 훑고, 맨 위 명령어 한 줄로 자격증명
+      실험했고 무엇을 배웠나) 두 축으로 근거를 훑고 맨 위 명령어 한 줄로 자격증명
       없이 바로 재현합니다.
     </p>
     <div class="cards topic-cards">
@@ -94,32 +94,32 @@
       </article>
       <article class="card">
         <h3>exp001, 짧은 사실 작업</h3>
-        <p>바닥 앵커(Null). 세 벤치마크 중 유일하게 <strong>실측</strong>으로, 추론이 제값을 하지 못하는 구간을 확인합니다. <code>none</code>이 이미 gpt-4o를 이기고 강도 손잡이는 헛돕니다.</p>
+        <p>Null 케이스이자 바닥 기준점입니다. 세 벤치마크 중 유일하게 <strong>실측</strong>으로 추론이 제값을 하지 못하는 구간을 확인합니다. <code>none</code>이 이미 gpt-4o를 앞서고 강도 손잡이를 더 올려도 달라지는 것이 없습니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp001-short-factual/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
         <h3>exp002, 다단계 추론</h3>
-        <p>다단계 천장 케이스. 사전 등록한 가설이 어디서 틀렸는지 입력, 산출물, 비용, 품질을 하나씩 해부합니다.</p>
+        <p>다단계 작업의 천장 사례입니다. 사전 등록한 예측이 어디서 틀렸는지 입력, 산출물, 비용, 품질을 하나씩 살펴봅니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp002-multi-step-reasoning/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
         <h3>exp003, 툴 사용 에이전트</h3>
-        <p>툴 에이전트 혼합 케이스. 바닥이 <code>none</code>이 아니라 <code>low</code>로 한 칸 올라가고, gpt-4o가 도구를 남용하는 지점을 짚습니다.</p>
+        <p>툴 에이전트 혼합 사례입니다. 바닥이 <code>none</code>이 아니라 <code>low</code>로 한 칸 올라가며 gpt-4o가 도구를 남용하는 지점을 짚습니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp003-tool-using-agent/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
         <h3>exp004, 스필오버 정책 시뮬레이션</h3>
-        <p>강도 삼부작 뒤 첫 운영 실험(Phase 1). 포화 부하에서 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨뤘고, 답은 무승부에 가까웠습니다.</p>
+        <p>강도 삼부작 뒤 첫 운영 실험(Phase 1). 부하가 한계 수준인 상황에서 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨뤘고 답은 무승부에 가까웠습니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp004-spillover-simulation/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
         <h3>exp005, 이중 배포 스필오버</h3>
-        <p>물리적으로 분리된 캐시를 가진 실제 두 배포에서의 Phase 2 판정. 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 다시 겨뤘고, 이번엔 격차가 약 6배로 벌어졌습니다.</p>
+        <p>물리적으로 분리된 캐시를 가진 실제 두 배포로 내린 Phase 2 판정입니다. 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 다시 겨뤘고 이번엔 격차가 약 6배로 벌어졌습니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp005-dual-spillover/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
         <h3>exp006, 캐시 키 버킷 쪼개기</h3>
-        <p>라이브 <code>gpt-5.2</code> PAYG에서 <code>prompt_cache_key</code>를 1개에서 8개로 쪼개면 캐시 히트가 살아나는지 물었습니다. 문서의 &lsquo;버킷당 약 15요청&rsquo; 한도는 물렁했고, 진짜 지렛대는 카디널리티가 아니라 보존 정책이었습니다.</p>
+        <p>라이브 <code>gpt-5.2</code> PAYG에서 <code>prompt_cache_key</code>를 1개에서 8개로 쪼개면 캐시 히트가 살아나는지 물었습니다. 문서의 &lsquo;버킷당 약 15요청&rsquo; 한도는 물렁했고 진짜 지렛대는 카디널리티가 아니라 보존 정책이었습니다.</p>
         <p><a href="../reasoning-effort-retrospective/experiments/exp006-cache-key-bucketing/ko/">실험 노트 읽기</a></p>
       </article>
       <article class="card">
@@ -143,7 +143,7 @@
       </article>
       <article class="card">
         <h3>다단계 작업</h3>
-        <p>평가자가 충분히 움직이면 추론이 제값을 할 수 있습니다.</p>
+        <p>심판 점수가 충분히 오르면 추론이 제값을 합니다.</p>
         <p><a href="../when-reasoning-pays-off/topics/multi-step-work/ko/">이 토픽 읽기</a></p>
       </article>
       <article class="card">
@@ -153,7 +153,7 @@
       </article>
       <article class="card">
         <h3>에이전트 루프 &amp; 예산 거버넌스</h3>
-        <p>새 측정이 아니라 운영 패턴(L6)입니다. 천장 점검이 닿지 못하는 루프를 묶습니다.</p>
+        <p>새 측정이 아니라 운영 패턴(L6)입니다. 천장 점검으로 확인할 수 없는 루프를 다룹니다.</p>
         <p><a href="../when-reasoning-pays-off/topics/agentic-loop-budget-governance/ko/">이 토픽 읽기</a></p>
       </article>
       <article class="card">
@@ -170,21 +170,21 @@
 
     <h2 id="bridge">브리지 글</h2>
     <p class="muted-note">
-      한 편의 글이 근거 계층과 운영 계층 사이에 자리해, 서술 관점이 왜 바뀌는지와
+      한 편의 글이 근거 계층과 운영 계층을 이어 주며 서술 관점이 왜 바뀌고
       어떤 습관이 이어지는지를 짚습니다.
     </p>
     <div class="cards topic-cards">
       <article class="card">
         <h3>측정에서 프로덕션으로</h3>
-        <p>근거 계층의 측정 습관이 프로덕션 운영으로 어떻게 이어지고, 무엇이 그대로 남는지.</p>
+        <p>근거 계층의 측정 습관이 프로덕션 운영으로 어떻게 이어지고 무엇이 그대로 남는지.</p>
         <p><a href="../when-reasoning-pays-off/topics/bridge-from-measurement-to-production/ko/">브리지 글 읽기</a></p>
       </article>
     </div>
 
     <h2 id="operations">운영 글</h2>
     <p class="muted-note">
-      이 글들은 한 계층 더 프로덕션 운영에 가까워집니다. 복구, 캐시 라우팅,
-      보존, 마이그레이션 사이징.
+      이 글들은 복구, 캐시 라우팅, 보존, 마이그레이션 사이징 등
+      프로덕션 운영에 더 가까운 주제를 다룹니다.
     </p>
     <div class="cards topic-cards">
       <article class="card">

@@ -10,7 +10,7 @@
   <meta property="og:site_name" content="when reasoning pays off">
   <meta property="og:locale" content="ko_KR">
   <meta property="og:title" content="추론은 언제 비용을 정당화하나 — 같은 토큰 단가, 다른 청구서">
-  <meta property="og:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
+  <meta property="og:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼 가치가 있는지 판단하는 실무 가이드.">
   <meta property="og:url" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/ko/">
   <meta property="og:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
   <meta property="og:image:alt" content="Same token price, different bill: a reasoning workload bills extra hidden thinking tokens, so its total bill is taller.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="추론은 언제 비용을 정당화하나 — 같은 토큰 단가, 다른 청구서">
-  <meta name="twitter:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼의 값을 하는지 판단하기 위한 실무 가이드.">
+  <meta name="twitter:description" content="Azure OpenAI 배포 환경에서 추론 모델이 언제 비용만큼 가치가 있는지 판단하는 실무 가이드.">
   <meta name="twitter:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
@@ -51,20 +51,20 @@
       </nav>
     </div>
     <div class="hero">
-      <img src="../assets/hero.svg" alt="두 워크로드의 토큰 단가는 같지만, 추론 워크로드에는 보이지 않는 '사고' 토큰이 더해져 최종 청구액이 커집니다.">
+      <img src="../assets/hero.svg" alt="두 워크로드의 토큰 단가는 같지만 추론 워크로드에는 보이지 않는 '사고' 토큰이 더해져 최종 청구액이 커집니다.">
     </div>
   </header>
 
   <main>
     <h1>같은 토큰 단가, 다른 청구서</h1>
     <p class="lede">
-      어떤 팀이 워크로드를 추론 모델로 옮기고 나서, 토큰 단가는 예전과
-      똑같다는 걸 확인합니다. 그런데 낯선 조절값이 하나 새로 생겼습니다. 바로
-      추론 강도입니다. 이 값을 올리는 일은 거의 공짜처럼 느껴집니다. 그러니 어디서든 최대로
-      올려 최선의 답을 끌어내지 않을 이유가 없어 보입니다. 하지만 정작 눈에 보이는 출력은 거의 그대로인데 청구서만
+      어떤 팀이 워크로드를 추론 모델로 옮긴 뒤, 토큰 단가는 예전과
+      똑같다는 걸 확인합니다. 그런데 새로운 설정값이 하나 생겼습니다. 바로
+      추론 강도입니다. 이 값을 올리는 데는 비용이 거의 들지 않는 듯합니다. 어디서든 최대로
+      올려 최선의 답을 얻는 편이 낫다고 생각하기 쉽습니다. 하지만 정작 눈에 보이는 출력은 거의 그대로인데 청구서만
       올라갑니다. 원인은 숨은 "사고" 토큰입니다. 추론 모델은 이 토큰을
-      생성하고 그만큼 과금하지만, 응답에는 결코 드러내지 않습니다. 이
-      프로젝트는 대표적인 소규모 작업 집합을 대상으로, 그 추가 토큰이 언제
+      생성하고 그만큼 과금하지만 응답에는 결코 드러내지 않습니다. 이
+      프로젝트는 대표적인 소규모 작업 집합에서 그 추가 토큰이 언제
       값을 하고 언제 청구서만 부풀리는지를 측정합니다.
     </p>
 
@@ -78,30 +78,30 @@
 
     <h2>팀이 신경 쓰는 이유</h2>
     <p>
-      모델 마이그레이션 이후 엔지니어에게 닥치는 질문은 직설적입니다. 왜
-      비용이 움직였는가, 왜 지연이 바뀌었는가, 왜 스로틀링이 늘었는가? 추론
-      강도가 이 세 가지 모두의 밑에 깔려 있습니다. 기본값을 높게 두면 독자에게
-      결코 닿지 않는 내부 연산에 토큰을 조용히 소비합니다. 종량제에서는 실제 비용으로,
+      모델 마이그레이션을 마친 엔지니어가 맞닥뜨리는 질문은 분명합니다. 왜
+      비용이 달라졌는가, 왜 지연이 바뀌었는가, 왜 스로틀링이 늘었는가? 추론
+      강도가 이 세 가지에 모두 영향을 줍니다. 기본값을 높게 두면 독자가
+      볼 수 없는 내부 연산에 토큰을 소비합니다. 종량제에서는 실제 비용으로,
       프로비저닝 용량에서는 귀한 여유 용량으로 말이죠. 강도가
-      실제로 답을 바꾸는 지점을 아는 것이, 자신 있는 롤아웃과 청구서에서의
-      뜻밖의 사태를 가르는 차이입니다.
+      실제로 답을 바꾸는 지점을 알아야 확신을 갖고 롤아웃하면서도
+      예상 밖의 청구서를 피할 수 있습니다.
     </p>
 
     <h2>무엇을 측정했는가</h2>
     <p>
-      프롬프트와 워크로드 구간은 그대로 고정한 채, 짧은 사실 응답, 구조화
+      프롬프트와 워크로드 구간을 그대로 고정한 채, 짧은 사실 응답, 구조화
       데이터의 자연어 변환, 다단계 추론, 도구를 사용하는 에이전트라는 네
       구간 각각에 동일한 추론 강도 단계를 순서대로 적용했습니다. 그리고 모든
-      호출에서 사용량 전체를 낱낱이 기록했습니다. 입력, 캐시, 추론,
+      호출에서 사용량 전체를 기록했습니다. 입력, 캐시, 추론,
       출력 토큰은 물론 품질 신호와 지연까지 함께 담았습니다. 이렇게 측정한
       토큰 구성 위에, 같은 워크로드가 종량제(PAYG)와 프로비저닝 처리량(PTU)에서
       각각 어떻게 과금되는지를 모델링해 비교했습니다.
     </p>
 
-    <h2>근거가 보여 준 것</h2>
+    <h2>측정 결과</h2>
     <p>
-      결과는 좋은 근거가 으레 그렇듯 엇갈렸습니다. 어떤 구간에서는
-      강도가 제값을 했고, 어떤 구간에서는 숨은 연산 비용만 늘었습니다. 네
+      결과는 구간마다 달랐습니다. 어떤 구간에서는
+      강도가 제값을 했고 어떤 구간에서는 숨은 연산 비용만 늘었습니다. 네
       가지 교훈은 구간 전반에 걸쳐 똑같이 적용됩니다.
     </p>
     <div class="cards">
@@ -117,8 +117,8 @@
       </div>
       <div class="card">
         <h3>추론 강도가 주요 비용 레버입니다</h3>
-        <p>추론 강도 조절값을 가장 낮은 수준으로 기본 설정하고, 품질 평가가
-           정당화할 때만 올리세요.</p>
+        <p>추론 강도는 가장 낮은 수준을 기본값으로 두고 품질 평가로 필요성이
+           확인될 때만 올리세요.</p>
       </div>
       <div class="card">
         <h3>과금 모델에 따라 효과가 달라집니다</h3>
@@ -130,8 +130,8 @@
 
     <h2>대상 독자</h2>
     <p>
-      추론을 켤지(그리고 얼마나) 결정하거나, 용량을 산정하거나, 모델 마이그레이션
-      이후 비용, 지연, 스로틀링 변화를 디버깅하려는, Azure OpenAI 배포를 운영하는
+      Azure OpenAI 배포를 운영하면서 추론을 켤지(그리고 얼마나) 결정하고 용량을 산정하거나, 모델 마이그레이션
+      이후 비용, 지연, 스로틀링 변화를 디버깅하려는
       엔지니어와 아키텍트를 위한 자료입니다.
     </p>
 
@@ -145,18 +145,18 @@
     <div class="article-summary-grid">
       <article class="summary-tile">
         <h2>개요 글 읽기</h2>
-        <p>안내가 있는 이야기: 강도가 어디서 지출을 낭비하고, 어디서 시도할
-           가치를 얻는지, 그리고 왜 숨은 토큰을 명시적으로 예산에 넣어야 하는지.
+        <p>강도가 어디서 지출을 낭비하고 어디서 시도할
+           가치가 있는지, 또 왜 숨은 토큰을 예산에 명시해야 하는지 설명합니다.
            <a href="../blog/articles/when-reasoning-pays-off/ko/">읽기 시작 →</a></p>
       </article>
       <article class="summary-tile">
         <h2>아티클 허브 둘러보기</h2>
-        <p>전체 읽기 흐름: 근거 토픽, 브리지 글, 그리고 복구, 캐싱, 사이징에
-           대한 운영 노트. <a href="../blog/articles/ko/">허브 열기 →</a></p>
+        <p>근거 토픽과 브리지 글, 복구·캐싱·사이징 운영 노트를 한곳에서
+           읽을 수 있습니다. <a href="../blog/articles/ko/">허브 열기 →</a></p>
       </article>
       <article class="summary-tile">
         <h2>근거 대시보드 살펴보기</h2>
-        <p>검증 기록: 모든 주장 뒤에 있는 정리된 테이블과 렌더링된 소스 차트.
+        <p>모든 주장의 근거가 되는 정리된 테이블과 렌더링한 원천 차트를 확인합니다.
            <a href="../blog/charts/?lang=ko">대시보드 열기 →</a></p>
       </article>
       <article class="summary-tile">
@@ -176,7 +176,7 @@
         </div>
         <div class="glossary-term" data-term="ptu">
           <dt>PTU</dt>
-          <dd>프로비저닝 처리량 단위: 토큰 단위가 아니라 처리량에 대해
+          <dd>프로비저닝 처리량 단위: 토큰 단위가 아니라 처리량을 기준으로
               비용을 지불하는 예약된 고정 용량 과금.</dd>
         </div>
         <div class="glossary-term" data-term="payg">
@@ -191,7 +191,7 @@
         </div>
         <div class="glossary-term" data-term="cache">
           <dt>캐시</dt>
-          <dd>프롬프트 캐시: 이전에 처리된 프롬프트 접두부를 재사용하며,
+          <dd>프롬프트 캐시: 이전에 처리된 프롬프트 접두부를 재사용하며
               낮은 캐시 입력 단가로 청구됨.</dd>
         </div>
         <div class="glossary-term" data-term="429">

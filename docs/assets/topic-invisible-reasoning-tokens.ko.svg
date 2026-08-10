@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">멀티스텝 작업에서 숨은 채널이 열린다</title>
-  <desc id="desc">benchmark-02: effort별 평균 숨은 추론 토큰. 각 막대 아래에 보이는 출력 표기.</desc>
+  <title id="title">다단계 작업에서 숨은 추론 토큰이 늘어난다</title>
+  <desc id="desc">benchmark-02: 추론 강도별 평균 추론 토큰. 각 막대 아래에는 보이는 출력 토큰을 표시.</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">멀티스텝 작업에서 숨은 채널이 열린다</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: effort별 평균 숨은 추론 토큰. 각 막대 아래에 보이는 출력 표기.</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">다단계 작업에서 숨은 추론 토큰이 늘어난다</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: 추론 강도별 평균 추론 토큰. 각 막대 아래에는 보이는 출력 토큰을 표시.</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -21,26 +21,26 @@
   <rect x="160.0" y="388.0" width="134.0" height="2.0" rx="8" fill="#3a86ff"/>
   <text x="227.0" y="378.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">0</text>
   <text x="227.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">minimal</text>
-  <text x="227.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">보이는 5.8</text>
+  <text x="227.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출력 5.8</text>
   <rect x="314.0" y="350.8" width="134.0" height="39.2" rx="8" fill="#06d6a0"/>
   <text x="381.0" y="340.8" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">17</text>
   <text x="381.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">low</text>
-  <text x="381.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">보이는 23.6</text>
+  <text x="381.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출력 23.6</text>
   <rect x="468.0" y="318.0" width="134.0" height="72.0" rx="8" fill="#8ecae6"/>
   <text x="535.0" y="308.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">32</text>
   <text x="535.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">medium</text>
-  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">보이는 38.9</text>
+  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출력 38.9</text>
   <rect x="622.0" y="292.0" width="134.0" height="98.0" rx="8" fill="#ffb703"/>
   <text x="689.0" y="282.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">44</text>
   <text x="689.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">high</text>
-  <text x="689.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">보이는 50.9</text>
+  <text x="689.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출력 50.9</text>
   <rect x="776.0" y="143.5" width="134.0" height="246.5" rx="8" fill="#fb8500"/>
   <text x="843.0" y="133.5" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">110</text>
   <text x="843.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">xhigh</text>
-  <text x="843.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">보이는 117.3</text>
+  <text x="843.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출력 117.3</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
   <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">막대는 집계된 effort 셀이며, 빈도 히스토그램이 아닙니다.</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">각 막대 아래의 작은 라벨은 평균 보이는 출력 토큰입니다.</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: benchmark-02 공개 집계 차트 데이터. 서술적 근거일 뿐입니다.</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">막대는 추론 강도별 집계 셀이며 빈도 히스토그램이 아닙니다.</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">각 막대 아래 작은 라벨은 보이는 출력 토큰의 평균입니다.</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: benchmark-02 공개 집계 차트 데이터. 설명용 근거일 뿐입니다.</text>
 </svg>

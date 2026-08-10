@@ -44,66 +44,65 @@
     <p class="article-kicker">운영 에세이 · GPT-4o에서 GPT-5.x로의 사이징</p>
     <h1>추론 마이그레이션 사이징: 모델 이름이 아니라 측정</h1>
     <p class="lede">
-      어떤 팀이 <code>gpt-4o</code> 트래픽을 GPT-5.x 추론 모델로 옮기려 하고, 새
-      배포에 쓸 PTU 숫자가 필요합니다. 반사적으로 이미 잘 돌아가는 것을
-      재사용하려 합니다. 기존 <code>gpt-4o</code> PTU 크기를 그대로 가져가거나,
-      거기에 제품군 수준의 “5.x” 배수를 적용하는 식입니다. 모델 이름에 다시
-      사이징할 만한 정보가 충분히 담겨 있으리라는 가정입니다. 하지만 PTU
+      <code>gpt-4o</code> 트래픽을 GPT-5.x 추론 모델로 옮기려는 팀에는 새
+      배포에 쓸 PTU 숫자가 필요합니다. 이때 흔히 이미 잘 돌아가는 수치를
+      재사용합니다. 기존 <code>gpt-4o</code> PTU 크기를 그대로 쓰거나,
+      거기에 제품군 수준의 “5.x” 배수를 적용하는 식입니다. 모델 이름만으로 다시
+      사이징할 정보가 충분하다는 가정입니다. 하지만 PTU
       사이징을 좌우하는 것은 모델 이름이 아니라 토큰 형태입니다. 프롬프트
-      크기, 보이는 출력, 숨은 추론 토큰, 캐시 적중률, 응답 상한이 모두 결과를
-      움직입니다. 그래서 이름만으로 사이징하려는 직관은 곧장 이 글이 던지는 운영
-      질문과 부딪힙니다. 모델 이름이면 충분한가요, 아니면 요청 형태를
+      크기, 보이는 출력, 숨은 추론 토큰, 캐시 적중률, 응답 상한에 따라 결과가
+      달라집니다. 이름만으로 사이징하려는 직관은 운영상의 질문으로 이어집니다.
+      모델 이름이면 충분한가요, 아니면 요청 형태를
       먼저 다시 측정해야 하나요?
     </p>
 
     <figure class="article-figure" id="figure-migration-one-pager">
       <figcaption>
         <strong>이 글 한눈에 보기.</strong> 마이그레이션 사이징은 모델 이름만 보고
-        정하는 일이 아니라 모델링된 산술입니다. 권장 PTU = ceil(수요 &divide; 밀도
-        &divide; 목표 사용률)이며, 과도하게 큰 응답 상한(<code>max_output_tokens</code>)이
+        정하는 일이 아니라 산술로 모델링하는 작업입니다. 권장 PTU = ceil(수요 &divide; 밀도
+        &divide; 목표 사용률)이며 과도하게 큰 응답 상한(<code>max_output_tokens</code>)이
         워크로드가 확보하는 PTU를 좌우할 수 있는지는, 이 저장소에서 문서화된
         플랫폼 동작이 아니라 검증해야 할 수용 위험 가설로 다룹니다. 이 한 장
-        요약은 그 한 가지 메시지만 전하고 경계를 분명히 표시합니다. 측정된
-        용량이 아니라, 고정된 가격 스냅샷을 적용한 모델링된 워크로드에 대한 합성
+        요약은 이 메시지와 근거의 경계를 분명히 표시합니다. 실측
+        용량이 아니라, 고정된 가격 스냅샷을 적용해 모델링한 워크로드의 합성
         예시입니다.
         <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">마이그레이션 사이징 한 장 요약 SVG 열기</a>.
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="추론 마이그레이션 사이징 한 장 요약입니다. 수요 TPM에서 출발해 프롬프트와 max_output 예약을 거쳐, 밀도와 목표 사용률로 나눈 뒤 권장 PTU 천장에 이르는 사이징 사슬을 따라가며, 과도하게 큰 응답 상한(max_output_tokens)을 문서화된 플랫폼 동작이 아니라 검증해야 할 사이징 위험으로 표시합니다. 핵심 메시지는 마이그레이션 사이징이 모델링된 산술이라는 것입니다. 측정된 용량이 아니라 합성 예시임을 명시적으로 표시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="추론 마이그레이션 사이징 한 장 요약입니다. 수요 TPM에서 시작해 프롬프트와 max_output 예약을 거친 다음, 밀도와 목표 사용률로 나눠 권장 PTU 천장을 구합니다. 과도하게 큰 응답 상한(max_output_tokens)은 문서화된 플랫폼 동작이 아니라 검증해야 할 사이징 위험으로 표시합니다. 마이그레이션 사이징은 산술로 모델링하는 작업입니다. 실측 용량이 아닌 합성 예시임을 명시합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-remeasure" class="article-section">
       <h2>기존 크기를 그대로 쓰지 않고 다시 측정하는 이유</h2>
       <p>
-        재사용 반사 동작은 모델 이름만 알면 사이즈도 알 수 있다고 전제합니다. 잘
+        기존 수치를 재사용하려는 선택은 모델 이름만 알면 사이즈도 알 수 있다고 전제합니다. 잘
         돌아가는 <code>gpt-4o</code> 숫자에 제품군 배수를 곱하면 GPT-5.x에도
-        여전히 맞으리라는 식입니다. 그 전제를 받아들이기 전에 두 가지를
-        나란히 놓아 볼 만합니다. 첫째는 문서가 명시하는 내용입니다. Microsoft
+        여전히 맞으리라는 식입니다. 이 전제부터 문서의 명시 사항과 대조해야 합니다. Microsoft
         Learn은 피크 RPM, 평균 프롬프트·출력 토큰, 캐시 적중률, 모델의 출력 대
-        입력 비율, PTU당 Input TPM으로 트래픽을 정규화 TPM으로 변환하고, 캐시된
-        프롬프트 토큰을 사용률에서 차감합니다. OpenAI는 추론 토큰을
+        입력 비율, PTU당 Input TPM으로 트래픽을 정규화 TPM으로 변환하고 캐시된
+        프롬프트 토큰을 사용률에서 차감합니다. 또한 OpenAI는 추론 토큰을
         <code>output_tokens_details.reasoning_tokens</code>에 보고되는, 보이지
-        않는 출력 측 토큰으로 문서화합니다. 둘째는 이 저장소의 예시용 계산으로,
-        그 문서화된 공식을 하나의 예시 호출 형태에 적용해 사이징 동인들을 나란히
-        보여 줍니다. 어떤 배포를 측정한 것은 아닙니다.
+        않는 출력 측 토큰으로 문서화합니다. 이 저장소에서는 문서화된 공식을
+        하나의 예시 호출 형태에 적용해 사이징 동인을 함께 계산했습니다. 어떤
+        배포의 실측 결과도 아닙니다.
       </p>
       <p>
-        잠시 멈춰 볼 부분은 그 짝짓기입니다. 보이는 출력만으로 읽으면
+        핵심은 보이는 출력과 숨은 추론 출력을 함께 보는 데 있습니다. 보이는 출력만으로 읽으면
         마이그레이션은 감당할 만해 보일 수 있습니다. 같은 프롬프트와 같은
-        보이는 답변은 새 모델에서 비슷한 수준으로, 심지어 약간 더 가볍게
+        보이는 답변은 새 모델에서 비슷하거나 오히려 약간 더 가볍게
         사이징될 수도 있습니다. 하지만 보이는 답변이 요청의 전부는 아닙니다. 숨은
         추론 출력이 나타나는 순간 같은 답변이 훨씬 더 많은 정규화 TPM을 필요로 할
-        수 있고, 이 저장소의 가설은 문서화된 플랫폼 동작이 아니라
+        수 있습니다. 이 저장소의 가설은 문서화된 플랫폼 동작이 아니라
         검증해야 할 수용 위험입니다. 과도하게 큰 <code>max_output_tokens</code>
         상한이 그 토큰이 실제로 생성되든 아니든 수용 가중치를 예약할 수 있다는
         것입니다. 그래서 운영의 질문은 “새 모델이 더 무거운가?”가 아니라 “측정된
         요청 형태, 곧 보이는 출력, 추론 출력, 캐시 적중률, 응답 상한이
         실제로 무엇을 예약하는가?”입니다. 정규화 TPM 공식, 모델별 표, 캐시
-        차감, 추론 토큰 회계는 Microsoft Learn과 OpenAI가 문서화하는 내용이고,
+        차감, 추론 토큰 회계는 Microsoft Learn과 OpenAI가 문서화하는 내용이고
         과도하게 큰 <code>max_output_tokens</code>를 검증해야 할 PTU 수용 위험으로
-        다루는 것은 이 저장소가 옹호하는 운영적 추론입니다. 이어지는 차트는
-        고정된 가격 스냅샷을 적용한 모델링된 워크로드에 대한 합성 예시이며
-        측정된 용량도, 실시간 PTU 처리량도, SLA도 아닙니다. 아래 예시
-        차트가 사이징 동인을 명시적으로 보여 줍니다.
+        다루는 것은 이 저장소가 옹호하는 운영적 추론입니다. 아래 차트는
+        고정된 가격 스냅샷을 적용해 모델링한 워크로드의 합성 예시이며
+        실측 용량도, 실시간 PTU 처리량도, SLA도 아닙니다. 예시 차트에서
+        사이징 동인을 명시적으로 확인할 수 있습니다.
       </p>
     </section>
 
@@ -114,11 +113,11 @@
       </section>
       <section class="summary-tile">
         <h2>근거</h2>
-        <p>Microsoft Learn은 정규화 TPM 공식을 제공하고, OpenAI는 추론 토큰 회계 방식을 문서화합니다.</p>
+        <p>Microsoft Learn은 정규화 TPM 공식을, OpenAI는 추론 토큰 회계 방식을 문서화합니다.</p>
       </section>
       <section class="summary-tile">
         <h2>결정</h2>
-        <p>"5.x"에 대한 제품군 수준의 가정이 아니라, 측정된 토큰 형태를 기준으로 사이징하세요.</p>
+        <p>"5.x" 제품군 전체에 대한 가정 대신 실측 토큰 형태를 기준으로 사이징해야 합니다.</p>
       </section>
     </div>
 
@@ -134,7 +133,7 @@
     <p class="banner">
       <strong>범위 안내:</strong>
       아래 차트는 보편적인 용량 주장이 아니라 예시용 사이징 계산입니다.
-      의사결정의 형태를 이해하는 데 사용한 다음, 동일한 계산을 여러분의
+      의사결정의 형태를 이해한 뒤 동일한 계산을 여러분의
       실제 트래픽 샘플로 직접 수행하세요.
     </p>
 
@@ -142,7 +141,7 @@
       <p class="section-label">공식 동작 · 정규화 TPM</p>
       <h2>사이징 공식의 핵심: 토큰 형태</h2>
       <p>
-        Microsoft Learn은 트래픽을 정규화 TPM으로 변환하여 PTU 수요를
+        Microsoft Learn은 트래픽을 정규화 TPM으로 변환해 PTU 수요를
         산정합니다. 입력값은 피크 RPM, 평균 프롬프트 토큰, 평균 생성 출력
         토큰, 캐시 적중률, 모델의 출력 대 입력 비율, 그리고 모델의 PTU당
         Input TPM 값입니다.
@@ -157,9 +156,9 @@
         </p>
       </div>
       <p>
-        이 공식이 바로 제품군 수준의 지름길이 오해를 부르는 이유입니다.
-        어떤 모델은 출력 비율이 더 무거우면서도 이전 모델보다 PTU당 Input
-        TPM이 더 높을 수 있습니다. 답은 여러분 워크로드의 실제 프롬프트,
+        이 공식은 제품군 수준의 지름길이 왜 오해를 부르는지 설명합니다.
+        어떤 모델은 출력 비율이 더 높으면서도 이전 모델보다 PTU당 Input
+        TPM도 높을 수 있습니다. 결과는 워크로드의 실제 프롬프트,
         출력, 캐시 프로필에 달려 있습니다.
       </p>
     </section>
@@ -170,7 +169,7 @@
       <div class="evidence-grid">
         <div>
           <h3>1. 출력 가중치</h3>
-          <p>GPT-4.1 이후 모델의 경우, Microsoft Learn은 출력 토큰이 사용률 산정에서 모델별 입력 토큰 가중치를 갖는다고 설명합니다.</p>
+          <p>Microsoft Learn에 따르면 GPT-4.1 이후 모델의 출력 토큰은 사용률 산정에서 모델별 입력 토큰 가중치를 갖습니다.</p>
         </div>
         <div>
           <h3>2. 숨은 추론</h3>
@@ -178,11 +177,11 @@
         </div>
         <div>
           <h3>3. 캐시 적중률</h3>
-          <p>Microsoft Learn은 캐시된 프롬프트 토큰이 PTU 사용률에서 차감된다고 설명합니다. 따라서 프리픽스 형태의 변화가 사이징 결과를 움직일 수 있습니다.</p>
+          <p>Microsoft Learn에 따르면 캐시된 프롬프트 토큰은 PTU 사용률에서 차감됩니다. 따라서 프리픽스 형태가 바뀌면 사이징 결과도 달라질 수 있습니다.</p>
         </div>
         <div>
           <h3>4. 응답 상한</h3>
-          <p><code>max_output_tokens</code>를 기록하세요. 이 저장소는 과도하게 큰 상한을 추측할 값이 아니라, 검증해야 할 PTU 수용 위험 가설로 취급합니다.</p>
+          <p><code>max_output_tokens</code>를 기록해야 합니다. 이 저장소는 과도하게 큰 상한을 추측할 값이 아닌, 검증해야 할 PTU 수용 위험 가설로 취급합니다.</p>
         </div>
       </div>
     </section>
@@ -195,7 +194,7 @@
           <strong>읽어야 할 차트:</strong> 입력 토큰 200개와 보이는 출력 토큰
           20개를 가진 1,000 RPM 예시입니다. 처음 세 막대는 공식 정규화 TPM
           공식과 모델 표를 사용합니다. 마지막 두 막대는 보이지 않는 출력을
-          반드시 측정해야 하는 이유를 보이기 위해 60 토큰의 추론 가정을
+          반드시 측정해야 하는 이유를 설명하려고 60 토큰의 추론 가정을
           더합니다.
         </figcaption>
         <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.ko.svg" alt="GPT-4o와 gpt-5.2 마이그레이션 동인을 비교하는 예시 PTU 사이징 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
@@ -220,11 +219,11 @@
         </tbody>
       </table>
       <div class="chart-reading-note">
-        <h3>이것이 의미하는 바</h3>
+        <h3>운영 해석</h3>
         <p>
           보이는 출력만 다룬 행들은 GPT-5.x가 항상 GPT-4o보다 비효율적이라는
-          일괄적인 주장을 뒷받침하지 않습니다. 추론 행들은 함정을 보여줍니다.
-          일단 숨은 추론 출력이 나타나면, 캐시와 응답 정책을 측정하고
+          일괄적인 주장을 뒷받침하지 않습니다. 추론 행에는 다른 위험이 드러납니다.
+          숨은 추론 출력이 나타나면 캐시와 응답 정책을 측정하고
           조정하지 않는 한 동일한 보이는 답변이 훨씬 더 많은 정규화 TPM을
           필요로 할 수 있습니다.
         </p>
@@ -233,14 +232,14 @@
 
     <section id="checklist" class="article-section">
       <p class="section-label">운영자 체크리스트 · 용량 구매 전에 다시 측정</p>
-      <h2>마이그레이션은 이름 변경이 아니라 측정입니다</h2>
+      <h2>이름 변경에 그치지 않는 마이그레이션 측정</h2>
       <ol>
-        <li><strong>작업 구성을 고정하세요.</strong> 프롬프트, 도구, 스키마, 검색 배치, 샘플 분포를 모든 모델 조합에서 바이트 단위로 안정되게 유지하세요.</li>
-        <li><strong>보이는 출력을 측정하세요.</strong> 마이그레이션 전후의 평균 및 p95 보이는 출력 토큰을 비교하세요.</li>
-        <li><strong>추론 출력을 측정하세요.</strong> <code>reasoning_tokens</code>를 수집하세요. 최종 답변 텍스트로부터 추정하지 마세요.</li>
-        <li><strong>캐시 적중률을 측정하세요.</strong> 캐시 키 버킷별로 <code>cached_tokens / prompt_tokens</code>를 기록하세요. 특히 ReAct나 도구 스키마가 바뀐 뒤에는 더 그렇습니다.</li>
-        <li><strong>상한을 적정 크기로 맞추세요.</strong> 대표적인 보이는 + 추론 백분위수를 기준으로 <code>max_output_tokens</code>를 설정한 다음, 드물게 발생하는 긴 답변에는 호출별 재정의를 사용하세요.</li>
-        <li><strong>그런 다음에만 PTU를 사이징하세요.</strong> 현재 모델 표와 여러분이 측정한 워크로드 형태로 정규화 TPM 공식을 적용하세요.</li>
+        <li><strong>작업 구성을 고정하세요.</strong> 프롬프트, 도구, 스키마, 검색 배치, 샘플 분포를 모든 모델 조합에서 바이트 단위로 일정하게 유지합니다.</li>
+         <li><strong>보이는 출력을 측정하세요.</strong> 마이그레이션 전후의 평균 및 p95 보이는 출력 토큰을 비교합니다.</li>
+         <li><strong>추론 출력을 측정하세요.</strong> <code>reasoning_tokens</code>를 수집하고 최종 답변 텍스트에서 추정하지 않습니다.</li>
+         <li><strong>캐시 적중률을 측정하세요.</strong> 캐시 키 버킷별로 <code>cached_tokens / prompt_tokens</code>를 기록합니다. ReAct나 도구 스키마가 바뀐 뒤에는 특히 중요합니다.</li>
+         <li><strong>상한을 적정 크기로 맞추세요.</strong> 대표적인 보이는 + 추론 백분위수를 기준으로 <code>max_output_tokens</code>를 설정하고 드물게 발생하는 긴 답변에는 호출별 재정의를 사용합니다.</li>
+        <li><strong>측정 후 PTU를 사이징하세요.</strong> 현재 모델 표와 여러분 워크로드의 실측 형태로 정규화 TPM 공식을 적용하세요.</li>
       </ol>
     </section>
 
@@ -249,8 +248,8 @@
       <p>
         <strong>Tier 1 — 서비스 계약(Microsoft Learn 및 OpenAI).</strong> 정규화
         TPM 사이징 공식, 모델별 PTU당 Input TPM과 출력 대 입력 비율, GPT-4.1
-        이후의 출력 토큰 가중치, 사용률에서의 100% 캐시 차감, 그리고 추론 토큰
-        회계 방식이 여기에 문서화되어 있습니다.
+        이후 모델의 출력 토큰 가중치, 사용률에서 캐시된 토큰을 100% 차감하는 규칙, 그리고 추론 토큰
+        회계 방식을 문서화합니다.
       </p>
       <ul>
         <li>[1] <strong>Determine PTU sizing for a workload</strong> — 정규화 TPM
@@ -263,8 +262,8 @@
           PTU 사용률 모델과 요청 형태가 예약된 용량을 어떻게 소비하는지를
           문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">아카이브</a>.</li>
         <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — 캐시된 프롬프트
-          토큰이 사용률에서 차감되므로, 프리픽스 형태의 변화가 사이징 결과를
-          움직인다는 점을 문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
+          토큰이 사용률에서 차감되므로, 프리픽스 형태에 따라 사이징 결과가
+          달라진다는 점을 문서화합니다. <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">아카이브</a>.</li>
         <li>[4] <strong>OpenAI reasoning models guide</strong> — 추론 토큰을
           <code>output_tokens_details.reasoning_tokens</code>에 보고되는 보이지
           않는 출력 측 토큰으로 문서화합니다. <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI 문서</a> (2026-06-04 접근) · <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">아카이브</a>.</li>
@@ -273,11 +272,11 @@
         <strong>Tier 2 — 운영적 추론(이 저장소).</strong> 과도하게 큰
         <code>max_output_tokens</code>를 PTU 수용 위험 가설로 다루는 것과, 추론
         및 캐시된 토큰의 측정 계약은 Learn 사양이 아니라 이 저장소의 운영적
-        추론입니다.
+        판단입니다.
       </p>
       <ul>
         <li>[5] <strong>이 저장소, <code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
-          — <code>mean_max_output_tokens</code>를 기록하고, 큰
+          — <code>mean_max_output_tokens</code>를 기록하고 큰
           <code>max_output_tokens</code>를 추측할 값이 아니라 검증해야 할 예약된
           수용 가중치로 해석합니다.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/13-ptu-vs-payg-decision-runbook.md">출처</a>.</li>
@@ -288,13 +287,13 @@
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">출처</a>.</li>
       </ul>
       <p>
-        <strong>이 주제가 증명하는 것과 증명하지 못하는 것.</strong> 접근일 기준
+        <strong>근거의 범위.</strong> 접근일을 기준으로
         Microsoft Learn이 명시하는 PTU 사이징 계약 — 정규화 TPM 공식, 모델별
         PTU당 Input TPM과 출력 대 입력 비율, GPT-4.1 이후의 출력 토큰 가중치,
         그리고 100% 캐시 차감 — 과 OpenAI의 추론 토큰 회계 방식, 그리고 사이징
         전에 출력, 추론, 캐시, 상한을 다시 측정하라는 이 저장소의 경험칙을
         문서화합니다. 예시 차트는 문서화된 공식을 하나의 예시 호출 형태에 적용한
-        것으로, 용량 보장이 아니라 계산 예시이며, 특정 GPT-5.x 워크로드가 모든
+        것으로, 용량 보장이 아니라 계산 예시이며 특정 GPT-5.x 워크로드가 모든
         리전·모델 버전·트래픽 형태에 걸쳐 이전의 GPT-4o보다 더 무겁거나 가볍다는
         것을 증명하지는 않습니다.
       </p>
@@ -306,7 +305,7 @@
         않으므로, GPT-4o 트래픽을 PTU의 GPT-5.x로 옮기기 전에 출력, 추론, 캐시,
         그리고 <code>max_output_tokens</code> 상한 정책을 다시 측정한 다음 정규화
         TPM 공식으로 사이징합니다.</strong></p>
-      <p>이 글로 운영 에세이 묶음이 마무리됩니다. 이제 흐름은 애초에 어떤 근거가 공개할 만큼 강했는지를 가른 방법론으로 돌아갑니다.</p>
+      <p>이 글로 운영 에세이 묶음을 마무리합니다. 이제 애초에 어떤 근거가 공개할 만큼 강했는지 가른 방법론으로 돌아갑니다.</p>
       <p><a class="button-link" href="../../when-reasoning-pays-off/ko/">어떤 근거가 공개할 만큼 강한지 어떻게 판단했나요?</a></p>
     </section>
   </main>

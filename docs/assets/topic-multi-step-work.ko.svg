@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">다단계 작업은 품질의 양상을 바꿨다</title>
-  <desc id="desc">benchmark-02: 평가 점수가 GPT-4o 기준선에서 상승. 비용 라벨은 짝지은 지출을 보여 줌.</desc>
+  <title id="title">다단계 작업에서는 품질 점수가 달라졌다</title>
+  <desc id="desc">benchmark-02: 심판 점수가 GPT-4o 기준선보다 상승. 비용 라벨에는 해당 지출을 표시.</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">다단계 작업은 품질의 양상을 바꿨다</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: 평가 점수가 GPT-4o 기준선에서 상승. 비용 라벨은 짝지은 지출을 보여 줌.</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">다단계 작업에서는 품질 점수가 달라졌다</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: 심판 점수가 GPT-4o 기준선보다 상승. 비용 라벨에는 해당 지출을 표시.</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -17,7 +17,7 @@
   <text x="148" y="201.1" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">1.5</text>
   <line x1="155" y1="132.9" x2="910" y2="132.9" stroke="#e8f0f8"/>
   <text x="148" y="136.9" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">2.0</text>
-  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">평균 평가 점수</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">평균 심판 점수</text>
   <rect x="160.0" y="197.1" width="108.3" height="192.9" rx="8" fill="#3a86ff"/>
   <text x="214.2" y="187.1" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">1.50</text>
   <text x="214.2" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">gpt-4o</text>
@@ -44,7 +44,7 @@
   <text x="855.8" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.002179</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
   <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">여기서는 품질 변화가 보이므로, 지출이 정당화될 여지가 있습니다.</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">가장 저렴하게 이긴 셀도 이야기의 일부이며, 최고 점수만이 전부가 아닙니다.</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공개 집계 차트 데이터. 서술적 근거일 뿐입니다.</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">여기서는 품질이 달라지므로 지출을 정당화할 여지가 있습니다.</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">최고 점수뿐 아니라 같은 점수를 가장 낮은 비용으로 낸 셀도 봐야 합니다.</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공개 집계 차트 데이터. 설명용 근거일 뿐입니다.</text>
 </svg>
