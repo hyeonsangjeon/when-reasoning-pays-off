@@ -44,171 +44,171 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">प्रयोग-पुनरावलोकन</a> / प्रयोग नोट, exp004</p>
-    <p class="article-kicker">प्रयोग नोट, exp004, PTU spillover-policy simulation (Phase 1), क्या clever policy ने लागत वसूल की</p>
-    <h1>exp004 &mdash; क्या proactive spillover policy ने सच में फ़ायदा दिया?</h1>
+    <p class="article-kicker">प्रयोग नोट, exp004, PTU स्पिलओवर-नीति सिमुलेशन (चरण 1), क्या जटिल नीति सार्थक रही</p>
+    <h1>exp004 &mdash; क्या proactive स्पिलओवर नीति सच में लाभकारी रही?</h1>
     <p class="muted-note">लेखक Hyeonsang Jeon &middot; ग्लोबल ब्लैक बेल्ट, क्लाउड &amp; एआई ऐप्स</p>
 
-    <p class="lede">पिछले तीन benchmarks एक ही बात पर थे: reasoning-effort dial कितना ऊपर ले जाएँ। इस बार axis बदलता है, मॉडल नहीं बल्कि <strong>deployment</strong>। जब PTU यानी fixed-capacity deployment saturation के पास पहुँचता है, तब fallback route पर कुछ traffic भेजने वाली दो <strong>spillover</strong> policies को उसी load के नीचे भिड़ाया गया।</p>
-    <p class="lede">हमने <strong>prediction पहले से लिख दिया था</strong>: latency चढ़ने के संकेत देखकर <em>पहले से</em> action लेने वाली proactive policy, timeout या 429 के <em>बाद</em> react करने वाली reactive policy से sustain window में cache decay कम झेलेगी। intuition यही कहता है कि जल्दी संभलना बेहतर होगा।</p>
-    <p class="lede">माप ने वह intuition चुपचाप पलट दिया। sustained-phase steady-state cache hit <strong>reactive 99.2337%, proactive 99.0680%</strong> निकली, यानी proactive policy उल्टे <strong>0.1657 pp</strong> कम रही। और reactive जहाँ पूरे sustain में spillover पर चली, proactive ने उसे <em>एक बार भी engage नहीं किया</em>। यह नोट उन 22 min को <em>design → inputs → prediction vs measurement → curves → decision</em> में दोबारा पढ़ता है: exp001 में जैसे “easy work पर reasoning लागत नहीं वसूल करती” था, यहाँ जवाब है कि इन conditions में clever policy लागत नहीं वसूल करती।</p>
+    <p class="lede">पिछले तीन बेंचमार्क में प्रश्न था कि रीज़निंग स्तर कितना बढ़ाया जाए। इस बार मॉडल नहीं, <strong>डिप्लॉयमेंट नीति</strong> बदली गई। जब निश्चित क्षमता वाला PTU डिप्लॉयमेंट संतृप्ति के पास पहुँचता है, तब कुछ ट्रैफ़िक वैकल्पिक मार्ग पर भेजने वाली दो <strong>स्पिलओवर</strong> नीतियों की समान भार में तुलना की गई।</p>
+    <p class="lede">हमने <strong>पूर्व-पंजीकृत अनुमान</strong> लिखा था: बढ़ते विलंब के संकेत देखकर <em>पहले</em> कार्रवाई करने वाली proactive नीति, टाइमआउट या 429 के <em>बाद</em> प्रतिक्रिया देने वाली reactive नीति की तुलना में स्थिर खंड में कैश-हिट की गिरावट कम झेलेगी। सहज धारणा यही थी कि पहले कार्रवाई करना बेहतर होगा।</p>
+    <p class="lede">मापन ने इस धारणा को पलट दिया। स्थिर खंड में स्थिर-अवस्था कैश हिट <strong>reactive 99.2337%, proactive 99.0680%</strong> रही; अर्थात proactive नीति <strong>0.1657 pp</strong> नीचे थी। reactive पूरे स्थिर खंड में स्पिलओवर पर चली, जबकि proactive ने स्पिलओवर <em>एक बार भी सक्रिय नहीं किया</em>। यह नोट उन 22 मिनटों को <em>डिज़ाइन → इनपुट → अनुमान बनाम मापन → वक्र → निर्णय</em> के क्रम में देखता है। exp001 की तरह, इन परिस्थितियों में अधिक जटिल नीति सार्थक नहीं रही।</p>
 
     <section class="article-section">
       <p class="section-label">क्यों पढ़ें</p>
-      <h2>PTU deployment saturation के पास जाए तो क्या होता है?</h2>
-      <p>Fixed capacity यानी PTU पर model deploy करने पर एक पल आता है जब traffic उस capacity ceiling के <strong>पास</strong> पहुँचता है। अगर वहीं prompt cache डगमगाए, responses धीमे होते हैं और लागत रिसती है, क्योंकि वही prompt फिर से compute करना पड़ता है।</p>
-      <p>इस डगमगाहट की buffer layer <strong>spillover</strong> है। overflow होने जैसा लगे तो traffic का हिस्सा fallback route पर भेज दो। तरीका दो हैं: <strong>reactive</strong> timeout या 429 दिखने के <em>बाद</em> spill करता है; <strong>proactive</strong> p95 latency धीरे-धीरे चढ़ते देखकर <em>पहले</em> थोड़ा traffic हटाना शुरू करता है।</p>
-      <p>अगर आप <strong>PTU deployment</strong> चलाते हैं और traffic अक्सर saturation छूता है, तो यह नोट आपके सबसे पास है। operator का आम सवाल है, “क्या smarter policy cache को बेहतर बचाएगी?” यह experiment उसका एक <strong>measured answer</strong> देता है, और जवाब शायद आपकी उम्मीद से अलग है।</p>
+      <h2>PTU डिप्लॉयमेंट संतृप्ति के पास जाए तो क्या होता है?</h2>
+      <p>निश्चित क्षमता वाले PTU पर मॉडल डिप्लॉय करने पर ट्रैफ़िक कभी-कभी उसकी <strong>ऊपरी सीमा</strong> के पास पहुँचता है। कैश मिस होने पर PTU का निश्चित शुल्क नहीं बढ़ता; शुल्क की इकाई प्रति 1 PTU-hour ही रहती है। लेकिन समान प्रीफ़िक्स की दोबारा गणना क्षमता की अतिरिक्त गुंजाइश घटाती है और विलंब तथा थ्रूपुट को बिगाड़ सकती है।</p>
+      <p>इस दबाव को सँभालने की सुरक्षा-परत <strong>स्पिलओवर</strong> है: अतिप्रवाह की आशंका पर कुछ ट्रैफ़िक वैकल्पिक मार्ग पर भेजा जाता है। <strong>reactive</strong> नीति टाइमआउट या 429 के <em>बाद</em> ट्रैफ़िक हटाती है; <strong>proactive</strong> नीति p95 विलंब बढ़ता देखकर <em>पहले</em> ही ऐसा करना शुरू करती है।</p>
+      <p>यदि आप <strong>PTU डिप्लॉयमेंट</strong> चलाते हैं और ट्रैफ़िक अक्सर संतृप्ति छूता है, तो यह नोट एक सामान्य संचालन प्रश्न का <strong>प्रत्यक्ष मापन</strong> देता है: क्या अधिक जटिल नीति कैश को बेहतर बचाती है? उत्तर शायद आपकी अपेक्षा से अलग है।</p>
     </section>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">पहले, 10 सेकंड</p>
-      <h2>निष्कर्ष पर भरोसा न करें, numbers खुद print करें</h2>
-      <p>Token spend 0 है। पहली दो lines हर policy के inputs, variables और artifacts को जस का तस print करती हैं; आख़िरी line published aggregate से headline number फिर निकालकर इस note से मिलाती है, network या credentials के बिना।</p>
-      <pre class="code-block"><code># Print each policy's (reactive · proactive) input -> variable -> artifact card (no network)
+      <h2>निष्कर्ष पर भरोसा न करें, आँकड़े स्वयं निकालें</h2>
+      <p>टोकन खर्च 0 है। पहली दो पंक्तियाँ प्रत्येक नीति के इनपुट, चर और आर्टिफ़ैक्ट कार्ड जस के तस दिखाती हैं; अंतिम पंक्ति प्रकाशित समेकित आँकड़ों से मुख्य संख्या दोबारा निकालकर इस नोट से मिलाती है। इसके लिए नेटवर्क या प्रमाण-पत्र नहीं चाहिए।</p>
+      <pre class="code-block"><code># प्रत्येक नीति (reactive · proactive) का इनपुट → चर → आर्टिफ़ैक्ट कार्ड दिखाएँ (नेटवर्क नहीं)
 python3 -c "import experiments; print(experiments.describe('exp004_spillover_baseline_reactive.yaml').summary())"
 python3 -c "import experiments; print(experiments.describe('exp004_spillover_proactive.yaml').summary())"
 
-# Re-print the sustain cache hit from the published aggregate and compare (zero tokens)
+# प्रकाशित समेकित आँकड़ों से स्थिर खंड का कैश हिट दोबारा दिखाकर तुलना करें (टोकन 0)
 python3 -c "import json; s=json.load(open('benchmarks/04-spillover-simulation/analysis.json'))['per_policy_stats']; print('sustain cache-hit  reactive=%.4f%%  proactive=%.4f%%  gap=%+.4f pp' % (s['reactive']['sustain']['cache_hit_ratio']*100, s['proactive']['sustain']['cache_hit_ratio']*100, (s['proactive']['sustain']['cache_hit_ratio']-s['reactive']['sustain']['cache_hit_ratio'])*100))"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर रेपो खोलें &amp; ⭐</a></p>
-      <p class="muted-note">Live load को सच में फिर चलाने के लिए Azure credentials और असली spend चाहिए, क्योंकि यह actual load test है। credentials के बिना रास्ता, यानी published raw JSONL से <code>analysis.json</code> दोबारा derive करना, <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> के reproduction footer में लिखा है।</p>
+      <p class="muted-note">लाइव भार दोबारा चलाने के लिए Azure प्रमाण-पत्र और वास्तविक खर्च चाहिए। प्रमाण-पत्र के बिना प्रकाशित कच्चे JSONL से <code>analysis.json</code> दोबारा निकालने की विधि <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> के पुनरुत्पादन पादलेख में दी गई है।</p>
     </section>
 
     <nav class="article-outline" aria-label="इस नोट की संरचना">
-      <strong>पढ़ने का क्रम &mdash; पहले ईमानदार निष्कर्ष, mechanism बाद में:</strong>
-      <a href="#design">इस बार dial नहीं, deployment है</a>
-      <a href="#predict">prediction चूका</a>
-      <a href="#result">clever policy नहीं जीती</a>
-      <a href="#mechanism">tie क्यों हुआ, एक side को spill करना ही नहीं पड़ा</a>
+      <strong>पढ़ने का क्रम &mdash; पहले स्पष्ट निष्कर्ष, क्रिया-विधि बाद में:</strong>
+      <a href="#design">इस बार मॉडल नहीं, डिप्लॉयमेंट नीति बदली है</a>
+      <a href="#predict">पूर्वानुमान चूका</a>
+      <a href="#result">जटिल नीति नहीं जीती</a>
+      <a href="#mechanism">बराबरी क्यों हुई: एक नीति को स्पिलओवर की आवश्यकता ही नहीं पड़ी</a>
       <a href="#limits">कहाँ तक भरोसा करें</a>
-      <a href="#decision">तो default क्या रखें</a>
+      <a href="#decision">तो डिफ़ॉल्ट क्या रखें</a>
     </nav>
 
     <section id="design" class="article-section">
       <p class="section-label">डिज़ाइन</p>
-      <h2>इस बार dial नहीं, deployment है</h2>
-      <p><strong>इसे क्यों मापा।</strong> पिछली तीन notes का सवाल था कि reasoning dial कहाँ तक उठाएँ। लेकिन dial तय होने के बाद अगली दीवार आती है: उसी setting पर traffic चढ़े तो <strong>deployment टिकता है या नहीं</strong>। PTU deployment saturation के पास जाए तो prompt cache हिल सकता है, और spillover उसका buffer है। common intuition है कि proactive policy reactive से बेहतर होगी; हमने इसे अंदाज़े से नहीं, माप से परखना चाहा।</p>
-      <p><strong>इसलिए “पहले action बेहतर है” को hypothesis बनाया।</strong> साफ़ वाक्य था: <em>under sustained saturation load, proactive policy suffers less sustain-phase cache-hit decay than reactive policy.</em> इसकी breaking line भी साफ थी। <strong>अगर proactive sustain cache में reactive को साफ़ हरा दे, तो “early action” support होगा; अगर न हरा पाए या नीचे निकले, तो कम से कम इन conditions में यह intuition लागत नहीं वसूल करती।</strong></p>
-      <p><strong>यह root-cause hunt नहीं, mitigation comparison है।</strong> “spillover ही cache decay की root cause है” वाला strong claim field observation से पहले ही कमजोर हो चुका था। इसलिए यह experiment कारण खोजने की जगह नहीं है; यह सिर्फ़ दो mitigation policies को भिड़ाकर देखता है कि <strong>कौन बेहतर है</strong>। scope छोटा है, इसलिए answer भी छोटा और साफ़ है।</p>
-      <p><strong>simulation से शुरुआत क्यों।</strong> Phase 1 एक <em>single</em> gpt-5.2 deployment पर spillover state को internally mimic करता है; यह physically separate cache pools नहीं हैं। इसलिए यहाँ absolute numbers नहीं, <strong>policy difference की direction</strong> पढ़नी है। primary और fallback cache pools सच में अलग हों, वह two-deployment load test Phase 2 का काम है। यह note पहले floor बनाता है।</p>
-      <p><strong>सवाल एक है।</strong> sustained near-saturation ReAct load में proactive spillover, reactive से cache बेहतर बचाता है या नहीं?</p>
-      <p><strong>Design (load).</strong> वही 22-min load दोनों policies पर identically चलता है: <strong>2-min warmup</strong> (0.3 TPS) → <strong>10-min ramp</strong> (0.5→2.5 TPS) → <strong>10-min sustain</strong> (2.0 TPS). Durations 22/2/10/10 min. एक gpt-5.2 deployment, <code>effort=low</code>, system prompt लगभग <strong>30K tokens</strong> (SHA-256 से pinned ताकि दोनों runs byte-identical रहें, <code>corpus_seed 4242</code>). SHA-256 fragment 98d3a5…088a. internal throttle threshold <strong>90,000 TPM</strong> है। हर policy <strong>2,136 (warmup 36 / ramp 900 / sustain 1,200)</strong> requests चलाती है। TPS 0.3, 0.5→2.5, 2.0.</p>
-      <p><strong>बदलने वाली चीज़ सिर्फ़ एक है</strong>: <code>policy.type</code> को <code>reactive</code> और <code>proactive</code> के बीच flip किया गया। prompt, load, model, effort और threshold fixed हैं, इसलिए दो artifacts में अंतर केवल policy से आता है।</p>
-      <div class="article-summary-grid" aria-label="पूर्व-पंजीकृत prediction और role">
-        <section class="summary-tile"><h2>पूर्व-पंजीकृत prediction</h2><p>proactive (<code>proactive</code>) policy sustain-phase cache decay कम झेलेगी, इसलिए उसका steady-state cache hit reactive (<code>reactive</code>) baseline से <strong>higher</strong> होगा।</p></section>
-        <section class="summary-tile"><h2>इस experiment की role</h2><p>effort trilogy (01, 02, 03) के बाद पहला operations experiment: चुनी हुई setting <strong>saturation load में टिकती है या नहीं</strong>? लेकिन यह physical cache separation के बिना <em>Phase 1 floor</em> है।</p></section>
+      <h2>इस बार मॉडल नहीं, डिप्लॉयमेंट नीति बदली है</h2>
+      <p><strong>इसे क्यों मापा।</strong> पिछली तीन टिप्पणियों में प्रश्न था कि रीज़निंग स्तर कहाँ तक बढ़ाया जाए। स्तर तय होने के बाद अगला प्रश्न है: उसी सेटिंग पर ट्रैफ़िक बढ़े तो <strong>डिप्लॉयमेंट टिकता है या नहीं</strong>। PTU संतृप्ति के पास प्रॉम्प्ट कैश अस्थिर हो सकता है और स्पिलओवर उसका शमन उपाय है। हमने इस धारणा को मापा कि proactive नीति reactive नीति से बेहतर होगी।</p>
+      <p><strong>इसलिए “पहले कार्रवाई बेहतर है” को परिकल्पना बनाया।</strong> <em>पूर्व-पंजीकृत अनुमान था कि लगातार संतृप्ति वाले भार में proactive नीति, reactive नीति से कम कैश-हिट गिरावट झेलेगी।</em> <strong>यदि proactive स्थिर खंड में स्पष्ट रूप से आगे रहती, तो पहले कार्रवाई करने की धारणा समर्थित होती; बराबर या नीचे रहने पर इन परिस्थितियों में वह लाभकारी नहीं मानी जाती।</strong></p>
+      <p><strong>यह मूल-कारण की खोज नहीं, शमन उपायों की तुलना है।</strong> “स्पिलओवर ही कैश गिरावट का मूल कारण है” वाला प्रबल दावा मैदानी अवलोकन में पहले ही कमजोर पड़ चुका था। यह प्रयोग केवल दो शमन नीतियों में <strong>कौन बेहतर है</strong>, इसका सीमित उत्तर देता है।</p>
+      <p><strong>सिमुलेशन से शुरुआत क्यों।</strong> <em>चरण 1 एक ही gpt-5.2 डिप्लॉयमेंट पर स्पिलओवर अवस्था की नकल करता है; कैश पूल भौतिक रूप से अलग नहीं हैं।</em> इसलिए यहाँ निरपेक्ष आँकड़ों के बजाय <strong>नीतियों के अंतर की दिशा</strong> पढ़नी चाहिए। भौतिक रूप से अलग प्राथमिक और वैकल्पिक कैश पूल वाला दो-डिप्लॉयमेंट भार परीक्षण चरण 2 का विषय है।</p>
+      <p><strong>सवाल एक है।</strong> संतृप्ति के निकट लगातार ReAct भार में proactive स्पिलओवर, reactive नीति से कैश बेहतर बचाता है या नहीं?</p>
+      <p><strong>डिज़ाइन (भार)।</strong> दोनों नीतियों पर समान 22 मिनट का भार चला: <strong>2 मिनट वार्मअप</strong> (0.3 TPS) → <strong>10 मिनट रैंप</strong> (0.5→2.5 TPS) → <strong>10 मिनट स्थिर खंड</strong> (2.0 TPS)। एक gpt-5.2 डिप्लॉयमेंट, <code>effort=low</code> और लगभग <strong>30K टोकन</strong> का सिस्टम प्रॉम्प्ट था। दोनों रन बाइट तक समान रहें, इसलिए प्रॉम्प्ट को SHA-256 98d3a5&hellip;088a और <code>corpus_seed 4242</code> से स्थिर रखा गया। आंतरिक थ्रॉटल सीमा <strong>90,000 TPM</strong> थी। प्रत्येक नीति ने <strong>2,136</strong> अनुरोध (वार्मअप 36 / रैंप 900 / स्थिर खंड 1,200) चलाए। मूल अवधि-सूचक 22/2/10/10 मिनट और TPS 0.3, 0.5→2.5, 2.0 थे; SHA-256 अंश 98d3a5…088a था।</p>
+      <p><strong>बदलने वाली चीज़ केवल एक थी</strong>: <code>policy.type</code> को <code>reactive</code> और <code>proactive</code> के बीच बदला गया। प्रॉम्प्ट, भार, मॉडल, रीज़निंग स्तर और सीमा स्थिर थे, इसलिए दो आर्टिफ़ैक्ट में अंतर केवल नीति से आता है।</p>
+      <div class="article-summary-grid" aria-label="पूर्व-पंजीकृत अनुमान और भूमिका">
+        <section class="summary-tile"><h2>पूर्व-पंजीकृत अनुमान</h2><p><code>proactive</code> नीति स्थिर खंड में कम कैश-हिट गिरावट झेलेगी, इसलिए उसका स्थिर-अवस्था कैश हिट <code>reactive</code> आधार-रेखा से <strong>अधिक</strong> होगा।</p></section>
+        <section class="summary-tile"><h2>इस प्रयोग की भूमिका</h2><p>रीज़निंग स्तर वाले प्रयोगों (01, 02, 03) के बाद पहला संचालन प्रयोग: चुनी हुई सेटिंग <strong>संतृप्ति वाले भार में टिकती है या नहीं</strong>? यह भौतिक कैश विभाजन के बिना केवल <em>चरण 1 की आधार-रेखा</em> है।</p></section>
       </div>
     </section>
 
     <section id="io" class="article-section">
       <p class="section-label">इनपुट और आउटपुट</p>
-      <h2>क्या खाया और क्या छोड़ा</h2>
-      <p>इस experiment ने जो लिया और जो छोड़ा, वे हाथ से लिखे summary नहीं हैं। वे repo की real files हैं। इसलिए input से output तक रास्ता एक line में trace किया जा सकता है।</p>
+      <h2>क्या इनपुट लिया और क्या आर्टिफ़ैक्ट छोड़ा</h2>
+      <p>इनपुट और आउटपुट हाथ से लिखे सार नहीं, रिपॉज़िटरी की वास्तविक फ़ाइलें हैं। इसलिए इनपुट से आर्टिफ़ैक्ट तक का मार्ग सीधे देखा जा सकता है।</p>
       <div class="article-summary-grid" aria-label="इनपुट और आउटपुट">
         <section class="summary-tile">
-          <h2>Input (in)</h2>
-          <p><strong>Policy definitions:</strong> <code>experiments/exp004_spillover_baseline_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (केवल <code>policy.type</code> अलग).<br>
-          <strong>Prompts:</strong> system-prompt corpus (<code>corpus_seed 4242</code>) और user prompts.<br>
-          <strong>Pinned:</strong> दोनों runs का system prompt SHA-256 (<code>98d3a5&hellip;088a</code>) से fixed, यानी दोनों policies को <em>byte-identical</em> prompt मिला।</p>
+          <h2>इनपुट (in)</h2>
+          <p><strong>नीति परिभाषाएँ:</strong> <code>experiments/exp004_spillover_baseline_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (केवल <code>policy.type</code> अलग).<br>
+          <strong>प्रॉम्प्ट:</strong> सिस्टम-प्रॉम्प्ट कॉर्पस (<code>corpus_seed 4242</code>) और उपयोगकर्ता प्रॉम्प्ट।<br>
+          <strong>स्थिर:</strong> दोनों रन का सिस्टम प्रॉम्प्ट SHA-256 (<code>98d3a5&hellip;088a</code>) से निश्चित, यानी दोनों नीतियों को <em>बाइट तक समान</em> प्रॉम्प्ट मिला।</p>
         </section>
         <section class="summary-tile">
-          <h2>Artifacts (out)</h2>
-          <p><strong>Raw calls:</strong> <code>runs/*.jsonl</code> (+ per-run <code>*.summary.json</code>).<br>
-          <strong>Aggregate:</strong> <code>analysis.json</code>, <code>analysis.md</code>.<br>
-          <strong>Recovery curves:</strong> <code>results/spillover-recovery-curves/*.png</code>, <code>.csv</code> (time के साथ cache hit).</p>
+          <h2>आर्टिफ़ैक्ट (out)</h2>
+          <p><strong>कच्ची कॉल:</strong> <code>runs/*.jsonl</code> (+ प्रति-रन <code>*.summary.json</code>).<br>
+          <strong>समेकित आँकड़े:</strong> <code>analysis.json</code>, <code>analysis.md</code>.<br>
+          <strong>पुनर्प्राप्ति वक्र:</strong> <code>results/spillover-recovery-curves/*.png</code>, <code>.csv</code> (समय के साथ कैश हिट)।</p>
         </section>
       </div>
-      <p><strong>हर policy ने 2,136 requests पूरे किए</strong> (completed=scheduled=2,136, <code>dry_run=false</code>, <code>dirty=false</code>, कोई halt नहीं)। real 429 दोनों तरफ <strong>0</strong> थे। एक भी <code>fixture</code> marker नहीं है, हर call real Azure call है। <strong>कुछ भी drop नहीं किया गया</strong>: 9 outlier candidates (reactive 1, proactive 8) exclusion rule (3σ latency + coincident logged event) पूरा नहीं करते थे, इसलिए सब रखे गए; zero-token और cache-miss वाली 5 anomalous rows भी raw usage fields से aggregates में आईं। क्या रखा और क्यों, नीचे <a href="#transparency">पारदर्शिता</a> में साफ़ है।</p>
+      <p><strong>प्रत्येक नीति ने 2,136 अनुरोध पूरे किए</strong> (पूर्ण=नियोजित=2,136, <code>dry_run=false</code>, <code>dirty=false</code>, कोई रुकावट नहीं)। वास्तविक 429 दोनों तरफ <strong>0</strong> थे। एक भी <code>fixture</code> चिह्न नहीं है, हर कॉल वास्तविक Azure कॉल है। <strong>कोई पंक्ति नहीं हटाई गई</strong>: 9 अपवाद उम्मीदवार (reactive 1, proactive 8) बहिष्करण नियम (3σ विलंब + साथ दर्ज घटना) पूरा नहीं करते थे, इसलिए सब रखे गए; शून्य-टोकन और कैश-मिस वाली 5 असामान्य पंक्तियाँ भी कच्चे उपयोग फ़ील्ड से समेकित आँकड़ों में शामिल हुईं। क्या रखा और क्यों, नीचे <a href="#transparency">पारदर्शिता</a> में साफ़ है।</p>
     </section>
 
     <section id="predict" class="article-section">
-      <p class="section-label">prediction बनाम माप</p>
-      <h2>prediction चूका</h2>
-      <div class="article-summary-grid" aria-label="prediction बनाम माप">
-        <section class="summary-tile"><h2>क्या predict किया</h2><p>proactive (<code>proactive</code>) policy sustain-phase cache decay कम झेलेगी। short version: “early action beats late reaction.”</p></section>
-        <section class="summary-tile"><h2>क्या निकला</h2><p>Sustain cache hit <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>99.0680%</strong> निकला, यानी proactive side उल्टे <strong>0.1657 pp lower</strong>। reactive पूरे sustain में spillover पर चला (99.9%), जबकि proactive ने उसे <strong>कभी engage नहीं किया</strong> (0%).</p></section>
+      <p class="section-label">पूर्वानुमान बनाम माप</p>
+      <h2>पूर्वानुमान चूका</h2>
+      <div class="article-summary-grid" aria-label="पूर्वानुमान बनाम माप">
+        <section class="summary-tile"><h2>क्या अनुमान था</h2><p><code>proactive</code> नीति स्थिर खंड में कैश-हिट की गिरावट कम झेलेगी; अर्थात पहले कार्रवाई करना बाद की प्रतिक्रिया से बेहतर होगा।</p></section>
+        <section class="summary-tile"><h2>क्या निकला</h2><p>स्थिर खंड का कैश हिट <code>reactive</code> <strong>99.2337%</strong> और <code>proactive</code> <strong>99.0680%</strong> रहा; अर्थात proactive <strong>0.1657 pp कम</strong> था। reactive पूरे स्थिर खंड में स्पिलओवर पर चला (99.9%), जबकि proactive ने उसे <strong>कभी सक्रिय नहीं किया</strong> (0%)।</p></section>
       </div>
-      <p><strong>फैसला: इन conditions में early action ने लागत नहीं वसूली।</strong> pre-registered hypothesis, यानी proactive advantage, इस single-endpoint simulator में support नहीं हुआ। लेकिन difference tiny और technical है: curves साफ़ अलग नहीं हुईं, बल्कि proactive side के <strong>exactly two cache misses</strong> ने mean नीचे खींचा। जैसे exp001 ने “easy work पर reasoning doesn’t pay” दिखाया था, यहाँ “इन conditions में clever policy doesn’t pay” है। prediction चूकने वाला experiment भी evidence है। Gap 0.1657 (pp) है।</p>
+      <p><strong>फैसला: इन परिस्थितियों में पहले कार्रवाई करना लाभकारी नहीं रहा।</strong> proactive बढ़त वाली पूर्व-पंजीकृत परिकल्पना इस एकल-एंडपॉइंट सिमुलेटर में समर्थित नहीं हुई। अंतर बहुत छोटा था: वक्र स्पष्ट रूप से अलग नहीं हुए; proactive की <strong>ठीक दो कैश मिस</strong> ने औसत नीचे खींचा। exp001 की तरह, अनुमान का चूकना भी उपयोगी साक्ष्य है। अंतर 0.1657 pp है।</p>
     </section>
 
     <section id="result" class="article-section">
       <p class="section-label">पहला संकेत</p>
-      <h2>clever policy नहीं जीती</h2>
-      <p>नीचे की table <strong>sustain 10-minute steady state</strong> है, यानी load target पर settle हो चुका है और hypothesis इसी window में रहती है। numbers published aggregate <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>analysis.md</code></a> §7 से फिर उद्धृत हैं।</p>
-      <pre class="code-block"><code>Policy        Sustain spillover   Sustain cache hit (per-min mean ± std)   Note
-reactive      99.9% engaged       99.2337%  (±0.0033 pp)                  baseline · spilled over throughout sustain
-proactive     0% (never)          99.0680%  (±1.2802 pp)                  two cache misses pulled the mean down
-Delta(pro-re)   —                 -0.1657 pp                              effectively flat, only the sign differs</code></pre>
-      <p>दोनों curves <strong>99.23% के पास लगभग flat</strong> हैं। reactive standard deviation 0.0033 pp के साथ rock-steady है और proactive भी ज़्यादातर minutes में उसी height पर बैठता है। लेकिन sustain के दो requests, <strong>1307 और 1959</strong>, cache miss हुए; 21,153 input tokens हर बार full price पर billed हुए। उन्हीं minutes में visible dip बना, std 1.2802 pp तक बढ़ा और aggregate mean नीचे आया। यानी proactive लगातार पीछे नहीं था; <strong>ठीक दो misses</strong> ने number अलग किया।</p>
-      <p>Full run यानी warmup + ramp + sustain में window बढ़ाते ही direction पलट जाती है: <code>reactive</code> 99.0478% vs <code>proactive</code> 99.0942%, proactive <strong>0.0464 pp higher</strong>। किसी भी window में gap बहुत छोटा है।</p>
+      <h2>जटिल नीति नहीं जीती</h2>
+      <p>नीचे की तालिका <strong>स्थिर खंड 10-मिनट स्थिर अवस्था</strong> है, यानी भार लक्ष्य पर स्थिर हो चुका है और परिकल्पना इसी अवधि में रहती है। आँकड़े प्रकाशित समेकित आँकड़े <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>analysis.md</code></a> §7 से फिर उद्धृत हैं।</p>
+      <pre class="code-block"><code>नीति          स्थिर स्पिलओवर      स्थिर कैश हिट (प्रति-मिनट औसत ± मानक विचलन)   टिप्पणी
+reactive      99.9% सक्रिय        99.2337%  (±0.0033 pp)                          आधार-रेखा · पूरे स्थिर खंड में स्पिलओवर
+proactive     0% (कभी नहीं)       99.0680%  (±1.2802 pp)                          दो कैश मिस ने औसत घटाया
+अंतर(pro−re)   —                  -0.1657 pp                                      लगभग सपाट; केवल दिशा उलटी</code></pre>
+      <p>दोनों वक्र <strong>99.23% के पास लगभग सपाट</strong> हैं। reactive मानक विचलन 0.0033 pp के साथ बहुत स्थिर है और proactive भी ज़्यादातर मिनट में उसी स्तर पर बैठता है। लेकिन स्थिर खंड के दो अनुरोध, <strong>1307 और 1959</strong>, कैश मिस हुए; 21,153 इनपुट टोकन हर बार पूरी दर पर बिल किए गए। उन्हीं मिनटों में स्पष्ट गिरावट बनी, मानक विचलन 1.2802 pp तक बढ़ा और समेकित औसत नीचे आया। यानी proactive लगातार पीछे नहीं था; <strong>ठीक दो मिस</strong> ने आँकड़ों में अंतर पैदा किया।</p>
+      <p>पूरा रन यानी वार्मअप + रैंप + स्थिर खंड में अवधि बढ़ाते ही दिशा पलट जाती है: <code>reactive</code> 99.0478% बनाम <code>proactive</code> 99.0942%, proactive <strong>0.0464 pp अधिक</strong>। किसी भी अवधि में अंतर बहुत छोटा है।</p>
 
       <figure class="article-figure" id="figure-exp004-recovery">
-        <figcaption><strong>60-second rolling cache-hit curves (दोनों policies).</strong> x-axis relative elapsed seconds है और y-axis cache-hit ratio। दोनों curves 99.2% के पास लगभग flat हैं: reactive पूरे sustain में spillover route पर smooth रहता है, जबकि proactive primary route पर रहता है और sustain में दो बार थोड़ी देर नीचे जाता है (requests 1307 और 1959 के cache misses). Steady state reactive 99.2337%, proactive 99.0680% है। Source: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/spillover-recovery-curves/policy_comparison.png"><code>results/spillover-recovery-curves/policy_comparison.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-04-recovery.png" alt="reactive और proactive policies के 60-second rolling cache-hit ratio की time series. दोनों curves करीब 99.2% पर flat हैं; सिर्फ proactive में sustain के दौरान दो छोटे dips दिखते हैं। Sustain steady state reactive 99.2337% और proactive 99.0680% है, gap 0.1657 pp." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>60-सेकंड गतिशील कैश-हिट वक्र (दोनों नीतियों).</strong> क्षैतिज धुरी सापेक्ष बीता सेकंड है और ऊर्ध्वाधर धुरी कैश-हिट अनुपात। दोनों वक्र 99.2% के पास लगभग सपाट हैं: reactive पूरे स्थिर खंड में स्पिलओवर रूट पर सुचारु रहता है, जबकि proactive प्राथमिक रूट पर रहता है और स्थिर खंड में दो बार थोड़ी देर नीचे जाता है (अनुरोध 1307 और 1959 के कैश मिस). स्थिर अवस्था reactive 99.2337%, proactive 99.0680% है। स्रोत: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/spillover-recovery-curves/policy_comparison.png"><code>results/spillover-recovery-curves/policy_comparison.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-04-recovery.png" alt="reactive और proactive नीतियों के 60-सेकंड गतिशील कैश-हिट अनुपात की समय शृंखला. दोनों वक्र करीब 99.2% पर सपाट हैं; सिर्फ proactive में स्थिर खंड के दौरान दो छोटे गिरावटें दिखते हैं। स्थिर खंड स्थिर अवस्था reactive 99.2337% और proactive 99.0680% है, अंतर 0.1657 pp." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
     <section id="mechanism" class="article-section">
       <p class="section-label">दूसरा संकेत</p>
-      <h2>tie क्यों हुआ, एक side को spill करना ही नहीं पड़ा</h2>
-      <p>ऊपर से दोनों policies <strong>opposite directions में चलीं और फिर भी वहीं पहुँचीं</strong>; यही इस experiment का core है। reactive ने पहले warmup request से spillover engage किया और लगभग पूरे sustain में fallback route पर रहा (99.9%). सभी five state transitions reactive side पर हैं: spillover transitions at 1/91/92/1478/1479. दूसरी ओर proactive में p95 latency threshold कभी cross नहीं हुई, इसलिए उसने <strong>spillover कभी engage नहीं किया</strong> (0%). उसे spill करना ही नहीं पड़ा।</p>
-      <p><strong>फिर भी cache लगभग same निकला।</strong> वजह design में है: Phase 1 spillover को single deployment पर routing label की तरह mimic करता है। primary route हो या fallback route, दोनों <em>same cache</em> देखते हैं। इसलिए “किस route पर भेजा” cache-hit number में मुश्किल से दर्ज होता है। cached tokens दोनों policies में exactly <strong>44,733,952</strong> रहे।</p>
-      <p><strong>Latency, cost और throughput भी tie हैं।</strong> sustain TTFT proactive में थोड़ा faster है (p50 7,620.9 ms vs 8,490.6 ms, p95 12,107.8 ms vs 13,617.5 ms), लेकिन यह pre-registered cache metric नहीं है; यह उस proactive run का narrower latency spread है जिसने fallback route लिया ही नहीं। full-run cost <code>reactive</code> $17.883347 vs <code>proactive</code> $17.924671 है, यानी proactive <strong>$0.041324</strong> महँगा। proactive ने total tokens थोड़े <em>कम</em> इस्तेमाल किए (45,812,897 vs 45,828,455), फिर भी cost ज़्यादा आई क्योंकि output और reasoning-token mix थोड़ा ऊँचा था। PTU token-pressure proxy में throughput-gain factor <strong>1.000340×</strong> है, practically flat।</p>
-      <p><strong>short version:</strong> policies ने opposite behavior दिखाया, लेकिन shared cache पर वह difference cache, cost या throughput में <em>meaningfully</em> नहीं लिखा गया। इस condition में policy को clever बनाने की कीमत bill पर value बनकर नहीं दिखी।</p>
+      <h2>बराबरी क्यों हुई: एक नीति को स्पिलओवर की आवश्यकता ही नहीं पड़ी</h2>
+      <p>ऊपर से दोनों नीतियाँ <strong>विपरीत दिशाओं में चलीं और फिर भी वहीं पहुँचीं</strong>; यही इस प्रयोग का मूल बिंदु है। reactive ने पहले वार्मअप अनुरोध से स्पिलओवर सक्रिय किया और लगभग पूरे स्थिर खंड में वैकल्पिक मार्ग पर रहा (99.9%). सभी पाँच अवस्था परिवर्तन reactive पक्ष पर हैं: स्पिलओवर परिवर्तन अनुरोध 1/91/92/1478/1479 पर हुए. दूसरी ओर proactive में p95 विलंब सीमा कभी पार नहीं हुई, इसलिए उसने <strong>स्पिलओवर कभी सक्रिय नहीं किया</strong> (0%). उसे स्पिलओवर करना ही नहीं पड़ा।</p>
+      <p><strong>फिर भी कैश लगभग समान निकला।</strong> वजह डिज़ाइन में है: चरण 1 स्पिलओवर को एकल डिप्लॉयमेंट पर रूटिंग लेबल की तरह नकल करता है। प्राथमिक रूट हो या वैकल्पिक मार्ग रूट, दोनों <em>समान कैश</em> देखते हैं। इसलिए “किस रूट पर भेजा” कैश-हिट संख्या में मुश्किल से दर्ज होता है। कैशित टोकन दोनों नीतियों में ठीक <strong>44,733,952</strong> रहे।</p>
+      <p><strong>विलंब, लागत और थ्रूपुट भी बराबरी हैं।</strong> स्थिर खंड TTFT proactive में थोड़ा तेज़ है (p50 7,620.9 ms बनाम 8,490.6 ms, p95 12,107.8 ms बनाम 13,617.5 ms), लेकिन यह पूर्व-पंजीकृत कैश मापदंड नहीं है; यह उस proactive रन का संकरा विलंब फैलाव है जिसने वैकल्पिक मार्ग रूट लिया ही नहीं। पूरा रन लागत <code>reactive</code> $17.883347 बनाम <code>proactive</code> $17.924671 है, यानी proactive <strong>$0.041324</strong> महँगा। proactive ने कुल टोकन थोड़े <em>कम</em> इस्तेमाल किए (45,812,897 बनाम 45,828,455), फिर भी लागत ज़्यादा आई क्योंकि आउटपुट और रीज़निंग-टोकन मिश्रण थोड़ा ऊँचा था। PTU टोकन-दबाव प्रतिनिधि में थ्रूपुट-लाभ गुणक <strong>1.000340×</strong> है, व्यावहारिक रूप से सपाट।</p>
+      <p><strong>संक्षेप में:</strong> नीतियों ने विपरीत व्यवहार दिखाया, लेकिन साझा कैश पर वह अंतर कैश, लागत या थ्रूपुट में <em>सार्थक रूप से</em> नहीं लिखा गया। इस परिस्थिति में नीति को जटिल बनाने की कीमत बिल पर मान बनकर नहीं दिखी।</p>
     </section>
 
     <section id="transparency" class="article-section">
       <p class="section-label">पारदर्शिता</p>
       <h2>अंकों पर लगे धब्बे भी जस के तस</h2>
-      <p>कोई measurement पूरी तरह clean नहीं होता। इस experiment के marks मिटाने के बजाय हम उन्हें लिखते हैं, क्योंकि छिपे हुए marks अगली टीम को उसी जगह फँसाते हैं।</p>
+      <p>कोई मापन पूरी तरह साफ़ नहीं होता। इस प्रयोग के निशान मिटाने के बजाय हम उन्हें लिखते हैं, क्योंकि छिपे हुए निशान अगली टीम को उसी जगह फँसाते हैं।</p>
       <ul>
-        <li><strong>Zero outliers excluded.</strong> outlier rule row को तभी exclude करता है जब sustain latency mean+3σ से ऊपर हो और साथ में logged event, जैसे real 429, retry, route transition या spillover engagement, coincides करे। candidates थे (reactive 1, proactive 8), लेकिन कोई भी उस logged event से नहीं मिला, इसलिए <strong>सब रखे गए</strong>।</li>
-        <li><strong>Five anomalous rows kept.</strong> reactive में एक zero-token sustain row (request 1276) है; proactive में दो zero-token rows (1306 और 1934) और दो cache-miss rows (1307 और 1959) हैं। request indices 1276/1306/1307/1934/1959. वे exclusion rule पूरा नहीं करते, इसलिए aggregates में as-is गए, और <strong>proactive का lower sustain mean उन्हीं दो cache misses से आया</strong>। कुछ छिपाया नहीं गया।</li>
-        <li><strong>Headline sustain steady state है।</strong> ramp और warmup transients मिलाने से policy effect धुँधला होता है, इसलिए representative number sustain 10 minutes है, वही window जहाँ hypothesis रहती है। full-run figures §7 में साथ हैं, ताकि दिखे कि दोनों windows में gap छोटा ही है।</li>
+        <li><strong>हटाए गए अपवाद: 0।</strong> अपवाद नियम पंक्ति को तभी हटाता है जब स्थिर खंड विलंब औसत+3σ से ऊपर हो और साथ में दर्ज घटना, जैसे वास्तविक 429, पुनः प्रयास, रूट परिवर्तन या स्पिलओवर सक्रियण, साथ घटित हो। उम्मीदवार थे (reactive 1, proactive 8), लेकिन कोई भी उस दर्ज घटना से नहीं मिला, इसलिए <strong>सब रखे गए</strong>।</li>
+        <li><strong>रखी गई असामान्य पंक्तियाँ: 5।</strong> reactive में एक शून्य-टोकन स्थिर खंड पंक्ति (अनुरोध 1276) है; proactive में दो शून्य-टोकन पंक्तियाँ (1306 और 1934) और दो कैश-मिस पंक्तियाँ (1307 और 1959) हैं। अनुरोध क्रमांक 1276/1306/1307/1934/1959. वे बहिष्करण नियम पूरा नहीं करते, इसलिए समेकित आँकड़ों में जस के तस गए, और <strong>proactive का कम स्थिर खंड औसत उन्हीं दो कैश मिस से आया</strong>। कुछ छिपाया नहीं गया।</li>
+        <li><strong>मुख्य आँकड़ा स्थिर खंड की स्थिर अवस्था है।</strong> रैंप और वार्मअप क्षणिक अवस्थाएँ मिलाने से नीति प्रभाव धुँधला होता है, इसलिए प्रतिनिधि संख्या स्थिर खंड 10 मिनट है, वही अवधि जहाँ परिकल्पना रहती है। पूरा रन आँकड़े §7 में साथ हैं, ताकि दिखे कि दोनों अवधियों में अंतर छोटा ही है।</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">सीमाएँ</p>
       <h2>कहाँ तक भरोसा करें</h2>
-      <p>यह result single-endpoint simulator, एक load profile और एक run से निकला छोटा comparison है। raw magnitude से ज्यादा <strong>method और direction</strong> साथ ले जाना सुरक्षित है।</p>
+      <p>यह परिणाम एकल-एंडपॉइंट सिमुलेटर, एक भार रूपरेखा और एक रन से निकली छोटी तुलना है। कच्चे परिमाण से ज्यादा <strong>तरीका और दिशा</strong> साथ ले जाना सुरक्षित है।</p>
       <ul>
-        <li><strong>Spillover simulated है।</strong> primary और fallback routes single deployment पर routing labels हैं, physically separate cache pools नहीं। इसलिए absolute cache numbers real two-deployment environment में सीधे transfer नहीं होते; policies के बीच केवल <em>direction</em> पढ़ें।</li>
-        <li><strong>Phase 1 floor.</strong> यह simulator सिर्फ policy layer isolate करता है। physically separate cache pools पर high-fidelity re-measurement Phase 2 का काम है। capacity या cost planning में ये magnitudes डालने से पहले Phase 2 देखें।</li>
-        <li><strong>Load और sample.</strong> एक 22-minute run, हर policy पर 2,136 requests। इस size पर confidence intervals या statistical significance claim नहीं करते; direction साफ़ है, absolute magnitude को small-sample caution के साथ पढ़ें।</li>
-        <li><strong>Real 429s 0 थे।</strong> throttle internal threshold (90,000 TPM) से mimic किया गया। actual 429s वाला environment अलग behave कर सकता है।</li>
-        <li><strong>Billing PAYG snapshot है।</strong> throughput token-based estimate है और real PTU slot routing या PTU billing model नहीं करता।</li>
+        <li><strong>स्पिलओवर सिम्युलेटेड है।</strong> प्राथमिक और वैकल्पिक मार्ग एकल डिप्लॉयमेंट पर रूटिंग लेबल हैं, भौतिक रूप से अलग कैश पूल नहीं। इसलिए निरपेक्ष कैश आँकड़े वास्तविक दो-डिप्लॉयमेंट परिवेश में सीधे लागू नहीं होते; नीतियों के बीच केवल <em>दिशा</em> पढ़ें।</li>
+        <li><strong>चरण 1 की आधार-रेखा।</strong> यह सिमुलेटर सिर्फ नीति परत अलग करता है। भौतिक रूप से अलग कैश पूल पर उच्च-विश्वसनीयता वाला पुनर्मापन चरण 2 का काम है। क्षमता या लागत योजना में ये परिमाण डालने से पहले चरण 2 देखें।</li>
+        <li><strong>भार और नमूना.</strong> एक 22-मिनट रन, हर नीति पर 2,136 अनुरोध। इस आकार पर विश्वास अंतराल या सांख्यिकीय महत्त्व दावा नहीं करते; दिशा साफ़ है, निरपेक्ष परिमाण को छोटे नमूने की सावधानी के साथ पढ़ें।</li>
+        <li><strong>वास्तविक 429 0 थे।</strong> थ्रॉटल आंतरिक सीमा (90,000 TPM) से नकल किया गया। वास्तविक 429 वाला परिवेश अलग व्यवहार कर सकता है।</li>
+        <li><strong>बिलिंग PAYG स्नैपशॉट है।</strong> थ्रूपुट टोकन-आधारित अनुमान है और वास्तविक PTU स्लॉट रूटिंग या PTU बिलिंग मॉडल नहीं करता।</li>
       </ul>
     </section>
 
     <section id="decision" class="article-section decision-box">
-      <h2>तो default क्या रखें</h2>
-      <p><strong>आज के evidence पर complex proactive spillover policy अपनाने की वजह नहीं है। इस single-endpoint condition में early action ने cache को late reaction से बेहतर नहीं बचाया (-0.1657 pp), और cost थोड़ी ज़्यादा आई (+$0.041324)। difference बहुत छोटा है और shared-cache design से बँधा है, इसलिए simple reactive policy काफी है। असली verdict Phase 2 का है, जहाँ primary और fallback cache pools physically split होंगे।</strong></p>
+      <h2>तो डिफ़ॉल्ट क्या रखें</h2>
+      <p><strong>आज के साक्ष्य पर जटिल proactive स्पिलओवर नीति अपनाने का कारण नहीं है। इस एकल-एंडपॉइंट परिस्थिति में पहले कार्रवाई करने से कैश, बाद की प्रतिक्रिया की तुलना में बेहतर नहीं बचा (-0.1657 pp), और लागत थोड़ी ज़्यादा आई (+$0.041324)। अंतर बहुत छोटा है और साझा-कैश डिज़ाइन से बँधा है, इसलिए सरल reactive नीति काफी है। असली निर्णय चरण 2 का है, जहाँ प्राथमिक और वैकल्पिक मार्ग कैश पूल भौतिक रूप से विभाजित होंगे।</strong></p>
     </section>
 
     <section id="forward" class="article-section">
       <p class="section-label">आगे ले जाना</p>
       <h2>ताकि अगला व्यक्ति कम भटके</h2>
-      <p>Evidence दर्ज करना सिर्फ़ जीत लिखना नहीं है। जिस experiment की prediction चूकी, वह क्यों चूकी और कहाँ तक भरोसेमंद है, यह भी बचना चाहिए ताकि अगला decision उसे फिर इस्तेमाल कर सके। इसलिए यह note retrospective और उसे setup करने वाले experiment से वापस जुड़ता है।</p>
+      <p>साक्ष्य दर्ज करना सिर्फ़ जीत लिखना नहीं है। जिस प्रयोग का पूर्वानुमान चूका, वह क्यों चूकी और कहाँ तक भरोसेमंद है, यह भी बचना चाहिए ताकि अगला निर्णय उसे फिर इस्तेमाल कर सके। इसलिए यह नोट पुनरावलोकन और उसकी तैयारी करने वाले प्रयोग से वापस जुड़ता है।</p>
       <ul>
-        <li><strong>Retrospective body →</strong> hub के <a href="../../../hi/#next">अगला कदम, अगला प्रयोग</a> ने इसी “live PTU load test” की बात की थी। token-based PTU <em>estimates</em> के बाद यह पहला <em>measured</em> load result है।</li>
-        <li><strong>जिस note ने संकेत दिया →</strong> <a href="../../exp003-tool-using-agent/hi/">exp003 &mdash; tool-using agent</a> ने अंत में “live search और असली PTU load test” को next step कहा था। यह note उसी load test का <strong>Phase 1</strong> है।</li>
-        <li><strong>Raw material →</strong> दो policy definitions <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a> में हैं, और analysis <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> में है।</li>
+        <li><strong>पुनरावलोकन मुख्य भाग →</strong> केंद्र के <a href="../../../hi/#next">अगला कदम, अगला प्रयोग</a> ने इसी “लाइव PTU भार परीक्षण” की बात की थी। टोकन-आधारित PTU <em>अनुमान</em> के बाद यह पहला <em>मापा गया</em> भार परिणाम है।</li>
+        <li><strong>जिस नोट ने संकेत दिया →</strong> <a href="../../exp003-tool-using-agent/hi/">exp003 &mdash; टूल-आधारित एजेंट</a> ने अंत में “लाइव खोज और असली PTU भार परीक्षण” को अगला चरण कहा था। यह नोट उसी भार परीक्षण का <strong>चरण 1</strong> है।</li>
+        <li><strong>कच्ची सामग्री →</strong> दो नीति परिभाषाएँ <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a> में हैं, और विश्लेषण <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> में है।</li>
       </ul>
-      <p><strong>अगला experiment.</strong> Phase 1 ने single deployment पर spillover mimic किया। अगला step higher-fidelity re-measurement है: <strong>two physically separate deployments</strong>, real TPM throttle और वही load, ताकि दिखे कि primary और fallback cache pools सच में अलग होने पर भी policy difference इतना ही छोटा रहता है या नहीं।</p>
+      <p><strong>अगला प्रयोग.</strong> चरण 1 ने एकल डिप्लॉयमेंट पर स्पिलओवर की नकल की। अगला चरण अधिक विश्वसनीय पुनर्मापन है: <strong>भौतिक रूप से अलग दो डिप्लॉयमेंट</strong> (चरण 2), वास्तविक TPM थ्रॉटल और वही भार, ताकि दिखे कि प्राथमिक और वैकल्पिक मार्ग कैश पूल सच में अलग होने पर भी नीति अंतर इतना ही छोटा रहता है या नहीं।</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">इसे खुद फिर चलाएँ और ⭐ छोड़ें</a></p>
     </section>
 
     <section id="sources" class="article-section">
       <p class="section-label">स्रोत और साक्ष्य की सीमा</p>
       <h2>स्रोत &amp; साक्ष्य की सीमा</h2>
-      <p>यह note भी नया measurement नहीं जोड़ता। यह published aggregates को फिर उद्धृत करता है। single-endpoint-simulator boundary सहित evidence और limits नीचे हैं।</p>
+      <p>यह नोट भी नया मापन नहीं जोड़ता। यह प्रकाशित समेकित आँकड़ों को फिर उद्धृत करता है। एकल-एंडपॉइंट-सिमुलेटर सीमा सहित साक्ष्य और सीमाएँ नीचे हैं।</p>
       <ul>
-        <li>इस experiment का analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> (§1 question and design, §3 provenance, §5 headline, §6 recovery curve, §7 per-policy aggregates, §8 consumption model, §9 outliers, §10 limits, §11 conclusion). सभी figures यहीं से फिर उद्धृत।</li>
-        <li>Policy definitions: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_baseline_reactive.yaml"><code>experiments/exp004_spillover_baseline_reactive.yaml</code></a> और <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a> (केवल <code>policy.type</code> अलग).</li>
-        <li>Methodology: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8 (effect size और direction से judgment, statistical significance नहीं).</li>
-        <li>Pricing: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, accessed 2026-05-19). gpt-5.2 = $1.75 / $0.175 / $14.00 / $14.00 per 1M input / cached-input / reasoning / output tokens.</li>
-        <li>Boundary: single-endpoint simulator, spillover routing label है (physical cache split नहीं), one 22-minute run, 2,136 requests per policy, no confidence intervals, real 429s internal threshold से simulated, PTU token-pressure estimate है।</li>
+        <li>इस प्रयोग का विश्लेषण: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> (§1 प्रश्न और डिज़ाइन, §3 स्रोत-क्रम, §5 मुख्य आँकड़ा, §6 पुनर्प्राप्ति वक्र, §7 प्रति-नीति समेकित आँकड़े, §8 खपत मॉडल, §9 अपवाद, §10 सीमाएँ, §11 निष्कर्ष). सभी आँकड़े यहीं से फिर उद्धृत।</li>
+        <li>नीति परिभाषाएँ: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_baseline_reactive.yaml"><code>experiments/exp004_spillover_baseline_reactive.yaml</code></a> और <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a> (केवल <code>policy.type</code> अलग).</li>
+        <li>कार्यप्रणाली: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8 (प्रभाव आकार और दिशा से निर्णय, सांख्यिकीय महत्त्व नहीं).</li>
+        <li>मूल्य-निर्धारण: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, देखा गया 2026-05-19). gpt-5.2 = $1.75 / $0.175 / $14.00 / $14.00 प्रति 1M इनपुट / कैशित-इनपुट / रीज़निंग / आउटपुट टोकन.</li>
+        <li>सीमा: एकल-एंडपॉइंट सिमुलेटर, स्पिलओवर रूटिंग लेबल है (भौतिक कैश विभाजित नहीं), एक 22-मिनट रन, 2,136 अनुरोध प्रति नीति, विश्वास अंतराल नहीं, वास्तविक 429 आंतरिक सीमा से सिम्युलेटेड, PTU टोकन-दबाव अनुमान है।</li>
       </ul>
     </section>
   </main>

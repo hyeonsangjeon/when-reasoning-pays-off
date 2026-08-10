@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>छोटे तथ्यात्मक काम | reasoning कब वसूल होती है</title>
-  <meta name="description" content="यह विषय-लेख दिखाता है कि छोटे तथ्यात्मक काम में reasoning effort बढ़ाने से गुणवत्ता नहीं बढ़ती; सिर्फ़ cost, latency और छिपे token बढ़ते हैं।">
+  <title>छोटे तथ्यात्मक काम | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="यह विषय-लेख दिखाता है कि छोटे तथ्यात्मक काम में रीज़निंग स्तर बढ़ाने पर लागत, लेटेंसी, रीज़निंग टोकन और गुणवत्ता लगभग सपाट रहते हैं।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -40,63 +40,62 @@
   </header>
 
   <main class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">reasoning कब वसूल होता है</a> / विषय विवरण</p>
+    <p class="breadcrumb"><a href="../../../../hi/">लेख सूची</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
     <p class="article-kicker">विषय-लेख · benchmark-01 छोटे तथ्यात्मक काम</p>
-    <h1>छोटे तथ्यात्मक काम: जब ज़्यादा reasoning गुणवत्ता नहीं, सिर्फ़ लागत बढ़ाती है</h1>
+    <h1>छोटे तथ्यात्मक काम: जब ऊँचा रीज़निंग स्तर गुणवत्ता नहीं बढ़ाता</h1>
     <p class="lede">
-      जब कोई टीम पहली बार reasoning model अपनाती है, तो छोटे तथ्यात्मक सवाल effort की घुंडी घुमाने की सबसे सुरक्षित जगह लगते हैं। जवाब छोटा होता है, ग़लती जल्दी पकड़ में आती है, और “थोड़ा और सोचने दो” सस्ते बीमे जैसा सुनाई देता है। इसलिए सबसे पहले reasoning effort बढ़ाने का मन करता है। लेकिन यह shipping policy नहीं, जाँचने लायक़ hypothesis है; यह लेख उसे डेटा से परखता है।
+      जब कोई टीम पहली बार रीज़निंग मॉडल अपनाती है, तो छोटे तथ्यात्मक सवाल रीज़निंग स्तर बढ़ाने की सबसे सुरक्षित जगह लगते हैं। जवाब छोटा होता है, ग़लती जल्दी पकड़ में आती है और “थोड़ा और सोचने दें” सस्ते बीमे जैसा सुनाई देता है। इसलिए सबसे पहले रीज़निंग स्तर बढ़ाने का मन होता है। लेकिन यह डिप्लॉयमेंट नीति नहीं, जाँचने योग्य परिकल्पना है; यह लेख उसे डेटा पर परखता है।
     </p>
 
     <section class="article-section">
       <h2>इस सहज धारणा को क्यों जाँचा</h2>
       <p>
-        यह दृश्य जाना-पहचाना है। migration के बाद टीम reasoning model पर आती है, configuration में reasoning effort की घुंडी दिखती है, और छोटे तथ्यात्मक सवाल सबसे सुरक्षित case लगते हैं। output छोटा है, ग़लती साफ़ दिखती है, और “थोड़ा और सोचने दो” सस्ते बीमे जैसा सुनाई देता है; इसलिए default भी यहीं बढ़ाना लगभग मुफ़्त लगता है।
+        यह स्थिति जानी-पहचानी है। माइग्रेशन के बाद टीम रीज़निंग मॉडल अपनाती है, कॉन्फ़िगरेशन में रीज़निंग स्तर चुनने का विकल्प देखती है और छोटे तथ्यात्मक सवाल सबसे सुरक्षित मामला लगते हैं। उत्तर छोटा है, ग़लती साफ़ दिखती है और “थोड़ा और सोचने दें” सस्ते बीमे जैसा सुनाई देता है; इसलिए डिफ़ॉल्ट स्तर बढ़ाना लगभग मुफ़्त लगता है।
       </p>
       <p>
-        इससे एक साफ़ hypothesis बनती है। छोटे तथ्यात्मक काम में, क्या ज़्यादा
-        reasoning effort सचमुच जवाब को ज़्यादा सुरक्षित बनाता है? अगर हाँ, तो ऊँचा
-        default सही है। अगर नहीं, तो टीम ऐसी सोच का दाम दे रही है जो पाठक तक पहुँचती
+        इससे एक साफ़ परिकल्पना बनती है। छोटे तथ्यात्मक काम में क्या ऊँचा
+        रीज़निंग स्तर सचमुच उत्तर को अधिक भरोसेमंद बनाता है? अगर हाँ, तो ऊँचा
+        डिफ़ॉल्ट सही है। अगर नहीं, तो टीम ऐसी गणना का दाम दे रही है जो पाठक तक पहुँचती
         ही नहीं।
       </p>
       <p>
-        इसलिए हमने इसे मापा। workload shape वही रखा — छोटे तथ्यात्मक काम का यही मापा
-        गया हिस्सा — और effort के स्तरों को एक-एक करके देखा। हर स्तर पर प्रति-request
-        लागत, latency, दिखने वाला जवाब, छिपे reasoning tokens और जज स्कोर की
-        तुलना की। इस केस में नतीजा इतना साफ़ था कि default बदलने की बात की जा सके:
-        effort ने लागत, latency और hidden tokens खरीदे, लेकिन बेहतर जवाब नहीं खरीदा।
-        नीचे का one-pager यही बात एक फ़्रेम में कहता है, और आगे के section मापा हुआ
-        detail देते हैं।
+        इसलिए हमने इसे मापा। वर्कलोड-रूप को स्थिर रखा—छोटे तथ्यात्मक काम का यही मापा
+        गया हिस्सा—और रीज़निंग स्तरों को एक-एक करके देखा। हर स्तर पर प्रति अनुरोध
+        लागत, लेटेंसी, दिखाई देने वाला उत्तर, छिपे रीज़निंग टोकन और मूल्यांकन स्कोर की
+        तुलना की। नतीजा साफ़ था: लागत, लेटेंसी, रीज़निंग टोकन और गुणवत्ता सभी
+        लगभग सपाट रहे। नीचे का एक-पृष्ठ सार यही बात एक फ़्रेम में दिखाता है और आगे के
+        खंड मापन का विवरण देते हैं।
       </p>
     </section>
 
     <figure class="article-figure" id="figure-short-factual-one-pager">
       <figcaption>
         <strong>एक नज़र में यह विषय।</strong> छोटे तथ्यात्मक काम के इस मापे गए हिस्से में
-        reasoning effort के स्तर बढ़ाने पर प्रति-request लागत लगभग सपाट रही, औसत
-        जज स्कोर 1.95 के आसपास रहा — और हर gpt-5.2 tier gpt-4o baseline से नीचे था।
-        यह one-pager वही संदेश देता है और evidence boundary भी दिखाता है। नीचे के section
-        उसका मापा हुआ detail जोड़ते हैं।
-        <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">छोटे तथ्यात्मक काम का one-pager SVG खोलें</a>।
+        रीज़निंग स्तर बढ़ाने पर प्रति अनुरोध लागत लगभग सपाट रही और औसत
+        मूल्यांकन स्कोर 1.95 के आसपास रहा। हर gpt-5.2 कॉन्फ़िगरेशन की लागत gpt-4o
+        आधार-रेखा से कम थी। यह एक-पृष्ठ सार वही संदेश और साक्ष्य-सीमा दिखाता है।
+        नीचे के खंड मापन का विवरण देते हैं।
+        <a href="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">छोटे तथ्यात्मक काम का एक-पृष्ठ सार SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का one-pager। none से xhigh तक reasoning effort के स्तर बढ़ने पर प्रति-request लागत लगभग सपाट रहती है, हर gpt-5.2 tier gpt-4o baseline से नीचे रहता है, और judge quality 1.95 के आसपास रहती है। मुख्य संदेश: छोटे तथ्यात्मक काम में effort ladder चढ़ने पर cost और quality flat रहीं और gpt-5.2 पहले से gpt-4o baseline से मेल खा रहा था। यह N=20, R=3 का मापा गया aggregate है, और cost per request के रूप में दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="छोटे तथ्यात्मक काम का एक-पृष्ठ सार। none से xhigh तक रीज़निंग स्तर बढ़ाने पर प्रति अनुरोध लागत लगभग सपाट रहती है, हर gpt-5.2 कॉन्फ़िगरेशन gpt-4o आधार-रेखा से सस्ता रहता है और मूल्यांकन स्कोर 1.95 के आसपास रहता है। मुख्य संदेश: छोटे तथ्यात्मक काम में लागत, लेटेंसी, रीज़निंग टोकन और गुणवत्ता लगभग सपाट रहे। यह N = 20, R = 3 का मापा गया समुच्चय है और लागत प्रति अनुरोध दी गई है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="विषय का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>अगर काम में ज़्यादातर छोटे तथ्यात्मक जवाब चाहिए, तो क्या ज़्यादा reasoning effort quality को इतना सुधारता है कि बिल जायज़ लगे?</p>
+        <p>अगर काम में अधिकतर छोटे तथ्यात्मक उत्तर चाहिए, तो क्या ऊँचा रीज़निंग स्तर गुणवत्ता को इतना सुधारता है कि बिल उचित लगे?</p>
       </section>
       <section class="summary-tile">
         <h2>साक्ष्य</h2>
-        <p>benchmark-01 के लागत, quality, latency और token-shape chart, सार्वजनिक data tables के साथ।</p>
+        <p>benchmark-01 के लागत, गुणवत्ता, लेटेंसी और टोकन-संरचना चार्ट तथा सार्वजनिक डेटा तालिकाएँ।</p>
       </section>
       <section class="summary-tile">
         <h2>नतीजा</h2>
-        <p>इस हिस्से में प्रति-request लागत लगभग सपाट रही: none से xhigh तक लगभग 1.02x, और हर gpt-5.2 tier gpt-4o baseline से नीचे था। औसत जज स्कोर 1.95 के आसपास रहा।</p>
+        <p>इस हिस्से में प्रति अनुरोध लागत लगभग सपाट रही: none से xhigh तक लगभग 1.02x, और हर gpt-5.2 कॉन्फ़िगरेशन gpt-4o आधार-रेखा से सस्ता था। औसत मूल्यांकन स्कोर 1.95 के आसपास रहा।</p>
       </section>
       <section class="summary-tile">
         <h2>निर्णय</h2>
-        <p>जो सबसे कम effort पहले से सही जवाब दे रहा है, उसे default रखें। उसे तभी बढ़ाएँ जब evaluator इस workload shape पर सचमुच quality lift दिखाए।</p>
+        <p>जो सबसे कम रीज़निंग स्तर पहले से सही उत्तर दे रहा है, उसे डिफ़ॉल्ट रखें। स्तर तभी बढ़ाएँ जब मूल्यांकन मॉडल इसी वर्कलोड-रूप पर गुणवत्ता में वास्तविक सुधार दिखाए।</p>
       </section>
     </div>
 
@@ -109,65 +108,67 @@
     <section class="article-section">
       <h2>डेटा ने क्या दिखाया</h2>
       <p>
-        hypothesis यह थी कि ज़्यादा effort पर जवाब ज़्यादा सुरक्षित होगा। डेटा ने ऐसा
-        नहीं दिखाया। cost bars लगभग सपाट रहती हैं &mdash; none effort पर $0.000587 और
-        xhigh पर $0.000598, यानी लगभग 1.02x span, और हर gpt-5.2 tier gpt-4o
-        baseline $0.000665 से नीचे है &mdash; quality bars भी उतनी ही सपाट हैं: औसत
-        जज स्कोर ladder पर लगभग 1.95 है, baseline के 1.90 के बराबर या ऊपर। latency में
-        भी trend नहीं है (बिना climb के लगभग 1.4s से 1.7s), और token-shape throughput
-        factor 0.99 के आसपास रहता है।
+        परिकल्पना थी कि ऊँचे रीज़निंग स्तर पर उत्तर अधिक भरोसेमंद होगा। डेटा ने ऐसा
+        नहीं दिखाया। लागत की पट्टियाँ लगभग सपाट हैं—none पर $0.000587 और
+        xhigh पर $0.000598, यानी लगभग 1.02x का अंतर। हर gpt-5.2 कॉन्फ़िगरेशन की
+        लागत gpt-4o आधार-रेखा के $0.000665 से कम है। गुणवत्ता भी लगभग सपाट है:
+        रीज़निंग स्तरों पर औसत मूल्यांकन स्कोर लगभग 1.95 है, जो आधार-रेखा के 1.90
+        के बराबर या उससे अधिक है। लेटेंसी में भी कोई क्रमिक रुझान नहीं है
+        (लगभग 1.4s से 1.7s), और टोकन-संरचना का थ्रूपुट गुणक 0.99 के आसपास रहता है।
       </p>
       <p>
-        यानी न cost bars effort के साथ चलीं, न quality bars। chart की पूरी बात बस इतनी है। reasoning पर ज़्यादा खर्च करने से न सस्ता bill मिला, न बेहतर जवाब; और सबसे कम setting पर gpt-5.2 पहले ही gpt-4o baseline से match या beat कर रहा था। इस workload shape में ऊँचा effort default नहीं, experimental setting रहना चाहिए।
+        यानी न लागत की पट्टियाँ रीज़निंग स्तर के साथ बदलीं, न गुणवत्ता की। चार्ट की
+        बात इतनी ही है: ऊँचा स्तर न सस्ता बिल लाया, न बेहतर उत्तर। सबसे कम सेटिंग पर
+        gpt-5.2 पहले ही gpt-4o आधार-रेखा के बराबर या उससे बेहतर था। इस वर्कलोड-रूप
+        में ऊँचा स्तर डिफ़ॉल्ट नहीं, प्रयोगात्मक सेटिंग रहना चाहिए।
       </p>
     </section>
 
     <section class="article-section">
       <h2>परिकल्पना ग़लत क्यों हो सकती है</h2>
       <p>
-        सुरक्षित दिखने वाला default फिर भी निराश कर सकता है, क्योंकि छोटे तथ्यात्मक
-        काम में लंबे internal search की ज़रूरत कम पड़ती है। जब जवाब एक ही तथ्य हो, तो
-        bottleneck अक्सर retrieval, stable prompt, या बस वही सबसे कम effort setting
-        होती है जो पहले से सही जवाब दे रही है — अतिरिक्त deliberation नहीं। उस बिंदु के
-        बाद model के पास खोजने को कुछ नया नहीं बचता, इसलिए effort बढ़ने पर accuracy नहीं,
-        सिर्फ़ छिपे tokens बढ़ते हैं।
+        सुरक्षित दिखने वाला डिफ़ॉल्ट फिर भी निराश कर सकता है, क्योंकि छोटे तथ्यात्मक
+        काम में लंबी आंतरिक खोज की ज़रूरत कम पड़ती है। जब उत्तर एक ही तथ्य हो, तो
+        अड़चन अक्सर सूचना-प्राप्ति, स्थिर प्रॉम्प्ट या पहले से सही उत्तर दे रही सबसे कम
+        रीज़निंग सेटिंग होती है—अतिरिक्त विचार नहीं। उस बिंदु के बाद मॉडल के पास खोजने
+        को कुछ नया नहीं बचता, इसलिए स्तर बढ़ने पर सटीकता नहीं बढ़ती।
       </p>
       <p>
-        यही pattern इस हिस्से में दिखता है। जज स्कोर effort के साथ नहीं बढ़ता; वह
-        1.95 के आसपास रहता है, और cost, latency, reasoning tokens भी लगभग सपाट रहते हैं।
-        यहाँ pay करने लायक hidden thinking लगभग नहीं है। इसलिए इस हिस्से में ऊँचा default
-        वह कुछ नहीं खरीदता जो सस्ती setting पहले से न दे रही हो।
+        यही पैटर्न इस हिस्से में दिखता है। मूल्यांकन स्कोर रीज़निंग स्तर के साथ नहीं
+        बढ़ता; वह 1.95 के आसपास रहता है। लागत, लेटेंसी और रीज़निंग टोकन भी लगभग
+        सपाट रहते हैं। यहाँ भुगतान योग्य अतिरिक्त आंतरिक गणना लगभग नहीं है। इसलिए
+        ऊँचा डिफ़ॉल्ट ऐसा कुछ नहीं देता जो सस्ती सेटिंग पहले से न दे रही हो।
       </p>
     </section>
 
     <section class="article-section">
       <h2>चार्ट कैसे पढ़ें</h2>
       <p>
-        ये aggregate bar charts हैं, frequency histograms नहीं। benchmark-01 में हर bar
-        एक अलग effort configuration दिखाती है, इसलिए तुलना इस बात की है कि वही workload
-        shape effort बढ़ने पर कैसे बदलता है।
+        ये समुच्चय पट्टी-चार्ट हैं, आवृत्ति-हिस्टोग्राम नहीं। benchmark-01 में हर पट्टी
+        एक अलग रीज़निंग कॉन्फ़िगरेशन दिखाती है; तुलना यह बताती है कि वही वर्कलोड-रूप
+        स्तर बदलने पर कैसे बदलता है।
       </p>
       <div class="evidence-grid">
         <div>
           <h3>X-अक्ष</h3>
           <p>
-            bars reasoning effort के स्तर बाएँ से दाएँ दिखाती हैं — baseline, none,
-            low, medium, high, xhigh। इसे वही setting समझें जिसे operator बदल सकता है।
+            पट्टियाँ बाएँ से दाएँ रीज़निंग स्तर दिखाती हैं—आधार-रेखा, none,
+            low, medium, high, xhigh। यह वही सेटिंग है जिसे संचालक बदल सकता है।
           </p>
         </div>
         <div>
           <h3>Y-अक्ष</h3>
           <p>
-            cost chart में bar height का मतलब mean USD per request है। quality chart में
-            bar height mean जज स्कोर है। इन्हें अलग-अलग नहीं, जोड़ी में पढ़ें।
+            लागत चार्ट में पट्टी की ऊँचाई का अर्थ प्रति अनुरोध औसत USD है। गुणवत्ता
+            चार्ट में यह औसत मूल्यांकन स्कोर है। दोनों को जोड़ी में पढ़ें।
           </p>
         </div>
         <div>
           <h3>बार और तालिका</h3>
           <p>
-            हर bar एक aggregate configuration है। chart के नीचे की table exact value,
-            जहाँ उपलब्ध हो वहाँ standard deviation, और sample count दिखाती है। error bars
-            confidence interval नहीं, standard deviation हैं।
+            हर पट्टी एक समुच्चय कॉन्फ़िगरेशन है। चार्ट के नीचे की तालिका सटीक मान,
+            उपलब्ध होने पर मानक विचलन और नमूनों की संख्या दिखाती है। त्रुटि-पट्टियाँ
+            विश्वास-अंतराल नहीं, मानक विचलन हैं।
           </p>
         </div>
       </div>
@@ -175,64 +176,65 @@
 
     <figure class="article-figure" id="figure-short-factual-cost">
       <figcaption>
-        <strong>मूल चार्ट &mdash; छोटे तथ्यात्मक काम की प्रति-request लागत (benchmark&nbsp;01)।</strong>
-        <strong>X-अक्ष:</strong> model और effort के स्तर — gpt-4o baseline, फिर gpt-5.2
+        <strong>मूल चार्ट &mdash; छोटे तथ्यात्मक काम की प्रति अनुरोध लागत (benchmark&nbsp;01)।</strong>
+        <strong>X-अक्ष:</strong> मॉडल और रीज़निंग स्तर—gpt-4o आधार-रेखा, फिर gpt-5.2
         का none, low, medium, high और xhigh।
-        <strong>Y-अक्ष:</strong> mean PAYG USD per request।
-        <strong>Bars:</strong> हर bar एक effort configuration की औसत लागत दिखाती है — यह
-        frequency histogram नहीं, aggregate comparison है — और vertical whiskers दोहराए गए
-        measurement पर &plusmn;1 standard deviation दिखाती हैं।
-        <strong>इसे कैसे पढ़ें:</strong> लागत none effort के $0.000587 से xhigh पर
-        $0.000598 तक लगभग सपाट रहती है — लगभग 1.02x span, हर gpt-5.2 tier $0.000665
-        baseline से नीचे — जबकि नीचे वाला paired जज स्कोर 1.95 के आसपास रहता है।
-        <strong>Evidence boundary:</strong> हर configuration में N = 20 authored sample,
-        R = 3 repeats, छोटे तथ्यात्मक काम का यही एक हिस्सा, और pricing एक dated PAYG
-        snapshot पर एक ही Azure OpenAI tenant और region के लिए है। यह दूसरे workload,
-        region या future pricing के लिए proof नहीं है।
-        <strong>Source &amp; dashboard:</strong> bar values सार्वजनिक mirror data
+        <strong>Y-अक्ष:</strong> प्रति अनुरोध औसत PAYG USD।
+        <strong>पट्टियाँ:</strong> हर पट्टी एक रीज़निंग कॉन्फ़िगरेशन की औसत लागत दिखाती
+        है। यह आवृत्ति-हिस्टोग्राम नहीं, समुच्चय तुलना है। खड़ी रेखाएँ दोहराए गए मापन पर
+        &plusmn;1 मानक विचलन दिखाती हैं।
+        <strong>पढ़ने का तरीक़ा:</strong> लागत none के $0.000587 से xhigh के
+        $0.000598 तक लगभग सपाट रहती है—लगभग 1.02x का अंतर। हर gpt-5.2
+        कॉन्फ़िगरेशन $0.000665 की आधार-रेखा से सस्ता है, जबकि साथ वाला मूल्यांकन
+        स्कोर 1.95 के आसपास रहता है।
+        <strong>साक्ष्य-सीमा:</strong> हर कॉन्फ़िगरेशन में N = 20 लिखित नमूने और
+        R = 3 दोहराव हैं। यह छोटे तथ्यात्मक काम का एक हिस्सा है और मूल्य निर्धारण
+        दिनांकित PAYG स्नैपशॉट के आधार पर एक Azure OpenAI टेनेंट और रीजन के लिए है।
+        यह दूसरे वर्कलोड, रीजन या भविष्य के मूल्य निर्धारण का प्रमाण नहीं है।
+        <strong>स्रोत और डैशबोर्ड:</strong> पट्टियों के मान सार्वजनिक प्रतिलिपि डेटा
         <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json</code>
-        से आती हैं; इसे <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a>
-        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">served chart data</a>) के साथ पढ़ें।
+        से आते हैं; इन्हें <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">साक्ष्य डैशबोर्ड</a>
+        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">प्रदत्त चार्ट डेटा</a>) के साथ पढ़ें।
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का bar chart, जिसमें effort ladder पर mean PAYG प्रति-request लागत लगभग सपाट रहती है, gpt-4o baseline और gpt-5.2 none से xhigh तक दिखते हैं, और हर gpt-5.2 tier baseline से नीचे है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 का पट्टी-चार्ट। रीज़निंग स्तरों पर औसत PAYG प्रति अनुरोध लागत लगभग सपाट रहती है; gpt-4o आधार-रेखा और gpt-5.2 के none से xhigh तक के कॉन्फ़िगरेशन दिखते हैं तथा हर gpt-5.2 कॉन्फ़िगरेशन आधार-रेखा से सस्ता है। मानक-विचलन रेखाएँ भी दिखाई गई हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <figure class="article-figure" id="figure-short-factual-quality">
       <figcaption>
-        <strong>जोड़ा हुआ मूल चार्ट &mdash; छोटे तथ्यात्मक काम का जज स्कोर (benchmark&nbsp;01)।</strong>
-        <strong>X-अक्ष:</strong> वही model और effort के स्तर।
-        <strong>Y-अक्ष:</strong> 0&ndash;2 rubric पर mean जज स्कोर (quality guardrail)।
-        <strong>Bars:</strong> हर bar एक effort configuration का mean score दिखाती है —
-        यह frequency histogram नहीं, aggregate comparison है — और whiskers &plusmn;1 standard
-        deviation दिखाते हैं।
-        <strong>इसे कैसे पढ़ें:</strong> quality bars flat और baseline से थोड़ा ऊपर रहती हैं —
-        gpt-4o baseline 1.90, gpt-5.2 none 1.95, low 1.97, medium 1.97, high 1.93,
-        xhigh 1.95 — यानी इस हिस्से में flat cost bars ने न कम bill खरीदा, न बेहतर जवाब।
-        <strong>Evidence boundary:</strong> हर configuration में N = 20, R = 3 repeats;
-        error bars confidence interval नहीं, standard deviation हैं, और N = 20 पर p-value
-        claim नहीं किया गया है।
-        <strong>Source &amp; dashboard:</strong> bar values
+        <strong>साथ वाला मूल चार्ट &mdash; छोटे तथ्यात्मक काम का मूल्यांकन स्कोर (benchmark&nbsp;01)।</strong>
+        <strong>X-अक्ष:</strong> वही मॉडल और रीज़निंग स्तर।
+        <strong>Y-अक्ष:</strong> 0&ndash;2 मानदंड पर औसत मूल्यांकन स्कोर (गुणवत्ता सुरक्षा-मानक)।
+        <strong>पट्टियाँ:</strong> हर पट्टी एक रीज़निंग कॉन्फ़िगरेशन का औसत स्कोर दिखाती
+        है। यह आवृत्ति-हिस्टोग्राम नहीं, समुच्चय तुलना है। रेखाएँ &plusmn;1 मानक
+        विचलन दिखाती हैं।
+        <strong>पढ़ने का तरीक़ा:</strong> गुणवत्ता की पट्टियाँ सपाट और आधार-रेखा से थोड़ी ऊपर हैं—
+        gpt-4o आधार-रेखा 1.90, gpt-5.2 none 1.95, low 1.97, medium 1.97, high 1.93,
+        xhigh 1.95। यानी इस हिस्से में लगभग सपाट लागत के साथ उत्तर भी बेहतर नहीं हुआ।
+        <strong>साक्ष्य-सीमा:</strong> हर कॉन्फ़िगरेशन में N = 20 और R = 3 दोहराव हैं;
+        त्रुटि-पट्टियाँ विश्वास-अंतराल नहीं, मानक विचलन हैं और N = 20 पर p-value का
+        दावा नहीं किया गया है।
+        <strong>स्रोत और डैशबोर्ड:</strong> पट्टियों के मान
         <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json</code>
-        से आती हैं; इसे <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-quality">evidence dashboard</a>
-        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/quality.json">served chart data</a>) में
-        cost chart के साथ पढ़ें।
+        से आते हैं; इन्हें <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-quality">साक्ष्य डैशबोर्ड</a>
+        (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-01/quality.json">प्रदत्त चार्ट डेटा</a>) में
+        लागत चार्ट के साथ पढ़ें।
       </figcaption>
-      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark-01 का bar chart, जिसमें effort ladder पर mean judge score लगभग 1.9 से 2.0 के आसपास सपाट रहता है और cost भी flat रहती है। standard-deviation whiskers भी दिखाए गए हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+      <img class="wide-chart" src="../../../../../../assets/benchmark-01-quality.png" alt="benchmark-01 का पट्टी-चार्ट, जिसमें रीज़निंग स्तरों पर औसत मूल्यांकन स्कोर लगभग 1.9 से 2.0 के बीच सपाट रहता है और लागत भी लगभग सपाट है। मानक-विचलन रेखाएँ भी दिखाई गई हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
     </figure>
 
     <section class="article-section">
       <h2>मूल चार्ट क्या जोड़ते हैं</h2>
       <p>
-        हर source chart फ़ैसले का अलग हिस्सा साफ़ करता है। cost chart बताता है कि setting
-        कितनी महँगी है। quality chart बताता है कि उस खर्च से जवाब बेहतर हुआ या नहीं।
-        latency और token composition operational side effect दिखाते हैं। throughput view
-        उसी token shape को capacity planning के दबाव में बदलकर दिखाता है।
+        हर मूल चार्ट निर्णय का अलग पहलू साफ़ करता है। लागत चार्ट बताता है कि सेटिंग
+        कितनी महँगी है। गुणवत्ता चार्ट बताता है कि उस खर्च से उत्तर बेहतर हुआ या नहीं।
+        लेटेंसी और टोकन-संरचना संचालन पर पड़ने वाले प्रभाव दिखाते हैं। थ्रूपुट दृश्य
+        उसी टोकन-संरचना को क्षमता-योजना के दबाव में बदलकर दिखाता है।
       </p>
       <table class="chart-table evidence-table">
-        <caption>benchmark-01 source charts से मुख्य बातें</caption>
+        <caption>benchmark-01 के मूल चार्ट से मुख्य बातें</caption>
         <thead>
           <tr>
-            <th>Source chart</th>
+            <th>मूल चार्ट</th>
             <th>इसे कैसे पढ़ें</th>
             <th>दिखा क्या</th>
             <th>फ़ैसले पर असर</th>
@@ -240,34 +242,34 @@
         </thead>
         <tbody>
           <tr>
-            <td>Cost per request</td>
-            <td>X-अक्ष effort level है; Y-अक्ष mean USD per request है।</td>
-            <td>none effort पर $0.000587; xhigh effort पर $0.000598; baseline $0.000665।</td>
-            <td>bill flat और baseline से नीचे रहता है, इसलिए higher effort को कुछ prove नहीं करना।</td>
+            <td>प्रति अनुरोध लागत</td>
+            <td>X-अक्ष रीज़निंग स्तर है; Y-अक्ष प्रति अनुरोध औसत USD है।</td>
+            <td>none पर $0.000587; xhigh पर $0.000598; आधार-रेखा $0.000665।</td>
+            <td>बिल लगभग सपाट और आधार-रेखा से कम है; इसलिए ऊँचे स्तर को अपना लाभ साबित करना होगा।</td>
           </tr>
           <tr>
-            <td>Quality guardrail</td>
-            <td>X-अक्ष वही effort levels हैं; Y-अक्ष mean जज स्कोर है।</td>
-            <td>none effort पर 1.95; xhigh effort पर 1.95; baseline 1.90।</td>
-            <td>quality flat है और पहले से baseline के बराबर या ऊपर है।</td>
+            <td>गुणवत्ता सुरक्षा-मानक</td>
+            <td>X-अक्ष वही रीज़निंग स्तर हैं; Y-अक्ष औसत मूल्यांकन स्कोर है।</td>
+            <td>none पर 1.95; xhigh पर 1.95; आधार-रेखा 1.90।</td>
+            <td>गुणवत्ता लगभग सपाट है और पहले से आधार-रेखा के बराबर या उससे अधिक है।</td>
           </tr>
           <tr>
-            <td>Latency</td>
-            <td>X-अक्ष effort level है; Y-अक्ष mean response latency है।</td>
-            <td>none effort पर लगभग 1.7s; xhigh effort पर लगभग 1.4s, ladder में कोई trend नहीं।</td>
-            <td>latency noisy है, effort की cost नहीं।</td>
+            <td>लेटेंसी</td>
+            <td>X-अक्ष रीज़निंग स्तर है; Y-अक्ष औसत प्रतिक्रिया लेटेंसी है।</td>
+            <td>none पर लगभग 1.7s; xhigh पर लगभग 1.4s; स्तरों में कोई क्रमिक रुझान नहीं।</td>
+            <td>लेटेंसी में उतार-चढ़ाव है, पर रीज़निंग स्तर के साथ क्रमिक वृद्धि नहीं।</td>
           </tr>
           <tr>
-            <td>Token composition</td>
-            <td>X-अक्ष effort level है; Y-अक्ष mean tokens per request है।</td>
-            <td>reasoning tokens zero के पास रहते हैं (none पर 0, high पर लगभग 1.35); visible output सिर्फ़ लगभग 14.0 से 14.8 tokens तक बदलता है।</td>
-            <td>इस हिस्से में hidden billable growth लगभग नहीं है।</td>
+            <td>टोकन-संरचना</td>
+            <td>X-अक्ष रीज़निंग स्तर है; Y-अक्ष प्रति अनुरोध औसत टोकन हैं।</td>
+            <td>रीज़निंग टोकन लगभग शून्य रहते हैं (none पर 0, high पर लगभग 1.35 और xhigh पर लगभग 0.62); दिखाई देने वाला आउटपुट केवल लगभग 14.0 से 14.8 टोकन तक बदलता है।</td>
+            <td>इस हिस्से में छिपी बिल-योग्य वृद्धि लगभग नहीं है।</td>
           </tr>
           <tr>
-            <td>Token-shape throughput</td>
-            <td>X-अक्ष effort level है; Y-अक्ष baseline के मुक़ाबले throughput factor है।</td>
-            <td>factor none से xhigh तक 0.99 के आसपास रहता है।</td>
-            <td>traffic shape को extra capacity headroom नहीं चाहिए।</td>
+            <td>टोकन-संरचना थ्रूपुट</td>
+            <td>X-अक्ष रीज़निंग स्तर है; Y-अक्ष आधार-रेखा के मुक़ाबले थ्रूपुट गुणक है।</td>
+            <td>none से xhigh तक गुणक 0.99 के आसपास रहता है।</td>
+            <td>इस ट्रैफ़िक-रूप के लिए अतिरिक्त क्षमता-अंतर की आवश्यकता नहीं दिखती।</td>
           </tr>
         </tbody>
       </table>
@@ -276,22 +278,23 @@
     <section class="article-section">
       <h2>क्या हुआ</h2>
       <p>
-        लागत-रेखा सपाट रही। none effort पर औसत $0.000587 per request था,
-        xhigh effort पर औसत $0.000598 per request — लगभग 1.02x span — और हर
-        gpt-5.2 tier gpt-4o baseline $0.000665 से नीचे था। paired quality भी flat थी:
-        औसत जज स्कोर 1.95 के आसपास रहा, baseline के 1.90 के बराबर या ऊपर।
+        लागत-रेखा सपाट रही। none पर औसत प्रति अनुरोध लागत $0.000587 थी और
+        xhigh पर $0.000598—लगभग 1.02x का अंतर। हर gpt-5.2 कॉन्फ़िगरेशन
+        gpt-4o आधार-रेखा के $0.000665 से सस्ता था। साथ में मापी गई गुणवत्ता भी
+        लगभग सपाट थी: औसत मूल्यांकन स्कोर 1.95 के आसपास रहा, जो आधार-रेखा के
+        1.90 के बराबर या उससे अधिक है।
       </p>
       <p>
-        यह "reasoning बुरी है" जैसा सार्वभौमिक दावा नहीं है। यह सिर्फ़ workload shape
-        के बारे में दावा है। इस हिस्से में pay करने लायक अतिरिक्त internal computation लगभग
-        नहीं थी, और effort बढ़ाने से न सस्ता bill मिला, न बेहतर जवाब। dashboard लागत और
-        quality को साथ रखता है, इसलिए यह साफ़ दिखता है।
+        यह “रीज़निंग बुरी है” जैसा सार्वभौमिक दावा नहीं है। यह केवल इस वर्कलोड-रूप
+        के बारे में दावा है। इस हिस्से में भुगतान योग्य अतिरिक्त आंतरिक गणना लगभग नहीं
+        थी और स्तर बढ़ाने से न सस्ता बिल मिला, न बेहतर उत्तर। डैशबोर्ड लागत और
+        गुणवत्ता को साथ रखता है, इसलिए यह साफ़ दिखता है।
       </p>
       <p>
-        सबसे बड़ा trap उलटी intuition है: higher effort ज़रूर safer होगा। अगर reviewer सिर्फ़ कुछ
-        जवाब देखे, तो xhigh effort ज़्यादा सुरक्षित महसूस हो सकता है क्योंकि model
-        ज़्यादा सोचता हुआ लगता है। chart इसी intuition को policy बनने से रोकता है: वह दिखाता है
-        कि quality delta flat है, इसलिए सस्ती setting धीमे या बड़े bill के बिना वही जवाब रखती है।
+        सबसे बड़ा भ्रम यह सहज धारणा है कि ऊँचा स्तर अवश्य अधिक सुरक्षित होगा। अगर
+        समीक्षक केवल कुछ उत्तर देखे, तो xhigh अधिक सुरक्षित लग सकता है क्योंकि मॉडल
+        अधिक सोचता हुआ प्रतीत होता है। चार्ट इस धारणा को नीति बनने से रोकता है: गुणवत्ता
+        में अंतर लगभग शून्य है, इसलिए सस्ती सेटिंग वही उत्तर देती है।
       </p>
     </section>
 
@@ -299,27 +302,27 @@
       <h2>मापते हुए हमने क्या सीखा</h2>
       <div class="evidence-grid">
         <div>
-          <h3>ज़्यादा सोचना अपने-आप default नहीं बनता</h3>
+          <h3>अधिक सोचना अपने-आप डिफ़ॉल्ट नहीं बनता</h3>
           <p>
-            effort एक treatment है। इसे किसी एक हिस्से पर लगाकर मापें, और तभी बढ़ाएँ
-            जब evaluator सचमुच बदले। इसे global default बना देने से production traffic
-            आने तक बिल छिपा रहता है।
+            रीज़निंग स्तर एक उपचार-चर है। इसे किसी एक हिस्से पर लागू करके मापें और तभी
+            बढ़ाएँ जब मूल्यांकन स्कोर सचमुच बदले। इसे सर्वव्यापी डिफ़ॉल्ट बनाने पर
+            प्रोडक्शन ट्रैफ़िक आने तक बिल छिपा रह सकता है।
           </p>
         </div>
         <div>
-          <h3>लागत को quality के साथ ही पढ़ें</h3>
+          <h3>लागत को गुणवत्ता के साथ पढ़ें</h3>
           <p>
-            सिर्फ़ cost chart बदलाव को साफ़ लेकिन अधूरा दिखा सकता है। सिर्फ़ quality
-            chart आर्थिक असर छिपा सकता है। काम की सही reading जोड़ी में है: खर्च कितना
-            बढ़ा, और क्या जवाब सचमुच बेहतर हुआ?
+            केवल लागत चार्ट बदलाव को साफ़ लेकिन अधूरा दिखा सकता है। केवल गुणवत्ता
+            चार्ट आर्थिक असर छिपा सकता है। सही निष्कर्ष दोनों को साथ पढ़ने पर मिलता है:
+            खर्च कितना बढ़ा और क्या उत्तर सचमुच बेहतर हुआ?
           </p>
         </div>
         <div>
-          <h3>छोटे तथ्यात्मक काम के लिए low-effort baseline ज़रूरी है</h3>
+          <h3>छोटे तथ्यात्मक काम के लिए न्यूनतम सीमा ज़रूरी है</h3>
           <p>
-            सबसे कम स्वीकार्य effort level वही baseline है जिसे हर ऊँचे level को हराना
-            चाहिए। अगर quality में वह आगे नहीं निकलता, तो operator को सस्ती setting रखनी
-            चाहिए और optimization का समय कहीं और लगाना चाहिए।
+            सबसे कम स्वीकार्य रीज़निंग स्तर ही न्यूनतम सीमा है, जिसे हर ऊँचे स्तर को
+            पार करना चाहिए। अगर गुणवत्ता बेहतर नहीं होती, तो संचालक को सस्ती सेटिंग
+            रखनी चाहिए और अनुकूलन का समय कहीं और लगाना चाहिए।
           </p>
         </div>
       </div>
@@ -328,72 +331,72 @@
     <section class="article-section">
       <h2>निर्णय कब दोबारा देखें</h2>
       <p>
-        इस नतीजे को हमेशा के लिए freeze मत कीजिए। अगर काम short recall से synthesis में
-        बदल जाए, evaluator rubric multi-hop justification को reward करने लगे, prompt में
-        tool outputs आने लगें, या नया model लागत-गुणवत्ता का पैटर्न बदल दे, तो इसे फिर से
-        जाँचिए। सबक़ यह नहीं है कि reasoning कभी इस्तेमाल न करें। सबक़ यह है: paired
-        evidence के बिना effort मत बढ़ाइए।
+        इस नतीजे को स्थायी न मानें। अगर काम संक्षिप्त स्मरण से संश्लेषण में बदल जाए,
+        मूल्यांकन मानदंड कई चरणों वाले औचित्य को पुरस्कृत करने लगे, प्रॉम्प्ट में टूल
+        आउटपुट आने लगें या नया मॉडल लागत-गुणवत्ता का पैटर्न बदल दे, तो फिर से जाँचें।
+        सबक़ यह नहीं कि रीज़निंग कभी इस्तेमाल न करें; सबक़ यह है कि जुड़े हुए साक्ष्य के
+        बिना स्तर न बढ़ाएँ।
       </p>
       <p>
-        अच्छा follow-up experiment वही X-axis रखता है, लेकिन workload shape बदल देता है।
-        छोटे तथ्यात्मक, multi-step, tool-agent और synthesis tasks — हर एक को अपनी effort
-        setting डेटा से कमानी चाहिए। आम तौर पर reasoning की असली value इसी routing
-        policy में निकलती है।
+        अच्छा अगला प्रयोग वही X-अक्ष रखता है, लेकिन वर्कलोड-रूप बदल देता है।
+        छोटे तथ्यात्मक, बहु-चरणीय, टूल-एजेंट और संश्लेषण कार्यों—सभी को अपनी रीज़निंग
+        सेटिंग डेटा से उचित ठहरानी चाहिए। रीज़निंग का वास्तविक मूल्य अक्सर इसी रूटिंग
+        नीति में मिलता है।
       </p>
     </section>
 
     <section class="article-section">
       <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
-        ऊपर दिया गया हर number इस repository की किसी public artifact तक trace होता है,
-        और लागत का हर आँकड़ा एक dated pricing snapshot पर निकाला गया है। इस हिस्से में ऊँचा
-        effort experimental रहना चाहिए — यह operational interpretation इस लेख की अपनी
-        है। नीचे के दो tier बताते हैं कि documented input कहाँ ख़त्म होता है और inference
-        कहाँ से शुरू होती है।
+        ऊपर दिया हर मान इस रिपॉज़िटरी की किसी सार्वजनिक कलाकृति तक खोजा जा सकता है,
+        और लागत का हर आँकड़ा दिनांकित मूल्य स्नैपशॉट से निकला है। इस हिस्से में ऊँचा
+        रीज़निंग स्तर प्रयोगात्मक रहना चाहिए—यह लेख की अपनी संचालन-व्याख्या है। नीचे
+        की श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ समाप्त होता है और अनुमान कहाँ
+        से शुरू होता है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> (v1.0)। हर configuration पर N = 20 authored samples, R = 3 repeats, और सिर्फ़ public aggregate डेटा। चार्ट की व्याख्या इसी fixed stance पर आधारित है; error bars standard deviation हैं, confidence interval नहीं, और N = 20 पर p-value claim नहीं किया गया है।</li>
-        <li>[2] <strong>Tier 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति-request लागत (none effort का $0.000587, xhigh effort का $0.000598, दोनों $0.000665 baseline से नीचे) इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> पर गणित है। accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>। list pricing बदलने पर figures बदलेंगे।</li>
-        <li>[3] <strong>Tier 2 — short-factual measurement:</strong> यह repository, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से flat per-request cost, लगभग 1.95 mean जज स्कोर (gpt-4o baseline 1.9), लगभग 1409 ms और 1713 ms के बीच no-trend latency, और throughput factor का 0.99 के पास रहना मिलता है।</li>
-        <li>[4] <strong>Tier 2 — rendered chart डेटा:</strong> यह repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। यहीं से near-zero reasoning tokens (none पर 0.0, high पर 1.35) और visible output का सिर्फ़ लगभग 14.0 से 14.8 tokens तक बदलना दिखता है।</li>
-        <li>[5] <strong>Evidence dashboard:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> की per-configuration tables और rendered source charts इन्हीं artifact का auditable रूप हैं।</li>
+        <li>[1] <strong>स्तर 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> (v1.0)। हर कॉन्फ़िगरेशन पर N = 20 लिखित नमूने, R = 3 दोहराव और केवल सार्वजनिक समुच्चय डेटा। चार्ट की व्याख्या इसी स्थिर दृष्टिकोण पर आधारित है; त्रुटि-पट्टियाँ मानक विचलन हैं, विश्वास-अंतराल नहीं, और N = 20 पर p-value का दावा नहीं किया गया है।</li>
+        <li>[2] <strong>स्तर 1 — PAYG मूल्य स्नैपशॉट:</strong> प्रति अनुरोध लागत—none का $0.000587 और xhigh का $0.000598, दोनों $0.000665 की आधार-रेखा से कम—इस रिपॉज़िटरी की <code>pricing/azure-openai-payg-2026-05.yaml</code> से निकाली गई है। 2026-05-19 को देखा गया: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI मूल्य पृष्ठ</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">संग्रहित प्रति</a>। सूची-मूल्य बदलने पर ये मान बदलेंगे।</li>
+        <li>[3] <strong>स्तर 2 — छोटे तथ्यात्मक काम का मापन:</strong> यह रिपॉज़िटरी, <code>benchmarks/01-short-factual/analysis.json</code>। यहीं से लगभग सपाट प्रति अनुरोध लागत, लगभग 1.95 का औसत मूल्यांकन स्कोर (gpt-4o आधार-रेखा 1.9), लगभग 1409 ms से 1713 ms के बीच बिना क्रमिक रुझान वाली लेटेंसी और 0.99 के आसपास थ्रूपुट गुणक मिलता है।</li>
+        <li>[4] <strong>स्तर 2 — रेंडर किया गया चार्ट डेटा:</strong> यह रिपॉज़िटरी, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) और <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>। यहीं से लगभग शून्य रीज़निंग टोकन (none पर 0.0, high पर 1.35 और xhigh पर लगभग 0.62) तथा दिखाई देने वाले आउटपुट का केवल लगभग 14.0 से 14.8 टोकन तक बदलना दिखता है।</li>
+        <li>[5] <strong>साक्ष्य डैशबोर्ड:</strong> <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">साक्ष्य डैशबोर्ड</a> की प्रति-कॉन्फ़िगरेशन तालिकाएँ और रेंडर किए गए मूल चार्ट इन्हीं कलाकृतियों का लेखा-परीक्षण योग्य रूप हैं।</li>
       </ul>
       <p>
-        यह हिस्सा क्या साबित करता है, और क्या नहीं: छोटे तथ्यात्मक काम के इस workload
-        shape में, एक tenant और एक region पर, इसी pricing snapshot के तहत, effort ladder ने
-        लागत और hidden tokens खरीदे लेकिन matching quality lift नहीं मिली। यह यह साबित
-        नहीं करता कि यही pattern synthesis, multi-step या tool-using काम में भी रहेगा,
-        या future pricing snapshot पर भी वैसा ही दिखेगा।
+        यह हिस्सा क्या साबित करता है, और क्या नहीं: छोटे तथ्यात्मक काम के इस
+        वर्कलोड-रूप में, एक टेनेंट और एक रीजन पर, इसी मूल्य स्नैपशॉट के तहत लागत,
+        लेटेंसी, छिपे रीज़निंग टोकन और गुणवत्ता सभी लगभग सपाट रहे। यह साबित नहीं करता
+        कि यही पैटर्न संश्लेषण, बहु-चरणीय या टूल-आधारित काम में भी रहेगा, अथवा भविष्य
+        के मूल्य स्नैपशॉट पर भी वैसा ही दिखेगा।
       </p>
     </section>
 
     <section class="article-section decision-box">
       <h2>व्यावहारिक नियम</h2>
       <p>
-        <strong>व्यावहारिक नियम: छोटे तथ्यात्मक काम को उसी सबसे कम effort पर रखें जो
-        पहले से सही जवाब दे रहा है। उसे तभी बढ़ाएँ जब इसी workload shape पर quality gate
-        सचमुच बदले — और वह फ़ैसला paired लागत, latency और token-composition charts के साथ
+        <strong>व्यावहारिक नियम: छोटे तथ्यात्मक काम को उसी सबसे कम रीज़निंग स्तर पर रखें जो
+        पहले से सही उत्तर दे रहा है। उसे तभी बढ़ाएँ जब इसी वर्कलोड-रूप पर गुणवत्ता सीमा
+        सचमुच बदले—और वह निर्णय लागत, लेटेंसी और टोकन-संरचना चार्ट की जोड़ी के साथ
         पढ़कर लें।</strong>
       </p>
       <p>
-        evidence dashboard उसी नियम का सत्यापन रिकॉर्ड है।
+        साक्ष्य डैशबोर्ड उसी नियम का सत्यापन रिकॉर्ड है।
       </p>
       <p>
-        <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">source chart देखें</a>
+        <a class="button-link" href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-01-cost_per_request">मूल चार्ट देखें</a>
       </p>
     </section>
 
     <section id="next" class="article-section">
       <p>
         <strong>आगे:</strong>
-        <a href="../../invisible-reasoning-tokens/hi/">Invisible reasoning tokens: छिपी हुई लागत आख़िर जाती कहाँ है</a>
-        &mdash; अगर answer text छोटा ही रहा, तो अतिरिक्त लागत आई कहाँ से?
+        <a href="../../invisible-reasoning-tokens/hi/">अदृश्य रीज़निंग टोकन: छिपी लागत आख़िर जाती कहाँ है</a>
+        &mdash; अगर उत्तर छोटा ही रहा, तो अतिरिक्त लागत आई कहाँ से?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · प्रकाशित डेटा सिर्फ़ sanitized या aggregate रूप में है।</p>
+    <p>MIT-लाइसेंस प्राप्त शोध-कलाकृति · प्रकाशित डेटा केवल साफ़ किया हुआ या समुच्चय रूप में है।</p>
   </footer>
 </body>
 </html>

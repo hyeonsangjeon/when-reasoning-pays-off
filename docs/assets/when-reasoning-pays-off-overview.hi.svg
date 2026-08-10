@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-labelledby="t d" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
+<title id="t">रीज़निंग कब सार्थक है, कब नहीं</title>
+<desc id="d">रीज़निंग मॉडल की लागत, गुणवत्ता और प्रोडक्शन अनुबंधों के मापन की शृंखला। मुख्य संदेश: समान टोकन दर-सूची पर भी रीज़निंग मॉडल का बिल बहुत बदल सकता है।</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#5C6470"/></marker><marker id="arrowA" markerWidth="11" markerHeight="11" refX="4" refY="3.2" orient="auto"><path d="M0 0 L8 3.2 L0 6.4 z" fill="#5A3FA0"/></marker></defs>
+<rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="1199" height="674" fill="none" stroke="#E1E5EA" stroke-width="1"/>
+<rect x="0" y="0" width="1200" height="8" fill="#5A3FA0"/>
+<rect x="64" y="43" width="90" height="22" rx="11" fill="#5A3FA0"/><text x="109.0" y="59" text-anchor="middle" font-size="12" font-weight="700" letter-spacing="1.2" fill="#FFFFFF">अवलोकन</text>
+<text x="170" y="59" font-size="13" font-weight="700" letter-spacing="2.5" fill="#5C6470">WHEN REASONING PAYS OFF</text>
+<text x="1136" y="59" text-anchor="end" font-size="13" font-weight="700" letter-spacing="1.5" fill="#5A3FA0">ARC 01 / 11</text>
+<text x="64" y="112" font-size="34" font-weight="700" fill="#14213D">रीज़निंग कब सार्थक है, कब नहीं</text>
+<text x="64" y="148" font-size="17" fill="#5C6470">रीज़निंग मॉडल की लागत, गुणवत्ता और प्रोडक्शन अनुबंधों के मापन की शृंखला</text>
+<path d="M64 172 H1136" stroke="#E1E5EA" stroke-width="1.4"/>
+<rect x="64" y="200" width="472" height="360" rx="14" fill="#F6F8FB" stroke="#E1E5EA" stroke-width="1.2"/>
+<rect x="104" y="270" width="120" height="74" rx="10" fill="#FFFFFF" stroke="#5C6470" stroke-width="1.6"/><circle cx="118" cy="284" r="5" fill="none" stroke="#5C6470" stroke-width="1.6"/><text x="164" y="302" text-anchor="middle" font-size="13" font-weight="700" fill="#14213D">टोकन दर-सूची</text><text x="164" y="322" text-anchor="middle" font-size="12" fill="#5C6470">प्रति टोकन</text><text x="164" y="337" text-anchor="middle" font-size="12" fill="#5C6470">(समान)</text><path d="M236 307 H300" stroke="#5C6470" stroke-width="2" marker-end="url(#arrow)"/><rect x="330" y="400" width="58" height="60" rx="4" fill="#5A3FA0" opacity="0.35"/><text x="359" y="478" text-anchor="middle" font-size="12" fill="#5C6470">कम स्तर</text><rect x="416" y="300" width="58" height="160" rx="4" fill="#5A3FA0"/><text x="445" y="478" text-anchor="middle" font-size="12" fill="#5C6470">ऊँचा स्तर</text><text x="402" y="280" text-anchor="middle" font-size="13" font-weight="700" fill="#14213D">बिल</text><path d="M322 360 H486" stroke="#D55E00" stroke-width="2" stroke-dasharray="6 5"/><text x="116" y="356" font-size="11.5" font-weight="600" fill="#A33D00">उत्तर गुणवत्ता:</text><text x="116" y="372" font-size="11.5" fill="#A33D00">गारंटी नहीं</text>
+<text x="572" y="224" font-size="12.5" font-weight="700" letter-spacing="2" fill="#5A3FA0">मुख्य संदेश</text>
+<text x="572" y="268" font-size="26" font-weight="600" fill="#14213D">समान टोकन दर-सूची पर भी</text>
+<text x="572" y="304" font-size="26" font-weight="600" fill="#14213D">रीज़निंग मॉडल का बिल</text>
+<text x="572" y="340" font-size="26" font-weight="600" fill="#14213D">बहुत बदल सकता है।</text>
+<path d="M572 378 H700" stroke="#5A3FA0" stroke-width="3"/>
+<rect x="572" y="409" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="418" font-size="15.5" fill="#2B2D42">इसलिए हर खंड में एक सवाल पूछते हैं।</text><rect x="572" y="436" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="445" font-size="15.5" fill="#2B2D42">क्या अतिरिक्त खर्च ने उत्तर बेहतर किया?</text><rect x="572" y="463" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="472" font-size="15.5" fill="#2B2D42">11 लेख: 5 मापन, 6 संचालन</text>
+<path d="M64 596 H1136" stroke="#E1E5EA" stroke-width="1.2"/>
+<text x="64" y="624" font-size="13" fill="#5C6470">साक्ष्य की सीमा — प्रति सेल N=20, R=3, 3 रीज़निंग बेंचमार्क, एक Azure OpenAI टेनेंट/रीजन</text>
+<text x="64" y="644" font-size="12.5" fill="#5C6470">स्रोत: इस रिपॉज़िटरी के benchmarks/ और results/</text>
+<rect x="1007" y="608" width="129" height="21" rx="10.5" fill="none" stroke="#5A3FA0" stroke-width="1.3"/><text x="1071.5" y="623" text-anchor="middle" font-size="11.5" font-weight="600" letter-spacing="0.6" fill="#5A3FA0">शृंखला अवलोकन</text>
+<text x="1136" y="644" text-anchor="end" font-size="11.5" fill="#5C6470">स्थिर एक-पृष्ठ सार · सार्वजनिक समुच्चय</text>
+</svg>

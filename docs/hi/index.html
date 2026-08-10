@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>when reasoning pays off — वही token price, अलग bill</title>
-  <meta name="description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
+  <title>when reasoning pays off — समान टोकन दर, अलग बिल</title>
+  <meta name="description" content="Azure OpenAI डिप्लॉयमेंट में रीज़निंग मॉडल कब अपनी लागत को सार्थक बनाते हैं, यह तय करने की व्यावहारिक मार्गदर्शिका।">
   <!-- Social sharing (Open Graph + Twitter Card) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="when reasoning pays off">
   <meta property="og:locale" content="hi_IN">
-  <meta property="og:title" content="when reasoning pays off — वही token price, अलग bill">
-  <meta property="og:description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
+  <meta property="og:title" content="when reasoning pays off — समान टोकन दर, अलग बिल">
+  <meta property="og:description" content="Azure OpenAI डिप्लॉयमेंट में रीज़निंग मॉडल कब अपनी लागत को सार्थक बनाते हैं, यह तय करने की व्यावहारिक मार्गदर्शिका।">
   <meta property="og:url" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/hi/">
   <meta property="og:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="वही token price, अलग bill: reasoning workload में छिपे हुए 'सोच' tokens का अतिरिक्त शुल्क लगता है, इसलिए कुल bill ऊपर जाता है।">
+  <meta property="og:image:alt" content="समान टोकन दर, अलग बिल: रीज़निंग वर्कलोड में छिपे हुए 'सोच' टोकन का अतिरिक्त शुल्क लगता है, इसलिए कुल बिल बढ़ जाता है।">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="when reasoning pays off — वही token price, अलग bill">
-  <meta name="twitter:description" content="Azure OpenAI deployment में यह तय करने की practical guide कि reasoning models कब अपनी लागत वसूल करते हैं।">
+  <meta name="twitter:title" content="when reasoning pays off — समान टोकन दर, अलग बिल">
+  <meta name="twitter:description" content="Azure OpenAI डिप्लॉयमेंट में रीज़निंग मॉडल कब अपनी लागत को सार्थक बनाते हैं, यह तय करने की व्यावहारिक मार्गदर्शिका।">
   <meta name="twitter:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
@@ -29,17 +29,17 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-07-11">
+  <meta name="i18n:last-translated-at" content="2026-08-10">
   <meta name="i18n:source-content-sha256" content="9d696381a827ac970645465ccc1851cde2a1621468e472a14b6fb475edcb722d">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="./">when reasoning pays off</a>
-      <nav class="site-links" aria-label="साइट">
+      <nav class="site-links" aria-label="साइट नेविगेशन">
         <a href="../blog/articles/hi/">लेख</a>
-        <a href="../blog/articles/when-reasoning-pays-off/hi/">अवलोकन</a>
-        <a href="../blog/charts/?lang=hi">चार्ट</a>
+        <a href="../blog/articles/when-reasoning-pays-off/hi/">अवलोकन लेख</a>
+        <a href="../blog/charts/?lang=hi">साक्ष्य चार्ट</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -51,116 +51,115 @@
       </nav>
     </div>
     <div class="hero">
-      <img src="../assets/hero.svg" alt="दो workloads का per-token price समान है, लेकिन reasoning workload पर अदृश्य 'सोच' tokens का अतिरिक्त शुल्क लगता है, इसलिए उसका कुल bill अधिक होता है।">
+      <img src="../assets/hero.svg" alt="दो वर्कलोड की प्रति-टोकन दर समान है, लेकिन रीज़निंग वर्कलोड में छिपे हुए 'सोच' टोकन का अतिरिक्त शुल्क लगता है, इसलिए उसका कुल बिल अधिक होता है।">
     </div>
   </header>
 
   <main>
-    <h1>वही token price, अलग bill</h1>
+    <h1>समान टोकन दर, अलग बिल</h1>
     <p class="lede">
-      कोई टीम workload को reasoning model पर ले जाती है। per-token price पहले जैसा
-      ही दिखता है, लेकिन एक नई setting सामने आती है: reasoning effort। उसे बढ़ाना
-      लगभग मुफ़्त-सा लगता है। फिर हर जगह इसे ऊपर कर बेहतर जवाब क्यों न लिया जाए?
-      पर visible output लगभग वैसा ही रहता है और bill फिर भी चढ़ जाता है। वजह छिपे
-      हुए "सोच" tokens हैं: reasoning model इन्हें बनाता है और इन पर charge करता
-      है, पर response में कभी नहीं दिखाता। यह project representative tasks के छोटे
-      set पर मापता है कि ये extra tokens कब लागत वसूल करते हैं और कब सिर्फ़ bill बढ़ाते हैं।
+      कोई टीम अपने वर्कलोड को रीज़निंग मॉडल पर ले जाती है। प्रति-टोकन दर पहले जैसी
+      ही दिखती है, लेकिन एक नया विकल्प सामने आता है: रीज़निंग स्तर। इसे बढ़ाना लगभग
+      मुफ़्त-सा लगता है—तो हर जगह इसे बढ़ाकर बेहतर उत्तर क्यों न लिए जाएँ? फिर बिल
+      बढ़ जाता है, जबकि दिखाई देने वाला आउटपुट लगभग नहीं बदलता। इसकी वजह छिपे हुए
+      "सोच" टोकन हैं: रीज़निंग मॉडल इन्हें बनाता है और इनका शुल्क लेता है, लेकिन
+      प्रतिक्रिया में कभी नहीं दिखाता। यह परियोजना प्रतिनिधि कार्यों के एक छोटे समूह
+      पर मापती है कि अतिरिक्त टोकन कब अपनी लागत को सार्थक बनाते हैं और कब केवल बिल बढ़ाते हैं।
     </p>
 
     <nav class="article-outline" aria-label="यहाँ से शुरू करें">
       <span class="section-label">यहाँ से शुरू करें</span>
-      <a href="../blog/articles/hi/">लेख-केंद्र</a>
-      <a href="../blog/articles/when-reasoning-pays-off/hi/">अवलोकन निबंध</a>
+      <a href="../blog/articles/hi/">लेख केंद्र</a>
+      <a href="../blog/articles/when-reasoning-pays-off/hi/">अवलोकन लेख</a>
       <a href="../blog/charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
     </nav>
 
     <h2>टीमें इसकी परवाह क्यों करती हैं</h2>
     <p>
-      मॉडल माइग्रेशन के बाद इंजीनियर से सवाल सीधे पूछे जाते हैं: लागत क्यों
-      बदली, लेटेंसी क्यों बदली, थ्रॉटलिंग क्यों बढ़ी? reasoning effort इन तीनों के
-      नीचे बैठा है। default ऊँचा छोड़ दें तो tokens चुपचाप उस internal computation पर
-      खर्च होते हैं जो reader तक कभी नहीं पहुँचती: PAYG में असली पैसा, और
-      PTU में कीमती capacity headroom। effort कहाँ सच में जवाब बदलता है, यह
-      जानना भरोसेमंद rollout और अचानक आए bill के बीच का फर्क है।
+      मॉडल माइग्रेशन के बाद इंजीनियर से सीधे सवाल किए जाते हैं: लागत क्यों बदली,
+      लेटेंसी क्यों बदली और थ्रॉटलिंग क्यों बढ़ी? रीज़निंग स्तर इन तीनों को प्रभावित
+      करता है। इसे डिफ़ॉल्ट रूप से ऊँचा रखने पर टोकन उस आंतरिक गणना में चुपचाप खर्च
+      होते हैं जो पाठक तक कभी नहीं पहुँचती—PAYG में वास्तविक धन और PTU में बहुमूल्य
+      अतिरिक्त क्षमता। रीज़निंग स्तर वास्तव में कहाँ उत्तर बदलता है, यह जानना
+      भरोसेमंद रोलआउट और अप्रत्याशित बिल के बीच का अंतर है।
     </p>
 
     <h2>हमने क्या परखा</h2>
     <p>
-      हमने prompts और workload slices स्थिर रखे, फिर हर slice पर reasoning-effort के
-      स्तरों का वही क्रम चलाया: छोटे factual answers, structured data से natural
-      language synthesis, multi-step reasoning, और tools इस्तेमाल करने वाले agents।
-      हर call पर पूरा usage breakdown दर्ज किया: input, cached, reasoning और output
-      tokens, साथ में quality signal और latency। इस measured token shape के ऊपर
-      हमने modeled view जोड़ा कि वही workload pay-as-you-go (PAYG) बनाम provisioned
-      throughput (PTU) में कैसे priced होगा।
+      हमने प्रॉम्प्ट और वर्कलोड के खंड स्थिर रखे, फिर हर खंड पर रीज़निंग स्तरों का
+      वही क्रम चलाया: छोटे तथ्यात्मक उत्तर, संरचित डेटा से स्वाभाविक भाषा में रूपांतरण,
+      बहु-चरणीय रीज़निंग और टूल इस्तेमाल करने वाले एजेंट। हर कॉल पर इनपुट, कैश,
+      रीज़निंग और आउटपुट टोकन का पूरा उपयोग-विवरण, गुणवत्ता संकेत और लेटेंसी दर्ज की।
+      प्रत्यक्ष मापन से मिली इस टोकन संरचना के आधार पर हमने मॉडल किया कि उसी वर्कलोड
+      की लागत उपयोग-आधारित PAYG और प्रावधानित थ्रूपुट PTU में कैसी होगी।
     </p>
 
     <h2>साक्ष्य ने क्या दिखाया</h2>
     <p>
-      नतीजे वैसे ही बँटे जैसे भरोसेमंद evidence बँटता है: कुछ जगह effort ने अपनी
-      लागत वसूल की, और कुछ जगह उसने सिर्फ़ hidden computation की लागत बढ़ाई।
-      चार बातें हर slice पर लागू होती हैं।
+      परिणाम हर खंड में अलग रहे। कुछ जगह रीज़निंग स्तर ने अपनी लागत को सार्थक
+      बनाया, जबकि कुछ जगह केवल छिपी हुई गणना की लागत बढ़ी। चार निष्कर्ष सभी खंडों
+      पर लागू होते हैं।
     </p>
     <div class="cards">
       <div class="card">
-        <h3>reasoning tokens हमेशा मापें</h3>
-        <p>इन पर शुल्क लगता है पर ये लौटाए नहीं जाते। हर call पर पूरा usage
-           breakdown दर्ज करें: input, cache, reasoning और output।</p>
+        <h3>रीज़निंग टोकन हमेशा मापें</h3>
+        <p>इनका शुल्क लगता है, लेकिन ये प्रतिक्रिया में नहीं लौटते। हर कॉल पर इनपुट,
+           कैश, रीज़निंग और आउटपुट टोकन का पूरा उपयोग-विवरण दर्ज करें।</p>
       </div>
       <div class="card">
-        <h3>हर task को reasoning की ज़रूरत नहीं</h3>
-        <p>छोटे तथ्यात्मक उत्तर, संरचित डेटा से प्राकृतिक भाषा में रूपांतरण,
-           और सरल वर्गीकरण में अक्सर लागत बढ़ी पर उसके साथ गुणवत्ता नहीं बढ़ी।</p>
+        <h3>हर कार्य को रीज़निंग की आवश्यकता नहीं होती</h3>
+        <p>छोटे तथ्यात्मक उत्तरों में लागत, लेटेंसी और रीज़निंग टोकन लगभग समान रहे।
+           संरचित डेटा के भाषा-रूपांतरण और सरल वर्गीकरण में भी पहले प्रत्यक्ष मापन करें।</p>
       </div>
       <div class="card">
-        <h3>एफर्ट प्रमुख लागत-नियंत्रक है</h3>
-        <p>reasoning-effort knob को default रूप से सबसे निचले स्तर पर रखें और
-           तभी बढ़ाएँ जब गुणवत्ता मूल्यांकन इस खर्च को उचित ठहराए।</p>
+        <h3>रीज़निंग स्तर लागत का प्रमुख नियंत्रण है</h3>
+        <p>रीज़निंग स्तर को डिफ़ॉल्ट रूप से न्यूनतम रखें और तभी बढ़ाएँ जब गुणवत्ता
+           मूल्यांकन अतिरिक्त खर्च को उचित ठहराए।</p>
       </div>
       <div class="card">
-        <h3>बिलिंग मॉडल फ़ायदे को बदल देता है</h3>
-        <p>पे-ऐज़-यू-गो (PAYG) पर, reasoning tokens घटाने से bill कम होता है।
-           प्रोविज़ंड थ्रूपुट (PTU) पर, वही कटौती निश्चित बिल पर थ्रूपुट लाभ
-           बन जाती है।</p>
+        <h3>बिलिंग मॉडल लाभ का रूप बदल देता है</h3>
+        <p>PAYG में रीज़निंग टोकन घटाने से बिल कम होता है।
+           PTU में यही कटौती निश्चित बिल पर अधिक थ्रूपुट
+           के रूप में लाभ देती है।</p>
       </div>
     </div>
 
     <h2>यह किसके लिए है</h2>
     <p>
-      उन इंजीनियरों और आर्किटेक्ट्स के लिए जो Azure OpenAI deployment चलाते हैं
-      और यह तय कर रहे हैं कि reasoning enable करें या नहीं (और कितनी), क्षमता का
-      आकलन कर रहे हैं, या मॉडल माइग्रेशन के बाद लागत, लेटेंसी या थ्रॉटलिंग में
-      बदलाव डीबग कर रहे हैं।
+      यह उन इंजीनियरों और आर्किटेक्टों के लिए है जो Azure OpenAI डिप्लॉयमेंट चलाते
+      हैं और तय कर रहे हैं कि रीज़निंग चालू करनी है या नहीं—और किस स्तर पर; जो क्षमता
+      का आकलन कर रहे हैं; या मॉडल माइग्रेशन के बाद लागत, लेटेंसी अथवा थ्रॉटलिंग में
+      आए बदलाव की जाँच कर रहे हैं।
     </p>
 
     <div class="banner">
-      <strong>यह कोई उत्पाद नहीं, शोध सामग्री है।</strong> कोई होस्टेड सेवा
-      नहीं है और कोई SLA नहीं। यह repository केवल reproducible benchmarks,
-      methodology, decision tools और sanitized result slices प्रकाशित करती है।
+      <strong>यह शोध सामग्री है, उत्पाद नहीं।</strong> कोई होस्टेड सेवा या SLA
+      उपलब्ध नहीं है। यह रिपॉज़िटरी केवल पुनरुत्पाद्य बेंचमार्क, कार्यप्रणाली,
+      निर्णय-उपकरण और परिशोधित परिणामों के चुनिंदा अंश प्रकाशित करती है।
     </div>
 
     <h2>आगे क्या पढ़ें</h2>
     <div class="article-summary-grid">
       <article class="summary-tile">
-        <h2>अवलोकन निबंध पढ़ें</h2>
-        <p>guided story: effort कहाँ खर्च बर्बाद करता है, कहाँ आज़माने लायक है,
-           और hidden tokens को budget में स्पष्ट रूप से क्यों रखना चाहिए।
+        <h2>अवलोकन लेख पढ़ें</h2>
+        <p>यह निर्देशित विवरण बताता है कि रीज़निंग स्तर कहाँ खर्च व्यर्थ करता है,
+           कहाँ इसे आज़माना उचित है और छिपे टोकन को बजट में स्पष्ट रूप से क्यों रखना चाहिए।
            <a href="../blog/articles/when-reasoning-pays-off/hi/">पढ़ना शुरू करें →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>लेख-केंद्र देखें</h2>
-        <p>पूरा reading path: साक्ष्य विषय, सेतु निबंध, और recovery, caching व
-           साइज़िंग पर परिचालन नोट्स। <a href="../blog/articles/hi/">केंद्र खोलें →</a></p>
+        <h2>लेख केंद्र देखें</h2>
+        <p>पूरे पठन-क्रम में साक्ष्य-विषय, सेतु लेख और रिकवरी, कैश व
+           साइज़िंग पर संचालन संबंधी टिप्पणियाँ शामिल हैं। <a href="../blog/articles/hi/">केंद्र खोलें →</a></p>
       </article>
       <article class="summary-tile">
         <h2>साक्ष्य डैशबोर्ड देखें</h2>
-        <p>सत्यापन रिकॉर्ड: हर दावे के पीछे व्यवस्थित तालिकाएँ और रेंडर किए गए स्रोत चार्ट।
+        <p>हर दावे के आधार में मौजूद व्यवस्थित तालिकाएँ और मूल स्रोत से रेंडर किए गए चार्ट देखें।
            <a href="../blog/charts/?lang=hi">डैशबोर्ड खोलें →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>पूरी methodology पढ़ें</h2>
-        <p>निर्णय ढाँचा और ऑपरेटर मार्गदर्शन रिपॉज़िटरी दस्तावेज़ में हैं।
+        <h2>पूरी कार्यप्रणाली पढ़ें</h2>
+        <p>निर्णय-ढाँचा और संचालन संबंधी मार्गदर्शन रिपॉज़िटरी के दस्तावेज़ों में उपलब्ध हैं।
            <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub पर देखें →</a></p>
       </article>
     </div>
@@ -170,41 +169,40 @@
       <dl class="glossary-list">
         <div class="glossary-term" data-term="foundry">
           <dt>Foundry</dt>
-          <dd>Azure AI Foundry: इस project में मापे गए model को deploy और
-              सर्व करने वाला प्रबंधित प्लेटफ़ॉर्म।</dd>
+          <dd>Azure AI Foundry: इस परियोजना में मापे गए मॉडल को डिप्लॉय करके उपलब्ध कराने के लिए इस्तेमाल किया गया प्रबंधित प्लेटफ़ॉर्म।</dd>
         </div>
         <div class="glossary-term" data-term="ptu">
           <dt>PTU</dt>
-          <dd>Provisioned Throughput Units: tokens के बजाय throughput के लिए payment वाली
-              आरक्षित, निश्चित-क्षमता बिलिंग।</dd>
+          <dd>Provisioned Throughput Units: आरक्षित, निश्चित क्षमता वाली बिलिंग,
+              जिसमें टोकन के बजाय थ्रूपुट के लिए भुगतान किया जाता है।</dd>
         </div>
         <div class="glossary-term" data-term="payg">
           <dt>PAYG</dt>
-          <dd>Pay-as-you-go: input, cache, reasoning और output tokens के अनुसार लिया
-              जाने वाला उपयोग-आधारित बिलिंग।</dd>
+          <dd>Pay-as-you-go: इनपुट, कैश, रीज़निंग और आउटपुट टोकन के अनुसार
+              शुल्क लेने वाली उपयोग-आधारित बिलिंग।</dd>
         </div>
         <div class="glossary-term" data-term="reasoning">
-          <dt>reasoning tokens</dt>
-          <dd>internal "सोच" tokens जिन्हें reasoning model बनाता और bill करता है पर
-              प्रतिक्रिया में कभी नहीं लौटाता।</dd>
+          <dt>रीज़निंग टोकन</dt>
+          <dd>आंतरिक "सोच" टोकन, जिन्हें रीज़निंग मॉडल बनाता है और जिनका शुल्क
+              लिया जाता है, लेकिन जो प्रतिक्रिया में कभी नहीं लौटते।</dd>
         </div>
         <div class="glossary-term" data-term="cache">
           <dt>कैश</dt>
-          <dd>Prompt cache: पहले process किए गए prompt prefixes का reuse, कम
-              कैश-इनपुट दर पर बिल किया जाता है।</dd>
+          <dd>प्रॉम्प्ट कैश: पहले संसाधित किए गए प्रॉम्प्ट उपसर्गों का दोबारा उपयोग,
+              जिसका शुल्क कम कैश-इनपुट दर पर लिया जाता है।</dd>
         </div>
         <div class="glossary-term" data-term="429">
           <dt>429</dt>
-          <dd>HTTP 429 Too Many Requests: जब कोई deployment अपनी rate या
-              क्षमता सीमा पार करता है तब लौटाई जाने वाली थ्रॉटलिंग प्रतिक्रिया।</dd>
+          <dd>HTTP 429 Too Many Requests: डिप्लॉयमेंट के अनुरोध-दर या क्षमता सीमा
+              पार करने पर लौटाई जाने वाली थ्रॉटलिंग प्रतिक्रिया।</dd>
         </div>
       </dl>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed शोध सामग्री। प्रकाशित data केवल sanitized या
-       aggregate रूप में है।</p>
+    <p>MIT लाइसेंस वाली शोध सामग्री। प्रकाशित डेटा केवल परिशोधित या
+       समेकित रूप में उपलब्ध है।</p>
   </footer>
 
   <script src="../assets/i18n.js" defer></script>

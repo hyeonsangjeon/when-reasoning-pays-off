@@ -261,6 +261,10 @@ def check_localized_overview_parity() -> None:
             "guide": 'aria-label="このシリーズの構成"',
             "svg": "when-reasoning-pays-off-overview.ja.svg",
         },
+        "hi": {
+            "guide": 'aria-label="इस शृंखला की संरचना"',
+            "svg": "when-reasoning-pays-off-overview.hi.svg",
+        },
     }
     for locale, contract in locale_contracts.items():
         page = LOCALE_PAGES[locale]
@@ -300,10 +304,9 @@ def check_localized_overview_parity() -> None:
             )
 
 
-def check_japanese_chart_locale() -> None:
+def check_translated_chart_locales() -> None:
     locale_dir = BLOG_ROOT / "data" / "chart-data" / "locales"
     ko_labels = load_json(locale_dir / "ko.json")
-    ja_labels = load_json(locale_dir / "ja.json")
 
     def leaf_paths(
         value: object,
@@ -316,18 +319,20 @@ def check_japanese_chart_locale() -> None:
             paths.update(leaf_paths(child, prefix + (key,)))
         return paths
 
-    require(
-        leaf_paths(ja_labels) == leaf_paths(ko_labels),
-        "Japanese chart locale must cover every Korean baseline label",
-    )
-    require(
-        ja_labels.get("meta", {}).get("fallback") is False,
-        "Japanese chart locale must not fall back to English",
-    )
-    require(
-        ja_labels.get("meta", {}).get("translation_status") == "translated",
-        "Japanese chart locale must be marked translated",
-    )
+    for locale, label in {"ja": "Japanese", "hi": "Hindi"}.items():
+        labels = load_json(locale_dir / f"{locale}.json")
+        require(
+            leaf_paths(labels) == leaf_paths(ko_labels),
+            f"{label} chart locale must cover every Korean baseline label",
+        )
+        require(
+            labels.get("meta", {}).get("fallback") is False,
+            f"{label} chart locale must not fall back to English",
+        )
+        require(
+            labels.get("meta", {}).get("translation_status") == "translated",
+            f"{label} chart locale must be marked translated",
+        )
 
 
 def check_no_root_relative_blog_urls() -> int:
@@ -502,7 +507,7 @@ def main() -> None:
     claim_count = check_ledger(canonical_sha)
     check_ptu_wording()
     check_localized_overview_parity()
-    check_japanese_chart_locale()
+    check_translated_chart_locales()
     blog_url_count = check_no_root_relative_blog_urls()
     scanned_count = check_forbidden_public_patterns(
         args.changed_from,

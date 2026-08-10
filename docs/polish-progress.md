@@ -51,3 +51,13 @@ See `docs/blog/polish-changelog.md` for per-article notes and borderline-call lo
 
 Korean controls meaning, information order, evidence boundaries, and editorial tone for
 this pass. English remains the canonical source locale in release metadata.
+
+## Hindi Korean-baseline pass (2026-08-10)
+
+- [x] Re-polished all 21 Hindi HTML pages against the Korean editorial baseline.
+- [x] Re-polished 9 existing Hindi SVGs and added the localized overview SVG.
+- [x] Replaced the English-fallback chart locale with complete Hindi labels.
+- [x] Restored overview structure parity: 21 top-level blocks, 7 figures, and 8 sources.
+
+Korean controls meaning, information order, evidence boundaries, and editorial tone for
+this pass. English remains the canonical source locale in release metadata.

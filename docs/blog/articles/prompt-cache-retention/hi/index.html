@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>रिटेंशन request की नीति है | when reasoning pays off</title>
-  <meta name="description" content="जब बाद में cache reuse ज़रूरी हो, तब prompt_cache_retention को अनुमान पर न छोड़कर साफ़ तौर पर सेट करने पर यह public operations लेख है।">
+  <title>रिटेंशन मान्यता नहीं, अनुरोध की नीति है | when reasoning pays off</title>
+  <meta name="description" content="यह सार्वजनिक संचालन-लेख बताता है कि बाद में कैश पुनः उपयोग ज़रूरी होने पर prompt_cache_retention को अनुमान पर न छोड़कर स्पष्ट रूप से क्यों सेट करना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -21,12 +21,12 @@
 <body>
   <header class="site">
     <div class="bar">
-      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <a class="brand" href="../../../../hi/">जब रीज़निंग लाभ देती है</a>
       <nav class="site-links" aria-label="लेख नेविगेशन">
         <a href="../../../../hi/">होम</a>
         <a href="../../hi/">लेख सूची</a>
         <a href="../../when-reasoning-pays-off/hi/">अवलोकन निबंध</a>
-        <a href="../../../charts/?lang=hi">evidence dashboard</a>
+        <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -40,68 +40,67 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../hi/">लेख</a> / operations लेख</p>
-    <p class="article-kicker">operations लेख, prompt cache रिटेंशन</p>
-    <h1>रिटेंशन मान्यता नहीं, request की नीति है</h1>
+    <p class="breadcrumb"><a href="../../hi/">लेख</a> / संचालन लेख</p>
+    <p class="article-kicker">संचालन लेख, प्रॉम्प्ट कैश रिटेंशन</p>
+    <h1>रिटेंशन मान्यता नहीं, अनुरोध की नीति है</h1>
     <p class="lede">
-      समर्थित मॉडल eligible prefix को डिफ़ॉल्ट रूप से cache कर लेते हैं, इसलिए prompt
-      caching अक्सर अपने-आप चलती हुई लगती है। तब सहज रूप से उसी पर भरोसा हो जाता है: workload किसी idle gap के बाद, shift boundary पार करके, batch pause के बाद, या
-      बाद की customer turn में वही shared prefix फिर इस्तेमाल करता है, और request body
-      में बस <code>prompt_cache_retention</code> नहीं भेजा जाता, यह मानकर कि वह window
-      अभी भी बनी होगी। लेकिन "डिफ़ॉल्ट रूप से cache होता है" और "operation जितनी देर
-      मानकर चल रहा है उतनी देर retained रहता है" एक ही बात नहीं हैं। अगर request
-      retention नहीं माँगती, तो operation शायद ऐसी cache window पर निर्भर हो जो उसने
-      कभी माँगी ही नहीं। इसलिए असली सवाल "cache on है?" नहीं, बल्कि "जिस reuse window
-      पर यह workload निर्भर है, क्या request ने उसे साफ़ तौर पर माँगा है?" है।
+      समर्थित मॉडल पात्र प्रीफ़िक्स के लिए कैशिंग स्वतः सक्षम कर सकते हैं, लेकिन इससे हर अनुरोध पर वास्तविक कैश हिट की गारंटी नहीं मिलती। इसलिए प्रॉम्प्ट
+      कैशिंग अक्सर अपने-आप चलती हुई लगती है। तब सहज रूप से उसी पर भरोसा हो जाता है: कार्यभार किसी निष्क्रिय अंतर के बाद, शिफ़्ट सीमा पार करके, बैच विराम के बाद, या
+      बाद की ग्राहक संवाद में वही साझा प्रीफ़िक्स फिर इस्तेमाल करता है, और अनुरोध मुख्य भाग
+      में बस <code>prompt_cache_retention</code> नहीं भेजा जाता, यह मानकर कि वह अवधि
+      अभी भी बनी होगी। लेकिन “कैशिंग सक्षम है”, “वास्तविक कैश हिट हुई” और “संचालन जितनी देर मानकर चल रहा है उतनी देर कैश संरक्षित रहा”—ये तीन अलग बातें हैं। अगर अनुरोध
+      संरक्षण नहीं माँगती, तो संचालन शायद ऐसी कैश अवधि पर निर्भर हो जो उसने
+      कभी माँगी ही नहीं। इसलिए असली सवाल “कैशिंग सक्षम है?” नहीं, बल्कि "जिस पुनः उपयोग अवधि
+      पर यह कार्यभार निर्भर है, क्या अनुरोध ने उसे साफ़ तौर पर माँगा है?" है।
     </p>
 
     <figure class="article-figure" id="figure-retention-one-pager">
       <figcaption>
-        <strong>एक नज़र में यह लेख।</strong> prompt caching अपने-आप होती है, लेकिन
-        retention window request policy है। Microsoft Learn एक <code>in_memory</code>
-        default बताता है जो कुछ ही मिनटों में साफ़ हो सकता है, और एक explicit
-        <code>24h</code> window भी। यह one-pager एक ही बात पर ज़ोर देता है: अगर बाद का
-        reuse अहम है, तो retention को explicit रखें: और साथ ही सीमा भी साफ़ करता है।
-        retention modes आधिकारिक spec हैं, जबकि उनके साथ दिखाया गया first-token latency
-        shape PAYG पर मापा गया sanitized public aggregate है, जिसे यहाँ सिर्फ़
-        descriptive रूप में रखा गया है।
-        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">cache रिटेंशन का एक-पृष्ठ सार SVG खोलें</a>।
+        <strong>एक नज़र में यह लेख।</strong> पात्र प्रीफ़िक्स के लिए प्रॉम्प्ट कैशिंग स्वतः सक्षम हो सकती है, लेकिन वास्तविक हिट की गारंटी नहीं होती और
+        संरक्षण अवधि अनुरोध नीति है। Microsoft Learn एक <code>in_memory</code>
+        डिफ़ॉल्ट बताता है जो कुछ ही मिनटों में साफ़ हो सकता है, और एक स्पष्ट
+        <code>24h</code> अवधि भी। यह एक-पृष्ठ सार एक ही बात पर ज़ोर देता है: अगर बाद का
+        पुनः उपयोग अहम है, तो संरक्षण को स्पष्ट रखें: और साथ ही सीमा भी साफ़ करता है।
+        संरक्षण मोड आधिकारिक विनिर्देश हैं, जबकि उनके साथ दिखाया गया प्रथम-टोकन विलंब
+        स्वरूप PAYG पर मापा गया पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जिसे यहाँ सिर्फ़
+        वर्णनात्मक रूप में रखा गया है।
+        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg">कैश रिटेंशन का एक-पृष्ठ सार SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="prompt cache retention का one-pager। यह in-memory retention की छोटी default lifetime की तुलना एक explicit 24h window से करता है, जो warm prefix को routable रखती है, और दिखाता है कि इस source run में 24h configuration की first-token latency tail कम थी। मुख्य संदेश: retention window अहम है, इसलिए इसे explicit सेट करें। इसमें documented retention modes और एक sanitized measured aggregate दिखाया गया है; यह केवल वर्णनात्मक है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-retention.svg" alt="प्रॉम्प्ट कैश संरक्षण का एक-पृष्ठ सार। यह इन-मेमोरी संरक्षण की छोटी डिफ़ॉल्ट अवधि की तुलना एक स्पष्ट 24h अवधि से करता है, जो गरम प्रीफ़िक्स को रूट-योग्य रखती है, और दिखाता है कि इस स्रोत रन में 24h कॉन्फ़िगरेशन की प्रथम-टोकन विलंब टेल कम थी। मुख्य संदेश: संरक्षण अवधि अहम है, इसलिए इसे स्पष्ट सेट करें। इसमें दस्तावेज़ीकृत संरक्षण मोड और एक पहचान-रहित मापा गया समेकित आँकड़ा दिखाया गया है; यह केवल वर्णनात्मक है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-retention" class="article-section">
-      <h2>मान लेने के बजाय window क्यों सेट करें</h2>
+      <h2>मान लेने के बजाय अवधि क्यों सेट करें</h2>
       <p>
-        "डिफ़ॉल्ट काफ़ी है" वाली सहज प्रतिक्रिया यह मान लेती है कि cache window उतनी देर
-        बनी रहेगी, जितना gap workload दो reuse के बीच छोड़ता है। इसे मान लेने से पहले दो
-        बातों को साथ रखकर देखना चाहिए। पहली बात Microsoft Learn की documented behavior
-        है: retention policies दो हैं: <code>in_memory</code> और <code>24h</code>।
-        in-memory entries आमतौर पर 5–10 मिनट की inactivity के भीतर साफ़ हो जाती हैं और
-        last use के 1 घंटे के भीतर हमेशा हटा दी जाती हैं, जबकि extended retention
-        cacheable prefix को अधिकतम 24 घंटे तक routable रख सकती है। <code>gpt-5.4</code>
-        और उससे पुराने मॉडलों में value छोड़ने का मतलब <code>in_memory</code> है, और
-        prompt cache की pricing दोनों policies में एक-सी है। दूसरी बात इस repository के
-        source runs से लिया गया एक sparse sanitized public aggregate है, जिसे retention
-        mode के हिसाब से group किया गया है और जो descriptive रूप से दिखाता है कि
-        <code>in_memory</code> और <code>24h</code> में first-token latency और cache hit
-        ratio ने व्यवहार में कैसे बदलाव दिखाए।
+        "डिफ़ॉल्ट काफ़ी है" वाली सहज प्रतिक्रिया यह मान लेती है कि कैश अवधि उतनी देर
+        बनी रहेगी, जितना अंतर कार्यभार दो पुनः उपयोग के बीच छोड़ता है। इसे मान लेने से पहले दो
+        बातों को साथ रखकर देखना चाहिए। पहली बात Microsoft Learn की दस्तावेज़ीकृत व्यवहार
+        है: संरक्षण नीतियाँ दो हैं: <code>in_memory</code> और <code>24h</code>।
+        इन-मेमोरी प्रविष्टियाँ आमतौर पर 5–10 मिनट की निष्क्रियता के भीतर साफ़ हो जाती हैं और
+        अंतिम उपयोग के 1 घंटे के भीतर हमेशा हटा दी जाती हैं, जबकि विस्तारित संरक्षण
+        कैश-योग्य प्रीफ़िक्स को अधिकतम 24 घंटे तक रूट-योग्य रख सकती है। <code>gpt-5.4</code>
+        और उससे पुराने मॉडलों में मान छोड़ने का मतलब <code>in_memory</code> है, और
+        प्रॉम्प्ट कैश की मूल्य-निर्धारण दोनों नीतियों के लिए समान है। दूसरी बात इस रिपॉज़िटरी के
+        स्रोत रन से लिया गया एक सीमित पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जिसे संरक्षण
+        मोड के हिसाब से समूह किया गया है और जो वर्णनात्मक रूप से दिखाता है कि
+        <code>in_memory</code> और <code>24h</code> में प्रथम-टोकन विलंब और कैश हिट
+        अनुपात ने व्यवहार में कैसे बदलाव दिखाए।
       </p>
       <p>
-        असली बात इन दोनों को साथ पढ़ने में है। सिर्फ़ hit ratio देखकर बात आश्वस्त करने
-        वाली लग सकती है, जबकि retention choice का असर कहीं और सामने आता है। मापे गए इस
-        हिस्से में दोनों modes का hit ratio ऊँचा रहा (क़रीब 0.93–0.96), इसलिए अगर आप
-        सिर्फ़ वही देखें तो लगेगा कि retention mode से ज़्यादा फ़र्क़ नहीं पड़ा। लेकिन
-        first-token latency tail कहानी का दूसरा हिस्सा दिखाती है: cardinality 1 पर
-        <code>in_memory</code> series क़रीब 106,000 ms p95 पर थी, जबकि
-        <code>24h</code> series क़रीब 9,900 ms पर। यानी यहाँ retention choice hit ratio
-        में नहीं, latency tail में दिखी। इसी वजह से retention को cached-token share के
-        साथ latency रखकर पढ़ना चाहिए: यह सिर्फ़ performance setting नहीं, request policy
-        और governance choice भी है। दो retention modes, उनकी lifetime,
-        <code>in_memory</code> default, एक-सी pricing, और extended retention की
-        in-region शर्त Microsoft Learn documented behavior के रूप में देता है। latency और
-        hit ratio को साथ रखकर दिखाया गया यह public evidence इस repository का source-run
-        evidence है, कोई universal latency curve नहीं। नीचे के charts वही pairing साफ़ करते
+        असली बात इन दोनों को साथ पढ़ने में है। सिर्फ़ हिट अनुपात देखकर बात आश्वस्त करने
+        वाली लग सकती है, जबकि संरक्षण चुनाव का असर कहीं और सामने आता है। मापे गए इस
+        हिस्से में दोनों मोड का हिट अनुपात ऊँचा रहा (क़रीब 0.93–0.96), इसलिए अगर आप
+        सिर्फ़ वही देखें तो लगेगा कि संरक्षण मोड से ज़्यादा फ़र्क़ नहीं पड़ा। लेकिन
+        प्रथम-टोकन विलंब टेल कहानी का दूसरा हिस्सा दिखाती है: कार्डिनैलिटी 1 पर
+        <code>in_memory</code> शृंखला क़रीब 106,000 ms p95 पर थी, जबकि
+        <code>24h</code> शृंखला क़रीब 9,900 ms पर। यानी यहाँ संरक्षण चुनाव हिट अनुपात
+        में नहीं, विलंब टेल में दिखी। इसी वजह से संरक्षण को कैशित-टोकन हिस्सा के
+        साथ विलंब रखकर पढ़ना चाहिए: यह सिर्फ़ प्रदर्शन सेटिंग नहीं, अनुरोध नीति
+        और शासन चुनाव भी है। दो संरक्षण मोड, उनकी अवधि,
+        <code>in_memory</code> डिफ़ॉल्ट, एक-सी मूल्य-निर्धारण, और विस्तारित संरक्षण की
+        क्षेत्र के भीतर शर्त Microsoft Learn दस्तावेज़ीकृत व्यवहार के रूप में देता है। विलंब और
+        हिट अनुपात को साथ रखकर दिखाया गया यह सार्वजनिक साक्ष्य इस रिपॉज़िटरी का स्रोत रन
+        साक्ष्य है, कोई सार्वभौमिक विलंब वक्र नहीं। नीचे के चार्ट वही युग्मन साफ़ करते
         हैं।
       </p>
     </section>
@@ -109,241 +108,238 @@
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>सवाल</h2>
-        <p>जहाँ operation बाद में cache reuse की उम्मीद करता है, क्या request सचमुच वही window माँग रही है?</p>
+        <p>जहाँ संचालन बाद में कैश पुनः उपयोग की उम्मीद करता है, क्या अनुरोध सचमुच वही अवधि माँग रही है?</p>
       </section>
       <section class="summary-tile">
-        <h2>evidence</h2>
-        <p>Microsoft Learn retention modes को define करता है, और यह repository sparse public latency और hit-ratio evidence जोड़ती है।</p>
+        <h2>साक्ष्य</h2>
+        <p>Microsoft Learn संरक्षण मोड को परिभाषित करता है, और यह रिपॉज़िटरी सीमित सार्वजनिक विलंब और हिट-अनुपात साक्ष्य जोड़ती है।</p>
       </section>
       <section class="summary-tile">
         <h2>फैसला</h2>
-        <p>retention को explicit रखें, prefix stable रखें, और latency को cached-token share के साथ पढ़ें।</p>
+        <p>संरक्षण को स्पष्ट रखें, प्रीफ़िक्स स्थिर रखें, और विलंब को कैशित-टोकन हिस्सा के साथ पढ़ें।</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="लेख के खंड">
       <strong>प्रश्न से पढ़ें:</strong>
-      <a href="#spec">official behavior</a>
-      <a href="#evidence">public evidence</a>
-      <a href="#policy">operating policy</a>
-      <a href="#residency">data residency पर टिप्पणी</a>
+      <a href="#spec">आधिकारिक व्यवहार</a>
+      <a href="#evidence">सार्वजनिक साक्ष्य</a>
+      <a href="#policy">संचालन नीति</a>
+      <a href="#residency">डेटा निवास पर टिप्पणी</a>
       <a href="#sources">स्रोत</a>
     </nav>
 
     <p class="banner">
       <strong>दायरे पर टिप्पणी:</strong>
-      नीचे दिए गए public measurements sparse source-run evidence हैं। ये एक operations
-      checklist को सहारा देते हैं, universal latency claim नहीं बनाते।
+      नीचे दिए गए सार्वजनिक मापन सीमित स्रोत रन के साक्ष्य हैं। ये एक संचालन
+      जाँच-सूची को सहारा देते हैं, सार्वभौमिक विलंब दावा नहीं बनाते।
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">official behavior, दो retention modes</p>
-      <h2>Automatic caching, explicit retention के बराबर नहीं</h2>
+      <p class="section-label">आधिकारिक व्यवहार, दो संरक्षण मोड</p>
+      <h2>कैशिंग सक्षम होना, वास्तविक हिट या स्पष्ट संरक्षण के बराबर नहीं</h2>
       <p>
-        Microsoft Learn दो prompt cache retention policies बताता है: <code>in_memory</code> और <code>24h</code>। in-memory cache entries आमतौर पर
-        5–10 मिनट की inactivity के भीतर साफ़ हो जाती हैं और last use के 1 घंटे के भीतर
-        हमेशा हटा दी जाती हैं। extended retention cacheable prefix को अधिकतम 24 घंटे तक
-        active रख सकती है।
+        Microsoft Learn दो प्रॉम्प्ट कैश संरक्षण नीतियाँ बताता है: <code>in_memory</code> और <code>24h</code>। कैशिंग की पात्रता या सक्रियण अपने-आप वास्तविक कैश हिट सिद्ध नहीं करता। इन-मेमोरी कैश प्रविष्टियाँ आमतौर पर
+        5–10 मिनट की निष्क्रियता के भीतर साफ़ हो जाती हैं और अंतिम उपयोग के 1 घंटे के भीतर
+        हमेशा हटा दी जाती हैं। विस्तारित संरक्षण कैश-योग्य प्रीफ़िक्स को अधिकतम 24 घंटे तक
+        सक्रिय रख सकती है।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>Default window छोटी हो सकती है</h3>
-          <p><code>gpt-5.4</code> और उससे पुराने मॉडलों में retention छोड़ने का मतलब <code>in_memory</code> है।</p>
+          <h3>डिफ़ॉल्ट अवधि छोटी हो सकती है</h3>
+          <p><code>gpt-5.4</code> और उससे पुराने मॉडलों में संरक्षण छोड़ने का मतलब <code>in_memory</code> है।</p>
         </div>
         <div>
-          <h3>Longer reuse को explicit रखें</h3>
-          <p>अगर बाद का reuse अपेक्षित है, तो जहाँ support हो वहाँ <code>prompt_cache_retention</code> को <code>24h</code> पर सेट करें।</p>
+          <h3>लंबा पुनः उपयोग को स्पष्ट रखें</h3>
+          <p>अगर बाद का पुनः उपयोग अपेक्षित है, तो जहाँ समर्थन हो वहाँ <code>prompt_cache_retention</code> को <code>24h</code> पर सेट करें।</p>
         </div>
         <div>
-          <h3>Price यहाँ फ़र्क़ नहीं बनाती</h3>
-          <p>Microsoft Learn के अनुसार prompt cache pricing दोनों retention policies में एक-सी है।</p>
+          <h3>मूल्य यहाँ फ़र्क़ नहीं बनाती</h3>
+          <p>Microsoft Learn के अनुसार प्रॉम्प्ट कैश मूल्य-निर्धारण दोनों संरक्षण नीतियों के लिए एक ही है।</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">observed evidence, measured public slice</p>
-      <h2>Retention का असर latency में साफ़ दिखा</h2>
+      <p class="section-label">अवलोकित साक्ष्य, मापा गया सार्वजनिक खंड</p>
+      <h2>संरक्षण का असर विलंब में साफ़ दिखा</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>यह chart कैसे पढ़ें:</strong> यह public aggregate cache-key का मापा
-          गया हिस्सा है, जिसे retention mode के हिसाब से group किया गया है। बायाँ panel
-          p95 time to first token दिखाता है। दायाँ panel cache hit ratio दिखाता है। हर
-          group वही cardinality रखते हुए <code>in_memory</code> और <code>24h</code> की
+          <strong>यह चार्ट कैसे पढ़ें:</strong> यह सार्वजनिक समेकित आँकड़े कैश-कुंजी का मापा
+          गया हिस्सा है, जिसे संरक्षण मोड के हिसाब से समूह किया गया है। बायाँ खंड
+          p95 प्रथम टोकन तक का समय दिखाता है। दायाँ खंड कैश हिट अनुपात दिखाता है। हर
+          समूह वही कार्डिनैलिटी रखते हुए <code>in_memory</code> और <code>24h</code> की
           तुलना करता है।
         </figcaption>
-        <img src="../../../../assets/prompt-cache-retention-evidence.hi.svg" alt="TTFT p95 और cache hit ratio की तुलना करता prompt cache retention evidence chart।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/prompt-cache-retention-evidence.hi.svg" alt="TTFT p95 और कैश हिट अनुपात की तुलना करता प्रॉम्प्ट कैश संरक्षण साक्ष्य चार्ट।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-retention-ttft">
         <figcaption>
-          <strong>Source chart: retention mode के हिसाब से first-token latency p95।</strong>
-          <strong>X-अक्ष:</strong> log2 पैमाने पर bucket-कार्डिनैलिटी (1, फिर 8)।
-          <strong>Y-अक्ष:</strong> स्थिर-अवस्था पहले-टोकन तक p95 समय (मिलीसेकंड)।
-          <strong>Lines:</strong> यह लेख जिन दो retention policies की तुलना करता है: <code>in_memory</code> और <code>24h</code>, हर एक N&nbsp;=&nbsp;960 records।
-          यह two-series line chart है, frequency histogram नहीं। <strong>इसे कैसे
-          पढ़ें:</strong> cardinality 1 पर <code>in_memory</code> series क़रीब
-          106,000&nbsp;ms p95 पर थी और <code>24h</code> series क़रीब 9,900&nbsp;ms पर। इस configuration में retention का असर latency tail में दिखा: और traffic 8
-          buckets में बँटते ही दोनों series एक-दूसरे के क़रीब आ गईं।
-          <strong>evidence-सीमा:</strong> PAYG gpt-5.2 पर एक sparse sanitized public
-          aggregate (PTU नहीं)। source-run evidence, universal latency rule नहीं।
+          <strong>स्रोत चार्ट: संरक्षण मोड के हिसाब से प्रथम-टोकन विलंब p95।</strong>
+          <strong>क्षैतिज अक्ष:</strong> log2 पैमाने पर बकेट-कार्डिनैलिटी (1, फिर 8)।
+          <strong>ऊर्ध्वाधर अक्ष:</strong> स्थिर-अवस्था पहले-टोकन तक p95 समय (मिलीसेकंड)।
+          <strong>रेखाएँ:</strong> यह लेख जिन दो संरक्षण नीतियों की तुलना करता है: <code>in_memory</code> और <code>24h</code>, हर एक N&nbsp;=&nbsp;960 रिकॉर्ड।
+          यह दो-शृंखला पंक्ति चार्ट है, आवृत्ति हिस्टोग्राम नहीं। <strong>इसे कैसे
+          पढ़ें:</strong> कार्डिनैलिटी 1 पर <code>in_memory</code> शृंखला क़रीब
+          106,000&nbsp;ms p95 पर थी और <code>24h</code> शृंखला क़रीब 9,900&nbsp;ms पर। इस कॉन्फ़िगरेशन में संरक्षण मोड के बीच विलंब टेल का बड़ा वर्णनात्मक अंतर दिखा; 8 बकेट वाले सेल में दोनों शृंखलाएँ पास थीं। एकल रन कारण सिद्ध नहीं करता।
+          <strong>साक्ष्य-सीमा:</strong> PAYG gpt-5.2 पर एक सीमित पहचान-रहित सार्वजनिक
+          समेकित आँकड़े (PTU नहीं)। स्रोत रन का साक्ष्य, सार्वभौमिक विलंब नियम नहीं।
           <strong>स्रोत:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
           (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">स्रोत CSV</a>)।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="retention mode के हिसाब से bucket cardinality (log2 axis) के सापेक्ष steady-state first-token p95 time का line chart। in_memory line एक bucket पर क़रीब 1,06,000 मिलीसेकंड से बहुत ऊँची शुरू होकर 8 buckets पर क़रीब 16,000 तक गिरती है, जबकि 24h line नीचे रहती है, क़रीब 10,000–15,000 मिलीसेकंड के आसपास।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="संरक्षण मोड के हिसाब से बकेट कार्डिनैलिटी (log2 धुरी) के सापेक्ष स्थिर-अवस्था प्रथम-टोकन p95 समय का पंक्ति चार्ट। in_memory पंक्ति एक बकेट पर क़रीब 1,06,000 मिलीसेकंड से बहुत ऊँची शुरू होकर 8 बकेट पर क़रीब 16,000 तक गिरती है, जबकि 24h पंक्ति नीचे रहती है, क़रीब 10,000–15,000 मिलीसेकंड के आसपास।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-retention-hit-ratio">
         <figcaption>
-          <strong>Paired source chart: retention mode के हिसाब से cache hit ratio।</strong>
-          <strong>X-अक्ष:</strong> वही log2 bucket-कार्डिनैलिटी अक्ष (1, फिर 8)।
-          <strong>Y-अक्ष:</strong> steady-state cache hit ratio, 0–1।
-          <strong>Lines:</strong> वही <code>in_memory</code> और <code>24h</code>
-          series, हर एक N&nbsp;=&nbsp;960। <strong>इसे कैसे पढ़ें:</strong> मापे गए इस
-          हिस्से में दोनों series ऊँची रहीं (क़रीब 0.93–0.96), और cardinality 1 पर
-          <code>24h</code> series थोड़ी ऊँची थी। यहाँ retention का बड़ा फ़र्क़ hit ratio
-          में नहीं, ऊपर वाले latency panel में दिखा: इसलिए retention को cached-token
-          share के साथ latency रखकर पढ़ना चाहिए। <strong>evidence-सीमा:</strong> PAYG gpt-5.2
-          पर वही sparse sanitized public aggregate (PTU नहीं)। यह वर्णनात्मक है,
-          universal cache-hit rule नहीं। <strong>स्रोत:</strong>
+          <strong>संबद्ध स्रोत चार्ट: संरक्षण मोड के हिसाब से कैश हिट अनुपात।</strong>
+          <strong>क्षैतिज अक्ष:</strong> वही log2 बकेट-कार्डिनैलिटी अक्ष (1, फिर 8)।
+          <strong>ऊर्ध्वाधर अक्ष:</strong> स्थिर-अवस्था कैश हिट अनुपात, 0–1।
+          <strong>रेखाएँ:</strong> वही <code>in_memory</code> और <code>24h</code>
+          शृंखला, हर एक N&nbsp;=&nbsp;960। <strong>इसे कैसे पढ़ें:</strong> मापे गए इस
+          हिस्से में दोनों शृंखलाएँ ऊँची रहीं (क़रीब 0.93–0.96), और कार्डिनैलिटी 1 पर
+          <code>24h</code> शृंखला थोड़ी ऊँची थी। यहाँ संरक्षण का बड़ा फ़र्क़ हिट अनुपात
+          में नहीं, ऊपर वाले विलंब खंड में दिखा: इसलिए संरक्षण को कैशित-टोकन
+          हिस्सा के साथ विलंब रखकर पढ़ना चाहिए। <strong>साक्ष्य-सीमा:</strong> PAYG gpt-5.2
+          पर वही सीमित पहचान-रहित सार्वजनिक समेकित आँकड़े (PTU नहीं)। यह वर्णनात्मक है,
+          सार्वभौमिक कैश-हिट नियम नहीं। <strong>स्रोत:</strong>
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत CSV</a>)।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="retention mode के हिसाब से bucket cardinality (log2 axis) के सापेक्ष steady-state cache hit ratio का line chart। in_memory और 24h दोनों lines क़रीब 0.93–0.96 के बीच ऊँची हैं, एक bucket पर 24h line थोड़ी ऊपर है, और cardinality बढ़ने पर लगभग सपाट रहती हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="संरक्षण मोड के हिसाब से बकेट कार्डिनैलिटी (log2 धुरी) के सापेक्ष स्थिर-अवस्था कैश हिट अनुपात का पंक्ति चार्ट। in_memory और 24h दोनों रेखाएँ क़रीब 0.93–0.96 के बीच ऊँची हैं, एक बकेट पर 24h पंक्ति थोड़ी ऊपर है, और कार्डिनैलिटी बढ़ने पर लगभग सपाट रहती हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>Retention पर public evidence</caption>
+        <caption>संरक्षण पर सार्वजनिक साक्ष्य</caption>
         <thead>
           <tr>
-            <th>Retention</th>
-            <th>Cardinality</th>
-            <th>Hit ratio</th>
+            <th>संरक्षण</th>
+            <th>कार्डिनैलिटी</th>
+            <th>हिट अनुपात</th>
             <th>TTFT p95</th>
-            <th>Steady records</th>
+            <th>स्थिर रिकॉर्ड</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
+          <tr><td>इन-मेमोरी</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>388</td></tr>
           <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>390</td></tr>
-          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
+          <tr><td>इन-मेमोरी</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>389</td></tr>
           <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>389</td></tr>
         </tbody>
       </table>
       <div class="chart-reading-note">
         <h3>यह क्या दिखाता है, और क्या नहीं</h3>
         <p>
-          मापे गए इस public हिस्से में cardinality 1 वाले configuration ने
-          first-token latency में retention का असर साफ़ दिखाया। यह source-run evidence
-          है, universal rule नहीं। टिकाऊ सबक़ इससे भी सरल है: retention mode, hit
-          ratio, और latency को साथ पढ़ें।
+          मापे गए इस सार्वजनिक हिस्से में कार्डिनैलिटी 1 पर संरक्षण मोड के बीच प्रथम-टोकन विलंब का बड़ा वर्णनात्मक अंतर दिखा। यह स्रोत रन का साक्ष्य है; यह कारणात्मक या सार्वभौमिक नियम नहीं। टिकाऊ सबक़ इससे भी सरल है: संरक्षण मोड, हिट
+          अनुपात, और विलंब को साथ पढ़ें।
         </p>
       </div>
     </section>
 
     <section id="policy" class="article-section">
-      <p class="section-label">operating policy, अस्पष्टता हो तो fail closed</p>
-      <h2>अगर retention अहम है, तो choice साफ़ दिखनी चाहिए</h2>
+      <p class="section-label">संचालन नीति, अस्पष्टता हो तो सुरक्षित रूप से अस्वीकार</p>
+      <h2>अगर संरक्षण अहम है, तो चुनाव साफ़ दिखनी चाहिए</h2>
       <p>
-        इस public repository में एक छोटा retention-policy helper है, जो उन मॉडलों पर
-        omitted value स्वीकार नहीं करता जिनका documented default
-        <code>in_memory</code> है। यह सख़्त लग सकता है, लेकिन यह एक आम failure mode
-        रोकता है: design लंबी cache window मानकर चलता है, जबकि request body चुपचाप
-        short default ले लेती है।
+        इस सार्वजनिक रिपॉज़िटरी में एक छोटा संरक्षण-नीति सहायक है, जो उन मॉडलों पर
+        छोड़ा गया मान स्वीकार नहीं करता जिनका दस्तावेज़ीकृत डिफ़ॉल्ट
+        <code>in_memory</code> है। यह सख़्त लग सकता है, लेकिन यह एक आम विफलता मोड
+        रोकता है: डिज़ाइन लंबी कैश अवधि मानकर चलता है, जबकि अनुरोध मुख्य भाग चुपचाप
+        छोटा डिफ़ॉल्ट ले लेती है।
       </p>
       <div class="evidence-grid">
         <div>
           <h3>अच्छा</h3>
-          <p>जब workload बाद के reuse पर निर्भर हो, तब <code>prompt_cache_retention="24h"</code>।</p>
+          <p>जब कार्यभार बाद के पुनः उपयोग पर निर्भर हो, तब <code>prompt_cache_retention="24h"</code>।</p>
         </div>
         <div>
           <h3>यह भी अच्छा</h3>
-          <p>जब workload को सिर्फ़ short reuse चाहिए और यह बात explicit हो, तब <code>prompt_cache_retention="in_memory"</code>।</p>
+          <p>जब कार्यभार को सिर्फ़ छोटा पुनः उपयोग चाहिए और यह बात स्पष्ट हो, तब <code>prompt_cache_retention="in_memory"</code>।</p>
         </div>
         <div>
           <h3>जोखिम भरा</h3>
-          <p>जब operations runbook लंबी window मानकर चलता हो, फिर भी value छोड़ देना।</p>
+          <p>जब संचालन रनबुक लंबी अवधि मानकर चलता हो, फिर भी मान छोड़ देना।</p>
         </div>
       </div>
     </section>
 
     <section id="residency" class="article-section">
-      <p class="section-label">गवर्नेंस टिप्पणी, retention सिर्फ़ latency की बात नहीं</p>
-      <h2>Longer retention के लिए governance check भी ज़रूरी है</h2>
+      <p class="section-label">गवर्नेंस टिप्पणी, संरक्षण सिर्फ़ विलंब की बात नहीं</p>
+      <h2>लंबे संरक्षण के लिए शासन जाँच भी ज़रूरी है</h2>
       <p>
-        Microsoft Learn के अनुसार in-memory prompt caching सभी डेटा-residency regions
-        के साथ compatible है। extended retention के लिए cached डेटा region के भीतर
-        तभी रहता है जब mode Regional Standard या Regional Provisioned हो। इसलिए
-        retention सिर्फ़ performance decision नहीं, governance decision भी है।
+        Microsoft Learn के अनुसार इन-मेमोरी प्रॉम्प्ट कैशिंग सभी डेटा-निवास क्षेत्र
+        के साथ संगत है। विस्तारित संरक्षण के लिए कैशित डेटा क्षेत्र के भीतर
+        तभी रहता है जब मोड Regional Standard या Regional Provisioned हो। इसलिए
+        संरक्षण सिर्फ़ प्रदर्शन निर्णय नहीं, शासन निर्णय भी है।
       </p>
       <p>
-        इसलिए longer retention पर भरोसा करने से पहले यह पक्का करें कि serving mode
-        cached डेटा को region के भीतर रखता है। इस चुनाव को default पर न छोड़ें।
+        इसलिए लंबा संरक्षण पर भरोसा करने से पहले यह पक्का करें कि सेवा मोड
+        कैशित डेटा को क्षेत्र के भीतर रखता है। इस चुनाव को डिफ़ॉल्ट पर न छोड़ें।
       </p>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>sources और evidence boundary</h2>
-      <p><strong>Tier 1: service contract (Microsoft Learn)।</strong> दो retention
-        policies, in-memory clear और removal windows, 24 घंटे की extended ceiling,
-        <code>gpt-5.4</code> और उससे पुराने मॉडलों का <code>in_memory</code> default,
-        दोनों policies में एक-सी pricing, और डेटा residency behavior यहाँ documented
+      <h2>स्रोत और साक्ष्य सीमा</h2>
+      <p><strong>स्तर 1: सेवा अनुबंध (Microsoft Learn)।</strong> दो संरक्षण
+        नीतियों, इन-मेमोरी साफ़ और हटाना अवधियाँ, 24 घंटे की विस्तारित ऊपरी सीमा,
+        <code>gpt-5.4</code> और उससे पुराने मॉडलों का <code>in_memory</code> डिफ़ॉल्ट,
+        दोनों नीतियों में एक-सी मूल्य-निर्धारण, और डेटा निवास व्यवहार यहाँ दस्तावेज़ीकृत
         हैं।</p>
       <ul>
-        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong>: इसमें
-          <code>in_memory</code> और <code>24h</code> retention policies, 5–10 मिनट की
-          inactivity के भीतर in-memory clear होना और last use के 1 घंटे के भीतर हटना,
-          24 घंटे की extended ceiling, <code>gpt-5.4</code> और उससे पुराने मॉडलों के
-          लिए <code>in_memory</code> default, दोनों policies में एक-सी prompt cache
-          pricing, और यह डेटा-residency rule documented है कि extended retention
-          cached डेटा को region में तभी रखता है जब mode Regional Standard या Regional
-          Provisioned हो। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">archive</a>।</li>
+        <li>[1] <strong>Azure OpenAI के साथ प्रॉम्प्ट कैशिंग</strong>: इसमें
+          <code>in_memory</code> और <code>24h</code> संरक्षण नीतियाँ, 5–10 मिनट की
+          निष्क्रियता के भीतर इन-मेमोरी साफ़ होना और अंतिम उपयोग के 1 घंटे के भीतर हटना,
+          24 घंटे की विस्तारित ऊपरी सीमा, <code>gpt-5.4</code> और उससे पुराने मॉडलों के
+          लिए <code>in_memory</code> डिफ़ॉल्ट, दोनों नीतियों में एक-सी प्रॉम्प्ट कैश
+          मूल्य-निर्धारण, और यह डेटा-निवास नियम दस्तावेज़ीकृत है कि विस्तारित संरक्षण
+          कैशित डेटा को क्षेत्र में तभी रखता है जब मोड Regional Standard या Regional
+          Provisioned हो। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">अभिलेख</a>।</li>
       </ul>
-      <p><strong>Tier 2: operational inference (यह repository)।</strong>
-        <code>in_memory</code> default वाले मॉडलों पर omitted value को fail closed करने
-        वाला retention-policy helper, और sparse public hit-ratio व first-token latency
-        evidence, Learn specifications नहीं बल्कि इस repository का operational inference
-        और source-run evidence हैं।</p>
+      <p><strong>स्तर 2: संचालनगत निष्कर्ष (यह रिपॉज़िटरी)।</strong>
+        <code>in_memory</code> डिफ़ॉल्ट वाले मॉडलों पर छोड़ा गया मान को सुरक्षित रूप से अस्वीकार करने
+        वाला संरक्षण-नीति सहायक, और सीमित सार्वजनिक हिट-अनुपात व प्रथम-टोकन विलंब
+        साक्ष्य, Learn के विनिर्देश नहीं बल्कि इस रिपॉज़िटरी का संचालनगत निष्कर्ष
+        और स्रोत रन के साक्ष्य हैं।</p>
       <ul>
-        <li>[2] <strong>यह repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-         : prompt cache-key और retention runbook। §4 documented per-model defaults से
-          <code>in_memory</code> default table निकालता है और
-          <code>prompt_cache_retention</code> को explicit रखने की सलाह देता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
-        <li>[3] <strong>यह repository, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
-         : <code>ensure_explicit</code> helper, जो documented default
-          <code>in_memory</code> वाले मॉडलों पर omitted value आने पर error उठाता है।
-          यह Learn specification नहीं, operational inference है. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">स्रोत</a>।</li>
-        <li>[4] <strong>यह repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-         : retention hit ratio और first-token latency table के पीछे का sparse public
-          aggregate। यह universal latency rule नहीं, source-run evidence है. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
+        <li>[2] <strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
+         : प्रॉम्प्ट कैश-कुंजी और संरक्षण रनबुक। §4 दस्तावेज़ीकृत प्रति-मॉडल डिफ़ॉल्ट से
+          <code>in_memory</code> डिफ़ॉल्ट तालिका निकालता है और
+          <code>prompt_cache_retention</code> को स्पष्ट रखने की सलाह देता है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
+        <li>[3] <strong>यह रिपॉज़िटरी, <code>batch-runner/batch_runner/cache/retention_policy.py</code></strong>
+         : <code>ensure_explicit</code> सहायक, जो दस्तावेज़ीकृत डिफ़ॉल्ट
+          <code>in_memory</code> वाले मॉडलों पर छोड़ा गया मान आने पर त्रुटि उठाता है।
+          यह Learn विनिर्देश नहीं, संचालनगत निष्कर्ष है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/cache/retention_policy.py">स्रोत</a>।</li>
+        <li>[4] <strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
+         : संरक्षण हिट अनुपात और प्रथम-टोकन विलंब तालिका के पीछे का सीमित सार्वजनिक
+          समेकित आँकड़े। यह सार्वभौमिक विलंब नियम नहीं, स्रोत रन का साक्ष्य है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>
       <p>
-        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> यह उस access date पर
-        Microsoft Learn के बताए prompt cache retention contract को दर्ज करता है: <code>in_memory</code> और <code>24h</code> policies, in-memory clear और removal
-        windows, 24 घंटे की extended ceiling, <code>gpt-5.4</code> और उससे पुराने
-        मॉडलों का <code>in_memory</code> default, दोनों policies में एक-सी pricing, और
-        extended retention की in-region residency condition: साथ ही यह repository rule
-        भी: <code>prompt_cache_retention</code> को explicit रखें, और
-        <code>in_memory</code>-default model पर value छूट जाए तो fail closed करें। एक
-        public हिस्से ने दिखाया कि cardinality 1 पर retention का असर first-token
-        latency में दिखने लगा। यह source-run evidence है, हर model, region, या traffic
-        shape पर universal latency curve का प्रमाण नहीं।
+        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> यह उस अभिगमन तिथि पर
+        Microsoft Learn के बताए प्रॉम्प्ट कैश संरक्षण अनुबंध को दर्ज करता है: <code>in_memory</code> और <code>24h</code> नीतियों, इन-मेमोरी कैश साफ़ होने और हटने की
+        अवधियाँ, 24 घंटे की विस्तारित ऊपरी सीमा, <code>gpt-5.4</code> और उससे पुराने
+        मॉडलों का <code>in_memory</code> डिफ़ॉल्ट, दोनों नीतियों में एक-सी मूल्य-निर्धारण, और
+        विस्तारित संरक्षण की क्षेत्र के भीतर निवास परिस्थिति: साथ ही यह रिपॉज़िटरी नियम
+        भी: <code>prompt_cache_retention</code> को स्पष्ट रखें, और
+        <code>in_memory</code>-डिफ़ॉल्ट मॉडल पर मान छूट जाए तो सुरक्षित रूप से अस्वीकार करें। एक
+        सार्वजनिक हिस्से ने दिखाया कि कार्डिनैलिटी 1 पर संरक्षण का असर प्रथम-टोकन
+        विलंब में दिखने लगा। यह स्रोत रन का साक्ष्य है, हर मॉडल, क्षेत्र, या ट्रैफ़िक
+        स्वरूप पर सार्वभौमिक विलंब वक्र का प्रमाण नहीं।
       </p>
     </section>
 
     <section class="article-section decision-box">
       <h2>व्यावहारिक नियम</h2>
-      <p><strong>व्यावहारिक नियम: जिन मॉडलों में default वापस <code>in_memory</code> पर
-        जा सकता है, वहाँ अगर cache reuse को छोटी idle window से आगे भी टिके रहना है, तो
-        default पर भरोसा न करें। <code>prompt_cache_retention</code> को explicit सेट
-        करें, cacheable prefix को stable रखें, और यह जाँचने के लिए कि आपने जो window
-        माँगी थी वही मिली भी है, cached-token share के साथ first-token latency पढ़ें।</strong></p>
-      <p>अगला लेख एक request की cache policy से आगे बढ़कर देखता है कि पूरा GPT-4o workload
-        PTU पर GPT-5.x के लिए resize करने पर capacity math में क्या बदलता है।</p>
-      <p><a class="button-link" href="../../reasoning-migration-sizing/hi/">जब GPT-4o ट्रैफ़िक PTU पर GPT-5.x में जाता है, तो capacity math में असल में क्या बदलता है?</a></p>
+      <p><strong>व्यावहारिक नियम: जिन मॉडलों में डिफ़ॉल्ट वापस <code>in_memory</code> पर
+        जा सकता है, वहाँ अगर कैश पुनः उपयोग को छोटी निष्क्रिय अवधि से आगे भी टिके रहना है, तो
+        डिफ़ॉल्ट पर भरोसा न करें। <code>prompt_cache_retention</code> को स्पष्ट सेट
+        करें, कैश-योग्य प्रीफ़िक्स को स्थिर रखें, और यह जाँचने के लिए कि आपने जो अवधि
+        माँगी थी वही मिली भी है, कैशित-टोकन हिस्सा के साथ प्रथम-टोकन विलंब पढ़ें।</strong></p>
+      <p>अगला लेख एक अनुरोध की कैश नीति से आगे बढ़कर देखता है कि पूरा GPT-4o कार्यभार
+        PTU पर GPT-5.x के लिए पुनः आकार करने पर क्षमता गणना में क्या बदलता है।</p>
+      <p><a class="button-link" href="../../reasoning-migration-sizing/hi/">जब GPT-4o ट्रैफ़िक PTU पर GPT-5.x में जाता है, तो क्षमता गणना में असल में क्या बदलता है?</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed शोध artifact, प्रकाशित डेटा केवल sanitized या aggregate रूप में है।</p>
+    <p>MIT-लाइसेंस-प्राप्त शोध आर्टिफ़ैक्ट, प्रकाशित डेटा केवल पहचान-रहित या समेकित रूप में है।</p>
   </footer>
 </body>
 </html>
