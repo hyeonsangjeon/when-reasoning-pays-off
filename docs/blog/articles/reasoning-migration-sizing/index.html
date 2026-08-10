@@ -43,7 +43,7 @@
     <h1>Do not resize a reasoning migration from the model name alone</h1>
     <p class="lede">
       A team plans to move its <code>gpt-4o</code> traffic to a GPT-5.x reasoning
-      model and needs a PTU number for the new deployment. The reflex is to reuse
+      model and needs a PTU number for the new deployment. One approach is to reuse
       what already works: carry the old <code>gpt-4o</code> PTU size forward, or
       apply a family-level “5.x” multiplier to it, on the assumption that the
       model name carries enough information to resize. But PTU sizing is driven by
@@ -63,7 +63,7 @@
         in this repository as an admission-risk hypothesis to test — not a
         documented platform behavior — for whether it could dominate the PTU
         the workload reserves. The one-pager
-        carries that single message and marks the boundary plainly: it is a
+        summarizes that message and marks the boundary plainly: it is a
         synthetic worked example over a modeled workload with pinned pricing
         snapshots, not measured capacity.
         <a href="../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">Open the migration-sizing one-pager SVG</a>.
@@ -74,27 +74,25 @@
     <section id="why-remeasure" class="article-section">
       <h2>Why re-measure instead of reusing the old size</h2>
       <p>
-        The reuse reflex assumes the model name carries the size: a working
+        Reusing the old size assumes that a working
         <code>gpt-4o</code> number, scaled by a family multiplier, will still
-        fit GPT-5.x. Before accepting that, two things are worth putting
-        side by side. The first is what the documentation specifies: Microsoft
-        Learn converts traffic into normalized TPM from peak RPM, average prompt
+        fit GPT-5.x. Microsoft Learn converts traffic into normalized TPM from
+        peak RPM, average prompt
         and output tokens, cache rate, the model's output-to-input ratio, and its
         Input TPM per PTU, and it deducts cached prompt tokens from utilization;
         OpenAI documents reasoning tokens as non-visible output-side tokens
-        reported in <code>output_tokens_details.reasoning_tokens</code>. The
-        second is this repository's illustrative worked calculation, which runs
+        reported in <code>output_tokens_details.reasoning_tokens</code>. This
+        repository's illustrative worked calculation runs
         that documented formula over one example call shape so the size drivers
         sit side by side. It is not a measurement of any deployment.
       </p>
       <p>
-        The pairing is the part worth pausing on. Read on visible output alone,
-        the migration can look manageable: the same prompt and the same
-        visible answer can size at roughly the same level, or even slightly
+        Based on visible output alone, the migration can look manageable: the
+        same prompt and the same visible answer can size at roughly the same level, or even slightly
         lighter, on the newer model. But the visible answer is not the whole
         request: once hidden reasoning output appears, the same answer can need
-        far more normalized TPM, and this repository's working hypothesis, an
-        admission risk to test rather than documented platform behavior, is
+        far more normalized TPM. This repository's working hypothesis — an
+        admission risk to test rather than documented platform behavior — is
         that an oversized <code>max_output_tokens</code> ceiling could reserve
         admission weight whether or not those tokens are ever generated. That is
         why the operating question is not “is the new model
@@ -106,8 +104,7 @@
         <code>max_output_tokens</code> as PTU admission risk to test is
         operational inference this repository defends. The chart that follows is a
         synthetic worked example over a modeled workload with pinned pricing
-        snapshots. It is not measured capacity, live PTU throughput, or an SLA.
-        The illustrative chart below makes the size drivers explicit.
+        snapshots, not measured capacity, live PTU throughput, or an SLA.
       </p>
     </section>
 
@@ -227,7 +224,7 @@
         <h3>What the chart says</h3>
         <p>
           The visible-only rows do not support a blanket claim that GPT-5.x is
-          always less efficient than GPT-4o. The reasoning rows show the trap:
+          always less efficient than GPT-4o. The reasoning rows show that,
           once hidden reasoning output appears, the same visible answer can
           need much more normalized TPM unless cache and response policy are
           measured and tuned.
@@ -254,7 +251,7 @@
         The normalized-TPM sizing formula, the per-model Input TPM per PTU and
         output-to-input ratio, the GPT-4.1-and-later output-token weighting, the
         100% cache deduction from utilization, and the reasoning-token accounting
-        are documented here.</p>
+        are documented in the following sources.</p>
       <ul>
         <li>[1] <strong>Determine PTU sizing for a workload</strong> — defines the
           normalized-TPM calculation (Input TPM = Peak RPM × prompt size; Output
@@ -262,16 +259,16 @@
           rate) + output-to-input ratio × output TPM; PTUs = normalized TPM ÷ Input
           TPM per PTU), the per-model Input TPM per PTU and output-to-input ratio
           values, and that cached tokens are deducted 100% from the utilization
-          calculation. accessed 2026-06-05: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>; <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>.</li>
+          calculation. Accessed 2026-06-05: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>; <a href="https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing">https://web.archive.org/web/20260605011106/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing</a>.</li>
         <li>[2] <strong>What is provisioned throughput for Foundry Models?</strong> —
           documents the PTU utilization model and how request shape consumes
-          reserved capacity. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>; <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>.</li>
+          reserved capacity. Accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>; <a href="https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput">https://web.archive.org/web/20260426163819/https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput</a>.</li>
         <li>[3] <strong>Prompt caching with Azure OpenAI</strong> — documents that
           cached prompt tokens are deducted from utilization, so a prefix-shape
-          change moves the sizing result. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+          change moves the sizing result. Accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
         <li>[4] <strong>OpenAI reasoning models guide</strong> — documents reasoning
           tokens as non-visible output-side tokens reported in
-          <code>output_tokens_details.reasoning_tokens</code>. accessed 2026-06-04: <a href="https://developers.openai.com/api/docs/guides/reasoning">https://developers.openai.com/api/docs/guides/reasoning</a>; <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning</a>.</li>
+          <code>output_tokens_details.reasoning_tokens</code>. Accessed 2026-06-04: <a href="https://developers.openai.com/api/docs/guides/reasoning">https://developers.openai.com/api/docs/guides/reasoning</a>; <a href="https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning">https://web.archive.org/web/20260602053729/https://developers.openai.com/api/docs/guides/reasoning</a>.</li>
       </ul>
       <p><strong>Tier 2 — operational inference (this repository).</strong> The
         treatment of an oversized <code>max_output_tokens</code> as a PTU
@@ -310,8 +307,8 @@
         PTU, re-measure output, reasoning, cache, and <code>max_output_tokens</code>
         ceiling policy, then size with the normalized-TPM formula, because the
         model name alone is not enough information to size the workload.</strong></p>
-      <p>This essay closes the operations arc; the loop returns to the methodology
-        that decided which evidence was strong enough to publish in the first
+      <p>This essay closes the operations arc and returns to the methodology
+        used to decide which evidence was strong enough to publish in the first
         place.</p>
       <p><a class="button-link" href="../when-reasoning-pays-off/">How did the lab decide what evidence was strong enough to publish?</a></p>
     </section>

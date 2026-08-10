@@ -43,7 +43,7 @@
     <h1>429 is a recovery signal, not just an error</h1>
     <p class="lede">
       A traffic burst pushes a PTU deployment to 100% utilization and the calls
-      start coming back as 429. The reflex is to reach for one of three moves:
+      start coming back as 429. The usual response is one of three moves:
       open a health-check polling loop until capacity looks free, retry on a
       blind fixed timer, or immediately route everything to another target. Each
       one assumes the client has to guess when it is safe to try again. It does
@@ -57,7 +57,7 @@
         <strong>This essay at a glance.</strong> When a saturated PTU target
         returns 429, the documented <code>retry-after-ms</code> header is the
         admission contract: honor it, add jitter, and budget for the observed long tail. The
-        one-pager carries that single message and marks the evidence boundary —
+        one-pager summarizes that message and marks the evidence boundary —
         the header is Microsoft Learn's contract, while the short-median,
         long-tail shape beside it is a sanitized public aggregate from this
         repository's source runs, shown descriptively.
@@ -69,22 +69,22 @@
     <section id="why-header" class="article-section">
       <h2>Why read the header instead of guessing</h2>
       <p>
-        All three reflexes share one hidden assumption: that the client cannot
+        All three responses assume that the client cannot
         know when capacity will free up, so it has to probe, wait a fixed
-        interval, or leave. Before accepting that, two things are worth putting
-        side by side. The first is what Microsoft Learn documents: at 100%
+        interval, or leave. Microsoft Learn documents that, at 100%
         utilization the service returns 429 immediately and attaches
         <code>retry-after-ms</code>, a service-provided wait value for when to
-        try again. The second is a sanitized public
-        aggregate of the <code>retry-after-ms</code> values actually observed
-        across this repository's source runs, included descriptively to show what
-        those advised waits looked like in practice. Together they turn “when is
+        try again. We also include a sanitized public aggregate of the
+        <code>retry-after-ms</code> values observed across this repository's
+        source runs to show what those advised waits looked like in practice.
+        Together, the documented
+        behavior and observed values turn “when is
         it safe to try again?” from a client-side guess into a value the service
         hands back.
       </p>
       <p>
-        The shape of that aggregate is the part worth pausing on. The advised
-        waits were short at the median (overall p50 &asymp; 43&nbsp;ms),
+        The aggregate shows that the advised waits were short at the median
+        (overall p50 &asymp; 43&nbsp;ms),
         so a health-check loop or a blind fixed-interval backoff would
         usually wait far longer than the service actually asked for. But the tail
         was not negligible: a small share of waits stretched toward
@@ -163,8 +163,9 @@
         <div>
           <h3>Operational inference</h3>
           <p>
-            If the header already says when to try again, health-check polling is
-            usually a weaker signal plus extra traffic and noisier telemetry.
+            If the header already says when to try again, health-check polling
+            usually provides a weaker signal while adding traffic and telemetry
+            noise.
           </p>
         </div>
       </div>
@@ -209,7 +210,7 @@
           and the combined sample (n&nbsp;=&nbsp;193); this is an empirical
           cumulative distribution, not a frequency histogram.
           <strong>How to read it:</strong> each curve rises almost to the top
-          near zero. In this sample most advised waits were short (overall
+          near zero, because most advised waits in this sample were short (overall
           p50 &asymp; 43&nbsp;ms), then flattens into a long tail reaching
           about 17,000&nbsp;ms, so a small share of waits were very long (overall
           p99 &asymp; 16,921&nbsp;ms). That short-median, long-tail shape is why
@@ -263,8 +264,8 @@
       <p class="section-label">Operating pattern · one owner for retry</p>
       <h2>Do not stack retry loops</h2>
       <p>
-        The safe pattern is boring on purpose: pick exactly one component to own
-        429 recovery. If the SDK is configured to retry, let it own the wait. If
+        Pick exactly one component to own 429 recovery. If the SDK is configured
+        to retry, let it own the wait. If
         an application router owns recovery, disable SDK auto-retry and make the
         router parse <code>retry-after-ms</code> directly.
       </p>
@@ -324,10 +325,10 @@
       <h2>Sources and evidence boundary</h2>
       <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> The 429
         admission behavior, both retry headers, the leaky-bucket utilization
-        model, and the SDK's default retry are documented here.</p>
+        model, and the SDK's default retry are documented in the following sources.</p>
       <ul>
-        <li>[1] <strong>Operate provisioned throughput deployments in production</strong> — defines the immediate 429 at 100% utilization, the <code>retry-after-ms</code> and <code>retry-after</code> response headers, the leaky-bucket utilization model, and the OpenAI SDK's default 429 retry (<code>max_retries</code>). accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>; <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>.</li>
-        <li>[2] <strong>Manage traffic with spillover for provisioned deployments</strong> — defines the spillover redirect of non-200 (including <code>429</code>) overage to a standard deployment via the <code>spilloverDeploymentName</code> property and the <code>x-ms-spillover-from-deployment</code> response header. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>; <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>.</li>
+        <li>[1] <strong>Operate provisioned throughput deployments in production</strong> — defines the immediate 429 at 100% utilization, the <code>retry-after-ms</code> and <code>retry-after</code> response headers, the leaky-bucket utilization model, and the OpenAI SDK's default 429 retry (<code>max_retries</code>). Accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>; <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started</a>.</li>
+        <li>[2] <strong>Manage traffic with spillover for provisioned deployments</strong> — defines the spillover redirect of non-200 (including <code>429</code>) overage to a standard deployment via the <code>spilloverDeploymentName</code> property and the <code>x-ms-spillover-from-deployment</code> response header. Accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>; <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management</a>.</li>
       </ul>
       <p><strong>Tier 2 — operational inference (this repository).</strong> The
         rules of thumb — one retry owner, honor the header, add jitter to
@@ -357,7 +358,7 @@
         <code>retry-after-ms</code> as the admission contract — honor it, add
         jitter to de-synchronize the fleet, and redirect to a spillover deployment
         only after repeated honored waits fail to clear.</strong></p>
-      <p>The next essay turns from when to retry to what a repeated prompt actually decides.</p>
+      <p>The next essay turns from when to retry to what the cache key decides for a repeated prompt.</p>
       <p><a class="button-link" href="../prompt-cache-key-bucketing/">When the same prompt repeats, what does the cache key actually decide?</a></p>
     </section>
   </main>

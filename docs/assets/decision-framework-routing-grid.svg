@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img"
      aria-labelledby="dfTitle dfDesc" width="900" height="360">
-  <title id="dfTitle">Decision framework: model by effort routing grid</title>
+  <title id="dfTitle">Decision framework: model-by-effort routing grid</title>
   <desc id="dfDesc">A conceptual grid with two model rows and five reasoning-effort
   columns. One cell is highlighted as a defensible starting point that the reader
   then validates on their own data. No measured numbers are shown.</desc>

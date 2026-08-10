@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agentic loop &amp; budget governance | when reasoning pays off</title>
-  <meta name="description" content="An operator-pattern topic: once a task becomes a tool loop, per-call effort tuning stops biting. Bound the loop with thresholds, a fail-closed breaker, eval-gated escalation, and per-step cost traceability.">
+  <meta name="description" content="An operator pattern for tool loops, where per-call effort tuning no longer bounds total cost. Bound the loop with thresholds, a fail-closed breaker, eval-gated escalation, and per-step cost traceability.">
   <meta name="article:locale" content="en">
   <meta name="article:translation-status" content="canonical_topic">
   <link rel="stylesheet" href="../../../../../assets/styles.css">
@@ -40,15 +40,15 @@
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Operator pattern: loop &amp; budget governance (L6), design rather than a new measurement</p>
-    <h1>Agentic loops: after the ceiling check says stop, who actually stops the loop?</h1>
-    <p class="lede">The companion topic ends on a clean note: once tool-agent quality is pinned against its ceiling, more reasoning effort buys latency and cost, not score — so route to the lowest effort that reaches the cap. That advice is exactly right for one call. But a real agent is rarely one call. It plans, calls a tool, reads the result, reasons again, and loops. The moment the task becomes a loop, cost stops being a number you can read off a pricing page and becomes an <em>integral over steps</em> — and the per-call effort dial, the one lever everyone reaches for first, no longer reaches the thing that is actually spending your money. This topic is the other half of the ceiling check: not "is this call worth more effort," but "when does the loop stop, and who decided."</p>
+    <h1>Agentic loops: enforcing stop conditions after the ceiling check</h1>
+    <p class="lede">The companion topic establishes a call-level rule: once tool-agent quality is pinned against its ceiling, route to the lowest effort that reaches the cap because more reasoning buys latency and cost rather than score. A real agent, however, plans, calls a tool, reads the result, reasons again, and loops. Its cost becomes an <em>integral over steps</em>, which the per-call effort dial cannot bound. This topic extends the ceiling check from "is this call worth more effort," to "when does the loop stop, and who decided."</p>
 
     <section class="article-section">
       <h2>Why this pattern exists</h2>
       <p>
-        Here is the shape of the afternoon that creates this topic. Your agent
-        passes every demo. Then one ordinary support ticket sends it into a loop
-        — search, re-read, call another tool, think a little harder, try again —
+        An agent can pass every demo, then encounter an ordinary support ticket
+        that sends it into a loop — search, re-read, call another tool, think a
+        little harder, try again —
         and forty tool calls later it answers. The answer is <em>correct</em>. It
         also cost forty times what you budgeted for that task, and nobody noticed
         until the monthly invoice. Nothing failed: no exception, no 500, no
@@ -56,12 +56,10 @@
         working agent right up until you read the bill.
       </p>
       <p>
-        When that agent underperforms, the instinct is the familiar one — let it
-        loop a little longer, let it think a little harder. The companion ceiling
-        check already showed where "think harder" stops paying on a single call.
-        This topic is about the part the per-call levers cannot touch: the number
-        of calls. If you operate a workload like this, you have probably already
-        reached for the per-call dials and found they do not quite bite.
+        When that agent underperforms, letting it loop longer or think harder is
+        an intuitive response. The companion ceiling check already showed where
+        "think harder" stops paying on a single call. This topic addresses what
+        per-call levers cannot control: the number of calls.
       </p>
       <ul>
         <li><code>reasoning_effort</code> (lever <strong>L4</strong>) bounds the reasoning tokens of <em>one</em> call. It says nothing about how many calls the loop makes.</li>
@@ -71,9 +69,9 @@
       <p>
         None of that makes the per-call levers wrong; they are still the right
         first move on any single call. They simply operate one layer below the
-        loop. The capability question — can the model loop, can it hold a million
-        tokens — was never the hard one. The hard one is governing the loop:
-        thresholds, intervention, evals, traceability, and ownership.
+        loop. Governing the loop requires thresholds, intervention, evals,
+        traceability, and ownership; the model's ability to loop or hold a
+        million tokens does not provide those controls.
       </p>
     </section>
 
@@ -82,13 +80,13 @@
         <strong>Read this as design, not a new measurement.</strong> This topic
         is a <strong>Tier&nbsp;2 operator pattern</strong>: it introduces no new
         measured magnitudes. The one measured anchor it leans on is the
-        benchmark-03 ceiling from the companion topic (a real, published result),
+        benchmark-03 ceiling from the companion topic (a published result),
         and every loop control it describes is lifted from a guard this
         repository's own measurement runner <em>already</em> implements — because
         a benchmark batch is itself an unbounded-cost loop that must not run away.
         How often production loops actually run away, and the distribution of
-        their step counts, is <strong>not measured here</strong>; that honesty is
-        kept explicit in the sources section below. The canonical write-up is
+        their step counts, is <strong>not measured here</strong>; the sources
+        section preserves that boundary. The canonical write-up is
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — agentic loop budget governance</a>.
       </p>
     </aside>
@@ -113,9 +111,8 @@
     <p class="banner">
       <strong>Companion topic:</strong>
       <a href="../tool-agent-ceiling-checks/">Tool-agent ceiling checks</a>
-      is the detection half — it shows where a single call stops improving. This
-      topic is the intervention half — what stops the loop once it keeps spending
-      anyway.
+      shows where a single call stops improving. This topic covers the
+      intervention that stops a loop once it keeps spending anyway.
     </p>
 
     <section class="article-section">
@@ -128,7 +125,7 @@
                     + reasoning_tokens_step × output_rate
                     + output_tokens_step    × output_rate )</code></pre>
       <p>
-        Three things make that sum grow faster than anyone expects. First, the
+        Three mechanisms make that sum grow quickly. First, the
         iteration count is unbounded: with no hard cap, a loop that fails to
         converge — a flaky tool, an ambiguous sub-goal, a "keep refining until
         it's right" instruction — just keeps issuing billable calls, and nothing
@@ -186,8 +183,8 @@
         <strong>Mechanism.</strong> When a threshold is crossed mid-loop, the
         loop has to stop deterministically and visibly — return a best-effort
         partial answer plus a typed "budget exceeded" signal — never silently
-        keep going, and never silently truncate. That choice is the whole
-        difference between a bounded cost and a runaway.
+        keep going, and never silently truncate. This behavior distinguishes a
+        bounded cost from a runaway.
       </p>
       <p>
         <strong>Action.</strong> Build a circuit-breaker that aborts the loop on
@@ -266,7 +263,7 @@
         where the runaways live.
       </p>
       <p>
-        <strong>Scope note (honest boundary).</strong> Those loop-scoped fields are
+        <strong>Scope note.</strong> Those loop-scoped fields are
         the <em>next increment</em>, not something already shipped. They slot onto
         the existing <code>PTURequestRecord</code> — which already carries
         <code>request_idx</code> and the full <code>usage</code> block — and
@@ -298,8 +295,8 @@
         shape applied to published data; this applies it to spend.
       </p>
       <p>
-        <strong>In-repo evidence.</strong> <code>GOVERNANCE.md</code> is the
-        owned-contract change-control model budget policy follows, and the "silent
+        <strong>In-repo evidence.</strong> <code>GOVERNANCE.md</code> provides the
+        owned-contract change-control model for budget policy, and the "silent
         overrun = silent scope change" rule from <code>docs/05</code> §6 is the
         sentence that makes a ceiling change reviewable rather than routine.
       </p>
@@ -308,9 +305,9 @@
     <section id="boundary" class="article-section">
       <h2>Sources and evidence boundary</h2>
       <p>
-        Two things are happening in this topic, and they live in different tiers.
-        The measured anchor — the benchmark-03 ceiling — is a published result you
-        can audit. The loop-governance pattern is operational design: it reuses
+        This topic combines evidence from two tiers. The measured anchor — the
+        benchmark-03 ceiling — is a published result you can audit. The
+        loop-governance pattern is operational design: it reuses
         primitives that already exist in this repository, but the runaway behavior
         it guards against is not itself measured here. The tiers below mark where
         the documented input ends and the design inference begins.
@@ -329,8 +326,8 @@
         measure how often loops run away, the distribution of step counts by task
         shape, or the long-context cost-scaling curve — <code>docs/04</code> §4
         already records that no benchmark here measures long-output / long-context
-        workloads. Treat those as honest gaps a future runaway-characterization
-        benchmark would close, not as quiet claims.
+        workloads. These are gaps for a future runaway-characterization
+        benchmark to close, not claims made here.
       </p>
     </section>
 

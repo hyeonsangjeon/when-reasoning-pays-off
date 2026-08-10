@@ -39,7 +39,7 @@ Please include:
 
 - A description of the issue and the public-tree path(s) involved.
 - Steps to reproduce, if applicable.
-- The commit SHA you observed the issue at.
+- The commit SHA at which you observed the issue.
 - Whether the issue involves data leakage, CI exposure, or both.
 
 ## Response Targets

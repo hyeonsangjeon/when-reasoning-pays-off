@@ -89,7 +89,7 @@ pytest -q -m "not adaptive_calibration" batch-runner/tests/
 ```
 
 Enable the shared git hooks once per clone so the same read-only release
-and docs gates CI runs (public-manifest integrity, public-surface grep,
+and docs gates that run in CI (public-manifest integrity, public-surface grep,
 static Pages validation) also run locally before every `git push`:
 
 ```bash

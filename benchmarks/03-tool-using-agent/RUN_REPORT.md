@@ -64,8 +64,8 @@ phrasing to avoid Azure's jailbreak classifier and (2) a
 | --- | --- | ---: | ---: | --- |
 | `scripts.run_judge --benchmark 03-tool-using-agent --experiment-prefix exp003 --confirm` | `exp003_*` | 360 | ~$0.40 | ✅ 360 / 360 judged |
 
-Combined measurement + judge spend: **≈ $1.51** — three orders of
-magnitude under the spec's $45 combined hard ceiling.
+Combined measurement + judge spend: **≈ $1.51**, well under the spec's
+$45 combined hard ceiling.
 
 ## Schema invariants (verified)
 

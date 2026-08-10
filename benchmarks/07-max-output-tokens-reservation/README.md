@@ -50,7 +50,7 @@
 > matching `^methodology-auditor approved v2\.5 adaptive — [a-z0-9-]+ —
 > \d{4}-\d{2}-\d{2}$`. Default `enabled: false`.
 
-0.5.C role-separately estimates each role's onset interval (§4.1),
+0.5.C estimates each role's onset interval separately (§4.1),
 runs at most two §4.2 expansion probes and three §4.3 bracket probes
 per role under hard caps (`adaptive_tps_hard_max = 1.20 × max(phase_b_grid_tps)`,
 `adaptive_tps_hard_min = 0.5 × min(phase_a_grid_tps)`), and evaluates
@@ -495,7 +495,7 @@ budget is bounded by `reasoning.effort=low`, not by the cap).
 | Contingency (single stage rerun within lifecycle) | n/a | $30 | n/a | n/a |
 | **Task 019 v2.3 total live cap** | | **$400** | | |
 
-**Do not exhaust shared budget; cap is an accounting guardrail, not a
+**Do not exhaust shared budget; the cap is an accounting guardrail, not a
 spend target.** The shared tenant has > $1,600 remaining of its
 ~$2,500/month — that figure is recorded for auditor traceability ONLY
 and is NOT a Task 019 spend target. Other in-flight measurements
@@ -565,7 +565,7 @@ python -m scripts.measure_max_output_tokens_sweep \
 
 Requires `DefaultAzureCredential` resolution + the env vars
 `AZURE_OPENAI_FOUNDRY_ENDPOINT` and
-`AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED` populated to a throttled
+`AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED` configured for a throttled
 GlobalStandard deployment.
 
 ## Exit codes
@@ -629,7 +629,7 @@ backlog_excessive flag; cache_not_warm flag), and global aggregates
 
 **v2.3 calibration result additions** (relative to v2.2.1):
 - top-level `candidate_tps_grid_phase_b` echo (the pinned six-member
-  list — never the result-file's own copy is treated as authoritative
+  list — the result file's own copy is never treated as authoritative
   for downstream validation; the pinned constant is the source of
   truth),
 - top-level `calibration_probe_max_calls_phase_a` and

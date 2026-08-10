@@ -30,7 +30,7 @@
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
   <meta name="i18n:last-translated-at" content="2026-07-11">
-  <meta name="i18n:source-content-sha256" content="5d70ec0d3682ecd07243620c0d2facaa9da1ac72ba062b86116d244d717ec3e6">
+  <meta name="i18n:source-content-sha256" content="9d696381a827ac970645465ccc1851cde2a1621468e472a14b6fb475edcb722d">
 </head>
 <body>
   <header class="site">
@@ -83,8 +83,8 @@
       throttling? Reasoning effort sits underneath all three. Left high by
       default, it quietly spends tokens on internal computation that never
       reaches the reader — real money on pay-as-you-go, and scarce headroom on
-      provisioned capacity. Knowing where effort actually changes the answer is
-      the difference between a confident rollout and a surprise on the invoice.
+      provisioned capacity. Teams need to know where effort actually changes the
+      answer before a high default becomes a surprise on the invoice.
     </p>
 
     <h2>What we tested</h2>
@@ -94,16 +94,15 @@
       answers, structured-to-natural-language synthesis, multi-step
       reasoning, and tool-using agents. On every call we captured the full
       usage breakdown: input, cached, reasoning, and output tokens, plus a
-      quality signal and latency. On top of that measured token shape, we
-      layered a modeled view of how the same workload would price under
+      quality signal and latency. Using that measured token shape, we modeled
+      how the same workload would price under
       pay-as-you-go versus provisioned throughput.
     </p>
 
     <h2>What the evidence showed</h2>
     <p>
-      The results split the way good evidence should — effort paid for itself
-      in some places and only bought hidden computation in others. Four
-      takeaways carry across the slices.
+      Effort paid for itself in some places and only bought hidden computation
+      in others. Four takeaways carry across the slices.
     </p>
     <div class="cards">
       <div class="card">

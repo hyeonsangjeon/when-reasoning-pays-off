@@ -47,5 +47,5 @@
     <line x1="712" y1="170" x2="756" y2="170"/>
   </g>
   <text x="40" y="252" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="13">If a benchmark deviates from the contract, fix one &#8212; do not silently disagree.</text>
+        font-size="13">If a benchmark deviates from the contract, reconcile them &#8212; do not let them silently disagree.</text>
 </svg>

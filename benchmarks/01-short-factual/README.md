@@ -3,16 +3,15 @@
 ## Why this benchmark exists
 
 This benchmark is the **null case** for reasoning effort. The 20 samples here are short,
-structured-input to natural-language synthesis tasks that a non-reasoning model is
+structured-input-to-natural-language synthesis tasks that a non-reasoning model is
 expected to solve correctly on the first try. Reasoning is **not required** to answer any
 sample: every task is one extraction, one format conversion, one classification, or one
 trivial arithmetic step on input that is already explicit.
 
 If GPT-5.2 produces no measurable quality improvement here while spending additional
 input, reasoning, and output tokens, then this benchmark establishes the **floor of
-"when reasoning does not pay off."** That floor is the single most important number this
-repo produces — without it, every cost-saving claim on more sophisticated benchmarks is
-unanchored.
+"when reasoning does not pay off."** That floor anchors the repo's cost-saving claims
+on more sophisticated benchmarks.
 
 ## Position in the repo
 

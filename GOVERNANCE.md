@@ -76,6 +76,6 @@ the owner via GitHub issues and pull requests.
 ## Continuity
 
 The owner maintains a `LICENSE` file (MIT) that grants permissive reuse
-of the published code and documentation under this repository. If the
+of the published code and documentation in this repository. If the
 repository becomes unmaintained, downstream users may fork under the
 same license. See `LICENSE` for full terms.

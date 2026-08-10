@@ -152,7 +152,7 @@ log writer, anonymization-violation refusal.
 
 ## Out of scope for this commit
 
-- `scripts/measure_native_spillover.py` (deferred — only landed after Stage 1 == `SPILLOVER_PROVEN`).
+- `scripts/measure_native_spillover.py` (deferred — will land only after Stage 1 == `SPILLOVER_PROVEN`).
 - `experiments/exp008_native_spillover.yaml` (same deferral).
 - `analysis.md` (same deferral).
 - Workload corpus + prompt copies (deferred until Stage 1 unblocks).

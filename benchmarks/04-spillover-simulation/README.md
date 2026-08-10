@@ -49,11 +49,9 @@ It explicitly cannot:
   separate later task would add a judge pass if Task 014's analysis
   motivates it.
 
-The point of Phase 1 is to produce a result that is publishable in either
-direction. If the two recovery curves are indistinguishable, weak-form G is
-weakened. If they differ in the predicted direction, weak-form G is
-supported and a Phase 2 measurement on a real-throttled primary is
-justified.
+Either Phase 1 outcome is informative. Indistinguishable recovery curves weaken
+weak-form G; a difference in the predicted direction supports it and
+justifies a Phase 2 measurement on a real-throttled primary.
 
 ## Position in the repo
 

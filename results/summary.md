@@ -56,7 +56,7 @@ workloads measured here.
     ([cited from `benchmarks/02-multi-step-reasoning/analysis.md` §6](../benchmarks/02-multi-step-reasoning/analysis.md)).
   - **Mixed case (benchmark 03):** gpt-5.2 `low` wins at **0.939 ×
     throughput × 100.0 % pass = +4.3 %** correct-answers-per-minute
-    relative to the gpt-4o baseline (1.0 × × 90.0 %);
+    relative to the gpt-4o baseline (1.0 × 90.0 %);
     [cited from `benchmarks/03-tool-using-agent/analysis.md` §6](../benchmarks/03-tool-using-agent/analysis.md).
 
 - **Quality saturation point:**
@@ -171,7 +171,7 @@ per-benchmark analysis.
 | **Short-factual / null** (benchmark 01) | **gpt-5.2 `none`** — saves 12 % USD/req (16 % per correct) vs gpt-4o ([01 §5](../benchmarks/01-short-factual/analysis.md)) | **gpt-5.2 `none`** — +4.4 % correct-answers-per-minute (near-parity throughput × higher pass-rate) ([01 §6](../benchmarks/01-short-factual/analysis.md)) |
 | **Multi-step reasoning** (benchmark 02) | **gpt-5.2 `none`** — 42 % cost-per-correct saving ($0.000618 vs $0.001064; [02 §5](../benchmarks/02-multi-step-reasoning/analysis.md)) | **gpt-5.2 `none`** — +32.5 % correct-answers-per-minute relative to gpt-4o baseline ([02 §6](../benchmarks/02-multi-step-reasoning/analysis.md)) |
 | **Tool-using, no/one tool** (benchmark 03 subset) | **gpt-5.2 `low`** or **`none`** — both at 100.0 % no-tool / one-tool pass and ~$0.00277 / correct, beating gpt-4o ($0.00365 / correct, 83 % no-tool) ([03 §5, §7](../benchmarks/03-tool-using-agent/analysis.md)) | **gpt-5.2 `low`** — +4.3 % correct-answers-per-minute vs gpt-4o ([03 §6](../benchmarks/03-tool-using-agent/analysis.md)) |
-| **Tool-using, multi-tool** (benchmark 03 subset) | **gpt-5.2 `low`** — 100.0 % multi-tool pass at $0.002773 / correct; gpt-4o is 83.3 % at $0.003651 / correct ([03 §5, §7](../benchmarks/03-tool-using-agent/analysis.md)) | **gpt-5.2 `low`** — same 0.939 × throughput × 100.0 % pass beats gpt-4o (1.0 × × 83.3 %) ([03 §6](../benchmarks/03-tool-using-agent/analysis.md)) |
+| **Tool-using, multi-tool** (benchmark 03 subset) | **gpt-5.2 `low`** — 100.0 % multi-tool pass at $0.002773 / correct; gpt-4o is 83.3 % at $0.003651 / correct ([03 §5, §7](../benchmarks/03-tool-using-agent/analysis.md)) | **gpt-5.2 `low`** — same 0.939 × throughput × 100.0 % pass beats gpt-4o (1.0 × 83.3 %) ([03 §6](../benchmarks/03-tool-using-agent/analysis.md)) |
 
 The "effort > low" column is **empty on every benchmark**: `high` and
 `xhigh` consistently add cost without lifting quality on the workloads

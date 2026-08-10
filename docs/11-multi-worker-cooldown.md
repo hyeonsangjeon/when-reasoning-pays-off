@@ -39,8 +39,8 @@ labeled as such anywhere it is cited.
 ## 2. Coordination protocol
 
 `CooldownCoordinator` wraps an `AdmissionController` and an injected
-`CooldownBackend`. On every 429 the underlying controller decides to
-sleep on, the coordinator:
+`CooldownBackend`. On every 429 for which the underlying controller
+decides to sleep, the coordinator:
 
 1. Calls `backend.claim_slot(deployment_key, worker_id, retry_after_ms)`
    to obtain a per-worker time offset (milliseconds).

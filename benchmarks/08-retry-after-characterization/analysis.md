@@ -99,7 +99,7 @@ confirm" any universal PTU behavior.
 
 ## Decision
 
-For a customer's retry wrapper, the two operational answers are:
+For a customer's retry wrapper, the four operational answers are:
 
 1. In these source runs, observed `retry-after-ms` values look
    **clustered / integer-ms quantized**, not like a smooth continuous

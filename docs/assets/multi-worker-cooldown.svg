@@ -39,7 +39,7 @@
 
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#bcd2e8">
     <text x="520" y="160" fill="#e0fbfc" font-weight="700">Why it matters</text>
-    <text x="520" y="190">&#8226; aligned resume &#8594; leak-bucket edge</text>
+    <text x="520" y="190">&#8226; aligned resume &#8594; leaky-bucket edge</text>
     <text x="520" y="216">&#8226; coincident requests &#8594; fresh 429s</text>
     <text x="520" y="242">&#8226; jitter de-synchronises workers</text>
     <text x="520" y="268">&#8226; fewer self-inflicted throttles</text>

@@ -128,7 +128,6 @@ accessed `2026-05-19`).
 | gpt-5.2 | high | $0.001250 ± $0.000574 | **100.0 %** (60/60) | **$0.001250** |
 | gpt-5.2 | xhigh | $0.002179 ± $0.001532 | **100.0 %** (60/60) | **$0.002179** |
 
-The single most important number on this page sits in the top-right column:
 **gpt-5.2 effort=none is 42 % cheaper per correct answer than the gpt-4o
 baseline** ($0.000618 vs $0.001064), and gpt-5.2 effort=low is **16 %
 cheaper per correct answer than gpt-4o** ($0.000888 vs $0.001064) even
@@ -367,9 +366,8 @@ empirical reason.
   strict. Higher effort tiers add proportionally more latency without
   the offsetting quality lift.
 
-**The reasoning surface earns its bill on this benchmark, but at
-effort=none — i.e., gpt-5.2's *baseline* reasoning configuration is the
-correct lever.** The pre-registered hypothesis "high reasoning effort
+**The gpt-5.2 model upgrade pays on this benchmark; raising effort above
+none does not.** The pre-registered hypothesis "high reasoning effort
 pays for itself on multi-step tasks" is **falsified** as stated: above
 `effort=none`, additional reasoning tokens are spent but do not produce
 additional correct answers. The headline win is the **model upgrade

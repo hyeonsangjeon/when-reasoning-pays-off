@@ -28,8 +28,7 @@ every cell that invoked a tool.
 | `experiments/exp_smoke_03.yaml` | `exp_smoke_03` | 4 | 4 | `[low, high]` | 0.005 | ✅ all cells OK |
 | **Total smoke** | | **6** | **6** | | **≈ 0.008** | ✅ ≤ $0.50 ceiling |
 
-Smoke spend is ~$0.008 — three orders of magnitude under the combined
-$0.50 ceiling.
+Smoke spend is ~$0.008, well under the combined $0.50 ceiling.
 
 ## Sample-level outcomes
 
@@ -83,8 +82,7 @@ zero `content_filter` rejections were observed.
 
 1. Both smoke YAMLs executed end-to-end against live Foundry v1.
 2. Six raw JSONs written under `benchmarks/03-tool-using-agent/runs/`.
-3. Combined smoke spend (~$0.008) is three orders of magnitude under
-   the $0.50 ceiling.
+3. Combined smoke spend (~$0.008) is well under the $0.50 ceiling.
 4. Tool dispatch path is verified by the live spot-check on `tu_07`
    and the runner unit test (`test_live_tool_loop_dispatches_tool_calls`).
 5. No `content_filter` rejections after the dataset rephrasing pass.

@@ -46,30 +46,24 @@
     <section class="article-section">
       <h2>Why we tested this</h2>
       <p>
-        The short-factual slice taught one lesson: when a task only needs
-        recall, extra reasoning mostly buys cost. But not every task is recall.
-        Plenty of real work asks the model to keep a small chain of constraints
-        alive — combine a few conditions, carry an intermediate result, and
-        only then answer. On that shape, "let it think more" stops looking like
-        an obvious waste and starts to look like it might earn its keep.
+        Unlike short factual work, many tasks require the model to keep a small
+        chain of constraints alive: combine a few conditions, carry an
+        intermediate result, and only then answer. On that shape, "let it think
+        more" may earn its keep.
       </p>
       <p>
-        That gives us a clean hypothesis to check: if a task genuinely requires
-        holding multiple constraints together, maybe a stronger model or more
-        reasoning effort buys real quality rather than only a larger bill. The
-        intuition is reasonable — the experiment tests whether it holds on a
-        measured slice instead of in the abstract.
+        We tested whether a stronger model or more reasoning effort buys real
+        quality when a task requires multiple constraints to be held together,
+        rather than assuming that it does.
       </p>
       <p>
-        So we tested it. Benchmark-02 holds a multi-step slice fixed and walks
+        Benchmark-02 holds a multi-step slice fixed and walks
         the same model and effort ladder — the GPT-4o baseline, then GPT-5.2 at
         none, low, medium, high, and xhigh effort — reading mean judge
-        score next to cost and latency at each cell. The result is mixed and
-        worth stating plainly: GPT-5.2 lifted quality over the GPT-4o baseline,
-        but inside GPT-5.2 the highest effort settings were not automatically
-        the winner, and the cheapest top-scoring cell spent no reasoning tokens
-        at all. The one-pager below states that in a single frame, and the
-        sections after it show the measured detail.
+        score next to cost and latency at each cell. GPT-5.2 lifted quality over
+        the GPT-4o baseline, but inside GPT-5.2 the highest effort settings were
+        not automatically the winner, and the cheapest top-scoring cell spent no
+        reasoning tokens at all.
       </p>
     </section>
 
@@ -77,8 +71,8 @@
       <figcaption>
         <strong>At a glance.</strong> On this multi-step slice the quality
         lift tracked the model upgrade (gpt-4o &rarr; gpt-5.2), not steps up the effort
-        ladder. The one-pager states the same message and marks the evidence
-        boundary; the sections below add the measured detail.
+        ladder. The one-pager marks the evidence boundary; the sections below
+        provide the measured detail.
         <a href="../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">Open the multi-step one-pager SVG</a>.
       </figcaption>
       <img src="../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="One-pager for multi-step work. It contrasts a near-flat effort ladder within a model against a clear quality lift from the gpt-4o to gpt-5.2 model upgrade. Headline message: on multi-step work, the quality lift came from the model upgrade, not from climbing the effort ladder. Marked as a measured aggregate, per-effort quality cells compared within and across models." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -131,7 +125,7 @@
     </section>
     <section id="s4" class="article-section">
       <h2>What this means</h2>
-      <p>Reasoning pays when it changes the answer, not when it only changes the answer's aura. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p>
+      <p>Reasoning pays when it changes the answer. Multi-step work is where the trial belongs first: the task has enough internal structure for the model to benefit, and the evaluator can see the difference.</p>
       <p>The decision is therefore not “use more reasoning everywhere.” It is “route multi-step slices to the lowest effort level that clears the quality bar.”</p>
     </section>
 
@@ -186,7 +180,7 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The cost figures drift if list pricing moves.</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost framing is priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The cost figures drift if list pricing moves.</li>
         <li>[3] <strong>Tier 2 — benchmark-02 slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the per-effort quality figures — the 1.5 GPT-4o baseline, the 2.0 reached by GPT-5.2 none, medium, high, and xhigh, and the 1.93 at GPT-5.2 low, where GPT-5.2 none spends no reasoning tokens yet is the cheapest top-scoring cell at $0.000618 — and the matching cost figures from $0.000618 to $0.002179 per request.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, and <code>latency.json</code>, read together with <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code> as paired-reading evidence that the quality lift on this slice carried a justified bill rather than only a taller one.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 quality and cost paired chart</a> is the auditable form of the same artifacts.</li>

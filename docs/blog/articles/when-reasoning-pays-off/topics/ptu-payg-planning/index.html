@@ -41,15 +41,15 @@
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Topic detail</p>
     <p class="article-kicker">Topic essay · PTU/PAYG planning model</p>
     <h1>PTU/PAYG crossover: planning line, not capacity result</h1>
-    <p class="lede">You have already measured which model and effort cells are worth using. Now the traffic team hands you a forecast for the next quarter and asks the question that decides the bill: at this expected request rate, do you stay on pay-as-you-go (PAYG) or reserve provisioned throughput (PTU)? It is tempting to draw one crossover line and treat it as the answer. This essay treats that line for what it actually is — a modeled, price-only break-even that tells you when a capacity experiment is worth running, not a measurement of how a live PTU deployment behaves under load.</p>
+    <p class="lede">You have already measured which model and effort cells are worth using. Now the traffic team hands you a forecast for the next quarter and asks the question that decides the bill: at this expected request rate, do you stay on pay-as-you-go (PAYG) or reserve provisioned throughput (PTU)? It is tempting to draw one crossover line and treat it as the answer. The line is a modeled, price-only break-even that tells you when a capacity experiment is worth running, not a measurement of how a live PTU deployment behaves under load.</p>
 
     <figure class="article-figure" id="figure-ptu-payg-one-pager">
       <figcaption>
         <strong>At a glance: modeled, not measured.</strong> PTU versus
-        PAYG is a calculated crossover at a break-even request rate: below it PAYG is
-        cheaper, above it the committed PTU block is. The one-pager states the same
-        message and marks the modeled boundary; the sections below add the calculation
-        and its limits.
+        PAYG is a calculated crossover at a break-even request rate: below it,
+        PAYG is cheaper; above it, the committed PTU block is. The one-pager marks the
+        modeled boundary; the sections below provide the calculation and its
+        limits.
         <a href="../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">Open the PTU/PAYG one-pager SVG</a>.
       </figcaption>
       <img src="../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="One-pager for PTU versus PAYG planning. It shows a rising PAYG cost line crossing a flat committed-PTU cost line at a break-even request rate. Headline message: PTU versus PAYG is a modeled crossover at a break-even request rate, below it PAYG is cheaper and above it PTU. Explicitly labeled modeled, not measured: the crossover is calculated, not a live capacity result." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -57,9 +57,9 @@
 
     <section class="article-section" id="why-modeled">
       <h2>Why we modeled this</h2>
-      <p>There are two ways to treat a crossover line, and they pull in opposite directions. One is to read it as a verdict: the line points at PTU, so reserve PTU. The other is to read it as a planning trigger: the line says PTU is plausibly cheaper for this workload, so this is the deployment worth testing with a capacity experiment. We modeled the crossover for the second reading.</p>
-      <p>We did it that way because the line only answers a narrow price question. At one pricing snapshot, for one measured token-per-request shape, where does a fixed PTU floor become cheaper than the PAYG bill? It says nothing about whether the deployment can carry the traffic, where 429 throttling begins, how the prompt cache behaves under load, or what p95 latency looks like. Mistaking that price answer for a capacity answer is exactly the error this essay is built to prevent.</p>
-      <p>So the calculation deliberately combines two kinds of input: dated PAYG and PTU pricing snapshots on one side, and the measured per-request cost and token shape from the benchmarks on the other. That pairing is what makes the output a planning model — grounded in real measurements, but scoped to price — rather than a live capacity result.</p>
+      <p>A crossover line can be mistaken for a verdict: the line points at PTU, so reserve PTU. We use it instead as a planning trigger. When PTU looks plausibly cheaper for this workload, the deployment is worth testing with a capacity experiment.</p>
+      <p>The line answers only a narrow price question. At one pricing snapshot, for one measured token-per-request shape, where does a fixed PTU floor become cheaper than the PAYG bill? It says nothing about whether the deployment can carry the traffic, where 429 throttling begins, how the prompt cache behaves under load, or what p95 latency looks like. Treating that price answer as a capacity answer confuses the two.</p>
+      <p>The calculation therefore combines dated PAYG and PTU pricing snapshots with the measured per-request cost and token shape from the benchmarks. That pairing makes the output a planning model — grounded in real measurements, but scoped to price — rather than a live capacity result.</p>
     </section>
 
     <div class="article-summary-grid" aria-label="Topic summary">
@@ -114,12 +114,12 @@
     <section id="s3" class="article-section">
       <h2>Why the distinction matters</h2>
       <p>Without the distinction, a crossover chart can be misread as a promise. It is tempting to say that a row with a 564 rpm crossover “needs PTU” or that a row with a 2,700 rpm crossover “does not need PTU.” The evidence is more careful than that. The chart says what the economics look like under the modeled assumptions. A live system still needs latency, cache, retry, and evidence that the curve has stopped rising.</p>
-      <p>That caution is a feature, not a weakness. It is what makes the chart usable: it tells the team when to run a capacity experiment, not what the capacity experiment will find.</p>
+      <p>This limit makes the chart usable: it tells the team when to run a capacity experiment without predicting what that experiment will find.</p>
     </section>
     <section id="s4" class="article-section">
       <h2>What this means</h2>
-      <p>PAYG and PTU answer different questions. PAYG asks how much each completed request costs. PTU asks what fixed capacity can carry at an acceptable quality and latency level. The crossover line connects those worlds, but it does not collapse them into one measurement.</p>
-      <p>In this project, the line is therefore labeled as a modeled hypothesis. It belongs beside the measured charts, not above them as a verdict.</p>
+      <p>PAYG and PTU answer different questions. PAYG asks how much each completed request costs. PTU asks what fixed capacity can carry at an acceptable quality and latency level. The crossover line relates those questions without answering both in one measurement.</p>
+      <p>In this project, the line is therefore labeled as a modeled hypothesis and read alongside the measured charts.</p>
     </section>
 
     <section id="table" class="article-section">
@@ -148,8 +148,8 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The per-request cost inputs inherit this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> this repository, <code>pricing/azure-openai-payg-2026-05.yaml</code>. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The per-token rates here (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output and reasoning $14.00/1M; gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) set the per-request bill that feeds the formula.</li>
-        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> this repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. accessed 2026-05-19, region eastus2: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The PTU side of the formula — $2.00 per PTU-hour, a 50 PTU minimum (the floor), and the Input TPM per PTU used for the throughput factor (gpt-4o 2,500; gpt-5.2 3,400) — comes from this snapshot. Both the PAYG and PTU prices feed the break-even: a PAYG bill per request on one side, a fixed $100/hour PTU floor (50 × $2.00) on the other.</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> this repository, <code>pricing/azure-openai-payg-2026-05.yaml</code>. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The per-token rates here (gpt-5.2 input $1.75/1M, cached input $0.175/1M, output and reasoning $14.00/1M; gpt-4o input $2.50/1M, cached $1.25/1M, output $10.00/1M) set the per-request bill that feeds the formula.</li>
+        <li>[3] <strong>Tier 1 — PTU pricing snapshot:</strong> this repository, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. Accessed 2026-05-19, region eastus2: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn — provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The PTU side of the formula — $2.00 per PTU-hour, a 50 PTU minimum (the floor), and the Input TPM per PTU used for the throughput factor (gpt-4o 2,500; gpt-5.2 3,400) — comes from this snapshot. Both the PAYG and PTU prices feed the break-even: a PAYG bill per request on one side, a fixed $100/hour PTU floor (50 × $2.00) on the other.</li>
         <li>[4] <strong>Tier 2 — measured per-request inputs:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, and <code>benchmarks/03-tool-using-agent/analysis.json</code>. These supply the mean cost per request and the per-cell token-per-request distribution that becomes the throughput-gain factor relative to the gpt-4o baseline.</li>
         <li>[5] <strong>Tier 2 — modeled crossover output (CALCULATION, not measurement):</strong> this repository, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, and <code>benchmark-03/crossover.json</code>. The <code>modeled_break_even_rpm</code> series rendered by the chart is computed as <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>. The 2,748 rpm figure for benchmark-01 xhigh, the 50 PTU floor, and the $2.00 PTU-hour rate are all calculated or quoted inputs — labeled MODELED, not measured throughput.</li>
         <li>[6] <strong>Evidence dashboard:</strong> the rendered <a href="../../../../charts/?lang=en#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG crossover chart family</a> is the auditable form of the same JSON artifacts.</li>
@@ -167,7 +167,7 @@
 
     <section class="article-section decision-box">
       <h2>What the evidence lets us say</h2>
-      <p>The crossover is valuable when it stays humble: at this pricing snapshot, for this token distribution, it converts evidence into a planning question and leaves live capacity to live measurement.</p>
+      <p>At this pricing snapshot and for this token distribution, the crossover turns the evidence into a planning question; live capacity still requires live measurement.</p>
       <p><a class="button-link" href="../../">Back to the overview essay</a></p>
 
       <h2>The practical rule</h2>
@@ -178,7 +178,7 @@
         <li>Before committing PTU, weigh the non-price factors the chart cannot see: latency targets, admission concurrency, and burst tolerance.</li>
       </ol>
       <p>
-        <strong>The crossover marks only the price-only
+        <strong>The crossover marks only the price
         break-even at this snapshot and token shape — decide PTU versus PAYG by
         pairing it with the non-price factors it cannot model: latency,
         admission, and burst.</strong>

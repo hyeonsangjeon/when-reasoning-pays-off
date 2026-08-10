@@ -70,15 +70,14 @@ outlier exclusion. All counts are per request.
 | gpt-5.2 | high | 60 | 223.5 ± 12.6 | 0.0 ± 0.0 | 15.5 ± 10.0 | 1.35 ± 5.94 | 239.0 ± 18.0 |
 | gpt-5.2 | xhigh | 60 | 223.5 ± 12.6 | 0.0 ± 0.0 | 14.8 ± 8.8 | 0.62 ± 4.78 | 238.3 ± 19.2 |
 
-The striking feature is what is *absent*: the reasoning column is ≈ 0 at
-every tier. Even at `high` the mean is 1.35 tokens (SD 5.94 — a few requests
+The reasoning column is ≈ 0 at every tier. Even at `high` the mean is
+1.35 tokens (SD 5.94 — a few requests
 emit a couple dozen, most emit none) and `xhigh` is lower still at 0.62. The
 input shape is fixed across effort levels (the prompt is byte-identical) and
 visible output moves only marginally (10–16 tokens), so total tokens per
 request stay inside a ~2 % band (234.9 → 239.0) across the whole ladder. On
-short-factual work the effort dial buys almost no reasoning tokens — there is
-nothing for the model to deliberate about — so the usual "reasoning is what
-you pay for" lever is inert here.
+short-factual work the effort dial buys almost no reasoning tokens because
+there is nothing for the model to deliberate about.
 
 ## 5. Cost by Effort
 
@@ -99,7 +98,7 @@ accessed `2026-05-19`).
 | gpt-5.2 | xhigh | $0.000598 ± $0.000138 ($0.598 per 1,000 req; `pricing/azure-openai-payg-2026-05.yaml`, accessed `2026-05-19`) |
 
 GPT-5.2 at `none` undercuts the GPT-4o baseline by **$0.000078 per request**
-(≈12 %, i.e. $0.587 vs $0.665 per 1,000 requests) on a lower input rate
+(≈12 %, i.e. $0.587 vs $0.665 per 1,000 requests) because of a lower input rate
 (`$1.75/$0.175` vs `$2.50/$1.25` per 1 M tokens) and zero reasoning spend.
 Raising the effort dial barely moves the bill: `low` and `medium` are
 statistically identical to `none` ($0.589), and even `xhigh` ($0.598) and
@@ -157,8 +156,8 @@ support confidence-interval or significance claims.
 | gpt-5.2 | high | 1.93 ± 0.31 | 60 |
 | gpt-5.2 | xhigh | 1.95 ± 0.22 | 60 |
 
-Two facts stand out. First, **gpt-5.2 matches or beats gpt-4o at every
-tier, starting from `none`** (1.95 vs 1.90). Second, effort does not help:
+**gpt-5.2 matches or beats gpt-4o at every tier, starting from `none`**
+(1.95 vs 1.90). Effort does not help:
 the gpt-5.2 column spans just 1.93–1.97, a **0.04-point** spread, and the
 widest gap anywhere on the ladder is **0.07 points** (low/medium vs gpt-4o)
 — comfortably *within one SD* in every cell. Per the methodology §8
@@ -178,14 +177,14 @@ Per-tag breakdown (selected; full table in `analysis.json` under
 | classification (n=6) | 2.00 ± 0.00 | 2.00 ± 0.00 | 2.00 ± 0.00 |
 | transliteration (n=6) | 2.00 ± 0.00 | 2.00 ± 0.00 | 2.00 ± 0.00 |
 
-The aggregate parity hides a tidy tag-level trade. gpt-5.2 `none` *earns*
+The aggregate parity hides a tag-level trade. gpt-5.2 `none` *earns*
 its edge on the two tags gpt-4o fumbles — **extraction** (1.75 → 2.00) and
 **summarization** (1.33 → 1.78) — and does so with zero reasoning tokens.
 The one tag where gpt-4o wins is **arithmetic-trivial** (2.00 vs 1.83), and
 turning the effort dial up makes gpt-5.2 *worse* there, not better (1.83 at
 `none` → 1.67 at `high`): the model over-thinks "1 + 1". Everything else is
-a 2.00 wash on both sides. Net: the quality that matters here comes from the
-model swap, not the effort dial.
+a 2.00 wash on both sides. The quality difference comes from the model swap,
+not the effort dial.
 
 Sibling chart pair (quality):
 - [`results/cost-curves/benchmark-01-quality.png`](../../results/cost-curves/benchmark-01-quality.png)

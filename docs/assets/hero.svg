@@ -2,7 +2,7 @@
      aria-labelledby="heroTitle heroDesc" width="1200" height="480">
   <title id="heroTitle">Same token price, different bill</title>
   <desc id="heroDesc">A conceptual illustration: two workloads pay the same per-token
-  price, but the reasoning workload bills extra invisible "thinking" tokens, so its
+  price, but the reasoning workload is billed for extra invisible "thinking" tokens, so its
   total bill is taller. No measured numbers are shown.</desc>
 
   <defs>

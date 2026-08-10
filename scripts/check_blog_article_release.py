@@ -74,12 +74,12 @@ def meta_content(html: str, name: str) -> str | None:
 def extract_main_inner(html: str) -> str:
     matches = list(
         re.finditer(
-            r"<main\s+id=[\"']article-content[\"'][^>]*>(?P<inner>.*?)</main>",
+            r"<main\b[^>]*>(?P<inner>.*?)</main>",
             html,
             re.IGNORECASE | re.DOTALL,
         )
     )
-    require(len(matches) == 1, "English article must have one main#article-content")
+    require(len(matches) == 1, "English article must have exactly one main element")
     return matches[0].group("inner")
 
 
@@ -138,6 +138,45 @@ def check_article_meta() -> str:
             f"{rel(page)} source article sha mismatch",
         )
     return canonical_sha
+
+
+def check_all_article_translation_hashes() -> int:
+    checked = 0
+    for manifest_path in sorted(ARTICLE_ROOT.rglob("i18n-parity.json"), key=rel):
+        manifest = load_json(manifest_path)
+        if manifest.get("canonical_locale", "en") != "en":
+            continue
+
+        locale_paths = manifest.get("locales")
+        require(
+            isinstance(locale_paths, dict),
+            f"{rel(manifest_path)} must map its translated locales",
+        )
+        canonical_path = manifest_path.parent / locale_paths.get("en", "index.html")
+        require(
+            canonical_path.is_file(),
+            f"{rel(manifest_path)} English canonical page is missing",
+        )
+        canonical_sha = article_sha(read_text(canonical_path))
+
+        for locale, locale_path in locale_paths.items():
+            if locale == "en":
+                continue
+            page = manifest_path.parent / locale_path
+            require(page.is_file(), f"{rel(manifest_path)} locale page is missing: {locale}")
+            html = read_text(page)
+            source_locale = meta_content(html, "article:source-locale")
+            source_sha = meta_content(html, "article:source-article-sha256")
+            require(
+                source_locale == "en",
+                f"{rel(page)} source locale must be en",
+            )
+            require(
+                source_sha == canonical_sha,
+                f"{rel(page)} source article sha mismatch",
+            )
+            checked += 1
+    return checked
 
 
 def check_ledger(canonical_sha: str) -> int:
@@ -413,6 +452,7 @@ def main() -> None:
 
     check_required_files()
     canonical_sha = check_article_meta()
+    translation_hash_count = check_all_article_translation_hashes()
     claim_count = check_ledger(canonical_sha)
     check_ptu_wording()
     check_korean_overview_parity()
@@ -424,6 +464,7 @@ def main() -> None:
     print(
         "check passed: blog article release "
         f"sha={canonical_sha} claims={claim_count} "
+        f"translation_hashes={translation_hash_count} "
         f"blog_html_files={blog_url_count} scanned_public_files={scanned_count}"
     )
 

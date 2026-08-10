@@ -16,10 +16,9 @@ samples here cover three subtypes:
   the model must plan the tool sequence and combine intermediate results.
 
 Paired with benchmarks 01 (the null floor) and 02 (the multi-step
-reasoning ceiling), this benchmark spans the realistic production decision
-space. The repo's headline question becomes answerable: for a new
-production task, **which model × effort × consumption-model combination is
-the defensible default**?
+reasoning ceiling), this benchmark completes the comparison needed to choose
+a defensible model × effort × consumption-model default for a new production
+task.
 
 ## Position in the repo
 
