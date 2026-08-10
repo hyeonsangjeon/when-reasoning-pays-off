@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>कैश कीज़ लेबल नहीं, रूटिंग के संकेत हैं | when reasoning pays off</title>
-  <meta name="description" content="यह सार्वजनिक operations लेख बताता है कि prompt_cache_key bucketing, cacheable prefix, और sparse public evidence को कैसे समझें।">
+  <meta name="description" content="यह सार्वजनिक संचालन-लेख बताता है कि prompt_cache_key बकेटिंग, कैश-योग्य प्रीफ़िक्स और सीमित सार्वजनिक साक्ष्य को कैसे समझें।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -21,12 +21,12 @@
 <body>
   <header class="site">
     <div class="bar">
-      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <a class="brand" href="../../../../hi/">जब रीज़निंग लाभ देती है</a>
       <nav class="site-links" aria-label="लेख नेविगेशन">
         <a href="../../../../hi/">होम</a>
         <a href="../../hi/">लेख सूची</a>
         <a href="../../when-reasoning-pays-off/hi/">अवलोकन निबंध</a>
-        <a href="../../../charts/?lang=hi">evidence dashboard</a>
+        <a href="../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -41,135 +41,130 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख</a> / संचालन निबंध</p>
-    <p class="article-kicker">संचालन निबंध, prompt caching और routing hints</p>
+    <p class="article-kicker">संचालन निबंध, प्रॉम्प्ट कैशिंग और रूटिंग संकेत</p>
     <h1>कैश कीज़ लेबल नहीं, रूटिंग के संकेत हैं</h1>
     <p class="lede">
-      जब कोई टीम <code>prompt_cache_key</code> जोड़ती है, तो अक्सर उसे भी बाकी labels
+      जब कोई टीम <code>prompt_cache_key</code> जोड़ती है, तो अक्सर उसे भी बाकी लेबल
       की तरह ही इस्तेमाल करने लगती है। फिर सहज रूप से उसमें वही चीज़ें भर दी जाती हैं
-      जो हर call को अलग पहचान दें: <code>request_id</code>, user के सवाल का raw text,
-      timestamp, या tenant/user का इतना बारीक axis कि सब अलग-अलग रहें। लेकिन यह field
-      सिर्फ label नहीं है। यह prompt के prefix hash के साथ मिलकर repeated work को कहाँ
-      route किया जाए, उस पर असर डालती है। इसलिए key को बहुत specific बनाने की सहज
-      इच्छा सीधे इस लेख के मुख्य सवाल से टकराती है: क्या ऐसी unique key reuse इकट्ठा
-      करती है, या वही cache locality तोड़ देती है जिसे shared prefix बनाने की कोशिश
+      जो हर कॉल को अलग पहचान दें: <code>request_id</code>, उपयोगकर्ता के सवाल का मूल पाठ,
+      समय-मुद्रा, या टेनेंट/उपयोगकर्ता का इतना बारीक धुरी कि सब अलग-अलग रहें। लेकिन यह फ़ील्ड
+      सिर्फ लेबल नहीं है। यह प्रॉम्प्ट के प्रीफ़िक्स हैश के साथ मिलकर दोहराया गया काम को कहाँ
+      रूट किया जाए, उस पर असर डालती है। इसलिए कुंजी को बहुत विशिष्ट बनाने की सहज
+      इच्छा सीधे इस लेख के मुख्य सवाल से टकराती है: क्या ऐसी अद्वितीय कुंजी पुनः उपयोग इकट्ठा
+      करती है, या वही कैश स्थानीयता तोड़ देती है जिसे साझा प्रीफ़िक्स बनाने की कोशिश
       कर रहा था?
     </p>
 
     <figure class="article-figure" id="figure-keybucket-one-pager">
       <figcaption>
-        <strong>एक नज़र में यह लेख।</strong> cacheable prefix और उसका
-        <code>prompt_cache_key</code> मिलकर repeated work को एक machine तक route करते
-        हैं। Microsoft Learn यह भी बताता है कि एक bucket में प्रति minute क़रीब 15
-        request के बाद cache effectiveness गिर सकती है। यह one-pager एक ही संदेश देता
-        है: हर bucket का size documented ceiling के नीचे रखें। साथ ही यह सीमा भी साफ़
-        करता है: ceiling आधिकारिक spec है, जबकि उसके साथ दिखा hit ratio और latency का
-        pattern PAYG पर मापा गया sanitized public aggregate है, जिसे यहाँ सिर्फ
-        descriptive रूप में दिखाया गया है।
-        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">cache-key बकेटिंग का एक-पृष्ठ सार SVG खोलें</a>।
+        <strong>एक नज़र में यह लेख।</strong> कैश-योग्य प्रीफ़िक्स और उसका
+        <code>prompt_cache_key</code> मिलकर दोहराया गया काम को एक मशीन तक रूट करते
+        हैं। Microsoft Learn यह भी बताता है कि एक बकेट में प्रति मिनट क़रीब 15
+        अनुरोध से ऊपर ट्रैफ़िक अतिरिक्त मशीनों तक फैल सकता है और कैश प्रभावशीलता घट सकती है; यह सख्त सीमा नहीं है। यह एक-पृष्ठ सार एक ही संदेश देता
+        है: लगभग 15 RPM को आरंभिक रूटिंग मार्गदर्शिका मानें, सख्त सीमा नहीं; फिर अपने कार्यभार में मापें। साथ ही साक्ष्य का दायरा साफ़
+        करता है: मार्गदर्शिका आधिकारिक दस्तावेज़ में है, जबकि उसके साथ दिखा हिट अनुपात और विलंब का
+        ढर्रा PAYG पर मापा गया पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जिसे यहाँ सिर्फ
+        वर्णनात्मक रूप में दिखाया गया है।
+        <a href="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">कैश-कुंजी बकेटिंग का एक-पृष्ठ सार SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="prompt cache-key bucketing का one-pager। इसमें दिखाया गया है कि एक prefix+key bucket एक machine पर route होती है, प्रति bucket प्रति minute क़रीब 15 request documented overflow point है, और source runs में cache hit ratio ऊँचा और लगभग flat रहा जबकि in-memory TTFT बेहतर हुआ। इसलिए hit ratio को latency के साथ पढ़ना चाहिए। मुख्य संदेश: हर bucket को documented ceiling के नीचे रखें। ceiling आधिकारिक spec है; shape sanitized measured aggregate है, सिर्फ descriptive." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="प्रॉम्प्ट कैश-कुंजी बकेट-विभाजन का एक-पृष्ठ सार। इसमें दिखाया गया है कि एक प्रीफ़िक्स+कुंजी बकेट एक मशीन पर रूट होती है, प्रति बकेट प्रति मिनट क़रीब 15 अनुरोध एक अनुमानित रूटिंग मार्गदर्शिका है, सख्त सीमा नहीं, और स्रोत रन में कैश हिट अनुपात ऊँचा और लगभग सपाट रहा जबकि इन-मेमोरी TTFT बेहतर हुआ। इसलिए हिट अनुपात को विलंब के साथ पढ़ना चाहिए। मुख्य संदेश: लगभग 15 RPM से बकेट-आकार का आरंभिक अनुमान लें और वास्तविक परिणाम मापें। मार्गदर्शिका आधिकारिक दस्तावेज़ में है; स्वरूप पहचान-रहित मापा गया समेकित आँकड़ा है, सिर्फ वर्णनात्मक." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-bucket" class="article-section">
-      <h2>अंदाज़े से नहीं, key का size तय क्यों करें</h2>
+      <h2>अंदाज़े से नहीं, कुंजी का आकार तय क्यों करें</h2>
       <p>
-        unique key बनाने की सहज प्रवृत्ति यह मानकर चलती है कि specificity मुफ़्त है: key जितनी बारीक होगी, बस requests को उतना बेहतर अलग कर देगी। इसे मान लेने से
-        पहले दो बातों को साथ देखना चाहिए। पहली, Microsoft Learn क्या कहता है: prompt
-        cache के लिए शुरुआती prefix का identical होना ज़रूरी है, और
-        <code>prompt_cache_key</code> prefix hash के साथ मिलकर repeated work कहाँ route
-        होगा, उस पर असर डालती है। वही documentation एक roughly guide point भी देती है: एक prefix+key combination पर प्रति minute क़रीब 15 request: जिसके बाद traffic
-        extra machines तक फैल सकता है और cache effectiveness गिर सकती है। दूसरी बात,
-        इस repository के source runs का sparse sanitized public aggregate है, जो सिर्फ
-        descriptive रूप में दिखाता है कि वही prefix ज़्यादा buckets में बाँटने पर cache
-        hit ratio और first-token latency वास्तव में कैसे बदले।
+        अद्वितीय कुंजी बनाने की सहज प्रवृत्ति यह मानकर चलती है कि विशिष्टता मुफ़्त है: कुंजी जितनी बारीक होगी, बस अनुरोध को उतना बेहतर अलग कर देगी। इसे मान लेने से
+        पहले दो बातों को साथ देखना चाहिए। पहली, Microsoft Learn क्या कहता है: प्रॉम्प्ट
+        कैश के लिए शुरुआती प्रीफ़िक्स का समान होना ज़रूरी है, और
+        <code>prompt_cache_key</code> प्रीफ़िक्स हैश के साथ मिलकर दोहराया गया काम कहाँ रूट
+        होगा, उस पर असर डालती है। वही दस्तावेज़ एक अनुमानित मार्गदर्शिका भी देता है: एक प्रीफ़िक्स+कुंजी संयोजन पर प्रति मिनट क़रीब 15 अनुरोध से ऊपर ट्रैफ़िक
+        अतिरिक्त मशीनों तक फैल सकता है और कैश प्रभावशीलता गिर सकती है। दूसरी बात,
+        इस रिपॉज़िटरी के स्रोत रन का सीमित पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जो सिर्फ
+        वर्णनात्मक रूप में दिखाता है कि वही प्रीफ़िक्स ज़्यादा बकेट में बाँटने पर कैश
+        हिट अनुपात और प्रथम-टोकन विलंब वास्तव में कैसे बदले।
       </p>
       <p>
-        असल में रुककर देखने लायक़ बात यही तुलना है। सिर्फ hit ratio देखने पर सब ठीक
-        लग सकता है, जबकि नीचे का user experience बदल रहा हो। मापे गए इस हिस्से में
-        bucket cardinality बढ़ने पर भी hit ratio ऊँचा और लगभग flat रहा (क़रीब
-        0.93–0.96), इसलिए अगर उसे अकेले पढ़ें तो लगेगा कि splitting की कोई क़ीमत नहीं
-        पड़ी। लेकिन first-token latency tail दूसरी आधी कहानी दिखाती है: एक hot bucket
-        बहुत बड़ा p95 उठा रही थी, और traffic को ज़्यादा buckets में फैलाते ही वह तेज़ी
-        से गिर गया। इसलिए संचालन का असली सवाल यह नहीं है कि "cache hit हुआ या नहीं",
-        बल्कि यह है कि "क्या हर bucket का size ऐसा है कि shared prefix अपनी locality
-        बनाए रखे और कोई एक bucket ज़्यादा hot न हो जाए?" prefix hash routing और प्रति
-        minute क़रीब 15 request वाला overflow point Microsoft Learn की documented बात
-        है। bucket count की गणना और latency के साथ रखी public hit-ratio evidence इस
-        repository की operational inference और source-run evidence है, कोई universal
-        cache-hit curve नहीं। नीचे के charts इस संबंध को साफ़ दिखाते हैं।
+        असल में रुककर देखने लायक़ बात यही तुलना है। सिर्फ हिट अनुपात देखने पर सब ठीक
+        लग सकता है, जबकि नीचे का उपयोगकर्ता अनुभव बदल रहा हो। मापे गए इस हिस्से में
+        बकेट कार्डिनैलिटी बढ़ने पर भी हिट अनुपात ऊँचा और लगभग सपाट रहा (क़रीब
+        0.93–0.96), इसलिए अगर उसे अकेले पढ़ें तो लगेगा कि विभाजन की कोई क़ीमत नहीं
+        पड़ी। लेकिन प्रथम-टोकन विलंब टेल में बड़ा वर्णनात्मक अंतर था: एक बकेट वाले in_memory सेल का p95 बहुत ऊँचा था, जबकि 8 बकेट वाले सेल में कम था। एकल रन इस अंतर का कारण सिद्ध नहीं करता। इसलिए संचालन का असली सवाल यह नहीं है कि "कैश हिट हुआ या नहीं",
+        बल्कि यह है कि "क्या हर बकेट का आकार ऐसा है कि साझा प्रीफ़िक्स अपनी स्थानीयता
+        बनाए रखे और कोई एक बकेट ज़्यादा गरम न हो जाए?" प्रीफ़िक्स हैश रूटिंग और प्रति
+        मिनट क़रीब 15 अनुरोध वाली अनुमानित रूटिंग मार्गदर्शिका Microsoft Learn की दस्तावेज़ीकृत बात
+        है। बकेट गणना की गणना और विलंब के साथ रखी सार्वजनिक हिट-अनुपात साक्ष्य इस
+        रिपॉज़िटरी का संचालनगत निष्कर्ष और स्रोत रन का साक्ष्य है, कोई सार्वभौमिक
+        कैश-हिट वक्र नहीं। नीचे के चार्ट इस संबंध को साफ़ दिखाते हैं।
       </p>
     </section>
 
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>प्रश्न</h2>
-        <p>shared prompt prefix के लिए कितनी cache-key buckets रखनी चाहिए?</p>
+        <p>साझा प्रॉम्प्ट प्रीफ़िक्स के लिए कितनी कैश-कुंजी बकेट रखनी चाहिए?</p>
       </section>
       <section class="summary-tile">
-        <h2>evidence</h2>
-        <p>Microsoft Learn routing hint और approximate overflow point बताता है; यह repository sparse public measurement जोड़ती है।</p>
+        <h2>साक्ष्य</h2>
+        <p>Microsoft Learn रूटिंग संकेत और अनुमानित रूटिंग बिंदु बताता है; यह रिपॉज़िटरी सीमित सार्वजनिक मापन जोड़ती है।</p>
       </section>
       <section class="summary-tile">
         <h2>फैसला</h2>
-        <p>bucket को workload के हिसाब से बाँटें, per-bucket rate को risk zone के नीचे रखें, और hit ratio के साथ first-token latency भी देखें।</p>
+        <p>बकेट को कार्यभार के हिसाब से बाँटें, प्रति-बकेट दर को जोखिम क्षेत्र के नीचे रखें, और हिट अनुपात के साथ प्रथम-टोकन विलंब भी देखें।</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="लेख के खंड">
       <strong>सवाल के हिसाब से पढ़ें:</strong>
-      <a href="#spec">official behavior</a>
-      <a href="#formula">bucket formula</a>
-      <a href="#evidence">public evidence</a>
-      <a href="#patterns">अच्छी और बुरी keys</a>
+      <a href="#spec">आधिकारिक व्यवहार</a>
+      <a href="#formula">बकेट सूत्र</a>
+      <a href="#evidence">सार्वजनिक साक्ष्य</a>
+      <a href="#patterns">अच्छी और बुरी कुंजियाँ</a>
       <a href="#sources">स्रोत</a>
     </nav>
 
     <p class="banner">
       <strong>दायरे की टिप्पणी:</strong>
-      यहाँ दिए गए measurements source runs के sparse evidence हैं। इन्हें universal
-      cache-hit curve साबित करने के लिए नहीं, बल्कि operating checklist बनाने के लिए
+      यहाँ दिए गए मापन स्रोत रन के सीमित साक्ष्य हैं। इन्हें सार्वभौमिक
+      कैश-हिट वक्र साबित करने के लिए नहीं, बल्कि संचालन जाँच-सूची बनाने के लिए
       पढ़ें।
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">official behavior, key क्या बदलती है</p>
-      <h2>cache की शुरुआत identical prefix से होती है</h2>
+      <p class="section-label">आधिकारिक व्यवहार, कुंजी क्या बदलती है</p>
+      <h2>कैश की शुरुआत समान प्रीफ़िक्स से होती है</h2>
       <p>
-        Microsoft Learn के मुताबिक prompt cache के लिए कम-से-कम 1,024 input tokens
-        चाहिए, और पहले 1,024 tokens identical होने चाहिए। शुरुआती prefix को routing
-        के लिए hash किया जाता है, और पहले 1,024 tokens के बाद हर 128 tokens पर
-        additional cache match बनता है। पहले 1,024 tokens के भीतर एक character का
-        फ़र्क़ भी cache hit को miss में बदल सकता है।
+        Microsoft Learn के मुताबिक प्रॉम्प्ट कैश के लिए कम-से-कम 1,024 इनपुट टोकन
+        चाहिए, और पहले 1,024 टोकन समान होने चाहिए। शुरुआती प्रीफ़िक्स को रूटिंग
+        के लिए हैश किया जाता है, और पहले 1,024 टोकन के बाद हर 128 टोकन पर
+        अतिरिक्त कैश मेल बनता है। पहले 1,024 टोकन के भीतर एक अक्षर का
+        फ़र्क़ भी कैश हिट को मिस में बदल सकता है।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>prefix पहले</h3>
-          <p>repeated instructions, schema, tools, और examples को शुरू में रखें। prefix बदलते ही बाद का reuse बहुत कम काम आता है।</p>
+          <h3>प्रीफ़िक्स पहले</h3>
+          <p>दोहराया गया निर्देश, स्कीमा, टूल, और उदाहरण को शुरू में रखें। प्रीफ़िक्स बदलते ही बाद का पुनः उपयोग बहुत कम काम आता है।</p>
         </div>
         <div>
-          <h3>key बाद में</h3>
-          <p><code>prompt_cache_key</code> prefix hash के साथ मिलकर repeated work की routing पर असर डालती है।</p>
+          <h3>कुंजी बाद में</h3>
+          <p><code>prompt_cache_key</code> प्रीफ़िक्स हैश के साथ मिलकर दोहराया गया काम की रूटिंग पर असर डालती है।</p>
         </div>
         <div>
           <h3>गारंटी नहीं</h3>
-          <p>यह key reuse की संभावना बढ़ाती है, hit का वादा नहीं करती। इसे operating hint की तरह देखें।</p>
+          <p>यह कुंजी पुनः उपयोग की संभावना बढ़ाती है, हिट का वादा नहीं करती। इसे संचालन संकेत की तरह देखें।</p>
         </div>
       </div>
     </section>
 
     <section id="formula" class="article-section">
-      <p class="section-label">sizing, buckets को risk zone से नीचे रखें</p>
-      <h2>एक bucket बहुत hot हो सकती है; बहुत ज़्यादा buckets बहुत cold पड़ सकती हैं</h2>
+      <p class="section-label">आकार-निर्धारण, अनुमान से शुरू करें और मापकर सुधारें</p>
+      <h2>एक बकेट बहुत गरम और बहुत अधिक बकेट बहुत ठंडे हो सकते हैं</h2>
       <p>
-        Microsoft Learn एक approximate overflow point बताता है। अगर वही prefix और
-        <code>prompt_cache_key</code> combination प्रति minute क़रीब 15 request से ऊपर
-        चला जाए, तो कुछ requests extra machines पर route हो सकती हैं और cache
-        effectiveness घट सकती है। व्यावहारिक sizing rule यह है कि shared prefix को
-        enough stable buckets में बाँटें, ताकि हर bucket थोड़ी headroom के साथ उस risk
-        zone से नीचे रहे।
+        Microsoft Learn लगभग 15 RPM का अनुमानित रूटिंग बिंदु बताता है, सख्त सीमा नहीं। उसी प्रीफ़िक्स और
+        <code>prompt_cache_key</code> संयोजन पर दर बढ़ने से कुछ अनुरोध अतिरिक्त मशीनों पर रूट हो सकते हैं और कैश
+        प्रभावशीलता घट सकती है। इस संख्या से आरंभिक बकेट-संख्या का अनुमान लें, फिर प्रति-बकेट दर, वास्तविक कैश हिट और प्रथम-टोकन विलंब मापकर उसे समायोजित करें।
       </p>
       <div class="chart-reading-note">
-        <h3>bucket-count rule</h3>
+        <h3>आरंभिक बकेट-संख्या का अनुमान</h3>
         <p>
           <code>common_prefix_rpm = common_prefix_tps × 60</code><br>
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code><br>
@@ -178,85 +173,85 @@
       </div>
       <div class="evidence-grid">
         <div>
-          <h3>worked example</h3>
-          <p>1.4 TPS पर shared prefix 84 RPM देखता है। 15-RPM floor पर 6 buckets बनती हैं; 10-RPM target पर 9.</p>
+          <h3>हल किया हुआ उदाहरण</h3>
+          <p>1.4 TPS पर साझा प्रीफ़िक्स 84 RPM देखता है। 15-RPM मार्गदर्शिका से आरंभिक अनुमान 6 बकेट और 10-RPM लक्ष्य से 9 बकेट है।</p>
         </div>
         <div>
           <h3>सिर्फ एक क्यों नहीं?</h3>
-          <p>एक single hot bucket local cache path को overflow करा सकती है, भले ही visible prompt स्थिर दिखे।</p>
+          <p>एक एकल गरम बकेट स्थानीय कैश मार्ग को अतिप्रवाह करा सकती है, भले ही दृश्य प्रॉम्प्ट स्थिर दिखे।</p>
         </div>
         <div>
-          <h3>हर call पर unique क्यों नहीं?</h3>
-          <p>अगर हर call की key unique होगी, तो reuse जमा ही नहीं होगा। cache के पास भीड़ बनने का मौका नहीं मिलेगा।</p>
+          <h3>हर कॉल पर अद्वितीय क्यों नहीं?</h3>
+          <p>अगर हर कॉल की कुंजी अद्वितीय होगी, तो पुनः उपयोग जमा ही नहीं होगा। कैश के पास भीड़ बनने का मौका नहीं मिलेगा।</p>
         </div>
       </div>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">observed evidence, sparse public case</p>
-      <h2>hit ratio और latency को साथ मापें</h2>
+      <p class="section-label">अवलोकित साक्ष्य, सीमित सार्वजनिक उदाहरण</p>
+      <h2>हिट अनुपात और विलंब को साथ मापें</h2>
       <figure class="article-figure">
         <figcaption>
-          <strong>चार्ट कैसे पढ़ें:</strong> यह public aggregate का cache-key case है।
-          बायाँ panel cache hit ratio दिखाता है। दायाँ panel time to first token का p95
-          दिखाता है। X-axis पर retention mode और bucket cardinality है।
+          <strong>चार्ट कैसे पढ़ें:</strong> यह सार्वजनिक समेकित आँकड़े का कैश-कुंजी उदाहरण है।
+          बायाँ खंड कैश हिट अनुपात दिखाता है। दायाँ खंड प्रथम टोकन तक का समय का p95
+          दिखाता है। क्षैतिज धुरी पर संरक्षण मोड और बकेट कार्डिनैलिटी हैं।
         </figcaption>
-        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.hi.svg" alt="cache hit ratio और TTFT p95 की तुलना दिखाने वाला prompt cache-key bucketing evidence chart." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/prompt-cache-key-bucketing-evidence.hi.svg" alt="कैश हिट अनुपात और TTFT p95 की तुलना दिखाने वाला प्रॉम्प्ट कैश-कुंजी बकेट-विभाजन साक्ष्य चार्ट." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-hit-ratio">
         <figcaption>
-          <strong>source chart: cache hit ratio बनाम cache-key cardinality.</strong>
-          <strong>X-axis:</strong> log2 scale पर bucket cardinality (1, फिर उसी prefix
-          पर 8 buckets)। <strong>Y-axis:</strong> steady-state cache hit ratio, 0–1.
-          <strong>Lines:</strong> दो retention series: <code>in_memory</code> और
-          <code>24h</code>, हर एक N&nbsp;=&nbsp;960 records। यह two-series line chart है,
-          frequency histogram नहीं। <strong>इसे कैसे पढ़ें:</strong> इस low per-bucket-rate
-          case में cardinality बढ़ने पर भी hit ratio ऊँचा और लगभग flat रहा (क़रीब
-          0.93–0.96)। यानी यहाँ prefix को ज़्यादा buckets में बाँटने से अपने-आप hit ratio
-          नहीं टूटा: fragmentation की क़ीमत इस panel में नहीं, अगले panel की latency
-          tail में दिखी। <strong>evidence boundary:</strong> PAYG gpt-5.2 पर एक tenant
-          और region से लिया गया sparse sanitized public aggregate (PTU नहीं)। यह
-          descriptive है, universal cache-hit curve नहीं। <strong>Source:</strong> values
-          इस repository के
+          <strong>स्रोत चार्ट: कैश हिट अनुपात बनाम कैश-कुंजी कार्डिनैलिटी.</strong>
+          <strong>क्षैतिज धुरी:</strong> log2 पैमाने पर बकेट कार्डिनैलिटी (1, फिर उसी प्रीफ़िक्स
+          पर 8 बकेट)। <strong>ऊर्ध्वाधर धुरी:</strong> स्थिर-अवस्था कैश हिट अनुपात, 0–1.
+          <strong>रेखाएँ:</strong> दो संरक्षण शृंखला: <code>in_memory</code> और
+          <code>24h</code>, हर एक N&nbsp;=&nbsp;960 रिकॉर्ड। यह दो-शृंखला पंक्ति चार्ट है,
+          आवृत्ति हिस्टोग्राम नहीं। <strong>इसे कैसे पढ़ें:</strong> इस कम प्रति-बकेट-दर
+          उदाहरण में कार्डिनैलिटी बढ़ने पर भी हिट अनुपात ऊँचा और लगभग सपाट रहा (क़रीब
+          0.93–0.96)। यानी यहाँ प्रीफ़िक्स को ज़्यादा बकेट में बाँटने से अपने-आप हिट अनुपात
+          नहीं टूटा: खंडीकरण की क़ीमत इस खंड में नहीं, अगले खंड की विलंब
+          टेल में दिखी। <strong>साक्ष्य सीमा:</strong> PAYG gpt-5.2 पर एक टेनेंट
+          और क्षेत्र से लिया गया सीमित पहचान-रहित सार्वजनिक समेकित आँकड़े (PTU नहीं)। यह
+          वर्णनात्मक है, सार्वभौमिक कैश-हिट वक्र नहीं। <strong>स्रोत:</strong> मान
+          इस रिपॉज़िटरी के
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           से आते हैं (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत CSV</a>)।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="log2 axis पर bucket cardinality, 1 और 8 buckets, के मुकाबले steady-state cache hit ratio का line chart। in_memory और 24h retention की दो लगभग flat lines क़रीब 0.93–0.96 के ऊँचे स्तर पर रहती हैं, जिससे दिखता है कि इस case में cardinality बढ़ने पर hit ratio लगभग स्थिर रहा।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/cache-hit-ratio-vs-cardinality.png" alt="log2 धुरी पर बकेट कार्डिनैलिटी, 1 और 8 बकेट, के मुकाबले स्थिर-अवस्था कैश हिट अनुपात का पंक्ति चार्ट। in_memory और 24h संरक्षण की दो लगभग सपाट रेखाएँ क़रीब 0.93–0.96 के ऊँचे स्तर पर रहती हैं, जिससे दिखता है कि इस उदाहरण में कार्डिनैलिटी बढ़ने पर हिट अनुपात लगभग स्थिर रहा।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-ttft">
         <figcaption>
-          <strong>paired source chart: first-token latency p95 बनाम cache-key cardinality.</strong>
-          <strong>X-axis:</strong> वही log2 bucket-cardinality axis (1, फिर 8)।
-          <strong>Y-axis:</strong> steady-state time to first token का p95, milliseconds
-          में। <strong>Lines:</strong> वही दो retention series, हर एक N&nbsp;=&nbsp;960।
-          <strong>इसे कैसे पढ़ें:</strong> cardinality&nbsp;1 पर एक single hot
-          <code>in_memory</code> bucket बहुत बड़ा p95 (क़रीब 106,000&nbsp;ms) उठा रही
-          थी, और traffic को 8 buckets में फैलाते ही यह तेज़ी से गिर गया (क़रीब
-          16,600&nbsp;ms)। वहीं <code>24h</code> series पूरे समय नीचे रही: इसलिए मापे
-          गए इस हिस्से में bucketing की क़ीमत latency tail पर दिखी। इसी कारण hit ratio
-          को first-token latency के साथ पढ़ना चाहिए, अकेले नहीं। <strong>evidence
-          boundary:</strong> PAYG gpt-5.2 पर लिया गया वही sparse sanitized public
-          aggregate (PTU नहीं)। यह descriptive है, latency guarantee नहीं।
-          <strong>Source:</strong>
+          <strong>संबद्ध स्रोत चार्ट: प्रथम-टोकन विलंब p95 बनाम कैश-कुंजी कार्डिनैलिटी.</strong>
+          <strong>क्षैतिज धुरी:</strong> वही log2 बकेट-कार्डिनैलिटी धुरी (1, फिर 8)।
+          <strong>ऊर्ध्वाधर धुरी:</strong> स्थिर-अवस्था में प्रथम टोकन तक के समय का p95, मिलीसेकंड
+          में। <strong>रेखाएँ:</strong> वही दो संरक्षण शृंखला, हर एक N&nbsp;=&nbsp;960।
+          <strong>इसे कैसे पढ़ें:</strong> कार्डिनैलिटी&nbsp;1 पर एक एकल गरम
+          <code>in_memory</code> बकेट बहुत बड़ा p95 (क़रीब 106,000&nbsp;ms) उठा रही
+          थी, और 8 बकेट वाले सेल में यह बहुत कम मापा गया (क़रीब
+          16,600&nbsp;ms)। वहीं <code>24h</code> शृंखला पूरे समय नीचे रही: इसलिए मापे
+          गए इस हिस्से में बकेट-विभाजन की क़ीमत विलंब टेल पर दिखी। इसी कारण हिट अनुपात
+          को प्रथम-टोकन विलंब के साथ पढ़ना चाहिए, अकेले नहीं। <strong>साक्ष्य
+          सीमा:</strong> PAYG gpt-5.2 पर लिया गया वही सीमित पहचान-रहित सार्वजनिक
+          समेकित आँकड़े (PTU नहीं)। यह वर्णनात्मक है, विलंब गारंटी नहीं।
+          <strong>स्रोत:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
           (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">स्रोत CSV</a>)।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="log2 axis पर bucket cardinality के मुकाबले steady-state p95 time to first token का line chart। in_memory line एक single bucket पर क़रीब 1,06,000 milliseconds से बहुत ऊँची शुरू होकर 8 buckets पर क़रीब 16,000 तक तेज़ी से गिरती है, जबकि 24h line नीचे और लगभग flat रहती है, क़रीब 10,000–15,000 milliseconds के आसपास।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/ttft-p95-vs-cardinality.png" alt="log2 धुरी पर बकेट कार्डिनैलिटी के मुकाबले स्थिर-अवस्था p95 प्रथम टोकन तक का समय का पंक्ति चार्ट। in_memory पंक्ति एक एकल बकेट पर क़रीब 1,06,000 मिलीसेकंड से बहुत ऊँची शुरू होकर 8 बकेट पर क़रीब 16,000 तक तेज़ी से गिरती है, जबकि 24h पंक्ति नीचे और लगभग सपाट रहती है, क़रीब 10,000–15,000 मिलीसेकंड के आसपास।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>public cache-key bucketing evidence</caption>
+        <caption>सार्वजनिक कैश-कुंजी बकेट-विभाजन साक्ष्य</caption>
         <thead>
           <tr>
-            <th>Retention</th>
-            <th>Cardinality</th>
-            <th>Hit ratio</th>
+            <th>संरक्षण</th>
+            <th>कार्डिनैलिटी</th>
+            <th>हिट अनुपात</th>
             <th>TTFT p95</th>
-            <th>Per-bucket RPM</th>
+            <th>प्रति-बकेट RPM</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>in-memory</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
-          <tr><td>in-memory</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
+          <tr><td>इन-मेमोरी</td><td>1</td><td>0.9334</td><td>106,389.96 ms</td><td>30.65</td></tr>
+          <tr><td>इन-मेमोरी</td><td>8</td><td>0.9586</td><td>16,623.66 ms</td><td>4.00</td></tr>
           <tr><td>24h</td><td>1</td><td>0.9612</td><td>9,899.74 ms</td><td>30.73</td></tr>
           <tr><td>24h</td><td>8</td><td>0.9612</td><td>15,549.08 ms</td><td>4.00</td></tr>
         </tbody>
@@ -264,93 +259,92 @@
       <div class="chart-reading-note">
         <h3>यह क्या साबित करता है, और क्या नहीं</h3>
         <p>
-          यह public case कोई universal threshold curve साबित नहीं करता। लेकिन यह साफ़
-          दिखाता है कि operators को सिर्फ hit ratio नहीं देखना चाहिए। retention mode,
-          per-bucket rate, और first-token latency: तीनों user experience को बदलते हैं।
+          यह सार्वजनिक उदाहरण किसी सार्वभौमिक या सख्त सीमा-वक्र को सिद्ध नहीं करता। लेकिन यह साफ़
+          दिखाता है कि संचालक को सिर्फ हिट अनुपात नहीं देखना चाहिए। संरक्षण मोड,
+          प्रति-बकेट दर, और प्रथम-टोकन विलंब: तीनों उपयोगकर्ता अनुभव को बदलते हैं।
         </p>
       </div>
     </section>
 
     <section id="patterns" class="article-section">
-      <p class="section-label">key design, stable workload buckets</p>
-      <h2>bucket को call से नहीं, workload से बाँटें</h2>
+      <p class="section-label">कुंजी डिज़ाइन, स्थिर कार्यभार बकेट</p>
+      <h2>बकेट को कॉल से नहीं, कार्यभार से बाँटें</h2>
       <p>
-        अच्छी key एक ही workload के लिए deterministic होनी चाहिए। बुरी key हर call की
-        entropy अपने साथ ले आती है। अगर key में timestamp, UUID, random suffix, या
-        unique call token आ गया, तो cache-key space फैल जाता है और prefix reuse बन ही
+        अच्छी कुंजी एक ही कार्यभार के लिए नियतात्मक होनी चाहिए। बुरी कुंजी हर कॉल की
+        अनिश्चितता अपने साथ ले आती है। अगर कुंजी में समय-मुद्रा, UUID, यादृच्छिक प्रत्यय, या
+        अद्वितीय कॉल टोकन आ गया, तो कैश-कुंजी स्थान फैल जाता है और प्रीफ़िक्स पुनः उपयोग बन ही
         नहीं पाता।
       </p>
       <div class="evidence-grid">
         <div>
           <h3>अच्छा</h3>
-          <p><code>tenant:flow:locale:schema</code> एक ही agent, schema, locale, और task shape को साथ रखता है।</p>
+          <p><code>tenant:flow:locale:schema</code> एक ही एजेंट, स्कीमा, लोकेल, और कार्य स्वरूप को साथ रखता है।</p>
         </div>
         <div>
           <h3>बुरा</h3>
-          <p>unique ids, timestamps, random UUIDs, और raw user questions हर call के लिए अलग bucket बना देते हैं।</p>
+          <p>अद्वितीय आईडी, समय-मुद्राएँ, यादृच्छिक UUID, और कच्चा उपयोगकर्ता प्रश्न हर कॉल के लिए अलग बकेट बना देते हैं।</p>
         </div>
         <div>
           <h3>निगरानी</h3>
-          <p>per-bucket RPM, cached-token share, और first-token latency track करें। traffic shape बदलने पर size फिर से तय करें।</p>
+          <p>प्रति-बकेट RPM, कैशित-टोकन हिस्सा, और प्रथम-टोकन विलंब निगरानी करें। ट्रैफ़िक स्वरूप बदलने पर आकार फिर से तय करें।</p>
         </div>
       </div>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>sources और evidence boundary</h2>
-      <p><strong>Tier 1: service contract (Microsoft Learn).</strong> prompt caching
-        का prefix rule, prefix hash routing, per-128-token match step, single-character
-        miss, <code>prompt_cache_key</code> routing hint, और प्रति minute क़रीब 15
-        request वाला overflow point यहीं documented है.</p>
+      <h2>स्रोत और साक्ष्य सीमा</h2>
+      <p><strong>स्तर 1: सेवा अनुबंध (Microsoft Learn)।</strong> प्रॉम्प्ट कैशिंग
+        का प्रीफ़िक्स नियम, प्रीफ़िक्स हैश रूटिंग, प्रति-128-टोकन मेल चरण, एक-अक्षर
+        मिस, <code>prompt_cache_key</code> रूटिंग संकेत, और प्रति मिनट क़रीब 15
+        अनुरोध वाला अतिप्रवाह बिंदु यहीं दस्तावेज़ीकृत है।</p>
       <ul>
-        <li>[1] <strong>Azure OpenAI के साथ prompt caching</strong>: 1,024 टोकन की
-          न्यूनतम शर्त और identical prefix requirement, शुरुआती prefix के hash से
-          routing, पहले 1,024 tokens के बाद हर identical 128 tokens पर cache match,
-          single-character cache miss, prefix hash के साथ मिलकर routing पर असर डालने
-          वाला <code>prompt_cache_key</code> hint, और वह प्रति minute क़रीब 15 request
-          point जहाँ same prefix+key वाले requests extra machines तक spill होकर cache
-          effectiveness घटा सकते हैं: यह सब यहीं documented है। source: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को access किया गया), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">archive</a>।</li>
+        <li>[1] <strong>Azure OpenAI के साथ प्रॉम्प्ट कैशिंग</strong>: 1,024 टोकन की
+          न्यूनतम शर्त और समान प्रीफ़िक्स आवश्यकता, शुरुआती प्रीफ़िक्स के हैश से
+          रूटिंग, पहले 1,024 टोकन के बाद हर समान 128 टोकन पर कैश मेल,
+          एक-अक्षर कैश मिस, प्रीफ़िक्स हैश के साथ मिलकर रूटिंग पर असर डालने
+          वाला <code>prompt_cache_key</code> संकेत, और वह बिंदु — प्रति मिनट लगभग 15
+          अनुरोध — जिसके बाद समान प्रीफ़िक्स+कुंजी वाले अनुरोध अतिरिक्त मशीनों तक फैलकर कैश
+          प्रभावशीलता घटा सकते हैं: यह सब यहीं दस्तावेज़ीकृत है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया), <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">अभिलेख</a>।</li>
       </ul>
-      <p><strong>Tier 2: operational inference (यह repository).</strong> bucket-count
-        math और public hit-ratio evidence Learn specifications नहीं हैं; ये इस
-        repository की operational inference और source-run evidence हैं.</p>
+      <p><strong>स्तर 2: संचालनगत निष्कर्ष (यह रिपॉज़िटरी)।</strong> बकेट-संख्या
+        गणना और सार्वजनिक हिट-अनुपात साक्ष्य Learn के विनिर्देश नहीं हैं; ये इस
+        रिपॉज़िटरी का संचालनगत निष्कर्ष और स्रोत रन के साक्ष्य हैं।</p>
       <ul>
         <li>[2] <strong>यह रिपॉज़िटरी, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-         : bucket-sizing runbook। repository documented क़रीब 15-RPM figure से
+         : बकेट-आकार-निर्धारण रनबुक। रिपॉज़िटरी दस्तावेज़ीकृत क़रीब 15-RPM मार्गदर्शिका से
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> निकालती है, जबकि
-          <code>recommended_buckets</code> formula और default per-bucket 10-RPM target
-          Learn specification नहीं, repository की operational inference है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
+          <code>recommended_buckets</code> सूत्र और डिफ़ॉल्ट प्रति-बकेट 10-RPM लक्ष्य
+          Learn का विनिर्देश नहीं, रिपॉज़िटरी का संचालनगत निष्कर्ष है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">स्रोत</a>।</li>
         <li>[3] <strong>यह रिपॉज़िटरी, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-         : hit ratio और first-token latency table के पीछे का sparse public aggregate।
-          यह universal curve नहीं, source-run evidence है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
+         : हिट अनुपात और प्रथम-टोकन विलंब तालिका के पीछे का सीमित सार्वजनिक समेकित आँकड़े।
+          यह सार्वभौमिक वक्र नहीं, स्रोत रन का साक्ष्य है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">स्रोत</a>।</li>
       </ul>
       <p>
-        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> access date पर
-        Microsoft Learn prompt caching contract को जैसा बताता है: 1,024-token prefix
-        rule, prefix hash routing, <code>prompt_cache_key</code> hint, और प्रति minute
-        क़रीब 15 request overflow point: यह लेख उसे दर्ज करता है। साथ ही repository
-        का यह sizing rule of thumb भी रखता है कि shared prefix को इतनी stable buckets
-        में बाँटें कि हर bucket उस point से कुछ नीचे रहे। bucket-count formula और public
-        hit-ratio evidence operational inference और source-run evidence हैं, guaranteed
-        cache-hit curve नहीं। यह किसी universal threshold को साबित नहीं करता जो हर
-        model, region, और traffic shape पर एक जैसा लागू हो।
+        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> अभिगमन तिथि पर
+        Microsoft Learn प्रॉम्प्ट कैशिंग अनुबंध को जैसा बताता है: 1,024-टोकन प्रीफ़िक्स
+        नियम, प्रीफ़िक्स हैश रूटिंग, <code>prompt_cache_key</code> संकेत, और प्रति मिनट
+        क़रीब 15 अनुरोध का अनुमानित रूटिंग बिंदु: यह लेख उसे दर्ज करता है। साथ ही रिपॉज़िटरी
+        का यह आकार-निर्धारण व्यावहारिक नियम भी रखता है कि साझा प्रीफ़िक्स को उतनी स्थिर बकेट में बाँटने का आरंभिक अनुमान लें और परिणाम मापकर सुधारें। बकेट-संख्या सूत्र और सार्वजनिक
+        हिट-अनुपात साक्ष्य संचालनगत निष्कर्ष और स्रोत रन के साक्ष्य हैं, गारंटीकृत
+        कैश-हिट वक्र नहीं। यह किसी सार्वभौमिक सीमा को साबित नहीं करता जो हर
+        मॉडल, क्षेत्र, और ट्रैफ़िक स्वरूप पर एक जैसा लागू हो।
       </p>
     </section>
 
     <section class="article-section decision-box">
       <h2>व्यावहारिक नियम</h2>
-      <p><strong>व्यावहारिक नियम: cacheable prefix को stable रखें, bucket को workload
-        के हिसाब से बाँटें ताकि हर <code>prefix + prompt_cache_key</code> documented
-        प्रति minute क़रीब 15 request overflow point से headroom के साथ नीचे रहे, और
-        cache hit ratio को first-token latency के साथ पढ़ें, अकेले किसी एक पर भरोसा
+      <p><strong>व्यावहारिक नियम: कैश-योग्य प्रीफ़िक्स को स्थिर रखें, बकेट को कार्यभार
+        के हिसाब से बाँटें ताकि हर <code>prefix + prompt_cache_key</code> दस्तावेज़ीकृत
+        प्रति मिनट क़रीब 15 अनुरोध की मार्गदर्शिका से आरंभिक अनुमान मिले, और
+        कैश हिट अनुपात को प्रथम-टोकन विलंब के साथ पढ़ें, अकेले किसी एक पर भरोसा
         न करें।</strong></p>
-      <p>अगला निबंध इस सवाल से आगे बढ़ता है कि key को कैसे बाँटना है, और पूछता है कि cache कितनी देर तक बनी रहनी चाहिए।</p>
-      <p><a class="button-link" href="../../prompt-cache-retention/hi/">जब cache reuse को छोटी idle window से आगे भी बचाए रखना हो, तो request में क्या बात साफ़-साफ़ लिखनी चाहिए?</a></p>
+      <p>अगला निबंध इस सवाल से आगे बढ़ता है कि कुंजी को कैसे बाँटना है, और पूछता है कि कैश कितनी देर तक बनी रहनी चाहिए।</p>
+      <p><a class="button-link" href="../../prompt-cache-retention/hi/">जब कैश पुनः उपयोग को छोटी निष्क्रिय अवधि से आगे भी बचाए रखना हो, तो अनुरोध में क्या बात साफ़-साफ़ लिखनी चाहिए?</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact, published डेटा केवल sanitized या aggregate रूप में है।</p>
+    <p>MIT-लाइसेंस-प्राप्त शोध आर्टिफ़ैक्ट, प्रकाशित डेटा केवल पहचान-रहित या समेकित रूप में है।</p>
   </footer>
 </body>
 </html>

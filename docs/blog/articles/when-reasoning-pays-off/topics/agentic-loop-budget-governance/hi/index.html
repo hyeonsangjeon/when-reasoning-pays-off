@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agentic loop और budget governance | when reasoning pays off</title>
-  <meta name="description" content="एक operator-pattern topic: task जैसे ही tool loop बनता है, per-call effort tuning काम नहीं आती। loop को thresholds, fail-closed breaker, eval-gated escalation, और per-step cost traceability से बांधें।">
+  <title>एजेंट लूप और बजट संचालन | रीज़निंग कब वसूल होती है</title>
+  <meta name="description" content="संचालक पैटर्न: काम टूल लूप बनते ही प्रति-कॉल रीज़निंग स्तर पर्याप्त नहीं रहता। लूप को सीमा, विफलता पर बंद होने वाले अवरोधक, मूल्यांकन-आधारित वृद्धि और हर चरण की लागत-पहचान से बाँधें।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -26,7 +26,7 @@
         <a href="../../../../../../hi/">होम</a>
         <a href="../../../../hi/">लेख</a>
         <a href="../../../hi/">अवलोकन निबंध</a>
-        <a href="../../../../../charts/?lang=hi">साक्ष्य dashboard</a>
+        <a href="../../../../../charts/?lang=hi">साक्ष्य डैशबोर्ड</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
       </nav>
       <nav class="lang" aria-label="भाषा">
@@ -40,318 +40,312 @@
   </header>
 
   <main id="article-content" class="article-page topic-page">
-    <p class="breadcrumb"><a href="../../../../hi/">लेख</a> / <a href="../../../hi/">जब reasoning payoff देती है</a> / विषय विवरण</p>
-    <p class="article-kicker">Operator pattern: loop &amp; budget governance (L6), नई measurement नहीं बल्कि design</p>
-    <h1>Agentic loops: ceiling check “रुको” कह दे, उसके बाद सचमुच loop को रोकता कौन है?</h1>
-    <p class="lede">साथ वाला topic एक साफ़ बात पर खत्म होता है: tool-agent quality जब अपने ceiling पर अटक जाए, तब अधिक reasoning effort से score नहीं बढ़ता, सिर्फ latency और लागत बढ़ती है — इसलिए उस सबसे कम effort पर route करें जो cap तक पहुंचता है। एक call के लिए यह सलाह बिल्कुल सही है। लेकिन असली agent शायद ही कभी सिर्फ एक call होता है। वह plan करता है, tool call करता है, result पढ़ता है, फिर reason करता है, और loop में जाता है। task जैसे ही loop बनता है, लागत pricing page से पढ़ी जाने वाली एक संख्या नहीं रहती; वह <em>steps पर integral</em> बन जाती है। और per-call effort सेटिंग — वही lever जिसे सब पहले पकड़ते हैं — अब उस हिस्से तक नहीं पहुंचती जो असल में पैसा खर्च कर रहा है। यह topic ceiling check का दूसरा आधा है: “इस call पर और effort लगाने से फायदा है?” नहीं, बल्कि “loop कब रुकेगा, और यह किसने तय किया?”</p>
+    <p class="breadcrumb"><a href="../../../../hi/">लेख</a> / <a href="../../../hi/">रीज़निंग कब वसूल होती है</a> / विषय विवरण</p>
+    <p class="article-kicker">संचालक पैटर्न · लूप और बजट संचालन (L6) · नया मापन नहीं, एक डिज़ाइन</p>
+    <h1>एजेंट लूप: सीमा-जाँच “रुकें” कह दे, तो लूप को वास्तव में कौन रोकता है?</h1>
+    <p class="lede">साथ वाला विषय स्पष्ट निष्कर्ष देता है: टूल-एजेंट की गुणवत्ता ऊपरी सीमा पर अटक जाए, तो ऊँचा रीज़निंग स्तर स्कोर नहीं बढ़ाता; केवल लेटेंसी और लागत बढ़ती है। इसलिए उस सबसे कम स्तर पर रूट करें जो सीमा तक पहुँचता है। एक कॉल के लिए यह सही सलाह है। लेकिन वास्तविक एजेंट शायद ही एक कॉल में रुकता है। वह योजना बनाता है, टूल कॉल करता है, परिणाम पढ़ता है, फिर विचार करता है और लूप दोहराता है। काम लूप बनते ही लागत मूल्य-पृष्ठ की एक संख्या नहीं रहती; वह <em>चरणों पर समाकलन</em> बन जाती है। प्रति-कॉल रीज़निंग सेटिंग उस हिस्से को नियंत्रित नहीं करती जो अब वास्तविक खर्च पैदा कर रहा है। यह सीमा-जाँच का दूसरा आधा है: “इस कॉल पर अधिक रीज़निंग उपयोगी है?” नहीं, बल्कि “लूप कब रुकेगा और यह किसने तय किया?”</p>
 
     <section class="article-section">
-      <h2>यह pattern क्यों मौजूद है</h2>
+      <h2>यह पैटर्न क्यों आवश्यक है</h2>
       <p>
-        जिस दोपहर से यह topic पैदा होता है, वह कुछ ऐसी होती है। आपका agent
-        हर demo पास कर देता है। फिर एक सामान्य support ticket उसे loop में डाल देता है
-        — search, फिर से पढ़ना, दूसरा tool call, थोड़ा और सोचना, फिर कोशिश —
-        और कई tool calls बाद वह जवाब देता है। जवाब <em>सही</em> है। लेकिन उस
-        task की लागत आपके budget से कई गुना निकल चुकी है, और monthly invoice आने तक
-        किसी को पता नहीं चलता। कुछ fail नहीं हुआ: कोई exception नहीं, कोई 500 नहीं, कोई
-        alert नहीं। runaway loop इसी वजह से खतरनाक है। बिल पढ़ने तक वह
-        बिल्कुल working agent जैसा दिखता है।
+        यह समस्या अक्सर ऐसे सामने आती है। आपका एजेंट हर प्रदर्शन सफलतापूर्वक पूरा करता
+        है। फिर एक सामान्य सहायता अनुरोध उसे लूप में डाल देता है—खोज, दोबारा पढ़ना,
+        दूसरा टूल कॉल, थोड़ा और विचार, फिर प्रयास। कई टूल कॉल के बाद वह सही उत्तर देता
+        है, लेकिन वह उत्तर <em>सही</em> होने के बावजूद काम की लागत बजट से कई गुना बढ़ चुकी होती है और मासिक बिल आने तक
+        किसी को पता नहीं चलता। कोई त्रुटि, 500 प्रतिक्रिया या चेतावनी नहीं आती। अनियंत्रित
+        लूप इसी कारण ख़तरनाक है: बिल आने तक वह सामान्य रूप से काम करता एजेंट दिखता है।
       </p>
       <p>
-        जब agent कमजोर पड़ता है, instinct वही पुरानी होती है — उसे
-        थोड़ा और loop करने दें, थोड़ा और सोचने दें। साथ वाले ceiling
-        check ने पहले ही दिखा दिया कि single call पर “think harder” कहां payoff देना बंद कर देता है।
-        यह topic उस हिस्से पर है जिसे per-call levers छू ही नहीं सकते: calls की <em>संख्या</em>।
-        अगर आप ऐसा workload चला रहे हैं, तो शायद आपने per-call सेटिंगें आज़मा ली होंगी
-        और पाया होगा कि वे यहां पूरी पकड़ नहीं बनाते।
+        एजेंट कमज़ोर पड़े, तो सहज प्रतिक्रिया होती है—उसे थोड़ा और लूप करने दें, थोड़ा
+        और सोचने दें। साथ वाली सीमा-जाँच दिखा चुकी है कि एक कॉल पर “और सोचें” कहाँ
+        लाभ देना बंद करता है। यह विषय उस हिस्से पर है जिसे प्रति-कॉल नियंत्रण छू नहीं
+        सकते: कॉल की <em>संख्या</em>। ऐसे वर्कलोड में प्रति-कॉल सेटिंगें पूरी लागत
+        नियंत्रित नहीं करतीं।
       </p>
       <ul>
-        <li><code>reasoning_effort</code> (lever <strong>L4</strong>) <em>एक</em> call के reasoning tokens को bound करता है। यह loop कितने calls करेगा, इस बारे में कुछ नहीं कहता।</li>
-        <li><code>max_output_tokens</code> (lever <strong>L5</strong>) <em>एक</em> call के output को bound करता है। यह iterations के पार cumulative spend को bound नहीं करता।</li>
-        <li>Prompt-cache stability (lever <strong>L3</strong>) एक prefix की input लागत घटाती है। loop में transcript हर step पर बढ़ता है, इसलिए cacheable fraction ठीक तब घटता है जब बिल सबसे बड़ा होता है।</li>
+        <li><code>reasoning_effort</code> (नियंत्रण <strong>L4</strong>) <em>एक</em> कॉल के रीज़निंग टोकन सीमित करता है। यह लूप में कॉल की संख्या तय नहीं करता।</li>
+        <li><code>max_output_tokens</code> (नियंत्रण <strong>L5</strong>) <em>एक</em> कॉल का आउटपुट सीमित करता है। यह दोहरावों में कुल खर्च सीमित नहीं करता।</li>
+        <li>प्रॉम्प्ट-कैश स्थिरता (नियंत्रण <strong>L3</strong>) किसी उपसर्ग की इनपुट लागत घटाती है। लूप में विवरण हर चरण पर बढ़ता है, इसलिए कैश योग्य अंश ठीक तब घट सकता है जब बिल सबसे बड़ा हो।</li>
       </ul>
       <p>
-        इसका मतलब यह नहीं कि per-call levers गलत हैं; किसी भी single call पर वे अभी भी सही
-        first move हैं। बस वे loop से एक layer नीचे काम करते हैं।
-        capability वाला सवाल — क्या model loop कर सकता है, क्या वह million tokens संभाल सकता है — असली कठिन सवाल कभी था ही नहीं।
-        कठिन हिस्सा loop को govern करना है:
-        thresholds, intervention, evals, traceability, और ownership।
+        इसका अर्थ यह नहीं कि प्रति-कॉल नियंत्रण ग़लत हैं; एक कॉल के लिए वे अब भी सही
+        पहला क़दम हैं। वे केवल लूप से एक परत नीचे काम करते हैं। कठिन सवाल यह नहीं कि
+        मॉडल लूप चला सकता है या लाखों टोकन संभाल सकता है। कठिन हिस्सा लूप का संचालन
+        है: सीमाएँ, हस्तक्षेप, मूल्यांकन, लागत-पहचान और स्वामित्व।
       </p>
     </section>
 
     <aside class="article-section banner" aria-label="साक्ष्य सीमा">
       <p>
-        <strong>इसे नई measurement नहीं, design की तरह पढ़ें।</strong> यह topic
-        एक <strong>Tier&nbsp;2 operator pattern</strong> है: यह कोई नई measured magnitude
-        introduce नहीं करता। इसका एक measured anchor साथ वाले topic का
-        benchmark-03 ceiling है (एक वास्तविक, published result),
-        और यहां बताए गए हर loop control को इस repository के अपने measurement runner में
-        <em>पहले से</em> मौजूद guard से सीधे लिया गया है — क्योंकि
-        benchmark batch खुद भी unbounded-लागत loop है; उसे भी runaway नहीं होने देना होता।
-        production loops सच में कितनी बार runaway होते हैं, और उनके step counts का distribution क्या है,
-        यह <strong>यहां measured नहीं है</strong>; यह boundary नीचे sources section में
-        साफ़ रखी गई है। canonical write-up है
-        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — agentic loop budget governance</a>.
+        <strong>इसे नया मापन नहीं, डिज़ाइन मानें।</strong> यह
+        <strong>स्तर&nbsp;2 संचालक पैटर्न</strong> है और कोई नई मापी गई मात्रा प्रस्तुत
+        नहीं करता। इसका मापा हुआ आधार साथ वाले विषय का benchmark-03 ऊपरी-सीमा-नतीजा है।
+        यहाँ बताए गए लूप नियंत्रण इस रिपॉज़िटरी के मापन-रनर में <em>पहले से</em> मौजूद
+        सुरक्षा उपायों से लिए गए हैं, क्योंकि बेंचमार्क बैच भी अनियंत्रित लागत वाला लूप
+        बन सकता है। प्रोडक्शन लूप वास्तव में कितनी बार अनियंत्रित होते हैं और उनके चरणों
+        की संख्या का वितरण क्या है, यह <strong>यहाँ नहीं मापा गया</strong>। यह सीमा नीचे
+        स्रोत खंड में स्पष्ट है। प्रामाणिक विवरण:
+        <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18 — एजेंट लूप बजट संचालन</a>।
       </p>
     </aside>
 
     <div class="article-summary-grid" aria-label="विषय सारांश">
-      <section class="summary-tile"><h2>प्रश्न</h2><p>जब task model calls का loop हो, तो cumulative लागत को क्या bound करता है — और उस bound का owner कौन है?</p></section>
-      <section class="summary-tile"><h2>Pattern</h2><p>Operator lever L6: step cap और लागत ceiling, fail-closed breaker, eval-gated escalation, और per-step लागत traceability।</p></section>
-      <section class="summary-tile"><h2>साथ वाला evidence</h2><p>Measured: benchmark-03 का 1.97–2.00 quality ceiling, जबकि लागत $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी — यही per-step finding loop को माननी होगी।</p></section>
-      <section class="summary-tile"><h2>निर्णय</h2><p>loop चलाने से पहले उसे bound करें, breaker को fail closed रखें, और हर ceiling को committed, reviewed policy मानें — ऐसा constant नहीं जिसे कोई hotfix में बढ़ा दे।</p></section>
+      <section class="summary-tile"><h2>प्रश्न</h2><p>जब काम मॉडल कॉल का लूप हो, तो कुल लागत की सीमा क्या तय करती है और उसका स्वामी कौन है?</p></section>
+      <section class="summary-tile"><h2>पैटर्न</h2><p>संचालक नियंत्रण L6: चरण और लागत की सीमा, विफलता पर बंद होने वाला अवरोधक, मूल्यांकन-आधारित वृद्धि और हर चरण की लागत-पहचान।</p></section>
+      <section class="summary-tile"><h2>साथ वाला साक्ष्य</h2><p>मापा गया: benchmark-03 की गुणवत्ता 1.97–2.00 की ऊपरी सीमा पर रही, जबकि लागत $0.002762 → $0.003499 और लेटेंसी 2.9s → 3.8s बढ़ी। लूप को यही चरण-स्तरीय नतीजा मानना होगा।</p></section>
+      <section class="summary-tile"><h2>निर्णय</h2><p>लूप चलाने से पहले उसे सीमित करें, अवरोधक को विफलता पर बंद रखें और हर ऊपरी सीमा को प्रतिबद्ध, समीक्षित नीति मानें—ऐसा स्थिरांक नहीं जिसे कोई तात्कालिक सुधार में बढ़ा दे।</p></section>
     </div>
 
     <nav class="article-outline" aria-label="विषय अनुभाग">
-      <strong>पहलू के हिसाब से पढ़ें:</strong>
-      <a href="#s1">Thresholds</a>
-      <a href="#s2">Intervention</a>
-      <a href="#s3">Evals</a>
-      <a href="#s4">Traceability</a>
-      <a href="#s5">Governance</a>
-      <a href="#boundary">Sources और evidence boundary</a>
+      <strong>पहलू के अनुसार पढ़ें:</strong>
+      <a href="#s1">सीमाएँ</a>
+      <a href="#s2">हस्तक्षेप</a>
+      <a href="#s3">मूल्यांकन</a>
+      <a href="#s4">लागत-पहचान</a>
+      <a href="#s5">संचालन</a>
+      <a href="#boundary">स्रोत और साक्ष्य-सीमा</a>
     </nav>
 
     <p class="banner">
-      <strong>साथ वाला topic:</strong>
-      <a href="../../tool-agent-ceiling-checks/hi/">Tool-agent ceiling checks</a>
-      detection वाला आधा है — यह दिखाता है कि single call कहां improve होना बंद करता है। यह
-      topic intervention वाला आधा है — जब loop फिर भी spend करता रहता है, तो उसे कौन रोकता है।
+      <strong>साथ वाला विषय:</strong>
+      <a href="../../tool-agent-ceiling-checks/hi/">टूल-एजेंट सीमा-जाँच</a>
+      पहचान वाला आधा है—यह दिखाता है कि एक कॉल कहाँ सुधरना बंद करता है। यह विषय
+      हस्तक्षेप वाला आधा है—लूप खर्च करता रहे, तो उसे कौन रोकता है।
     </p>
 
     <section class="article-section">
-      <h2>Runaway लागत एक integral है, कोई एक number नहीं</h2>
+      <h2>अनियंत्रित लागत एक समाकलन है, कोई एक संख्या नहीं</h2>
       <p>
-        loop आपको इसलिए चौंकाता है क्योंकि उसका बिल steps का sum होता है, कोई ऐसी figure नहीं
+        लूप इसलिए चौंकाता है क्योंकि उसका बिल चरणों का योग होता है, कोई ऐसी संख्या नहीं
         जिसका अंदाज़ा आप पहले से भरोसे के साथ लगा सकें:
       </p>
       <pre class="code-block"><code>total_cost ≈ Σ_step ( input_tokens_step    × input_rate
                     + reasoning_tokens_step × output_rate
                     + output_tokens_step    × output_rate )</code></pre>
       <p>
-        तीन बातें उस sum को उम्मीद से तेज़ बढ़ाती हैं। पहली, iteration count unbounded होता है:
-        hard cap न हो तो जो loop converge नहीं करता — flaky tool, ambiguous sub-goal,
-        “सही होने तक refine करते रहो” instruction — वह billable calls चलाता रहता है, और
-        model के अंदर कोई चीज़ उसे अपने-आप नहीं रोकती। दूसरी, context हर step पर बढ़ता है: हर
-        iteration पुराने transcript के साथ नया tool output जोड़कर next input के रूप में भेजता है,
-        इसलिए late steps सबसे महंगे होते हैं। prefix में single byte change भी cache flush कर देता है,
-        और फिर वही steps full input rate पर बिल होते हैं। तीसरी, effort loop के भीतर multiply होता है: high
-        <code>reasoning_effort</code> default per-step reasoning
-        tokens को step count से multiply करता है; यहां गलती सबसे महंगी पड़ती है।
+        तीन बातें उस योग को अपेक्षा से तेज़ बढ़ाती हैं। पहली, दोहरावों की संख्या असीमित
+        हो सकती है। कठोर सीमा के बिना जो लूप अभिसरित नहीं होता—अस्थिर टूल, अस्पष्ट
+        उप-लक्ष्य या “सही होने तक सुधारते रहें” जैसा निर्देश—वह बिल-योग्य कॉल चलाता
+        रहता है; मॉडल उसे अपने-आप नहीं रोकता। दूसरी, संदर्भ हर चरण पर बढ़ता है: हर
+        दोहराव पुराने विवरण में नया टूल आउटपुट जोड़कर अगला इनपुट बनाता है, इसलिए बाद
+        के चरण सबसे महँगे होते हैं। उपसर्ग में एक बाइट का बदलाव भी कैश अमान्य कर सकता
+        है और फिर वही चरण पूरे इनपुट दर पर बिल होते हैं। तीसरी, रीज़निंग स्तर लूप में
+        गुणा होता है: high <code>reasoning_effort</code> का डिफ़ॉल्ट हर चरण के
+        रीज़निंग टोकन को चरणों की संख्या से गुणा करता है।
       </p>
       <p>
-        per-call levers उस sum के अलग-अलग term को संभालते हैं। वे जो नहीं कर सकते,
-        वह है <em>terms की संख्या</em> या <em>running total</em> को bound करना। यही
-        gap loop खोलता है, और नीचे दिए पाँच पहलू उसे बंद करने का तरीका हैं।
+        प्रति-कॉल नियंत्रण उस योग के अलग-अलग पद संभालते हैं। वे <em>पदों की संख्या</em>
+        या <em>चलते कुल</em> को सीमित नहीं कर सकते। यही अंतर लूप खोलता है और नीचे के
+        पाँच पहलू उसे बंद करने का तरीक़ा देते हैं।
       </p>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>Thresholds — step cap और cumulative लागत ceiling</h2>
-      <p><em>यह पहली बार तब दिखता है जब एक task चुपचाप अपने पड़ोसी tasks से 40× खर्च कर देता है।</em></p>
+      <h2>सीमाएँ—चरण सीमा और कुल लागत की ऊपरी सीमा</h2>
+      <p><em>यह पहली बार तब दिखता है जब कोई काम चुपचाप समान कामों से 40× अधिक खर्च कर देता है।</em></p>
       <p>
-        <strong>तंत्र।</strong> loop को दो bounds चाहिए, जो single call को नहीं चाहिए:
-        maximum iteration count, और पूरे task के लिए cumulative token/लागत ceiling।
-        सिर्फ एक bound leak कर जाता है। step cap के बावजूद expensive runaway हो सकता है
-        अगर हर step बहुत बड़ा हो; सिर्फ लागत ceiling हो तो endless cheap spin चल सकता है।
+        <strong>तंत्र।</strong> लूप को दो सीमाएँ चाहिए: अधिकतम दोहरावों की संख्या और पूरे
+        काम के लिए कुल टोकन/लागत की ऊपरी सीमा। केवल एक सीमा पर्याप्त नहीं। हर चरण
+        बहुत बड़ा हो, तो चरण सीमा के भीतर भी महँगा अनियंत्रित खर्च हो सकता है; केवल
+        लागत सीमा हो, तो अंतहीन सस्ता दोहराव चल सकता है।
       </p>
       <p>
-        <strong>क्या करें।</strong> task class के हिसाब से <code>max_iterations</code>
-        step cap और <code>hard_ceiling_usd</code> cumulative ceiling declare करें।
-        ceiling को representative sample के p99 से निकालें — step count और
-        per-task लागत — किसी ऐसे round number से नहीं जो देखने में safe लगे। दोनों को
-        conservative रखें और केवल evidence के साथ raise करें।
+        <strong>क्या करें।</strong> कार्य-वर्ग के अनुसार <code>max_iterations</code>
+        चरण सीमा और <code>hard_ceiling_usd</code> कुल लागत सीमा घोषित करें।
+        सीमा प्रतिनिधि नमूने के p99—चरणों की संख्या और प्रति-कार्य लागत—से निकालें,
+        मनमानी गोल संख्या से नहीं। दोनों को सावधान रखें और केवल साक्ष्य पर बढ़ाएँ।
       </p>
       <p>
-        <strong>Repo के भीतर evidence।</strong> <code>scripts/run_benchmark.py</code>
-        पहले से यही करता है: pre-run estimate
+        <strong>रिपॉज़िटरी के भीतर साक्ष्य।</strong> <code>scripts/run_benchmark.py</code>
+        पहले से यही करता है: रन से पहले का अनुमान
         (<code>estimate_experiment_cost_usd</code>) जिसे
-        <code>MAX_COST_PER_BENCHMARK_USD</code> gate करता है, mid-run
-        <code>hard_ceiling_usd</code> जिसे <code>BudgetTracker</code>
-        dataclass track करता है, और tool-loop <code>max_iterations</code> cap
+        <code>MAX_COST_PER_BENCHMARK_USD</code>         नियंत्रित करता है; रन के बीच <code>hard_ceiling_usd</code>, जिसे
+        <code>BudgetTracker</code> डेटाक्लास दर्ज करता है; और टूल-लूप की
+        <code>max_iterations</code> सीमा
         (<code>agent.max_tool_iterations</code>)। <code>docs/05-methodology.md</code>
-        §6 “Budget guards” इसे hygiene नहीं, methodology मानता है: “silent
-        budget overrun भी experiment scope में silent change है।” यही बात
-        production में भी लागू होती है — silent loop overrun, task की allowed लागत में silent change है।
+        §6 “Budget guards” इसे सामान्य सावधानी नहीं, कार्यप्रणाली मानता है: “बिना
+        सूचना बजट पार करना प्रयोग के दायरे में बिना सूचना बदलाव है।” यही बात
+        प्रोडक्शन में भी लागू होती है—लूप का अनदेखा अतिक्रमण अनुमत लागत में अनदेखा बदलाव है।
       </p>
     </section>
 
     <section id="s2" class="article-section">
-      <h2>Intervention — fail closed करने वाला circuit-breaker</h2>
-      <p><em>यह पहली बार तब सामने आता है जब loop error देने के बजाय पूरी रात spin करता रहता है।</em></p>
+      <h2>हस्तक्षेप—विफलता पर बंद होने वाला परिपथ-अवरोधक</h2>
+      <p><em>यह पहली बार तब सामने आता है जब लूप त्रुटि देने के बजाय पूरी रात चलता रहता है।</em></p>
       <p>
-        <strong>तंत्र।</strong> जब threshold mid-loop cross होती है, तो
-        loop को deterministic और visible तरीके से रुकना चाहिए — best-effort
-        partial answer और typed “budget exceeded” signal लौटाते हुए। वह कभी silently
-        चलता न रहे, और कभी silently truncate न करे। bounded लागत और runaway के बीच असली फर्क यही choice है।
+        <strong>तंत्र।</strong> लूप के बीच सीमा पार हो, तो लूप को पूर्वनिर्धारित और
+        प्रत्यक्ष तरीक़े से रुकना चाहिए—यथासंभव आंशिक उत्तर और प्रकार-सहित “बजट पार”
+        संकेत लौटाते हुए। वह न चुपचाप चलता रहे, न चुपचाप काटा जाए। सीमित और अनियंत्रित
+        लागत के बीच वास्तविक अंतर यही विकल्प है।
       </p>
       <p>
-        <strong>क्या करें।</strong> ऐसा circuit-breaker बनाएं जो इनमें से किसी भी स्थिति पर loop abort करे:
-        step cap hit हो, cumulative लागत <code>hard_ceiling_usd</code> तक पहुंच गई,
-        या no-progress detector fire हुआ — जैसे वही tool call बार-बार repeat हो।
-        abort पर termination reason वाला typed terminal record emit करें, फिर एक final answer-only call करें
-        ताकि caller को फिर भी कुछ usable मिले। Fail closed: संदेह हो तो default
-        <em>stop</em> है, <em>continue</em> नहीं।
+        <strong>क्या करें।</strong> ऐसा परिपथ-अवरोधक बनाएँ जो इनमें से किसी भी स्थिति पर लूप रोक दे:
+        चरण सीमा पूरी हो, कुल लागत <code>hard_ceiling_usd</code> तक पहुँच जाए या
+        प्रगति-रहित स्थिति का पहचानकर्ता सक्रिय हो—जैसे वही टूल कॉल बार-बार दोहराया जाए।
+        रुकने पर कारण-सहित प्रकारबद्ध अंतिम रिकॉर्ड लिखें, फिर केवल अंतिम उत्तर वाला एक
+        कॉल करें ताकि कॉलर को उपयोगी सामग्री मिल सके। विफलता पर बंद रहें: संदेह हो, तो
+        डिफ़ॉल्ट <em>रुकना</em> है, <em>जारी रखना</em> नहीं।
       </p>
       <p>
-        <strong>Repo के भीतर evidence।</strong> runner typed
-        <code>BudgetExceededError</code> raise करता है (“Raised when pre-run estimate or running
-        total breaches a budget guard”), और <code>BudgetTracker.is_halted</code>
-        total ceiling cross करते ही next call से पहले halt enforce करता है;
-        process dedicated <code>EXIT_BUDGET</code> code से exit करता है। tool
-        loop उसी idea का clean model है: <code>iterations &gt;= max_iterations</code> पर
-        यह <code>tools=</code> के बिना one final call fire करता है ताकि model final answer emit करने पर मजबूर हो,
-        <code>tool_loop_terminated="iteration_cap"</code> record करता है, और
-        recovery leg को trajectory में append करता है। यह reason छोड़ने वाला fail-closed breaker है — इसे production में as-is अपनाएं।
+        <strong>रिपॉज़िटरी के भीतर साक्ष्य।</strong> रनर प्रकारबद्ध
+        <code>BudgetExceededError</code> उठाता है (“रन से पहले का अनुमान या चलता कुल
+        बजट सीमा पार करे, तो उठाया जाता है”)। <code>BudgetTracker.is_halted</code>
+        कुल सीमा पार होते ही अगले कॉल से पहले रुकना लागू करता है और प्रक्रिया समर्पित
+        <code>EXIT_BUDGET</code> कोड के साथ समाप्त होती है। टूल-लूप इसी विचार का स्पष्ट
+        मॉडल है: <code>iterations &gt;= max_iterations</code> पर वह <code>tools=</code>
+        के बिना एक अंतिम कॉल करता है, <code>tool_loop_terminated="iteration_cap"</code>
+        दर्ज करता है और पुनर्प्राप्ति चरण को पथ में जोड़ता है। यह कारण दर्ज करने वाला,
+        विफलता पर बंद अवरोधक है; प्रोडक्शन में इसी व्यवहार को अपनाएँ।
       </p>
     </section>
 
     <section id="s3" class="article-section">
-      <h2>Evals — escalation केवल वहीं करें जहां payoff हो</h2>
-      <p><em>यह उस दिन आता है जब “बस इसे और सोचने दें” मदद करना बंद कर देता है, लेकिन बिलिंग चलती रहती है।</em></p>
+      <h2>मूल्यांकन—स्तर केवल वहीं बढ़ाएँ जहाँ लाभ हो</h2>
+      <p><em>यह तब सामने आता है जब “इसे और सोचने दें” मदद करना बंद कर देता है, लेकिन बिलिंग चलती रहती है।</em></p>
       <p>
-        <strong>तंत्र।</strong> repo का central result यह है कि mid-range से ऊपर
-        effort से quality नहीं बढ़ती, सिर्फ लागत बढ़ती है। benchmark-03 पर quality effort की पूरी range में
-        1.97–2.00 के पास ceiling पर रही, जबकि per-request
-        लागत $0.002762 से $0.003499 और latency 2.9s से 3.8s तक बढ़ी।
-        loop में यही finding <em>continuation</em> decision govern करती है: एक और
-        step, या next call पर higher effort, अपनी जगह साबित करे।
+        <strong>तंत्र।</strong> रिपॉज़िटरी का मुख्य नतीजा है कि मध्यम सीमा से ऊपर
+        रीज़निंग स्तर बढ़ाने पर गुणवत्ता नहीं बढ़ी, केवल लागत बढ़ी। benchmark-03 में
+        गुणवत्ता 1.97–2.00 की ऊपरी सीमा पर रही, जबकि प्रति अनुरोध लागत $0.002762
+        से $0.003499 और लेटेंसी 2.9s से 3.8s तक बढ़ी। लूप में यही नतीजा
+        <em>जारी रखने</em> के निर्णय को नियंत्रित करता है: एक और चरण या अगले कॉल पर
+        ऊँचा स्तर अपना लाभ साबित करे।
       </p>
       <p>
-        <strong>क्या करें।</strong> escalation — एक और iteration, या next call पर higher
-        <code>reasoning_effort</code> — को cheap eval के पीछे gate करें: कोई
-        rubric score, self-consistency या confidence signal, explicit stop
-        check। default stop रखें, और eval से continue करने का कारण मांगें। इससे
-        open-ended “loop until done” bounded “loop until eval says continue” में बदलता है,
-        यानी single-call routing decision का loop form।
+        <strong>क्या करें।</strong> एक और दोहराव या अगले कॉल पर ऊँचा
+        <code>reasoning_effort</code> केवल कम लागत वाला मूल्यांकन पार करने पर दें:
+        मानदंड-स्कोर, आत्म-संगति या भरोसा संकेत, अथवा स्पष्ट रुकने की जाँच। डिफ़ॉल्ट
+        रूप से रुकें और मूल्यांकन से जारी रखने का कारण माँगें। इससे “पूरा होने तक लूप”
+        सीमित “मूल्यांकन जारी रखने को उचित ठहराए तब तक लूप” बनता है।
       </p>
       <p>
-        <strong>Repo के भीतर evidence।</strong> <code>scripts/run_judge.py</code> वही
-        rubric जज है जो हर benchmark में quality score करता है; वही pattern natural continuation gate बनता है।
-        1.97–2.00 ceiling
+        <strong>रिपॉज़िटरी के भीतर साक्ष्य।</strong> <code>scripts/run_judge.py</code>
+        मूल्यांकन मॉडल चलाकर हर बेंचमार्क में मानदंड के अनुसार गुणवत्ता स्कोर करने वाली
+        स्क्रिप्ट है; यह स्वयं मूल्यांकन मॉडल नहीं है। यही तंत्र जारी रखने की स्वाभाविक
+        जाँच बन सकता है। 1.97–2.00 की ऊपरी सीमा
         (<code>results/summary.md</code> §3;
-        <code>benchmarks/03-tool-using-agent/analysis.md</code>) measured
-        evidence है कि ungated “think harder, loop again” default return के point से काफी आगे तक spend करवाता रहता है।
+        <code>benchmarks/03-tool-using-agent/analysis.md</code>) मापा गया
+        साक्ष्य है कि बिना जाँच वाला “और सोचें, फिर लूप करें” लाभकारी बिंदु से बहुत आगे
+        तक खर्च करवा सकता है।
       </p>
     </section>
 
     <section id="s4" class="article-section">
-      <h2>Traceability — लागत को per loop, per step attribute करें</h2>
-      <p><em>यह पहली बार तब चुभता है जब $40 task सामने हो और आप बता न पाएं कि कौन सा step वजह था।</em></p>
+      <h2>लागत-पहचान—हर लूप और हर चरण की लागत अलग दर्ज करें</h2>
+      <p><em>यह पहली बार तब चुभता है जब $40 का काम सामने हो और आप न बता पाएँ कि किस चरण ने खर्च बढ़ाया।</em></p>
       <p>
-        <strong>तंत्र।</strong> जिसे आप attribute नहीं कर सकते, उसे govern नहीं कर सकते।
-        single end-of-task number यह छिपा देता है कि कौन सा step runaway हुआ और क्यों। Governance के लिए
-        stable loop id से keyed per-step records चाहिए, जिनमें step का
-        usage, running cumulative लागत, और बची हुई budget headroom हो।
+        <strong>तंत्र।</strong> जिस लागत की पहचान नहीं कर सकते, उसका संचालन नहीं कर
+        सकते। काम के अंत की एक संख्या छिपा देती है कि कौन-सा चरण अनियंत्रित हुआ और क्यों।
+        स्थिर लूप पहचान से जुड़े हर चरण के रिकॉर्ड चाहिए, जिनमें उपयोग, चलता कुल खर्च
+        और बचा हुआ बजट-अंतर हो।
       </p>
       <p>
         <strong>क्या करें।</strong> <code>docs/14-observability-schema.md</code> में
-        per-request capture को loop-scoped fields से extend करें: stable
-        <code>loop_id</code> / task id, monotonic <code>step_index</code>,
-        per-step <code>usage</code> block (already captured —
+        प्रति अनुरोध अभिलेख में लूप-स्तरीय फ़ील्ड जोड़ें: स्थिर
+        <code>loop_id</code> / कार्य पहचान, क्रमशः बढ़ता <code>step_index</code>,
+        हर चरण का <code>usage</code> खंड (पहले से दर्ज—
         <code>reasoning_tokens</code>, <code>cached_tokens</code>, …),
         <code>cumulative_cost_usd</code>, और <code>budget_remaining_usd</code>।
-        हर step पर एक JSONL row emit करें; loop का बिल इन rows का sum है, और वह row जहां
-        <code>budget_remaining_usd</code> पहली बार non-positive होता है, आपका
-        intervention point है। termination पर <code>step_index</code> के <em>distribution</em> पर alarm करें,
-        सिर्फ mean पर नहीं — runaways tail में रहते हैं।
+        हर चरण पर एक JSONL पंक्ति लिखें; लूप का बिल इन पंक्तियों का योग है। जिस पंक्ति
+        में <code>budget_remaining_usd</code> पहली बार शून्य या ऋणात्मक हो, वही हस्तक्षेप
+        बिंदु है। समाप्ति पर <code>step_index</code> के <em>वितरण</em> पर चेतावनी दें,
+        केवल औसत पर नहीं; अनियंत्रित मामले वितरण के अंतिम सिरे में होते हैं।
       </p>
       <p>
-        <strong>Scope note (ईमानदार सीमा)।</strong> ये loop-scoped fields
-        <em>next increment</em> हैं, already shipped चीज़ नहीं। ये existing
-        <code>PTURequestRecord</code> पर fit होते हैं — जिसमें पहले से
-        <code>request_idx</code> और full <code>usage</code> block है — और
-        <code>schemas/ptu_request_record.schema.json</code> पर। आज runner
-        पहले से per-iteration <code>usage</code> objects को एक
-        cell-level dict में sum करता है और per-iteration trajectory record करता है; loop traceability
-        उसी roll-up को first-class बनाती है — per-step rows रखें, केवल sum नहीं।
+        <strong>दायरा (स्पष्ट सीमा)।</strong> ये लूप-स्तरीय फ़ील्ड <em>अगला प्रस्तावित
+        चरण</em> हैं, पहले से जारी सुविधा नहीं। ये मौजूदा <code>PTURequestRecord</code>
+        और <code>schemas/ptu_request_record.schema.json</code> में जोड़े जा सकते हैं;
+        रिकॉर्ड में <code>request_idx</code> और पूरा <code>usage</code> खंड पहले से है।
+        अभी रनर हर दोहराव के <code>usage</code> ऑब्जेक्ट को कॉन्फ़िगरेशन-स्तरीय शब्दकोश
+        में जोड़ता और हर दोहराव का पथ दर्ज करता है। लूप लागत-पहचान इसी समेकन को प्रथम
+        श्रेणी बनाती है: केवल योग नहीं, हर चरण की पंक्तियाँ रखें।
       </p>
     </section>
 
     <section id="s5" class="article-section">
-      <h2>Governance — budget एक owned contract है</h2>
-      <p><em>और यह तब चोट करता है जब कोई hotfix में ceiling bump कर देता है और बिल बिना किसी दर्ज रिकॉर्ड के बढ़ जाता है।</em></p>
+      <h2>संचालन—बजट स्वामित्व वाला अनुबंध है</h2>
+      <p><em>यह तब चोट करता है जब कोई तात्कालिक सुधार में ऊपरी सीमा बढ़ा देता है और बिल बिना दर्ज रिकॉर्ड के बढ़ जाता है।</em></p>
       <p>
-        <strong>तंत्र।</strong> Step caps और लागत ceilings policy हैं, magic numbers नहीं।
-        उन्हें owned, version-controlled, और review के जरिए change होना चाहिए —
-        किसी भी ऐसे contract की तरह जो तय करता है system को क्या करने की अनुमति है।
-        ceiling raise scope change है, और उसे वैसा ही महसूस होना चाहिए।
+        <strong>तंत्र।</strong> चरण और लागत की सीमाएँ नीति हैं, मनमानी संख्याएँ नहीं।
+        उनका स्वामी तय हो, वे संस्करण-नियंत्रित हों और समीक्षा से बदलें—किसी भी ऐसे
+        अनुबंध की तरह जो तय करता है कि तंत्र को क्या करने की अनुमति है। ऊपरी सीमा
+        बढ़ाना दायरे का बदलाव है और उसे उसी रूप में लिया जाना चाहिए।
       </p>
       <p>
-        <strong>क्या करें।</strong> per-task-class budget policy committed
-        config में declare करें, services में scattered constants में नहीं। हर ceiling
-        change review करें; overrun rate — breaker कितनी बार fire होता है — को
-        first-class SLO की तरह track करें; और ceiling raise को methodology change जितनी ceremony दें।
+        <strong>क्या करें।</strong> हर कार्य-वर्ग की बजट नीति प्रतिबद्ध कॉन्फ़िगरेशन में
+        घोषित करें, सेवाओं में बिखरे स्थिरांकों में नहीं। हर सीमा-बदलाव की समीक्षा करें;
+        अतिक्रमण दर—अवरोधक कितनी बार सक्रिय होता है—को प्रथम-श्रेणी SLO की तरह दर्ज
+        करें और सीमा बढ़ाने पर कार्यप्रणाली बदलाव जैसी प्रक्रिया अपनाएँ।
         <code>docs/16-release-tiers-and-redaction-policy.md</code> में
-        release-governance discipline published डेटा पर यही pattern लागू करता है; यहां वही spend पर लागू होता है।
+        प्रकाशन-संचालन का यही अनुशासन प्रकाशित डेटा पर लागू करता है; यहाँ वही खर्च पर लागू होता है।
       </p>
       <p>
-        <strong>Repo के भीतर evidence।</strong> <code>GOVERNANCE.md</code> वही
-        owned-contract change-control model है जिसका budget policy पालन करती है, और <code>docs/05</code> §6 का “silent
-        overrun = silent scope change” rule वह line है जो ceiling change को routine नहीं, reviewable बनाती है।
+        <strong>रिपॉज़िटरी के भीतर साक्ष्य।</strong> <code>GOVERNANCE.md</code> वही
+        स्वामित्व-आधारित अनुबंध-बदलाव मॉडल है जिसका बजट नीति पालन करती है। <code>docs/05</code>
+        §6 का “अनदेखा अतिक्रमण = दायरे में अनदेखा बदलाव” नियम सीमा-बदलाव को सामान्य
+        नहीं, समीक्षा योग्य बनाता है।
       </p>
     </section>
 
     <section id="boundary" class="article-section">
-      <h2>Sources और evidence boundary</h2>
+      <h2>स्रोत और साक्ष्य-सीमा</h2>
       <p>
-        इस topic में दो चीज़ें साथ चल रही हैं, और वे अलग tiers में रहती हैं।
-        measured anchor — benchmark-03 ceiling — published result है जिसे आप
-        audit कर सकते हैं। loop-governance pattern operational design है: यह
-        इस repository में पहले से मौजूद primitives reuse करता है, लेकिन जिस runaway behavior
-        से यह guard करता है, वह खुद यहां measured नहीं है। नीचे के tiers साफ़ करते हैं कि
-        documented input कहां खत्म होता है और design inference कहां शुरू होती है।
+        इस विषय में दो बातें अलग श्रेणियों में साथ चलती हैं। मापा हुआ आधार—benchmark-03
+        की ऊपरी सीमा—प्रकाशित नतीजा है, जिसका लेखा-परीक्षण किया जा सकता है। लूप-संचालन
+        पैटर्न एक संचालन-डिज़ाइन है: वह रिपॉज़िटरी में पहले से मौजूद घटकों का पुनः उपयोग
+        करता है, लेकिन जिस अनियंत्रित व्यवहार से बचाता है, वह यहाँ नहीं मापा गया। नीचे
+        की श्रेणियाँ बताती हैं कि प्रलेखित इनपुट कहाँ समाप्त होता है और डिज़ाइन-अनुमान
+        कहाँ शुरू होता है।
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 — methodology contract:</strong> यह repository, <code>docs/05-methodology.md</code> §6 “Budget guards.” pre-run estimate plus mid-run hard-ceiling abort, जिसे यह pattern generalize करता है; rule “a silent budget overrun is also a silent change in experiment scope” वही governance stance है जिसे §5 में ले जाया गया है।</li>
-        <li>[2] <strong>Tier 2 — measured companion (benchmark-03):</strong> यह repository, <code>results/summary.md</code> §3 और <code>benchmarks/03-tool-using-agent/analysis.md</code>। measured ceiling का source — quality effort की पूरी range में 1.97–2.00 के भीतर रही, जबकि per-request लागत $0.002762 → $0.003499 और latency 2.9s → 3.8s बढ़ी। यही per-step finding है जिसे loop के escalation gate को मानना चाहिए।</li>
-        <li>[3] <strong>Operator pattern (design, measured tier नहीं):</strong> loop controls सीधे <code>scripts/run_benchmark.py</code> से लिए गए हैं — <code>BudgetTracker</code> / <code>hard_ceiling_usd</code>, <code>BudgetExceededError</code>, <code>EXIT_BUDGET</code>, <code>estimate_experiment_cost_usd</code> gated by <code>MAX_COST_PER_BENCHMARK_USD</code>, <code>agent.max_tool_iterations</code>, और <code>tool_loop_terminated="iteration_cap"</code> — और rubric gate <code>scripts/run_judge.py</code> से। canonical write-up <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a> है, जिसे <code>docs/09-operator-guide-one-page.md</code> में operator lever <strong>L6</strong> के रूप में introduce किया गया है।</li>
-        <li>[4] <strong>Proposed next increment (unbuilt):</strong> §4 में loop-scoped fields — <code>loop_id</code>, <code>step_index</code>, <code>cumulative_cost_usd</code>, <code>budget_remaining_usd</code> — <code>docs/14-observability-schema.md</code> और <code>schemas/ptu_request_record.schema.json</code> को extend करते हैं। ये सिर्फ design हैं; इस topic में कहीं यह दावा नहीं कि वे shipped हैं।</li>
-        <li>[5] <strong>Evidence dashboard:</strong> measured companion rendered <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 quality और cost chart</a> के रूप में audit किया जा सकता है।</li>
+        <li>[1] <strong>स्तर 1 — कार्यप्रणाली अनुबंध:</strong> यह रिपॉज़िटरी, <code>docs/05-methodology.md</code> §6 “Budget guards”। यह पैटर्न रन से पहले के अनुमान और रन के बीच कठोर सीमा पर रुकने को सामान्य रूप देता है। “अनदेखा बजट अतिक्रमण प्रयोग के दायरे में अनदेखा बदलाव भी है” वाला नियम §5 के संचालन दृष्टिकोण का आधार है।</li>
+        <li>[2] <strong>स्तर 2 — साथ वाला मापा गया साक्ष्य (benchmark-03):</strong> यह रिपॉज़िटरी, <code>results/summary.md</code> §3 और <code>benchmarks/03-tool-using-agent/analysis.md</code>। मापी गई ऊपरी सीमा का स्रोत: गुणवत्ता सभी स्तरों पर 1.97–2.00 के भीतर रही, जबकि प्रति अनुरोध लागत $0.002762 → $0.003499 और लेटेंसी 2.9s → 3.8s बढ़ी। लूप की स्तर-वृद्धि जाँच को यही चरण-स्तरीय नतीजा मानना चाहिए।</li>
+        <li>[3] <strong>संचालक पैटर्न (डिज़ाइन, मापी गई श्रेणी नहीं):</strong> लूप नियंत्रण <code>scripts/run_benchmark.py</code> से लिए गए हैं—<code>BudgetTracker</code> / <code>hard_ceiling_usd</code>, <code>BudgetExceededError</code>, <code>EXIT_BUDGET</code>, <code>MAX_COST_PER_BENCHMARK_USD</code> से नियंत्रित <code>estimate_experiment_cost_usd</code>, <code>agent.max_tool_iterations</code> और <code>tool_loop_terminated="iteration_cap"</code>। मानदंड-जाँच <code>scripts/run_judge.py</code> स्क्रिप्ट चलाती है; स्क्रिप्ट स्वयं मूल्यांकन मॉडल नहीं है। प्रामाणिक विवरण <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/18-agentic-loop-budget-governance.md">docs/18</a> है और <code>docs/09-operator-guide-one-page.md</code> इसे संचालक नियंत्रण <strong>L6</strong> के रूप में प्रस्तुत करता है।</li>
+        <li>[4] <strong>प्रस्तावित अगला चरण (अभी निर्मित नहीं):</strong> §4 के लूप-स्तरीय फ़ील्ड—<code>loop_id</code>, <code>step_index</code>, <code>cumulative_cost_usd</code>, <code>budget_remaining_usd</code>—<code>docs/14-observability-schema.md</code> और <code>schemas/ptu_request_record.schema.json</code> का प्रस्तावित विस्तार हैं। यह केवल डिज़ाइन है; इनके जारी होने का दावा नहीं किया गया है।</li>
+        <li>[5] <strong>साक्ष्य डैशबोर्ड:</strong> साथ वाले मापे गए नतीजे का <a href="../../../../../charts/?lang=hi#chart-cost-curves-effort-benchmark-03-quality">benchmark-03 गुणवत्ता और लागत चार्ट</a> के रूप में लेखा-परीक्षण किया जा सकता है।</li>
       </ul>
       <p>
-        यह topic क्या establish करता है और क्या नहीं: यह दिखाता है कि इस repository में पहले से चल रहे guards से loop को कैसे bound करें,
-        और continue करने का decision लेते समय measured ceiling को कैसे respect करें। यह <em>measure नहीं करता</em>
-        कि loops कितनी बार runaway होते हैं, task
-        shape के हिसाब से step counts का distribution क्या है, या long-context लागत-scaling curve कैसा है — <code>docs/04</code> §4
-        पहले से record करता है कि यहां कोई benchmark long-output / long-context
-        workloads measure नहीं करता। इन्हें future runaway-characterization
-        benchmark से close होने वाले honest gaps मानें, quiet claims नहीं।
+        यह विषय दिखाता है कि रिपॉज़िटरी में पहले से मौजूद सुरक्षा उपायों से लूप को कैसे
+        सीमित करें और जारी रखने के निर्णय में मापी गई ऊपरी सीमा को कैसे मानें। यह
+        <em>नहीं मापता</em> कि लूप कितनी बार अनियंत्रित होते हैं, वर्कलोड-रूप के अनुसार
+        चरणों की संख्या का वितरण क्या है या लंबे संदर्भ में लागत-वृद्धि कैसी है।
+        <code>docs/04</code> §4 पहले ही दर्ज करता है कि यहाँ कोई बेंचमार्क लंबे आउटपुट
+        या लंबे संदर्भ का मापन नहीं करता। इन्हें भविष्य के बेंचमार्क से भरने योग्य
+        स्पष्ट अंतर मानें, मौन दावे नहीं।
       </p>
     </section>
 
     <section class="article-section decision-box">
-      <h2>यह pattern हमें क्या कहने देता है</h2>
-      <p>loop work के लिए उपयोगी sentence “इसे और सोचने दें” या “इसे और लंबे समय तक loop करने दें” नहीं है। उपयोगी sentence है: “loop चलाने से पहले उसे bound करें, और उस bound का owner तय करें।”</p>
+      <h2>यह पैटर्न हमें क्या कहने देता है</h2>
+      <p>लूप-आधारित काम के लिए उपयोगी नियम “इसे और सोचने दें” या “इसे अधिक देर तक लूप करने दें” नहीं है। उपयोगी नियम है: “लूप चलाने से पहले उसे सीमित करें और उस सीमा का स्वामी तय करें।”</p>
       <p><a class="button-link" href="../../../hi/">अवलोकन निबंध पर वापस जाएं</a></p>
 
       <h2>व्यावहारिक नियम</h2>
       <ol>
-        <li>हर multi-call task को एक नहीं, दो bounds दें: <code>max_iterations</code> step cap <em>और</em> <code>hard_ceiling_usd</code> cumulative ceiling, दोनों representative p99 से sized।</li>
-        <li>breaker को fail closed बनाएं — cap, ceiling, या no-progress पर stop करें, typed reason record करें, और best-effort partial answer return करें।</li>
-        <li>हर escalation को cheap eval के पीछे gate करें, और measured ceiling को मानें: mid-range से ऊपर, effort से score नहीं बढ़ा, सिर्फ लागत बढ़ी।</li>
-        <li>सिर्फ end-of-task sum नहीं, per-step rows रखें, ताकि आप runaway हुए step का नाम ले सकें।</li>
-        <li>budget को committed, reviewed policy की तरह रखें; overrun rate को SLO की तरह track करें और ceiling raise को scope change जैसी ceremony दें।</li>
+        <li>हर बहु-कॉल काम को दो सीमाएँ दें: प्रतिनिधि p99 से निर्धारित <code>max_iterations</code> चरण सीमा <em>और</em> <code>hard_ceiling_usd</code> कुल लागत सीमा।</li>
+        <li>अवरोधक को विफलता पर बंद रखें—चरण सीमा, लागत सीमा या प्रगति न होने पर रुकें, प्रकार-सहित कारण दर्ज करें और यथासंभव आंशिक उत्तर लौटाएँ।</li>
+        <li>हर स्तर-वृद्धि को कम लागत वाले मूल्यांकन से नियंत्रित करें और मापी गई ऊपरी सीमा मानें: मध्यम सीमा से ऊपर स्कोर नहीं बढ़ा, केवल लागत बढ़ी।</li>
+        <li>केवल काम के अंत का योग नहीं, हर चरण की पंक्तियाँ रखें ताकि अनियंत्रित चरण पहचाना जा सके।</li>
+        <li>बजट को प्रतिबद्ध, समीक्षित नीति मानें; अतिक्रमण दर को SLO की तरह दर्ज करें और सीमा-वृद्धि पर दायरा-बदलाव जैसी प्रक्रिया अपनाएँ।</li>
       </ol>
       <p>
-        <strong>व्यावहारिक नियम: L1–L5 हर call को bound करते हैं; L6 loop को bound करता है।
-        loop चलने से पहले तय करें कि कब stop करना है, और उस decision को
-        model के default पर छोड़ी गई चीज़ नहीं, बल्कि आपकी owned चीज़ बनाएं।</strong>
+        <strong>व्यावहारिक नियम: L1–L5 हर कॉल को सीमित करते हैं; L6 लूप को सीमित
+        करता है। लूप चलने से पहले तय करें कि कब रुकना है और यह निर्णय मॉडल के
+        डिफ़ॉल्ट पर न छोड़कर अपने स्वामित्व में रखें।</strong>
       </p>
       <p>
-        <a class="button-link" href="../../tool-agent-ceiling-checks/hi/">साथ वाला ceiling check पढ़ें</a>
+        <a class="button-link" href="../../tool-agent-ceiling-checks/hi/">साथ वाली सीमा-जाँच पढ़ें</a>
       </p>
     </section>
 
     <section id="next" class="article-section">
       <p>
         <strong>अगला:</strong>
-        <a href="../../ptu-payg-planning/hi/">PTU/PAYG crossover: planning line, capacity result नहीं</a>
-        &mdash; loop को bound करने और workload size करने के बाद, provisioned throughput pay-as-you-go से कब बेहतर होता है?
+        <a href="../../ptu-payg-planning/hi/">PTU/PAYG क्रॉसओवर: योजना-रेखा, क्षमता-नतीजा नहीं</a>
+        &mdash; लूप सीमित करने और वर्कलोड का आकार तय करने के बाद, आरक्षित थ्रूपुट PAYG से कब बेहतर होता है?
       </p>
     </section>
   </main>
 
-  <footer class="site"><p>MIT-licensed research artifact; published डेटा केवल sanitized या aggregate है।</p></footer>
+  <footer class="site"><p>MIT-लाइसेंस प्राप्त शोध-कलाकृति · प्रकाशित डेटा केवल साफ़ किया हुआ या समुच्चय रूप में है।</p></footer>
 </body>
 </html>

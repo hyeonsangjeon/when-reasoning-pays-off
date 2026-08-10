@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">क्रॉसओवर एक योजना-रेखा है, मापी क्षमता नहीं</title>
-  <desc id="desc">सार्वजनिक मूल्य-स्नैपशॉट और 50 PTU न्यूनतम पर मॉडल-किया-गया PAYG/PTU लाभ-हानि RPM।</desc>
+  <title id="title">क्रॉसओवर योजना की सीमा है, क्षमता का प्रत्यक्ष मापन नहीं</title>
+  <desc id="desc">सार्वजनिक मूल्य स्नैपशॉट और 50 PTU न्यूनतम सीमा पर मॉडल किया गया PAYG/PTU ब्रेक-ईवन RPM।</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">क्रॉसओवर एक योजना-रेखा है, मापी क्षमता नहीं</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">सार्वजनिक मूल्य-स्नैपशॉट और 50 PTU न्यूनतम पर मॉडल-किया-गया PAYG/PTU लाभ-हानि RPM।</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">क्रॉसओवर योजना की सीमा है, क्षमता का प्रत्यक्ष मापन नहीं</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">सार्वजनिक मूल्य स्नैपशॉट और 50 PTU न्यूनतम सीमा पर मॉडल किया गया PAYG/PTU ब्रेक-ईवन RPM।</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -17,7 +17,7 @@
   <text x="148" y="191.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">2250</text>
   <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
   <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">3000</text>
-  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">मॉडल-किया-गया लाभ-हानि RPM</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">मॉडल किया गया ब्रेक-ईवन RPM</text>
   <rect x="160.0" y="142.7" width="236.7" height="247.3" rx="8" fill="#fb8500"/>
   <text x="278.3" y="132.7" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2748</text>
   <text x="278.3" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b01 xhigh</text>
@@ -31,8 +31,8 @@
   <text x="791.7" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b03 low</text>
   <text x="791.7" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">लागत $0.002773</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
-  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">चार्ट कैसे पढ़ें</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">X-अक्ष सेल चुने हुए उदाहरण हैं, सतत प्रयोग नहीं।</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">मॉडल-रेखा से प्रश्न गढ़ें, फिर live ट्रैफ़िक से सत्यापित करें।</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">स्रोत: सार्वजनिक समुच्चय चार्ट-डेटा; केवल वर्णनात्मक सबूत।</text>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">चार्ट पढ़ने का तरीका</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">X-अक्ष के सेल चुने हुए उदाहरण हैं, सतत प्रयोग नहीं।</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">मॉडल की सीमा से प्रश्न तय करें, फिर वास्तविक ट्रैफ़िक पर सत्यापित करें।</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">स्रोत: सार्वजनिक समेकित चार्ट डेटा; केवल वर्णनात्मक साक्ष्य।</text>
 </svg>

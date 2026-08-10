@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">multi-step काम ने गुणवत्ता की कहानी बदली</title>
-  <desc id="desc">benchmark-02: judge स्कोर GPT-4o बेसलाइन से चढ़ा; लागत-लेबल युग्मित खर्च दिखाते हैं।</desc>
+  <title id="title">बहु-चरणीय कार्य में गुणवत्ता स्कोर बदला</title>
+  <desc id="desc">benchmark-02: मूल्यांकन स्कोर GPT-4o बेसलाइन से बढ़ा; लागत लेबल संबंधित खर्च दिखाते हैं।</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">multi-step काम ने गुणवत्ता की कहानी बदली</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: judge स्कोर GPT-4o बेसलाइन से चढ़ा; लागत-लेबल युग्मित खर्च दिखाते हैं।</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">बहु-चरणीय कार्य में गुणवत्ता स्कोर बदला</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02: मूल्यांकन स्कोर GPT-4o बेसलाइन से बढ़ा; लागत लेबल संबंधित खर्च दिखाते हैं।</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -17,34 +17,34 @@
   <text x="148" y="201.1" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">1.5</text>
   <line x1="155" y1="132.9" x2="910" y2="132.9" stroke="#e8f0f8"/>
   <text x="148" y="136.9" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">2.0</text>
-  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">औसत judge स्कोर</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">औसत मूल्यांकन स्कोर</text>
   <rect x="160.0" y="197.1" width="108.3" height="192.9" rx="8" fill="#3a86ff"/>
   <text x="214.2" y="187.1" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">1.50</text>
   <text x="214.2" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">gpt-4o</text>
   <text x="214.2" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.000798</text>
   <rect x="288.3" y="132.9" width="108.3" height="257.1" rx="8" fill="#06d6a0"/>
   <text x="342.5" y="122.9" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2.00</text>
-  <text x="342.5" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">none</text>
+  <text x="342.5" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">कोई नहीं</text>
   <text x="342.5" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.000618</text>
   <rect x="416.7" y="141.4" width="108.3" height="248.6" rx="8" fill="#8ecae6"/>
   <text x="470.8" y="131.4" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">1.93</text>
-  <text x="470.8" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">low</text>
+  <text x="470.8" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">निम्न</text>
   <text x="470.8" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.000859</text>
   <rect x="545.0" y="132.9" width="108.3" height="257.1" rx="8" fill="#ffb703"/>
   <text x="599.2" y="122.9" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2.00</text>
-  <text x="599.2" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">medium</text>
+  <text x="599.2" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">मध्यम</text>
   <text x="599.2" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.001083</text>
   <rect x="673.3" y="132.9" width="108.3" height="257.1" rx="8" fill="#fb8500"/>
   <text x="727.5" y="122.9" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2.00</text>
-  <text x="727.5" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">high</text>
+  <text x="727.5" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">उच्च</text>
   <text x="727.5" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.001250</text>
   <rect x="801.7" y="132.9" width="108.3" height="257.1" rx="8" fill="#8338ec"/>
   <text x="855.8" y="122.9" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2.00</text>
-  <text x="855.8" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">xhigh</text>
+  <text x="855.8" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">अति उच्च</text>
   <text x="855.8" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">$0.002179</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
-  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">चार्ट कैसे पढ़ें</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">यहाँ गुणवत्ता-गति दृश्य है, इसलिए खर्च का जवाब देने को कुछ है।</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">सबसे सस्ता जीतने वाला सेल भी कहानी का हिस्सा है, सिर्फ़ सर्वोच्च स्कोर नहीं।</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">स्रोत: सार्वजनिक समुच्चय चार्ट-डेटा; केवल वर्णनात्मक सबूत।</text>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">चार्ट पढ़ने का तरीका</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">यहाँ गुणवत्ता बदलती है, इसलिए अतिरिक्त खर्च उचित हो सकता है।</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">केवल सर्वोच्च स्कोर नहीं, समान स्कोर वाला सबसे कम लागत का सेल भी देखें।</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">स्रोत: सार्वजनिक समेकित चार्ट डेटा; केवल वर्णनात्मक साक्ष्य।</text>
 </svg>

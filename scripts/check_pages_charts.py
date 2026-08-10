@@ -60,17 +60,18 @@ def check_locales(manifest):
     en = load(DATA / "locales" / "en.json")
     ko = load(DATA / "locales" / "ko.json")
     ja = load(DATA / "locales" / "ja.json")
+    hi = load(DATA / "locales" / "hi.json")
     for loc in LOCALES:
         path = DATA / "locales" / f"{loc}.json"
         require(path.is_file(), f"missing locale {loc}")
         data = load(path)
         meta = data.get("meta", {})
         require(meta.get("locale") == loc, f"locale meta mismatch for {loc}")
-        if loc in {"en", "ko", "ja"}:
+        if loc in {"en", "ko", "ja", "hi"}:
             require(meta.get("fallback") is False, f"{loc} must be real labels")
         else:
             require(meta.get("fallback") is True and meta.get("fallback_to") == "en", f"{loc} must explicitly fall back to en")
-    for loc, labels in {"en": en, "ko": ko, "ja": ja}.items():
+    for loc, labels in {"en": en, "ko": ko, "ja": ja, "hi": hi}.items():
         for family in REQUIRED_FAMILIES:
             require(
                 nested_get(labels, ["families", family, "title"]),
@@ -84,12 +85,15 @@ def check_locales(manifest):
     note_en = nested_get(en, ["notes", "ptu_payg_modeled_hypothesis"])
     note_ko = nested_get(ko, ["notes", "ptu_payg_modeled_hypothesis"])
     note_ja = nested_get(ja, ["notes", "ptu_payg_modeled_hypothesis"])
+    note_hi = nested_get(hi, ["notes", "ptu_payg_modeled_hypothesis"])
     require("not measured PTU throughput" in note_en, "en PTU hypothesis note must say not measured PTU throughput")
     require("측정된 PTU 처리량이 아닙니다" in note_ko, "ko PTU hypothesis note must say not measured PTU throughput")
     require(note_ja, "ja missing PTU modeled-hypothesis note")
+    require(note_hi, "hi missing PTU modeled-hypothesis note")
     require(nested_get(en, ["notes", "quality_guardrail"]), "en missing quality guardrail note")
     require(nested_get(ko, ["notes", "quality_guardrail"]), "ko missing quality guardrail note")
     require(nested_get(ja, ["notes", "quality_guardrail"]), "ja missing quality guardrail note")
+    require(nested_get(hi, ["notes", "quality_guardrail"]), "hi missing quality guardrail note")
 
 
 def check_renderer_and_page():

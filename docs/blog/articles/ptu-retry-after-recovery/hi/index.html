@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>429 सिर्फ़ error नहीं, रिकवरी का संकेत है | when reasoning pays off</title>
-  <meta name="description" content="यह public operations लेख समझाता है कि Azure OpenAI PTU की 429 प्रतिक्रिया को सामान्य failure नहीं, बल्कि retry-after-ms वाले recovery signal की तरह क्यों लेना चाहिए।">
+  <title>429 सिर्फ़ त्रुटि नहीं, रिकवरी का संकेत है | when reasoning pays off</title>
+  <meta name="description" content="यह सार्वजनिक संचालन-लेख समझाता है कि Azure OpenAI PTU की 429 प्रतिक्रिया को सामान्य विफलता नहीं, बल्कि retry-after-ms वाले रिकवरी संकेत की तरह क्यों लेना चाहिए।">
   <meta name="article:locale" content="hi">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -21,7 +21,7 @@
 <body>
   <header class="site">
     <div class="bar">
-      <a class="brand" href="../../../../hi/">when reasoning pays off</a>
+      <a class="brand" href="../../../../hi/">जब रीज़निंग लाभ देती है</a>
       <nav class="site-links" aria-label="लेख नेविगेशन">
         <a href="../../../../hi/">होम</a>
         <a href="../../hi/">लेख सूची</a>
@@ -41,339 +41,335 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../../hi/">लेख</a> / संचालन निबंध / हिन्दी रूपांतर</p>
-    <p class="article-kicker">संचालन निबंध · PTU recovery और 429 handling</p>
-    <h1>429 सिर्फ़ error नहीं, रिकवरी का संकेत है</h1>
+    <p class="article-kicker">संचालन निबंध · PTU रिकवरी और 429 प्रबंधन</p>
+    <h1>429 सिर्फ़ त्रुटि नहीं, रिकवरी का संकेत है</h1>
     <p class="lede">
-      ट्रैफ़िक का एक burst PTU capacity को 100% utilization तक पहुँचा देता है, और calls
-      429 लौटाने लगती हैं। ऐसे में आम तौर पर तीन रास्ते सूझते हैं: capacity खाली दिखने
-      तक health-check polling loop चलाते रहो, बिना पक्की जानकारी के किसी fixed timer पर
-      retry करो, या सारा ट्रैफ़िक तुरंत किसी दूसरे target पर भेज दो। इन तीनों के पीछे
-      एक ही मान्यता है: दोबारा कोशिश कब सुरक्षित होगी, इसका अंदाज़ client को खुद लगाना
-      पड़ेगा। लेकिन ऐसा नहीं है। 429 जवाब यह बात पहले ही header
-      <code>retry-after-ms</code> में बता देता है। इसलिए असली operations सवाल “call fail
-      हुई क्या?” नहीं, बल्कि “अगला फैसला किसके हाथ में है: wait, redirect, या give up?”
+      ट्रैफ़िक का एक बर्स्ट PTU क्षमता को 100% उपयोग तक पहुँचा देता है, और कॉल
+      429 लौटाने लगती हैं। ऐसे में आम तौर पर तीन रास्ते सूझते हैं: क्षमता खाली दिखने
+      तक स्वास्थ्य-जाँच चक्र चलाते रहो, बिना पक्की जानकारी के किसी निश्चित टाइमर पर
+      पुनः प्रयास करो, या सारा ट्रैफ़िक तुरंत किसी दूसरे लक्ष्य पर भेज दो। इन तीनों के पीछे
+      एक ही मान्यता है: दोबारा कोशिश कब सुरक्षित होगी, इसका अंदाज़ क्लाइंट को खुद लगाना
+      पड़ेगा। लेकिन ऐसा नहीं है। 429 जवाब यह बात पहले ही हेडर
+      <code>retry-after-ms</code> में बता देता है। इसलिए असली संचालन सवाल “कॉल विफल
+      हुई क्या?” नहीं, बल्कि “अगला फैसला किसके हाथ में है: प्रतीक्षा, पुनर्निर्देशन, या हार मानना?”
       है।
     </p>
 
     <figure class="article-figure" id="figure-ptu-retry-one-pager">
       <figcaption>
-        <strong>यह लेख एक नज़र में।</strong> जब saturated PTU target 429 लौटाता है, तब
-        documented <code>retry-after-ms</code> header ही admission contract होता है। उसका
-        पालन करें, jitter जोड़ें, और दिखी हुई long tail के लिए budget रखें। यह one-pager
-        यही एक बात कहता है और evidence boundary भी साफ़ करता है: header Microsoft Learn
-        का contract है, जबकि उसके साथ दिखा short-median, long-tail आकार इस repository के
-        source runs से लिया गया sanitized public aggregate है, जिसे सिर्फ़ descriptive रूप
+        <strong>यह लेख एक नज़र में।</strong> जब संतृप्त PTU लक्ष्य 429 लौटाता है, तब
+        दस्तावेज़ीकृत <code>retry-after-ms</code> हेडर ही प्रवेश अनुबंध होता है। उसका
+        पालन करें, जिटर जोड़ें, और देखे गए लंबे टेल के लिए बजट रखें। यह एक-पृष्ठ सार
+        यही एक बात कहता है और साक्ष्य सीमा भी साफ़ करता है: हेडर Microsoft Learn
+        का अनुबंध है, जबकि उसके साथ दिखी छोटी माध्यिका और लंबे टेल वाला स्वरूप इस रिपॉज़िटरी के
+        स्रोत रन से लिया गया पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जिसे सिर्फ़ वर्णनात्मक रूप
         में दिखाया गया है।
-        <a href="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg">429 recovery one-pager SVG खोलें</a>।
+        <a href="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg">429 रिकवरी एक-पृष्ठ सार SVG खोलें</a>।
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg" alt="429 के बाद retry-after-ms से recovery समझाने वाला one-pager। इसमें documented 429 header contract को देखे गए retry-after-ms distribution के एक sketch के साथ रखा गया है, जहाँ median छोटा है और tail लंबी है। मुख्य संदेश यह है: 429 मिले, तो retry-after-ms header का पालन करें और jitter जोड़ें, क्योंकि इस sample में सुझाए गए waits median पर छोटे थे लेकिन tail लंबी थी। इसे documented contract और sanitized observed aggregate के रूप में, सिर्फ़ descriptive तरीके से दिखाया गया है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-ptu-retry-after-recovery.svg" alt="429 के बाद retry-after-ms से रिकवरी समझाने वाला एक-पृष्ठ सार। इसमें दस्तावेज़ीकृत 429 हेडर अनुबंध को देखे गए retry-after-ms वितरण के एक रेखाचित्र के साथ रखा गया है, जहाँ माध्यिका छोटी है और टेल लंबी है। मुख्य संदेश यह है: 429 मिले, तो retry-after-ms हेडर का पालन करें और जिटर जोड़ें, क्योंकि इस नमूने में सुझाई गई प्रतीक्षा-अवधियाँ माध्यिका पर छोटी थीं लेकिन टेल लंबी थी। इसे दस्तावेज़ीकृत अनुबंध और पहचान-रहित अवलोकित समेकित आँकड़े के रूप में, सिर्फ़ वर्णनात्मक तरीके से दिखाया गया है।" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-header" class="article-section">
-      <h2>अंदाज़ लगाने के बजाय header क्यों पढ़ें</h2>
+      <h2>अंदाज़ लगाने के बजाय हेडर क्यों पढ़ें</h2>
       <p>
-        इन तीनों शुरुआती प्रतिक्रियाओं के पीछे एक छिपी हुई मान्यता है: client यह जान
-        ही नहीं सकता कि capacity कब खाली होगी, इसलिए उसे या तो probe करना पड़ेगा, या किसी
-        fixed interval पर wait करना पड़ेगा, या फिर target छोड़ना पड़ेगा। इसे मान लेने से
-        पहले दो चीज़ें साथ रखनी चाहिए। पहली, Microsoft Learn क्या document करता है: 100%
-        utilization पर service तुरंत 429 लौटाती है और <code>retry-after-ms</code> जोड़ती
-        है। यानी service खुद बताती है कि दोबारा कब कोशिश करनी है। दूसरी, इस repository
-        के source runs में वास्तव में देखे गए <code>retry-after-ms</code> values का एक
-        sanitized public aggregate, जिसे descriptive रूप में इसलिए शामिल किया गया है ताकि
-        दिख सके कि व्यवहार में ये सुझाए गए waits कैसे दिखे। इन दोनों को साथ देखने पर “कब
-        दोबारा कोशिश करना सुरक्षित है?” यह सवाल client के अंदाज़े से निकलकर service के
-        दिए हुए value पर आ जाता है।
+        इन तीनों शुरुआती प्रतिक्रियाओं के पीछे एक छिपी हुई मान्यता है: क्लाइंट यह जान
+        ही नहीं सकता कि क्षमता कब खाली होगी, इसलिए उसे या तो जाँच करना पड़ेगा, या किसी
+        निश्चित अंतराल पर प्रतीक्षा करना पड़ेगा, या फिर लक्ष्य छोड़ना पड़ेगा। इसे मान लेने से
+        पहले दो चीज़ें साथ रखनी चाहिए। पहली, Microsoft Learn क्या दस्तावेज़ित करता है: 100%
+        उपयोग पर सेवा तुरंत 429 लौटाती है और <code>retry-after-ms</code> जोड़ती
+        है। यानी सेवा खुद बताती है कि दोबारा कब कोशिश करनी है। दूसरी, इस रिपॉज़िटरी
+        के स्रोत रन में वास्तव में देखे गए <code>retry-after-ms</code> मानों का एक
+        पहचान-रहित सार्वजनिक समेकित आँकड़ा, जिसे वर्णनात्मक रूप में इसलिए शामिल किया गया है ताकि
+        दिख सके कि व्यवहार में ये सुझाई गई प्रतीक्षा-अवधियाँ कैसे दिखे। इन दोनों को साथ देखने पर “कब
+        दोबारा कोशिश करना सुरक्षित है?” यह सवाल क्लाइंट के अंदाज़े से निकलकर सेवा के
+        दिए हुए मान पर आ जाता है।
       </p>
       <p>
-        उस aggregate की shape पर ठहरकर देखना चाहिए। सुझाए गए waits median पर छोटे थे (overall p50 &asymp; 43&nbsp;ms), इसलिए health-check loop या blind fixed-interval
-        backoff आम तौर पर service की असल मांग से कहीं ज़्यादा देर wait करते। लेकिन tail
-        मामूली नहीं थी: waits का एक छोटा हिस्सा 17,000&nbsp;ms तक खिंचता था (overall p99
-        &asymp; 16,921&nbsp;ms)। यही short-median, long-tail shape operationally सबसे
-        अहम बात है। header को fixed reset clock नहीं, admission-control signal की तरह
-        लेना चाहिए। तुरंत 429 मिलना और <code>retry-after-ms</code> contract, यह Microsoft
-        Learn document करता है। किस point पर wait बंद करके redirect करना चाहिए, इसे एक
-        latency-budget ceiling से तय करना इस repository का operational inference है। नीचे
-        दिया source chart उसी distribution को साफ़ दिखाता है।
+        उस समेकित आँकड़े के स्वरूप पर ठहरकर देखना चाहिए। सुझाई गई प्रतीक्षा-अवधियाँ माध्यिका पर छोटी थीं (कुल p50 &asymp; 43&nbsp;ms), इसलिए स्वास्थ्य-जाँच चक्र या अंधा निश्चित-अंतराल
+        बैकऑफ़ आम तौर पर सेवा की असल मांग से कहीं ज़्यादा देर प्रतीक्षा कराते। लेकिन टेल
+        मामूली नहीं थी: प्रतीक्षाओं का एक छोटा हिस्सा 17,000&nbsp;ms तक खिंचता था (कुल p99
+        &asymp; 16,921&nbsp;ms)। यही छोटी माध्यिका और लंबे टेल वाला स्वरूप संचालन की दृष्टि से सबसे
+        अहम बात है। हेडर को निश्चित रीसेट घड़ी नहीं, प्रवेश-नियंत्रण संकेत की तरह
+        लेना चाहिए। तुरंत 429 मिलना और <code>retry-after-ms</code> अनुबंध, यह Microsoft
+        Learn दस्तावेज़ित करता है। किस बिंदु पर प्रतीक्षा बंद करके पुनर्निर्देशन करना चाहिए, इसे एक
+        विलंब-बजट ऊपरी सीमा से तय करना इस रिपॉज़िटरी का संचालनगत निष्कर्ष है। नीचे
+        दिया स्रोत चार्ट उसी वितरण को साफ़ दिखाता है।
       </p>
     </section>
 
     <div class="article-summary-grid" aria-label="लेख का सार">
       <section class="summary-tile">
         <h2>सवाल</h2>
-        <p>जब PTU capacity “अभी नहीं” कहे, तो client अगला कदम कैसे तय करे?</p>
+        <p>जब PTU क्षमता “अभी नहीं” कहे, तो क्लाइंट अगला कदम कैसे तय करे?</p>
       </section>
       <section class="summary-tile">
         <h2>साक्ष्य</h2>
-        <p>Microsoft Learn के provisioned-throughput और spillover documents, साथ में इस repository का PTU admission-controller operational note।</p>
+        <p>Microsoft Learn के आरक्षित थ्रूपुट और स्पिलओवर दस्तावेज़, साथ में इस रिपॉज़िटरी का PTU प्रवेश-नियंत्रक संचालनगत नोट।</p>
       </section>
       <section class="summary-tile">
         <h2>फ़ैसला</h2>
-        <p>retry का owner एक ही रखें। header का पालन करें, jitter जोड़ें, और redirect तभी करें जब latency policy इसकी मांग करे।</p>
+        <p>पुनः प्रयास का स्वामी एक ही रखें। हेडर का पालन करें, जिटर जोड़ें, और पुनर्निर्देशन तभी करें जब विलंब नीति इसकी मांग करे।</p>
       </section>
     </div>
 
     <nav class="article-outline" aria-label="लेख के खंड">
       <strong>सवाल के हिसाब से पढ़ें:</strong>
       <a href="#spec">आधिकारिक संकेत</a>
-      <a href="#evidence">service का व्यवहार</a>
-      <a href="#pattern">operating pattern</a>
-      <a href="#fallback">redirect के विकल्प</a>
+      <a href="#evidence">सेवा का व्यवहार</a>
+      <a href="#pattern">संचालन ढर्रा</a>
+      <a href="#fallback">पुनर्निर्देशन के विकल्प</a>
       <a href="#sources">स्रोत</a>
     </nav>
 
     <p class="banner">
       <strong>दायरे की टिप्पणी:</strong>
-      यह लेख वही PTU 429 admission contract रखता है जिसे access date पर Microsoft Learn
-      document करता है, और उसके साथ कुछ operational rules of thumb भी रखता है जिनका यह
-      repository समर्थन करता है। यह retry wrapper के लिए runbook है, किसी खास
-      तैनाती की measurement नहीं। इसमें जो <code>retry-after-ms</code> distribution
-      दिखाया गया है, वह इस repository के source runs का sanitized public aggregate है।
-      इसे सिर्फ़ descriptive रूप में इसलिए शामिल किया गया है ताकि दिख सके कि सुझाए गए
-      waits constant नहीं थे — यह service-level guarantee नहीं है।
+      यह लेख वही PTU 429 प्रवेश अनुबंध रखता है जिसे देखे जाने की तिथि पर Microsoft Learn
+      दस्तावेज़ित करता है, और उसके साथ कुछ संचालनगत व्यावहारिक नियम भी रखता है जिनका यह
+      रिपॉज़िटरी समर्थन करता है। यह पुनः प्रयास आवरण के लिए रनबुक है, किसी खास
+      डिप्लॉयमेंट का मापन नहीं। इसमें जो <code>retry-after-ms</code> वितरण
+      दिखाया गया है, वह इस रिपॉज़िटरी के स्रोत रन का पहचान-रहित सार्वजनिक समेकित आँकड़ा है।
+      इसे सिर्फ़ वर्णनात्मक रूप में इसलिए शामिल किया गया है ताकि दिख सके कि सुझाई गई
+      प्रतीक्षा-अवधियाँ स्थिर नहीं थीं — यह सेवा-स्तरीय गारंटी नहीं है।
     </p>
 
     <section id="spec" class="article-section">
-      <p class="section-label">आधिकारिक spec · service क्या कहती है</p>
-      <h2>header ही admission signal है</h2>
+      <p class="section-label">आधिकारिक विनिर्देश · सेवा क्या कहती है</p>
+      <h2>हेडर ही प्रवेश संकेत है</h2>
       <p>
-        Microsoft Learn, PTU high-utilization handling को तुरंत 429 लौटाने वाले path के
+        Microsoft Learn, PTU उच्च उपयोग के प्रबंधन को तुरंत 429 लौटाने वाले मार्ग के
         रूप में बताता है, जिसके साथ <code>retry-after-ms</code> और
-        <code>retry-after</code> response headers आते हैं। वही production guide यह भी
-        समझाती है कि इस wait को client-side retry के लिए भी इस्तेमाल किया जा सकता है और
-        request को किसी दूसरे serving target पर redirect करने के लिए भी।
+        <code>retry-after</code> प्रतिक्रिया हेडर आते हैं। वही उत्पादन मार्गदर्शिका यह भी
+        समझाती है कि इस प्रतीक्षा को क्लाइंट-पक्ष पुनः प्रयास के लिए भी इस्तेमाल किया जा सकता है और
+        अनुरोध को किसी दूसरे सेवा लक्ष्य पर पुनर्निर्देशन करने के लिए भी।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>क्या documented है</h3>
+          <h3>क्या दस्तावेज़ीकृत है</h3>
           <p>
-            <code>retry-after-ms</code> को service द्वारा दिए गए wait value की तरह लें।
-            यह किसी guessed fixed reset interval से ज़्यादा भरोसेमंद signal है।
+            <code>retry-after-ms</code> को सेवा द्वारा दिए गए प्रतीक्षा मान की तरह लें।
+            यह किसी अनुमानित निश्चित रीसेट अंतराल से ज़्यादा भरोसेमंद संकेत है।
           </p>
         </div>
         <div>
-          <h3>क्या documented नहीं है</h3>
+          <h3>क्या दस्तावेज़ीकृत नहीं है</h3>
           <p>
-            इस wait value के पीछे का exact formula public नहीं है। client में कोई
-            deterministic reset model hard-code न करें।
+            इस प्रतीक्षा मान के पीछे का सटीक सूत्र सार्वजनिक नहीं है। क्लाइंट में कोई
+            नियतात्मक रीसेट मॉडल स्थायी रूप से दर्ज न करें।
           </p>
         </div>
         <div>
-          <h3>Operational inference</h3>
+          <h3>संचालनगत निष्कर्ष</h3>
           <p>
-            अगर header पहले ही बता रहा है कि दोबारा कब कोशिश करनी है, तो health-check
-            polling आम तौर पर उससे कमज़ोर signal देती है और extra traffic के साथ noisier
-            telemetry भी जोड़ती है।
+            अगर हेडर पहले ही बता रहा है कि दोबारा कब कोशिश करनी है, तो बार-बार की स्वास्थ्य-जाँच आम तौर पर उससे कमज़ोर संकेत देती है और अतिरिक्त ट्रैफ़िक के साथ अधिक शोरयुक्त
+            टेलीमेट्री भी जोड़ती है।
           </p>
         </div>
       </div>
       <figure class="article-figure" id="figure-429-admission">
         <figcaption>
-          <strong>429 दीवार नहीं, संकेत क्यों है:</strong> अनुरोधों का वही एक बर्स्ट, दो अलग नतीजे। लिमिटर के बिना बर्स्ट सीधे API से टकराता है और API 503 लौटाकर लोड छोड़ देता है। टोकन-बकेट लिमिटर के साथ, सीमा के भीतर के अनुरोध स्वस्थ API तक पहुँचते हैं जबकि सीमा से ऊपर के अनुरोधों को 429 वापस कॉल करने वाले को लौटा दिया जाता है। यही वह admission (admission) संकेत है जिसकी बात यह लेख करता है। कितनी देर रुकना है, यह उसके बाद हेडर बताता है। <em>यह अवधारणात्मक चित्रण है, मापा गया डेटा नहीं।</em>
+          <strong>429 दीवार नहीं, संकेत क्यों है:</strong> अनुरोधों का वही एक बर्स्ट, दो अलग नतीजे। लिमिटर के बिना बर्स्ट सीधे API से टकराता है और API 503 लौटाकर लोड छोड़ देता है। टोकन-बकेट लिमिटर के साथ, सीमा के भीतर के अनुरोध स्वस्थ API तक पहुँचते हैं जबकि सीमा से ऊपर के अनुरोधों को 429 वापस कॉल करने वाले को लौटा दिया जाता है। यही वह प्रवेश संकेत है जिसकी बात यह लेख करता है। कितनी देर रुकना है, यह उसके बाद हेडर बताता है। <em>यह अवधारणात्मक चित्रण है, मापा गया डेटा नहीं।</em>
         </figcaption>
         <img src="../../../../assets/429-rate-limit.gif" alt="रेट-लिमिटिंग समझाने वाला एनिमेशन। अनुरोधों का वही बर्स्ट दो बार दिखाया गया है। लिमिटर के बिना बर्स्ट सीधे API से टकराता है और API 503 लौटाकर लोड छोड़ता है। टोकन-बकेट लिमिटर के साथ, सीमा के भीतर के अनुरोध स्वस्थ API तक पहुँचते हैं जबकि सीमा से ऊपर के अनुरोध 429 के रूप में कॉल करने वाले को लौटते हैं, इसलिए API स्वस्थ रहता है। यह अवधारणात्मक चित्रण है, मापा गया डेटा नहीं।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="evidence" class="article-section">
-      <p class="section-label">service behavior · wait constant क्यों नहीं है</p>
-      <h2>यह wait admission control है, fixed cooldown नहीं</h2>
+      <p class="section-label">सेवा व्यवहार · प्रतीक्षा स्थिर क्यों नहीं है</p>
+      <h2>यह प्रतीक्षा प्रवेश नियंत्रण है, निश्चित शांत-अवधि नहीं</h2>
       <p>
-        Microsoft Learn, PTU utilization को leaky-bucket algorithm के एक variation की
-        तरह document करता है। हर request एक estimated compute लागत जोड़ती है: prompt
-        token count, जिसमें cached tokens घटे होते हैं, और call का
-        <code>max_tokens</code> जुड़ा होता है; जबकि deployed capacity PTUs की संख्या के
-        अनुपात में लगातार drain होती रहती है। अगर request उस समय पहुँचे जब utilization
-        पहले से 100% हो, तो service तुरंत HTTP 429 लौटाती है और
-        <code>retry-after-ms</code> व <code>retry-after</code> headers जोड़ती है, जो
-        बताते हैं कि अगली request स्वीकार होने से पहले कितना wait करना है।
+        Microsoft Learn, PTU उपयोग को लीकी-बकेट एल्गोरिदम के एक रूपांतर की
+        तरह दस्तावेज़ित करता है। हर अनुरोध एक अनुमानित गणना लागत जोड़ता है: प्रॉम्प्ट
+        टोकन संख्या, जिसमें कैशित टोकन घटे होते हैं, और कॉल का
+        <code>max_tokens</code> जुड़ा होता है; जबकि डिप्लॉय की गई क्षमता PTU की संख्या के
+        अनुपात में लगातार घटती रहती है। अगर अनुरोध उस समय पहुँचे जब उपयोग
+        पहले से 100% हो, तो सेवा तुरंत HTTP 429 लौटाती है और
+        <code>retry-after-ms</code> व <code>retry-after</code> हेडर जोड़ती है, जो
+        बताते हैं कि अगला अनुरोध स्वीकार होने से पहले कितनी प्रतीक्षा करनी है।
       </p>
       <p>
-        क्योंकि यह wait उस पल bucket किस तरह drain हो रही है, उसे reflect करती है,
-        इसलिए यह fixed cooldown नहीं है। यही documented contract client को एक नहीं, दो
-        रास्ते देती है: अगर wait caller के latency budget में fit बैठती है, तो header का
-        पालन करें; अगर wait उस budget से ऊपर जाती है, तो उसे redirect-or-fail condition
-        मानें। एक ही budget ceiling से इन दोनों रास्तों को अलग करना इस repository का
-        operational inference है; तुरंत 429 मिलना और header contract, यही Microsoft Learn
-        document करता है।
+        क्योंकि यह प्रतीक्षा उस पल बकेट किस तरह खाली हो रही है, उसे दर्शाती है,
+        इसलिए यह निश्चित शांत-अवधि नहीं है। यही दस्तावेज़ीकृत अनुबंध क्लाइंट को एक नहीं, दो
+        रास्ते देता है: अगर प्रतीक्षा कॉलर के विलंब बजट में समाती है, तो हेडर का
+        पालन करें; अगर प्रतीक्षा उस बजट से ऊपर जाती है, तो उसे पुनर्निर्देशन या विफलता की स्थिति
+        मानें। एक ही बजट ऊपरी सीमा से इन दोनों रास्तों को अलग करना इस रिपॉज़िटरी का
+        संचालनगत निष्कर्ष है; तुरंत 429 मिलना और हेडर अनुबंध, यही Microsoft Learn
+        दस्तावेज़ित करता है।
       </p>
       <figure class="article-figure" id="figure-ptu-retry-cdf">
         <figcaption>
-          <strong>source chart: देखा गया <code>retry-after-ms</code> distribution (descriptive)।</strong>
-          <strong>X-axis:</strong> response header द्वारा सुझाया गया wait, milliseconds में।
-          <strong>Y-axis:</strong> उस wait से कम या बराबर 429 responses का empirical
-          cumulative share।
-          <strong>Lines:</strong> हर source group के लिए एक curve, साथ में combined curve:
-          burst-shaped source (n&nbsp;=&nbsp;167), scheduled-shaped source
-          (n&nbsp;=&nbsp;26), और combined sample (n&nbsp;=&nbsp;193); यह empirical
-          cumulative distribution है, frequency histogram नहीं।
-          <strong>इसे कैसे पढ़ें:</strong> हर curve zero के पास लगभग ऊपर तक पहुँच जाती है।
-          यानी इस sample में ज़्यादातर सुझाए गए waits छोटे थे (overall p50
-          &asymp; 43&nbsp;ms) — और फिर करीब 17,000&nbsp;ms तक जाती long tail में
-          flatten हो जाती है, इसलिए waits का एक छोटा हिस्सा बहुत लंबा था (overall p99
-          &asymp; 16,921&nbsp;ms)। यही short-median, long-tail shape बताती है कि नीचे दिया
-          operating pattern wait को latency budget ceiling तक सीमित रखता है और उसके बाद
-          redirect या fail करता है। <strong>Evidence boundary:</strong> यह इस repository के
-          source runs से लिए गए 429 events का एक sanitized public aggregate है, जिसे
-          descriptive रूप में दिखाया गया है; यह service-level guarantee, reset model, या
-          किसी खास तैनाती, region, या future API version की measurement नहीं है।
-          <strong>Source:</strong> percentile values इस repository की
+          <strong>स्रोत चार्ट: देखा गया <code>retry-after-ms</code> वितरण (वर्णनात्मक)।</strong>
+          <strong>क्षैतिज धुरी:</strong> प्रतिक्रिया हेडर द्वारा सुझाई गई प्रतीक्षा, मिलीसेकंड में।
+          <strong>ऊर्ध्वाधर धुरी:</strong> उस प्रतीक्षा से कम या बराबर 429 प्रतिक्रियाओं का अनुभवजन्य
+          संचयी हिस्सा।
+          <strong>रेखाएँ:</strong> हर स्रोत समूह के लिए एक वक्र, साथ में संयुक्त वक्र:
+          बर्स्ट-आकार स्रोत (n&nbsp;=&nbsp;167), अनुसूचित-आकार स्रोत
+          (n&nbsp;=&nbsp;26), और संयुक्त नमूना (n&nbsp;=&nbsp;193); यह अनुभवजन्य
+          संचयी वितरण है, आवृत्ति हिस्टोग्राम नहीं।
+          <strong>इसे कैसे पढ़ें:</strong> हर वक्र शून्य के पास लगभग ऊपर तक पहुँच जाती है।
+          यानी इस नमूने में ज़्यादातर सुझाई गई प्रतीक्षा-अवधियाँ छोटी थीं (कुल p50
+          &asymp; 43&nbsp;ms) — और फिर करीब 17,000&nbsp;ms तक जाते लंबे टेल में
+          समतल हो जाती है, इसलिए प्रतीक्षाओं का एक छोटा हिस्सा बहुत लंबा था (कुल p99
+          &asymp; 16,921&nbsp;ms)। यही छोटी माध्यिका और लंबे टेल वाला स्वरूप बताती है कि नीचे दिया
+          संचालन ढर्रा प्रतीक्षा को विलंब बजट ऊपरी सीमा तक सीमित रखता है और उसके बाद
+          पुनर्निर्देशन या विफल करता है। <strong>साक्ष्य सीमा:</strong> यह इस रिपॉज़िटरी के
+          स्रोत रन से ली गई 429 घटनाओं का एक पहचान-रहित सार्वजनिक समेकित आँकड़ा है, जिसे
+          वर्णनात्मक रूप में दिखाया गया है; यह सेवा-स्तरीय गारंटी, रीसेट मॉडल, या
+          किसी खास डिप्लॉयमेंट, क्षेत्र, या भविष्य के API संस्करण का मापन नहीं है।
+          <strong>स्रोत:</strong> प्रतिशतक मान इस रिपॉज़िटरी की
           <code>results/retry-after-characterization/retry_after_ms_percentiles.csv</code>
-          से ली गई हैं (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">source CSV</a>)।
+          से ली गई हैं (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/retry-after-characterization/retry_after_ms_percentiles.csv">स्रोत CSV</a>)।
         </figcaption>
-        <img class="wide-chart" src="../../../../assets/retry-after-ms-cdf.png" alt="देखे गए retry-after-ms values का empirical cumulative distribution। हर curve zero milliseconds के पास लगभग सीधी ऊपर उठती है, यानी इस sample में ज़्यादातर सुझाए गए 429 waits छोटे थे, और फिर waits के एक छोटे हिस्से के लिए क़रीब 17,000 milliseconds तक जाती लंबी tail में flatten हो जाती है। अलग curves burst-shaped source, scheduled-shaped source, और combined sample की तुलना करती हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../assets/retry-after-ms-cdf.png" alt="देखे गए retry-after-ms मान का अनुभवजन्य संचयी वितरण। हर वक्र शून्य मिलीसेकंड के पास लगभग सीधी ऊपर उठती है, यानी इस नमूने में ज़्यादातर सुझाई गई 429 प्रतीक्षा-अवधियाँ छोटी थीं, और फिर प्रतीक्षाओं के एक छोटे हिस्से के लिए क़रीब 17,000 मिलीसेकंड तक जाते लंबे टेल में समतल हो जाती है। अलग वक्र बर्स्ट-आकार स्रोत, अनुसूचित-आकार स्रोत, और संयुक्त नमूनों की तुलना करते हैं।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>देखे गए retry-after-ms percentiles (sanitized public aggregate)</caption>
+        <caption>देखे गए retry-after-ms प्रतिशतक (पहचान-रहित सार्वजनिक समेकित आँकड़ा)</caption>
         <thead>
           <tr>
-            <th>source group</th>
-            <th>429 count</th>
+            <th>स्रोत समूह</th>
+            <th>429 गणना</th>
             <th>p50</th>
             <th>p90</th>
             <th>p99</th>
-            <th>Max</th>
+            <th>अधिकतम</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Overall</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
-          <tr><td>Burst-shaped source</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
-          <tr><td>Scheduled-shaped source</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
+          <tr><td>कुल</td><td>193</td><td>43 ms</td><td>50.8 ms</td><td>16,921.12 ms</td><td>17,258 ms</td></tr>
+          <tr><td>बर्स्ट-आकार स्रोत</td><td>167</td><td>43 ms</td><td>49 ms</td><td>16,983.26 ms</td><td>17,258 ms</td></tr>
+          <tr><td>अनुसूचित-आकार स्रोत</td><td>26</td><td>3 ms</td><td>60 ms</td><td>60 ms</td><td>60 ms</td></tr>
         </tbody>
       </table>
       <div class="evidence-grid">
         <div>
-          <h3>Documented (Tier 1)</h3>
-          <p>100% utilization पर service तुरंत <code>retry-after-ms</code> और <code>retry-after</code> के साथ 429 लौटाती है; Learn इस 429 को service error नहीं, traffic-management signal कहता है।</p>
+          <h3>दस्तावेज़ीकृत (स्तर 1)</h3>
+          <p>100% उपयोग पर सेवा तुरंत <code>retry-after-ms</code> और <code>retry-after</code> के साथ 429 लौटाती है; Learn इस 429 को सेवा त्रुटि नहीं, ट्रैफ़िक-प्रबंधन संकेत कहता है।</p>
         </div>
         <div>
-          <h3>Documented (Tier 1)</h3>
-          <p>Estimate में <code>max_tokens</code> शामिल होता है। इसे वास्तविक generation size के क़रीब रखने से concurrency बढ़ती है। cached tokens पूरी तरह discount हो जाते हैं और utilization में नहीं जुड़ते।</p>
+          <h3>दस्तावेज़ीकृत (स्तर 1)</h3>
+          <p>अनुमान में <code>max_tokens</code> शामिल होता है। इसे वास्तविक उत्पादन आकार के क़रीब रखने से समांतरता बढ़ती है। कैशित टोकन पूरी तरह छूट हो जाते हैं और उपयोग में नहीं जुड़ते।</p>
         </div>
         <div>
-          <h3>Inferred (Tier 2)</h3>
-          <p>Caller एक ही latency-budget ceiling तय करे और उसके ऊपर wait से redirect पर switch करे — यह इस repository का rule of thumb है, Learn specification नहीं।</p>
+          <h3>अनुमानित (स्तर 2)</h3>
+          <p>कॉलर एक ही विलंब-बजट ऊपरी सीमा तय करे और उसके ऊपर प्रतीक्षा से पुनर्निर्देशन पर बदले — यह इस रिपॉज़िटरी का व्यावहारिक नियम है, Learn विनिर्देश नहीं।</p>
         </div>
       </div>
     </section>
 
     <section id="pattern" class="article-section">
-      <p class="section-label">operating pattern · retry का owner एक</p>
-      <h2>retry loops को stack मत करें</h2>
+      <p class="section-label">संचालन ढर्रा · पुनः प्रयास का स्वामी एक</p>
+      <h2>पुनः-प्रयास चक्रों को एक के ऊपर एक न रखें</h2>
       <p>
-        सुरक्षित pattern जान-बूझकर सीधा है: 429 recovery का owner ठीक एक component को
-        बनाइए। अगर SDK retry के लिए configured है, तो wait उसी को संभालने दें। अगर
-        application router recovery संभालता है, तो SDK auto-retry बंद करें और router से
-        सीधे <code>retry-after-ms</code> parse कराएँ।
+        सुरक्षित ढर्रा जान-बूझकर सीधा है: 429 रिकवरी का स्वामी केवल एक घटक को बनाइए। अगर SDK पुनः प्रयास के लिए कॉन्फ़िगर है, तो प्रतीक्षा उसी को संभालने दें। अगर
+        अनुप्रयोग राउटर रिकवरी संभालता है, तो SDK स्वतः-पुनः प्रयास बंद करें और राउटर से
+        सीधे <code>retry-after-ms</code> पार्स कराएँ।
       </p>
       <figure class="article-figure">
         <figcaption>
-          <strong>reference implementation:</strong> public repository में एक छोटा
-          header-driven admission controller शामिल है, जो <code>retry-after-ms</code> parse
-          करता है, <code>retry-after</code> पर fallback करता है, safe throttle events
-          emit करता है, और double-retry ownership को मना करता है।
+          <strong>संदर्भ कार्यान्वयन:</strong> सार्वजनिक रिपॉज़िटरी में एक छोटा
+          हेडर-आधारित प्रवेश नियंत्रक शामिल है, जो <code>retry-after-ms</code> पार्स
+          करता है, <code>retry-after</code> पर वैकल्पिक हेडर का उपयोग करता है, सुरक्षित थ्रॉटल घटनाएँ
+          उत्सर्जित करता है, और दोहरा-पुनः-प्रयास स्वामित्व को मना करता है।
         </figcaption>
-        <img src="../../../../assets/ptu-admission-controller.hi.svg" alt="PTU admission controller flow: 429 observe करें, retry-after-ms parse करें, फिर sleep या redirect करें, और उसके बाद resume करें।" style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../../assets/ptu-admission-controller.hi.svg" alt="PTU प्रवेश नियंत्रक प्रवाह: 429 देखें, retry-after-ms पार्स करें, फिर प्रतीक्षा या पुनर्निर्देशन करें, और उसके बाद फिर शुरू करें।" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <div class="evidence-grid">
         <div>
-          <h3>Sleep path</h3>
-          <p>जब per-call latency से ज़्यादा throughput मायने रखता हो, तब यह path लें। header value के साथ jitter जोड़कर wait करें, फिर दोबारा कोशिश करें।</p>
+          <h3>प्रतीक्षा मार्ग</h3>
+          <p>जब प्रति-कॉल विलंब से ज़्यादा थ्रूपुट मायने रखता हो, तब यह मार्ग लें। हेडर मान के साथ जिटर जोड़कर प्रतीक्षा करें, फिर दोबारा कोशिश करें।</p>
         </div>
         <div>
-          <h3>Redirect path</h3>
-          <p>जब PTU पर बने रहने से ज़्यादा latency मायने रखती हो, तब यह path लें। 429 मिलते ही request को standard target पर route करें।</p>
+          <h3>पुनर्निर्देशन मार्ग</h3>
+          <p>जब PTU पर बने रहने से ज़्यादा विलंब मायने रखता हो, तब यह मार्ग लें। 429 मिलते ही अनुरोध को मानक लक्ष्य पर रूट करें।</p>
         </div>
         <div>
-          <h3>Give-up path</h3>
-          <p>जब wait और redirect, दोनों policy तोड़ते हों, तब यह path लें। retry storms छिपाने के बजाय controlled response लौटाएँ।</p>
+          <h3>रोकने का मार्ग</h3>
+          <p>जब प्रतीक्षा और पुनर्निर्देशन, दोनों नीति तोड़ते हों, तब यह मार्ग लें। पुनः प्रयास तूफ़ान छिपाने के बजाय नियंत्रित प्रतिक्रिया लौटाएँ।</p>
         </div>
       </div>
     </section>
 
     <section id="fallback" class="article-section">
-      <p class="section-label">fallback · native या custom</p>
-      <h2>redirect एक policy choice है, panic button नहीं</h2>
+      <p class="section-label">वैकल्पिक मार्ग · मूल या कस्टम</p>
+      <h2>पुनर्निर्देशन एक नीति चुनाव है, घबराहट बटन नहीं</h2>
       <p>
-        Microsoft Learn की spillover feature, overage traffic को standard target पर
-        redirect कर सकती है और ऐसे headers भी देती है जो spillover behavior पहचानने में
-        मदद करते हैं। जब platform-supported shape आपकी ज़रूरत से मेल खाती हो, तब यह
-        low-operations path है। custom router तब भी काम का रहता है जब application को PTU
-        target से 429 लौटने से पहले फैसला करना हो, या जब routing policy tenant, region,
-        latency budget, या business priority पर निर्भर करती हो।
+        Microsoft Learn की स्पिलओवर सुविधा, अतिरिक्त ट्रैफ़िक को मानक लक्ष्य पर
+        पुनर्निर्देशन कर सकती है और ऐसे हेडर भी देती है जो स्पिलओवर व्यवहार पहचानने में
+        मदद करते हैं। जब प्लेटफ़ॉर्म-समर्थित स्वरूप आपकी ज़रूरत से मेल खाता हो, तब यह
+        कम संचालन वाला मार्ग है। कस्टम राउटर तब भी काम का रहता है जब अनुप्रयोग को PTU
+        लक्ष्य से 429 लौटने से पहले फैसला करना हो, या जब रूटिंग नीति टेनेंट, क्षेत्र,
+        विलंब बजट, या व्यावसायिक प्राथमिकता पर निर्भर करती हो।
       </p>
       <div class="evidence-grid">
         <div>
-          <h3>Native spillover</h3>
-          <p>जब simple overflow lane काफ़ी हो और extra routing logic, value से ज़्यादा risk जोड़ता हो, तब यह सबसे अच्छा विकल्प है।</p>
+          <h3>मूल स्पिलओवर</h3>
+          <p>जब सरल अतिप्रवाह मार्ग काफ़ी हो और अतिरिक्त रूटिंग तर्क, लाभ से ज़्यादा जोखिम जोड़ता हो, तब यह सबसे अच्छा विकल्प है।</p>
         </div>
         <div>
-          <h3>Custom router</h3>
-          <p>जब user latency खर्च होने से पहले application policy को तय करना हो कि wait करना है, redirect करना है, या give up करना है, तब यह बेहतर है।</p>
+          <h3>कस्टम राउटर</h3>
+          <p>जब उपयोगकर्ता विलंब खर्च होने से पहले अनुप्रयोग को नीति से तय करना हो कि प्रतीक्षा करना है, पुनर्निर्देशन करना है, या हार मानना है, तब यह बेहतर है।</p>
         </div>
         <div>
-          <h3>Anti-pattern</h3>
-          <p>SDK retry + router retry + spillover मिलकर attempts को कई गुना बढ़ा सकते हैं। सबसे पहले ownership को consolidate करें।</p>
+          <h3>अवांछित ढर्रा</h3>
+          <p>SDK पुनः प्रयास + राउटर पुनः प्रयास + स्पिलओवर मिलकर प्रयास को कई गुना बढ़ा सकते हैं। सबसे पहले स्वामित्व को एकीकृत करें।</p>
         </div>
       </div>
     </section>
 
     <section id="sources" class="article-section">
-      <h2>स्रोत और evidence boundary</h2>
-      <p><strong>Tier 1 — service contract (Microsoft Learn).</strong> 429 admission
-        behavior, दोनों retry headers, leaky-bucket utilization model, और SDK की default
-        retry यहीं documented हैं।</p>
+      <h2>स्रोत और साक्ष्य सीमा</h2>
+      <p><strong>स्तर 1 — सेवा अनुबंध (Microsoft Learn)।</strong> 429 प्रवेश
+        व्यवहार, दोनों पुनः प्रयास हेडर, लीकी-बकेट उपयोग मॉडल, और SDK की डिफ़ॉल्ट
+        पुनः प्रयास यहीं दस्तावेज़ीकृत हैं।</p>
       <ul>
-        <li>[1] <strong>production में provisioned throughput तैनात क्षमता चलाना</strong> —
-          100% utilization पर तुरंत 429, <code>retry-after-ms</code> और
-          <code>retry-after</code> response headers, leaky-bucket utilization model, और
-          OpenAI SDK की default 429 retry (<code>max_retries</code>) को define करता है।
-          source: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn दस्तावेज़</a> (2026-06-04 को access किया गया) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">archive</a>।</li>
-        <li>[2] <strong>provisioned capacity के लिए spillover से traffic manage करना</strong> —
-          non-200 overage (जिसमें <code>429</code> भी शामिल है) को
-          <code>spilloverDeploymentName</code> property और spillover source बताने वाले
-          x-ms response header की मदद से standard target पर redirect करने वाली spillover
-          behavior को define करता है। source: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn दस्तावेज़</a> (2026-06-04 को access किया गया) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">archive</a>।</li>
+        <li>[1] <strong>उत्पादन में आरक्षित थ्रूपुट डिप्लॉयमेंट चलाना</strong> —
+          100% उपयोग पर तुरंत 429, <code>retry-after-ms</code> और
+          <code>retry-after</code> प्रतिक्रिया हेडर, लीकी-बकेट उपयोग मॉडल, और
+          OpenAI SDK की डिफ़ॉल्ट 429 पुनः प्रयास (<code>max_retries</code>) को परिभाषित करता है।
+          स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया) · <a href="https://web.archive.org/web/20260604161404/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started">अभिलेख</a>।</li>
+        <li>[2] <strong>आरक्षित क्षमता के लिए स्पिलओवर से ट्रैफ़िक प्रबंधन करना</strong> —
+          गैर-200 अतिरिक्त भार (जिसमें <code>429</code> भी शामिल है) को
+          <code>spilloverDeploymentName</code> गुण और स्पिलओवर स्रोत बताने वाले
+          x-ms प्रतिक्रिया हेडर की मदद से मानक लक्ष्य पर पुनर्निर्देशन करने वाली स्पिलओवर व्यवहार को परिभाषित करता है। स्रोत: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">Microsoft Learn दस्तावेज़</a> (2026-06-04 को देखा गया) · <a href="https://web.archive.org/web/20260604161530/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management">अभिलेख</a>।</li>
       </ul>
-      <p><strong>Tier 2 — operational inference (यह repository).</strong> Rules of thumb —
-        retry का owner एक रखें, header का पालन करें, fleet को de-synchronize करने के लिए
-        jitter जोड़ें, और honored waits कई बार लेने के बाद भी बात साफ़ न हो तभी spillover
-        पर redirect करें — operational हैं, Learn specifications नहीं।</p>
+      <p><strong>स्तर 2 — संचालनगत निष्कर्ष (यह रिपॉज़िटरी)।</strong> व्यावहारिक नियम —
+        पुनः प्रयास का स्वामी एक रखें, हेडर का पालन करें, समूह को असमकालिक करने के लिए
+        जिटर जोड़ें, और हेडर के अनुसार कई बार प्रतीक्षा करने के बाद भी बात साफ़ न हो तभी स्पिलओवर लक्ष्य पर पुनर्निर्देशन करें — संचालनगत हैं, Learn के विनिर्देश नहीं।</p>
       <ul>
-        <li>[3] <strong>यह repository, <code>docs/10-ptu-admission-controller.md</code></strong>
-          — header-driven admission controller note: single retry owner,
-          <code>retry-after-ms</code> का पालन, default jitter, और wait ceiling पार होने
-          पर fallback। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">source</a>।</li>
-        <li>[4] <strong>यह repository, <code>batch_runner/ptu/admission_controller.py</code></strong>
-          — वह reference implementation जो <code>retry-after-ms</code> parse करती है,
-          <code>retry-after</code> पर fallback करती है, और double-retry ownership को
-          मना करती है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">source</a>।</li>
+        <li>[3] <strong>यह रिपॉज़िटरी, <code>docs/10-ptu-admission-controller.md</code></strong>
+          — हेडर-आधारित प्रवेश नियंत्रक नोट: एकल पुनः प्रयास स्वामी,
+          <code>retry-after-ms</code> का पालन, डिफ़ॉल्ट जिटर, और प्रतीक्षा ऊपरी सीमा पार होने
+          पर वैकल्पिक मार्ग। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/10-ptu-admission-controller.md">स्रोत</a>।</li>
+        <li>[4] <strong>यह रिपॉज़िटरी, <code>batch_runner/ptu/admission_controller.py</code></strong>
+          — वह संदर्भ कार्यान्वयन जो <code>retry-after-ms</code> पार्स करती है,
+          <code>retry-after</code> पर वैकल्पिक मार्ग करती है, और दोहरा-पुनः-प्रयास स्वामित्व को
+          मना करती है। <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/batch-runner/batch_runner/ptu/admission_controller.py">स्रोत</a>।</li>
       </ul>
       <p>
-        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> यह वही PTU admission
-        contract दर्ज करता है जिसे Microsoft Learn access date पर बताता है — 100%
-        utilization पर तुरंत 429, <code>retry-after-ms</code> और
-        <code>retry-after</code> headers, और spillover redirect path — और उसके साथ इस
-        repository के कुछ operational rules of thumb भी रखता है: header का पालन करें,
-        fleet को de-synchronize करने के लिए jitter जोड़ें, और honored waits कई बार लेने
-        के बाद भी बात साफ़ न हो तभी spillover target पर redirect करें। यह यह साबित नहीं
-        करता कि यह contract हर region, model SKU, या future API version में बिल्कुल
-        एक-जैसा रहेगा, और न ही यह किसी खास तैनाती को load पर measure करता है।
+        <strong>यह विषय क्या साबित करता है, और क्या नहीं।</strong> यह वही PTU प्रवेश
+        अनुबंध दर्ज करता है जिसे Microsoft Learn देखे जाने की तिथि पर बताता है — 100%
+        उपयोग पर तुरंत 429, <code>retry-after-ms</code> और
+        <code>retry-after</code> हेडर, और स्पिलओवर पुनर्निर्देशन मार्ग — और उसके साथ इस
+        रिपॉज़िटरी के कुछ संचालनगत व्यावहारिक नियम भी रखता है: हेडर का पालन करें,
+        समूह को असमकालिक करने के लिए जिटर जोड़ें, और हेडर के अनुसार कई बार प्रतीक्षा करने
+        के बाद भी बात साफ़ न हो तभी स्पिलओवर लक्ष्य पर पुनर्निर्देशन करें। यह यह साबित नहीं
+        करता कि यह अनुबंध हर क्षेत्र, मॉडल SKU, या भविष्य API संस्करण में बिल्कुल
+        एक-जैसा रहेगा, और न ही यह किसी खास डिप्लॉयमेंट को भार में मापता है।
       </p>
     </section>
 
     <section class="article-section decision-box">
       <h2>व्यावहारिक नियम</h2>
-      <p><strong>व्यावहारिक नियम: जब PTU target 429 लौटाए, तो <code>retry-after-ms</code>
-        को admission contract मानें: उसका पालन करें, fleet को de-synchronize करने के लिए
-        jitter जोड़ें, और honored waits कई बार लेने के बाद भी बात साफ़ न हो तभी spillover
-        target पर redirect करें।</strong></p>
-      <p>अगला लेख “कब retry करें” से आगे बढ़कर यह पूछता है कि एक ही prompt बार-बार आने पर असल में फ़ैसला क्या होता है।</p>
-      <p><a class="button-link" href="../../prompt-cache-key-bucketing/hi/">जब वही prompt दोहराया जाए, तो cache key असल में क्या तय करती है</a></p>
+      <p><strong>व्यावहारिक नियम: जब PTU लक्ष्य 429 लौटाए, तो <code>retry-after-ms</code>
+        को प्रवेश अनुबंध मानें: उसका पालन करें, समूह को असमकालिक करने के लिए
+        जिटर जोड़ें, और हेडर के अनुसार कई बार प्रतीक्षा करने के बाद भी बात साफ़ न हो तभी स्पिलओवर
+        लक्ष्य पर पुनर्निर्देशन करें।</strong></p>
+      <p>अगला लेख “कब पुनः प्रयास करें” से आगे बढ़कर यह पूछता है कि एक ही प्रॉम्प्ट बार-बार आने पर असल में फ़ैसला क्या होता है।</p>
+      <p><a class="button-link" href="../../prompt-cache-key-bucketing/hi/">जब वही प्रॉम्प्ट दोहराया जाए, तो कैश कुंजी असल में क्या तय करती है</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact · published डेटा केवल sanitized या aggregate रूप में है।</p>
+    <p>MIT-लाइसेंस-प्राप्त शोध आर्टिफ़ैक्ट · प्रकाशित डेटा केवल पहचान-रहित या समेकित रूप में है।</p>
   </footer>
 </body>
 </html>
