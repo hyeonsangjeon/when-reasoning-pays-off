@@ -12,7 +12,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp005 · 캐시 풀을 진짜로 나눴더니 똑똑한 정책이 더 크게 졌다 | when reasoning pays off</title>
-  <meta name="description" content="PTU 이중 배포 스필오버 측정(Phase 2) 실험 노트 exp005. 캐시 풀이 물리적으로 분리된 두 라이브 gpt-5.2 배포에서, 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨룬다. Phase 1의 무승부와 달리 이번엔 미리 대비한 쪽이 정상상태 캐시가 0.9923%p 낮았고, throttled 원래 배포에서 실제 429를 167번 맞았으며, 비용도 0.91달러 더 들었다.">
+  <meta name="description" content="PTU(고정 용량) 이중 배포 스필오버 측정(Phase 2) 실험 노트 exp005. 캐시 풀이 물리적으로 분리된 두 라이브 gpt-5.2 배포에서, 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨룬다. Phase 1의 무승부와 달리 이번엔 미리 대비한 쪽이 정상상태 캐시가 0.9923%p 낮았고 throttled 원래 배포에서 실제 429를 167번 맞았으며 비용도 0.91달러 더 들었다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="canonical">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -47,26 +47,26 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp005</p>
-    <p class="article-kicker">실험 노트 · exp005 · PTU 이중 배포 스필오버 측정(Phase 2) · 캐시 풀을 진짜로 나눴을 때</p>
+    <p class="article-kicker">실험 노트 · exp005 · PTU(고정 용량) 이중 배포 스필오버 측정(Phase 2) · 캐시 풀을 진짜로 나눴을 때</p>
     <h1>exp005 &mdash; 캐시 풀을 진짜로 나눴더니, 똑똑한 정책이 더 크게 졌다</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">지난 노트(<a href="../../exp004-spillover-simulation/ko/">exp004</a>)는 배포 <em>하나</em> 위에서 스필오버(넘침 대비)를 흉내 냈다. 두 정책은 사실상 무승부였고(<strong>&minus;0.1657%p</strong>), 우리는 그때 이렇게 적었다 &mdash; &ldquo;진짜 판정은 Phase 2의 몫이다.&rdquo; 이번이 그 Phase 2다. 이제 배포가 <strong>둘</strong>이고, 스로틀은 <em>진짜</em>이며, 원래 배포와 예비 배포의 <strong>캐시 풀이 물리적으로 갈린다</strong>.</p>
-    <p class="lede">그래서 이런 <strong>예측</strong>이 자연스러웠다 &mdash; 캐시 풀이 진짜로 나뉘면, 원래 배포를 미리 지키는 <em>사전 대비</em>(proactive) 정책이 이번엔 값을 할지도 모른다. 사전 등록한 읽기는 두 갈래였다: 격차가 <strong>커지면</strong> &lsquo;캐시 재구축 비용&rsquo;이 진짜라는 뜻, <strong>비슷하면</strong> 캐시 풀 분리가 별 요인이 아니라는 뜻.</p>
-    <p class="lede">측정은 이번에 <strong>더 세게</strong> 뒤집었다. 포화 정상상태 캐시 히트는 <strong>reactive 99.2337%, proactive 98.2414%</strong> &mdash; 미리 대비한 쪽이 오히려 <strong>0.9923%p 낮았다</strong>(Phase 1 격차의 약 6배). 게다가 proactive는 throttled 원래 배포에 매달리다 실제 429(&ldquo;지금은 안 됨&rdquo; 신호)를 <strong>167번</strong> 맞았고(reactive는 <strong>0번</strong>), 돈도 <strong>$0.91</strong> 더 썼다. 이 노트는 그 22분을 <em>설계 → 입력 → 예측 대 실측 → 두 곡선 → 결정</em>으로 되짚는다 &mdash; 캐시 풀을 나누자, 똑똑한 정책은 <strong>더 크게</strong> 졌다.</p>
+    <p class="lede">지난 노트(<a href="../../exp004-spillover-simulation/ko/">exp004</a>)에서는 배포 <em>하나</em> 위에서 스필오버(넘침 대비)를 흉내 냈다. 사실상 무승부였던 두 정책(<strong>&minus;0.1657%p</strong>)을 두고 우리는 &ldquo;진짜 판정은 Phase 2의 몫이다.&rdquo;라고 적었다. 이번이 바로 그 Phase 2다. 배포는 이제 <strong>둘</strong>, 스로틀은 <em>진짜</em>다. 원래 배포와 예비 배포의 <strong>캐시 풀도 물리적으로 갈린다</strong>.</p>
+    <p class="lede">이런 <strong>예측</strong>이 자연스러웠다 &mdash; 캐시 풀이 진짜로 나뉘면 원래 배포를 미리 지키는 <em>사전 대비</em>(proactive) 정책이 이번엔 값을 할지도 모른다. 사전 등록한 예측은 두 갈래였다. 격차가 <strong>커지면</strong> &lsquo;캐시 재구축 비용&rsquo;이 진짜라는 뜻이고 <strong>비슷하면</strong> 캐시 풀 분리가 별 요인이 아니라는 뜻이다.</p>
+    <p class="lede">이번 실측은 예상에서 <strong>더 크게</strong> 벗어났다. 한도 구간의 정상상태 캐시 히트는 <strong>reactive 99.2337%, proactive 98.2414%</strong>로, 미리 대비한 쪽이 오히려 <strong>0.9923%p 낮았다</strong>(Phase 1 격차의 약 6배). proactive는 throttled 원래 배포에 매달리다 실제 429(&ldquo;지금은 안 됨&rdquo; 신호)를 <strong>167번</strong> 맞았고 reactive는 <strong>0번</strong>이었다. 비용도 <strong>$0.91</strong> 더 썼다. 이 노트에서는 그 22분을 <em>설계 → 입력 → 예측 대 실측 → 두 곡선 → 결정</em> 순서로 되짚는다 &mdash; 캐시 풀을 나누자 똑똑한 정책은 <strong>더 크게</strong> 졌다.</p>
 
     <section class="article-section">
       <p class="section-label">왜 읽어야 하나</p>
       <h2>원래 배포와 예비 배포를 진짜로 나눠 쓰면 무슨 일이 나나</h2>
-      <p>PTU(고정 용량) 배포가 한도에 가까워지면, 트래픽 일부를 <strong>예비 배포</strong>로 흘려보내는 게 스필오버다. Phase 1은 이 예비 경로를 배포 하나 안에서 <em>라벨</em>로만 흉내 냈다 &mdash; 원래 경로든 예비 경로든 같은 캐시(프롬프트를 재사용해 아껴 쓰는 저장고)를 봤다. 그래서 정책 차이가 캐시에 거의 새겨지지 않았다.</p>
-      <p>Phase 2는 그 의심을 없앤다. 원래 배포와 예비 배포를 <strong>진짜 다른 배포</strong>로 두면, Azure 설계상 <strong>캐시 풀도 갈린다</strong>. 이제 &lsquo;어느 배포로 보냈나&rsquo;가 캐시 온도에 곧바로 새겨진다. 한쪽으로 몰면 그 풀만 뜨겁게 유지되고, 둘로 나누면 <em>양쪽이 다 미지근</em>해진다.</p>
-      <p>당신이 <strong>원래 배포 + 예비 배포</strong>를 물리적으로 나눠 운영한다면 이 글이 가깝다. &ldquo;원래 배포를 지키려고 트래픽을 미리 조금씩 나눠 흘리면 캐시를 더 지킬까?&rdquo;라는 질문에, 이 실험이 하나의 <strong>실측 답</strong>을 준다 &mdash; 그리고 그 답은 &lsquo;나누지 마라&rsquo;에 가깝다.</p>
+      <p>PTU 배포가 한도에 가까워지면 트래픽 일부를 <strong>예비 배포</strong>로 흘려보내는데, 이를 스필오버라고 한다. Phase 1은 이 예비 경로를 배포 하나 안에서 <em>라벨</em>로만 흉내 냈다 &mdash; 원래 경로든 예비 경로든 같은 캐시(프롬프트를 재사용해 아껴 쓰는 저장고)를 봤다. 이 때문에 정책 차이가 캐시에 거의 영향을 주지 않았다.</p>
+      <p>Phase 2에서는 그 의심을 걷어낸다. 원래 배포와 예비 배포를 <strong>서로 다른 실제 배포</strong>로 두면 Azure 설계상 <strong>캐시 풀도 갈린다</strong>. &lsquo;어느 배포로 보냈나&rsquo;가 곧바로 캐시 온도를 좌우한다. 한쪽으로 몰면 그 풀만 뜨겁게 유지되지만 둘로 나누면 <em>양쪽이 다 미지근</em>해진다.</p>
+      <p><strong>원래 배포 + 예비 배포</strong>를 물리적으로 나눠 운영할 때 생기는 질문은 &ldquo;원래 배포를 지키려고 트래픽을 미리 조금씩 나눠 흘리면 캐시를 더 지킬까?&rdquo;다. <strong>실측 결과</strong>는 &lsquo;나누지 마라&rsquo;에 가깝다.</p>
     </section>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저, 10초</p>
       <h2>결론을 믿지 말고 숫자부터 직접 찍어 보세요</h2>
-      <p>토큰 소비는 0입니다. 첫 두 줄은 두 정책의 입력&middot;변수&middot;산출물 카드를 그대로 출력하고, 마지막 줄은 게시된 집계에서 헤드라인 숫자를 다시 계산해 이 노트와 맞는지 대조합니다(네트워크&middot;자격증명 없음).</p>
+      <p>토큰 소비는 0입니다. 첫 두 줄은 두 정책의 입력&middot;변수&middot;산출물 카드를 그대로 출력하고 마지막 줄은 게시된 집계에서 헤드라인 숫자를 다시 계산해 이 노트와 맞는지 대조합니다(네트워크&middot;자격증명 없음).</p>
       <pre class="code-block"><code># 두 정책(reactive · proactive)의 입력 → 변수 → 산출물 카드를 출력 (네트워크 없음)
 python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_reactive.yaml').summary())"
 python3 -c "import experiments; print(experiments.describe('exp005_dual_spillover_proactive.yaml').summary())"
@@ -74,7 +74,7 @@ python3 -c "import experiments; print(experiments.describe('exp005_dual_spillove
 # 게시된 집계에서 포화 구간 캐시 히트를 다시 찍어 노트와 대조 (토큰 0)
 python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis.json'))['per_policy_stats']; print('sustain cache-hit  reactive=%.4f%%  proactive=%.4f%%  gap=%+.4f pp' % (s['reactive']['sustain']['cache_hit_ratio']*100, s['proactive']['sustain']['cache_hit_ratio']*100, (s['proactive']['sustain']['cache_hit_ratio']-s['reactive']['sustain']['cache_hit_ratio'])*100))"</code></pre>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub에서 레포 열기 &amp; ⭐</a></p>
-      <p class="muted-note">실제 라이브 부하 재현은 Azure 자격증명과 실제 과금이 필요합니다 &mdash; 이건 진짜 이중 배포 부하 테스트입니다. 자격증명 없이 되짚는 길(게시된 원시 JSONL에서 <code>analysis.json</code>을 다시 유도하는 절차)은 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>의 재현 푸터에 정리되어 있습니다.</p>
+      <p class="muted-note">실제 라이브 부하를 재현하려면 Azure 자격증명과 실제 과금이 필요합니다 &mdash; 진짜 이중 배포 부하 테스트이기 때문입니다. 자격증명 없이 되짚으려면 게시된 원시 JSONL에서 <code>analysis.json</code>을 다시 유도하는 절차를 따르세요. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>의 재현 푸터에 정리되어 있습니다.</p>
     </section>
 
     <nav class="article-outline" aria-label="이 노트의 구성">
@@ -90,23 +90,23 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
     <section id="design" class="article-section">
       <p class="section-label">설계</p>
       <h2>이번엔 캐시 풀을 진짜로 나눈다</h2>
-      <p><strong>왜 이걸 쟀나.</strong> Phase 1의 무승부에는 빠져나갈 구멍이 하나 있었다 &mdash; 배포가 하나라 캐시 풀이 공유였다. 그러니 &lsquo;정책 차이가 원래 안 새겨지는 것&rsquo;인지, 아니면 &lsquo;공유 캐시라서 안 새겨진 것&rsquo;인지 가릴 수 없었다. Phase 2는 그 구멍을 막는다. 캐시 풀을 <strong>진짜로 갈라</strong> 놓고, 그래도 판정이 같은지 본다.</p>
-      <p><strong>그래서 가설은 &lsquo;격차의 크기&rsquo;에 걸었다.</strong> 사전 등록한 읽기는 두 갈래다 &mdash; <em>Phase 2 격차가 Phase 1보다 뚜렷이 커지면, 캐시 풀이 갈릴 때 트래픽을 나누는 값(캐시 재구축 비용)이 진짜라는 뜻. 비슷하면, 캐시 풀 분리는 정책 타이밍보다 작은 요인이라는 뜻.</em> 어느 쪽이든 <strong>실측이 답을 고른다</strong>.</p>
-      <p><strong>원인 규명이 아니라 완화책 비교다.</strong> &lsquo;스필오버가 캐시 하락의 근본 원인&rsquo;이라는 강한 주장은 이미 현장 관찰에서 힘을 잃었다. 이 실험은 원인을 캐는 자리가 아니라, 두 완화 정책 중 <strong>어느 쪽이 나은지</strong>만 겨루는 자리다.</p>
-      <p><strong>왜 이중 배포인가.</strong> 원래 배포(<code>ptu-deploy-throttled</code>)에 <strong>60,000 TPM</strong>(분당 토큰 한도)이라는 낮은 상한을 <em>일부러</em> 걸어, 약 30K 토큰 부하가 <strong>진짜 429</strong>를 뱉게 한다. 예비 배포(<code>gpt-5.2</code>)에는 <strong>500,000 TPM</strong>의 넉넉한 여유를 준다. 배포 이름이 다르면 캐시 풀도 다르다 &mdash; Phase 1이 흉내만 냈던 &lsquo;물리적 분리&rsquo;가 여기선 진짜다.</p>
+      <p><strong>왜 이걸 쟀나.</strong> Phase 1의 무승부에는 해석상 한계가 하나 있었다 &mdash; 배포가 하나라 캐시 풀이 공유였다. &lsquo;정책에 따른 차이가 원래 없는 것&rsquo;인지, 아니면 &lsquo;공유 캐시 때문에 차이가 나타나지 않은 것&rsquo;인지 가릴 수 없었다. Phase 2는 이 한계를 없앤다. 캐시 풀을 <strong>실제로 분리하고</strong>도 판정이 같은지 본다.</p>
+      <p><strong>사전 등록한 예측은 &lsquo;격차의 크기&rsquo;에 걸었다.</strong> 두 갈래였다 &mdash; <em>Phase 2 격차가 Phase 1보다 뚜렷이 커지면, 캐시 풀이 갈릴 때 트래픽을 나누는 값(캐시 재구축 비용)이 진짜라는 뜻. 비슷하면, 캐시 풀 분리는 정책 타이밍보다 작은 요인이라는 뜻.</em> 어느 쪽인지 <strong>실측으로 가른다</strong>.</p>
+      <p><strong>원인 규명이 아니라 완화책 비교다.</strong> &lsquo;스필오버가 캐시 하락의 근본 원인&rsquo;이라는 강한 주장은 이미 현장 관찰에서 힘을 잃었다. 이 실험은 원인을 캐지 않고 두 완화 정책 중 <strong>어느 쪽이 나은지</strong>만 겨룬다.</p>
+      <p><strong>왜 이중 배포인가.</strong> 원래 배포(<code>ptu-deploy-throttled</code>)에는 <strong>60,000 TPM</strong>(분당 토큰 한도)이라는 낮은 상한을 <em>일부러</em> 걸었다. 약 30K 토큰 부하가 <strong>진짜 429</strong>를 뱉게 하려는 설정이다. 예비 배포(<code>gpt-5.2</code>)에는 <strong>500,000 TPM</strong>의 넉넉한 여유를 줬다. 배포 이름이 다르면 캐시 풀도 다르므로 Phase 1이 흉내만 냈던 &lsquo;물리적 분리&rsquo;가 여기서는 실제로 일어난다.</p>
       <p><strong>질문은 하나다.</strong> 캐시 풀이 물리적으로 갈린 위에서, 미리 대비하는 스필오버가 사후 반응보다 캐시를 더 지키는가?</p>
       <p><strong>설계(부하).</strong> Phase 1과 <em>바이트까지 같은</em> 22분 부하를 두 정책에 똑같이 흘린다 &mdash; <strong>웜업 2분</strong>(0.3 TPS) → <strong>램프 10분</strong>(0.5→2.5 TPS) → <strong>지속 10분</strong>(2.5 TPS). <code>effort=low</code>, 시스템 프롬프트 약 <strong>30K 토큰</strong>(두 런이 바이트까지 동일하도록 SHA-256 <code>98d3a5&hellip;088a</code>로 고정, <code>corpus_seed 4242</code>). 예정 요청은 정책당 <strong>2,136건</strong>(웜업 36 · 램프 900 · 지속 1,200).</p>
-      <p><strong>변하는 축은 딱 하나</strong> &mdash; <code>policy.type</code>을 <code>reactive</code>와 <code>proactive</code>로 바꾼다. 프롬프트&middot;부하&middot;모델&middot;강도&middot;두 배포 상한은 모두 고정이라, 두 산출물의 차이는 오직 정책에서 온다.</p>
-      <div class="article-summary-grid" aria-label="미리 적어둔 예측과 역할">
-        <section class="summary-tile"><h2>미리 적어둔 예측</h2><p>캐시 풀이 진짜로 갈리면 <code>proactive</code>가 값을 할 수도 있다. 사전 등록한 판정선은 <strong>격차의 크기</strong> &mdash; Phase 1보다 커지면 캐시 재구축 비용이 진짜, 비슷하면 분리는 작은 요인.</p></section>
-        <section class="summary-tile"><h2>이 실험의 역할</h2><p>Phase 1(공유 캐시 바닥)에 이은 <strong>고충실도 재측정</strong>. 원래/예비 캐시 풀이 물리적으로 갈릴 때, 정책 차이가 캐시&middot;비용&middot;429에 <em>진짜로</em> 새겨지는지 확인한다.</p></section>
+      <p><strong>변하는 축은 딱 하나</strong>다. <code>policy.type</code>만 <code>reactive</code>와 <code>proactive</code>로 바꾼다. 프롬프트&middot;부하&middot;모델&middot;강도&middot;두 배포 상한을 모두 고정했으므로 두 산출물은 정책에서만 달라진다.</p>
+      <div class="article-summary-grid" aria-label="사전 등록한 예측과 역할">
+        <section class="summary-tile"><h2>사전 등록한 예측</h2><p>캐시 풀이 진짜로 갈리면 <code>proactive</code>가 값을 할 수도 있다. 사전 등록한 판정선은 <strong>격차의 크기</strong> &mdash; Phase 1보다 커지면 캐시 재구축 비용이 진짜, 비슷하면 분리는 작은 요인.</p></section>
+        <section class="summary-tile"><h2>이 실험의 역할</h2><p>Phase 1(공유 캐시 바닥)에 이은 <strong>고충실도 재측정</strong>. 원래/예비 캐시 풀이 물리적으로 갈릴 때, 정책에 따라 캐시&middot;비용&middot;429가 <em>실제로</em> 달라지는지 확인한다.</p></section>
       </div>
     </section>
 
     <section id="io" class="article-section">
       <p class="section-label">입력과 산출물</p>
       <h2>무엇을 먹고 무엇을 남겼나</h2>
-      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 그래서 입력에서 출력까지 한 줄로 되짚을 수 있습니다.</p>
+      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 입력에서 출력까지 한 줄로 되짚을 수 있습니다.</p>
       <div class="article-summary-grid" aria-label="입력과 산출물">
         <section class="summary-tile">
           <h2>입력 (in)</h2>
@@ -121,17 +121,17 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
           <strong>곡선:</strong> <code>results/dual-spillover-curves/*.png</code>&middot;<code>.csv</code> (배포별&middot;집계 캐시 히트, 실제 429 타임라인).</p>
         </section>
       </div>
-      <p><strong>reactive는 2,136요청을 끝까지 돌렸다</strong>(완료=예정=2,136). <strong>proactive는 완료 2,303 / 예정 2,136</strong> &mdash; 남는 <strong>167건</strong>은 실제 429가 각각 하나의 실패 행으로 기록된 것이라 토큰이 0이고 집계에 영향이 없다. 실제 429는 <strong>reactive 0건 · proactive 167건</strong>(전부 throttled 원래 배포). <code>dry_run=false</code>, <code>dirty=false</code>, 중단 없음. <strong>지운 행은 없다</strong> &mdash; 무엇을 왜 남겼는지는 아래 <a href="#transparency">투명성</a>에서 짚는다.</p>
+      <p><strong>reactive는 2,136요청을 끝까지 돌렸다</strong>(완료=예정=2,136). <strong>proactive는 완료 2,303 / 예정 2,136</strong>이다. 남는 <strong>167건</strong>은 실제 429가 각각 하나의 실패 행으로 기록된 것으로, 토큰이 0이라 집계에는 영향이 없다. 실제 429는 <strong>reactive 0건 · proactive 167건</strong>이며 전부 throttled 원래 배포에서 나왔다. <code>dry_run=false</code>, <code>dirty=false</code>, 중단 없음. <strong>지운 행은 없다</strong> &mdash; 무엇을 왜 남겼는지는 아래 <a href="#transparency">투명성</a>에서 짚는다.</p>
     </section>
 
     <section id="predict" class="article-section">
       <p class="section-label">예측 대 실측</p>
       <h2>예측은 또 빗나갔다 &mdash; 더 세게</h2>
       <div class="article-summary-grid" aria-label="예측 대 실측">
-        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>캐시 풀이 진짜로 갈리면 미리 대비하는(<code>proactive</code>) 정책이 이번엔 값을 할 수 있다. 최소한 격차의 방향이 뒤집힐 만한 자리였다.</p></section>
-        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>포화 캐시 히트는 <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>98.2414%</strong> &mdash; 미리 대비한 쪽이 <strong>0.9923%p 낮았다</strong>(Phase 1의 &minus;0.1657%p보다 약 6배 큰 격차). 실제 429는 <strong>0 대 167</strong>.</p></section>
+        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>캐시 풀이 진짜로 갈리면 미리 대비하는(<code>proactive</code>) 정책이 이번엔 값을 할지도 모른다. 최소한 격차의 방향이 뒤집힐 만한 자리였다.</p></section>
+        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>한도 구간의 캐시 히트는 <code>reactive</code> <strong>99.2337%</strong> vs <code>proactive</code> <strong>98.2414%</strong> &mdash; 미리 대비한 쪽이 <strong>0.9923%p 낮았다</strong>(Phase 1의 &minus;0.1657%p보다 약 6배 큰 격차). 실제 429는 <strong>0 대 167</strong>.</p></section>
       </div>
-      <p><strong>판정: 캐시 풀을 나누자 미리 대비는 더 크게 값을 못 했다.</strong> 사전 등록한 두 갈래 중, 실측은 <strong>&lsquo;격차가 커진다&rsquo;</strong>를 골랐다 &mdash; 즉 캐시 풀이 갈릴 때 트래픽을 미리 나누는 값(캐시 재구축 비용)은 <em>진짜</em>였고, 그 값은 <code>proactive</code>에게 청구됐다. Phase 1에서 &ldquo;공유 캐시라 안 새겨졌나?&rdquo; 하던 의심은 이제 답이 났다 &mdash; 캐시를 <em>진짜로</em> 나누면, 나누는 정책이 손해다.</p>
+      <p><strong>판정: 캐시 풀을 나누자 미리 대비는 더 크게 값을 못 했다.</strong> 실측은 사전 등록한 두 갈래 중 <strong>&lsquo;격차가 커진다&rsquo;</strong>와 일치했다 &mdash; 캐시 풀이 갈릴 때 트래픽을 미리 나누면 캐시 재구축 비용이 <em>실제로</em> 발생했고 <code>proactive</code>의 손해로 이어졌다. Phase 1에서 제기한 &ldquo;공유 캐시라 안 새겨졌나?&rdquo;라는 의문도 해소됐다 &mdash; 캐시를 <em>진짜로</em> 나누면 나누는 정책이 손해다.</p>
     </section>
 
     <section id="result" class="article-section">
@@ -142,72 +142,72 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
 reactive    98.75% 켜짐     99.2337%  (±0.0026%p)               0         기준선 · 예비 풀 하나로 몰아 뜨겁게
 proactive   67.95% 켜짐     98.2414%  (±4.3726%p)               167       원래+예비로 나눠 양쪽이 다 식음
 차이(pro−re)   —            −0.9923%p                            +167      Phase 1(−0.1657%p)의 약 6배</code></pre>
-      <p>두 곡선 모두 대체로 <strong>99.2% 근처</strong>를 지난다. reactive는 표준편차 0.0026%p로 바위처럼 안정적이다 &mdash; 예비 배포 하나에 몰아넣어 그 풀이 내내 뜨거웠기 때문이다. 반대로 proactive는 표준편차가 <strong>4.3726%p</strong>로 요동친다. 원인은 두 가지다: throttled 원래 배포가 뱉은 <strong>지속 구간 429 154건</strong>(토큰 0의 실패 행)과, 트래픽을 두 풀로 나누며 생긴 <strong>캐시 미스 12건</strong>(원래 배포 7 · 예비 배포 5)이 분(minute)마다 골을 파고, 그 골들이 집계 평균을 <strong>98.2414%</strong>까지 끌어내렸다.</p>
-      <p>전구간(웜업+램프+지속)으로 넓혀도 방향은 같다 &mdash; <code>reactive</code> <strong>99.0479%</strong> vs <code>proactive</code> <strong>98.2112%</strong>로, reactive가 <strong>0.8367%p 높다</strong>. Phase 1에서는 창을 넓히면 방향이 뒤집혔지만, Phase 2에서는 <strong>어느 창으로 봐도 reactive가 앞선다</strong>.</p>
+      <p>두 곡선 모두 대체로 <strong>99.2% 근처</strong>를 지난다. reactive는 표준편차 0.0026%p로 바위처럼 안정적이다 &mdash; 예비 배포 하나에 몰아넣어 그 풀이 내내 뜨거웠기 때문이다. 반대로 proactive는 표준편차가 <strong>4.3726%p</strong>로 요동친다. 원인은 throttled 원래 배포가 뱉은 <strong>지속 구간 429 154건</strong>(토큰 0의 실패 행)과 트래픽을 두 풀로 나누며 생긴 <strong>캐시 미스 12건</strong>(원래 배포 7 · 예비 배포 5)이다. 이들 때문에 분(minute)마다 값이 낮아졌고 집계 평균은 <strong>98.2414%</strong>까지 내려갔다.</p>
+      <p>전구간(웜업+램프+지속)으로 창을 넓혀도 방향은 같다. <code>reactive</code> <strong>99.0479%</strong> vs <code>proactive</code> <strong>98.2112%</strong>로 reactive가 <strong>0.8367%p 높다</strong>. Phase 1은 창을 넓히면 방향이 뒤집혔지만 Phase 2에서는 <strong>어느 창에서나 reactive가 앞선다</strong>.</p>
 
       <figure class="article-figure" id="figure-exp005-recovery">
-        <figcaption><strong>60초 롤링 캐시 히트 곡선(두 정책, 집계).</strong> 가로축은 요청 진행, 세로축은 캐시 히트 비율이다. reactive(형제 런)는 예비 풀 하나에 몰려 매끈하게 99.2% 근처를 유지하고, proactive(이번 런)는 원래+예비로 나뉘어 더 자주&middot;더 깊게 내려찍는다 &mdash; throttled 원래 배포의 실제 429와 두 풀의 캐시 미스가 곡선을 뚫고 나온다. 정상상태는 reactive 99.2337%, proactive 98.2414%로 차이 0.9923%p. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/dual-spillover-curves/policy_comparison_aggregate.png"><code>results/dual-spillover-curves/policy_comparison_aggregate.png</code></a>.</figcaption>
-        <img src="../../../../../../assets/benchmark-05-dual-spillover.png" alt="reactive와 proactive 두 정책의 롤링 캐시 히트 비율 시계열. reactive 곡선은 99.2% 근처에서 매끈하고, proactive 곡선은 더 자주 그리고 더 깊게 내려찍는다. 지속 정상상태는 reactive 99.2337%, proactive 98.2414%로 차이는 0.9923%p." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>60초 롤링 캐시 히트 곡선(두 정책, 집계).</strong> 가로축은 요청 진행, 세로축은 캐시 히트 비율이다. reactive(형제 런)는 예비 풀 하나에 몰려 매끈하게 99.2% 근처를 유지한다. proactive(이번 런)는 원래+예비로 나뉘어 더 자주&middot;더 깊게 내려찍는다 &mdash; throttled 원래 배포의 실제 429와 두 풀의 캐시 미스가 곡선의 하락으로 나타난다. 정상상태는 reactive 99.2337%, proactive 98.2414%로 차이 0.9923%p. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/dual-spillover-curves/policy_comparison_aggregate.png"><code>results/dual-spillover-curves/policy_comparison_aggregate.png</code></a>.</figcaption>
+        <img src="../../../../../../assets/benchmark-05-dual-spillover.png" alt="reactive와 proactive 두 정책의 롤링 캐시 히트 비율 시계열. reactive 곡선은 99.2% 근처에서 매끈하고 proactive 곡선은 더 자주 그리고 더 깊게 내려찍는다. 지속 정상상태는 reactive 99.2337%, proactive 98.2414%로 차이는 0.9923%p." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
     <section id="mechanism" class="article-section">
       <p class="section-label">두 번째 신호</p>
       <h2>왜 갈렸나 &mdash; 나누면 양쪽이 다 식는다</h2>
-      <p>이번엔 두 정책이 캐시에 <strong>진짜로 다른 자국</strong>을 남겼다 &mdash; Phase 1과 갈리는 지점이 바로 여기다. reactive는 웜업 첫 요청부터 예비 배포로 넘어가, 포화 내내 트래픽의 <strong>98.75%</strong>를 그 <em>하나의</em> 풀에 몰아넣었다. 한 풀만 계속 데우니, 지속 캐시 미스가 <strong>0건</strong>이고 풀은 <strong>99.2336%</strong>로 뜨겁게 유지됐다. 실제 429도 0건 &mdash; throttled 원래 배포를 거의 건드리지 않았으니까.</p>
-      <p><strong>proactive는 정반대로 움직였고, 그게 발목을 잡았다.</strong> 원래 배포를 지키려고 트래픽을 나눠, 포화 스필오버 비율이 <strong>67.95%</strong>에 그쳤다 &mdash; 나머지 <strong>약 43%</strong>는 계속 throttled 원래 배포로 갔다. 그 배포는 30K 토큰 부하를 감당하지 못해 실제 429를 <strong>167번</strong> 뱉었고, 트래픽이 두 풀로 흩어지면서 <em>어느 쪽도</em> reactive의 단일 풀만큼 데워지지 못했다 &mdash; 지속 캐시는 원래 배포 <strong>96.7534%</strong>, 예비 배포 <strong>98.6942%</strong>로 <em>둘 다</em> reactive의 99.2336%보다 미지근했다.</p>
-      <p><strong>비용과 지연도 같은 방향이다.</strong> 두 런은 총 토큰이 거의 같은데(reactive 45,850,205 · proactive 45,851,851), 전구간 비용은 <code>reactive</code> $17.895660 vs <code>proactive</code> $18.806026 &mdash; proactive가 <strong>$0.910366</strong> 더 든다. 이유는 순전히 캐시 온도다: proactive의 낮은 캐시 히트가 입력 토큰 약 38만 개를 캐시 요율($0.175/1M)에서 정가($1.75/1M)로 밀어냈다. 지속 첫 토큰 지연(TTFT)도 reactive가 더 빠르고(p50 7,153.9ms 대 7,926.6ms), 전구간 p95는 proactive가 <strong>34,631.71ms</strong>까지 치솟는다 &mdash; 429 백오프가 실제 지연 위에 쌓인 탓이다.</p>
-      <p><strong>정리하면:</strong> 캐시 풀이 진짜로 갈리자, &lsquo;원래 배포를 지키려 트래픽을 나눈다&rsquo;는 똑똑한 발상이 <strong>캐시를 두 번 다시 데우고</strong> throttle 벌점(429)까지 무는 결과가 됐다. 값을 한 건 오히려 <strong>단순함</strong>이었다 &mdash; 한 풀에 몰아 뜨겁게 유지한 reactive.</p>
+      <p>이번에는 두 정책의 <strong>캐시 결과가 달랐다</strong>. Phase 1과 갈리는 지점이다. reactive는 웜업 첫 요청부터 예비 배포로 넘어가 한도 구간 내내 트래픽의 <strong>98.75%</strong>를 그 <em>하나의</em> 풀에 몰아넣었다. 한 풀만 계속 데운 덕분에 지속 캐시 미스는 <strong>0건</strong>이고 풀은 <strong>99.2336%</strong>로 뜨겁게 유지됐다. 실제 429도 0건이었다 &mdash; throttled 원래 배포를 거의 건드리지 않았기 때문이다.</p>
+      <p><strong>proactive는 트래픽을 두 풀로 나눠 불리했다.</strong> 원래 배포를 지키려고 트래픽을 나눈 탓에 한도 구간의 스필오버 비율이 <strong>67.95%</strong>에 그쳤고 나머지 <strong>약 43%</strong>는 계속 throttled 원래 배포로 갔다. 그 배포는 30K 토큰 부하를 감당하지 못해 실제 429를 <strong>167번</strong> 뱉었다. 트래픽도 두 풀로 흩어져 <em>어느 쪽도</em> reactive의 단일 풀만큼 데워지지 못했다 &mdash; 지속 캐시는 원래 배포 <strong>96.7534%</strong>, 예비 배포 <strong>98.6942%</strong>로 <em>둘 다</em> reactive의 99.2336%보다 미지근했다.</p>
+      <p><strong>비용과 지연도 같은 방향이다.</strong> 두 런의 총 토큰은 거의 같다(reactive 45,850,205 · proactive 45,851,851). 하지만 전구간 비용은 <code>reactive</code> $17.895660 vs <code>proactive</code> $18.806026로 proactive가 <strong>$0.910366</strong> 더 든다. 캐시 온도만으로 생긴 차이다. proactive의 낮은 캐시 히트 때문에 입력 토큰 약 38만 개에는 캐시 요율($0.175/1M) 대신 정가($1.75/1M)가 적용됐다. 지속 첫 토큰 지연(TTFT)도 reactive가 더 빠르며(p50 7,153.9ms 대 7,926.6ms), 전구간 p95는 proactive가 <strong>34,631.71ms</strong>까지 치솟는다 &mdash; 429 백오프가 실제 지연 위에 쌓인 탓이다.</p>
+      <p><strong>캐시 풀이 진짜로 갈리자</strong> 원래 배포를 지키려고 트래픽을 나눈 정책은 <strong>두 캐시를 다시 데워야 했고</strong> throttle 벌점(429)까지 받았다. 한 풀에 몰아 뜨겁게 유지한 <strong>reactive</strong>가 더 나았다.</p>
     </section>
 
     <section id="transparency" class="article-section">
       <p class="section-label">투명성</p>
       <h2>숫자에 남긴 얼룩까지 그대로</h2>
-      <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 실험이 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
+      <p>완벽하게 깨끗한 측정은 없다. 이 실험이 남긴 자국도 지우지 않고 적어 둔다. 감추면 다음 사람이 같은 자리에서 헛디딜 수 있기 때문이다.</p>
       <ul>
-        <li><strong>지운 이상치 0건.</strong> 이상치 규칙은 &lsquo;포화 구간에서 지연이 평균+3σ를 넘고, 동시에 실제 429&middot;재시도&middot;경로 전환 같은 로그 이벤트가 겹칠 때&rsquo;만 제외한다. 후보는 reactive 6건&middot;proactive 18건이 있었고 그중 일부가 이벤트와 겹쳤지만, 그 후보를 빼도 지속 TTFT는 1% 미만으로 흔들려 <strong>전부 남겼다</strong>.</li>
-        <li><strong>유지한 이상 행.</strong> proactive에는 0토큰 지속 행 <strong>154건</strong>(실제 429의 실패 시도)과 캐시 미스 행 <strong>12건</strong>이 있고, reactive에는 둘 다 0건이다. 이건 측정 오류가 아니라 <em>이 벤치마크가 재려고 만든 현상</em> 그 자체라, 원자료 그대로 집계에 반영했다 &mdash; <strong>proactive의 낮은 지속 평균은 바로 이 429와 캐시 미스에서 나왔다</strong>. 감추지 않는다.</li>
-        <li><strong>헤드라인은 지속 정상상태다.</strong> 램프&middot;웜업의 과도기를 섞으면 정책 효과가 흐려지므로, 가설이 사는 지속 10분을 대표 숫자로 삼았다. 전구간 수치도 함께 두어, 어느 창에서도 reactive가 앞선다는 걸 확인할 수 있게 했다.</li>
+        <li><strong>지운 이상치 0건.</strong> 이상치 규칙에 따라 &lsquo;포화 구간에서 지연이 평균+3σ를 넘고, 동시에 실제 429&middot;재시도&middot;경로 전환 같은 로그 이벤트가 겹칠 때&rsquo;만 제외한다. 후보는 reactive 6건&middot;proactive 18건이었다. 일부는 이벤트와 겹쳤지만 해당 후보를 빼도 지속 TTFT가 1% 미만으로만 흔들려 <strong>전부 남겼다</strong>.</li>
+        <li><strong>유지한 이상 행.</strong> proactive에는 0토큰 지속 행 <strong>154건</strong>(실제 429의 실패 시도)과 캐시 미스 행 <strong>12건</strong>이 있고 reactive에는 둘 다 0건이다. 측정 오류가 아니라 <em>이 벤치마크가 재려고 만든 현상</em> 자체이므로 원자료 그대로 집계에 반영했다 &mdash; <strong>proactive의 낮은 지속 평균은 바로 이 429와 캐시 미스에서 나왔다</strong>. 감추지 않는다.</li>
+        <li><strong>헤드라인은 지속 정상상태다.</strong> 램프&middot;웜업의 과도기를 섞으면 정책 효과가 흐려지므로 가설이 사는 지속 10분을 대표 숫자로 삼았다. 전구간 수치도 함께 두어 어느 창에서도 reactive가 앞선다는 걸 확인하도록 했다.</li>
       </ul>
     </section>
 
     <section id="limits" class="article-section">
       <p class="section-label">한계</p>
       <h2>어디까지 믿을 수 있나</h2>
-      <p>이 결과는 한 Foundry 리소스 안의 두 배포, 각 하나의 용량 등급, 하나의 부하 프로파일, 한 번의 실행에서 나온 값입니다. 숫자 자체보다 <strong>방법과 방향을 가져가는 편</strong>이 안전합니다.</p>
+      <p>이 결과는 한 Foundry 리소스 안의 두 배포, 각 하나의 용량 등급, 하나의 부하 프로파일, 한 번의 실행에서 나온 값입니다. 숫자 자체보다 <strong>방법과 방향을 기준으로 삼는 편</strong>이 안전합니다.</p>
       <ul>
-        <li><strong>절대 수치는 이전 안 된다.</strong> 두 배포는 한 리소스 안, 각 하나의 용량 등급이다. 캐시 히트와 달러 값은 다른 테넌트&middot;리전&middot;용량 계획으로 그대로 옮겨가지 않는다 &mdash; 정책 간 <em>차이의 방향</em>을 읽어야 한다.</li>
-        <li><strong>커스텀 라우터다.</strong> 스필오버는 파이썬 클라이언트의 라우터로 돌렸다. Azure <em>네이티브</em> 스필오버(<code>spilloverDeploymentName</code> 방식)와는 다를 수 있어, 응답별 스필오버 헤더를 남겨 두어 나중에 네이티브 방식과 대조할 수 있게 했다.</li>
-        <li><strong>완화책 비교지 원인 규명이 아니다.</strong> 어떤 현장 캐시 하락의 근본 원인을 이 실험이 가리지는 못한다. 강한 형태의 가설은 이미 현장 측정에서 기각됐다.</li>
-        <li><strong>부하&middot;표본.</strong> 22분 한 번, 정책당 2,136 예정 요청. 이 크기에서는 신뢰구간이나 통계적 유의성을 주장하지 않는다 &mdash; 방향은 견고하나 절대 크기는 소표본 주의.</li>
-        <li><strong>범위 밖.</strong> 응답 품질은 채점하지 않았고, <code>max_output_tokens</code>를 PTU 예약처럼 쓰는 효과(별도 가설)도 이 실험에선 건드리지 않는다.</li>
+        <li><strong>절대 수치는 이전 안 된다.</strong> 두 배포는 한 리소스 안에 있고 각각 하나의 용량 등급을 쓴다. 캐시 히트와 달러 값은 다른 테넌트&middot;리전&middot;용량 계획에 그대로 적용되지 않는다 &mdash; 정책 간 <em>차이의 방향</em>을 읽어야 한다.</li>
+        <li><strong>커스텀 라우터다.</strong> 스필오버는 파이썬 클라이언트의 라우터로 돌렸다. Azure <em>네이티브</em> 스필오버(<code>spilloverDeploymentName</code> 방식)와는 다를 수 있어 응답별 스필오버 헤더를 남겼고 나중에 네이티브 방식과 대조할 수 있다.</li>
+        <li><strong>완화책 비교지 원인 규명이 아니다.</strong> 이 실험으로는 어떤 현장 캐시 하락의 근본 원인도 가릴 수 없다. 강한 형태의 가설은 이미 현장 측정에서 기각됐다.</li>
+        <li><strong>부하&middot;표본.</strong> 실행은 22분 한 번이고 정책마다 2,136 예정 요청을 잡았다. 이 정도 표본으로 신뢰구간이나 통계적 유의성을 주장하지 않는다. 방향은 견고하지만 절대 크기를 읽을 때는 소표본에 유의해야 한다.</li>
+        <li><strong>범위 밖.</strong> 응답 품질은 채점하지 않았고 <code>max_output_tokens</code>를 PTU 예약처럼 쓰는 효과(별도 가설)도 이 실험에선 건드리지 않는다.</li>
       </ul>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>그래서 무엇을 기본값으로</h2>
-      <p><strong>원래 배포가 throttle 되고 여유 있는 예비 풀이 있다면, 단순한 사후 반응(<code>reactive</code>)을 기본값으로 하라. 실패한 요청과 뒤이은 몇 건을 예비 풀로 몰아넣고 그 한 풀을 뜨겁게 유지하는 이 단순한 규칙이, 원래 배포를 지키려 트래픽을 미리 나누는 <code>proactive</code>를 이겼다 &mdash; 캐시는 0.9923%p 더 지켰고(지속), 비용은 $0.910366 덜 들었으며, 실제 429는 167건이 아니라 0건이었다. 캐시 풀이 물리적으로 갈리면, 트래픽을 나누는 것은 양쪽 풀을 함께 식히는 벌점이다. 워크로드 형태가 바뀌면 다시 측정하라.</strong></p>
+      <p><strong>원래 배포가 throttle 되고 여유 있는 예비 풀이 있다면 단순한 사후 반응(<code>reactive</code>)을 기본값으로 하라. 이 규칙은 실패한 요청과 뒤이은 몇 건을 예비 풀로 몰아넣어 한 풀을 뜨겁게 유지한다. 원래 배포를 지키려고 트래픽을 미리 나누는 <code>proactive</code>보다 캐시는 0.9923%p 더 지켰고(지속), 비용은 $0.910366 덜 들었으며 실제 429는 167건이 아니라 0건이었다. 캐시 풀이 물리적으로 갈릴 때 트래픽을 나누면 양쪽 풀을 함께 식히는 벌점이 생긴다. 워크로드 형태가 바뀌면 다시 측정하라.</strong></p>
     </section>
 
     <section id="forward" class="article-section">
       <p class="section-label">이어짓기</p>
       <h2>다음 사람이 덜 헤매도록</h2>
-      <p>근거를 남기는 일은 이긴 결과만 적는 게 아닙니다. 예측이 빗나간 실험도, 왜 빗나갔고 어디까지 믿을 수 있는지까지 남아야 다음 결정에 다시 쓸 수 있습니다. 그래서 이 노트는 Phase 1과 앞선 실험으로 되돌아 연결됩니다.</p>
+      <p>근거를 남긴다는 건 이긴 결과만 적는 일이 아닙니다. 예측이 빗나간 실험도 왜 빗나갔고 어디까지 믿을 수 있는지 남겨야 다음 결정에 다시 쓸 수 있습니다. 이 노트는 그래서 Phase 1과 앞선 실험으로 되돌아 연결됩니다.</p>
       <ul>
-        <li><strong>Phase 1 →</strong> <a href="../../exp004-spillover-simulation/ko/">exp004 &mdash; 스필오버 정책 시뮬레이션(Phase 1)</a>은 배포 하나(공유 캐시) 위에서 같은 두 정책을 겨뤘고 무승부(&minus;0.1657%p)였다. 이 노트가 그 판정을 <strong>진짜 캐시 분리 위에서</strong> 마무리한다.</li>
+        <li><strong>Phase 1 →</strong> <a href="../../exp004-spillover-simulation/ko/">exp004 &mdash; 스필오버 정책 시뮬레이션(Phase 1)</a>에서는 배포 하나(공유 캐시) 위에서 같은 두 정책을 겨뤘다. 결과는 무승부(&minus;0.1657%p)였다. 이 노트는 그 판정을 <strong>진짜 캐시 분리 위에서</strong> 마무리한다.</li>
         <li><strong>회고 본문 →</strong> 허브의 <a href="../../../ko/#next">다음 판단 &middot; 다음 실험</a>이 예고한 &lsquo;물리적으로 분리된 2배포 부하 테스트&rsquo;가 바로 이 실험이다.</li>
         <li><strong>원자료 →</strong> 두 정책 정의는 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>experiments/exp005_dual_spillover_*.yaml</code></a>, 분석은 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>에 있다.</li>
       </ul>
-      <p><strong>다음 실험.</strong> 이번엔 커스텀 라우터로 스필오버를 돌렸다. 다음은 <strong>Azure 네이티브 스필오버</strong>를 같은 부하에 걸어, 응답별로 남겨 둔 스필오버 헤더로 커스텀 라우터와 <em>동작이 같은지</em> 대조하는 것이다.</p>
+      <p><strong>다음 실험.</strong> 이번에는 커스텀 라우터로 스필오버를 돌렸다. 다음에는 같은 부하에 <strong>Azure 네이티브 스필오버</strong>를 건다. 응답마다 남겨 둔 스필오버 헤더를 보고 커스텀 라우터와 <em>동작이 같은지</em> 대조한다.</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기</a></p>
     </section>
 
     <section id="sources" class="article-section">
       <p class="section-label">출처 · 근거 경계</p>
       <h2>출처 &amp; 근거 경계</h2>
-      <p>이 노트도 새 측정 없이 게시된 집계를 다시 인용했다. 두 배포&middot;한 리소스라는 경계까지, 근거와 한계를 아래에 둔다.</p>
+      <p>이 노트도 새 측정 없이 게시된 집계를 다시 인용했다. 두 배포&middot;한 리소스라는 경계까지 근거와 한계를 아래에 적는다.</p>
       <ul>
-        <li>이 실험 분석: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>(§1 질문&middot;설계, §3 프로버넌스, §5 헤드라인, §6 회복 곡선, §7 정책별 집계, §8 소비 모델, §9 이상치, §10 한계, §11 결론). 모든 수치는 여기서 재인용.</li>
+        <li>이 실험 분석: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a>(§1 질문&middot;설계, §3 프로버넌스, §5 헤드라인, §6 회복 곡선, §7 정책별 집계, §8 소비 모델, §9 이상치, §10 한계, §11 결론). 수치는 모두 여기서 다시 인용했다.</li>
         <li>정책 정의: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_reactive.yaml"><code>experiments/exp005_dual_spillover_reactive.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a>(<code>policy.type</code>만 다름).</li>
         <li>방법론: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §8(효과 크기&middot;방향으로 판단, 통계적 유의성 아님).</li>
         <li>가격: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 접근일 2026-05-19). gpt-5.2 = 1M 토큰당 입력 $1.75 / 캐시 입력 $0.175 / 추론 $14.00 / 출력 $14.00.</li>
@@ -216,6 +216,6 @@ proactive   67.95% 켜짐     98.2414%  (±4.3726%p)               167       원
     </section>
   </main>
 
-  <footer class="site"><p>MIT 라이선스 연구 아티팩트 · 게시 데이터는 정제 또는 집계본만 포함합니다.</p></footer>
+  <footer class="site"><p>MIT 라이선스 연구 아티팩트 · 게시 데이터에는 정제본 또는 집계본만 담습니다.</p></footer>
 </body>
 </html>

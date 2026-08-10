@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img"
      aria-labelledby="acTitle acDesc" width="900" height="320">
-  <title id="acTitle">retry-after-ms를 준수하는 PTU 어드미션 컨트롤러</title>
-  <desc id="acDesc">개념적 흐름: 요청이 스로틀된 PTU에 도달해 retry-after-ms 헤더가 담긴 429를 받습니다. 어드미션 컨트롤러는 정확히 그 간격만큼 대기하고 결정을 로그에 남긴 뒤 재개합니다. 측정값은 표시하지 않습니다.</desc>
+  <title id="acTitle">retry-after-ms를 따르는 PTU 수용 제어기</title>
+  <desc id="acDesc">개념적 흐름: 요청이 스로틀된 PTU에 도달해 retry-after-ms 헤더가 담긴 429를 받습니다. 수용 제어기는 헤더가 지정한 시간만큼 대기하고 결정을 로그에 남긴 뒤 요청을 재개합니다. 측정값은 표시하지 않습니다.</desc>
   <defs>
     <linearGradient id="acBg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
@@ -12,9 +12,9 @@
   </defs>
   <rect width="900" height="320" fill="url(#acBg)"/>
   <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="24" font-weight="700">헤더 기반 어드미션</text>
+        font-size="24" font-weight="700">헤더 기반 수용 제어</text>
   <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="15">retry-after-ms를 명시적으로 준수하고 &#8212; 클라이언트가 대기한 이유를 로그에 남기세요.</text>
+        font-size="15">retry-after-ms를 따르고 클라이언트가 대기한 이유를 로그에 남기세요.</text>
 
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
     <rect x="40" y="150" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
@@ -25,7 +25,7 @@
     <text x="315" y="200" fill="#ffd166" font-size="12">retry-after-ms</text>
 
     <rect x="460" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#4cc9f0"/>
-    <text x="535" y="180" fill="#e0fbfc">어드미션 게이트</text>
+    <text x="535" y="180" fill="#e0fbfc">수용 게이트</text>
     <text x="535" y="200" fill="#bcd2e8" font-size="12">대기 &amp; 로그</text>
 
     <rect x="680" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#06d6a0"/>
@@ -37,5 +37,5 @@
     <line x1="612" y1="180" x2="676" y2="180"/>
   </g>
   <text x="535" y="252" fill="#9fb3c8" text-anchor="middle"
-        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">로그만으로 구하는 다음 수용 가능 요청 시각</text>
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">로그에서 확인하는 다음 요청 수용 시각</text>
 </svg>

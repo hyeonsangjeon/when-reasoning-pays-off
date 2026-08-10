@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PTU/PAYG 계획 | 추론이 비용을 정당화할 때</title>
-  <meta name="description" content="PTU/PAYG 교차점 차트를 직접적인 용량 측정이 아니라 계획용 모델로 읽는 법을 다룬 주제 글.">
+  <meta name="description" content="PTU/PAYG 교차점 차트를 직접적인 용량 실측이 아니라 계획용 모델로 읽는 법을 다룹니다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -41,34 +41,34 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">추론이 비용을 정당화할 때</a> / 주제 상세</p>
-    <p class="article-kicker">주제 글 · PTU/PAYG 계획 모델</p>
+    <p class="article-kicker">주제 글, PTU/PAYG 계획 모델</p>
     <h1>PTU/PAYG 교차점: 용량 결과가 아니라 계획용 선</h1>
-    <p class="lede">어떤 모델과 강도 조합이 쓸 만한지는 이미 측정해 두었습니다. 이제 트래픽 팀이 다음 분기 예측치를 들고 와서 청구서를 좌우하는 질문을 던집니다. 이 예상 요청 속도에서 종량제(PAYG)에 머물러야 할까요, 아니면 프로비저닝된 처리량(PTU)을 예약해야 할까요? 교차점 선 하나를 그어 그것을 답으로 삼고 싶어집니다. 이 글은 그 선을 있는 그대로 다룹니다 &mdash; 실제 PTU 배포가 부하 아래에서 어떻게 동작하는지를 측정한 값이 아니라, 용량 실험을 돌릴 가치가 언제 생기는지를 알려 주는, 가격만 따진 모델링된 손익분기입니다.</p>
+    <p class="lede">어떤 모델과 강도 조합이 적합한지는 이미 실측했습니다. 이제 트래픽 팀이 다음 분기 예측치를 들고 와서 청구서를 좌우하는 질문을 던집니다. 이 예상 요청 속도에서 PAYG(사용한 만큼 과금)에 머물러야 할까요, 아니면 PTU(고정 용량)를 예약해야 할까요? 교차점 선 하나로 답하고 싶어집니다. 이 글에서 다루는 선은 실제 PTU 배포가 부하 아래에서 어떻게 동작하는지를 확인한 실측값이 아닙니다. 가격만 따져 용량 실험을 시작할 시점을 정하는 모델링된 손익분기입니다.</p>
 
     <figure class="article-figure" id="figure-ptu-payg-one-pager">
       <figcaption>
-        <strong>한눈에 보는 주제(측정이 아니라 모델링).</strong> PTU와 PAYG의
-        비교는 손익분기 요청 속도에서의 계산된 교차점입니다. 그 아래에서는
-        PAYG가, 그 위에서는 약정한 PTU 블록이 더 쌉니다. 이 한 장 요약은 그 한
-        문장을 전하고 모델링된 경계를 표시하며, 아래 절은 그 계산과 한계를
-        더합니다.
+        <strong>한눈에 보는 주제(실측이 아니라 모델링).</strong> PTU와 PAYG의
+        비교는 손익분기 요청 속도에서 계산한 교차점입니다. 그 아래에서는
+        PAYG가, 그 위에서는 약정한 PTU 블록이 더 쌉니다. 이 한 장 요약에는 그
+        결론과 모델링된 경계가 담겨 있으며 아래 절에서는 계산과 한계를
+        설명합니다.
         <a href="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg">PTU/PAYG 한 장 요약 SVG 열기</a>.
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU와 PAYG 계획을 위한 한 장 요약. 오르는 PAYG 비용 선이 평평한 약정 PTU 비용 선과 손익분기 요청 속도에서 교차하는 모습을 보여 줍니다. 핵심 메시지: PTU와 PAYG의 비교는 손익분기 요청 속도에서의 모델링된 교차점으로, 그 아래에서는 PAYG가, 그 위에서는 PTU가 더 쌉니다. 측정이 아니라 모델링임을 명확히 표시합니다. 이 교차점은 실시간 용량 결과가 아니라 계산된 값입니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-ptu-payg-planning.svg" alt="PTU와 PAYG 계획을 위한 한 장 요약. 오르는 PAYG 비용 선이 평평한 약정 PTU 비용 선과 손익분기 요청 속도에서 교차합니다. 핵심 메시지: PTU와 PAYG의 비교는 손익분기 요청 속도를 모델링한 교차점이며 그 아래에서는 PAYG가, 그 위에서는 PTU가 더 쌉니다. 실측이 아니라 모델링임을 명확히 표시합니다. 이 교차점은 실시간 용량 결과가 아니라 계산된 값입니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section class="article-section" id="why-modeled">
       <h2>이 교차점을 모델링한 이유</h2>
-      <p>교차점 선을 다루는 방식은 두 가지이고, 둘은 정반대로 잡아당깁니다. 첫째는 판정으로 읽는 것입니다. 선이 PTU를 가리키니 PTU를 예약하라는 식입니다. 둘째는 계획의 방아쇠로 읽는 것입니다. 선은 이 워크로드에서 PTU가 더 쌀 법하다고 말하므로, 바로 이 배포가 용량 실험을 돌려 볼 가치가 있는 후보라는 뜻입니다. 우리는 두 번째 해석에 맞춰 교차점을 모델링했습니다.</p>
-      <p>그렇게 한 이유는 이 선이 좁은 가격 질문 하나에만 답하기 때문입니다. 하나의 가격 스냅샷에서, 측정된 하나의 요청당 토큰 형태에 대해, 고정된 PTU 하한이 PAYG 청구서보다 싸지는 지점은 어디인가? 선은 그 배포가 트래픽을 감당할 수 있는지, 429 스로틀링이 어디서 시작되는지, 프롬프트 캐시가 부하 아래에서 어떻게 동작하는지, p95 지연 시간이 어떤지에 대해서는 아무 말도 하지 않습니다. 그 가격 답을 용량 답으로 착각하는 것이야말로 이 글이 막으려는 오류입니다.</p>
-      <p>그래서 이 계산은 두 종류의 입력을 일부러 결합합니다. 한쪽에는 날짜가 박힌 PAYG와 PTU 가격 스냅샷이, 다른 한쪽에는 벤치마크에서 측정한 요청당 비용과 토큰 형태가 있습니다. 바로 그 짝짓기가 출력을 실시간 용량 결과가 아니라 계획 모델 &mdash; 실제 측정에 뿌리를 두되 가격으로 범위가 한정된 &mdash; 로 만듭니다.</p>
+      <p>교차점 선을 다루는 방식은 두 가지인데, 결론은 정반대입니다. 첫째는 판정으로 읽는 방식입니다. 계산 결과 PTU가 더 저렴하니 PTU를 예약하라는 해석입니다. 둘째는 계획 시작 조건으로 읽는 방식입니다. 이 워크로드에서 PTU가 더 쌀 가능성이 있으므로, 해당 배포는 용량 실험을 돌려 볼 가치가 있는 후보라는 뜻입니다. 우리는 두 번째 해석에 맞춰 교차점을 모델링했습니다.</p>
+      <p>그렇게 한 이유는 이 선이 좁은 가격 질문 하나에만 답하기 때문입니다. 하나의 가격 스냅샷에서, 실측한 요청당 토큰 형태를 기준으로, 고정된 PTU 하한이 PAYG 청구서보다 싸지는 지점은 어디인가? 이 선에는 해당 배포가 트래픽을 감당할 수 있는지, 429 스로틀링이 어디서 시작되는지, 프롬프트 캐시가 부하 아래에서 어떻게 동작하는지, p95 지연 시간이 어떤지에 관한 정보가 없습니다. 가격에 관한 답을 용량 답으로 착각하는 것이 이 글이 막으려는 오류입니다.</p>
+      <p>이 계산은 두 종류의 입력을 일부러 결합합니다. 한쪽에는 날짜가 박힌 PAYG와 PTU 가격 스냅샷이, 다른 한쪽에는 벤치마크에서 실측한 요청당 비용과 토큰 형태가 있습니다. 두 입력을 결합하면 출력은 실시간 용량 결과가 아니라, 실측을 바탕으로 하되 가격으로 범위를 한정한 계획 모델이 됩니다.</p>
     </section>
 
     <div class="article-summary-grid" aria-label="주제 요약">
-      <section class="summary-tile"><h2>질문</h2><p>모델링된 PTU/PAYG 교차점이 우리에게 말해 줄 수 있는 것은 무엇이고, 결코 주장해서는 안 되는 것은 무엇인가요?</p></section>
-      <section class="summary-tile"><h2>근거</h2><p>두 개의 날짜가 박힌 가격 스냅샷 &mdash; <code>pricing/azure-openai-payg-2026-05.yaml</code>와 <code>pricing/azure-openai-ptu-2026-05.yaml</code> &mdash; 을, benchmark-01·-02·-03에서 측정한 요청당 비용 및 그 토큰 분포에서 도출한 처리량 계수와 결합한 손익분기 계산입니다. 그 출력은 교차점 차트 데이터의 <code>modeled_break_even_rpm</code> 계열이며, 측정된 처리량이 아닙니다.</p></section>
-      <section class="summary-tile"><h2>발견</h2><p>이 가격 스냅샷에서 모델링된 손익분기는 요청당 청구액과 토큰 형태가 놓는 자리에 떨어집니다. benchmark-01 xhigh은 약 2,748 rpm, benchmark-02 none은 약 2,680 rpm, benchmark-03 low은 약 564 rpm이며, 각각 $2.00/PTU-시간의 50 PTU 하한으로 환산됩니다. 이는 가격 스냅샷과 요청당 토큰 구성에 따라 움직이는 계산값이며, 측정된 천장 지점이 아닙니다.</p></section>
-      <section class="summary-tile"><h2>결정</h2><p>교차점은 이 워크로드 형태에서 용량 실험을 돌릴 가치가 언제 생기는지를 알려 주는 계획용 선으로 읽습니다. 어떤 배포에 PTU가 필요하다는 판정이 아닙니다. 가격, 토큰 구성, 리전이 바뀌면 다시 도출합니다.</p></section>
+      <section class="summary-tile"><h2>질문</h2><p>모델링된 PTU/PAYG 교차점으로 무엇을 판단할 수 있고 무엇을 주장해서는 안 될까요?</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>두 개의 날짜가 박힌 가격 스냅샷 &mdash; <code>pricing/azure-openai-payg-2026-05.yaml</code>와 <code>pricing/azure-openai-ptu-2026-05.yaml</code> &mdash; 을, benchmark-01, -02, -03에서 실측한 요청당 비용 및 그 토큰 분포에서 도출한 처리량 계수와 결합한 손익분기 계산입니다. 그 출력은 교차점 차트 데이터의 <code>modeled_break_even_rpm</code> 계열이며 실측 처리량이 아닙니다.</p></section>
+      <section class="summary-tile"><h2>발견</h2><p>이 가격 스냅샷에서 모델링된 손익분기는 요청당 청구액과 토큰 형태에 따라 정해집니다. benchmark-01 xhigh은 약 2,748 rpm, benchmark-02 none은 약 2,680 rpm, benchmark-03 low은 약 564 rpm이며 각각 $2.00/PTU-시간의 50 PTU 하한으로 환산됩니다. 이는 가격 스냅샷과 요청당 토큰 구성에 따라 달라지는 계산값이며 실측한 천장 지점이 아닙니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>교차점은 이 워크로드 형태에서 용량 실험을 시작할 시점을 정하는 계획용 선으로 사용합니다. 어떤 배포에 PTU가 필요하다는 판정이 아닙니다. 가격, 토큰 구성, 리전이 바뀌면 다시 도출합니다.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="주제 영역">
@@ -89,13 +89,13 @@
       <figure class="article-figure">
         <figcaption>
           <strong>주제 안내 차트(모델화한 집계로 직접 작성).</strong>
-          <strong>무엇을 읽나:</strong> 선택된 벤치마크 행들의 모델링된 PTU/PAYG
+          <strong>차트 내용:</strong> 선택된 벤치마크 행들의 모델링된 PTU/PAYG
           손익분기 RPM입니다. <strong>X축:</strong> 선택된 벤치마크 행,
           <strong>Y축:</strong> 모델링된 손익분기 RPM이며(막대가 높을수록 모델링된
-          PTU 하한이 더 싸 보이기 전까지 PAYG가 더 높은 요청 속도까지 올라갈 수
-          있다는 뜻). <strong>측정값이 아니라 계획 신호로 읽기:</strong> 이 막대는
+          PTU 하한 비용이 더 낮아지기 전까지 PAYG가 더 높은 요청 속도까지 올라갈 수
+          있다는 뜻). <strong>실측값이 아니라 계획 신호로 읽기:</strong> 이 막대는
           &mdash; benchmark-01의 약 2,748 rpm 표시점과 50 PTU 하한을 포함해 &mdash; 이
-          가격 스냅샷과 요청당 토큰 형태에서 계산된 값이며, 측정된 PTU 용량 결과가
+          가격 스냅샷과 요청당 토큰 형태에서 계산된 값이며 실측 PTU 용량 결과가
           아닙니다. 모델링된 교차점 JSON은 출처 절에서 인용합니다.
         </figcaption>
         <img class="wide-chart" src="../../../../../../assets/topic-ptu-payg-planning.ko.svg" alt="선택된 벤치마크 행들의 모델링된 PTU/PAYG 손익분기 RPM을 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
@@ -104,29 +104,29 @@
 
     <section id="s1" class="article-section">
       <h2>이 모델이 답하는 좁은 질문</h2>
-      <p>교차점 계산은 요청당 평균 비용, 토큰 형태 처리량 계수, 공개 가격 스냅샷, 그리고 50 PTU 하한을 결합합니다. 그 출력은 모델링된 손익분기 RPM입니다. 예를 들어 benchmark-01 xhigh 강도는 약 2,748 rpm, benchmark-02 none은 약 2,680 rpm, benchmark-03 low은 약 564 rpm 부근에 떨어집니다.</p><p>이 숫자들이 유용한 이유는 워크로드 형태가 계획 대화를 어떻게 바꾸는지 드러내 주기 때문입니다. 이것은 실부하 측정값이 아닙니다. 429가 어디서 시작되는지, 더는 오르지 않는 지점 근처에서 캐시가 어떻게 동작하는지, 특정 서빙 구성이 p95 지연 시간에서 어떻게 될지는 말해 주지 않습니다.</p>
+      <p>교차점 계산은 요청당 평균 비용, 토큰 형태 처리량 계수, 공개 가격 스냅샷, 그리고 50 PTU 하한을 결합합니다. 계산 결과는 모델링된 손익분기 RPM입니다. 예를 들어 benchmark-01 xhigh 강도는 약 2,748 rpm, benchmark-02 none은 약 2,680 rpm, benchmark-03 low은 약 564 rpm 부근입니다.</p><p>이 숫자에 따라 워크로드 형태별 계획 논의가 달라집니다. 이것은 실부하 실측값이 아닙니다. 여기에는 429가 시작되는 지점, 더는 오르지 않는 지점 근처의 캐시 동작, 특정 서빙 구성의 p95 지연 시간에 관한 정보가 없습니다.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>차트를 읽는 법</h2>
-      <p>X축은 선택된 벤치마크 행들의 집합이고, Y축은 모델링된 손익분기 RPM입니다. 막대가 높을수록 모델링된 PTU 하한이 더 싸 보이기 전까지 PAYG가 더 높은 요청 속도까지 올라갈 수 있다는 뜻입니다. 막대가 낮을수록 그 워크로드는 모델링된 교차점에 더 일찍 도달합니다.</p><p>이 막대들은 연속적인 용량 곡선이 아닙니다. 공개 집계 데이터와 가격 스냅샷에서 도출한 계획용 표시점입니다.</p>
+      <p>X축은 선택된 벤치마크 행들의 집합이고 Y축은 모델링된 손익분기 RPM입니다. 막대가 높을수록 모델링된 PTU 하한 비용이 더 낮아지기 전까지 PAYG가 더 높은 요청 속도까지 올라갈 수 있다는 뜻입니다. 막대가 낮을수록 그 워크로드는 모델링된 교차점에 더 일찍 도달합니다.</p><p>이 막대들은 연속적인 용량 곡선이 아닙니다. 공개 집계 데이터와 가격 스냅샷에서 도출한 계획용 기준점입니다.</p>
     </section>
     <section id="s3" class="article-section">
       <h2>이 구분이 중요한 이유</h2>
-      <p>이 구분이 없으면 교차점 차트는 약속으로 오독되기 쉽습니다. 564 rpm 교차점을 가진 행은 “PTU가 필요하다”, 2,700 rpm 교차점을 가진 행은 “PTU가 필요 없다”라고 말하고 싶어집니다. 그러나 근거는 그보다 신중합니다. 차트는 모델링된 가정 아래에서 경제성이 어떻게 보이는지를 말할 뿐입니다. 실제 시스템에는 여전히 지연 시간, 캐시, 재시도, 더는 오르지 않는 지점에 대한 근거가 필요합니다.</p><p>그 신중함은 약점이 아닙니다. 오히려 차트를 쓸모 있게 만드는 요소입니다. 차트는 언제 용량 실험을 돌려야 하는지를 알려 줄 뿐, 그 실험이 무엇을 발견할지는 말하지 않습니다.</p>
+      <p>이 구분이 없으면 교차점 차트를 확정적 결론으로 오독하기 쉽습니다. 564 rpm 교차점을 가진 행은 “PTU가 필요하다”, 2,700 rpm 교차점을 가진 행은 “PTU가 필요 없다”라고 해석하기 쉽습니다. 그러나 근거가 뒷받침하는 범위는 그보다 좁습니다. 차트가 다루는 범위는 모델링된 가정 아래의 경제성뿐입니다. 실제 시스템에는 여전히 지연 시간, 캐시, 재시도, 더는 오르지 않는 지점에 대한 근거가 필요합니다.</p><p>이 제한 덕분에 차트를 실용적으로 활용할 수 있습니다. 차트로는 용량 실험을 돌릴 시점만 정할 수 있고 그 실험의 결과는 알 수 없습니다.</p>
     </section>
     <section id="s4" class="article-section">
       <h2>이 결과가 뜻하는 것</h2>
-      <p>PAYG와 PTU는 서로 다른 질문에 답합니다. PAYG는 완료된 요청 하나하나가 얼마인지를 묻습니다. PTU는 고정된 용량이 받아들일 수 있는 품질과 지연 시간 수준에서 무엇을 감당할 수 있는지를 묻습니다. 교차점 선은 그 두 세계를 이어 주지만, 둘을 하나의 측정값으로 뭉뚱그리지는 않습니다.</p><p>그래서 이 프로젝트에서 그 선은 모델링된 가설로 표시됩니다. 측정된 차트들 위가 아니라 그 곁에 자리합니다.</p>
+      <p>PAYG와 PTU는 서로 다른 질문에 답합니다. PAYG에서는 완료된 요청 하나하나의 비용을 계산합니다. PTU에서는 고정된 용량이 받아들일 수 있는 품질과 지연 시간 수준에서 감당할 수 있는 처리량을 따집니다. 교차점 선은 두 방식을 연결하지만 서로 다른 질문을 하나의 실측값으로 뭉뚱그리지는 않습니다.</p><p>그래서 이 프로젝트에서는 그 선을 실측 차트와 구분해 모델링된 가설로 표시합니다.</p>
     </section>
 
     <section id="table" class="article-section">
       <h2>근거 표</h2>
       <table class="chart-table evidence-table">
         <caption>선택된 교차점 예시</caption>
-        <thead><tr><th>근거 항목</th><th>계산값</th><th>가격 조건</th><th>더해 주는 것</th></tr></thead>
+        <thead><tr><th>근거 항목</th><th>계산값</th><th>가격 조건</th><th>해석</th></tr></thead>
         <tbody>
           <tr><td>benchmark-01 xhigh</td><td>모델링된 2,748 rpm</td><td>50 PTU 하한</td><td>늦은 교차점: 짧은 사실형 작업은 xhigh 강도에서도 계속 저렴합니다.</td></tr>
-<tr><td>benchmark-02 none</td><td>모델링된 2,680 rpm</td><td>50 PTU 하한</td><td>측정된 요청이 저렴해 교차점이 늦습니다.</td></tr>
+<tr><td>benchmark-02 none</td><td>모델링된 2,680 rpm</td><td>50 PTU 하한</td><td>실측 요청이 저렴해 교차점이 늦습니다.</td></tr>
 <tr><td>benchmark-03 low</td><td>모델링된 564 rpm</td><td>50 PTU 하한</td><td>이른 교차점: 도구 에이전트의 더 큰 토큰 형태가 각 요청을 더 비싸게 만듭니다.</td></tr>
 <tr><td>근거 경계</td><td>모델링된 경제성</td><td>실시간 용량 아님</td><td>다음에 무엇을 테스트할지 정하는 데 씁니다.</td></tr>
         </tbody>
@@ -136,47 +136,47 @@
     <section id="sources" class="article-section">
       <h2>출처와 근거 경계</h2>
       <p>
-        위의 모든 손익분기 수치는 측정이 아니라 계산입니다. 측정된 요청당
+        위의 모든 손익분기 수치는 실측이 아니라 계산입니다. 실측한 요청당
         비용과 토큰 형태를 두 개의 날짜가 박힌 가격 스냅샷에 대입해 가격을
         매겨 산출합니다. 아래 두 계층은 문서화된 입력이 끝나고 모델링된
-        출력이 시작되는 경계를 표시합니다. 50 PTU 하한 조건의 2,748 rpm
-        교차점은 도출된 산술값이며, 측정된 처리량이나 429 발생, 천장 지점이
+        출력이 시작되는 경계를 나눕니다. 50 PTU 하한 조건의 2,748 rpm
+        교차점은 도출된 산술값이며 실측 처리량이나 429 발생, 천장 지점이
         아닙니다.
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 요청당 비용 입력은 이 고정된 입장을 물려받으며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.</li>
-        <li>[2] <strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 이 저장소, <code>pricing/azure-openai-payg-2026-05.yaml</code>. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 여기의 토큰당 정가(gpt-5.2 입력 $1.75/1M, 캐시 입력 $0.175/1M, 출력 및 추론 $14.00/1M; gpt-4o 입력 $2.50/1M, 캐시 $1.25/1M, 출력 $10.00/1M)가 공식에 들어가는 요청당 청구액을 결정합니다.</li>
-        <li>[3] <strong>Tier 1 &mdash; PTU 가격 스냅샷:</strong> 이 저장소, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 문서</a> (2026-05-19 접근, 리전 eastus2) · <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">아카이브</a>. 공식의 PTU 쪽 &mdash; PTU-시간당 $2.00, 50 PTU 최소(하한), 그리고 처리량 계수에 쓰는 PTU당 Input TPM(gpt-4o 2,500; gpt-5.2 3,400) &mdash; 은 이 스냅샷에서 나옵니다. PAYG와 PTU 정가 모두 손익분기에 들어갑니다. 한쪽에는 요청당 PAYG 청구액, 다른 한쪽에는 고정된 시간당 $100 PTU 하한(50 × $2.00)입니다.</li>
-        <li>[4] <strong>Tier 2 &mdash; 측정된 요청당 입력:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, <code>benchmarks/03-tool-using-agent/analysis.json</code>. 요청당 평균 비용과, gpt-4o 기준선 대비 처리량 향상 계수가 되는 셀별 요청당 토큰 분포의 출처입니다.</li>
-        <li>[5] <strong>Tier 2 &mdash; 모델링된 교차점 출력(측정이 아니라 계산):</strong> 이 저장소, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>. 차트가 렌더링하는 <code>modeled_break_even_rpm</code> 계열은 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>로 계산됩니다. benchmark-01 xhigh의 2,748 rpm 수치, 50 PTU 하한, PTU-시간당 $2.00 정가는 모두 계산되거나 인용된 입력이며, 측정된 처리량이 아니라 모델링된 값으로 표시됩니다.</li>
+        <li>[1] <strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 요청당 비용 입력은 이 고정된 입장을 물려받으며 오차 막대는 신뢰 구간이 아니라 표준편차이고 N = 20에서 p-값은 주장하지 않습니다.</li>
+        <li>[2] <strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 이 저장소, <code>pricing/azure-openai-payg-2026-05.yaml</code>. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근), <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 여기의 토큰당 정가(gpt-5.2 입력 $1.75/1M, 캐시 입력 $0.175/1M, 출력 및 추론 $14.00/1M; gpt-4o 입력 $2.50/1M, 캐시 $1.25/1M, 출력 $10.00/1M)가 공식에 들어가는 요청당 청구액을 결정합니다.</li>
+        <li>[3] <strong>Tier 1 &mdash; PTU 가격 스냅샷:</strong> 이 저장소, <code>pricing/azure-openai-ptu-2026-05.yaml</code>. 출처: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn 문서</a> (2026-05-19 접근, 리전 eastus2), <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">아카이브</a>. 공식의 PTU 쪽 &mdash; PTU-시간당 $2.00, 50 PTU 최소(하한), 그리고 처리량 계수에 쓰는 PTU당 Input TPM(gpt-4o 2,500; gpt-5.2 3,400) &mdash; 은 이 스냅샷에서 나옵니다. PAYG와 PTU 정가 모두 손익분기에 들어갑니다. 한쪽에는 요청당 PAYG 청구액, 다른 한쪽에는 고정된 시간당 $100 PTU 하한(50 × $2.00)입니다.</li>
+        <li>[4] <strong>Tier 2 &mdash; 실측한 요청당 입력:</strong> 이 저장소, <code>benchmarks/01-short-factual/analysis.json</code>, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>, <code>benchmarks/03-tool-using-agent/analysis.json</code>. 요청당 평균 비용과, gpt-4o 기준선 대비 처리량 향상 계수가 되는 셀별 요청당 토큰 분포의 출처입니다.</li>
+        <li>[5] <strong>Tier 2 &mdash; 모델링된 교차점 출력(실측이 아니라 계산):</strong> 이 저장소, <code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code>, <code>benchmark-02/crossover.json</code>, <code>benchmark-03/crossover.json</code>. 차트가 렌더링하는 <code>modeled_break_even_rpm</code> 계열은 <code>(min_ptu × ptu_hourly_rate ÷ (60 × mean_usd_per_request)) × throughput_gain_factor</code>로 계산됩니다. benchmark-01 xhigh의 2,748 rpm 수치, 50 PTU 하한, PTU-시간당 $2.00 정가는 모두 계산되거나 인용된 입력이며 실측 처리량이 아니라 모델링된 값으로 표시됩니다.</li>
         <li>[6] <strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">PTU/PAYG 교차점 차트 계열</a>은 같은 JSON 산출물을 감사할 수 있는 형태입니다.</li>
       </ul>
       <p>
         이 구간이 증명하는 것과 증명하지 못하는 것: 이 가격 스냅샷에서,
-        benchmark-01·-02·-03의 측정된 요청당 토큰 분포를 가진 워크로드에
-        대해 모델링된 손익분기가 어디에 놓이는지를 보여 줍니다. 다른 가격
-        스냅샷이나, 다른 워크로드 형태·캐시 적중률·추론 구성, 또는 다른 배포
+        benchmark-01, -02, -03의 실측한 요청당 토큰 분포를 가진 워크로드에
+        대해 모델링된 손익분기의 위치를 제시합니다. 다른 가격
+        스냅샷이나, 다른 워크로드 형태, 캐시 적중률, 추론 구성 또는 다른 배포
         리전에서도 그 교차점이 유지된다는 것은 증명하지 못합니다. 이것은
-        SLA가 아니라 계획 보조 수단이며, 실시간 용량에 대한 진술도 아닙니다.
+        SLA가 아니라 계획 보조 수단이며 실시간 용량에 대한 진술도 아닙니다.
       </p>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>근거로 말할 수 있는 것</h2>
-      <p>교차점은 겸손할 때 가치가 있습니다. 이 가격 스냅샷에서, 이 토큰 분포에 대해, 근거를 계획 질문으로 바꾸고 실시간 용량은 실시간 측정에 맡깁니다.</p>
+      <p>교차점은 제한된 범위에서 해석해야 가치가 있습니다. 이 가격 스냅샷과 토큰 분포를 기준으로 근거를 계획 질문으로 바꾸고 실시간 용량은 실측에 맡깁니다.</p>
       <p><a class="button-link" href="../../../ko/">개요 글로 돌아가기</a></p>
 
       <h2>실무 규칙</h2>
       <ol>
-        <li>손익분기 RPM을, 날짜가 박힌 PAYG·PTU 스냅샷에서 도출한 가격 전용 산술값으로 다루세요. 어느 한쪽 스냅샷이라도 움직이면 다시 도출하세요.</li>
-        <li>일반적인 워크로드가 아니라, 계획 중인 작업 구간의 측정된 토큰 형태에 맞추세요.</li>
+        <li>손익분기 RPM을, 날짜가 박힌 PAYG, PTU 스냅샷에서 도출한 가격 전용 산술값으로 다루세요. 어느 한쪽 스냅샷이라도 바뀌면 다시 도출하세요.</li>
+        <li>일반적인 워크로드가 아니라, 계획 중인 작업 구간의 실측 토큰 형태에 맞추세요.</li>
         <li>낮은 교차점은 어떤 배포에 PTU가 필요하다는 증명이 아니라, 용량 실험을 돌리라는 신호로 쓰세요.</li>
-        <li>PTU를 약정하기 전에 차트가 보지 못하는 비가격 요인 &mdash; 지연 시간 목표, 입장 동시성, 버스트 허용치 &mdash; 를 함께 따지세요.</li>
+        <li>PTU를 약정하기 전에 차트에 없는 비가격 요인 &mdash; 지연 시간 목표, 입장 동시성, 버스트 허용치 &mdash; 를 함께 따지세요.</li>
       </ol>
       <p>
-        <strong>실무 규칙: 교차점은 이 스냅샷과 토큰 형태에서의 가격 전용
+        <strong>실무 규칙: 교차점은 이 스냅샷과 토큰 형태에 한정된 가격 전용
         손익분기만 표시합니다 &mdash; PTU와 PAYG는 교차점이 모델링하지 못하는
-        비가격 요인, 즉 지연 시간, 입장, 버스트와 짝지어 결정하세요.</strong>
+        비가격 요인, 즉 지연 시간, 입장, 버스트를 함께 고려해 결정하세요.</strong>
       </p>
       <p>
         <a class="button-link" href="../../../../../charts/?lang=ko#chart-ptu-payg-crossover-benchmark-01-ptu_payg_crossover">교차점 차트 살펴보기</a>
@@ -187,14 +187,14 @@
       <p>
         <strong>다음:</strong>
         <a href="../../bridge-from-measurement-to-production/ko/">측정에서 프로덕션으로</a>
-        &mdash; 근거 습관은 언제 운영 습관이 되며, 둘 사이에서 무엇이
+        &mdash; 근거 습관은 언제 운영 습관이 되며 둘 사이에서 무엇이
         이어질까요?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
+    <p>MIT 라이선스 연구 산출물, 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
   </footer>
 </body>
 </html>

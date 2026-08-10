@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
   <title id="title">추론 모델 마이그레이션 사이징 요인</title>
-  <desc id="desc">1000 RPM 워크로드를 예로 든 PTU 사이징 차트로, 출력 가중치·캐시 비율·숨은 추론 토큰이 반올림된 PTU 추정치를 어떻게 바꾸는지 보여 줍니다.</desc>
+  <desc id="desc">1000 RPM 워크로드를 예로 들어, 출력 가중치·캐시 비율·숨은 추론 토큰에 따라 반올림된 PTU 추정치가 어떻게 달라지는지 보여 주는 사이징 차트.</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">마이그레이션 사이징은 워크로드 형태 계산입니다</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">마이그레이션 사이징은 워크로드 형태에 따라 달라집니다</text>
   <text x="32" y="68" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">예시 계산: 1,000 RPM, 입력 200 토큰, 보이는 출력 20 토큰. 추론 사례에는 숨은 추론 토큰 60개를 더합니다.</text>
 
   <rect x="32" y="95" width="916" height="330" rx="16" fill="#fff" stroke="#dce6f0"/>
@@ -23,12 +23,12 @@
     <rect x="230" y="254.6" width="90" height="110.4" rx="8" fill="#3a86ff"/>
     <text x="275" y="244" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">115</text>
     <text x="275" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-4o</text>
-    <text x="275" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 분량만</text>
+    <text x="275" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 토큰만</text>
 
     <rect x="370" y="259.4" width="90" height="105.6" rx="8" fill="#06d6a0"/>
     <text x="415" y="249" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">110</text>
     <text x="415" y="392" text-anchor="middle" font-size="12" font-weight="700" fill="#31475e">gpt-5.2</text>
-    <text x="415" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 분량만</text>
+    <text x="415" y="410" text-anchor="middle" font-size="11" fill="#6b7c8e">보이는 토큰만</text>
 
     <rect x="510" y="288.2" width="90" height="76.8" rx="8" fill="#8ecae6"/>
     <text x="555" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#102a43">80</text>
@@ -49,6 +49,6 @@
   <rect x="32" y="452" width="916" height="76" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
   <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">차트 읽는 법</text>
   <text x="58" y="502" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">앞의 세 막대는 Microsoft Learn의 공식과 모델 표를 따릅니다.</text>
-  <text x="58" y="520" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">마지막 두 막대는 60토큰 추론 가정을 더해, 숨은 출력을 측정해야 하는 이유를 보여 줍니다.</text>
-  <text x="58" y="542" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공식 사이징 산식 + 공개 예시 계산. 보편적 용량 주장이 아닙니다.</text>
+  <text x="58" y="520" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">마지막 두 막대에는 60토큰 추론 가정을 더해 숨은 추론 토큰 측정의 필요성을 드러냈습니다.</text>
+  <text x="58" y="542" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">출처: 공식 사이징 산식과 공개 예시 계산. 보편적인 용량 주장은 아닙니다.</text>
 </svg>

@@ -14,7 +14,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp001 · 단답 작업에 추론은 필요했는가 | when reasoning pays off</title>
-  <meta name="description" content="짧은 사실 작업(Null case) 벤치마크 exp001의 실험 노트. 설계·입력·산출물·사전등록 예측·실측 비용/품질·실패가 숨은 자리·한계·결정을 순서대로 되짚고, 자격증명 없이 이 실험만 직접 재현합니다. 세 벤치마크의 바닥 앵커 — 추론이 값을 하지 못한 자리를 실측으로 확인합니다.">
+  <meta name="description" content="짧은 사실 작업(Null 케이스) 벤치마크 exp001의 실험 노트. 설계·입력·산출물·사전 등록한 예측·실측 비용/품질·실패가 숨은 자리·한계·결정을 순서대로 되짚고 자격증명 없이 이 실험만 직접 재현합니다. 세 벤치마크의 바닥 앵커 — 추론이 값을 하지 못한 자리를 실측으로 확인합니다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="canonical">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -49,26 +49,26 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp001</p>
-    <p class="article-kicker">실험 노트 · exp001 · 짧은 사실 작업(Null case) · 추론이 값을 하지 못한 바닥</p>
+    <p class="article-kicker">실험 노트 · exp001 · 짧은 사실 작업(Null 케이스) · 추론이 값을 하지 못한 바닥</p>
     <h1>exp001 &mdash; 단답 작업에 추론은 필요했는가</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">세 벤치마크의 <strong>바닥</strong>부터 놓았다. 추출&middot;형식&middot;분류&middot;음역&middot;산술 &mdash; 한 번에 답이 나오는 <strong>짧은 사실 작업</strong>. 여기서 추론 강도를 올리는 건 &ldquo;1 더하기 1&rdquo;에 회의를 소집하는 일에 가깝다. 예측은 단순했다. <em>추론은 값을 하지 못한다.</em></p>
-    <p class="lede">이 노트가 앞선 두 편과 다른 점이 하나 있다. <strong>합성 픽스처가 아니라 실측</strong>이다. 360셀 전부를 Azure Foundry v1으로 실제 호출하고, 중립 심판 gpt-4o로 셀당 한 번씩 <strong>360/360</strong> 채점했다. <code>"fixture": true</code> 마커는 어디에도 없다. 그래서 이 바닥은 &lsquo;그럴듯하게 합성된 바닥&rsquo;이 아니라 <em>측정된 바닥</em>이다.</p>
-    <p class="lede">측정해 보니 <strong>예측 그대로였다</strong> &mdash; 세 벤치마크 중 사전 등록이 반전 없이 맞은 유일한 자리다. 다만 실측이 얹어 준 디테일이 둘 있었다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 강도 다이얼이 아무 데도 연결되지 않은 자리. 이 노트는 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
+    <p class="lede">앞선 두 편과 다른 점이 하나 있다. <strong>합성 픽스처가 아닌 실측</strong>이다. 360셀 전부를 Azure Foundry v1으로 실제 호출하고 중립 심판 모델 gpt-4o로 셀당 한 번씩 <strong>360/360</strong> 채점했다. <code>"fixture": true</code> 마커는 어디에도 없다. 이 바닥은 &lsquo;그럴듯하게 합성된 바닥&rsquo;과 다르다. 직접 <em>실측한 바닥</em>이다.</p>
+    <p class="lede">측정해 보니 <strong>예측 그대로였다</strong> &mdash; 세 벤치마크 중 사전 등록한 예측이 반전 없이 맞은 유일한 자리다. 다만 실측에서 두 가지를 더 확인했다. 하나, gpt-5.2는 <em>추론을 하나도 켜지 않은</em> <code>none</code>에서 이미 gpt-4o를 <strong>품질로도</strong> 앞섰다. 둘, 강도를 <code>xhigh</code>까지 올려도 숨은 추론 토큰은 <strong>0 근처에 붙어 있었다</strong> &mdash; 손잡이가 아무 데도 연결되지 않은 자리. 그 바닥을 <em>설계 → 입력 → 산출물 → 예측 대 실측 → 실패가 숨은 자리 → 결정</em>으로 되짚는다 &mdash; 다음 사람이 같은 길에서 덜 헤매도록.</p>
 
     <section class="article-section">
       <p class="section-label">왜 읽어야 하나</p>
       <h2>이 손잡이, 올려야 이득일까?</h2>
-      <p>새 모델을 붙이면 설정 어딘가에 <strong>추론 강도(reasoning effort)</strong>라는 손잡이가 있다. 모델이 답을 내기 전에 속으로 얼마나 더 곱씹을지 정하는 값이다. 올릴수록 더 똑똑해질 것 같아서, 잘 모를 땐 일단 높여 두기 쉽다. 하지만 손잡이를 올리면 답이 좋아지든 아니든 <strong>돈과 시간은 확실히 더 든다.</strong> 그러니 &lsquo;밑져야 본전&rsquo;이 아닐 수도 있다.</p>
-      <p>그래서 가장 쉬운 자리부터 확인하기로 했다. 한 번에 답이 나오는 <strong>짧은 사실 작업</strong> &mdash; 값 뽑아내기, 형식 맞추기, 분류, 간단한 계산 &mdash; 은 많은 서비스가 가장 자주 처리하는 일이기도 하다. 여기서 손잡이가 헛돈다면, &lsquo;잘 모르니 일단 올려 두자&rsquo;라는 습관은 매달 청구서만 키우는 셈이다.</p>
-      <p>이 글은 그 손잡이가 언제 돈값을 하고 언제 낭비인지를, 가장 쉬운 경우부터 실측으로 가른다. 당신의 작업이 여기에 해당한다면 결론은 곧 <strong>기본값</strong>이 된다. 해당하지 않더라도 걱정 마라 &mdash; 뒤에 올 다단계(02)와 툴 작업(03)의 반전은 바로 이 바닥과 견줘야 의미가 생긴다.</p>
+      <p>새 모델을 붙이면 설정 어딘가에 <strong>추론 강도(reasoning effort)</strong>라는 손잡이가 있다. 모델이 답을 내기 전에 속으로 얼마나 더 곱씹을지 정하는 값이다. 올릴수록 더 똑똑해질 것 같아 잘 모를 땐 일단 높여 두기 쉽다. 하지만 손잡이를 올리면 답이 좋아지든 아니든 <strong>돈과 시간은 확실히 더 든다.</strong> &lsquo;밑져야 본전&rsquo;이 아닐 수도 있다.</p>
+      <p>가장 쉬운 자리부터 확인하기로 했다. 한 번에 답이 나오는 <strong>짧은 사실 작업</strong> &mdash; 값 뽑아내기, 형식 맞추기, 분류, 간단한 계산 &mdash; 은 많은 서비스가 가장 자주 처리하는 일이기도 하다. 여기서 손잡이가 헛돈다면 &lsquo;잘 모르니 일단 올려 두자&rsquo;라는 습관은 매달 청구서만 키우는 셈이다.</p>
+      <p>이 글에서는 그 손잡이가 언제 돈값을 하고 언제 낭비인지를 가장 쉬운 경우부터 실측으로 가른다. 당신의 작업이 여기에 해당한다면 결론은 곧 <strong>기본값</strong>이 된다. 해당하지 않더라도 걱정 마라 &mdash; 뒤에 올 다단계(02)와 툴 작업(03)의 반전은 바로 이 바닥과 견줘야 의미가 생긴다.</p>
     </section>
 
     <section id="reproduce" class="article-section">
       <p class="section-label">먼저, 10초</p>
       <h2>결론을 믿지 말고 이 실험만 직접 돌려보세요</h2>
-      <p>토큰 소비는 0입니다. 아래 두 줄이 이 실험의 입력&middot;변수&middot;산출물을 그대로 출력하고, 러너 배선을 dry-run으로 검증합니다.</p>
+      <p>토큰 소비는 0입니다. 아래 두 줄이 이 실험의 입력&middot;변수&middot;산출물을 그대로 출력하고 러너 배선을 dry-run으로 검증합니다.</p>
       <pre class="code-block"><code># 이 실험의 입력 → 변수 → 산출물 카드를 출력 (네트워크 없음)
 python -c "import experiments; print(experiments.describe('exp001_short-factual_baseline.yaml').summary())"
 
@@ -92,13 +92,13 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
       <p class="section-label">설계</p>
       <h2>가장 단순한 작업부터</h2>
       <p><strong>왜 이걸 굳이 재 봤나.</strong> 흔한 믿음이 하나 있다. &lsquo;생각을 더 시키면 답도 더 좋아진다.&rsquo; 그럴듯하니, 많은 팀이 잘 모를 땐 추론 강도를 일단 높여 둔다 &mdash; 밑져야 본전이라는 마음으로. 그런데 강도를 올리면 답이 좋아지든 아니든 <strong>돈과 시간은 확실히 더 든다.</strong> 그러니 &lsquo;밑져야 본전&rsquo;이 아닐 수도 있다. 이 믿음이 정말 맞는지, 짐작이 아니라 데이터로 확인하고 싶었다.</p>
-      <p><strong>그래서 믿음을 &lsquo;가설&rsquo;로 바꿨다.</strong> 문장은 이렇다 &mdash; <em>가장 쉬운 작업에서는, 생각을 더 시켜도 답은 좋아지지 않고 비용만 오른다.</em> 쓸 만한 가설에는 &lsquo;이러면 내가 틀린 것&rsquo;이라는 선이 있어야 한다. 여기선 그 선이 분명하다. <strong>강도를 올릴수록 정답률이 또렷이 오른다면, 가설은 그 자리에서 깨진다.</strong> 반대로 강도를 올려도 정답률이 제자리면, 가설은 버틴다. 그 판정을 짐작이 아니라 실측으로 내리려고 이 실험을 짰다.</p>
-      <p><strong>왜 하필 가장 쉬운 작업부터였나.</strong> 기준점을 먼저 박아야 나머지를 믿을 수 있어서다. 어려운 문제에서 &lsquo;추론이 값을 한다&rsquo;를 보이려면, 먼저 <strong>&lsquo;값을 못 하는 자리&rsquo;가 어떤 모양인지</strong>를 실측으로 잡아 둬야 한다. 이 바닥이 있어야, 뒤에 올 다단계(02)와 툴 작업(03)의 반전이 진짜 반전인지 가늠할 수 있다. 그래서 이 노트는 시리즈의 <strong>출발점이자 기준점</strong>이 된다.</p>
-      <p><strong>검증할 질문은 하나로 줄였다.</strong> 한 번에 답이 나오는 짧은 사실 작업이다. 세 벤치마크 가운데 가장 쉬운 자리다. 여기서 gpt-5.2에게 생각할 여지(추론 강도)를 더 주면 답이 좋아지고, 그만한 값을 할까? 확인할 것은 둘뿐이다. 강도를 올리면 <strong>(1) 품질이 오르나, (2) 비용이 오르나.</strong> 비용은 두 방식으로 읽는다. 쓴 만큼 내는 <strong>PAYG</strong>에서는 &lsquo;정답 하나에 얼마&rsquo;를, 용량을 미리 빌리는 <strong>PTU</strong>에서는 &lsquo;같은 용량으로 1분에 몇 개를 맞히나&rsquo;를 본다. 예상 답은 &ldquo;아니오&rdquo;였다. 이 실험의 역할은 그 &lsquo;아니오&rsquo;의 바닥을, 짐작이 아니라 실측으로 못 박는 것이다.</p>
-      <p><strong>무엇으로 재나 &mdash; 데이터셋.</strong> 얼려 둔 저작 샘플 20개(<code>sf_01</code>&hellip;<code>sf_20</code>)로, 추출&middot;형식&middot;분류&middot;열거&middot;음역&middot;정규화&middot;단위환산&middot;간단 산술&middot;요약이 고루 섞여 있다. 이런 작업은 &lsquo;정답 하나&rsquo;를 표로 못 박기 어렵다. 그래서 정답표 대신 <code>expected_output_shape</code>(답의 모양)와 <code>quality_rubric_notes</code>(채점 기준)만 고정하고, 품질은 <strong>중립 심판 모델 gpt-4o가 답안을 읽고 0&middot;1&middot;2로 매기게</strong> 했다. 채점의 근거까지 원자료에 그대로 남긴다.</p>
-      <p><strong>바꾸는 건 딱 하나</strong> &mdash; gpt-5.2의 추론 강도(<code>reasoning.effort</code>)를 <code>none</code>(끔)에서 <code>low · medium · high · xhigh</code>까지 다섯 단계로 올려 본다. 나머지 조건은 전부 고정이다. 옆에는 추론 다이얼이 아예 없는 <strong>gpt-4o를 기준선</strong>으로 나란히 세운다. 우연한 요행을 걸러내려고 각 (샘플 × 모델 × 강도) 조합은 <strong>세 번씩(R=3)</strong> 돌린다.</p>
-      <div class="article-summary-grid" aria-label="사전 등록 예측과 역할">
-        <section class="summary-tile"><h2>사전 등록 예측</h2><p>짧은 사실 작업에는 추론이 필요 없다. 품질은 가장 낮은 강도에서 이미 천장에 닿고, 강도를 올리면 품질은 그대로인 채 비용&middot;지연&middot;토큰만 는다. 즉 &ldquo;강도를 올리지 말라&rdquo;가 답이다.</p></section>
+      <p><strong>그 믿음을 &lsquo;가설&rsquo;로 바꿨다.</strong> 문장은 이렇다 &mdash; <em>가장 쉬운 작업에서는, 생각을 더 시켜도 답은 좋아지지 않고 비용만 오른다.</em> 쓸 만한 가설에는 &lsquo;이러면 내가 틀린 것&rsquo;이라는 선이 있어야 한다. 여기선 그 선이 분명하다. <strong>강도를 올릴수록 정답률이 또렷이 오른다면 가설은 그 자리에서 깨진다.</strong> 반대로 강도를 올려도 정답률이 제자리면 가설은 버틴다. 그 판정을 짐작이 아닌 실측으로 내리려고 이 실험을 짰다.</p>
+      <p><strong>왜 하필 가장 쉬운 작업부터였나.</strong> 기준점을 먼저 박아야 나머지를 믿을 수 있어서다. 어려운 문제에서 &lsquo;추론이 값을 한다&rsquo;를 보이려면 먼저 <strong>&lsquo;값을 못 하는 자리&rsquo;가 어떤 모양인지</strong>를 실측으로 잡아 둬야 한다. 이 바닥이 있어야 뒤에 올 다단계(02)와 툴 작업(03)의 반전이 진짜 반전인지 가늠할 수 있다. 이 노트는 시리즈의 <strong>출발점이자 기준점</strong>이 된다.</p>
+      <p><strong>검증할 질문은 하나로 줄였다.</strong> 한 번에 답이 나오는 짧은 사실 작업이다. 세 벤치마크 가운데 가장 쉬운 자리다. 여기서 gpt-5.2에게 생각할 여지(추론 강도)를 더 주면 답이 좋아지고 그만한 값을 할까? 확인할 것은 둘뿐이다. 강도를 올리면 <strong>(1) 품질이 오르나, (2) 비용이 오르나.</strong> 비용은 두 방식으로 읽는다. 쓴 만큼 내는 <strong>PAYG</strong>에서는 &lsquo;정답 하나에 얼마&rsquo;를, 용량을 미리 빌리는 <strong>PTU</strong>에서는 &lsquo;같은 용량으로 1분에 몇 개를 맞히나&rsquo;를 본다. 예상 답은 &ldquo;아니오&rdquo;였다. 이 실험은 그 &lsquo;아니오&rsquo;의 바닥을 짐작이 아닌 실측으로 못 박는다.</p>
+      <p><strong>무엇으로 재나 &mdash; 데이터셋.</strong> 얼려 둔 저작 샘플 20개(<code>sf_01</code>&hellip;<code>sf_20</code>)로, 추출&middot;형식&middot;분류&middot;열거&middot;음역&middot;정규화&middot;단위환산&middot;간단 산술&middot;요약이 고루 섞여 있다. 이런 작업은 &lsquo;정답 하나&rsquo;를 표로 못 박기 어렵다. 정답표 대신 <code>expected_output_shape</code>(답의 모양)와 <code>quality_rubric_notes</code>(채점 기준)만 고정하고 품질은 <strong>중립 심판 모델 gpt-4o가 답안을 읽고 0&middot;1&middot;2로 매기게</strong> 했다. 채점의 근거까지 원자료에 그대로 남긴다.</p>
+      <p><strong>바꾸는 건 딱 하나</strong> &mdash; gpt-5.2의 추론 강도(<code>reasoning.effort</code>)를 <code>none</code>(끔)에서 <code>low · medium · high · xhigh</code>까지 다섯 단계로 올려 본다. 나머지 조건은 전부 고정이다. 옆에는 손잡이가 아예 없는 <strong>gpt-4o를 기준선</strong>으로 나란히 세운다. 우연한 요행을 걸러내려고 각 (샘플 × 모델 × 강도) 조합은 <strong>세 번씩(R=3)</strong> 돌린다.</p>
+      <div class="article-summary-grid" aria-label="사전 등록한 예측과 역할">
+        <section class="summary-tile"><h2>사전 등록한 예측</h2><p>짧은 사실 작업에는 추론이 필요 없다. 품질은 가장 낮은 강도에서 이미 천장에 닿고 강도를 올리면 품질은 그대로인 채 비용&middot;지연&middot;토큰만 는다. 즉 &ldquo;강도를 올리지 말라&rdquo;가 답이다.</p></section>
         <section class="summary-tile"><h2>이 실험의 역할</h2><p>세 벤치마크의 <em>바닥 앵커</em>. 다단계(02)의 천장과 툴 에이전트(03)의 혼합을 재기 전에, &ldquo;추론이 정말 필요 없는 자리&rdquo;가 어떤 모양인지 실측으로 고정한다. 뒤 실험들의 반전은 이 바닥과의 대비에서 의미를 얻는다.</p></section>
       </div>
     </section>
@@ -106,7 +106,7 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
     <section id="io" class="article-section">
       <p class="section-label">입력과 산출물</p>
       <h2>무엇을 먹고 무엇을 남겼나</h2>
-      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 그래서 인풋에서 아웃풋까지 한 줄로 되짚을 수 있습니다.</p>
+      <p>이 실험이 먹은 것도 남긴 것도 손으로 쓴 요약이 아니라 레포의 실제 파일입니다. 인풋에서 아웃풋까지 한 줄로 되짚을 수 있습니다.</p>
       <div class="article-summary-grid" aria-label="입력과 산출물">
         <section class="summary-tile">
           <h2>입력 (in)</h2>
@@ -117,22 +117,22 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
         <section class="summary-tile">
           <h2>산출물 (out)</h2>
           <p><strong>원시 호출:</strong> <code>runs/*.json</code> (Foundry v1 페이로드 + usage/latency 원문).<br>
-          <strong>채점:</strong> <code>judge_runs_real/*.json</code> (실측 gpt-4o 심판, 셀당 1회).<br>
+          <strong>채점:</strong> <code>judge_runs_real/*.json</code> (실측 심판 모델 gpt-4o, 셀당 1회).<br>
           <strong>집계:</strong> <code>analysis.json</code> (실측 데이터).<br>
           <strong>도표/표:</strong> <code>results/cost-curves/benchmark-01-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>측정 표면은 360셀</strong>(gpt-4o 60 + gpt-5.2 300, 강도 다섯 단계). 이상치로 제외된 셀은 <strong>0개</strong> &mdash; 운영 플래그(콜드스타트&middot;재시도&middot;출력 절단)로 3σ를 넘긴 행이 하나도 없었다. 채점은 중립 심판 gpt-4o가 셀당 한 번, <strong>360/360 성공</strong>. 모든 JSON은 실제 Azure Foundry v1 호출로 <code>"fixture": true</code> 마커가 하나도 없다. 집계는 <code>--experiment-prefix exp001_short-factual_baseline</code>로 실측 데이터만 골라 다시 만들었고, 두 번 돌려도 결과가 바이트까지 같다.</p>
+      <p><strong>측정한 셀은 360개</strong>(gpt-4o 60 + gpt-5.2 300, 강도 다섯 단계). 이상치로 제외된 셀은 <strong>0개</strong> &mdash; 운영 플래그(콜드스타트&middot;재시도&middot;출력 절단)로 3σ를 넘긴 행이 하나도 없었다. 채점은 중립 심판 모델 gpt-4o가 셀당 한 번, <strong>360/360 성공</strong>. 모든 JSON은 실제 Azure Foundry v1 호출로 <code>"fixture": true</code> 마커가 하나도 없다. 집계는 <code>--experiment-prefix exp001_short-factual_baseline</code>로 실측 데이터만 골라 다시 만들었고 두 번 돌려도 결과가 바이트까지 같다.</p>
     </section>
 
     <section id="predict" class="article-section">
       <p class="section-label">예측 대 실측</p>
       <h2>예측이 그대로 맞은 유일한 자리</h2>
       <div class="article-summary-grid" aria-label="예측 대 실측">
-        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>짧은 사실 작업엔 추론이 필요 없다. 품질은 바닥에서 이미 천장에 닿고, 강도를 올려도 품질은 그대로인 채 비용만 는다. 요약하면 &ldquo;강도를 올리지 말라.&rdquo;</p></section>
-        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>정확히 그대로였다 &mdash; 반전이 없다. 품질은 <code>none</code>에서 이미 천장에 닿았고(정답률 95%) 강도를 올려도 60건 중 1&ndash;2건 안에서만 흔들렸다. 얹어진 디테일: <code>none</code>이 gpt-4o를 <em>품질로도</em> 앞섰고, 추론 토큰은 <code>xhigh</code>에서도 0 근처였다.</p></section>
+        <section class="summary-tile"><h2>무엇을 예측했나</h2><p>짧은 사실 작업엔 추론이 필요 없다. 품질은 바닥에서 이미 천장에 닿고 강도를 올려도 품질은 그대로인 채 비용만 는다. 한 줄로 적은 예측은 &ldquo;강도를 올리지 말라.&rdquo;였다.</p></section>
+        <section class="summary-tile"><h2>무엇이 나왔나</h2><p>정확히 그대로였다 &mdash; 반전이 없다. 품질은 <code>none</code>에서 이미 천장에 닿았고(정답률 95%) 강도를 올려도 60건 중 1&ndash;2건 안에서만 흔들렸다. 두 가지가 더 확인됐다: <code>none</code>이 gpt-4o를 <em>품질로도</em> 앞섰고 추론 토큰은 <code>xhigh</code>에서도 0 근처였다.</p></section>
       </div>
-      <p><strong>판정: 예상이 그대로 맞았다.</strong> 다단계(02)와 툴(03)은 뚜껑을 열자 이야기가 뒤집혔다(천장 케이스는 <code>none</code>이 바닥, 혼합 케이스는 <code>low</code>가 바닥). 하지만 이 바닥만은 예측대로였다. 그래서 이 실험은 시리즈의 <em>기준점</em> 노릇을 한다. &ldquo;추론이 값을 못 하는 자리&rdquo;가 실제로 어떤 모양인지 실측으로 보여 주는 자리다.</p>
+      <p><strong>판정: 예상이 그대로 맞았다.</strong> 다단계(02)와 툴(03)은 뚜껑을 열자 이야기가 뒤집혔다(천장 케이스는 <code>none</code>이 바닥, 혼합 케이스는 <code>low</code>가 바닥). 하지만 이 바닥만은 예측대로였다. 이 실험은 시리즈의 <em>기준점</em> 노릇을 한다. &ldquo;추론이 값을 못 하는 자리&rdquo;가 실제로 어떤 모양인지 실측으로 보여 준다.</p>
     </section>
 
     <section id="reversal" class="article-section">
@@ -146,38 +146,38 @@ gpt-5.2   low      $0.589        96.7% (58/60)    $0.609
 gpt-5.2   medium   $0.589        96.7% (58/60)    $0.609
 gpt-5.2   high     $0.608        95.0% (57/60)    $0.640
 gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
-      <p><strong>추론을 한 톨도 켜지 않은 <code>none</code>이, 두 축 모두에서 gpt-4o를 앞선다.</strong> 요청 1,000건당 $0.587로 gpt-4o($0.665)보다 <strong>12% 싸고</strong>, 정답률은 오히려 <strong>95% 대 90%</strong>로 더 높다. 정답 1,000건당으로 환산하면 $0.618 대 $0.739 &mdash; <strong>16% 저렴</strong>하다. 다시 말해 여기서 값을 한 것은 &lsquo;강도를 올린 것&rsquo;이 아니라 <em>모델을 바꾼 것</em> 그 자체다. 강도 다이얼은 아직 아무 일도 하지 않았다.</p>
-      <p>그리고 <code>none</code> 위로는 아무 일도 일어나지 않는다. <code>low</code>&middot;<code>medium</code>은 정답률이 96.7%로 <em>한 칸 높아 보이지만</em>, 60건 중 딱 1건 차이다 &mdash; 표본이 작아(N=20&middot;R=3, 신뢰구간 없음) 잡음으로 봐야 할 크기다. <code>high</code>로 더 올리면 값은 오히려 요청당 <strong>+3.6%</strong> 뛰고 정답률은 95%로 되돌아온다. 결국 <strong><code>none</code>부터 <code>medium</code>까지는 사실상 평평하고</strong>, 그 위는 품질 없이 비용만 얹을 뿐이다.</p>
+      <p><strong>추론을 한 톨도 켜지 않은 <code>none</code>이 두 축 모두에서 gpt-4o를 앞선다.</strong> 요청 1,000건당 $0.587로 gpt-4o($0.665)보다 <strong>12% 싸고</strong>, 정답률은 오히려 <strong>95% 대 90%</strong>로 더 높다. 정답 1,000건당으로 환산하면 $0.618 대 $0.739 &mdash; <strong>16% 저렴</strong>하다. 여기서는 &lsquo;강도를 올린 것&rsquo;보다 <em>모델을 바꾼 것</em> 자체가 값을 했다. 손잡이는 아직 아무 일도 하지 않았다.</p>
+      <p><code>none</code> 위로는 아무 일도 일어나지 않는다. <code>low</code>&middot;<code>medium</code>은 정답률이 96.7%로 <em>한 칸 높아 보이지만</em> 60건 중 딱 1건 차이다 &mdash; 표본이 작아(N=20&middot;R=3, 신뢰구간 없음) 잡음으로 봐야 할 크기다. <code>high</code>로 더 올리면 값은 오히려 요청당 <strong>+3.6%</strong> 뛰고 정답률은 95%로 되돌아온다. <strong><code>none</code>부터 <code>medium</code>까지는 사실상 평평하고</strong>, 그 위는 품질 없이 비용만 얹을 뿐이다.</p>
 
       <figure class="article-figure" id="figure-exp001-quality">
-        <figcaption><strong>평평한 품질 곡선, 실측.</strong> 강도별 심판 점수(0&ndash;2). gpt-5.2는 <code>none</code>(1.95)부터 <code>xhigh</code>(1.95)까지 1.9&ndash;1.97 사이에서 미동도 없이 평평하고, gpt-4o 기준선(1.90)은 그 바로 아래에 있다. 강도 사다리 전체의 최대 품질 격차는 <strong>0.07점</strong>에 불과하다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(실측 코호트).</figcaption>
-        <img src="../../../../../../assets/benchmark-01-quality.png" alt="벤치마크 01의 강도별 평균 심판 점수 막대 그래프. gpt-5.2는 none부터 xhigh까지 1.9~1.97 사이에서 평평하고, gpt-4o는 1.90으로 그 아래에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+        <figcaption><strong>평평한 품질 곡선, 실측.</strong> 강도별 심판 점수(0&ndash;2). gpt-5.2는 <code>none</code>(1.95)부터 <code>xhigh</code>(1.95)까지 1.9&ndash;1.97 사이에서 미동도 없이 평평하고 gpt-4o 기준선(1.90)은 그 바로 아래에 있다. 강도 사다리 전체의 최대 품질 격차는 <strong>0.07점</strong>에 불과하다. 출처: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cost-curves/benchmark-01-quality.png"><code>results/cost-curves/benchmark-01-quality.png</code></a>(실측 코호트).</figcaption>
+        <img src="../../../../../../assets/benchmark-01-quality.png" alt="벤치마크 01의 강도별 평균 심판 점수 막대 그래프. gpt-5.2는 none부터 xhigh까지 1.9~1.97 사이에서 평평하고 gpt-4o는 1.90으로 그 아래에 있다." style="width:100%;height:auto;max-width:1100px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
       </figure>
     </section>
 
     <section id="subtypes" class="article-section">
       <p class="section-label">실패가 숨은 자리</p>
       <h2>실패는 어디 숨었나</h2>
-      <p>90% 대 95%라는 집계 숫자 둘만 봐서는 &ldquo;대체 어디서&rdquo; 갈렸는지 알 수 없다. 그래서 작업 유형별로 점수를 쪼개 봤다. 그러자 대부분의 유형은 두 모델 모두 만점(2.0)이고, <strong>차이는 딱 세 군데 &mdash; 추출&middot;요약&middot;산술 &mdash; 에서만</strong> 난다는 게 드러났다. 이 세 유형이 이 실험의 핵심이다.</p>
+      <p>90% 대 95%라는 집계 숫자 둘만 봐서는 &ldquo;대체 어디서&rdquo; 갈렸는지 알 수 없다. 그래서 작업 유형별로 점수를 쪼개 봤다. 그러자 대부분의 유형은 두 모델 모두 만점(2.0)이고 <strong>차이는 딱 세 군데 &mdash; 추출&middot;요약&middot;산술 &mdash; 에서만</strong> 난다는 게 드러났다. 이 세 유형이 이 실험의 핵심이다.</p>
       <pre class="code-block"><code>유형              gpt-4o   5.2/none   5.2/low   5.2/high   5.2/xhigh
 추출(extraction)  1.75     2.00       2.00      2.00       2.00
 요약(summ.)       1.33     1.78       2.00      1.78       1.89
 산술(arith-triv)  2.00     1.83       1.67      1.67       1.67</code></pre>
       <ul>
-        <li><strong>추출 &mdash; gpt-5.2가 바닥에서 메운 곳.</strong> gpt-4o는 추출 12건에서 1.75로 몇 건을 놓쳤는데, gpt-5.2는 <em>추론을 켜지 않은</em> <code>none</code>부터 이미 2.00 만점이다. gpt-5.2의 95%가 gpt-4o의 90%를 앞선 이유가 바로 여기다 &mdash; 추론이 아니라 모델 자체가 추출을 더 안정적으로 한다.</li>
+        <li><strong>추출 &mdash; gpt-5.2가 바닥에서 메운 곳.</strong> gpt-4o는 추출 12건에서 1.75로 몇 건을 놓쳤는데, gpt-5.2는 <em>추론을 켜지 않은</em> <code>none</code>부터 이미 2.00 만점이다. gpt-5.2의 95%가 gpt-4o의 90%를 앞선 이유가 바로 여기다 &mdash; 모델 자체의 추출이 더 안정적이다.</li>
         <li><strong>요약 &mdash; low에서 정점, 그 뒤 후퇴.</strong> gpt-4o가 가장 약한 태그(1.33). gpt-5.2는 <code>none</code> 1.78 → <code>low</code> 2.00으로 올라섰다가 <code>medium</code>&middot;<code>high</code>에서 1.78&ndash;1.89로 <em>도로 내려온다</em>. 강도를 올린다고 요약이 좋아지지 않는다.</li>
         <li><strong>산술 &mdash; 유일하게 gpt-4o가 이긴 자리, 그리고 강도의 역효과.</strong> 사소한 산술 6건에서 gpt-4o는 2.00 만점인데 gpt-5.2는 <code>none</code> 1.83에서 <code>low</code>&middot;<code>high</code>&middot;<code>xhigh</code> 1.67로 <em>내려간다</em>. 강도를 올릴수록 &ldquo;1 더하기 1&rdquo;을 과하게 곱씹어 오히려 헛디디는 것이다. 추론이 값을 못 하는 정도가 아니라, 여기선 <strong>음의 값</strong>을 한다.</li>
       </ul>
-      <p>세 유형이 서로를 깎아먹는다. gpt-5.2는 추출&middot;요약에서 gpt-4o보다 앞서고 산술에서 조금 뒤지지만, 합쳐 보면 <code>none</code>&middot;<code>low</code>에서 가장 좋다. 그리고 어느 유형에서도 <strong>강도를 올려 이득을 본 곳이 없다</strong>. 이 벤치마크를 &lsquo;추론이 값을 못 하는 사례(Null case)&rsquo;라 부르는 이유다.</p>
+      <p>세 유형이 서로를 깎아먹는다. gpt-5.2는 추출&middot;요약에서 gpt-4o보다 앞서고 산술에서 조금 뒤지지만 합쳐 보면 <code>none</code>&middot;<code>low</code>에서 가장 좋다. 어느 유형에서도 <strong>강도를 올려 이득을 본 곳이 없다</strong>. 이 벤치마크를 &lsquo;추론이 값을 못 하는 사례(Null 케이스)&rsquo;라 부르는 이유다.</p>
     </section>
 
     <section id="flatline" class="article-section">
       <p class="section-label">두 번째 신호</p>
       <h2>강도를 올려도 추론은 0에 머문다</h2>
-      <p><strong>그럼 왜 강도를 올려도 품질이 꿈쩍 안 하나?</strong> 토큰을 뜯어보면 답이 기계적으로 나온다. gpt-5.2가 겉으로 드러내지 않고 쓰는 <strong>추론 토큰</strong>은 <code>none</code>&middot;<code>low</code>&middot;<code>medium</code>에서 평균 <strong>0.00</strong>, <code>high</code>에서 1.35, <code>xhigh</code>에서 0.62다. 즉 <strong>강도를 최대로 올려도 모델이 실제로 &lsquo;생각&rsquo;에 쓰는 토큰은 0 근처</strong>다. 짧은 사실 작업은 한 번에 답이 나와서 <em>계획하거나 되짚을 거리가 아예 없고</em>, 그러니 강도 다이얼을 아무리 돌려도 연결된 데가 없다. 강도를 따라 추론 토큰이 실제로 늘어나던 다단계 작업(02)과는 정반대다.</p>
-      <p><strong>추론이 0이니 비용도 따라서 평평하다.</strong> 요청당 입력은 224토큰으로 고정이고(프롬프트가 바이트까지 같다), 눈에 보이는 출력도 10&ndash;16토큰으로 거의 늘지 않는다. 그러니 강도별 비용 차이라야 <code>none</code> $0.587에서 <code>high</code> $0.608, 요청 1,000건당 <strong>2센트 남짓</strong>의 미세한 차이뿐이다.</p>
+      <p><strong>그럼 왜 강도를 올려도 품질이 꿈쩍 안 하나?</strong> 토큰을 뜯어보면 답이 기계적으로 나온다. gpt-5.2가 겉으로 드러내지 않고 쓰는 <strong>추론 토큰</strong>은 <code>none</code>&middot;<code>low</code>&middot;<code>medium</code>에서 평균 <strong>0.00</strong>, <code>high</code>에서 1.35, <code>xhigh</code>에서 0.62다. 즉 <strong>강도를 최대로 올려도 모델이 실제로 &lsquo;생각&rsquo;에 쓰는 토큰은 0 근처</strong>다. 짧은 사실 작업은 한 번에 답이 나와서 <em>계획하거나 되짚을 거리가 아예 없고</em>, 그러니 손잡이를 아무리 돌려도 연결된 데가 없다. 강도를 따라 추론 토큰이 실제로 늘어나던 다단계 작업(02)과는 정반대다.</p>
+      <p><strong>추론이 0이니 비용도 따라서 평평하다.</strong> 요청당 입력은 224토큰으로 고정이고(프롬프트가 바이트까지 같다), 눈에 보이는 출력도 10&ndash;16토큰으로 거의 늘지 않는다. 강도별 비용 차이라야 <code>none</code> $0.587에서 <code>high</code> $0.608, 요청 1,000건당 <strong>2센트 남짓</strong>의 미세한 차이뿐이다.</p>
       <p><strong>응답이 걸리는 시간(지연)도 강도를 따르지 않는다.</strong> gpt-4o가 1,494ms, gpt-5.2는 강도와 상관없이 1,410&ndash;1,713ms 사이에서 노이즈처럼 흩어진다 &mdash; 심지어 <code>medium</code>이 <code>none</code>보다 빠르다. 한 번에 답하는 작업에서 강도로는 속도를 예측할 수 없다.</p>
-      <p><strong>용량을 통째로 빌리는 PTU로 보면 결론이 뒤집히진 않지만 살짝 눕는다.</strong> gpt-5.2 <code>none</code>은 요청당 토큰을 gpt-4o보다 약 1% 더 써서 처리량이 <strong>0.99배</strong>(약 −1%)다. 같은 용량으로 1분에 맞히는 개수는 gpt-4o가 근소하게 앞선다. 정리하면 <strong>쓴 만큼 내는 PAYG에서는 gpt-5.2 <code>none</code>이 분명히 싸고, 용량을 빌리는 PTU에서는 사실상 무승부</strong>다. 앞의 두 벤치마크처럼 PTU 격차가 크게 벌어지지 않고, 두 모델이 거의 포개진다.</p>
+      <p><strong>용량을 통째로 빌리는 PTU로 보면 결론이 뒤집히진 않지만 살짝 눕는다.</strong> gpt-5.2 <code>none</code>은 요청당 토큰을 gpt-4o보다 약 1% 더 써서 처리량이 <strong>0.99배</strong>(약 −1%)다. 같은 용량으로 1분에 맞히는 개수는 gpt-4o가 근소하게 앞선다. <strong>쓴 만큼 내는 PAYG에서는 gpt-5.2 <code>none</code>이 분명히 싸고 용량을 빌리는 PTU에서는 사실상 무승부</strong>다. 앞의 두 벤치마크처럼 PTU 격차가 크게 벌어지지 않고 두 모델이 거의 포개진다.</p>
     </section>
 
     <section id="transparency" class="article-section">
@@ -185,9 +185,9 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
       <h2>숫자에 남긴 얼룩까지 그대로</h2>
       <p>어떤 측정도 완벽하게 깨끗하지는 않다. 이 벤치마크가 남긴 자국을 지우지 않고 그대로 적어 둔다 &mdash; 감춰 두면 다음 사람이 같은 자리에서 헛디디기 때문이다.</p>
       <ul>
-        <li><strong>실측으로 교체.</strong> 이 바닥은 처음엔 합성 픽스처(<code>exp008_short-factual_fixture</code>)로 게시됐었다. 그럴듯한 모양이었지만, 측정은 아니었다. 이 노트와 함께 그 자리를 <em>실제로 측정한 데이터</em>로 바꿨다. <code>analysis.json</code>&middot;도표&middot;표를 <code>--experiment-prefix exp001_short-factual_baseline</code>로 다시 만들었다. 픽스처는 지우지 않았다. 자격증명 없이 오프라인에서 돌려 보는 발판으로 레포에 남기되, 게시 수치의 출처에서는 뺐다. 픽스처가 쓰던 <code>minimal</code> 강도는 실제 배포가 거부하는 값이라, 실측에서는 <code>none</code>이 바닥이다.</li>
-        <li><strong>이상치 0건.</strong> 360셀 어디에서도 운영 문제 표시(콜드스타트&middot;재시도&middot;출력 절단)나 3σ(정상 범위를 크게 벗어난 값)로 빠진 행이 없다(방법론 경보선 10%보다 한참 아래). 집계에서 가려낸 셀이 하나도 없는 깨끗한 표면이다.</li>
-        <li><strong>기계 정답표 없음.</strong> 이 데이터셋은 규칙으로 대조할 정답표가 없어 품질을 <em>심판 점수로만</em> 판정한다. 그래서 &ldquo;정답률&rdquo;은 심판 점수 2(완전 정답)의 비율로 계산했고, 부분 정답(1)은 통과로 세지 않았다. 이 선택을 밝혀 두어, 정답률이 어떻게 계산됐는지 드러낸다.</li>
+        <li><strong>실측으로 교체.</strong> 이 바닥은 처음엔 합성 픽스처(<code>exp008_short-factual_fixture</code>)로 게시됐었다. 그럴듯한 모양이었지만 측정은 아니었다. 이 노트와 함께 그 자리를 <em>실측 데이터</em>로 바꿨다. <code>analysis.json</code>&middot;도표&middot;표를 <code>--experiment-prefix exp001_short-factual_baseline</code>로 다시 만들었다. 픽스처는 지우지 않았다. 자격증명 없이 오프라인에서 돌려 보는 발판으로 레포에 남기되 게시 수치의 출처에서는 뺐다. 픽스처가 쓰던 <code>minimal</code> 강도는 실제 배포가 거부하는 값이라 실측에서는 <code>none</code>이 바닥이다.</li>
+        <li><strong>이상치 0건.</strong> 360셀 어디에서도 운영 문제 표시(콜드스타트&middot;재시도&middot;출력 절단)나 3σ(정상 범위를 크게 벗어난 값)로 빠진 행이 없다(방법론 경보선 10%보다 한참 아래). 모든 셀이 집계에 그대로 남았다.</li>
+        <li><strong>기계 정답표 없음.</strong> 이 데이터셋은 규칙으로 대조할 정답표가 없어 품질을 <em>심판 점수로만</em> 판정한다. &ldquo;정답률&rdquo;은 심판 점수 2(완전 정답)의 비율로 계산했고 부분 정답(1)은 통과로 세지 않았다. 이 선택을 밝혀 두어 정답률이 어떻게 계산됐는지 드러낸다.</li>
         <li><strong>산술의 역전.</strong> gpt-5.2가 gpt-4o에 진 유일한 태그(산술)를 숨기지 않고 §실패가 숨은 자리에 그대로 적었다 &mdash; 바닥의 결론이 &ldquo;gpt-5.2가 모든 걸 이긴다&rdquo;가 아니라 &ldquo;강도가 값을 못 한다&rdquo;임을 분명히 하기 위해서다.</li>
       </ul>
     </section>
@@ -195,44 +195,44 @@ gpt-5.2   xhigh    $0.598        95.0% (57/60)    $0.629</code></pre>
     <section id="limits" class="article-section">
       <p class="section-label">한계</p>
       <h2>어디까지 믿을 수 있나</h2>
-      <p>이 결과는 짧은 사실 작업 한 묶음, 가격표 한 장, 특정 모델과 채점 기준에서 나온 작은 집계값입니다. 그래서 숫자 자체보다 <strong>방법을 가져가는 편</strong>이 안전합니다.</p>
+      <p>이 결과는 짧은 사실 작업 한 묶음, 가격표 한 장, 특정 모델과 채점 기준에서 나온 작은 집계값입니다. 숫자 자체보다 <strong>방법을 가져가는 편</strong>이 안전합니다.</p>
       <ul>
         <li><strong>표본.</strong> N=20 · R=3. 이 표본 크기에서는 신뢰구간이나 통계적 유의성을 주장하지 않는다 &mdash; <code>none</code>&middot;<code>low</code>&middot;<code>medium</code>의 정답률 차이(60건 중 1건)는 잡음으로 읽어야 한다. 방향성 결론(&ldquo;강도는 값을 못 한다&rdquo;)은 견고하나 절대 크기는 소표본 주의.</li>
-        <li><strong>채점.</strong> 채점은 심판 모델(gpt-4o)이 했다. 기계 정답표가 없어 품질이 전적으로 심판에 달려 있다. 심판에게 준 지시문의 디지털 지문(SHA-256)을 채점 기록에 남겨 나중에 바뀌었는지 확인하지만, 심판 자체의 편향 가능성은 남는다.</li>
+        <li><strong>채점.</strong> 채점은 심판 모델(gpt-4o)이 했다. 기계 정답표가 없어 품질이 전적으로 심판 모델에 달려 있다. 심판 모델에 준 지시문의 디지털 지문(SHA-256)을 채점 기록에 남겨 나중에 바뀌었는지 확인하지만 심판 모델 자체의 편향 가능성은 남는다.</li>
         <li><strong>가격.</strong> 가격표 한 장을 기준으로 삼았다. 요금이나 과금 방식이 바뀌면 같은 원자료로 비용을 다시 계산해야 한다.</li>
-        <li><strong>PTU.</strong> 처리량은 토큰으로 계산한 추정치이며, 실제 PTU 부하 테스트가 아니다. 이 바닥에서 두 모델의 처리량이 약 1% 안에서 겹치므로, PTU 결론은 특히 조심해서 읽어야 한다.</li>
+        <li><strong>PTU.</strong> 처리량은 토큰으로 계산한 추정치이며 실제 PTU 부하 테스트가 아니다. 이 바닥에서 두 모델의 처리량이 약 1% 안에서 겹치므로 PTU 결론은 특히 조심해서 읽어야 한다.</li>
       </ul>
     </section>
 
     <section id="decision" class="article-section decision-box">
       <h2>그래서 무엇을 기본값으로</h2>
-      <p><strong>짧은 사실 작업의 기본값은 gpt-5.2 <code>강도=none</code>이다. 추론을 하나도 켜지 않고도 요청당 gpt-4o보다 12%, 정답당 16% 싸고, 정답률은 오히려 95% 대 90%로 높다. <code>none</code>부터 <code>medium</code>까지는 사실상 평평해서 low나 medium을 써도 무방하지만, 더 얻는 것은 표본 잡음 수준이다. <code>high</code> 이상은 추론 토큰이 여전히 0 근처인데 비용만 오르니 버린다. PTU로 보면 gpt-4o가 근소하게 앞서 사실상 무승부다. 값을 한 것은 강도가 아니라 모델 교체였다.</strong></p>
+      <p><strong>짧은 사실 작업의 기본값은 gpt-5.2 <code>강도=none</code>이다. 추론을 하나도 켜지 않고도 요청당 gpt-4o보다 12%, 정답당 16% 싸고 정답률은 오히려 95% 대 90%로 높다. <code>none</code>부터 <code>medium</code>까지는 사실상 평평해서 low나 medium을 써도 무방하지만 더 얻는 것은 표본 잡음 수준이다. <code>high</code> 이상은 추론 토큰이 여전히 0 근처인데 비용만 오르니 버린다. PTU로 보면 gpt-4o가 근소하게 앞서 사실상 무승부다. 모델 교체가 값을 했다.</strong></p>
     </section>
 
     <section id="forward" class="article-section">
       <p class="section-label">이어짓기</p>
       <h2>다음 사람이 덜 헤매도록</h2>
-      <p>근거를 기록하는 일은 숫자를 쌓는 데서 끝나지 않습니다. 어떤 질문을 던졌고, 어떤 지시문과 채점 기준을 썼고, 어느 가격표와 표본을 기준으로 삼았는지까지 남아야 다음 결정에 다시 쓸 수 있습니다. 그래서 이 노트는 회고와 타임라인으로 되돌아 연결됩니다.</p>
+      <p>근거를 기록하는 일은 숫자를 쌓는 데서 끝나지 않습니다. 어떤 질문을 던졌고 어떤 지시문과 채점 기준을 썼고 어느 가격표와 표본을 기준으로 삼았는지까지 남아야 다음 결정에 다시 쓸 수 있습니다. 이 노트는 회고와 타임라인으로 되돌아 연결됩니다.</p>
       <ul>
         <li><strong>회고 본문 →</strong> <a href="../../../ko/#questions">질문별 회고 Q1 &mdash; 단답 작업에 추론이 필요한가</a>의 핵심 근거가 이 실험이다.</li>
         <li><strong>타임라인 →</strong> <a href="../../../ko/#timeline">&ldquo;단답 케이스 측정 &mdash; 바닥을 찍다&rdquo;</a> 항목이 이 실험의 앵커 순간이다.</li>
-        <li><strong>짝 실험 →</strong> <a href="../../exp002-multi-step-reasoning/ko/">exp002 &mdash; 다단계 추론</a>은 &ldquo;추론이 이길 차례&rdquo;였는데도 <code>none</code>이 바닥이던 천장 케이스다. 이 바닥과 나란히 읽으면, 두 단발 작업 모두에서 강도 다이얼이 왜 비어 있는지 보인다.</li>
+        <li><strong>짝 실험 →</strong> <a href="../../exp002-multi-step-reasoning/ko/">exp002 &mdash; 다단계 추론</a>은 &ldquo;추론이 이길 차례&rdquo;였는데도 <code>none</code>이 바닥이던 천장 케이스다. 이 바닥과 나란히 읽으면, 두 단발 작업 모두에서 손잡이가 왜 비어 있는지 보인다.</li>
         <li><strong>실험 카드 →</strong> 입력/변수/출력의 기계적 명세는 레포 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/README.md"><code>experiments/README.md</code></a>의 <code>exp001</code> 카드에 있다.</li>
       </ul>
-      <p><strong>다음 실험.</strong> 이 바닥은 기계 정답표 없이 심판에만 기댔다. 다음은 <strong>규칙으로 자동 채점하는 검증자</strong>를 붙여 심판의 편향을 교차 확인하고, <strong>실제 PTU 부하 테스트</strong>로 여기 ~1% 처리량 격차가 라이브에서도 겹치는지 확인하는 것이다.</p>
+      <p><strong>다음 실험.</strong> 이 바닥은 기계 정답표 없이 심판 모델에만 기댔다. 다음에는 <strong>규칙으로 자동 채점하는 검증자</strong>를 붙여 심판 모델의 편향을 교차 확인하고 <strong>실제 PTU 부하 테스트</strong>로 여기 ~1% 처리량 격차가 라이브에서도 겹치는지 확인한다.</p>
       <p><a class="button-link" href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">직접 재현하고 ⭐ 남기기</a></p>
     </section>
 
     <section id="sources" class="article-section">
       <p class="section-label">출처 · 근거 경계</p>
       <h2>출처 &amp; 근거 경계</h2>
-      <p>이 노트의 숫자는 합성이 아니라 실측에서 나왔다. 그 숫자가 어디서 왔고 어디까지가 한계인지를, 아래에 그대로 둔다.</p>
+      <p>이 노트의 숫자는 합성이 아닌 실측에서 나왔다. 그 숫자가 어디서 왔고 어디까지가 한계인지 아래에 그대로 둔다.</p>
       <ul>
         <li>이 실험 분석: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.md"><code>benchmarks/01-short-factual/analysis.md</code></a>(§3 프로버넌스, §4 토큰 구성, §5 비용, §6 소비 모델, §7 품질, §8 지연, §9 이상치, §10 결론). 모든 수치는 여기서 재인용 &mdash; 실측 데이터 <code>exp001_short-factual_baseline</code>.</li>
         <li>교차 요약: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>.</li>
         <li>방법론: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a>(변수·표본·캐시·채점·비용·재현·통계 보고 규약).</li>
         <li>가격: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 접근일 2026-05-19).</li>
-        <li>경계: N=20 · 신뢰구간 없음 · 단일 가격 스냅샷 · 심판 gpt-4o · 결정적 정답표 없음(품질은 심판 점수만) · PTU는 토큰 기반 추정(라이브 부하 아님).</li>
+        <li>경계: N=20 · 신뢰구간 없음 · 단일 가격 스냅샷 · 심판 모델 gpt-4o · 결정적 정답표 없음(품질은 심판 점수만) · PTU는 토큰 기반 추정(라이브 부하 아님).</li>
       </ul>
     </section>
   </main>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>다단계 작업 | 추론이 비용을 정당화할 때</title>
-  <meta name="description" content="이 구간에서 다단계 작업의 품질 상승이 추론 강도 단계가 아니라 모델 업그레이드에서 왔음을 다루는 주제 글.">
+  <meta name="description" content="이 구간에서는 다단계 작업의 품질 상승이 추론 강도 단계가 아니라 모델 업그레이드에서 왔다는 점을 다룹니다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="translated_topic">
   <meta name="article:source-locale" content="en">
@@ -41,14 +41,14 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">추론이 비용을 정당화할 때</a> / 주제 상세</p>
-    <p class="article-kicker">주제 글 · benchmark-02 다단계 작업</p>
+    <p class="article-kicker">주제 글, benchmark-02 다단계 작업</p>
     <h1>다단계 작업: 추론을 시험해 볼 만한 때</h1>
     <p class="lede">
-      짧은 사실형 작업을 보고 나면 추론 강도를 '보이지 않는 지출'로 분류하기
-      쉽습니다. 답은 그대로인데 청구서만 불리는 설정처럼 보이기
+      짧은 사실형 작업 결과만 보면 추론 강도를 '보이지 않는 지출'로 분류하기
+      쉽습니다. 답은 그대로인데 청구서만 늘리는 설정으로 보이기
       때문입니다. 하지만 팀이
       다루는 작업 중에는 여러 제약을 동시에 머릿속에 붙들고 있어야 답이 나오는
-      것도 있고, 거기서는 질문이 다시 열립니다. 더 강한 모델이나 더 높은 추론
+      작업도 있습니다. 그런 작업에서는 다시 질문해야 합니다. 더 강한 모델이나 더 높은 추론
       강도가 비용만이 아니라 답까지 바꿀까요? 이 벤치마크는 그 직관을 시험대에
       올립니다.
     </p>
@@ -56,29 +56,28 @@
     <section class="article-section">
       <h2>이 직관을 시험한 이유</h2>
       <p>
-        짧은 사실형 작업은 한 가지 교훈을 남겼습니다. 작업이 단순한 기억만
-        요구하면 추가 추론은 대개 비용만 늘린다는 것입니다. 하지만 모든 작업이
-        기억은 아닙니다. 현실의 많은 작업은 모델에게 작은 제약의 사슬을 붙들고
-        있으라고 요구합니다 &mdash; 몇 가지 조건을 조합하고, 중간 결과를 들고
+        짧은 사실형 작업에서 얻은 교훈은 하나입니다. 작업이 단순한 기억만
+        요구하면 추가 추론은 대개 비용만 늘립니다. 그렇다고 모든 작업이
+         기억만 요구하는 것은 아닙니다. 현실의 많은 작업에서는 모델이 여러 제약을
+         동시에 처리해야 합니다 &mdash; 몇 가지 조건을 조합하고 중간 결과를 들고
         가다가, 그제야 답하는 식입니다. 이런 형태에서는 "조금 더 생각하게 두자"가
-        뻔한 낭비로만 보이지 않고, 값을 할지도 모른다는 쪽으로 바뀝니다.
+        단순한 낭비로만 볼 수 없고 비용을 정당화할 가능성이 생깁니다.
       </p>
       <p>
-        덕분에 확인할 가설이 깔끔하게 정리됩니다. 작업이 정말로 여러 제약을
-        함께 붙들어야 한다면, 더 강한 모델이나 더 높은 추론 강도가 더 큰
-        청구서가 아니라 실제 품질 향상으로 이어질지도 모릅니다. 직관 자체는
-        합리적입니다. 실험은 그 직관이 추상이 아니라 측정한 구간에서도 성립하는지
+        확인할 가설은 분명합니다. 여러 제약을 함께 처리해야 하는 작업이라면
+        더 강한 모델이나 더 높은 추론 강도가 실제 품질을 높일지도 모릅니다. 직관 자체는
+        합리적입니다. 실험에서는 그 직관이 실측한 구간에서도 성립하는지
         확인합니다.
       </p>
       <p>
-        그래서 직접 측정했습니다. benchmark-02에서는 다단계 구간을 고정한 채 같은
-        모델과 강도 단계를 훑습니다 &mdash; GPT-4o 기준선, 그다음 GPT-5.2의
+        이를 직접 측정했습니다. benchmark-02에서는 다단계 구간을 고정한 채 모델과
+        강도 조합을 순서대로 비교합니다 &mdash; GPT-4o 기준선, 그다음 GPT-5.2의
         none, low, medium, high, xhigh 강도 &mdash; 각 조합에서 평균 심판 점수를
-        비용·지연 시간과 나란히 읽습니다. 결과는 엇갈렸고, 그대로 말하는 편이
-        낫습니다. GPT-5.2는 GPT-4o 기준선 대비 품질을 끌어올렸지만, GPT-5.2
-        안에서는 가장 높은 강도 설정이 자동으로 승자가 되지는 않았고, 최고점을
+        비용, 지연 시간과 나란히 읽습니다. 결과는 엇갈렸습니다. GPT-5.2는 GPT-4o
+         기준선 대비 품질을 끌어올렸지만 GPT-5.2
+        안에서는 가장 높은 강도 설정이 자동으로 승자가 되지는 않았고 최고점을
         받은 가장 저렴한 조합은 추론 토큰을 전혀 쓰지 않았습니다. 아래 한 장
-        요약이 그 결론을 한 화면에 담고, 이어지는 절에서 측정된 세부를
+        요약이 그 결론을 한 화면에 담고 이어지는 절에서 실측 결과를
         풀어냅니다.
       </p>
     </section>
@@ -86,27 +85,27 @@
     <figure class="article-figure" id="figure-multi-step-one-pager">
       <figcaption>
         <strong>한눈에 보는 주제.</strong> 이 다단계 구간에서 품질 상승은 강도
-        단계를 올린 데서가 아니라 모델 업그레이드(gpt-4o &rarr; gpt-5.2)를
-        따라갔습니다. 이 한 장 요약은 그 한 문장을 전하고 근거 경계를 표시하며,
-        아래 절은 측정된 세부를 더합니다.
+        단계를 올린 데서가 아니라 모델 업그레이드(gpt-4o &rarr; gpt-5.2)에서
+        확인됐습니다. 이 한 장 요약에는 그 결론과 근거 경계가 담겨 있으며
+         아래 절에서는 실측 결과를 설명합니다.
         <a href="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg">다단계 작업 한 장 요약 SVG 열기</a>.
       </figcaption>
-      <img src="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="다단계 작업 한 장 요약. 한 모델 안에서는 강도를 높여도 품질이 거의 그대로였지만, gpt-4o에서 gpt-5.2로 모델을 업그레이드하자 품질이 뚜렷하게 올랐습니다. 핵심 메시지: 다단계 작업에서 품질 상승은 강도를 높인 데서가 아니라 모델을 업그레이드한 데서 왔습니다. 측정된 집계값으로, 모델 내부와 모델 사이의 강도별 품질 셀을 비교합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../../../assets/when-reasoning-pays-off-multi-step-work.svg" alt="다단계 작업 한 장 요약. 한 모델 안에서는 강도를 높여도 품질이 거의 그대로였지만 gpt-4o에서 gpt-5.2로 모델을 업그레이드하자 품질이 뚜렷하게 올랐습니다. 핵심 메시지: 다단계 작업에서 품질 상승은 강도를 높인 데서가 아니라 모델을 업그레이드한 데서 왔습니다. 실측 집계값을 바탕으로 모델 내부와 모델 사이의 강도별 품질 셀을 비교합니다." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <div class="article-summary-grid" aria-label="주제 요약">
-      <section class="summary-tile"><h2>질문</h2><p>추가 추론은 언제 더 큰 청구서가 아니라 실제 품질 향상으로 이어질까요?</p></section>
-      <section class="summary-tile"><h2>근거</h2><p>benchmark-02의 품질·비용·지연 시간·토큰 형태 차트.</p></section>
-      <section class="summary-tile"><h2>발견</h2><p>이 구간에서 GPT-5.2는 가장 높은 강도 설정 없이도 GPT-4o 기준선 대비 눈에 보이는 품질 상승을 보였습니다. 최고점을 받은 가장 저렴한 조합은 추론 토큰을 전혀 쓰지 않은 none이었습니다.</p></section>
-      <section class="summary-tile"><h2>결정</h2><p>다단계 작업은 품질 기준을 통과하는 가장 낮은 추론 강도로 보내고, 짝지은 품질 차트가 이 워크로드 형태에서 움직일 때만 강도를 올립니다.</p></section>
+      <section class="summary-tile"><h2>질문</h2><p>추가 추론은 언제 비용 증가와 함께 실제 품질도 높일까요?</p></section>
+      <section class="summary-tile"><h2>근거</h2><p>benchmark-02의 품질, 비용, 지연 시간, 토큰 형태 차트.</p></section>
+      <section class="summary-tile"><h2>발견</h2><p>이 구간에서 GPT-5.2는 가장 높은 강도 설정 없이도 GPT-4o 기준선 대비 뚜렷한 품질 상승을 보였습니다. 최고점을 받은 가장 저렴한 조합은 추론 토큰을 전혀 쓰지 않은 none이었습니다.</p></section>
+      <section class="summary-tile"><h2>결정</h2><p>다단계 작업은 합격선을 넘는 가장 낮은 추론 강도로 보내고 짝지은 품질 차트에서 이 워크로드 형태의 변화가 확인될 때만 강도를 올립니다.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="주제 영역">
       <strong>맥락별로 읽기:</strong>
-      <a href="#s1">해석을 바꾼 품질의 움직임</a>
+      <a href="#s1">해석을 바꾼 품질 변화</a>
       <a href="#s2">차트를 읽는 법</a>
       <a href="#s3">이 벤치마크가 달랐던 이유</a>
-      <a href="#s4">이 결과가 뜻하는 것</a>
+      <a href="#s4">결과의 의미</a>
       <a href="#table">근거 표</a>
     </nav>
 
@@ -118,35 +117,35 @@
     <section class="article-section">
       <figure class="article-figure">
         <figcaption>
-          <strong>주제 길잡이 차트(공개 집계로 직접 작성).</strong> 이 도식은 차트 한
-          장 크기의 질문 하나 &mdash; 모델과 강도별 평균 심판 점수, 각 막대 아래에
-          요청당 평균 비용 표기 &mdash; 를 떼어 내 아래 원천 표와 짝지어 보여
-          줍니다. 공개 차트 데이터 파이프라인에서 렌더링한 원천 차트는 더 아래에
+          <strong>주제 길잡이 차트(공개 집계로 직접 작성).</strong> 이 도식은 모델과
+          강도별 평균 심판 점수를 비교하고 각 막대 아래에 요청당 평균 비용을
+          표기합니다. 아래 원천 표와 함께 읽을 수 있도록 구성했습니다. 공개 차트
+          데이터 파이프라인에서 렌더링한 원천 차트는 더 아래에
           이어집니다.
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.ko.svg" alt="benchmark-02의 모델·강도별 평균 심판 점수를 비용 라벨과 함께 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/topic-multi-step-work.ko.svg" alt="benchmark-02의 모델, 강도별 평균 심판 점수를 비용 라벨과 함께 표시한 막대 차트." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
     </section>
 
     <section id="s1" class="article-section">
-      <h2>해석을 바꾼 품질의 움직임</h2>
-      <p>benchmark-02에서 기준선인 GPT-4o 셀은 평균 심판 점수 1.5를 기록했습니다. GPT-5.2는 none, medium, high, xhigh 강도에서 2.0에 도달했고, low 강도에서는 1.93에 그쳤습니다. 차트는 강도를 높일수록 품질이 좋아진다고 말하지 않습니다. 오히려 강도 단계만 따라 점수가 단조롭게 오르지는 않습니다 &mdash; low는 none보다 오히려 낮습니다. 차트가 말하는 것은 이 작업에는 모델과 강도 선택을 시험해 볼 만큼 충분한 구조가 있다는 점입니다.</p>
-      <p>더 중요한 해석은 처음으로 성공한 조합들의 모습입니다. GPT-5.2 none은 요청당 평균 $0.000618로 2.0에 도달했고, 추론 토큰은 전혀 쓰지 않았습니다. 이 구간의 승자는 가장 높은 강도가 아니라 품질 기준을 통과한 가장 저렴한 조합입니다. 덕분에 추론형 모델을 시험해 볼 가치는 분명하되, 가장 높은 강도 설정을 기본값으로 삼을 이유는 생기지 않습니다.</p>
+      <h2>해석을 바꾼 품질 변화</h2>
+      <p>benchmark-02에서 기준선인 GPT-4o 셀은 평균 심판 점수 1.5를 기록했습니다. GPT-5.2는 none, medium, high, xhigh 강도에서 2.0에 도달했고 low 강도에서는 1.93에 그쳤습니다. 차트는 강도를 높일수록 품질이 좋아진다고 말하지 않습니다. 강도 단계만 따라 점수가 단조롭게 오르지 않으며 low는 none보다 오히려 낮습니다. 이 작업에는 모델과 강도 선택을 시험해 볼 만큼 충분한 구조가 있습니다.</p>
+      <p>처음으로 성공한 조합을 보면 해석은 더 분명해집니다. GPT-5.2 none은 요청당 평균 $0.000618로 2.0에 도달했고 추론 토큰은 전혀 쓰지 않았습니다. 이 구간의 승자는 가장 높은 강도가 아니라 합격선을 넘은 가장 저렴한 조합입니다. 추론형 모델을 시험해 볼 가치는 분명하지만 가장 높은 강도 설정을 기본값으로 삼을 이유는 없습니다.</p>
     </section>
     <section id="s2" class="article-section">
       <h2>차트를 읽는 법</h2>
-      <p>X축은 모델/강도 조합이고, Y축은 평균 심판 점수입니다. 각 막대 아래 라벨은 같은 조합의 요청당 평균 비용입니다. 이렇게 짝지어 보는 시각이 중요한 이유는, 품질 막대만 놓고 보면 과잉 선택의 유혹이 생기기 때문입니다. 여러 셀이 루브릭 천장에 도달했다면, 더 싸고 더 빠른 쪽이 더 흥미로워집니다.</p>
-      <p>이것은 빈도 히스토그램이 아닙니다. 각 막대는 원천 표에 자체 표본 수와 표준편차를 가진, 요약된 실험 셀입니다.</p>
+      <p>X축은 모델/강도 조합이고 Y축은 평균 심판 점수입니다. 각 막대 아래 라벨은 같은 조합의 요청당 평균 비용입니다. 둘을 짝지어 봐야 하는 이유는 품질 막대만 놓고 보면 필요 이상으로 높은 강도를 고르기 쉽기 때문입니다. 여러 셀이 루브릭 천장에 도달했다면, 더 싸고 더 빠른 쪽을 먼저 검토해야 합니다.</p>
+      <p>이것은 빈도 히스토그램이 아닙니다. 원천 표에서 각 막대에는 자체 표본 수와 표준편차가 있으며 요약된 실험 셀 하나를 나타냅니다.</p>
     </section>
     <section id="s3" class="article-section">
       <h2>이 벤치마크가 달랐던 이유</h2>
-      <p>짧은 사실형 과제는 대부분 간결한 답변을 요구했습니다. 반면 다단계 과제는 모델에게 작은 추론 사슬을 유지하라고 요구했습니다. 그러자 "조금 더 생각하게 했을 때" 달라질 수 있는 범위가 달라졌습니다. 다만 이 구간에서 최고점은 추론 토큰을 전혀 쓰지 않은 none 조합에서 나왔으므로, 품질 상승은 추론 예산보다 모델 업그레이드 자체를 따라갔습니다. 추론이 의미를 가질 구조는 있었지만, 점수를 끌어올린 것은 더 높은 강도가 아니라 더 강한 모델이었습니다.</p>
-      <p>그렇더라도 이 구간에서 강도를 끝까지 올리는 전략은 근거가 약했습니다. 강도가 오를수록 지연 시간도 오르고, xhigh 강도는 평균 약 3.3초를 기록했습니다. 품질이 루브릭 천장에 닿고 나면, 다음 질문은 더 느리고 더 비싼 조합이 정말 새로운 정보를 주는가가 됩니다.</p>
+      <p>짧은 사실형 과제는 대부분 간결한 답변을 요구했습니다. 반면 다단계 과제는 모델에게 작은 추론 사슬을 유지하라고 요구했습니다. 이때 "조금 더 생각하게 했을 때" 답이 달라질 여지가 생겼습니다. 다만 이 구간에서 최고점은 추론 토큰을 전혀 쓰지 않은 none 조합에서 나왔으므로, 품질 상승은 추론 예산보다 모델 업그레이드 자체에서 발생했습니다. 추론이 의미를 가질 구조는 있었지만 점수를 높인 것은 더 높은 강도가 아니라 더 강한 모델이었습니다.</p>
+      <p>그렇더라도 이 구간에서 강도를 끝까지 올리는 전략은 뒷받침할 근거가 부족했습니다. 강도가 오를수록 지연 시간도 오르고 xhigh 강도는 평균 약 3.3초를 기록했습니다. 품질이 루브릭 천장에 닿고 나면 더 느리고 더 비싼 조합이 정말 새로운 정보를 주는지 따져야 합니다.</p>
     </section>
     <section id="s4" class="article-section">
-      <h2>이 결과가 뜻하는 것</h2>
-      <p>추론은 답변의 분위기가 아니라 답변 자체가 실제로 바뀔 때만 제값을 합니다. 다단계 작업은 그 시도가 가장 먼저 자리해야 할 곳입니다. 과제에 모델이 이득을 볼 만한 내부 구조가 충분하고, 심판 점수에도 의미 있는 변화가 나타나기 때문입니다. 다만 이 구간에서 그 변화를 만든 것은 강도 상향이 아니라 모델 업그레이드였습니다.</p>
-      <p>따라서 결론은 '어디서나 추론을 더 쓰는 것'이 아니라, '다단계 작업을 품질 기준을 통과하는 가장 낮은 강도로 보내고, 더 높은 강도는 짝지은 품질 차트가 다시 움직일 때만 올리는 것'입니다.</p>
+      <h2>결과의 의미</h2>
+      <p>추론은 답변의 분위기가 아니라 답변 자체가 실제로 바뀔 때만 제값을 합니다. 다단계 작업에서는 추론을 먼저 시험해 볼 만합니다. 모델이 활용할 내부 구조가 과제에 충분하고 심판 점수에도 의미 있는 변화가 나타나기 때문입니다. 다만 이 구간에서 그 변화를 만든 것은 강도 상향이 아니라 모델 업그레이드였습니다.</p>
+      <p>결론은 '어디서나 추론을 더 쓰는 것'이 아니라, '다단계 작업을 합격선을 넘는 가장 낮은 강도로 보내고, 더 높은 강도는 심판 점수가 다시 오를 때만 올리는 것'입니다.</p>
     </section>
 
     <section id="table" class="article-section">
@@ -160,32 +159,32 @@
           <strong>막대:</strong> 각 막대는 셀 하나의 평균 점수이며 &mdash; 빈도
           히스토그램이 아니라 집계 비교입니다 &mdash; 수염은 &plusmn;1 표준편차를
           나타냅니다.
-          <strong>읽는 법:</strong> 상승은 강도 단계를 따라서가 아니라 모델
+          <strong>읽는 법:</strong> 품질 상승은 강도 단계를 따라서가 아니라 모델
           사이에서 일어납니다 &mdash; gpt-4o 기준선은 1.5에 머무는 반면 모든
           gpt-5.2 셀은 2.0에 닿거나 가깝습니다(none, medium, high, xhigh은 2.0,
           low는 1.93). 따라서 이 구간에서 상승은 더 높은 강도가 아니라 모델
-          업그레이드를 따라갑니다.
-          <strong>근거 경계:</strong> 셀당 N = 20, R = 3 반복이며, 하나의 Azure
-          OpenAI 테넌트와 리전에서 측정한 이 하나의 다단계 구간입니다. 오차
-          막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지
+          사이에서 발생합니다.
+          <strong>근거 경계:</strong> 셀당 N = 20, R = 3 반복이며 하나의 Azure
+          OpenAI 테넌트와 리전에서 실측한 다단계 구간 하나입니다. 오차
+          막대는 신뢰 구간이 아니라 표준편차이고 N = 20에서 p-값은 주장하지
           않습니다.
           <strong>출처와 대시보드:</strong> 막대 값은
           <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json</code>에서
-          나오며, 짝지은 비용 차트와 함께
+          나오며 짝지은 비용 차트와 함께
           <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-02-quality">근거 대시보드</a>에서
           읽으세요
           (<a href="../../../../../data/chart-data/cost-curves-effort/benchmark-02/quality.json">제공되는 차트 데이터</a>).
         </figcaption>
-        <img class="wide-chart" src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark-02의 모델·강도별 평균 심판 점수 막대 차트로, gpt-4o 기준선은 약 1.5인 반면 모든 gpt-5.2 강도 셀은 2.0에 닿거나 가깝고, 표준편차 수염이 함께 표시되어 있습니다." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img class="wide-chart" src="../../../../../../assets/benchmark-02-quality.png" alt="benchmark-02의 모델, 강도별 평균 심판 점수 막대 차트로, gpt-4o 기준선은 약 1.5인 반면 모든 gpt-5.2 강도 셀은 2.0에 닿거나 가깝고 표준편차 수염이 함께 표시되어 있습니다." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <table class="chart-table evidence-table">
-        <caption>benchmark-02 비용·품질 근거</caption>
-        <thead><tr><th>근거 항목</th><th>측정값 A</th><th>측정값 B</th><th>더해 주는 것</th></tr></thead>
+        <caption>benchmark-02 비용, 품질 근거</caption>
+        <thead><tr><th>근거 항목</th><th>실측값 A</th><th>실측값 B</th><th>해석</th></tr></thead>
         <tbody>
-          <tr><td>GPT-4o 기준선</td><td>심판 점수 1.50</td><td>요청당 $0.000798</td><td>넘어서야 할 분명한 기준선입니다.</td></tr>
-<tr><td>GPT-5.2 none</td><td>심판 점수 2.00</td><td>요청당 $0.000618</td><td>이 공개 구간에서 최고점에 오른 가장 싼 조합이며, 추론 토큰을 전혀 쓰지 않습니다.</td></tr>
-<tr><td>GPT-5.2 low</td><td>심판 점수 1.93</td><td>요청당 $0.000859</td><td>기준선 위이지만 none보다 낮아, 이 구간의 깔끔한 승자는 아닙니다.</td></tr>
-<tr><td>GPT-5.2 xhigh</td><td>심판 점수 2.00</td><td>요청당 $0.002179</td><td>점수는 같지만, 더 큰 청구서와 더 긴 지연 시간을 동반합니다.</td></tr>
+          <tr><td>GPT-4o 기준선</td><td>심판 점수 1.50</td><td>요청당 $0.000798</td><td>넘어서야 할 비교 기준입니다.</td></tr>
+<tr><td>GPT-5.2 none</td><td>심판 점수 2.00</td><td>요청당 $0.000618</td><td>이 공개 구간에서 가장 낮은 비용으로 최고점에 올랐으며 추론 토큰을 전혀 쓰지 않습니다.</td></tr>
+<tr><td>GPT-5.2 low</td><td>심판 점수 1.93</td><td>요청당 $0.000859</td><td>기준선 위이지만 none보다 낮아, 이 구간의 명확한 승자는 아닙니다.</td></tr>
+<tr><td>GPT-5.2 xhigh</td><td>심판 점수 2.00</td><td>요청당 $0.002179</td><td>점수는 같고 비용과 지연 시간은 늘어납니다.</td></tr>
         </tbody>
       </table>
     </section>
@@ -193,22 +192,22 @@
     <section id="sources" class="article-section">
       <h2>출처와 근거 경계</h2>
       <p>
-        위의 모든 수치는 이 저장소의 공개 산출물로 추적되며, 모든 비용 수치는
-        날짜가 박힌 가격 스냅샷을 기준으로 계산됩니다. 이 글이 권하는 라우팅
-        습관 &mdash; 품질 기준에 닿는 가장 낮은 강도에서 멈추기 &mdash; 은 이 글
-        자체의 운영적 해석입니다. 아래 두 계층은 문서화된 입력이 끝나고 추론이
-        시작되는 경계를 표시합니다.
+        위의 모든 수치는 이 저장소의 공개 산출물로 추적되며 모든 비용 수치는
+        날짜가 명시된 가격 스냅샷을 기준으로 계산됩니다. 이 글이 권하는 라우팅
+        습관 &mdash; 합격선에 닿는 가장 낮은 강도에서 멈추기 &mdash; 은 이 글
+        자체의 운영 해석입니다. 아래 두 계층은 문서화된 입력과 추론의
+         경계를 나눕니다.
       </p>
       <ul>
-        <li>[1] <strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며, 오차 막대는 신뢰 구간이 아니라 표준편차이고, N = 20에서 p-값은 주장하지 않습니다.</li>
-        <li>[2] <strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 요청당 비용 관점은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근) · <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 움직이면 비용 수치도 달라집니다.</li>
-        <li>[3] <strong>Tier 2 &mdash; benchmark-02 구간 측정:</strong> 이 저장소, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. 강도별 품질 수치의 출처입니다 &mdash; GPT-4o 기준선 1.5, GPT-5.2 none, medium, high, xhigh이 닿은 2.0, GPT-5.2 low의 1.933333, 그리고 추론 토큰을 전혀 쓰지 않고도 $0.000618로 최고점을 받은 가장 저렴한 조합인 none &mdash; 그리고 요청당 $0.000618에서 $0.002179에 이르는 비용 수치입니다.</li>
-        <li>[4] <strong>Tier 2 &mdash; 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>을 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code>과 함께 읽으면, 이 구간의 품질 상승이 모델 업그레이드를 따라갔고 강도를 올려 늘어난 추론 토큰은 추가 품질로 이어지지 않았다는 근거가 됩니다.</li>
-        <li>[5] <strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 품질·비용 짝 차트</a>는 같은 산출물을 감사할 수 있는 형태입니다.</li>
+        <li>[1] <strong>Tier 1 &mdash; 방법론 계약:</strong> 이 저장소, <code>docs/05-methodology.md</code> (v1.0). 셀당 N = 20 작성 표본, R = 3 반복, 공개 집계 구간만 해당합니다. 차트 해석 본문은 이 고정된 입장을 전제하며 오차 막대는 신뢰 구간이 아니라 표준편차이고 N = 20에서 p-값은 주장하지 않습니다.</li>
+        <li>[2] <strong>Tier 1 &mdash; PAYG 가격 스냅샷:</strong> 요청당 비용 관점은 이 저장소의 <code>pricing/azure-openai-payg-2026-05.yaml</code>를 기준으로 가격을 매깁니다. 출처: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 가격 페이지</a> (2026-05-19 접근), <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">아카이브</a>. 정가가 바뀌면 비용 수치도 달라집니다.</li>
+        <li>[3] <strong>Tier 2 &mdash; benchmark-02 구간 실측:</strong> 이 저장소, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. 강도별 품질 수치의 출처입니다 &mdash; GPT-4o 기준선 1.5, GPT-5.2 none, medium, high, xhigh이 닿은 2.0, GPT-5.2 low의 1.933333, 그리고 추론 토큰을 전혀 쓰지 않고도 $0.000618로 최고점을 받은 가장 저렴한 조합인 none &mdash; 그리고 요청당 $0.000618에서 $0.002179에 이르는 비용 수치입니다.</li>
+        <li>[4] <strong>Tier 2 &mdash; 렌더링된 차트 데이터:</strong> 이 저장소, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-02/cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>을 <code>docs/blog/data/chart-data/token-composition/benchmark-02/tokens.json</code>과 함께 읽으면, 이 구간의 품질 상승이 모델 업그레이드에서 발생했고 강도를 올려 늘어난 추론 토큰은 추가 품질로 이어지지 않았다는 근거가 됩니다.</li>
+        <li>[5] <strong>근거 대시보드:</strong> 렌더링된 <a href="../../../../../charts/?lang=ko#chart-cost-curves-effort-benchmark-02-quality">benchmark-02 품질, 비용 짝 차트</a>는 같은 산출물을 감사할 수 있는 형태입니다.</li>
       </ul>
       <p>
         이 구간이 증명하는 것과 증명하지 못하는 것: 이 다단계 구간에서는 GPT-5.2가
-        GPT-4o 기준선 대비 측정 가능한 품질 상승을 냈음을 보여 줍니다. 더 높은
+        GPT-4o 기준선보다 측정 가능한 수준으로 품질을 높였습니다. 더 높은
         추론 강도가 항상 품질을 높이거나 추가 청구서를 정당화한다는 것은 증명하지
         못합니다 &mdash; 여기서 최고점을 받은 가장 저렴한 조합은 추론 토큰을 전혀
         쓰지 않았습니다. 같은 상승이 짧은 사실형 작업, 도구 에이전트, 종합
@@ -221,23 +220,23 @@
       <h2>근거로 말할 수 있는 것</h2>
       <p>
         이 구간에서 다단계 작업은 GPT-4o 기준선 1.5에서 GPT-5.2의 2.0으로 측정
-        가능한 품질 상승을 보였고, 그 상승은 강도 단계가 아니라 모델
-        업그레이드에서 왔습니다. 시리즈에 '추론은 답이 실제로 바뀔 때만 제값을
-        합니다'라는 기준점을 더합니다.
+        가능한 품질 상승을 보였고 그 상승은 강도 단계가 아니라 모델
+        업그레이드에서 왔습니다. 이 결과는 시리즈의 '추론은 답이 실제로 바뀔 때만
+         제값을 합니다'라는 기준을 뒷받침합니다.
       </p>
       <p><a class="button-link" href="../../../ko/">개요 글로 돌아가기</a></p>
 
       <h2>실무 규칙</h2>
       <ol>
         <li>같은 다단계 조합의 품질 차트를 비용 차트와 함께 읽으세요. 품질 막대만 보지 마세요.</li>
-        <li>품질 기준을 통과하는 가장 낮은 강도 조합을 고르세요. 더 높은 조합은 점수가 움직일 때만 후보로 다루세요.</li>
-        <li>더 높은 강도를 승격하기 전에 지연 시간을 확인하세요. 강도가 오를수록 대기가 길어집니다.</li>
-        <li>워크로드 형태가 바뀌면 다시 측정하세요. 이 구간의 상승은 다른 주제로 옮겨 가지 않습니다.</li>
+        <li>합격선을 넘는 가장 낮은 강도 조합을 고르세요. 더 높은 조합은 심판 점수가 오를 때만 후보로 다루세요.</li>
+        <li>더 높은 강도로 올리기 전에 지연 시간을 확인하세요. 강도가 오를수록 대기가 길어집니다.</li>
+        <li>워크로드 형태가 바뀌면 다시 측정하세요. 이 구간의 상승이 다른 주제에 그대로 적용되지는 않습니다.</li>
       </ol>
       <p>
-        <strong>실무 규칙: 다단계 작업에서는 먼저 품질 기준을 통과하는 가장 낮은
+        <strong>실무 규칙: 다단계 작업에서는 먼저 합격선을 넘는 가장 낮은
         모델/강도 조합을 고르세요. 추론 강도는 이 워크로드 형태에서 짝지은 품질
-        차트가 움직일 때만 올리세요 &mdash; 비용은 지출 자체가 아니라 품질이 함께
+        심판 점수가 오를 때만 올리세요 &mdash; 비용은 지출 자체가 아니라 품질이 함께
         오를 때만 정당화됩니다.</strong>
       </p>
       <p>
@@ -248,15 +247,15 @@
     <section id="next" class="article-section">
       <p>
         <strong>다음:</strong>
-        <a href="../../tool-agent-ceiling-checks/ko/">도구 에이전트 천장 점검: 추가 강도가 점수를 더는 못 움직일 때</a>
-        &mdash; 도구를 쓰는 작업에서 추론이 천장에 부딪힐 때, 차트는 무엇을 먼저
-        보여 줄까요?
+        <a href="../../tool-agent-ceiling-checks/ko/">도구 에이전트 천장 점검: 추가 강도에서도 심판 점수가 더는 오르지 않을 때</a>
+        &mdash; 도구를 쓰는 작업에서 추론이 천장에 부딪힐 때, 차트에서 무엇을 먼저
+        확인해야 할까요?
       </p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT 라이선스 연구 산출물 · 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
+    <p>MIT 라이선스 연구 산출물, 공개된 데이터는 정제 또는 집계된 형태만 포함합니다.</p>
   </footer>
 </body>
 </html>

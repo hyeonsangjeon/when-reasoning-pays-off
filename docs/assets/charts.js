@@ -43,6 +43,16 @@
         node.setAttribute("href", hrefs[cls]);
       });
     });
+    document.querySelectorAll(".brand").forEach(function (node) {
+      node.setAttribute("href", "../../" + locale + "/");
+    });
+    document.querySelectorAll(".lang [data-locale]").forEach(function (node) {
+      if (node.getAttribute("data-locale") === locale) {
+        node.setAttribute("aria-current", "true");
+      } else {
+        node.removeAttribute("aria-current");
+      }
+    });
   }
 
   function fetchJson(path) {
@@ -243,9 +253,27 @@
     root = document.getElementById("chart-root");
     var locale = localeFromUrl();
     loadLabels(locale).then(function () {
+      document.documentElement.lang = locale;
+      document.title = t("page.title") + " | when reasoning pays off";
       document.querySelectorAll("[data-i18n]").forEach(function (node) {
         node.textContent = t(node.getAttribute("data-i18n"));
       });
+      var siteNavLabel = labelValue("a11y.siteNav");
+      if (typeof siteNavLabel === "string") {
+        document.querySelectorAll("nav.site-links").forEach(function (node) {
+          node.setAttribute("aria-label", siteNavLabel);
+        });
+      }
+      var languageNavLabel = labelValue("a11y.languageNav");
+      if (typeof languageNavLabel === "string") {
+        var languageNav = document.querySelector("nav.lang");
+        if (languageNav) languageNav.setAttribute("aria-label", languageNavLabel);
+      }
+      var footer = labelValue("page.footer");
+      if (typeof footer === "string") {
+        var footerCopy = document.querySelector("footer.site > p");
+        if (footerCopy) footerCopy.textContent = footer;
+      }
       applyNavHrefs(locale);
       return fetchJson(DATA_ROOT + "public_chart_candidates.json");
     }).then(function (manifest) {
