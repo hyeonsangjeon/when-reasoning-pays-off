@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img"
      aria-labelledby="acTitle acDesc" width="900" height="320">
-  <title id="acTitle">retry-after-ms を尊重する PTU アドミッションコントローラー</title>
-  <desc id="acDesc">概念的なフロー：リクエストがスロットルされた PTU に当たり、retry-after-ms
-  ヘッダー付きの 429 を受け取ります。アドミッションコントローラーはその間隔だけスリープし、判断を
-  ログに記録してから再開します。測定値は示していません。</desc>
+  <title id="acTitle">retry-after-ms に従う PTU アドミッションコントローラー</title>
+  <desc id="acDesc">概念フロー：リクエストがスロットル中の PTU に到達し、retry-after-ms
+  ヘッダー付きの 429 を受け取ります。アドミッションコントローラーは指定時間だけ待機し、判断を
+  ログに記録してから再開します。実測値は示していません。</desc>
   <defs>
     <linearGradient id="acBg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>
@@ -14,9 +14,9 @@
   </defs>
   <rect width="900" height="320" fill="url(#acBg)"/>
   <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="24" font-weight="700">ヘッダー駆動のアドミッション</text>
+        font-size="24" font-weight="700">ヘッダーに基づくアドミッション制御</text>
   <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="15">retry-after-ms を明示的に尊重し、クライアントがスリープした理由をログに残します。</text>
+        font-size="15">retry-after-ms に従い、クライアントが待機した理由をログに残します。</text>
 
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle">
     <rect x="40" y="150" width="130" height="60" rx="8" fill="#16324f" stroke="#3a86ff"/>
@@ -28,7 +28,7 @@
 
     <rect x="460" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#4cc9f0"/>
     <text x="535" y="180" fill="#e0fbfc">アドミッションゲート</text>
-    <text x="535" y="200" fill="#bcd2e8" font-size="12">スリープしてログ</text>
+    <text x="535" y="200" fill="#bcd2e8" font-size="12">待機して記録</text>
 
     <rect x="680" y="150" width="150" height="60" rx="8" fill="#16324f" stroke="#06d6a0"/>
     <text x="755" y="186" fill="#e0fbfc">再開</text>
@@ -39,5 +39,5 @@
     <line x1="612" y1="180" x2="676" y2="180"/>
   </g>
   <text x="535" y="252" fill="#9fb3c8" text-anchor="middle"
-        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">ログだけから求める次の受け付け可能リクエスト時刻</text>
+        font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">ログから特定する次回のリクエスト受付可能時刻</text>
 </svg>

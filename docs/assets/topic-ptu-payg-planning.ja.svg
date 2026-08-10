@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">クロスオーバーは計画線であり、測定された容量ではない</title>
-  <desc id="desc">公開価格スナップショットと 50 PTU 下限のもとでモデル化した PAYG/PTU 損益分岐 RPM。</desc>
+  <title id="title">クロスオーバーは計画上の線であり、容量の実測値ではない</title>
+  <desc id="desc">公開価格のスナップショットと 50 PTU の下限を用いてモデル化した PAYG/PTU 損益分岐 RPM。</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">クロスオーバーは計画線であり、測定された容量ではない</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">公開価格スナップショットと 50 PTU 下限のもとでモデル化した PAYG/PTU 損益分岐 RPM。</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">クロスオーバーは計画上の線であり、容量の実測値ではない</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">公開価格のスナップショットと 50 PTU の下限を用いてモデル化した PAYG/PTU 損益分岐 RPM。</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -17,7 +17,7 @@
   <text x="148" y="191.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">2250</text>
   <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
   <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">3000</text>
-  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">モデル化された損益分岐 RPM</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">モデル化した損益分岐 RPM</text>
   <rect x="160.0" y="142.7" width="236.7" height="247.3" rx="8" fill="#fb8500"/>
   <text x="278.3" y="132.7" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">2748</text>
   <text x="278.3" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b01 xhigh</text>
@@ -31,8 +31,8 @@
   <text x="791.7" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">b03 low</text>
   <text x="791.7" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">コスト $0.002773</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
-  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">チャートの読み方</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">X 軸のセルは選んだ例であり、連続的な実験ではない。</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">モデル化された線で問いを立て、実トラフィックで検証する。</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出典：公開集計チャートデータ。記述的な根拠のみ。</text>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">チャートの見方</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">X 軸は選択した例であり、連続実験ではありません。</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">モデル値を起点に、実トラフィックで検証してください。</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出典：公開集計チャートデータ。記述的な参考値です。</text>
 </svg>

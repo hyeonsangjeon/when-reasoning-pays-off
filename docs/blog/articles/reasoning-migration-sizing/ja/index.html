@@ -40,7 +40,7 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 運用エッセイ / 日本語訳</p>
+    <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 運用エッセイ</p>
     <p class="article-kicker">運用エッセイ · GPT-4o から GPT-5.x へのサイジング</p>
     <h1>推論モデルへの移行を、モデル名だけでサイジングしてはいけない</h1>
     <p class="lede">
@@ -53,22 +53,22 @@
       サイズ、可視出力、隠れた推論トークン、キャッシュヒット率、応答上限がすべて
       結果を左右する。そのため、名前だけでサイジングしたくなる直感は、本記事が問う運用上の
       問いに真正面からぶつかる。モデル名で十分なのか、それともまずリクエストの
-      形を測り直さなければならないのか。
+      形を測り直す必要があるのでしょうか。
     </p>
 
     <figure class="article-figure" id="figure-migration-one-pager">
       <figcaption>
-        <strong>ひと目で見るこの記事。</strong> 移行のサイジングは、モデル名の参照では
+        <strong>この記事の要点。</strong> 移行のサイジングは、モデル名の参照では
         なくモデル化された計算です。推奨 PTU = ceil(需要 &divide; 密度 &divide;
         目標利用率) で、本リポジトリでは、過大な応答上限（<code>max_output_tokens</code>）を
         文書化されたプラットフォームの挙動ではなく、検証すべきアドミッション
         リスクの仮説として扱い、それがワークロードが確保する PTU を支配しうるかを
         確かめます。1枚要約はその一点を伝え、境界を率直に示します。これは
-        固定した価格スナップショットを用いた、モデル化されたワークロード上の合成的な
-        計算例であって、測定された容量ではありません。
+        固定した価格スナップショットを用いた、モデル化されたワークロードによる仮想的な
+        計算例であり、測定された容量ではありません。
         <a href="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg">移行サイジングの1枚要約 SVG を開く</a>。
       </figcaption>
-      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="推論移行のサイジングの1枚要約。需要 TPM から、プロンプト＋max_output の予約を経て、密度と目標利用率で割り、推奨 PTU の上限へと至るサイジングの連鎖をたどり、過大な応答上限（max_output_tokens）を、文書化されたプラットフォームの挙動ではなく検証すべきサイジングのリスクとして示します。中心メッセージ：移行のサイジングはモデル化された計算です。測定された容量ではなく、合成された計算例であることを明示します。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../../assets/when-reasoning-pays-off-reasoning-migration-sizing.svg" alt="推論移行のサイジングの1枚要約。需要 TPM から、プロンプト＋max_output の予約を経て、密度と目標利用率で割り、推奨 PTU の上限へと至るサイジングの連鎖をたどり、過大な応答上限（max_output_tokens）を、文書化されたプラットフォームの挙動ではなく検証すべきサイジングのリスクとして示します。中心メッセージ：移行のサイジングはモデル化された計算です。測定された容量ではなく、仮想的な計算例であることを明示します。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-remeasure" class="article-section">
@@ -76,8 +76,8 @@
       <p>
         再利用の反射は、モデル名だけでサイズが分かると仮定する。うまくいっている
         <code>gpt-4o</code> の数値を、ファミリーの乗数でスケールすれば、GPT-5.x にも
-        なお収まる、と。それを受け入れる前に、二つのことを並べておく価値があります。
-        一つ目はドキュメントが規定していることです。Microsoft Learn は、ピーク RPM、
+        なお収まる、と。それを受け入れる前に、二つの点を確認する必要があります。
+        一つ目はドキュメントに明記された仕様です。Microsoft Learn は、ピーク RPM、
         平均プロンプトと出力トークン、キャッシュ率、モデルの出力対入力比、そして PTU
         あたり Input TPM から、トラフィックを正規化 TPM に変換し、キャッシュ済み
         プロンプトトークンを利用率から差し引きます。OpenAI は推論トークンを、
@@ -101,8 +101,8 @@
         Microsoft Learn と OpenAI が文書化しているものです。過大な
         <code>max_output_tokens</code> を検証すべき PTU のアドミッションリスクとして
         扱うのは、本リポジトリが採っている運用上の推論です。続くチャートは、固定した
-        価格スナップショットを用いた、モデル化されたワークロード上の合成的な計算例
-        である。測定された容量でも、稼働中の PTU スループットでも、SLA でもない。
+        価格スナップショットを用いた、モデル化されたワークロード上の仮想的な計算例
+        です。測定された容量でも、稼働中の PTU スループットでも、SLA でもありません。
         下の例示チャートがサイズを動かす要因を明示します。
       </p>
     </section>
@@ -140,7 +140,7 @@
 
     <section id="formula" class="article-section">
       <p class="section-label">公式の挙動 · 正規化 TPM</p>
-      <h2>サイジング計算式が見るのはトークンの形である</h2>
+      <h2>サイジング計算式が見るのはトークンの形です</h2>
       <p>
         Microsoft Learn は、トラフィックを正規化 TPM に変換することで PTU 需要を
         サイジングします。入力となるのは、ピーク RPM、平均プロンプトトークン、
@@ -182,7 +182,7 @@
         </div>
         <div>
           <h3>4. 応答上限</h3>
-          <p><code>max_output_tokens</code> を記録してください。本リポジトリは、過大な上限を、推測する値ではなく、検証すべき PTU 受け入れリスクの仮説として扱います。</p>
+          <p><code>max_output_tokens</code> を記録してください。本リポジトリは、過大な上限を、推測する値ではなく、検証すべき PTU アドミッションリスクの仮説として扱います。</p>
         </div>
       </div>
     </section>
@@ -195,7 +195,7 @@
           <strong>読み解くチャート:</strong> 200 入力トークンと 20 可視出力トークンを
           持つ 1,000 RPM の例です。最初の 3 本のバーは公式の正規化 TPM 計算式と
           モデル表を使用します。最後の 2 本のバーは 60 トークンの推論を仮定として
-          加え、不可視の出力をなぜ測定しなければならないかを示します。
+          加え、不可視の出力を測定すべき理由を示します。
         </figcaption>
         <img class="wide-chart" src="../../../../assets/reasoning-migration-sizing.ja.svg" alt="GPT-4o と GPT-5.2 の移行要因を比較する例示的な PTU サイジングチャート。" style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -268,7 +268,7 @@
       <p><strong>Tier 2 — 運用上の推論（本リポジトリ）。</strong> 過大な
         <code>max_output_tokens</code> を PTU のアドミッションリスクの仮説として扱う
         こと、そして推論トークンとキャッシュ済みトークンの測定契約は、本リポジトリの
-        運用上の推論であって Learn の仕様ではありません。</p>
+        運用上の推論であり Learn の仕様ではありません。</p>
       <ul>
         <li>[5] <strong>本リポジトリ、<code>docs/13-ptu-vs-payg-decision-runbook.md</code></strong>
           — <code>mean_max_output_tokens</code> を記録し、大きな
@@ -280,13 +280,13 @@
           対応づける、PTU レコードの正準的な契約。<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/14-observability-schema.md">出典</a>。</li>
       </ul>
       <p>
-        <strong>このトピックが証明するものとしないもの。</strong> アクセス日時点で
-        Microsoft Learn が明示する PTU サイジングの契約——正規化 TPM の式、モデル別の
+        <strong>このトピックが示すこと、示さないこと。</strong> アクセス日時点で
+        Microsoft Learn が明記する PTU サイジングの契約——正規化 TPM の式、モデル別の
         PTU あたり Input TPM と出力対入力比、GPT-4.1 以降の出力トークンの重み付け、
         100% のキャッシュ差し引き——と、OpenAI の推論トークンの会計、そして本リポジトリの
         経験則——サイジングの前に出力・推論・キャッシュ・上限を測り直す——を文書化します。
         例示チャートは文書化された式を一つの呼び出しの形の例に適用したものです。これは
-        計算例であって容量の保証ではなく、特定の GPT-5.x のワークロードがすべての
+        計算例であり容量の保証ではなく、特定の GPT-5.x のワークロードがすべての
         リージョン・モデルバージョン・トラフィック形状にわたって従来の GPT-4o より重いか
         軽いかを証明するものではありません。
       </p>
@@ -297,14 +297,14 @@
       <p><strong>実務上のルール：GPT-4o のトラフィックを PTU 上の GPT-5.x へ移す前に、
         出力・推論・キャッシュ・<code>max_output_tokens</code> の上限ポリシーを測り直し、
         そのうえで正規化 TPM の式でサイジングしてください。モデル名だけでは、ワークロードを
-        サイジングするのに十分な情報ではないからです。</strong></p>
-      <p>本記事で運用面の話はいったん一区切りです。ここからは、そもそもどの根拠が公開に足るほど強かったのかを判断した方法論へ戻ります。</p>
+        サイジングするのに十分な情報ではないためです。</strong></p>
+      <p>本記事で運用エッセイはいったん完結します。ここからは、そもそもどの根拠が公開に足るほど強かったのかを判断した方法論へ戻ります。</p>
       <p><a class="button-link" href="../../when-reasoning-pays-off/ja/">どの根拠が公開に足るほど強いかを、ラボはどう判断したのか</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT ライセンスのリサーチ成果物 · 公開データはサニタイズ済みまたは集計のみ。</p>
+    <p>MIT ライセンスの研究成果物 · 公開データは匿名化済みまたは集計済みのものに限ります。</p>
   </footer>
 </body>
 </html>

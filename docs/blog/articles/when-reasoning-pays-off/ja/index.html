@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>推論がコストに見合うとき | 同じトークン単価、違う請求額</title>
-  <meta name="description" content="推論強度がいつ品質向上につながり、いつ見えないコストだけを増やすのかを説明するチャートベースの記事。">
+  <title>推論がコストに見合うとき | 同じトークン単価、異なる請求額</title>
+  <meta name="description" content="推論強度がどこで品質向上につながり、どこでは見えないコストだけを増やすのかをチャートで解説します。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <meta name="article:source-locale" content="en">
@@ -40,64 +40,111 @@
   </header>
 
   <main id="article-content" class="article-page">
-    <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 概要記事 / 日本語訳</p>
-    <p class="article-kicker">概要記事・推論強度、品質、支出</p>
-    <h1>推論がコストに見合うとき: 同じトークン単価、違う請求額</h1>
+    <p class="breadcrumb"><a href="../../ja/">記事一覧</a> / 概要 / 日本語版</p>
+    <p class="article-kicker">概要：推論強度、品質、コスト</p>
+    <h1>推論がコストに見合うとき：同じトークン単価、異なる請求額</h1>
     <p class="lede">
-      推論モデルは同じトークン単価表を使っていても、まったく違う請求額を
-      生むことがある。その違いを生むのが、推論トークンという予算である。
-      モデル内部で生成され、利用量として課金されるが、応答本文には
-      表示されないトークンである。
+      あるチームが推論モデルを導入し、トークン単価表は以前と同じだと確認します。
+      ところが設定には、新たに推論強度という項目があります。少し長く考えるための
+      コストがほぼ無視できるなら、どの場面でも回答がよくなるはずだと考え、強度を
+      上げたくなるのは自然です。しかし、推論モデルは同じ単価表を使っていても、
+      請求額が大きく変わることがあります。強度を上げるとモデル内部で生成される
+      トークンが増え、利用量として課金される一方、応答本文には表示されないためです。
+      問うべきなのは「推論は高価か」ではなく、「強度を上げると、どこで回答が改善し、
+      どこでは見えない計算だけが増えるのか」です。このシリーズでは、その問いを
+      データで検証します。
     </p>
+
+    <section class="article-section">
+      <h2>この直感を検証した理由</h2>
+      <p>
+        推論モデルへ移行すると、設定には推論強度が現れる一方、トークン単価は
+        変わらないように見えます。そのため強度を上げることは、誤答に備える
+        安価な保険のように思えます。すべての処理で強度を上げたくなるのは
+        もっともですが、追加の計算が回答を改善するのか、請求額にだけ反映されるのかは
+        わかりません。
+      </p>
+      <p>
+        各測定区間で検証する仮説は明快です。推論強度を上げると回答がよくなるのか、
+        それとも見えないトークン、レイテンシ、コストが増えるだけなのか。直感に従って
+        高い強度を既定値にすれば、最終的な出力が変わらなくてもコストは発生します。
+        一方、先に測定すれば、対応する品質指標が実際に改善した区間だけ強度を上げ、
+        それ以外では低く保てます。
+      </p>
+      <p>
+        そこで、プロンプトとワークロード区間を固定し、短い事実回答、複数ステップの
+        推論、ツール利用エージェントの三つの区間に同じ強度設定を順に適用して、
+        トークン構成、レイテンシ、コストを測定しました。さらに、測定したトークン構成を
+        PTU/PAYG の容量計画モデルに組み込みました。結果は区間ごとに異なります。
+        短い事実回答では、強度を上げても回答は改善せず、コストと推論トークンも
+        ほぼ横ばいでした。トークン構成を見ると、表示される出力がほぼ同じでも請求額が
+        変わり得る理由がわかります。複数ステップの処理では、評価スコアが実際に
+        動いた場合にだけ効果がありました。ツール利用エージェントでは品質が頭打ちになり、
+        強度をさらに上げてもレイテンシだけが増えるケースがよく見られました。
+        PTU/PAYG の交点は実測した容量ではなく、
+        モデル化した計画上のしきい値です。以下ではトピック別のチャートを順に説明し、
+        根拠ダッシュボードをすべての数値の監査証跡として示します。
+      </p>
+    </section>
+
+    <figure class="article-figure" id="figure-overview-one-pager">
+      <figcaption>
+        <strong>シリーズの全体像。</strong> 推論モデルはトークン単価表が同じでも、
+        請求額が大きく変わることがあります。この一枚にシリーズの要点と根拠の範囲を
+        まとめました。各測定結果は、以下のセクションで詳しく説明します。
+        <a href="../../../../assets/when-reasoning-pays-off-overview.ja.svg">日本語版の概要 SVG を開く</a>。
+      </figcaption>
+      <img class="overview-one-pager" src="../../../../assets/when-reasoning-pays-off-overview.ja.svg" alt="トークン単価表が同じでも、推論強度によって推論モデルの請求額は変わる可能性があります。追加コストが回答の改善につながったかを区間ごとに検証するシリーズの概要です。" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+    </figure>
 
     <div class="article-summary-grid" aria-label="記事の要約">
       <section class="summary-tile">
         <h2>問い</h2>
-        <p>推論強度を上げると、いつ測定できる品質向上につながり、いつ見えないコストだけが増えるのか。</p>
+        <p>推論強度を上げると、どこで測定可能な品質向上につながり、どこでは見えない計算だけが増えるのでしょうか。</p>
       </section>
       <section class="summary-tile">
         <h2>根拠</h2>
-        <p>公開チャートデータは、コスト、審判スコア、トークン構成、レイテンシ、モデル化された予約容量の交点を比較する。</p>
+        <p>公開チャートデータで、コスト、評価スコア、トークン構成、レイテンシ、モデル化した予約容量の交点を比較します。</p>
       </section>
       <section class="summary-tile">
-        <h2>わかったこと</h2>
-        <p>短い事実回答の測定区間では、コストは推論強度の階段を通じて実質的に横ばいでした（gpt-5.2 の各段階はいずれも gpt-4o ベースラインを下回りました）。平均審判スコアは 1.95 前後で、ベースライン以上を保った。審判が実際に動いたのは複数ステップの測定区間で、1.5 から 2.0 へ上がった。</p>
+        <h2>結果</h2>
+        <p>短い事実回答の測定区間では、すべての推論強度でコストはほぼ横ばいでした（gpt-5.2 の各強度はいずれも gpt-4o の baseline 未満です）。平均評価スコアは約 1.95 で、baseline 以上を維持しました。評価スコアが実際に動いたのは複数ステップの区間で、1.5 から 2.0 に上がりました。</p>
       </section>
       <section class="summary-tile">
         <h2>判断</h2>
-        <p>審判スコアが改善される場合にだけ推論強度を上げ、根拠ダッシュボードは本文の背後にある監査証跡として残す。</p>
+        <p>評価スコアが意味のある幅で改善する区間だけ推論強度を上げます。根拠ダッシュボードは、記事の監査証跡として維持します。</p>
       </section>
     </div>
 
     <section class="article-section" aria-label="このシリーズの構成">
-      <p class="section-label">このシリーズの読み方・三つの層とブリッジ</p>
-      <h2>三つの層で読むシリーズ</h2>
+      <p class="section-label">シリーズの読み方：三つの層と橋渡し</p>
+      <h2>三つの層で読み解く</h2>
       <div class="article-summary-grid">
         <section class="summary-tile">
-          <h2>概要・問い</h2>
-          <p>この記事は問いを枠づける。推論強度を上げると、いつその追加コストに見合うのか。</p>
-          <p><a href="./">現在地</a></p>
+          <h2>概要：問い</h2>
+          <p>この記事では、推論強度を上げることで追加コストに見合う効果が得られる条件を整理します。</p>
+          <p><a href="./">この記事</a></p>
         </section>
         <section class="summary-tile">
-          <h2>根拠・五つの測定区間</h2>
-          <p>五本のトピック記事が、それぞれ一つのワークロード測定区間でコスト・品質・レイテンシ・トークンの特性を測定する。</p>
-          <p><a href="../topics/short-factual-work/ja/">根拠レイヤーから始める</a></p>
+          <h2>根拠：五つの区間</h2>
+          <p>五つのトピック記事で、各ワークロード区間のコスト、品質、レイテンシ、トークン構成を測定します。</p>
+          <p><a href="../topics/short-factual-work/ja/">測定結果から読む</a></p>
         </section>
         <section class="summary-tile">
-          <h2>ブリッジ・測定 → 本番</h2>
-          <p>一本の記事が、語り口が変わる理由と、どの根拠の習慣が運用へ受け継がれるかを示す。</p>
-          <p><a href="../topics/bridge-from-measurement-to-production/ja/">ブリッジ記事を読む</a></p>
+          <h2>橋渡し：測定 → 本番</h2>
+          <p>橋渡しの記事では、記述の視点が変わる理由と、測定から運用へ引き継ぐ検証手法を説明します。</p>
+          <p><a href="../topics/bridge-from-measurement-to-production/ja/">橋渡しの記事を読む</a></p>
         </section>
         <section class="summary-tile">
-          <h2>運用・プロダクションの方針</h2>
-          <p>四本の記事が、同じ監査の規律を、回復・キャッシュのルーティング・保持期間・移行サイジングに当てはめる。</p>
-          <p><a href="../../ptu-retry-after-recovery/ja/">運用レイヤーから始める</a></p>
+          <h2>運用：本番環境の方針</h2>
+          <p>四つの記事で、同じ監査原則を復旧、キャッシュルーティング、保持、移行時のサイジングに適用します。</p>
+          <p><a href="../../ptu-retry-after-recovery/ja/">運用の記事から読む</a></p>
         </section>
       </div>
     </section>
 
     <nav class="article-outline" aria-label="記事のセクション">
-      <strong>トピック別に読む:</strong>
+      <strong>トピックから読む：</strong>
       <a href="#short-factual">短い事実回答</a>
       <a href="#reasoning-tokens">見えないトークン</a>
       <a href="#multi-step">複数ステップ</a>
@@ -106,195 +153,231 @@
     </nav>
 
     <p class="banner">
-      <strong>データ付録:</strong>
+      <strong>データ付録：</strong>
       完全な表とレンダリング済みの元チャートは
       <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>で
-      確認できる。この記事では、それぞれのチャートがなぜ必要で、どう使うべきかを説明する。
+      確認できます。この記事では、各チャートが必要な理由と使い方を説明します。
     </p>
 
     <section class="article-section chart-reading-guide">
-      <p class="section-label">読み方・棒、軸、表</p>
-      <h2>この記事のチャートの読み方</h2>
+      <p class="section-label">読み方：棒、軸、表</p>
+      <h2>チャートの読み方</h2>
       <p>
-        この記事の小さな棒グラフは、完全な元チャートを読むための道しるべである。
-        頻度分布のヒストグラムではない。各棒は、baseline・minimal・low・medium・high・xhigh という各強度設定の集計値である。
+        この記事の小さな棒グラフは、元チャートを読むためのガイドです。
+        頻度分布を表すヒストグラムではありません。各棒は、baseline、none、low、medium、high、xhigh
+        という強度設定ごとの集計値です。
       </p>
       <div class="evidence-grid">
-        <div><h3>X軸</h3><p>X軸は運用者が変えられる推論強度の段階である。左から右に進むほど、モデルにより多くの内部推論作業を許す。</p></div>
-        <div><h3>Y軸</h3><p>Y軸はチャートごとに変わる。コストはリクエストあたり USD、品質は審判スコア、レイテンシはミリ秒、トークン構成はトークン数、クロスオーバーはモデル化された分あたりリクエスト数である。</p></div>
-        <div><h3>棒</h3><p>高い棒が常によいとは限らない。品質の棒なら良い場合もあるが、コスト、レイテンシ、推論トークンの棒は、それに見合う品質上昇が必要なトレードオフである。</p></div>
-        <div><h3>元表</h3><p>正確な値、標準偏差、サンプル数はダッシュボードの表で確認する。本文では意思決定に必要な形だけを抜き出す。</p></div>
+        <div><h3>X 軸</h3><p>X 軸は、運用者が調整できる推論強度です。左から右へ進むほど、モデルに多くの内部推論を許可します。</p></div>
+        <div><h3>Y 軸</h3><p>Y 軸の指標はチャートごとに異なります。コストはリクエストあたりの USD、品質は評価スコア、レイテンシはミリ秒、トークン構成はトークン数、交点はモデル化した毎分リクエスト数です。</p></div>
+        <div><h3>棒</h3><p>棒は高ければよいとは限りません。品質では高いほどよい場合がありますが、コスト、レイテンシ、推論トークンの増加には、それに見合う品質向上が必要です。</p></div>
+        <div><h3>元データ</h3><p>正確な値、標準偏差、サンプル数はダッシュボードの表で確認できます。本文では、意思決定に必要な傾向だけを取り上げます。</p></div>
       </div>
     </section>
 
     <section id="short-factual" class="article-section">
-      <p class="section-label">トピック・ 短い事実回答</p>
-      <h2>短い事実回答：推論はしばしば割に合わない</h2>
+      <p class="section-label">トピック：短い事実回答</p>
+      <h2>短い事実回答：推論がコストに見合わない場合</h2>
       <figure class="article-figure" id="figure-short-factual">
         <figcaption>
-          <strong>読むチャート:</strong> リクエストあたり平均コストを、同じ短い事実回答の測定区間の審判スコアチャートと並べて読む。
+          <strong>見るポイント：</strong> リクエストあたりの平均コストと、同じ短い事実回答区間の評価スコアを並べて確認します。
         </figcaption>
-        <div class="mini-chart labeled-mini-chart" role="img" aria-label="棒グラフ: X軸は推論強度、Y軸は組み合わせる元チャートに応じてコストまたは評価スコアです。">
-          <div class="mini-axis-row"><span>Y: コスト / 審判スコア</span><span>各棒: 1つの強度設定</span></div>
+        <div class="mini-chart labeled-mini-chart" role="img" aria-label="棒グラフ：X 軸は推論強度、Y 軸は対応する元チャートに応じてコストまたは評価スコアを示します。">
+          <div class="mini-axis-row"><span>Y：コスト / 評価スコア</span><span>各棒：一つの強度設定</span></div>
           <div class="mini-plot">
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">Baseline</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">なし</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Low</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Medium</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">High</b></div>
-            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">Extra-high</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">baseline</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">none</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">low</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">medium</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-md"></i><b class="bar-label">high</b></div>
+            <div class="mini-bar-wrap"><i class="mini-bar-fill bar-sm"></i><b class="bar-label">xhigh</b></div>
           </div>
-          <div class="mini-x-axis">X: 推論強度</div>
+          <div class="mini-x-axis">X：推論強度</div>
         </div>
       </figure>
+      <figure class="article-figure" id="figure-short-factual-cost">
+        <figcaption>
+          <strong>元チャート：短い事実回答のリクエストあたりコスト（benchmark&nbsp;01）。</strong>
+          <strong>X 軸：</strong> gpt-4o の baseline と、gpt-5.2 の none、low、medium、
+          high、xhigh です。
+          <strong>Y 軸：</strong> リクエストあたりの平均 PAYG コスト（USD）です。
+          <strong>棒：</strong> 各棒は一つの強度セルの平均コストを示し、線系列は
+          ありません。縦のエラーバーは反復測定の &plusmn;1 標準偏差です。
+          <strong>読み方：</strong> コストはほぼ横ばいです。none は約 $0.000587、
+          xhigh は $0.000598 で、gpt-5.2 のすべての強度が gpt-4o の baseline
+          $0.000665 を下回ります。対応する評価スコアは約 1.95 で、baseline の
+          1.90 以上です。強度を上げても請求額が下がるわけでも、回答が改善する
+          わけでもありませんでした。
+          <strong>根拠の範囲：</strong> セルあたり N = 20 の作成サンプル、R = 3 の反復、
+          一つの短い事実回答区間、単一の Azure OpenAI テナントとリージョン、日付を
+          固定した PAYG スナップショットに限定されます。ほかのワークロード、
+          リージョン、将来の価格については証明しません。
+          <strong>出典とダッシュボード：</strong> 棒の値は
+          <code>results/cost-curves/benchmark-01-cost-per-request.csv</code>から
+          取得しました。対応する品質チャートと正確な表は
+          <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>で確認できます
+          （<a href="../../../data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json">ローカルのチャートデータ</a>）。
+        </figcaption>
+        <img class="wide-chart" src="../../../../assets/benchmark-01-cost-per-request.png" alt="benchmark-01 のリクエストあたり平均 PAYG コストを示す棒グラフです。gpt-4o の baseline と、gpt-5.2 の none から xhigh までを比較しています。gpt-5.2 のすべての強度が baseline を下回り、コストはほぼ横ばいです。縦のエラーバーは標準偏差を示します。" style="width:100%;height:auto;display:block;border-radius:12px;">
+      </figure>
       <div class="chart-reading-note">
-        <h3>この棒グラフの読み方</h3>
+        <h3>棒グラフの読み方</h3>
         <p>
-          X軸は推論強度である。コストチャートの Y軸はリクエストあたり平均 USD、
-          対になる品質チャートの Y軸は平均審判スコアである。つまり、この棒の形は、
-          推論強度を上げたことでスコアが上がったのか、それとも請求額だけが上がったのかを問う。
+          X 軸は推論強度です。コストチャートの Y 軸はリクエストあたりの平均 USD、
+          対応する品質チャートの Y 軸は平均評価スコアです。つまり、強度を上げた結果、
+          スコアが上がったのか、請求額だけが増えたのかを確認します。
         </p>
       </div>
       <div class="evidence-grid">
         <div>
-          <h3>なぜこのチャートがあるのか</h3>
+          <h3>確認する理由</h3>
           <p>
-            いちばん単純な移行時の落とし穴を検証する。チームが推論強度
-            を全体で上げたあと、タスクの大半は短い事実回答なのに、なぜ請求額が動いたのかを問う場面である。
+            移行時に起きやすい単純な落とし穴を検証します。処理の大半が短い事実回答なのに、
+            推論強度を一律に上げたあとで請求額が変わった場合です。
           </p>
         </div>
         <div>
-          <h3>何を意味するのか</h3>
+          <h3>チャートが示すこと</h3>
           <p>
-            短い事実回答の測定区間では、なし強度でリクエストあたり平均 $0.000587、xhigh で $0.000598 でした。
-            これは横ばいの 1.02x 幅で、どちらも gpt-4o ベースラインの $0.000665 を下回る。
-            平均審判スコアは 1.95 前後で、ベースラインの 1.90 以上を保ちました。
+            短い事実回答の区間では、none がリクエストあたり平均 $0.000587、
+            xhigh が $0.000598 でした。差は 1.02x にすぎず、ほぼ横ばいです。
+            どちらも gpt-4o の baseline $0.000665 を下回りました。平均評価スコアは
+            約 1.95 で、baseline の 1.90 以上を維持しました。
           </p>
         </div>
         <div>
-          <h3>運用上の教訓</h3>
+          <h3>運用上のポイント</h3>
           <p>
-            推論強度を上げても、より良い答えが得られないことがある。
-            短い事実回答では最も低い強度から始め、品質ゲートが実際の改善を示したときだけ上げる。
+            推論強度を上げても、回答が改善するとは限りません。短い事実回答では
+            最も低い強度から始め、品質ゲートで実測の改善を確認できた場合だけ上げます。
           </p>
         </div>
       </div>
     </section>
 
     <section id="reasoning-tokens" class="article-section">
-      <p class="section-label">トピック・ 見えない課金面</p>
-      <h2>推論トークンが請求額の差を説明する</h2>
+      <p class="section-label">トピック：見えない課金構造</p>
+      <h2>請求額の差を生む推論トークン</h2>
       <figure class="article-figure" id="figure-reasoning-tokens">
         <figcaption>
-          <strong>読むチャート:</strong> 推論強度別のトークン構成：キャッシュ入力、非キャッシュ入力、見える出力、推論トークンである。
+          <strong>見るポイント：</strong> 推論強度ごとのトークン構成を、キャッシュ済み入力、
+          非キャッシュ入力、表示される出力、推論トークンに分けて確認します。
         </figcaption>
-        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="積み上げトークン構成: X軸はトークン構成要素、Y軸はリクエストあたり平均トークン数です。">
-          <div class="mini-axis-row"><span>Y: 平均トークン/リクエスト</span><span>X: トークン構成要素</span></div>
+        <div class="stacked-mini-chart labeled-stack-chart" role="img" aria-label="積み上げトークン構成：X 軸はトークン構成要素、Y 軸はリクエストあたりの平均トークン数を示します。">
+          <div class="mini-axis-row"><span>Y：リクエストあたりの平均トークン数</span><span>X：トークン構成要素</span></div>
           <div class="stack-track">
             <div class="stack-segment stack-input"><b class="segment-label">入力トークン</b></div>
             <div class="stack-segment stack-output"><b class="segment-label">見える出力</b></div>
             <div class="stack-segment stack-reason"><b class="segment-label">推論トークン</b></div>
           </div>
-          <div class="mini-legend">プログレスバーの意味: 見える出力が小さくても、隠れた推論が請求額を支配することがある。</div>
+          <div class="mini-legend">表示される出力が少なくても、見えない推論が請求額の大半を占めることがあります。</div>
         </div>
       </figure>
       <div class="evidence-grid">
         <div>
-          <h3>なぜこのチャートがあるのか</h3>
+          <h3>確認する理由</h3>
           <p>
-            見える応答はほとんど同じに見えても、モデルはそれを生成するために多くの内部推論トークンを使っている場合がある。
-            単なる出力長のチャートでは、その課金対象の作業を見落とす。
+            応答本文がほぼ同じでも、モデルが回答を生成するために多くの内部推論トークンを
+            使っている場合があります。出力長だけを見ると、この課金対象の処理を見落とします。
           </p>
         </div>
         <div>
-          <h3>何を意味するのか</h3>
+          <h3>チャートが示すこと</h3>
           <p>
-            短い事実回答の測定区間では、推論トークンはどの強度でもゼロ近辺にとどまる。なしでは 0、high でも約 1.35 で、まさにそのため請求額は横ばいである。
-            見えない跳ね上がりはむしろ複数ステップの測定区間に現れ、そこでは推論トークンが強度とともに増え、回答本文からはわからないコスト差を生む。
+            短い事実回答の区間では、推論トークンはどの強度でもゼロ付近にとどまります。
+            none では 0、high でも約 1.35 であるため、請求額は横ばいです。
+            一方、複数ステップの区間では見えない増加が現れます。推論トークンが強度とともに
+            増え、回答本文からはわからないコスト差を生みます。
           </p>
         </div>
         <div>
-          <h3>運用上の教訓</h3>
+          <h3>運用上のポイント</h3>
           <p>
-            応答テキストだけではこの差は見えない。運用予算には、入力、キャッシュ入力、出力、推論トークンの利用量内訳が必要である。
+            応答テキストだけでは、この差はわかりません。運用予算では、入力、キャッシュ済み入力、
+            出力、推論トークンに分けて利用量を把握する必要があります。
           </p>
         </div>
       </div>
     </section>
 
     <section id="multi-step" class="article-section">
-      <p class="section-label">トピック・ 複数ステップ推論</p>
-      <h2>複数ステップの作業では、推論が割に合うことがある</h2>
+      <p class="section-label">トピック：複数ステップの推論</p>
+      <h2>複数ステップ：モデル変更で品質が向上した場合</h2>
       <figure class="article-figure" id="figure-multi-step">
         <figcaption>
-          <strong>読むチャート:</strong> まず品質バーを読み、そのあと対応するコストバーを読む。支出の理由は品質差である。
+          <strong>見るポイント：</strong> 先に品質を確認し、次に対応するコストを確認します。
+          追加支出を判断する根拠は品質差です。
         </figcaption>
-        <div class="mini-compare labeled-dot-chart" role="img" aria-label="比較チャート: X軸は baseline と高強度の比較、Y軸は平均評価スコアです。">
-          <div class="mini-axis-row"><span>Y: 平均審判スコア</span><span>点の大きさ: 品質水準</span></div>
+        <div class="mini-compare labeled-dot-chart" role="img" aria-label="比較チャート：X 軸は baseline と high の比較、Y 軸は平均評価スコアを示します。">
+          <div class="mini-axis-row"><span>Y：平均評価スコア</span><span>点の大きさ：品質水準</span></div>
           <div class="dot-plot">
-            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">Baseline</b></div>
-            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">High effort</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-low"></i><b class="dot-label">baseline</b></div>
+            <div class="dot-wrap"><i class="dot-fill dot-high"></i><b class="dot-label">high</b></div>
           </div>
-          <div class="mini-x-axis">X: 比較する強度設定</div>
+          <div class="mini-x-axis">X：比較する強度設定</div>
         </div>
       </figure>
       <div class="evidence-grid">
         <div>
-          <h3>なぜこのチャートがあるのか</h3>
+          <h3>対照例として見る理由</h3>
           <p>
-            これは対比事例である。中程度の推論が実際に効いており、強度を上げて試す価値があるワークロードである。
+            このワークロードでは、gpt-4o から gpt-5.2 へのモデル変更で品質が
+            向上しました。ただし gpt-5.2 内では、強度を上げても品質は改善していません。
           </p>
         </div>
         <div>
-          <h3>何を意味するのか</h3>
+          <h3>チャートが示すこと</h3>
           <p>
-            複数ステップの測定区間では、推論なしのベースラインは 1.5 点でした。
-            高強度ではリクエストあたり $0.00125 で 2.0 点でした。
+            複数ステップの区間では、gpt-4o の baseline は 1.5 点でした。
+            gpt-5.2 は none の時点で 2.0 点に達し、high も 2.0 点でした。
+            none は、同じ最高スコアをより低いリクエスト単価で得ています。
           </p>
         </div>
         <div>
-          <h3>運用上の教訓</h3>
+          <h3>運用上のポイント</h3>
           <p>
-            推論は、審判スコアが意味のある幅で動くときだけ価値を発揮する。まず品質を読み、そのあと限界支出が正当化されるかを判断する。
+            まずモデルと推論強度の組み合わせごとに品質を確認します。同じ品質なら、
+            最も低コストでレイテンシの短い設定を選びます。
           </p>
         </div>
       </div>
     </section>
 
     <section id="tool-agent" class="article-section">
-      <p class="section-label">トピック・ ツール利用エージェント</p>
-      <h2>ツールエージェントには天井効果の確認が必要</h2>
+      <p class="section-label">トピック：ツール利用エージェント</p>
+      <h2>ツール利用エージェント：頭打ちを見極める</h2>
       <figure class="article-figure" id="figure-tool-agent">
         <figcaption>
-          <strong>読むチャート:</strong> 品質とレイテンシを一緒に読む。スコアがすでに評価基準の上限近くなら、次の制約はレイテンシである。
+          <strong>見るポイント：</strong> 品質とレイテンシを併せて確認します。スコアがすでに
+          評価基準の上限に近ければ、次の制約はレイテンシです。
         </figcaption>
         <svg class="mini-svg-chart" viewBox="0 0 360 224" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ceil-svg-title ceil-svg-desc">
-          <title id="ceil-svg-title">ツールエージェントの品質天井効果</title>
-          <desc id="ceil-svg-desc">品質スコアはすでにルーブリック上限（天井）付近で平らになっており、推論強度をさらに上げてもスコアは変わらず、レイテンシ、コスト、内部トークンだけが増える。</desc>
+          <title id="ceil-svg-title">ツール利用エージェントの品質の頭打ち</title>
+          <desc id="ceil-svg-desc">評価スコアはすでにルーブリックの上限付近で頭打ちになっています。推論強度をさらに上げてもスコアは変わらず、レイテンシ、コスト、内部トークンだけが増えます。</desc>
           <defs>
             <linearGradient id="ceilFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#06d6a0"/>
               <stop offset="1" stop-color="#048a67"/>
             </linearGradient>
           </defs>
-          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">ツールエージェント: 品質天井効果</text>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">ツール利用エージェント：品質の頭打ち</text>
           <line x1="52" y1="34" x2="52" y2="180" stroke="#9fb3c8" stroke-width="2"/>
           <line x1="52" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
-          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">品質スコア</text>
-          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">推論強度設定</text>
+          <text x="20" y="110" transform="rotate(-90 20 110)" text-anchor="middle" font-size="12" fill="#53687c">評価スコア</text>
+          <text x="150" y="214" text-anchor="middle" font-size="12" fill="#53687c">推論強度</text>
           <line x1="52" y1="54" x2="244" y2="54" stroke="#048a67" stroke-width="2" stroke-dasharray="5 4"/>
-          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">ルーブリック上限（天井）</text>
+          <text x="56" y="48" font-size="11" fill="#048a67" font-weight="700">ルーブリックの上限</text>
           <rect x="64" y="118" width="34" height="58" rx="5" fill="url(#ceilFill)"/>
           <rect x="110" y="80" width="34" height="96" rx="5" fill="url(#ceilFill)"/>
           <rect x="156" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
           <rect x="202" y="62" width="34" height="114" rx="5" fill="url(#ceilFill)"/>
-          <text x="81" y="191" text-anchor="middle" font-size="11" fill="#31475e">Low</text>
-          <text x="127" y="191" text-anchor="middle" font-size="11" fill="#31475e">Medium</text>
-          <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">High</text>
-          <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">Extra-high</text>
+          <text x="81" y="191" text-anchor="middle" font-size="11" fill="#31475e">low</text>
+          <text x="127" y="191" text-anchor="middle" font-size="11" fill="#31475e">medium</text>
+          <text x="173" y="191" text-anchor="middle" font-size="11" fill="#31475e">high</text>
+          <text x="219" y="191" text-anchor="middle" font-size="11" fill="#31475e">xhigh</text>
           <rect x="250" y="58" width="104" height="100" rx="9" fill="#f3fbf8" stroke="#cdeee3"/>
-          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">強度を上げても</text>
-          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">スコア → 横ばい</text>
+          <text x="302" y="76" text-anchor="middle" font-size="10.5" fill="#31475e">強度を上げると</text>
+          <text x="302" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#048a67">スコア → 頭打ち</text>
           <text x="302" y="118" text-anchor="middle" font-size="11.5" fill="#b4540a">レイテンシ ↑</text>
           <text x="302" y="136" text-anchor="middle" font-size="11.5" fill="#b4540a">コスト ↑</text>
           <text x="302" y="154" text-anchor="middle" font-size="11.5" fill="#b4540a">内部トークン ↑</text>
@@ -302,78 +385,88 @@
       </figure>
       <div class="evidence-grid">
         <div>
-          <h3>なぜこのチャートがあるのか</h3>
+          <h3>頭打ちを確認する理由</h3>
           <p>
-            ツールエージェントはもっと考える必要があるように見えることがある。しかし、ときには難しい部分をすでにツール呼び出しが担っている。
+            ツール利用エージェントには、より多くの推論が必要に見えることがあります。
+            しかし、難しい処理をすでにツール呼び出しが担っている場合もあります。
           </p>
         </div>
         <div>
-          <h3>何を意味するのか</h3>
+          <h3>チャートが示すこと</h3>
           <p>
-            チャートがすでに天井効果を示しているなら、推論強度を上げても、より良い答えではなく内部トークンとレイテンシを主に増やす可能性がある。
+            benchmark-03 のツール利用エージェント区間では、評価スコアがすでに
+            ルーブリックの上限に達しています。強度を上げてもスコアは伸びず、主に
+            内部トークンとレイテンシだけが増えます。この場合、推論品質はもはや
+            ボトルネックではありません。
           </p>
         </div>
         <div>
-          <h3>運用上の教訓</h3>
+          <h3>運用上のポイント</h3>
           <p>
-            推論強度は既定値ではなく、制御された実験として扱う。エージェント型の作業では、制約が推論品質、ツール選択、ツールの遅さ、オーケストレーションのどれなのかを先に確認する。
+            推論強度は既定値ではなく、統制された実験として扱います。エージェント型の
+            処理では、ボトルネックが推論品質、ツール選択、ツールのレイテンシ、
+            オーケストレーションのどこにあるかを先に確認します。
           </p>
         </div>
       </div>
     </section>
 
     <section id="ptu-payg" class="article-section">
-      <p class="section-label">トピック・ 容量計画</p>
-      <h2>PTU/PAYG の交点は計画モデルである</h2>
+      <p class="section-label">トピック：容量計画</p>
+      <h2>PTU/PAYG の交点：実測ではなく計画モデル</h2>
       <figure class="article-figure" id="figure-ptu-payg">
         <figcaption>
-          <strong>読むチャート:</strong> 品質ガードレールとともに、モデル化された交点を読む。これはサイジングの目安であり、測定された容量の根拠ではない。
+          <strong>見るポイント：</strong> モデル化した交点を、品質ガードレールと併せて
+          確認します。これはサイジングの目安であり、実測した容量の根拠ではありません。
         </figcaption>
         <svg class="mini-svg-chart" viewBox="0 0 360 214" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ptupayg-svg-title ptupayg-svg-desc">
-          <title id="ptupayg-svg-title">モデル化された PTU/PAYG 交点</title>
-          <desc id="ptupayg-svg-desc">青い PAYG 変動費カーブがオレンジの PTU 固定下限と交わる点が、モデル化された計画閾値である。測定された PTU 容量ではない。</desc>
+          <title id="ptupayg-svg-title">モデル化した PTU/PAYG の交点</title>
+          <desc id="ptupayg-svg-desc">青い PAYG 変動費曲線とオレンジ色の PTU 固定下限が交わる点が、モデル化した計画上のしきい値です。実測した PTU 容量ではありません。</desc>
           <defs>
             <linearGradient id="paygStroke" x1="0" y1="1" x2="1" y2="0">
               <stop offset="0" stop-color="#3a86ff"/>
               <stop offset="1" stop-color="#1554b7"/>
             </linearGradient>
           </defs>
-          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">モデル化された PTU/PAYG 交点</text>
+          <text x="180" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2d3d">モデル化した PTU/PAYG の交点</text>
           <line x1="58" y1="34" x2="58" y2="180" stroke="#9fb3c8" stroke-width="2"/>
           <line x1="58" y1="176" x2="344" y2="176" stroke="#9fb3c8" stroke-width="2"/>
-          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">モデル化された時間あたりコスト</text>
-          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">リクエスト率（毎分）</text>
+          <text x="22" y="108" transform="rotate(-90 22 108)" text-anchor="middle" font-size="12" fill="#53687c">モデル化した時間コスト</text>
+          <text x="201" y="200" text-anchor="middle" font-size="12" fill="#53687c">毎分リクエスト数</text>
           <line x1="58" y1="96" x2="340" y2="96" stroke="#f4a300" stroke-width="4" stroke-linecap="round"/>
-          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU 固定下限（時間あたり定額）</text>
+          <text x="64" y="88" font-size="11" fill="#8a5b00" font-weight="700">PTU 固定下限（時間定額）</text>
           <path d="M58 170 Q160 150 340 46" fill="none" stroke="url(#paygStroke)" stroke-width="4" stroke-linecap="round"/>
           <text x="66" y="140" font-size="11" fill="#1554b7" font-weight="700">PAYG 変動費</text>
           <line x1="248" y1="96" x2="248" y2="176" stroke="#102a43" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
           <rect x="146" y="48" width="118" height="30" rx="7" fill="#ffffff" stroke="#dce6f0"/>
-          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">計画閾値</text>
-          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">測定値ではない・モデル値</text>
+          <text x="205" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#102a43">計画上のしきい値</text>
+          <text x="205" y="73" text-anchor="middle" font-size="9.5" fill="#8a5b00">実測ではなくモデル値</text>
           <line x1="248" y1="78" x2="248" y2="92" stroke="#102a43" stroke-width="1.2" opacity="0.6"/>
           <circle cx="248" cy="96" r="6" fill="#102a43" stroke="#ffffff" stroke-width="2.5"/>
         </svg>
       </figure>
       <div class="evidence-grid">
         <div>
-          <h3>なぜこのチャートがあるのか</h3>
+          <h3>計画に必要な理由</h3>
           <p>
-            PAYG と予約容量の判断は、異なる問いに答える。このチャートは、推論込みのトークン形状を計画しきい値に変換する。
+            PAYG と予約容量では、判断基準が異なります。このチャートでは、
+            推論を含むトークン構成を計画上のしきい値に換算します。
           </p>
         </div>
         <div>
-          <h3>何を意味するのか</h3>
+          <h3>チャートが示すこと</h3>
           <p>
-            短い事実回答の xhigh 行では、PTU/PAYG の交点は 50 PTU の下限を置いた約 2748 rpm のモデル化された仮説である。
-            測定された PTU スループットではありません。
+            短い事実回答の xhigh 行では、PTU/PAYG の交点は 50 PTU の下限を
+            前提とした約 2748 rpm という、モデル化した仮説です。実測した PTU
+            スループットではありません。
           </p>
         </div>
         <div>
-          <h3>運用上の教訓</h3>
+          <h3>運用上のポイント</h3>
           <p>
-            この数値は容量の根拠ではなく、計画しきい値として読む必要がある。PAYG では推論トークンを減らすと変動支出が減る。
-            PTU では、同じ削減が固定予約内でより多くのリクエストを処理する余地として現れる可能性がある。
+            この数値は容量の根拠ではなく、計画上のしきい値として扱います。PAYG では
+            推論トークンを減らすと変動費が下がります。PTU では、同じ削減によって
+            固定予約内で処理できるリクエスト数が増える可能性があります。
           </p>
         </div>
       </div>
@@ -381,35 +474,36 @@
 
 
     <section id="bridge" class="article-section">
-      <p class="section-label">ブリッジエッセイ・ 根拠レイヤーと運用レイヤーのあいだ</p>
+      <p class="section-label">橋渡し：測定結果から運用へ</p>
       <h2>測定からプロダクションへ</h2>
       <p>
-        根拠エッセイは測定の問いに答えました。推論強度を上げるとどこで品質が改善し、どこでは隠れた計算コストだけが増えるのか。運用エッセイは別の問いに
-        答える。推論強度についての判断が下され、トラフィックが流れ始めたあと、
-        このデプロイは運用者に何を返すべきなのか? ブリッジエッセイは、二つの
-        レイヤーのあいだで語り口がなぜ変わるのか、そしてどの習慣がそのまま
-        引き継がれるのかを説明する。
+        測定の記事では、推論強度を上げた結果、どこで品質が改善し、どこでは
+        見えない計算だけが増えるのかを検証しました。運用の記事で扱う問いは
+        異なります。推論強度を決め、トラフィックが流れ始めたあと、デプロイは
+        運用者に何を返すべきでしょうか。橋渡しの記事では、測定と運用で記述の
+        視点が変わる理由と、そのまま引き継ぐ検証手法を説明します。
       </p>
       <p>
-        <a class="button-link" href="../topics/bridge-from-measurement-to-production/ja/">ブリッジエッセイを読む</a>
+        <a class="button-link" href="../topics/bridge-from-measurement-to-production/ja/">橋渡しの記事を読む</a>
       </p>
     </section>
 
     <section id="operations-next" class="article-section decision-box">
-      <p class="section-label">運用エッセイ・ プロダクションレイヤー</p>
-      <h2>運用エッセイは根拠の物語を次の層へつなぐ</h2>
+      <p class="section-label">運用：プロダクション</p>
+      <h2>検証手法を運用へつなぐ</h2>
       <p>
-        この概要記事は、推論強度がコストと品質をいつ変えるのかを説明する。
-        運用エッセイは、同じ根拠の読み方をもう一段運用に近いテーマへ移す: <code>retry-after-ms</code> による
-        429 回復、<code>prompt_cache_key</code> のバケット化、明示的なキャッシュ保持、
-        GPT-4o から GPT-5.x へのサイジングである。
+        この概要では、推論強度がコストと品質を変える条件を説明しました。
+        運用の記事では、同じ検証手法をより実務に近いテーマへ適用します。
+        <code>retry-after-ms</code> に従う 429 からの復旧、
+        <code>prompt_cache_key</code> のバケット化、明示的なキャッシュ保持、
+        GPT-4o から GPT-5.x への移行時のサイジングです。
       </p>
       <p>
-        各記事は、公開チャート根拠、公式仕様の引用、文書化された動作と
-        運用上の推論の境界をそろえてから本文へ昇格する。
+        各記事は、公開チャート、公式仕様の引用、文書化された動作と
+        運用上の推論の境界を明示してから公開します。
       </p>
       <p>
-        <a class="button-link" href="../../ptu-retry-after-recovery/ja/">429 回復の記事を読む</a>
+        <a class="button-link" href="../../ptu-retry-after-recovery/ja/">429 からの復旧を読む</a>
         <a href="../../prompt-cache-key-bucketing/ja/">キャッシュキーの記事を読む</a>
         <a href="../../prompt-cache-retention/ja/">キャッシュ保持の記事を読む</a>
         <a href="../../reasoning-migration-sizing/ja/">移行サイジングの記事を読む</a>
@@ -418,41 +512,70 @@
     </section>
 
     <section id="sources" class="article-section">
-      <p class="section-label">出典・ 根拠の境界</p>
-      <h2>出典と根拠の境界</h2>
+      <p class="section-label">出典：根拠の範囲</p>
+      <h2>出典と根拠の範囲</h2>
       <p>
-        この概要は、五つの測定区間でコスト・品質・レイテンシ・トークン構成を一緒に読む。上記の数値はすべて本リポジトリの公開成果物にたどれ、運用上の解釈はこの記事自身のものである。下の二つの Tier は、文書化された契約がどこで終わり、運用上の解釈がどこから始まるのかを示す。
+        この概要では、五つの区間のコスト、品質、レイテンシ、トークン構成を
+        併せて確認します。上記の数値はすべて、このリポジトリの公開成果物まで
+        追跡できます。運用上の解釈は、この記事で提示したものです。以下の二つの
+        Tier で、文書化された仕様と運用上の解釈の境界を示します。
       </p>
       <ul>
-        <li>[1] <strong>Tier 1：方法論の契約：</strong> 本リポジトリ、<code>docs/05-methodology.md</code>（v1.0）。強度設定あたり N = 20 のサンプル、R = 3 回の反復、公開集計の測定区間のみ。チャート読解の本文はこの固定された前提に立っており、N = 20 で p 値は主張しません。</li>
-        <li>[2] <strong>Tier 1：PAYG 価格スナップショット：</strong> PAYG のコストの主張（リクエストあたりの平均 USD）は本リポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> に対して算定する。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI 価格ページ</a>（2026-05-19 アクセス）、 <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が動けば比率も変わる。</li>
-        <li>[3] <strong>Tier 1：PTU 価格スナップショット：</strong> PTU のモデル化されたクロスオーバーと 50 PTU の下限は本リポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> による。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 アクセス）、 <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。PTU の時間単価か PAYG のトークン単価が動けばクロスオーバーも移動する。</li>
-        <li>[4] <strong>Tier 2：短い事実回答の区間測定：</strong> 本リポジトリ、<code>benchmarks/01-short-factual/analysis.json</code>。$0.000587（なし）から $0.000598（xhigh）までの実質的に横ばいのリクエストあたりコスト、どちらも gpt-4o ベースラインの $0.000665 を下回ること、gpt-4o 1.9 に対する gpt-5.2 なし 1.95 の平均審判スコア、そして 0.0（なし）から 1.35（high）までのゼロ近辺の推論トークンの出典である。</li>
-        <li>[5] <strong>Tier 2：多段の区間測定：</strong> 本リポジトリ、<code>benchmarks/02-multi-step-reasoning/analysis.json</code>。非推論ベースライン 1.5 と、リクエストあたり $0.00125 での高強度審判スコア 2.0 の出典である。</li>
-        <li>[6] <strong>Tier 2：ツールエージェントの区間測定：</strong> 本リポジトリ、<code>benchmarks/03-tool-using-agent/analysis.json</code>。ツールエージェントの節で参照した天井効果の品質の棒の出典である。</li>
-        <li>[7] <strong>Tier 2：モデル化されたクロスオーバー：</strong> 短い事実回答の xhigh 行の 50 PTU 下限における約 2748 rpm は、測定されたトークン形状の上に載せたプランニングの計算であり、測定された PTU スループットの結果ではありません。容量の根拠ではなく、サイジングの指針として読む必要がある。</li>
-        <li>[8] <strong>根拠ダッシュボード：</strong> <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>の記事ごとの表とレンダリングされた元チャートは、同じ成果物を監査できる形である。</li>
+        <li>[1] <strong>Tier 1：方法論：</strong> このリポジトリの <code>docs/05-methodology.md</code>（v1.0）。セルあたり N = 20 の作成サンプル、R = 3 の反復、公開された集計区間のみを対象とします。チャートの解釈はこの固定条件を前提とし、N = 20 で p 値は主張しません。</li>
+        <li>[2] <strong>Tier 1：PAYG 価格スナップショット：</strong> PAYG コスト（リクエストあたりの平均 USD）は、このリポジトリの <code>pricing/azure-openai-payg-2026-05.yaml</code> を基に算出しています。出典：<a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI の価格ページ</a>（2026-05-19 閲覧）、<a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">アーカイブ</a>。定価が変われば比率も変わります。</li>
+        <li>[3] <strong>Tier 1：PTU 価格スナップショット：</strong> PTU のモデル化した交点と 50 PTU の下限には、このリポジトリの <code>pricing/azure-openai-ptu-2026-05.yaml</code> に記録された値を使用しています。出典：<a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn ドキュメント</a>（2026-05-19 閲覧）、<a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">アーカイブ</a>。1 PTU・1時間あたりの単価または PAYG のトークン単価が変われば、交点も移動します。</li>
+        <li>[4] <strong>Tier 2：短い事実回答の区間測定：</strong> このリポジトリの <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/01-short-factual/analysis.json"><code>benchmarks/01-short-factual/analysis.json</code></a>。リクエストあたりのコストは $0.000587 から $0.000598 でほぼ横ばいであり、すべて gpt-4o の baseline $0.000665 を下回ります。平均評価スコアは gpt-4o の 1.9 に対して gpt-5.2 の none が 1.95、推論トークンは none の 0.0 から high の 1.35 までで、ほぼゼロです。</li>
+        <li>[5] <strong>Tier 2：複数ステップの区間測定：</strong> このリポジトリの <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/02-multi-step-reasoning/analysis.json"><code>benchmarks/02-multi-step-reasoning/analysis.json</code></a>。gpt-4o baseline の 1.5 点、gpt-5.2 none の 2.0 点（リクエストあたり $0.000618）、high の 2.0 点（$0.00125）の出典です。</li>
+        <li>[6] <strong>Tier 2：ツール利用エージェントの区間測定：</strong> このリポジトリの <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/03-tool-using-agent/analysis.json"><code>benchmarks/03-tool-using-agent/analysis.json</code></a>。ツール利用エージェントのセクションで示した、品質が頭打ちになる棒グラフの出典です。</li>
+        <li>[7] <strong>Tier 2：モデル化した交点：</strong> 短い事実回答の xhigh 行における、50 PTU の下限を基準とした約 2748 rpm は、実測したトークン構成を使った計画上の計算です。実測した PTU スループットではありません。容量の根拠ではなく、サイジングの目安として扱います。モデル化の成果物：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json"><code>docs/blog/data/chart-data/ptu-payg-crossover/benchmark-01/crossover.json</code></a>。</li>
+        <li>[8] <strong>根拠ダッシュボード：</strong> <a href="../../../charts/?lang=ja">根拠ダッシュボード</a>にある記事別の表とレンダリング済みの元チャートで、同じ成果物を検証できます。</li>
       </ul>
       <p>
-        この概要が何を証明し、何を証明しないか：このベンチマークのサンプルで五つの測定区間の特性を示しますが、別のワークロードの構成、別のテナント、別のリージョン、あるいは将来の価格スナップショットでも同じ特性が保たれることは証明しない。各トピック記事は、その測定区間に固有の境界を併せて示す。
+        この概要は、今回のベンチマークサンプルにおける五つの区間の傾向を示します。
+        別のワークロード構成、テナント、リージョン、将来の価格スナップショットでも
+        同じ傾向が続くことは証明しません。各トピック記事では、その区間に固有の
+        根拠の範囲も示します。
       </p>
     </section>
 
     <section id="decision" class="article-section decision-box">
-      <h2>実務上のルール</h2>
+      <h2>根拠から言えること</h2>
       <p>
-        短い事実回答では低い推論強度を既定値にする。複数ステップの作業では、評価がコストを正当化するほど改善するときだけ推論強度を上げる。
-        ツールエージェントでは、追加で支出する前に天井効果を確認する。記事の横で常に根拠ダッシュボードを読む必要がある。
-        ダッシュボードは根拠の証跡であり、記事は意思決定の枠組みである。
+        この概要では、五つの区間でモデルと推論強度の組み合わせがコスト、品質、
+        レイテンシ、トークン構成をどう変えるかを併せて確認しました。追加支出に
+        価値があるのは、実際に回答が改善する場合だけです。
+      </p>
+      <h2>実務上のルール</h2>
+      <ol>
+        <li>短い事実回答では、低い推論強度を既定値にします。</li>
+        <li>複数ステップの処理では、モデルと推論強度の組み合わせを比較し、同じ品質なら最も低コストの設定を選びます。</li>
+        <li>ツール利用エージェントでは、推論強度をさらに上げる前に頭打ちを確認します。</li>
+        <li>すべてのコスト評価を、対応する品質、レイテンシ、トークンのチャートと併せて確認します。</li>
+      </ol>
+      <p>
+        <strong>実務上のルール：このワークロードでは、評価スコアの実測値が改善する区間だけ
+        推論強度を上げます。本番環境へ反映する前に、すべてのコスト評価を、対応する
+        品質、レイテンシ、トークンのチャートと併せて確認します。</strong>
+      </p>
+      <p>
+        根拠ダッシュボードはこのルールの監査証跡であり、各トピック記事には
+        区間ごとの適用方法を示しています。
       </p>
       <p>
         <a class="button-link" href="../../../charts/?lang=ja">根拠ダッシュボードを開く</a>
       </p>
     </section>
+
+    <section id="next" class="article-section">
+      <p>
+        <strong>次の記事：</strong>
+        <a href="../topics/short-factual-work/ja/">短い事実回答：推論がコストに見合わない場合。処理の大半が短い事実回答なら、推論強度を上げることで請求額に見合う品質向上が得られるのでしょうか。</a>
+      </p>
+    </section>
   </main>
 
   <footer class="site">
-    <p>MIT ライセンスの研究成果物・公開データはサニタイズ済みまたは集計済みのみである。</p>
+    <p>MIT ライセンスの研究成果物です。公開データには、サニタイズ済みまたは集計済みの情報だけを含みます。</p>
   </footer>
 </body>
 </html>

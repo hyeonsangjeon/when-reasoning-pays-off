@@ -251,37 +251,83 @@ def check_ptu_wording() -> None:
     )
 
 
-def check_korean_overview_parity() -> None:
-    ko_page = LOCALE_PAGES["ko"]
-    ko_html = read_text(ko_page)
-    required_markers = {
-        "overview one-pager": 'id="figure-overview-one-pager"',
-        "Korean overview SVG": "when-reasoning-pays-off-overview.ko.svg",
-        "series structure guide": 'aria-label="이 시리즈의 구성"',
-        "short-factual source chart": 'id="figure-short-factual-cost"',
-        "short-factual chart image": "benchmark-01-cost-per-request.png",
+def check_localized_overview_parity() -> None:
+    locale_contracts = {
+        "ko": {
+            "guide": 'aria-label="이 시리즈의 구성"',
+            "svg": "when-reasoning-pays-off-overview.ko.svg",
+        },
+        "ja": {
+            "guide": 'aria-label="このシリーズの構成"',
+            "svg": "when-reasoning-pays-off-overview.ja.svg",
+        },
     }
-    for label, marker in required_markers.items():
-        require(marker in ko_html, f"Korean overview missing {label}: {marker}")
+    for locale, contract in locale_contracts.items():
+        page = LOCALE_PAGES[locale]
+        html = read_text(page)
+        required_markers = {
+            "overview one-pager": 'id="figure-overview-one-pager"',
+            "localized overview SVG": contract["svg"],
+            "series structure guide": contract["guide"],
+            "short-factual source chart": 'id="figure-short-factual-cost"',
+            "short-factual chart image": "benchmark-01-cost-per-request.png",
+        }
+        for label, marker in required_markers.items():
+            require(marker in html, f"{locale} overview missing {label}: {marker}")
 
-    required_references = {
-        "Korean overview SVG": "when-reasoning-pays-off-overview.ko.svg",
-        "short-factual chart image": "benchmark-01-cost-per-request.png",
-        "served chart data": "cost-per-request.json",
-    }
-    for label, filename in required_references.items():
-        match = re.search(
-            rf'(?:href|src)=["\'](?P<url>[^"\']*{re.escape(filename)}[^"\']*)["\']',
-            ko_html,
-        )
-        require(match is not None, f"Korean overview missing {label} URL")
-        parsed = urlsplit(match.group("url"))
-        require(
-            not parsed.scheme and not parsed.netloc,
-            f"Korean overview {label} must be a relative URL",
-        )
-        target = (ko_page.parent / unquote(parsed.path)).resolve()
-        require(target.is_file(), f"Korean overview {label} target missing: {rel(target)}")
+        required_references = {
+            "localized overview SVG link": ("href", contract["svg"]),
+            "localized overview SVG image": ("src", contract["svg"]),
+            "short-factual chart image": ("src", "benchmark-01-cost-per-request.png"),
+            "served chart data": ("href", "cost-per-request.json"),
+        }
+        for label, (attribute, filename) in required_references.items():
+            match = re.search(
+                rf'{attribute}=["\'](?P<url>[^"\']*'
+                rf'{re.escape(filename)}[^"\']*)["\']',
+                html,
+            )
+            require(match is not None, f"{locale} overview missing {label} URL")
+            parsed = urlsplit(match.group("url"))
+            require(
+                not parsed.scheme and not parsed.netloc,
+                f"{locale} overview {label} must be a relative URL",
+            )
+            target = (page.parent / unquote(parsed.path)).resolve()
+            require(
+                target.is_file(),
+                f"{locale} overview {label} target missing: {rel(target)}",
+            )
+
+
+def check_japanese_chart_locale() -> None:
+    locale_dir = BLOG_ROOT / "data" / "chart-data" / "locales"
+    ko_labels = load_json(locale_dir / "ko.json")
+    ja_labels = load_json(locale_dir / "ja.json")
+
+    def leaf_paths(
+        value: object,
+        prefix: tuple[str, ...] = (),
+    ) -> set[tuple[str, ...]]:
+        if not isinstance(value, dict):
+            return {prefix}
+        paths: set[tuple[str, ...]] = set()
+        for key, child in value.items():
+            paths.update(leaf_paths(child, prefix + (key,)))
+        return paths
+
+    require(
+        leaf_paths(ja_labels) == leaf_paths(ko_labels),
+        "Japanese chart locale must cover every Korean baseline label",
+    )
+    require(
+        ja_labels.get("meta", {}).get("fallback") is False,
+        "Japanese chart locale must not fall back to English",
+    )
+    require(
+        ja_labels.get("meta", {}).get("translation_status") == "translated",
+        "Japanese chart locale must be marked translated",
+    )
 
 
 def check_no_root_relative_blog_urls() -> int:
@@ -455,7 +501,8 @@ def main() -> None:
     translation_hash_count = check_all_article_translation_hashes()
     claim_count = check_ledger(canonical_sha)
     check_ptu_wording()
-    check_korean_overview_parity()
+    check_localized_overview_parity()
+    check_japanese_chart_locale()
     blog_url_count = check_no_root_relative_blog_urls()
     scanned_count = check_forbidden_public_patterns(
         args.changed_from,
