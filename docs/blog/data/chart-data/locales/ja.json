@@ -1,3 +1,152 @@
 {
-  "meta": {"locale": "ja", "translation_status": "fallback_to_en", "fallback": true, "fallback_to": "en"}
+  "meta": {
+    "locale": "ja",
+    "translation_status": "translated",
+    "fallback": false
+  },
+  "page": {
+    "title": "根拠ダッシュボード",
+    "lede": "整理済みの公開チャートデータから静的チャートを描画します。概要記事とトピックノートを支える根拠としてご覧ください。",
+    "loading": "チャートデータを読み込んでいます...",
+    "error": "チャートデータを利用できません。",
+    "fallbackBadge": "英語ラベルを表示中",
+    "footer": "MIT ライセンスの研究成果です。公開データには整理または集計済みの情報のみを含みます。"
+  },
+  "nav": {
+    "home": "ホーム",
+    "articles": "記事",
+    "overview": "概要記事",
+    "github": "GitHub"
+  },
+  "families": {
+    "cost-curves-effort": {
+      "title": "推論強度別のコスト、品質、レイテンシ、スループット",
+      "description": "ベンチマークと推論強度別に、PAYG コスト、品質、レイテンシ、トークン構成に基づくスループット係数を示します。"
+    },
+    "token-composition": {
+      "title": "トークン構成",
+      "description": "ベンチマークと推論強度別に、キャッシュ済み入力、非キャッシュ入力、出力、推論トークンの構成を示します。"
+    },
+    "ptu-payg-crossover": {
+      "title": "モデル化した PTU/PAYG クロスオーバー",
+      "description": "PAYG コストとトークン構成に基づくスループット係数から、損益分岐リクエスト率をモデル化します。"
+    }
+  },
+  "metrics": {
+    "cost_per_request": "リクエストあたりの平均コスト",
+    "latency": "平均レイテンシ",
+    "quality": "平均評価スコア",
+    "throughput_gain": "トークン構成に基づくスループット係数",
+    "token_composition": "トークン構成",
+    "ptu_payg_crossover": "モデル化した損益分岐 RPM"
+  },
+  "dimensions": {
+    "effort": "推論強度",
+    "model": "モデル",
+    "benchmark": "ベンチマーク"
+  },
+  "effort": {
+    "na": "ベースライン",
+    "none": "none",
+    "minimal": "minimal",
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    "xhigh": "xhigh"
+  },
+  "series": {
+    "mean_usd_per_request": "リクエストあたりの平均 USD",
+    "std_usd_per_request": "リクエストあたりの USD 標準偏差",
+    "mean_latency_ms": "平均レイテンシ（ms）",
+    "std_latency_ms": "レイテンシの標準偏差（ms）",
+    "mean_judge_score": "平均評価スコア",
+    "std_judge_score": "評価スコアの標準偏差",
+    "judge_n": "評価件数",
+    "throughput_gain_factor": "トークン構成に基づくスループット係数",
+    "tokens_per_request": "リクエストあたりのトークン数",
+    "baseline_tokens_per_request": "ベースラインのリクエストあたりトークン数",
+    "mean_input_tokens_noncached": "非キャッシュ入力トークン",
+    "mean_cached_tokens": "キャッシュ済み入力トークン",
+    "mean_output_tokens": "出力トークン",
+    "mean_reasoning_tokens": "推論トークン",
+    "modeled_break_even_rpm": "モデル化した 1 分あたりの損益分岐リクエスト数",
+    "ptu_hourly_rate_usd": "1 PTU・1時間あたりの単価（USD）",
+    "min_ptu": "PTU 下限",
+    "n_used": "使用したサンプル数"
+  },
+  "units": {
+    "usd_per_request": "USD/リクエスト",
+    "milliseconds": "ミリ秒",
+    "judge_score": "評価スコア",
+    "factor": "係数",
+    "tokens": "トークン",
+    "mixed_usd_rpm": "USD およびリクエスト/分"
+  },
+  "notes": {
+    "ptu_payg_modeled_hypothesis": "モデル上の仮説であり、PTU スループットの実測値ではありません。",
+    "quality_guardrail": "コスト、スループット、クロスオーバーは、対応する品質ガードレールと併せて解釈してください。エラーバーは信頼区間ではなく、利用可能な場合の標準偏差です。",
+    "static_source": "同一オリジンの静的 JSON から描画し、ライブサービスは呼び出しません。"
+  },
+  "a11y": {
+    "chartLabel": "チャート",
+    "tableCaption": "データ表",
+    "siteNav": "サイトナビゲーション",
+    "languageNav": "言語ナビゲーション"
+  },
+  "chart_explainer": {
+    "title": "このチャートの見方",
+    "x_axis": "X 軸",
+    "y_axis": "Y 軸",
+    "bars": "棒",
+    "table": "表",
+    "x_axis_label": "推論強度",
+    "default_x_axis": "各位置は、ベンチマーク内の推論強度ごとのセルを表します。",
+    "default_y_axis": "Y 軸には選択した指標を表示します：{series}。",
+    "default_bars": "各棒は 1 つの集計セルです。棒が高いほど、その指標の値が大きいことを示します。",
+    "default_table": "表には、棒の正確な値、標準偏差、サンプル数を表示します。"
+  },
+  "chart_reading": {
+    "default": {
+      "x_axis": "各位置は、ベンチマーク内の推論強度ごとのセルを表します。",
+      "y_axis": "Y 軸の指標：{series}。",
+      "bars": "各棒は 1 つの集計セルです。棒が高いほど値が大きいことを示します。",
+      "table": "正確な値、標準偏差、サンプル数は表で確認できます。"
+    },
+    "cost_per_request": {
+      "x_axis": "左端のベースラインまたは低い強度から、右に向かって高くなる推論強度です。",
+      "y_axis": "リクエストあたりの平均 USD。棒が高いほど、PAYG で完了リクエストあたりのコストが高くなります。",
+      "bars": "各棒は推論強度セルごとの平均請求額です。支出の妥当性は、対応する品質チャートと併せて判断してください。",
+      "table": "表には、棒の算出に使った平均コスト、標準偏差、サンプル数の正確な値を表示します。"
+    },
+    "latency": {
+      "x_axis": "同じベンチマーク区間における推論強度です。",
+      "y_axis": "ミリ秒単位の平均レイテンシ。棒が高いほど、ユーザーの待ち時間が長くなります。",
+      "bars": "各棒は推論強度セルごとの平均レイテンシです。品質が向上せず棒だけが高くなる設定は、遅いだけで結果は改善しません。",
+      "table": "表には、正確なレイテンシ、標準偏差、サンプル数を表示します。"
+    },
+    "quality": {
+      "x_axis": "ベンチマーク区間における推論強度です。",
+      "y_axis": "平均評価スコア。棒が高いほど、評価モデルがそのセルを高く評価しています。",
+      "bars": "各棒は集計した評価スコアです。コストとレイテンシのチャートを解釈する際のガードレールとして使用してください。",
+      "table": "表には、正確な平均評価スコア、スコアのばらつき、評価件数、サンプル数を表示します。"
+    },
+    "throughput_gain": {
+      "x_axis": "ベンチマーク区間における推論強度です。",
+      "y_axis": "トークン構成に基づくスループット係数。棒が低いほど、同じ容量で処理できるリクエスト数が少なくなります。",
+      "bars": "各棒は、その推論強度セルのトークン構成をベースラインと比較します。PTU の実測値ではなく、計画の根拠としてご覧ください。",
+      "table": "表には、計画に使用した正確な係数とリクエストあたりのトークン数を表示します。"
+    },
+    "token_composition": {
+      "x_axis": "ベンチマーク区間における推論強度です。",
+      "y_axis": "選択したトークン要素の、リクエストあたりの平均トークン数です。",
+      "bars": "棒には主要な推論トークン系列を使用し、見えない内部予算を可視化します。表には、キャッシュ済み入力、非キャッシュ入力、出力、推論トークンをすべて表示します。",
+      "table": "トークンの内訳全体は表で確認できます。回答テキストだけでは推論トークンは分かりません。"
+    },
+    "ptu_payg_crossover": {
+      "x_axis": "モデル化したクロスオーバー計算に使用した推論強度セルです。",
+      "y_axis": "モデル化した 1 分あたりの損益分岐リクエスト数。棒が高いほど、PTU モデルとのクロスオーバーには PAYG で高いリクエスト率を維持する必要があります。",
+      "bars": "各棒はモデル化した計画上のしきい値であり、PTU スループットの実測値ではありません。",
+      "table": "表には、モデル化した RPM、1 PTU・1時間あたりの単価、PTU の下限、関連する入力値を表示します。"
+    }
+  }
 }

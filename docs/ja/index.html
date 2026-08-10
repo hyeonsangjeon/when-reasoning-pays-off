@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>when reasoning pays off — 同じトークン単価、異なる請求額</title>
-  <meta name="description" content="Azure OpenAI デプロイで推論モデルがいつコストに見合うかを判断するための実践ガイド。">
+  <title>推論はいつコストに見合うのか — 同じトークン単価、異なる請求額</title>
+  <meta name="description" content="Azure OpenAI のデプロイ環境で、推論モデルがいつコストに見合うかを判断するための実践ガイド。">
   <!-- Social sharing (Open Graph + Twitter Card) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="when reasoning pays off">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="when reasoning pays off — 同じトークン単価、異なる請求額">
-  <meta property="og:description" content="Azure OpenAI デプロイで推論モデルがいつコストに見合うかを判断するための実践ガイド。">
+  <meta property="og:title" content="推論はいつコストに見合うのか — 同じトークン単価、異なる請求額">
+  <meta property="og:description" content="Azure OpenAI のデプロイ環境で、推論モデルがいつコストに見合うかを判断するための実践ガイド。">
   <meta property="og:url" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/ja/">
   <meta property="og:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Same token price, different bill: a reasoning workload bills extra hidden thinking tokens, so its total bill is taller.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="when reasoning pays off — 同じトークン単価、異なる請求額">
-  <meta name="twitter:description" content="Azure OpenAI デプロイで推論モデルがいつコストに見合うかを判断するための実践ガイド。">
+  <meta name="twitter:title" content="推論はいつコストに見合うのか — 同じトークン単価、異なる請求額">
+  <meta name="twitter:description" content="Azure OpenAI のデプロイ環境で、推論モデルがいつコストに見合うかを判断するための実践ガイド。">
   <meta name="twitter:image" content="https://hyeonsangjeon.github.io/when-reasoning-pays-off/assets/og-card.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="canonical" href="./">
@@ -29,15 +29,15 @@
   <link rel="alternate" hreflang="hi" href="../hi/">
   <link rel="alternate" hreflang="x-default" href="../en/">
   <meta name="i18n:translation-status" content="translated">
-  <meta name="i18n:last-translated-at" content="2026-07-11">
+  <meta name="i18n:last-translated-at" content="2026-08-10">
   <meta name="i18n:source-content-sha256" content="9d696381a827ac970645465ccc1851cde2a1621468e472a14b6fb475edcb722d">
 </head>
 <body>
   <header class="site">
     <div class="bar">
       <a class="brand" href="./">when reasoning pays off</a>
-      <nav class="site-links" aria-label="サイト">
-        <a href="../blog/articles/ja/">記事</a>
+      <nav class="site-links" aria-label="サイトナビゲーション">
+        <a href="../blog/articles/ja/">記事一覧</a>
         <a href="../blog/articles/when-reasoning-pays-off/ja/">概要記事</a>
         <a href="../blog/charts/?lang=ja">チャート</a>
         <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
@@ -51,119 +51,119 @@
       </nav>
     </div>
     <div class="hero">
-      <img src="../assets/hero.svg" alt="2 つのワークロードは同じトークン単価を支払うが、推論ワークロードでは見えない「思考」トークンにも課金されるため、合計請求額が高くなる。">
+      <img src="../assets/hero.svg" alt="2 つのワークロードのトークン単価は同じでも、推論ワークロードでは見えない「思考」トークンが加算されるため、最終的な請求額は高くなります。">
     </div>
   </header>
 
   <main>
     <h1>同じトークン単価、異なる請求額</h1>
     <p class="lede">
-      あるチームがワークロードを推論モデルへ移すと、トークン単価は以前と
-      変わらないのに、見慣れない調整値が一つ増えていることに気づく。推論強度だ。
-      これを上げるのはほぼ無料に見える。ならば全体で最大にして、より良い答えを
-      取りにいけばよさそうに思える。しかし、見える出力はほとんど変わらないまま
-      請求額だけが上がる。原因は隠れた「思考」トークンである。推論モデルはこの
-      トークンを生成して課金するが、応答には決して出さない。本プロジェクトでは、
-      代表的な小規模タスク群を対象に、その追加トークンがいつ費用に見合い、いつ
-      請求額だけを膨らませるのかを測定する。
+      あるチームがワークロードを推論モデルへ移行したところ、トークン単価は以前と
+      変わらない一方で、新しい設定項目が一つ加わりました。推論強度です。この値を
+      上げても、ほとんどコストはかからないように見えます。それなら常に最大にして、
+      最良の回答を引き出せばよいと思うかもしれません。ところが、目に見える出力は
+      ほぼ変わらないのに、請求額だけが増えます。原因は、表に出ない「思考」トークンです。
+      推論モデルはこのトークンを生成し、その分も課金しますが、応答には表示しません。
+      本プロジェクトでは、代表的な小規模タスク群を対象に、追加トークンがいつコストに
+      見合い、いつ請求額を膨らませるだけなのかを測定します。
     </p>
 
-    <nav class="article-outline" aria-label="ここから始める">
-      <span class="section-label">ここから始める</span>
-      <a href="../blog/articles/ja/">記事ハブ</a>
+    <nav class="article-outline" aria-label="はじめに">
+      <span class="section-label">はじめに</span>
+      <a href="../blog/articles/ja/">記事一覧</a>
       <a href="../blog/articles/when-reasoning-pays-off/ja/">概要記事</a>
       <a href="../blog/charts/?lang=ja">根拠ダッシュボード</a>
       <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub</a>
     </nav>
 
-    <h2>チームが気にする理由</h2>
+    <h2>チームにとって重要な理由</h2>
     <p>
-      モデル移行のあと、エンジニアに届く問いは率直だ。なぜコストが動いたのか。
-      なぜレイテンシが変わったのか。なぜスロットリングが増えたのか。推論強度は
-      この 3 つすべての下にある。既定値を高くしておくと、読者には決して届かない
-      内部計算にトークンを静かに使う。従量課金では実費になり、プロビジョニング
-      容量では貴重な余力を削る。強度が実際に回答を変える地点を知っているかどうかが、
-      自信を持ったロールアウトと、請求書を見てから慌てる展開を分ける。
+      モデル移行後、エンジニアが直面する問いは明確です。なぜコストが変わったのか。
+      なぜレイテンシが変化したのか。なぜスロットリングが増えたのか。推論強度は、
+      この 3 つすべてに影響します。既定値を高くすると、利用者には見えない内部計算に
+      トークンが消費されます。従量課金では実際の費用が増え、プロビジョニング済み容量
+      では貴重な余力が減ります。推論強度が実際に回答を変える地点を把握していれば、
+      確信を持ってロールアウトし、想定外の請求を避けられます。
     </p>
 
     <h2>何を測定したか</h2>
     <p>
-      プロンプトとワークロードの区分は固定したまま、短い事実回答、構造化
-      データの自然言語変換、多段階推論、ツールを使うエージェントという各
-      区分に、同じ推論強度の段階を順に適用しました。そしてすべての呼び出し
-      で、入力・キャッシュ・推論・出力トークンに加え、品質シグナルと
-      レイテンシまで含めて使用量の内訳を記録した。この実測した
-      トークン構成をもとに、同じワークロードが従量課金（PAYG）とプロビジョ
-      ニングされたスループット（PTU）でそれぞれどう課金されるかをモデル化
-      して比較しました。
+      プロンプトとワークロード区分を固定したまま、短い事実回答、構造化データの
+      自然言語変換、多段階推論、ツールを使用するエージェントの 4 区分に、同じ
+      推論強度の段階を順に適用しました。すべての呼び出しについて、入力・キャッシュ・
+      推論・出力の各トークンに加え、品質シグナルとレイテンシも含む使用量全体を
+      記録しました。この実測したトークン構成をもとに、同じワークロードが
+      従量課金（PAYG）とプロビジョニング済みスループット（PTU）でそれぞれ
+      どのように課金されるかをモデル化し、比較しました。
     </p>
 
-    <h2>根拠から見えたこと</h2>
+    <h2>測定結果</h2>
     <p>
-      結果は、良い根拠らしく割れた。ある区分では強度が費用に見合い、別の区分では
-      隠れた計算費用だけが積み上がった。4 つの教訓は、区分全体に共通する。
+      結果は区分によって異なりました。推論強度がコストに見合う区分もあれば、
+      見えない計算コストだけが増える区分もありました。ただし、次の 4 つの教訓は
+      すべての区分に共通します。
     </p>
     <div class="cards">
       <div class="card">
         <h3>推論トークンは必ず測定する</h3>
-        <p>課金されるのに応答には返されません。すべての呼び出しで、入力・
-           キャッシュ・推論・出力に分けた使用量の内訳を記録する。</p>
+        <p>推論トークンは課金対象ですが、応答には返されません。すべての呼び出しで、
+           入力・キャッシュ・推論・出力の各トークンを分けて記録してください。</p>
       </div>
       <div class="card">
         <h3>すべてのタスクに推論が必要なわけではない</h3>
-        <p>短い事実回答、構造化データから自然言語への変換、単純な分類では、
-           品質が伴って上がらないままコストだけが増える場合が多くありました。</p>
+        <p>短い事実回答、構造化データの自然言語変換、単純な分類では、品質が
+           向上しないままコストだけが増えるケースが多く見られました。</p>
       </div>
       <div class="card">
-        <h3>推論強度が主要なコストレバー</h3>
-        <p>推論強度のつまみはまず最も低いレベルを既定とし、品質評価で支出を
-           正当化できる場合にだけ引き上げる。</p>
+        <h3>推論強度は主要なコスト調整手段</h3>
+        <p>推論強度は最も低いレベルを既定値とし、品質評価によって追加コストの
+           必要性を確認できた場合にのみ引き上げてください。</p>
       </div>
       <div class="card">
         <h3>課金モデルによって効果が変わる</h3>
-        <p>従量課金（PAYG）では、推論トークンを削減すると請求額が下がる。
-           プロビジョニングされたスループット（PTU）では、同じ削減が固定請求額
-           のままスループット向上として現れる。</p>
+        <p>従量課金（PAYG）では、推論トークンを減らすと請求額が下がります。
+           プロビジョニング済みスループット（PTU）では、固定費は変わらず、
+           同じ削減がスループットの向上として現れます。</p>
       </div>
     </div>
 
     <h2>対象読者</h2>
     <p>
-      Azure OpenAI デプロイを運用し、推論を有効にするかどうか（そしてどの
-      程度）を判断したり、容量を見積もったり、モデル移行後のコスト・レイテンシ・
-      スロットリングの変化をデバッグしたりするエンジニアとアーキテクト向けである。
+      Azure OpenAI のデプロイを運用し、推論を有効にするか、またどの程度の強度に
+      するかを判断する方、容量を見積もる方、モデル移行後のコスト・レイテンシ・
+      スロットリングの変化を調査する方を対象としています。
     </p>
 
     <div class="banner">
-      <strong>製品ではなく研究成果物である。</strong> ホスティングされた
-      サービスも SLA もありません。本リポジトリは、再現可能なベンチマーク、
-      方法論、意思決定ツール、サニタイズ済みの結果の抜粋のみを公開する。
+      <strong>これは製品ではなく、研究成果物です。</strong> ホスティングサービスや
+      SLA は提供していません。本リポジトリでは、再現可能なベンチマーク、方法論、
+      意思決定ツール、サニタイズ済みの結果の一部のみを公開しています。
     </div>
 
-    <h2>次に読むもの</h2>
+    <h2>次に読む</h2>
     <div class="article-summary-grid">
       <article class="summary-tile">
         <h2>概要記事を読む</h2>
-        <p>案内付きの物語：強度がどこで支出を無駄にし、どこで試す価値を得るのか、
-           そしてなぜ隠れたトークンを明示的に予算化すべきか。
+        <p>推論強度がどこでコストを無駄にし、どこで試す価値があるのか、また、
+           なぜ見えないトークンを予算に明示すべきなのかを順に解説します。
            <a href="../blog/articles/when-reasoning-pays-off/ja/">読み始める →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>記事ハブを見る</h2>
-        <p>読みの全体像。根拠トピック、ブリッジ記事、そして復旧・
-           キャッシュ・サイジングに関する運用ノート。
-           <a href="../blog/articles/ja/">ハブを開く →</a></p>
+        <h2>記事一覧を見る</h2>
+        <p>根拠トピックやブリッジ記事、復旧・キャッシュ・サイジングに関する
+           運用ノートをまとめて確認できます。
+           <a href="../blog/articles/ja/">記事一覧を開く →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>根拠ダッシュボードを調べる</h2>
-        <p>監査証跡：すべての主張の背後にある管理されたテーブルとレンダリング
-           されたソースチャート。
+        <h2>根拠ダッシュボードを見る</h2>
+        <p>すべての主張の根拠となる、整理済みのテーブルとレンダリング済みの
+           ソースチャートを確認できます。
            <a href="../blog/charts/?lang=ja">ダッシュボードを開く →</a></p>
       </article>
       <article class="summary-tile">
-        <h2>完全な方法論を読む</h2>
-        <p>意思決定フレームワークと運用ガイドはリポジトリのドキュメントに
-           ある。
+        <h2>方法論の全体を読む</h2>
+        <p>意思決定フレームワークと運用ガイドは、リポジトリのドキュメントで
+           公開しています。
            <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">GitHub で見る →</a></p>
       </article>
     </div>
@@ -173,28 +173,28 @@
       <dl class="glossary-list">
         <div class="glossary-term" data-term="foundry">
           <dt>Foundry</dt>
-          <dd>Azure AI Foundry：本プロジェクトで測定したモデルをデプロイ・
-              提供するマネージドプラットフォーム。</dd>
+          <dd>Azure AI Foundry：本プロジェクトで測定したモデルをデプロイし、
+              提供するためのマネージドプラットフォーム。</dd>
         </div>
         <div class="glossary-term" data-term="ptu">
           <dt>PTU</dt>
-          <dd>プロビジョニングされたスループット単位：トークン単位ではなく
-              スループットに対して支払う予約済み固定容量の課金。</dd>
+          <dd>プロビジョニング済みスループット単位：トークン数ではなく
+              スループットに対して料金を支払う、予約済み固定容量の課金方式。</dd>
         </div>
         <div class="glossary-term" data-term="payg">
           <dt>PAYG</dt>
-          <dd>従量課金：入力・キャッシュ・推論・出力の各トークンごとに
-              課金される消費ベースの課金。</dd>
+          <dd>従量課金：入力・キャッシュ・推論・出力の各トークンに応じて
+              課金される、使用量ベースの課金方式。</dd>
         </div>
         <div class="glossary-term" data-term="reasoning">
           <dt>推論トークン</dt>
-          <dd>推論モデルが生成し課金されるが、応答には返されない内部の
-              「思考」トークン。</dd>
+          <dd>推論モデルが生成する課金対象の内部「思考」トークン。応答には
+              返されません。</dd>
         </div>
         <div class="glossary-term" data-term="cache">
           <dt>キャッシュ</dt>
-          <dd>プロンプトキャッシュ：以前に処理されたプロンプトの接頭部を
-              再利用し、低いキャッシュ入力単価で課金される。</dd>
+          <dd>プロンプトキャッシュ：以前に処理したプロンプトの接頭部を
+              再利用し、通常より低いキャッシュ入力単価が適用される仕組み。</dd>
         </div>
         <div class="glossary-term" data-term="429">
           <dt>429</dt>
@@ -206,8 +206,8 @@
   </main>
 
   <footer class="site">
-    <p>MIT ライセンスの研究成果物。公開データはサニタイズ済みまたは集計値の
-       みである。</p>
+    <p>MIT ライセンスの研究成果物です。公開データは、サニタイズ済みまたは
+       集計済みのものに限られます。</p>
   </footer>
 
   <script src="../assets/i18n.js" defer></script>

@@ -41,3 +41,13 @@ All 18 article groups polished across 5 locales (KO-first), one commit per group
 preserved across 81 changed HTML files vs base. EN site landing `<main>` intentionally
 left byte-stable (already native; canonical source for the landing sha256 release gate).
 See `docs/blog/polish-changelog.md` for per-article notes and borderline-call log.
+
+## Japanese Korean-baseline pass (2026-08-10)
+
+- [x] Re-polished all 21 Japanese HTML pages against the Korean editorial baseline.
+- [x] Re-polished 10 existing Japanese SVGs and added the localized overview SVG.
+- [x] Replaced the English-fallback chart locale with complete Japanese labels.
+- [x] Restored overview structure parity: 21 top-level blocks, 7 figures, and 8 sources.
+
+Korean controls meaning, information order, evidence boundaries, and editorial tone for
+this pass. English remains the canonical source locale in release metadata.

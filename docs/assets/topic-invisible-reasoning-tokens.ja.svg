@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 980 560">
-  <title id="title">マルチステップ作業では隠れチャネルが開く</title>
-  <desc id="desc">benchmark-02：effort 別の平均隠れ推論トークン。各棒の下に見える出力を表示。</desc>
+  <title id="title">多段階タスクでは隠れた推論トークンが増える</title>
+  <desc id="desc">benchmark-02：推論強度別の平均推論トークン数。各棒の下に可視出力トークンを表示。</desc>
   <rect width="980" height="560" fill="#f8fbff"/>
-  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">マルチステップ作業では隠れチャネルが開く</text>
-  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02：effort 別の平均隠れ推論トークン。各棒の下に見える出力を表示。</text>
+  <text x="32" y="42" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#102a43">多段階タスクでは隠れた推論トークンが増える</text>
+  <text x="32" y="70" font-family="Segoe UI, system-ui, sans-serif" font-size="13" fill="#53687c">benchmark-02：推論強度別の平均推論トークン数。各棒の下に可視出力トークンを表示。</text>
   <rect x="32" y="96" width="916" height="316" rx="16" fill="#fff" stroke="#dce6f0"/>
   <line x1="160" y1="390" x2="910" y2="390" stroke="#9fb3c8" stroke-width="2"/>
   <line x1="160" y1="120" x2="160" y2="390" stroke="#9fb3c8" stroke-width="2"/>
@@ -17,30 +17,30 @@
   <text x="148" y="191.5" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">90</text>
   <line x1="155" y1="120.0" x2="910" y2="120.0" stroke="#e8f0f8"/>
   <text x="148" y="124.0" text-anchor="end" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#53687c">120</text>
-  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">平均推論トークン</text>
+  <text x="76" y="255.0" transform="rotate(-90 76 255.0)" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#53687c">平均推論トークン数</text>
   <rect x="160.0" y="388.0" width="134.0" height="2.0" rx="8" fill="#3a86ff"/>
   <text x="227.0" y="378.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">0</text>
-  <text x="227.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">minimal</text>
-  <text x="227.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 5.8</text>
+  <text x="227.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">none</text>
+  <text x="227.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出力 5.8</text>
   <rect x="314.0" y="350.8" width="134.0" height="39.2" rx="8" fill="#06d6a0"/>
   <text x="381.0" y="340.8" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">17</text>
   <text x="381.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">low</text>
-  <text x="381.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 23.6</text>
+  <text x="381.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出力 23.6</text>
   <rect x="468.0" y="318.0" width="134.0" height="72.0" rx="8" fill="#8ecae6"/>
   <text x="535.0" y="308.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">32</text>
   <text x="535.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">medium</text>
-  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 38.9</text>
+  <text x="535.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出力 38.9</text>
   <rect x="622.0" y="292.0" width="134.0" height="98.0" rx="8" fill="#ffb703"/>
   <text x="689.0" y="282.0" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">44</text>
   <text x="689.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">high</text>
-  <text x="689.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 50.9</text>
+  <text x="689.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出力 50.9</text>
   <rect x="776.0" y="143.5" width="134.0" height="246.5" rx="8" fill="#fb8500"/>
   <text x="843.0" y="133.5" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">110</text>
   <text x="843.0" y="420" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="12" font-weight="700" fill="#31475e">xhigh</text>
-  <text x="843.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">見える 117.3</text>
+  <text x="843.0" y="438" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出力 117.3</text>
   <rect x="32" y="452" width="916" height="78" rx="14" fill="#eef7ff" stroke="#c7ddf3"/>
-  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">チャートの読み方</text>
-  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">棒は集計した effort セルであり、頻度のヒストグラムではない。</text>
-  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">各棒の下の小さなラベルは平均の見える出力トークン。</text>
-  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出典：benchmark-02 公開集計チャートデータ。記述的な根拠のみ。</text>
+  <text x="58" y="482" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="700" fill="#102a43">チャートの見方</text>
+  <text x="58" y="504" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">棒は推論強度ごとの集計セルであり、頻度ヒストグラムではありません。</text>
+  <text x="58" y="522" font-family="Segoe UI, system-ui, sans-serif" font-size="12" fill="#31475e">各棒の下の小さなラベルは、可視出力トークンの平均です。</text>
+  <text x="58" y="544" font-family="Segoe UI, system-ui, sans-serif" font-size="11" fill="#6b7c8e">出典：benchmark-02 の公開集計チャートデータ。記述的な参考値です。</text>
 </svg>
