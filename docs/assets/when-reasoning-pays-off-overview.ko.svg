@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-labelledby="t d" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
+<title id="t">추론이 값을 하는 경우와 그렇지 않은 경우</title>
+<desc id="d">추론 모델의 비용과 품질, 이를 둘러싼 프로덕션 계약을 다루는 측정 시리즈. 핵심 메시지: 추론 모델은 토큰 단가표가 같아도 청구액이 전혀 달라질 수 있습니다.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#5C6470"/></marker><marker id="arrowA" markerWidth="11" markerHeight="11" refX="4" refY="3.2" orient="auto"><path d="M0 0 L8 3.2 L0 6.4 z" fill="#5A3FA0"/></marker></defs>
+<rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
+<rect x="0.5" y="0.5" width="1199" height="674" fill="none" stroke="#E1E5EA" stroke-width="1"/>
+<rect x="0" y="0" width="1200" height="8" fill="#5A3FA0"/>
+<rect x="64" y="43" width="90" height="22" rx="11" fill="#5A3FA0"/><text x="109.0" y="59" text-anchor="middle" font-size="12" font-weight="700" letter-spacing="1.2" fill="#FFFFFF">개요</text>
+<text x="170" y="59" font-size="13" font-weight="700" letter-spacing="2.5" fill="#5C6470">WHEN REASONING PAYS OFF</text>
+<text x="1136" y="59" text-anchor="end" font-size="13" font-weight="700" letter-spacing="1.5" fill="#5A3FA0">ARC 01 / 11</text>
+<text x="64" y="112" font-size="34" font-weight="700" fill="#14213D">추론이 값을 하는 경우와 그렇지 않은 경우</text>
+<text x="64" y="148" font-size="17" fill="#5C6470">추론 모델의 비용·품질과 이를 둘러싼 프로덕션 계약을 측정한 시리즈</text>
+<path d="M64 172 H1136" stroke="#E1E5EA" stroke-width="1.4"/>
+<rect x="64" y="200" width="472" height="360" rx="14" fill="#F6F8FB" stroke="#E1E5EA" stroke-width="1.2"/>
+<rect x="104" y="270" width="120" height="74" rx="10" fill="#FFFFFF" stroke="#5C6470" stroke-width="1.6"/><circle cx="118" cy="284" r="5" fill="none" stroke="#5C6470" stroke-width="1.6"/><text x="164" y="302" text-anchor="middle" font-size="13" font-weight="700" fill="#14213D">토큰 단가표</text><text x="164" y="322" text-anchor="middle" font-size="12" fill="#5C6470">토큰당</text><text x="164" y="337" text-anchor="middle" font-size="12" fill="#5C6470">(동일)</text><path d="M236 307 H300" stroke="#5C6470" stroke-width="2" marker-end="url(#arrow)"/><rect x="330" y="400" width="58" height="60" rx="4" fill="#5A3FA0" opacity="0.35"/><text x="359" y="478" text-anchor="middle" font-size="12" fill="#5C6470">낮은 강도</text><rect x="416" y="300" width="58" height="160" rx="4" fill="#5A3FA0"/><text x="445" y="478" text-anchor="middle" font-size="12" fill="#5C6470">높은 강도</text><text x="402" y="280" text-anchor="middle" font-size="13" font-weight="700" fill="#14213D">청구액</text><path d="M322 360 H486" stroke="#D55E00" stroke-width="2" stroke-dasharray="6 5"/><text x="116" y="356" font-size="11.5" font-weight="600" fill="#A33D00">답변 품질:</text><text x="116" y="372" font-size="11.5" fill="#A33D00">보장 안 됨</text>
+<text x="572" y="224" font-size="12.5" font-weight="700" letter-spacing="2" fill="#5A3FA0">핵심 메시지</text>
+<text x="572" y="268" font-size="26" font-weight="600" fill="#14213D">추론 모델은 같은</text>
+<text x="572" y="304" font-size="26" font-weight="600" fill="#14213D">토큰 단가표를 써도</text>
+<text x="572" y="340" font-size="26" font-weight="600" fill="#14213D">청구액이 전혀 달라질 수 있습니다.</text>
+<path d="M572 378 H700" stroke="#5A3FA0" stroke-width="3"/>
+<rect x="572" y="409" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="418" font-size="15.5" fill="#2B2D42">그래서 각 구간에서 한 가지를 묻습니다.</text><rect x="572" y="436" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="445" font-size="15.5" fill="#2B2D42">추가 지출이 더 나은 답을 만들었는가?</text><rect x="572" y="463" width="9" height="9" rx="2" fill="#5A3FA0"/><text x="590" y="472" font-size="15.5" fill="#2B2D42">글 11편: 실측 5편, 운영 6편</text>
+<path d="M64 596 H1136" stroke="#E1E5EA" stroke-width="1.2"/>
+<text x="64" y="624" font-size="13" fill="#5C6470">근거 경계 — 셀당 N=20, R=3, 추론 벤치마크 3개, 단일 Azure OpenAI 테넌트·리전</text>
+<text x="64" y="644" font-size="12.5" fill="#5C6470">출처: 이 저장소의 benchmarks/ 및 results/</text>
+<rect x="1007" y="608" width="129" height="21" rx="10.5" fill="none" stroke="#5A3FA0" stroke-width="1.3"/><text x="1071.5" y="623" text-anchor="middle" font-size="11.5" font-weight="600" letter-spacing="0.6" fill="#5A3FA0">시리즈 개요</text>
+<text x="1136" y="644" text-anchor="end" font-size="11.5" fill="#5C6470">정적 한 장 요약 · 정제한 공개 집계</text>
+</svg>

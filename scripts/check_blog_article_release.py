@@ -8,6 +8,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG_ROOT = ROOT / "docs" / "blog"
@@ -211,6 +212,39 @@ def check_ptu_wording() -> None:
     )
 
 
+def check_korean_overview_parity() -> None:
+    ko_page = LOCALE_PAGES["ko"]
+    ko_html = read_text(ko_page)
+    required_markers = {
+        "overview one-pager": 'id="figure-overview-one-pager"',
+        "Korean overview SVG": "when-reasoning-pays-off-overview.ko.svg",
+        "series structure guide": 'aria-label="이 시리즈의 구성"',
+        "short-factual source chart": 'id="figure-short-factual-cost"',
+        "short-factual chart image": "benchmark-01-cost-per-request.png",
+    }
+    for label, marker in required_markers.items():
+        require(marker in ko_html, f"Korean overview missing {label}: {marker}")
+
+    required_references = {
+        "Korean overview SVG": "when-reasoning-pays-off-overview.ko.svg",
+        "short-factual chart image": "benchmark-01-cost-per-request.png",
+        "served chart data": "cost-per-request.json",
+    }
+    for label, filename in required_references.items():
+        match = re.search(
+            rf'(?:href|src)=["\'](?P<url>[^"\']*{re.escape(filename)}[^"\']*)["\']',
+            ko_html,
+        )
+        require(match is not None, f"Korean overview missing {label} URL")
+        parsed = urlsplit(match.group("url"))
+        require(
+            not parsed.scheme and not parsed.netloc,
+            f"Korean overview {label} must be a relative URL",
+        )
+        target = (ko_page.parent / unquote(parsed.path)).resolve()
+        require(target.is_file(), f"Korean overview {label} target missing: {rel(target)}")
+
+
 def check_no_root_relative_blog_urls() -> int:
     checked = 0
     for path in sorted(BLOG_ROOT.rglob("*.html"), key=rel):
@@ -381,6 +415,7 @@ def main() -> None:
     canonical_sha = check_article_meta()
     claim_count = check_ledger(canonical_sha)
     check_ptu_wording()
+    check_korean_overview_parity()
     blog_url_count = check_no_root_relative_blog_urls()
     scanned_count = check_forbidden_public_patterns(
         args.changed_from,
