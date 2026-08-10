@@ -46,7 +46,7 @@ on the task, and the contribution of this repo is the per-task evidence.
 
 ## 2. Variables
 
-A measurement is only as honest as its variable hygiene. Each call we make has exactly
+A measurement is only as reliable as its variable control. Each call we make has exactly
 one independent variable; everything else is held constant or recorded.
 
 ### Independent variable
@@ -125,7 +125,7 @@ Three repeats are the minimum that lets us:
 2. Detect a stuck cell (all three repeats land in the same degenerate output).
 3. Flag a single outlier without it dominating the mean.
 
-We do not claim R = 3 gives tight confidence intervals. It gives an *honest variance
+We do not claim R = 3 gives tight confidence intervals. It gives a *variance
 estimate* that we report next to every mean. Where variance is large enough to threaten
 a conclusion, we say so in the benchmark's `analysis.md` and consider raising R for that
 cell only.
@@ -399,7 +399,7 @@ underlying `analysis.json` is not allowed in `results/`.
 
 ## 9. Known Limitations
 
-This section exists to keep us honest about what these measurements do not tell you.
+This section defines what these measurements do not tell you.
 
 ### Scope
 

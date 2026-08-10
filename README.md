@@ -89,8 +89,8 @@ deployment.
 
 **Who this is for.** Engineers and architects running an Azure OpenAI
 deployment who are trying to decide whether (and how much) reasoning to enable,
-sizing capacity, or debugging a cost / latency / throttling change after a
-model migration.
+size capacity, or debug a cost / latency / throttling change after a model
+migration.
 
 > **Research artifact, not a product.** This repository publishes reproducible
 > benchmarks, methodology, decision tools, and sanitized result slices. There
@@ -247,8 +247,8 @@ traceability — is in
 
 ## Methodology summary
 
-Three benchmark task types representative of common use cases. For each, we
-sweep `reasoning_effort` across its full ladder of tiers and run multiple
+We use three benchmark task types representative of common use cases. For each,
+we sweep `reasoning_effort` across its full ladder of tiers and run multiple
 repeats per (sample, effort) combination. We capture the full `response.usage`
 object — input, cached, reasoning, and output tokens separately — and pair
 token measurements with a quality evaluation.

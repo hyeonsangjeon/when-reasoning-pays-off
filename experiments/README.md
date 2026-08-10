@@ -52,7 +52,7 @@ for s in experiments.list_experiments():
 
 - **Input is the YAML; output is an `ExperimentResult`.** `run()` picks the right
   runner from the YAML and forwards `--dry-run` / `--allow-dirty` for you, then
-  returns the exit code and where records landed.
+  returns the exit code and the location of the records.
 - `describe()` and `list_experiments()` need only `pyyaml` — no credentials, no
   runner imports — so you can inspect the catalog for free.
 - Zero-setup, network-free demos of the deterministic primitives the runners are

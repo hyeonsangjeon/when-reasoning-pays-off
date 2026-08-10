@@ -98,11 +98,10 @@ the gap a loop opens.
 ## 3. The five governance surfaces
 
 Each surface below is written in the operator-guide idiom — **Mechanism /
-Action / In-repo evidence** — and opens with the moment you actually hit it. The
-reassuring part: **this repository's own measurement runner already implements
-all five**, because a benchmark batch is itself an unbounded-cost loop that must
-not run away. The production pattern is not theoretical — it is the runner's
-guard, lifted out.
+Action / In-repo evidence** — and opens with the moment you actually hit it.
+**This repository's own measurement runner already implements all five**,
+because a benchmark batch is itself an unbounded-cost loop that must not run
+away. The production pattern comes directly from the runner's guard.
 
 ### 3.1 Thresholds — a step cap and a cumulative cost ceiling
 
@@ -165,8 +164,9 @@ behind — lift it into production as-is.
 *This one arrives the day "just let it think harder" stops helping but keeps
 billing.*
 
-**Mechanism.** The repo's central result is that effort above the mid-range buys
-**cost, not quality.** On benchmark-03, quality held to a ceiling near 1.97–2.00
+**Mechanism.** The repo's central result is that effort above the mid-range
+raises **cost without improving quality.** On benchmark-03, quality held to a
+ceiling near 1.97–2.00
 across the whole effort ladder while per-request cost rose from $0.002762 to
 $0.003499 and latency from 2.9 s to 3.8 s
 ([`results/summary.md`](../results/summary.md) §3;
@@ -175,7 +175,7 @@ In a loop the same finding governs the *continuation* decision: another step, or
 a higher effort on the next call, should have to earn its place.
 
 **Action.** Gate escalation — one more iteration, or a higher `reasoning_effort`
-next call — behind a **cheap eval**: a rubric score, a self-consistency or
+on the next call — behind a **cheap eval**: a rubric score, a self-consistency or
 confidence signal, an explicit stop check. Default to **stop**, and make the
 eval argue for continuing. That turns an open-ended "loop until done" into a
 bounded "loop until the eval stops paying", which is just the decision-framework
@@ -183,7 +183,7 @@ routing tree (`docs/04` §2) in loop form.
 
 **In-repo evidence.** [`scripts/run_judge.py`](../scripts/run_judge.py) is the
 rubric judge already scoring quality in every benchmark; the same shape is the
-natural continuation gate. The 1.97–2.00 ceiling is the evidence that an un-gated
+natural continuation gate. The 1.97–2.00 ceiling is the evidence that an ungated
 "think harder, loop again" default keeps spending well past the point of return.
 
 ### 3.4 Traceability — attribute cost per loop, per step

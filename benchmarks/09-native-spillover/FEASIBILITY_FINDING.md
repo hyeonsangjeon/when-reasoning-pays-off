@@ -10,7 +10,7 @@
 - Verdict: **INFEASIBLE-AS-SPEC'D**
 - SKU alias: `PAYG/GlobalStandard`
 - `spilloverDeploymentName` present: `False`
-- Notes: primary SKU alias=PAYG/GlobalStandard is not PTU and spilloverDeploymentName not configured; per the spillover doc (accessed 2026-06-02) native spillover requires PTU primary → standard target. No owner OPTIN to provision a PTU primary. (account/RG resolved via read-only az discovery; values redacted)
+- Notes: primary SKU alias=PAYG/GlobalStandard is not PTU and spilloverDeploymentName is not configured; per the spillover doc (accessed 2026-06-02) native spillover requires PTU primary → standard target. No owner OPTIN was granted to provision a PTU primary. (account/RG resolved via read-only az discovery; values redacted)
 
 ## Stage 0b (capped same-API preflight)
 

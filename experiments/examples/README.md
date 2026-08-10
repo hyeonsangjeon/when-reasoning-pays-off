@@ -47,9 +47,9 @@ printable block.
 ```python
 experiments.run(config, *, dry_run=False, allow_dirty=None, extra_args=None) -> ExperimentResult
 ```
-Dispatches to the correct runner's `main([...])` and returns the exit code plus
-where records were written (`result.ok`, `result.summary()`).
-- `dry_run=True` → forwards `--dry-run`: **no HTTPS call**, synthetic
+Dispatches to the correct runner's `main([...])` and returns the exit code and
+the location of the records (`result.ok`, `result.summary()`).
+- `dry_run=True` → forwards `--dry-run`: **no HTTPS call**; synthetic
   zero-usage records are still written under the benchmark's `runs/`.
 - `allow_dirty` defaults to the value of `dry_run`: evidence runs
   (`dry_run=False`) require a **clean git tree** so the `git_commit` embedded

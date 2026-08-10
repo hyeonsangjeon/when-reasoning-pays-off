@@ -164,7 +164,7 @@ Stage 2 evidence is therefore authorised.
 Both YAMLs ran the full evidence cell pair (480 records × 2 cells
 per YAML, ~38 min wall per YAML). Combined live cost **$9.85**
 (well under the $120 combined ceiling). No `backlog_excessive`
-trips, no rate-limit (429) events, single transient 500 (1 failed
+trips, no rate-limit (429) events, a single transient 500 (1 failed
 record across 1,920 sends; cell isolation held).
 
 | YAML | total USD | cells | `backlog_excessive_any` | `max_in_flight_observed_run` |
@@ -185,7 +185,7 @@ the v2.3 aggregator):
 **Headline findings under v2.4 sem=96:**
 
 1. **The scheduled cadence is realized.** card=1 `realized_admitted_per_bucket_rpm`
-   tracks the planned 30 RPM (60×TPS) within boundary: 30.65 / 30.73.
+   tracks the planned 30 RPM (60×TPS), allowing for boundary effects: 30.65 / 30.73.
    Common-prefix RPM at card=8 likewise tracks 30 (30.69 / 30.75),
    with per-bucket = 30/8 ≈ 3.75 lifted to 4.00 by the cell's last-bucket
    boundary inclusivity.
@@ -282,7 +282,7 @@ analysis contract); the v2.4 evidence run reports
 `backlog_excessive == false` for all four cells, so all four
 points appear in both charts.
 
-Reproduce with::
+Reproduce with:
 
     python -m scripts.plot_cache_key_bucketing
 

@@ -11,7 +11,7 @@ asked to fill it in before review.
 
 ## Related issue / task
 
-<!-- Link to the issue this PR addresses, or "n/a" if drive-by fix. -->
+<!-- Link to the issue this PR addresses, or "n/a" for a drive-by fix. -->
 
 ## Release-tier label (required for any published artifact)
 

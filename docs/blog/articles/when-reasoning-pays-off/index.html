@@ -57,36 +57,35 @@
     <section class="article-section">
       <h2>Why we tested this</h2>
       <p>
-        The situation is familiar. A migration lands a team on a reasoning
-        model, the configuration exposes a reasoning-effort dial, and the
-        per-token price looks unchanged. Turning effort up can look like
-        cheap insurance against wrong answers. The instinct to raise it
-        everywhere is reasonable; what is missing is whether the extra thinking
-        ever reaches the reader, or only the bill.
+        The familiar migration pattern leaves a specific gap: the configuration
+        exposes a reasoning-effort dial while the per-token price looks
+        unchanged, but neither reveals whether the extra thinking reaches the
+        reader or only the bill. Raising effort everywhere is reasonable only
+        if it improves the answers.
       </p>
       <p>
-        That gives us a clean hypothesis to check, one slice at a time: does
-        higher reasoning effort actually buy a better answer, or does it mostly
-        buy hidden tokens, latency, and cost? Trusting the instinct would mean
+        We checked one slice at a time whether higher reasoning effort buys a
+        better answer or mostly buys hidden tokens, latency, and cost. Trusting
+        the instinct would mean
         shipping a higher default and paying for thinking that may never change
         the output. Measuring it first means we only raise effort where a paired
         quality signal moves, and keep it low where it does not.
       </p>
       <p>
-        So we tested it. We held the prompts and workload slices fixed and
-        walked the same effort ladder across each one: short factual
+        We held the prompts and workload slices fixed and walked the same effort
+        ladder across each one: short factual
         answers, multi-step reasoning, tool-using agents, token composition, and
         latency and cost. We then added a modeled PTU/PAYG planning surface
-        on top of the measured token shape. The results split the way good
-        evidence should: on short factual work the extra effort mostly bought
-        hidden reasoning tokens rather than a better answer; the invisible-token
+        based on the measured token shape. On short factual work, the extra
+        effort mostly bought hidden reasoning tokens rather than a better answer;
+        the invisible-token
         view explained why bills moved when the visible output barely changed;
         multi-step work could pay when the evaluator actually moved; tool-agent
         quality often hit a ceiling where more effort only added latency; and the
         PTU/PAYG crossover stayed a modeled planning threshold, not a measured
-        capacity result. The one-pager below states the single message, the
-        evidence dashboard is the audit trail behind every number, and the
-        sections after it show the measured detail.
+        capacity result. The one-pager summarizes these results, the evidence
+        dashboard provides the audit trail behind every number, and the sections
+        after it show the measured detail.
       </p>
     </section>
 
@@ -94,8 +93,8 @@
       <figcaption>
         <strong>The series at a glance.</strong> A reasoning model can share the
         same per-token price card and still produce a very different bill. This
-        one-pager states that single message and marks the evidence boundary for
-        the whole series; every section below adds the measured detail.
+        one-pager marks the evidence boundary for the series; the sections below
+        provide the measured detail.
         <a href="../../../assets/when-reasoning-pays-off-overview.svg">Open the one-pager SVG</a>.
       </figcaption>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" class="overview-one-pager" role="img" style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA" aria-labelledby="t d" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
@@ -595,8 +594,8 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1: methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance and does not claim p-values at N = 20.</li>
-        <li>[2] <strong>Tier 1: PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The ratios will drift if list pricing moves.</li>
-        <li>[3] <strong>Tier 1: PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn: provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
+        <li>[2] <strong>Tier 1: PAYG pricing snapshot:</strong> PAYG cost claims (mean USD per request) are computed against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The ratios will drift if list pricing moves.</li>
+        <li>[3] <strong>Tier 1: PTU pricing snapshot:</strong> PTU modeled crossover and the 50 PTU floor draw from <code>pricing/azure-openai-ptu-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">Microsoft Learn: provisioned throughput onboarding</a>; <a href="https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding">archive</a>. The crossover shifts if either PTU hourly rate or PAYG per-token pricing moves.</li>
         <li>[4] <strong>Tier 2: short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat $0.000587-to-$0.000598 gpt-5.2 cost band (every tier below the $0.000665 gpt-4o baseline, a 1.02x span), the ~1.95 mean judge score that matches or beats the 1.90 baseline, and the near-zero reasoning-token counts (0 at none, about 1.35 at high) across the effort ladder.</li>
         <li>[5] <strong>Tier 2: multi-step slice measurement:</strong> this repository, <code>benchmarks/02-multi-step-reasoning/analysis.json</code>. Source of the 1.5 non-reasoning baseline and 2.0 high-effort judge score at $0.00125 per request.</li>
         <li>[6] <strong>Tier 2: tool-agent slice measurement:</strong> this repository, <code>benchmarks/03-tool-using-agent/analysis.json</code>. Source of the ceiling-effect quality bars referenced in the tool-agent section.</li>

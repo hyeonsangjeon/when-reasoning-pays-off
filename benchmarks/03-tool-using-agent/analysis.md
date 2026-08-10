@@ -139,7 +139,7 @@ accessed `2026-05-19`).
 | gpt-5.2 | high | $0.003178 ± $0.001162 | **98.3 %** (59/60) | **$0.003232** |
 | gpt-5.2 | xhigh | $0.003499 ± $0.001242 | **100.0 %** (60/60) | **$0.003499** |
 
-The PAYG headline: **`gpt-5.2 effort=low` is the cost-per-correct
+**`gpt-5.2 effort=low` is the cost-per-correct
 Pareto-optimal point at $0.002773 / correct** — **24 % cheaper** than
 gpt-4o ($0.003651 / correct) and the only cell that hits 100 % pass-rate
 while pricing under gpt-4o. The shape across the effort sweep is:
@@ -173,8 +173,8 @@ The same measurement serves two audiences. PAYG customers see token
 reduction as direct dollar savings; PTU customers see token reduction as
 throughput gain at fixed spend (Methodology §6).
 
-**For PAYG (cost-per-correct lens):** the headline above is the bill.
-`gpt-5.2 effort=low` saves **$0.000878 per correct answer** vs gpt-4o
+**For PAYG (cost-per-correct lens):** `gpt-5.2 effort=low` saves
+**$0.000878 per correct answer** vs gpt-4o
 ($0.002773 vs $0.003651) — a **-24 % cost-per-correct reduction**, with
 **+10.0 percentage points of pass-rate** (100.0 % vs 90.0 %) as a free
 quality bonus. Above `low`, every additional effort tier costs more
@@ -204,9 +204,8 @@ a **+4.3 % correct-answers-per-minute gain** at the same capacity. The
 throughput regression (-6.1 % req/min) is more than offset by the
 pass-rate lift (+10.0 percentage points).
 
-This is the **two-lens convergence**: PAYG (`low` wins on cost/correct)
-and PTU (`low` wins on correct/min) point to the same default for the
-mixed workload on this benchmark.
+PAYG (`low` wins on cost/correct) and PTU (`low` wins on correct/min)
+point to the same default for the mixed workload on this benchmark.
 
 Sibling chart pair (PTU lens):
 - [`results/cost-curves/benchmark-03-throughput-gain.png`](../../results/cost-curves/benchmark-03-throughput-gain.png)
@@ -228,7 +227,7 @@ confidence-interval or significance claims.
 | gpt-5.2 | high | 1.97 ± 0.26 | 60 | **98.3 %** (59/60) | 0.0 % (0/60) |
 | gpt-5.2 | xhigh | 2.00 ± 0.00 | 60 | **100.0 %** (60/60) | 0.0 % (0/60) |
 
-### Per-subtype pass-rate breakdown — the headline story
+### Per-subtype pass-rate breakdown
 
 | model | effort | no-tool (n=18) | one-tool (n=24) | multi-tool (n=18) |
 | --- | --- | ---: | ---: | ---: |
@@ -239,8 +238,7 @@ confidence-interval or significance claims.
 | gpt-5.2 | high | **100.0 %** (18/18) | **100.0 %** (24/24) | 94.4 % (17/18) |
 | gpt-5.2 | xhigh | **100.0 %** (18/18) | **100.0 %** (24/24) | **100.0 %** (18/18) |
 
-This per-subtype split is the single most important chunk of evidence in
-benchmark 03:
+In benchmark 03:
 
 - **no-tool is where gpt-4o loses ground**: gpt-4o sometimes calls a
   tool when none is needed (83.3 % pass) while every gpt-5.2 cell holds
@@ -350,12 +348,11 @@ in [`analysis.json`](analysis.json).
 
 ## 11. Conclusion
 
-**For tool-using agent tasks measured here, the recommendation
-converges**: `gpt-5.2 effort=low` is the defensible default for both
+For the tool-using agent tasks measured here, `gpt-5.2 effort=low` is the
+defensible default for both
 PAYG and PTU customers. It is **24 % cheaper per correct answer than
 gpt-4o** on PAYG, **+4.3 % more correct answers per minute than gpt-4o**
-on PTU, and **lifts multi-tool pass-rate from 83.3 % to 100 %** as a
-free quality bonus.
+on PTU, and **lifts multi-tool pass-rate from 83.3 % to 100 %**.
 
 ### Headline numbers
 

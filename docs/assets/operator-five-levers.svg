@@ -13,7 +13,7 @@
   <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
         font-size="24" font-weight="700">Five levers you can act on</text>
   <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="15">Ordered for diagnostic application &#8212; re-measure after each change.</text>
+        font-size="15">Apply them in diagnostic order &#8212; re-measure after each change.</text>
 
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle">
     <!-- five lever tracks -->

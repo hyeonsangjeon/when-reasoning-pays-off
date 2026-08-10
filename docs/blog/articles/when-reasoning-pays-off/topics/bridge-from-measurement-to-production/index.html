@@ -41,15 +41,15 @@
     <p class="breadcrumb"><a href="../../../">Articles</a> / <a href="../../">When reasoning pays off</a> / Bridge essay</p>
     <p class="article-kicker">Bridge essay · Between the evidence layer and the operations layer</p>
     <h1>From measurement to production</h1>
-    <p class="lede">By the end of the five evidence essays, what you carry is a habit, not just a verdict: don&rsquo;t turn reasoning effort up because it sounds smarter &mdash; read cost, quality, latency, and token shape together, and spend the extra token only where it actually pays. That habit is enough to pick an effort level on a benchmark. It is not yet enough to run a live service. The moment your choice meets real traffic, the question quietly changes shape: you stop asking <em>where did reasoning pay in the benchmark?</em> and start asking <em>how do I keep that decision safe now that requests get throttled, retried, cached, spilled over, and sized for real capacity?</em> This bridge is about that change of question, and about the voice that has to change with it.</p>
+    <p class="lede">The five evidence essays establish a habit: read cost, quality, latency, and token shape together, and spend the extra token only where it pays. That habit is enough to pick an effort level on a benchmark, but not to run a live service. Once the choice meets real traffic, the question shifts from <em>where did reasoning pay in the benchmark?</em> to <em>how do I keep that decision safe now that requests get throttled, retried, cached, spilled over, and sized for real capacity?</em> This bridge explains that shift and the corresponding change in evidentiary voice.</p>
 
     <figure class="article-figure" id="figure-bridge-one-pager">
       <figcaption>
-        <strong>Bridge at a glance.</strong> The one-pager names the single
-        job of this page: the evidence layer speaks in &ldquo;we measured,&rdquo; the
-        operations layer speaks in &ldquo;the service returns,&rdquo; and the bridge says
-        which voice a given claim needs. It is a meta-reflection over the series
-        arc and introduces no new measurement; the sections below add the detail.
+        <strong>Bridge at a glance.</strong> The evidence layer speaks in
+        &ldquo;we measured,&rdquo; while the operations layer speaks in
+        &ldquo;the service returns,&rdquo; and the bridge identifies which voice a given
+        claim needs. It introduces no new measurement; the sections below provide
+        the detail.
         <a href="../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.svg">Open the bridge one-pager SVG</a>.
       </figcaption>
       <img src="../../../../../assets/when-reasoning-pays-off-bridge-from-measurement-to-production.svg" alt="One-pager for the bridge essay, From measurement to production. It contrasts two voices: an Evidence panel labeled we measured and an Operations panel labeled contract we honor, joined by an arc that asks which voice applies. Headline message: two voices, measurement we own and a contract someone else maintains, and the bridge names when each applies. Marked as a meta-reflection over the series arc that introduces no new measurement." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -57,14 +57,14 @@
 
     <section id="why-bridge" class="article-section">
       <h2>Why the bridge exists</h2>
-      <p>The five evidence essays all answer one kind of question: <em>when</em> is a reasoning token worth spending? They answer it the only honest way they can &mdash; by measuring a workload and reading cost against quality, latency, and token shape. After you deploy, that decision stops sitting still. The same prompt now arrives again and again at production volume, runs through cache behavior alongside other live traffic, sometimes comes back as a 429, and competes for provisioned capacity. The benchmark settled <em>when</em> the token is worth spending; nothing has yet settled <em>how</em> to keep spending it once something other than your test harness controls the conditions.</p>
-      <p>That gap is why this bridge page exists. It is not another measurement and it is not an operations spec &mdash; it is the hand-off note between the two. The evidence layer earns the decision; the operations layer has to honor that decision under conditions the benchmark never saw. Saying the hand-off out loud is what keeps a reader from treating a documented service behavior as something we measured, or treating a number we measured as something the platform promises. Different jobs, different evidence, different voice &mdash; and the rest of this page is about telling them apart.</p>
+      <p>The five evidence essays ask <em>when</em> a reasoning token is worth spending. They measure a workload and read cost against quality, latency, and token shape. After deployment, the same prompt arrives repeatedly at production volume, encounters cache behavior alongside other live traffic, sometimes returns a 429, and competes for provisioned capacity. The benchmark settles <em>when</em> the token is worth spending, but not <em>how</em> to keep spending it once the test harness no longer controls the conditions.</p>
+      <p>This bridge marks that handoff. The evidence layer earns the decision; the operations layer has to honor it under conditions the benchmark never saw. Keeping those jobs distinct prevents readers from treating documented service behavior as something we measured, or a measured number as something the platform promises.</p>
     </section>
 
     <div class="article-summary-grid" aria-label="Bridge summary">
       <section class="summary-tile"><h2>Question</h2><p>When does an evidence habit need to become an operations habit, and what carries over between the two?</p></section>
-      <section class="summary-tile"><h2>Evidence</h2><p>The five topic essays in the evidence layer share one shape. Each one names a workload — short factual answers, multi-step reasoning, tool-using agents, hidden reasoning tokens, modeled PAYG-versus-PTU crossover — and reads cost, quality, latency, and token composition together on a single small chart. The shape is deliberate: a single bar that says "cost climbed" is a footnote next to a paired bar that says "quality did not." A single quality bar that clears the rubric is a footnote next to a paired latency bar that says "the wait stretched." Each essay closes with a decision implication that survives even when the absolute numbers do not.</p></section>
-      <section class="summary-tile"><h2>Decision</h2><p>Carry the evidence habit into operations, not the absolute numbers. The operations essays are written as policy on top of official spec, not as benchmarks. They borrow the same audit trail discipline — Tier 1 documented behavior, Tier 2 operational inference, evidence boundary called out where the line falls — and apply it to questions the benchmark cells cannot answer alone.</p></section>
+      <section class="summary-tile"><h2>Evidence</h2><p>The five topic essays each name a workload — short factual answers, multi-step reasoning, tool-using agents, hidden reasoning tokens, modeled PAYG-versus-PTU crossover — and read cost, quality, latency, and token composition together. A bar that says "cost climbed" needs its paired quality result to show whether quality improved. A quality bar that clears the rubric still needs the latency bar that says whether "the wait stretched." Each essay closes with a decision implication that survives even when the absolute numbers do not.</p></section>
+      <section class="summary-tile"><h2>Decision</h2><p>Carry the evidence habit into operations while leaving the absolute numbers within their benchmark boundary. The operations essays express policy based on the official spec. They use the same audit-trail discipline — Tier 1 documented behavior, Tier 2 operational inference, evidence boundary called out where the line falls — for questions the benchmark cells cannot answer alone.</p></section>
     </div>
 
     <nav class="article-outline" aria-label="Bridge sections">
@@ -77,8 +77,8 @@
 
     <section id="s1" class="article-section">
       <h2>Why the voice changes</h2>
-      <p>The evidence essays say "we measured." That voice is correct for a measurement: it owns the result, it carries the noise, it lets the reader push back on the sample. The operations essays say "Microsoft Learn documents the contract, and the practical rule is this." That voice is correct for a contract: it points at the source, it separates what is guaranteed from what is inferred, and it lets the operator act without waiting for a re-run.</p>
-      <p>The benchmark voice is appropriate when the answer comes from a measurement we own. The operations voice is appropriate when the answer comes from a contract someone else maintains and we are translating it into a runbook. Mixing the two — saying "we measured" about a documented behavior, or saying "Microsoft Learn says" about a per-effort cost curve we ran ourselves — would weaken both halves. The split is a feature, not an inconsistency.</p>
+      <p>The evidence essays say "we measured." They own the result and its noise while leaving the sample open to scrutiny. The operations essays say "Microsoft Learn documents the contract, and the practical rule is this." They point to the source and separate guarantees from inference so an operator can act without waiting for a re-run.</p>
+      <p>Use the benchmark voice when the answer comes from a measurement we own, and the operations voice when translating a contract someone else maintains into a runbook. Saying "we measured" about documented behavior, or "Microsoft Learn says" about a per-effort cost curve we ran ourselves, would misstate the evidence.</p>
       <p>Practically, it shows up in three places:</p>
       <ul>
         <li><strong>Tense.</strong> Evidence essays use the past tense for findings ("none effort averaged $0.000587"). Operations essays use the present tense for contract behavior ("the service returns 429 with a <code>retry-after-ms</code> header").</li>
@@ -98,15 +98,15 @@
     <section id="s3" class="article-section">
       <h2>What is genuinely new in the operations layer</h2>
       <p>Three things appear in the operations layer that the evidence layer cannot reach.</p>
-      <p>A <strong>header contract</strong> appears. <code>retry-after-ms</code>, the spillover headers, and the cache match conditions are not measurements; they are commitments the service makes. The benchmark cells cannot vote on whether the commitment is correct. The operations essays read the commitment carefully and write down what it does and does not promise.</p>
-      <p>A <strong>routing surface</strong> appears. <code>prompt_cache_key</code> is not a metadata tag; it is a routing-affinity control combined with the prefix hash. Cache retention is not a side effect; it is a per-request policy choice with a residency dimension. These are operating-shape questions that show up only after a workload is running on a deployment.</p>
-      <p>A <strong>sizing translation</strong> appears. The migration sizing essay takes the same measurement habit and routes it back into provisioned-throughput sizing. The numbers in the chart there are illustrative — explicitly labeled as a calculation, not a capacity result — but the discipline is the one the benchmark essays trained: measure visible output, measure hidden reasoning, measure cached input, measure the response ceiling, and only then size the deployment.</p>
+      <p>The first addition is a <strong>header contract</strong>. <code>retry-after-ms</code>, the spillover headers, and the cache match conditions are commitments the service makes, not measurements. The operations essays record what each commitment does and does not promise.</p>
+      <p>Operations also introduces a <strong>routing surface</strong>. <code>prompt_cache_key</code> is a routing-affinity control combined with the prefix hash, not a metadata tag. Cache retention is a per-request policy choice with a residency dimension, not a side effect. These questions arise only after a workload is running on a deployment.</p>
+      <p>Finally, the migration sizing essay adds a <strong>sizing translation</strong>, applying the same measurement habit to provisioned-throughput sizing. Its chart is explicitly labeled as a calculation rather than a capacity result. The discipline remains the same: measure visible output, hidden reasoning, cached input, and the response ceiling before sizing the deployment.</p>
     </section>
 
     <section id="s4" class="article-section">
       <h2>How to read the operations essays after the evidence essays</h2>
-      <p>The same reading move works in both layers. Read the meta header first — Question, Evidence, Decision — and decide whether the page is asking what you came to ask. Read the body for mechanism and implication. Read the sources to check the evidence boundary. Carry the decision forward only if the boundary fits your situation.</p>
-      <p>In the evidence essays, the boundary is "we measured this on N = 20 samples in one tenant in one region with one pricing snapshot." In the operations essays, the boundary is "this is what Microsoft Learn documents as of the access date, plus a small set of operational inferences that this repository is willing to defend." Different boundary; same discipline.</p>
+      <p>The same reading sequence works in both layers. Start with the meta header — Question, Evidence, Decision — to confirm that the page addresses your question. Use the body for mechanism and implication, then check the evidence boundary in the sources. Carry the decision forward only if that boundary fits your situation.</p>
+      <p>In the evidence essays, the boundary is "we measured this on N = 20 samples in one tenant in one region with one pricing snapshot." In the operations essays, the boundary is "this is what Microsoft Learn documents as of the access date, plus a small set of operational inferences that this repository is willing to defend." The terminology changes, but the same discipline applies.</p>
     </section>
 
     <section id="sources" class="article-section">

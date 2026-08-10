@@ -2,8 +2,8 @@
      aria-labelledby="cxTitle cxDesc" width="900" height="340">
   <title id="cxTitle">PTU versus PAYG cost crossover</title>
   <desc id="cxDesc">A conceptual cost-versus-request-rate chart: PAYG cost rises with request
-  rate while PTU is a flat reserved cost; the two lines cross at a crossover request rate
-  that decides which is cheaper. No measured numbers are shown.</desc>
+  rate while PTU is a flat reserved cost; the two lines cross at the request rate where
+  the cheaper option changes. No measured numbers are shown.</desc>
   <defs>
     <linearGradient id="cxBg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0d1b2a"/><stop offset="1" stop-color="#102a43"/>

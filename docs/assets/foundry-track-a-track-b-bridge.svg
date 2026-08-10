@@ -17,7 +17,7 @@
   <text x="40" y="52" fill="#e0fbfc" font-family="Segoe UI, Helvetica, Arial, sans-serif"
         font-size="24" font-weight="700">Two tracks, one bridge</text>
   <text x="40" y="80" fill="#9fb3c8" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="15">Which surface is canonical, and how the downstream sample inherits it.</text>
+        font-size="15">Which surface is canonical, and how the downstream sample inherits from it.</text>
 
   <!-- Track A -->
   <rect x="60" y="120" width="300" height="170" rx="12" fill="#16324f" stroke="#4cc9f0" stroke-width="2"/>

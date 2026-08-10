@@ -296,7 +296,7 @@ prompt caching is engaged for that key.
 - Hard ceilings (v2.3 conservative-but-useful Task 019 cap): calibration
   $220 (per-probe $60), smoke $50, evidence $100, contingency $30, task
   total $400.
-- **Do not exhaust shared budget; cap is an accounting guardrail, not
+- **Do not exhaust shared budget; the cap is an accounting guardrail, not
   a spend target.** The shared tenant has > $1,600 remaining of its
   ~$2,500/month — that figure is context for auditor traceability ONLY
   and is NOT a Task 019 spend target. Other in-flight measurements

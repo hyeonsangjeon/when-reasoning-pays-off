@@ -48,16 +48,19 @@
     <section class="article-section">
       <h2>Why we tested this</h2>
       <p>
-        The pattern is familiar. After a migration, the team lands on a reasoning model, the configuration exposes a reasoning-effort dial, and short factual questions look like the safest place to turn it. The output is brief, errors are obvious, and “let it think a bit more” sounds like cheap insurance. Raising the default here feels almost free.
+        Short factual work provides a useful control after a migration. The
+        output is brief, errors are obvious, and the task rarely needs long
+        deliberation. Here, “let it think a bit more” sounds like cheap
+        insurance. If a higher reasoning-effort setting helps even here, a higher
+        default may earn its place.
       </p>
       <p>
-        That gives us a clean hypothesis to check: on short factual work, does
-        higher reasoning effort actually make the answer safer? If it does, the
-        higher default earns its place. If it does not, the team is paying for
-        thinking that never reaches the reader.
+        We tested whether higher reasoning effort actually makes a short factual
+        answer safer. A higher default earns its place only if it does; otherwise,
+        the team is paying for thinking that never reaches the reader.
       </p>
       <p>
-        So we measured it. We held the workload shape fixed, using the same short-factual slice, and walked the effort ladder one step at a time. At each level we compared cost per request, latency, visible answer text, hidden reasoning tokens, and judge score. In this slice, the result was the kind that should move a default: effort bought extra cost, latency, and hidden tokens, but not a better answer. The one-pager below states that in a single frame, and the sections after it show the measured detail.
+        We held the workload shape fixed, using the same short-factual slice, and walked the effort ladder one step at a time. At each level we compared cost per request, latency, visible answer text, hidden reasoning tokens, and judge score. In this slice, effort bought extra cost, latency, and hidden tokens, but not a better answer.
       </p>
     </section>
 
@@ -66,9 +69,8 @@
         <strong>This topic at a glance.</strong> On this short-factual slice,
         climbing the reasoning-effort ladder left cost per request essentially
         flat while the mean judge score held around 1.95 &mdash; and every gpt-5.2
-        tier landed below the gpt-4o baseline. The one-pager states that
-        message and marks the evidence boundary; the sections below add
-        the measured detail.
+        tier landed below the gpt-4o baseline. The one-pager marks the evidence
+        boundary; the sections below provide the measured detail.
         <a href="../../../../../assets/when-reasoning-pays-off-short-factual-work.svg">Open the short-factual one-pager SVG</a>.
       </figcaption>
       <img src="../../../../../assets/when-reasoning-pays-off-short-factual-work.svg" alt="One-pager for short factual work. It shows cost per request staying essentially flat across the reasoning-effort ladder from none to xhigh, every gpt-5.2 tier below the gpt-4o baseline, while judge quality stays around 1.95. Headline message: on short factual work, climbing the effort ladder left cost and quality flat and gpt-5.2 already matched the gpt-4o baseline. Marked as a measured aggregate, N=20, R=3, with cost shown per request." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
@@ -112,7 +114,11 @@
         factor holds around 0.99.
       </p>
       <p>
-        Neither the cost bars nor the quality bars moved with effort. That is the whole story the chart is trying to tell. Spending more on reasoning bought neither a cheaper bill nor a better answer, and gpt-5.2 at its lowest setting already matched or beat the gpt-4o baseline. For this workload shape, higher effort should stay experimental rather than become the default.
+        Neither the cost bars nor the quality bars moved with effort. Spending
+        more on reasoning bought neither a cheaper bill nor a better answer, and
+        gpt-5.2 at its lowest setting already matched or beat the gpt-4o
+        baseline. For this workload shape, higher effort should stay experimental
+        rather than become the default.
       </p>
     </section>
 
@@ -123,9 +129,8 @@
         work rarely needs a long internal search. When the answer is a single
         fact, the bottleneck tends to be retrieval, a stable prompt, or simply
         the lowest effort setting that already lands the correct answer — not
-        extra deliberation. Past that point more thinking has nothing left to
-        find, so the effort ladder keeps adding hidden tokens without adding
-        accuracy.
+        extra deliberation. Past that point, more thinking has nothing left to
+        find, so a higher effort setting offers no additional accuracy.
       </p>
       <p>
         That is the shape the slice shows. The judge score does not climb with
@@ -285,8 +290,8 @@
         at or above the baseline's 1.90.
       </p>
       <p>
-        That is not a universal claim that reasoning is bad. It is a workload
-        shape claim. In this slice, there was almost no added internal
+        The result applies to this workload shape rather than reasoning in
+        general. In this slice, there was almost no added internal
         computation to pay for, and raising effort bought neither a cheaper bill
         nor a better answer. The dashboard makes that visible because cost and
         quality are kept side by side.
@@ -355,7 +360,7 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at xhigh effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
+        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at xhigh effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
         <li>[3] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat per-request cost, the mean judge score of about 1.95 (gpt-4o baseline 1.9), the no-trend latency between about 1409 ms and 1713 ms, and the throughput factor holding near 0.99.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the near-zero reasoning tokens (0.0 at none, 1.35 at high) against visible output that moves only from about 13.98 to 14.78 tokens.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>
@@ -374,9 +379,9 @@
       <h2>The practical rule</h2>
       <p>
         <strong>Keep short factual work at the lowest
-        effort that already answers correctly, and promote a higher effort only
-        after a quality gate moves on this workload shape — read next to its
-        paired cost, latency, and token-composition charts.</strong>
+        effort that already answers correctly. Promote a higher effort only
+        after a quality gate moves on this workload shape, and read that movement
+        next to its paired cost, latency, and token-composition charts.</strong>
       </p>
       <p>
         The evidence dashboard is the audit trail behind that rule.

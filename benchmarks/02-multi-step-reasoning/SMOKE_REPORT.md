@@ -6,8 +6,8 @@
 
 All 6 spec-required smoke cells executed end-to-end against the real Foundry v1
 endpoint, exited 0, and produced JSONs that satisfy every Task 009 invariant.
-No integration defects surfaced; the runner code path proved against the
-harder benchmark-02 input shape works without modification.
+No integration defects surfaced; the runner code path works with the harder
+benchmark-02 input shape without modification.
 
 ## Summary
 

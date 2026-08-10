@@ -2,7 +2,7 @@
      aria-labelledby="spTitle spDesc" width="1280" height="640">
   <title id="spTitle">when reasoning pays off — same token price, different bill</title>
   <desc id="spDesc">A conceptual illustration in the project's house style: two workloads pay
-  the same per-token price, but the reasoning workload bills extra invisible "thinking" tokens,
+  the same per-token price, but the reasoning workload is billed for extra invisible "thinking" tokens,
   so its total bill is taller. No measured numbers are shown.</desc>
 
   <defs>

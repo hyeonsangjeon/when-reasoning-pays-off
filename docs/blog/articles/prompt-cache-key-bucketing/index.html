@@ -43,10 +43,10 @@
     <h1>Cache keys are routing hints, not labels</h1>
     <p class="lede">
       A team wires up <code>prompt_cache_key</code> and treats it like any
-      other label: the natural reflex is to fill it with whatever uniquely tags
+      other label, filling it with whatever uniquely tags
       the call: a <code>request_id</code>, the user's question text, a
       timestamp, or a per-tenant or per-user axis fine enough to keep them
-      apart. The field is more operational than a label, though: it is combined
+      apart. But the field has an operational role: it is combined
       with the prompt prefix hash to influence where matching work is routed. So
       the instinct to make the key specific runs straight into the operating
       question this essay asks: does a more unique key gather reuse, or
@@ -59,7 +59,7 @@
         <code>prompt_cache_key</code> routes repeated work to a machine, and
         Microsoft Learn documents an approximate 15-requests-per-minute point
         per bucket above which cache effectiveness can drop. The one-pager
-        carries that single message: size buckets to stay under the documented
+        summarizes that message: size buckets to stay under the documented
         ceiling. It also marks the boundary: the ceiling is official spec, while
         the hit-ratio and latency shape beside it is a sanitized public
         aggregate measured on pay-as-you-go, shown descriptively.
@@ -71,25 +71,23 @@
     <section id="why-bucket" class="article-section">
       <h2>Why size the key instead of guessing</h2>
       <p>
-        The unique-key reflex assumes specificity is free: that a finer
-        key can only help tell requests apart. Before accepting that, two things
-        are worth putting side by side. The first is what Microsoft Learn
-        documents: prompt caching requires an identical early prefix for cache
+        A unique-key strategy assumes specificity is free and that a finer
+        key can only help tell requests apart. Microsoft Learn documents that
+        prompt caching requires an identical early prefix for cache
         eligibility, and <code>prompt_cache_key</code> is combined with the prefix
         hash to steer where repeated work lands; the same documentation marks an
         approximate point, about 15 requests per minute for one
         prefix-plus-key combination, above which traffic can spill to
-        extra machines and cache effectiveness can drop. The second is a sparse
-        sanitized public aggregate from this repository's source runs, included
-        descriptively to show how cache hit ratio and first-token latency
-        actually moved as the same prefix was split into more buckets.
+        extra machines and cache effectiveness can drop. We also include a
+        sparse sanitized public aggregate from this repository's source runs to
+        show how cache hit ratio and first-token latency actually moved as the
+        same prefix was split into more buckets.
       </p>
       <p>
-        The pairing is the part worth pausing on. Hit ratio alone can read as
-        reassuring while the experience underneath shifts: in this slice the hit
-        ratio stayed high and roughly flat as bucket cardinality rose, so
+        Hit ratio alone can look reassuring while latency changes: in this slice
+        the hit ratio stayed high and roughly flat as bucket cardinality rose, so
         reading it by itself would suggest the splitting cost nothing. The
-        first-token latency tail tells the other half of the story: a
+        first-token latency tail showed a different pattern: a
         single hot bucket carried a very large p95 that fell sharply once
         traffic was spread across more buckets. That is why the operating
         question is not &ldquo;did the cache hit?&rdquo; but &ldquo;is each
@@ -110,7 +108,7 @@
       </section>
       <section class="summary-tile">
         <h2>Evidence</h2>
-        <p>Microsoft Learn defines the routing hint and approximate overflow point; this repo adds sparse public measurement.</p>
+        <p>Microsoft Learn defines the routing hint and approximate overflow point; this repository adds sparse public measurement.</p>
       </section>
       <section class="summary-tile">
         <h2>Decision</h2>
@@ -153,7 +151,7 @@
           <p><code>prompt_cache_key</code> is combined with the prefix hash to influence routing for repeated work.</p>
         </div>
         <div>
-          <h3>Guarantee never</h3>
+          <h3>Never guaranteed</h3>
           <p>The key improves the odds of reuse; it does not promise a hit. Treat it as an operating hint.</p>
         </div>
       </div>
@@ -189,7 +187,7 @@
         </div>
         <div>
           <h3>Why not unique?</h3>
-          <p>A unique key per call prevents reuse from accumulating. The cache never gets a crowd.</p>
+          <p>With a unique key per call, reuse never accumulates.</p>
         </div>
       </div>
     </section>
@@ -217,7 +215,7 @@
           per-bucket-rate slice the hit ratio stayed high and roughly flat
           (about 0.93&ndash;0.96) as cardinality rose, so splitting the prefix
           into more buckets did not, by itself, collapse the hit ratio here;
-          the cost of fragmentation appeared in the latency tail in the
+          the effect of bucketing appeared in the latency tail in the
           next panel, not in this one. <strong>Evidence boundary:</strong> a
           sparse sanitized public aggregate measured on pay-as-you-go gpt-5.2 on
           one tenant and region (not PTU); it is descriptive, not a universal
@@ -238,8 +236,8 @@
           <code>in_memory</code> bucket at cardinality&nbsp;1 carried a very large
           p95 (about 106,000&nbsp;ms) and fell sharply once traffic was spread
           across 8 buckets (about 16,600&nbsp;ms), while the <code>24h</code>
-          series stayed lower throughout. So on this slice the bucketing
-          cost landed on the latency tail, which is why hit ratio must be read
+          series stayed lower throughout. In this slice, the effect of bucketing
+          appeared in the latency tail, which is why hit ratio must be read
           beside first-token latency rather than alone.
           <strong>Evidence boundary:</strong> the same sparse sanitized public
           aggregate on pay-as-you-go gpt-5.2 (not PTU); descriptive, not a
@@ -281,8 +279,8 @@
       <p class="section-label">Key design; stable workload buckets</p>
       <h2>Bucket by workload, not by call</h2>
       <p>
-        A good key should be deterministic for the same workload. A bad key
-        contains per-call entropy. If a timestamp, UUID, random suffix, or unique
+        A good key should be deterministic for the same workload and exclude
+        per-call entropy. If a timestamp, UUID, random suffix, or unique
         call token enters the key, the cache-key space explodes and the prefix
         cannot build reuse.
       </p>
@@ -308,30 +306,30 @@
         prompt-caching prefix rule, prefix-hash routing, the per-128-token match
         step, the single-character miss, the <code>prompt_cache_key</code>
         routing hint, and the approximate 15-requests-per-minute overflow point
-        are documented here.</p>
+        are documented in the following source.</p>
       <ul>
-        <li>[1] <strong>Prompt caching with Azure OpenAI</strong>: documents the
+        <li>[1] <strong>Prompt caching with Azure OpenAI</strong> — documents the
           1,024-token minimum and identical-prefix requirement, routing by a hash
           of the initial prefix, a cache match for every 128 additional identical
           tokens after the first 1,024, the single-character cache miss, the
           <code>prompt_cache_key</code> hint combined with the prefix hash to
           influence routing, and the approximate 15-requests-per-minute point
           above which requests for the same prefix and key overflow to extra
-          machines and cache effectiveness drops. accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
+          machines and cache effectiveness drops. Accessed 2026-06-04: <a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>; <a href="https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching">https://web.archive.org/web/20260604174202/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching</a>.</li>
       </ul>
       <p><strong>Tier 2: operational inference (this repository).</strong> The
         bucket-count math and the public hit-ratio slice are repository
         operational inference and source-run evidence, not Learn specifications.</p>
       <ul>
         <li>[2] <strong>this repository, <code>docs/12-prompt-cache-key-policy.md</code></strong>
-          : the bucket-sizing runbook: the repository derives
+          — the bucket-sizing runbook: the repository derives
           <code>minimum_buckets = ceil(common_prefix_rpm / 15)</code> from the
           documented approximate 15-RPM figure, while the
           <code>recommended_buckets</code> formula and its default
           10-RPM-per-bucket target are repository operational inference, not a
           Learn specification. <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/12-prompt-cache-key-policy.md">source</a>.</li>
         <li>[3] <strong>this repository, <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code></strong>
-          : the sparse public aggregate slice behind the hit-ratio and
+          — the sparse public aggregate slice behind the hit-ratio and
           first-token-latency table; source-run evidence, not a universal curve.
           <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source</a>.</li>
       </ul>
@@ -356,13 +354,13 @@
         documented approximate 15-requests-per-minute overflow point with
         headroom, and read cache-hit ratio beside first-token latency rather than
         trusting either alone.</strong></p>
-      <p>The next essay turns from how to bucket the key to how long the cache should survive.</p>
+      <p>The next essay turns from key bucketing to how long the cache should survive.</p>
       <p><a class="button-link" href="../prompt-cache-retention/">When cache reuse must survive a short idle window, what must the request say explicitly?</a></p>
     </section>
   </main>
 
   <footer class="site">
-    <p>MIT-licensed research artifact; Published data is sanitized or aggregate only.</p>
+    <p>MIT-licensed research artifact · Published data is sanitized or aggregate only.</p>
   </footer>
 </body>
 </html>

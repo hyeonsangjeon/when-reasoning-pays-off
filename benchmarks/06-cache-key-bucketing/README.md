@@ -28,7 +28,7 @@
 
 ## What changed from v2.3 → v2.4 (one knob)
 
-Live `gpt-5.2` PAYG TTFT was much higher than v2.3 sized for. v2.3
+Live `gpt-5.2` PAYG TTFT was much higher than v2.3 was sized for. v2.3
 assumed ~9 s P95 TTFT; the live deployment delivered ~128 s P95 TTFT.
 At `TPS = 0.5`, Little's Law gives `in-flight = TPS × TTFT ≈ 64` —
 already 8× v2.3's `sem = 8`. The dispatcher semaphore therefore
@@ -141,7 +141,7 @@ the v2.3 pinned `sustain_tps=0.5`, the per-request cap is bounded
 above by `0.70 × 500 000 / 60 / 0.5 ≈ 11 666` tokens — well below
 the 30 K corpus's roughly 30 512-token footprint. The v2.3 corpus
 is 50 paragraphs (~21 K characters → ~5 250 tokens of textual
-content; effective `system_prompt` post `_build_system_prompt`
+content; effective `system_prompt` after `_build_system_prompt`
 ≈9 549 tokens after the target_system_prompt_tokens=9500 cap is
 applied). The user-prompt set is unchanged so cache-hit signals
 from the prefix portion remain comparable to Tasks 012/013, with
@@ -322,7 +322,7 @@ the audit covers five
 checks. The literal greps are not reproduced verbatim here because
 doing so would itself trip the host-name and auth-header greps;
 see the task-spec **Test / Verification Plan** section for the
-canonical command lines. The checks at a high level:
+canonical command lines. At a high level, the checks are:
 
 1. **API tokens** — long `sk-` prefixed tokens or `Bearer <token>` literals.
 2. **Endpoint host-names** — Azure OpenAI / Cognitive-Services /
@@ -359,7 +359,7 @@ The three co-occurring diagnostic signatures
 `backlog_excessive_card1 == true`; live P95 TTFT ≈128 s observed in
 the underlying JSONL) point cleanly at semaphore saturation, not at
 the deployment being unavailable. Little's Law at `0.5 TPS × ~128 s ≈ 64`
-in-flight makes `sem = 8` an 8× undersize.
+in-flight makes `sem = 8` 8× too small.
 
 **v2.4 remediation:** raise `runtime.concurrency` to `96` (~50%
 headroom over 64-in-flight steady state); preserve every other v2.3

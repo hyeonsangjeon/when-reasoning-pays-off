@@ -59,7 +59,7 @@
       <h2>What happens when the primary and spillover deployments are really separate?</h2>
       <p>When a PTU (fixed-capacity) deployment nears its ceiling, spillover sheds some traffic to a <strong>fallback deployment</strong>. Phase 1 faked that fallback route inside a single deployment, as a <em>label</em> &mdash; the primary and fallback routes saw the same cache (the store that reuses prompts to save cost). So the policy difference barely registered on the cache.</p>
       <p>Phase 2 removes that doubt. Make the primary and fallback <strong>genuinely different deployments</strong> and, by Azure design, their <strong>cache pools split too</strong>. Now &ldquo;which deployment did you route to&rdquo; registers directly on cache temperature. Concentrate on one, and that pool stays hot; split across two, and <em>both go lukewarm</em>.</p>
-      <p>If you run a <strong>separate primary + fallback</strong> deployment pair, this note is the closest. To the question &mdash; &ldquo;will splitting traffic early to protect the primary keep the cache warmer?&rdquo; &mdash; this experiment gives one <strong>measured answer</strong>, and the answer is closer to &lsquo;don't split.&rsquo;</p>
+      <p>If you run a <strong>separate primary + fallback</strong> deployment pair, this note is the closest match. To the question &mdash; &ldquo;will splitting traffic early to protect the primary keep the cache warmer?&rdquo; &mdash; this experiment gives one <strong>measured answer</strong>, and the answer is closer to &lsquo;don't split.&rsquo;</p>
     </section>
 
     <section id="reproduce" class="article-section">
@@ -105,13 +105,13 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
     <section id="io" class="article-section">
       <p class="section-label">Inputs and artifacts</p>
       <h2>What it consumed and what it left behind</h2>
-      <p>What this experiment consumed and produced isn't a hand-written summary but the repo's actual files. So you can retrace it from input to output in a single line.</p>
+      <p>The experiment's inputs and outputs are the repo's actual files, not a hand-written summary. So you can retrace it from input to output in a single line.</p>
       <div class="article-summary-grid" aria-label="Inputs and artifacts">
         <section class="summary-tile">
           <h2>Input (in)</h2>
           <p><strong>Policy definitions:</strong> <code>experiments/exp005_dual_spillover_reactive.yaml</code>, <code>&hellip;_proactive.yaml</code> (only <code>policy.type</code> differs).<br>
           <strong>Two deployments:</strong> primary <code>ptu-deploy-throttled</code> (60,000 TPM) · spillover <code>gpt-5.2</code> (500,000 TPM).<br>
-          <strong>Pinned:</strong> both runs' system prompt fixed by SHA-256 (<code>98d3a5&hellip;088a</code>) &mdash; guaranteeing both policies got a <em>byte-for-byte</em> identical prompt.</p>
+          <strong>Pinned:</strong> both runs' system prompt fixed by SHA-256 (<code>98d3a5&hellip;088a</code>) &mdash; guaranteeing both policies received a <em>byte-for-byte</em> identical prompt.</p>
         </section>
         <section class="summary-tile">
           <h2>Artifacts (out)</h2>
@@ -136,7 +136,7 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
     <section id="result" class="article-section">
       <p class="section-label">First signal</p>
       <h2>The clever policy lost by more</h2>
-      <p>The table below is the <strong>sustain 10-minute steady state</strong> &mdash; where load settles onto its target, the window the hypothesis lives in. The numbers are re-cited from the published aggregate <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>analysis.md</code></a> §5 and §7.</p>
+      <p>The table below is the <strong>sustain 10-minute steady state</strong> &mdash; the window where the load settles at its target and the hypothesis applies. The numbers are re-cited from the published aggregate <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>analysis.md</code></a> §5 and §7.</p>
       <pre class="code-block"><code>Policy      Sustain spillover   Sustain cache hit (per-min mean ± std)   Real 429   Note
 reactive    98.75% engaged      99.2337%  (±0.0026 pp)                   0          Baseline · concentrated on one hot pool
 proactive   67.95% engaged      98.2414%  (±4.3726 pp)                   167        Split across two → both went lukewarm
@@ -162,7 +162,7 @@ Delta(pro−re)   —               −0.9923 pp                               +
     <section id="transparency" class="article-section">
       <p class="section-label">Transparency</p>
       <h2>Every smudge on the numbers, left in</h2>
-      <p>No measurement is perfectly clean. We write down the marks this experiment left, without erasing them &mdash; hide them and the next person stumbles in the same spot.</p>
+      <p>No measurement is perfectly clean. We write down the marks this experiment left without erasing them &mdash; hiding them would make the next person stumble in the same spot.</p>
       <ul>
         <li><strong>Zero outliers removed.</strong> The outlier rule excludes only when sustain latency exceeds mean+3&sigma; <em>and</em> a logged event (real 429, retry, route transition) coincides. There were 6 candidates for reactive and 18 for proactive, some coinciding with events, but removing them shifts sustain TTFT by under 1%, so <strong>all were retained</strong>.</li>
         <li><strong>Anomalous rows kept.</strong> Proactive has <strong>154</strong> zero-token sustain rows (the real-429 failed attempts) and <strong>12</strong> cache-miss rows; reactive has zero of either. These aren't measurement faults &mdash; they're <em>the very phenomenon this benchmark exists to measure</em>, so they go into the aggregates as raw data. <strong>Proactive's lower sustain mean comes precisely from those 429s and cache misses.</strong> Nothing hidden.</li>
@@ -191,7 +191,7 @@ Delta(pro−re)   —               −0.9923 pp                               +
     <section id="forward" class="article-section">
       <p class="section-label">Building on</p>
       <h2>So the next person stumbles less</h2>
-      <p>Leaving evidence isn't only recording the wins. A missed prediction &mdash; why it missed and how far to trust it &mdash; also has to survive so it can be reused in the next decision. So this note connects back to Phase 1 and the earlier experiments.</p>
+      <p>Leaving evidence isn't only about recording the wins. A missed prediction &mdash; why it missed and how far to trust it &mdash; also has to survive so it can be reused in the next decision. So this note connects back to Phase 1 and the earlier experiments.</p>
       <ul>
         <li><strong>Phase 1 &rarr;</strong> <a href="../exp004-spillover-simulation/">exp004 &mdash; spillover-policy simulation (Phase 1)</a> raced the same two policies on a single deployment (shared cache) and tied (&minus;0.1657 pp). This note settles that verdict <strong>on a real cache split</strong>.</li>
         <li><strong>Retrospective &rarr;</strong> the <a href="../../#next">next call &middot; next experiment</a> in the hub previewed exactly this &lsquo;physically separate two-deployment load test.&rsquo;</li>
@@ -204,7 +204,7 @@ Delta(pro−re)   —               −0.9923 pp                               +
     <section id="sources" class="article-section">
       <p class="section-label">Sources · evidence boundary</p>
       <h2>Sources &amp; evidence boundary</h2>
-      <p>This note, too, re-cites published aggregates with no new measurement. Down to the two-deployment, one-resource boundary, the evidence and limits are below.</p>
+      <p>This note, too, re-cites published aggregates with no new measurement. The evidence and limits, including the two-deployment, one-resource boundary, are below.</p>
       <ul>
         <li>This experiment's analysis: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/05-dual-spillover/analysis.md"><code>benchmarks/05-dual-spillover/analysis.md</code></a> (§1 question &amp; design, §3 provenance, §5 headline, §6 recovery curves, §7 per-policy aggregates, §8 consumption model, §9 outliers, §10 limits, §11 conclusion). Every figure re-cited from here.</li>
         <li>Policy definitions: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_reactive.yaml"><code>experiments/exp005_dual_spillover_reactive.yaml</code></a> &middot; <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp005_dual_spillover_proactive.yaml"><code>&hellip;_proactive.yaml</code></a> (only <code>policy.type</code> differs).</li>
