@@ -104,6 +104,7 @@ def test_checked_in_schemas_validate_examples():
         "01890f3c-7b89-7cc8-98c4-dc0c0c07398f",
         "example.com",
         "customer.example.ai",
+        "sk_live_" + ("x" * 24),
         "10.23.45.67",
         "model-10.23.45.67",
         "2001:db8::1",
@@ -120,6 +121,7 @@ def test_checked_in_schemas_validate_examples():
         "01890f3c-7b89-7cc8-98c4-dc0c0c07398f",
         "example.com",
         "customer.example.ai",
+        "sk_live_" + ("x" * 24),
         "10.23.45.67",
         "workload-10.23.45.67",
         "2001:db8::1",
@@ -435,6 +437,25 @@ def test_unsupported_ptu_model_is_explicitly_not_modeled(
     assert report["ptu_sizing"]["reason"] == (
         "pinned PTU snapshots do not support the analyzed model"
     )
+
+
+def test_missing_payg_model_is_not_blamed_on_ptu_snapshots(tmp_path: Path):
+    _copy_sample_inputs(tmp_path)
+    pricing = yaml.safe_load((tmp_path / "pricing.yaml").read_text())
+    pricing["models"].pop("gpt-5.2")
+    (tmp_path / "pricing.yaml").write_text(
+        yaml.safe_dump(pricing, sort_keys=False),
+        encoding="utf-8",
+    )
+    report = analyze_files(tmp_path / "usage.jsonl", tmp_path / "workload.yaml")
+    assert report["boundaries"]["payg_cost"] == "NOT_MODELED"
+    assert report["ptu_sizing"]["reason"] == (
+        "pinned PAYG snapshot does not support the analyzed model"
+    )
+    ptu = next(
+        item for item in report["conclusions"] if item["id"] == "ptu-applicability"
+    )
+    assert "PAYG snapshot" in ptu["finding"]
 
 
 def test_ptu_max_output_cap_must_cover_visible_and_reasoning_output(
@@ -871,6 +892,19 @@ def test_status_counts_must_match_owned_row_dimensions():
         validate_report(report)
 
 
+def test_group_payg_status_and_cost_must_match_aggregate():
+    report = copy.deepcopy(_sample_report())
+    report["groups"][0]["modeled_cost_status"] = "NOT_MODELED"
+    report["groups"][0]["mean_modeled_usd_per_request"] = None
+    with pytest.raises(ReportValidationError, match="nested contract"):
+        validate_report(report)
+
+    report = copy.deepcopy(_sample_report())
+    report["groups"][0]["mean_modeled_usd_per_request"] *= 2
+    with pytest.raises(ReportValidationError, match="nested contract"):
+        validate_report(report)
+
+
 def test_report_visible_identifiers_reuse_input_privacy_rules():
     report = copy.deepcopy(_sample_report())
     report["workload"]["name"] = "a" * 32
@@ -1044,6 +1078,7 @@ def test_workload_name_rejects_free_text_pii_and_html(unsafe_name: str):
         "b" * 64,
         "01890f3c-7b89-7cc8-98c4-dc0c0c07398f",
         "example.com",
+        "sk_live_" + ("x" * 24),
     ],
 )
 def test_credential_shaped_allowed_identifiers_fail_without_echo(

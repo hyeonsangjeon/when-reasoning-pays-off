@@ -28,6 +28,7 @@ PTUReason = Literal[
     "required capacity inputs were not supplied",
     "PTU sizing requires exactly one model per report",
     "PTU sizing requires at least one successful usage row",
+    "pinned PAYG snapshot does not support the analyzed model",
     "pinned PTU snapshots do not support the analyzed model",
     "existing batch_runner PTU calculator",
 ]
@@ -601,6 +602,17 @@ class ReportContract(StrictReportModel):
             ):
                 raise ValueError("PTU row statuses contradict the applicability reason")
         elif self.ptu_sizing.reason == (
+            "pinned PAYG snapshot does not support the analyzed model"
+        ):
+            if (
+                len(distinct_models) != 1
+                or expected_successful == 0
+                or self.boundaries.payg_cost != "NOT_MODELED"
+                or self.ptu_sizing.missing_inputs
+                or ptu_source_rows != expected_rows
+            ):
+                raise ValueError("PAYG snapshot support reason contradicts report rows")
+        elif self.ptu_sizing.reason == (
             "pinned PTU snapshots do not support the analyzed model"
         ):
             if (
@@ -666,6 +678,20 @@ class ReportContract(StrictReportModel):
             grouped = sum(getattr(group, field_name) for group in self.groups)
             if grouped != getattr(self.aggregate, field_name):
                 raise ValueError(f"group sum differs for {field_name}")
+        all_groups_modeled = all(
+            group.modeled_cost_status == "MODELED" for group in self.groups
+        )
+        if (self.aggregate.modeled_cost_status == "MODELED") != all_groups_modeled:
+            raise ValueError("aggregate PAYG status contradicts group statuses")
+        if all_groups_modeled:
+            weighted_cost = sum(
+                float(group.mean_modeled_usd_per_request) * group.request_count
+                for group in self.groups
+            ) / self.aggregate.request_count
+            aggregate_cost = self.aggregate.mean_modeled_usd_per_request
+            assert aggregate_cost is not None
+            if abs(aggregate_cost - weighted_cost) > 0.000000005:
+                raise ValueError("aggregate PAYG cost contradicts group costs")
         expected_ids = [
             "quality-boundary",
             "reasoning-token-share",

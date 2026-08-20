@@ -27,6 +27,23 @@ _SENSITIVE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         re.compile(r"\b" + "sk-" + r"[A-Za-z0-9_-]{12,}"),
     ),
     (
+        "API credential",
+        re.compile(
+            r"\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{12,}\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "GitHub credential",
+        re.compile(
+            r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"
+        ),
+    ),
+    (
+        "cloud credential",
+        re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+    ),
+    (
         "credential assignment",
         re.compile(
             r"\b(?:api[_-]?key|accountkey|access[_-]?token)\s*[:=]",

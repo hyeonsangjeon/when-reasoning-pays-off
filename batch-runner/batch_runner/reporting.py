@@ -231,6 +231,14 @@ def _ptu_sizing_analysis(
             "missing_inputs": [],
             "source_rows": all_source_rows,
         }
+    payg_pricing = _load_payg_pricing_bytes(payg_bytes)
+    if models[0] not in payg_pricing.models:
+        return {
+            "status": "NOT_MODELED",
+            "reason": "pinned PAYG snapshot does not support the analyzed model",
+            "missing_inputs": [],
+            "source_rows": all_source_rows,
+        }
     input_total = sum(row.input_tokens for row in successful)
     cached_total = sum(row.cached_input_tokens for row in successful)
     mean_full_output_tokens = math.ceil(
