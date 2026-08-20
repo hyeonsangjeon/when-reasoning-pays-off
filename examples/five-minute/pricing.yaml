@@ -1,0 +1,14 @@
+source_url: https://azure.microsoft.com/en-us/pricing/details/azure-openai/
+accessed_date: 2026-05-19
+archive_url: https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/
+currency: USD
+models:
+  gpt-4o:
+    input_per_1m_usd: 2.50
+    cached_input_per_1m_usd: 1.25
+    output_per_1m_usd: 10.00
+  gpt-5.2:
+    input_per_1m_usd: 1.75
+    cached_input_per_1m_usd: 0.175
+    reasoning_per_1m_usd: 14.00
+    output_per_1m_usd: 14.00

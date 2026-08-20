@@ -1,0 +1,23 @@
+schema_version: "1.0.0"
+name: offline-reasoning-usage-sample
+method:
+  id: usage-profile
+  version: "1.0.0"
+pricing:
+  snapshot_id: azure-openai-payg-2026-05
+  snapshot_file: pricing.yaml
+quality:
+  status: NOT_MEASURED
+thresholds:
+  max_429_rate: 0.10
+  max_p95_latency_ms: 5000
+  min_cached_input_ratio: 0.25
+  max_reasoning_output_ratio: 0.50
+ptu_sizing:
+  expected_rpm: 120.0
+  mean_max_output_tokens: 1024
+  target_utilization: 0.70
+  pricing_snapshot_id: azure-openai-ptu-2026-05
+  pricing_snapshot_file: ptu-pricing.yaml
+  density_snapshot_id: azure-openai-ptu-density-2026-05
+  density_snapshot_file: density.yaml

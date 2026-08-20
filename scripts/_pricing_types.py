@@ -19,6 +19,7 @@ This module has no top-level side effects.
 from __future__ import annotations
 
 import datetime
+import math
 import re
 from dataclasses import dataclass, field
 from typing import Literal
@@ -27,6 +28,8 @@ from typing import Literal
 # ----------------------------------------------------------------------------
 # Typed errors
 # ----------------------------------------------------------------------------
+
+MAX_SUPPORTED_RATE = 1_000_000.0
 
 
 class PaygSchemaError(ValueError):
@@ -415,9 +418,17 @@ def validate_positive_rate(
         raise error_cls(
             f"{field_name} must be a positive number; got {type(value).__name__}: {value!r}"
         )
-    if value <= 0:
+    try:
+        numeric = float(value)
+    except (OverflowError, ValueError) as exc:
+        raise error_cls(f"{field_name} must be a finite positive number") from exc
+    if (
+        not math.isfinite(numeric)
+        or numeric <= 0
+        or numeric > MAX_SUPPORTED_RATE
+    ):
         raise error_cls(f"{field_name} must be > 0; got {value!r}")
-    return float(value)
+    return numeric
 
 
 def validate_positive_int(

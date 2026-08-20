@@ -39,6 +39,9 @@ def _pricing_files(
     cached_rate: float = 0.5,
     output_rate: float = 1.0,
     ptu_hourly: float = 2.0,
+    min_ptu: int = 1,
+    scale_increment: int = 1,
+    max_ptu: int = 100000,
 ) -> tuple[Path, Path]:
     payg = tmp_path / "payg.yaml"
     ptu = tmp_path / "ptu.yaml"
@@ -69,8 +72,9 @@ def _pricing_files(
                 "models": {
                     model_id: {
                         "ptu_hourly_rate_usd": ptu_hourly,
-                        "min_ptu": 1,
-                        "max_ptu_per_deployment": 100000,
+                        "min_ptu": min_ptu,
+                        "scale_increment": scale_increment,
+                        "max_ptu_per_deployment": max_ptu,
                     }
                 },
             }
@@ -87,7 +91,7 @@ def test_synthetic_worked_example_matches_acceptance_case():
         payg_rates_yaml=PAYG,
         ptu_rates_yaml=PTU,
     )
-    assert result.recommended_ptu_count == 1632
+    assert result.recommended_ptu_count == 1650
     assert result.dominant_driver == "max_tokens_oversize"
     assert result.decision == "payg_favorable"
     assert "operational inference" in result.rationale
@@ -124,7 +128,7 @@ def test_crossover_uses_ptu_monthly_over_payg_per_call():
     expected_payg_per_call = (
         700 * 1.75 + 300 * 0.175 + 200 * 14.0
     ) / 1_000_000
-    expected_ptu_monthly = 1632 * 2.0 * 24 * 30
+    expected_ptu_monthly = 1650 * 2.0 * 24 * 30
     expected_crossover = expected_ptu_monthly / (expected_payg_per_call * 60 * 24 * 30)
     assert math.isclose(result.crossover_rpm_ptu_eq_payg, expected_crossover)
 
@@ -132,7 +136,7 @@ def test_crossover_uses_ptu_monthly_over_payg_per_call():
 def test_reasoning_tokens_are_billed_as_output_tokens(tmp_path: Path):
     payg, ptu = _pricing_files(tmp_path, output_rate=10.0, ptu_hourly=100.0)
     no_reasoning = WorkloadShape(100, 0.0, 100, 0, 100, 10.0, "gpt-5.2")
-    with_reasoning = WorkloadShape(100, 0.0, 100, 300, 100, 10.0, "gpt-5.2")
+    with_reasoning = WorkloadShape(100, 0.0, 0, 1000, 1000, 10.0, "gpt-5.2")
     a = calculate(
         workload=no_reasoning,
         payg_rates_yaml=payg,
@@ -202,6 +206,43 @@ def test_near_crossover_decision_uses_five_percent_band(tmp_path: Path):
     assert result.decision == "near_crossover"
 
 
+def test_recommendation_honors_snapshot_minimum_ptu(tmp_path: Path):
+    payg, ptu = _pricing_files(tmp_path, min_ptu=50)
+    workload = WorkloadShape(1, 0.0, 1, 0, 1, 0.1, "gpt-5.2")
+    result = calculate(
+        workload=workload,
+        payg_rates_yaml=payg,
+        ptu_rates_yaml=ptu,
+    )
+    assert result.recommended_ptu_count == 50
+
+
+def test_recommendation_rounds_up_to_snapshot_scale_increment(tmp_path: Path):
+    payg, ptu = _pricing_files(
+        tmp_path,
+        min_ptu=50,
+        scale_increment=50,
+    )
+    workload = WorkloadShape(100, 0.0, 100, 0, 100, 153.0, "gpt-5.2")
+    result = calculate(
+        workload=workload,
+        payg_rates_yaml=payg,
+        ptu_rates_yaml=ptu,
+    )
+    assert result.recommended_ptu_count == 100
+
+
+def test_required_ptu_above_snapshot_maximum_fails_closed(tmp_path: Path):
+    payg, ptu = _pricing_files(tmp_path, max_ptu=1)
+    workload = WorkloadShape(1000, 0.0, 1000, 0, 1000, 500.0, "gpt-5.2")
+    with pytest.raises(CalculatorError, match="max_ptu_per_deployment"):
+        calculate(
+            workload=workload,
+            payg_rates_yaml=payg,
+            ptu_rates_yaml=ptu,
+        )
+
+
 @pytest.mark.parametrize(
     "kwargs",
     [
@@ -210,6 +251,11 @@ def test_near_crossover_decision_uses_five_percent_band(tmp_path: Path):
         {"expected_rpm": 0.0},
         {"mean_prompt_tokens": -1},
         {"mean_max_output_tokens": 10, "mean_visible_output_tokens": 11},
+        {
+            "mean_max_output_tokens": 10,
+            "mean_visible_output_tokens": 5,
+            "mean_reasoning_tokens": 6,
+        },
     ],
 )
 def test_workload_validation_rejects_invalid_shapes(kwargs: dict[str, object]):
@@ -284,5 +330,5 @@ def test_cli_outputs_stable_json_twice():
     second = subprocess.run(cmd, cwd=REPO_ROOT, text=True, capture_output=True, check=True)
     assert first.stdout == second.stdout
     payload = json.loads(first.stdout)
-    assert payload["recommended_ptu_count"] == 1632
+    assert payload["recommended_ptu_count"] == 1650
     assert payload["dominant_driver"] == "max_tokens_oversize"

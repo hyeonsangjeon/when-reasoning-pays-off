@@ -14,47 +14,66 @@ models earn their cost, and when they just bill for thinking nobody reads.*
 > **[Open the dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en)**
 > &nbsp;·&nbsp; [한국어](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=ko) · [日本語](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=ja) · [简体中文](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=zh-CN) · [हिन्दी](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=hi)
 
-📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English, Korean, Japanese, and Simplified Chinese; Hindi fallback in progress).
+📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English, Korean, Japanese, Simplified Chinese, and Hindi).
 
 Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
 
-## TL;DR — what the measurements say
+## Generate an offline report in under five minutes
 
-**Reasoning models genuinely earn their price on hard work.** On a multi-step
-task, turning the effort dial up measurably lifted answer quality (**1.5 →
-2.0**) — exactly what you hope for when you reach for a reasoning model. The
-catch is matching the dial to the job. On an everyday, non-reasoning task, that
-same extra effort bought **7.6× the cost for essentially no quality gain**,
-because the money flowed into hidden "thinking" tokens the task never needed.
-So the honest answer is *it depends on the task* — and this repo measures
-exactly where that line falls, so you spend effort only where it pays back.
+Python 3.11+, no credentials, no service calls, and no telemetry:
 
-*The two charts below are the everyday-task case (benchmark 01) — the one where
-extra effort does **not** pay. On harder tasks the quality line climbs instead.*
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+python -m pip install .
+reasoning-payoff analyze examples/five-minute/usage.jsonl \
+  --workload examples/five-minute/workload.yaml \
+  --out report
+```
 
-| 💸 Cost climbs steeply with effort… | 🎯 …but on easy tasks, quality stays flat |
+Open `report/report.html` directly from disk. The same run also creates
+`report.json`, `report.md`, and review-only `policy.json`. See the
+[numbered method guide](docs/19-five-minute-provenance-report.md) or the
+[standalone Pages guide](https://hyeonsangjeon.github.io/when-reasoning-pays-off/guides/five-minute-report/)
+([source](docs/guides/five-minute-report/)) for the strict JSONL/YAML
+contracts, privacy boundary, interpretation rules, exit codes, and BYOW
+workflow.
+
+<!-- CLAIM-INTEGRITY:START current-headlines -->
+## TL;DR — what the current measurements say
+
+**The current evidence is workload-specific and descriptive.** In the current
+GPT-5.2 short-factual cohort, `none` and `xhigh` cost
+**$0.000587 → $0.000598 per request
+(1.02x)**, while mean judge quality was **1.95 →
+1.95**. Mean reasoning tokens were
+**0 at `none`,
+1.35 at `high`, and
+0.62 at `xhigh`**. The measured floor is
+`none`; zero-sample cells are excluded from current public claims.
+
+On the multi-step benchmark, mean judge quality was
+**1.5 for the GPT-4o baseline and
+2.0 for GPT-5.2 at `none`**. Both the **model** and
+**effort** dimensions changed, so this comparison does not isolate an
+effort-only causal effect. Within GPT-5.2, `none` already reached the measured
+quality ceiling in this cohort; higher effort increased cost without improving
+that aggregate score.
+
+| Current short-factual cost | Current short-factual quality |
 | --- | --- |
-| ![Benchmark 01 cost per request rises about 7.6x from minimal to extra-high reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality score stays roughly flat across every reasoning effort level](docs/assets/benchmark-01-quality.png) |
+| ![Benchmark 01 cost per request remains nearly flat from none to xhigh reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality remains nearly flat across measured GPT-5.2 effort levels](docs/assets/benchmark-01-quality.png) |
 
-- **On genuinely hard work, effort pays.** On a multi-step reasoning task, the
-  same effort ladder lifted quality from **1.5 → 2.0** — the upside that makes
-  reasoning models worth reaching for.
-- **On easy work, more effort mostly buys hidden tokens, not better answers.**
-  On short factual work, cost climbed **7.6×** (minimal → extra-high) while the
-  mean judge score stayed flat (**1.88 → 1.78**) and billed reasoning tokens
-  exploded from **~4 to ~311** per request.
-- **The sweet spot is rarely `high` / `xhigh`.** Across all three benchmarks,
-  pushing past the mid-range added cost and latency without lifting measured
-  quality.
-- **Switching model can beat switching effort.** A low gpt-5.2 tier beat the
-  gpt-4o baseline by **11–42 %** on cost-per-correct-answer, depending on the
-  task shape.
+- **Treat effort as a workload-specific tuning parameter, not a quality
+  guarantee.** Run an evaluation before changing production policy.
+- **Separate model changes from effort changes.** A cross-model comparison is
+  useful evidence, but it is not an effort-only experiment.
+- **Trace every headline.** The values above resolve through the versioned
+  [public claim contract](batch-runner/batch_runner/data/public_claims.v1.json)
+  to canonical analysis and public chart JSON.
 
-<sub>Measured over **3 benchmarks × N=20 samples × R=3 repeats = 1080 cells**,
-byte-identical prompts, single Azure OpenAI tenant. Every number is re-cited
-from a per-benchmark `analysis.md`, never re-derived — see the
-[evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en)
-and [`results/summary.md`](results/summary.md).</sub>
+<sub>Current headline values are generated only inside this marker block.
+Historical benchmark, result, and blog inputs remain read-only.</sub>
+<!-- CLAIM-INTEGRITY:END current-headlines -->
 
 ## Try it in 30 seconds
 
@@ -62,6 +81,7 @@ and [`results/summary.md`](results/summary.md).</sub>
 | --- | --- | :---: |
 | **See the evidence** | [Open the live dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) — interactive cost / quality / latency / crossover charts | ❌ |
 | **Read the story** | [Overview essay →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/) in English · 한국어 · 日本語 · 简体中文 · हिन्दी | ❌ |
+| **Generate a provenance report** | `reasoning-payoff analyze examples/five-minute/usage.jsonl --workload examples/five-minute/workload.yaml --out report` | ❌ |
 | **Verify it runs locally** | `bash scripts/verify_setup.sh` — no credentials, ~10 s to a green check | ❌ |
 | **Run the test suite** | `pip install -r requirements-dev.txt && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |
 | **Reproduce the numbers** | [Reproducing these measurements ↓](#reproducing-these-measurements) | ✅ |
@@ -73,6 +93,7 @@ and [`results/summary.md`](results/summary.md).</sub>
 - [What this repo is](#what-this-repo-is) · [Terms you will see](#terms-you-will-see)
 - [The question](#the-question) · [Short answer](#short-answer) · [Which customer are you?](#which-customer-are-you)
 - [What's here](#whats-here) — [docs](#documentation), [code and data](#code-and-data)
+- [Five-minute offline report](#generate-an-offline-report-in-under-five-minutes) · [Method guide](docs/19-five-minute-provenance-report.md)
 - [Operator levers (L1–L5)](#operator-levers-l1l5) · [Methodology](#methodology-summary) · [Reproducing](#reproducing-these-measurements)
 - [Data publication policy](#data-publication-policy) · [Contributing, governance, security](#contributing-governance-security)
 
@@ -92,9 +113,11 @@ deployment who are trying to decide whether (and how much) reasoning to enable,
 size capacity, or debug a cost / latency / throttling change after a model
 migration.
 
-> **Research artifact, not a product.** This repository publishes reproducible
-> benchmarks, methodology, decision tools, and sanitized result slices. There
-> is no hosted service, no SLA, no managed library. See
+> **Research artifact with a stable offline tool boundary.** This repository
+> publishes reproducible benchmarks, methodology, sanitized result slices, and
+> the versioned `reasoning-payoff init / analyze / report` interface. The CLI
+> is credential-free and local; there is no hosted service, live-provider
+> command, uploader, telemetry server, or SLA. See
 > [`SUPPORT.md`](SUPPORT.md), [`SECURITY.md`](SECURITY.md), and
 > [`docs/16-release-tiers-and-redaction-policy.md`](docs/16-release-tiers-and-redaction-policy.md)
 > for scope, security reporting, and how published data is sanitized.
@@ -104,7 +127,7 @@ migration.
 | Term | Plain-language meaning |
 | --- | --- |
 | **Reasoning model** | A model that runs internal reasoning steps before producing a visible response (e.g. GPT-5.2). Those internal tokens are billed at the output rate but never returned to the caller. |
-| **`reasoning_effort`** | Per-request knob (`minimal` / `low` / `medium` / `high`) that controls how many reasoning tokens the model is allowed to spend. The primary cost lever on reasoning models. |
+| **`reasoning_effort`** | Per-request knob whose supported values vary by model and API (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and newer-model `max` are possible). Treat it as a measured tuning input, not a quality guarantee. |
 | **PAYG** (Pay-As-You-Go) | Consumption-based pricing on Azure OpenAI: billed per uncached input token, cached input token (at a lower rate), and output token actually used. Reasoning tokens are charged at the output rate. |
 | **PTU** (Provisioned Throughput Units) | Pre-paid, reserved capacity on Azure OpenAI: billed by the hour for a fixed throughput budget, independent of token volume. Once you have bought PTU, reducing tokens per request does not lower the bill — it lets the same capacity serve more traffic. |
 | **HTTP 429** | The "too many requests" / capacity-rejection response the service returns when a deployment is over its rate or PTU budget. We refer to "429 onset" as the request rate at which 429s start appearing. |
@@ -129,9 +152,8 @@ justified**. This repo measures that question with reproducible benchmarks.
 - Not every task benefits from reasoning. Short factual answers,
   structured-input-to-natural-language synthesis, and simple classification
   often do not need it.
-- `reasoning_effort` (`minimal` / `low` / `medium` / `high`) is the primary
-  cost lever. Default to the lowest level and raise it only when the task's
-  quality evaluation actually justifies it.
+- `reasoning_effort` support is model-specific. Start from the lowest supported
+  level and raise it only when a task-specific quality evaluation justifies it.
 - Prompt caching behaves differently on reasoning models. Why the hit ratio
   changes depends on the **architecture** (multi-node orchestration vs
   single-call ReAct) and on the **billing model** (PAYG vs PTU). The repo
@@ -197,11 +219,14 @@ measured magnitudes.
 | [`docs/16-release-tiers-and-redaction-policy.md`](docs/16-release-tiers-and-redaction-policy.md) | Three-tier release classification and redaction rules |
 | [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) | Publication boundaries and Azure AI Foundry packaging contract |
 | [`docs/18-agentic-loop-budget-governance.md`](docs/18-agentic-loop-budget-governance.md) | Operator lever L6 — governing unbounded agentic loops (thresholds, intervention, evals, traceability, governance) |
+| [`docs/19-five-minute-provenance-report.md`](docs/19-five-minute-provenance-report.md) | Official offline CLI method: install, sample/BYOW contracts, artifacts, privacy, interpretation, exit codes, and timing |
+| [Standalone five-minute Pages guide](https://hyeonsangjeon.github.io/when-reasoning-pays-off/guides/five-minute-report/) | Dependency-free web rendering of the same command and contract guide |
 
 ### Code and data
 
-- [`batch-runner/`](batch-runner/) — Python library: decision calculators,
-  `prompt_cache_key` policy, observability schema, release-tier helpers.
+- [`batch-runner/`](batch-runner/) — Python library and official
+  `reasoning-payoff` CLI: strict usage/workload contracts, deterministic local
+  reports, decision calculators, observability schema, and release-tier helpers.
 - [`scripts/`](scripts/) — Measurement, public-data generation, and article
   publication pipeline. Start with [`scripts/README.md`](scripts/README.md).
 - [`benchmarks/`](benchmarks/) — Per-task measurement targets with sanitized
@@ -275,13 +300,16 @@ cd when-reasoning-pays-off
 
 # Python 3.11+ required. If `python` is missing, use `python3` everywhere below.
 python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+python -m pip install .
 
-# One command proves the setup works — no credentials, ~10 seconds:
-bash scripts/verify_setup.sh
+# Generate the four-artifact provenance bundle:
+reasoning-payoff analyze examples/five-minute/usage.jsonl \
+  --workload examples/five-minute/workload.yaml \
+  --out report
 ```
 
-Then explore or dry-run any experiment — still no cloud account, no tokens spent:
+Open `report/report.html`, then explore or dry-run any experiment — still no
+cloud account and no tokens spent:
 
 ```bash
 python experiments/examples/describe_all.py       # the full input → variable → output catalog
@@ -297,10 +325,10 @@ pip install -r requirements-dev.txt
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
 ```
 
-> You do **not** need `pip install -e .` to reproduce anything: every runner is
-> invoked as `python -m scripts.<runner>` from the repo root, and the tests add
-> their own import roots (see `conftest.py`). Editable install still works for
-> contributors on a modern toolchain (`setuptools >= 64`).
+> A normal `pip install .` exposes the official CLI and keeps the packaged
+> `init` resources available outside the repository. Editable install remains
+> suitable for contributors; measurement runners are still invoked as
+> `python -m scripts.<runner>` from the repository root.
 
 ### Tier 2 — re-run the benchmarks against a live model (Azure required)
 

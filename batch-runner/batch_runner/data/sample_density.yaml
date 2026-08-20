@@ -1,0 +1,11 @@
+guide_publication_date: "2026-05"
+guide_source: "Microsoft Learn provisioned-throughput sizing snapshot"
+learn_url: "https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding"
+access_date: "2026-05-28"
+input_tpm_per_ptu:
+  gpt-5.2: 3400
+output_to_input_token_ratio:
+  operational_inference:
+    gpt-5.2: 8
+  explicit: {}
+  unspecified: []
