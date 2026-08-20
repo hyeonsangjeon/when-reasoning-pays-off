@@ -28,7 +28,7 @@ check_tree() {
   commit="$1"
   path="$2"
   expected="$3"
-  actual="$(git rev-parse "$commit:$path" 2>/dev/null)" || return 1
+  actual="$(git rev-parse "$commit^{commit}:$path" 2>/dev/null)" || return 1
   if [ "$actual" != "$expected" ]; then
     printf 'pre-push: protected tree changed in %s: %s\n' "$commit" "$path" >&2
     return 1

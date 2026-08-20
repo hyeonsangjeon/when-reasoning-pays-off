@@ -40,7 +40,7 @@ _SENSITIVE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     (
         "hostname",
         re.compile(
-            r"\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b",
+            r"\b(?:[a-z0-9-]+\.)+(?:com|net|org|io|dev|local|internal)\b",
             re.IGNORECASE,
         ),
     ),
@@ -125,6 +125,12 @@ def ensure_safe_identifier(value: str, *, label: str) -> None:
     """Reject sensitive and credential-shaped user-controlled identifiers."""
 
     ensure_safe_public_text(value, label=label)
+    if re.fullmatch(
+        r"(?:[a-z0-9-]+\.)+[a-z]{2,63}",
+        value,
+        re.IGNORECASE,
+    ):
+        raise PrivacyViolation(f"{label} is hostname-shaped")
     credential_shaped = (
         len(value) >= 32 and re.fullmatch(r"[0-9A-Fa-f]{32,}", value)
     ) or (
