@@ -21,30 +21,44 @@ set -uo pipefail
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$ROOT" || exit 0
 
+fail=0
+
+echo "== pre-push 1/5: protected historical trees =="
+check_tree() {
+  commit="$1"
+  path="$2"
+  expected="$3"
+  actual="$(git rev-parse "$commit:$path" 2>/dev/null)" || return 1
+  if [ "$actual" != "$expected" ]; then
+    printf 'pre-push: protected tree changed in %s: %s\n' "$commit" "$path" >&2
+    return 1
+  fi
+}
+outgoing=()
+while read -r _local_ref local_oid _remote_ref _remote_oid; do
+  case "$local_oid" in
+    ""|0000000000000000000000000000000000000000) ;;
+    *) outgoing+=("$local_oid") ;;
+  esac
+done
+if [ "${#outgoing[@]}" -eq 0 ]; then
+  outgoing=(HEAD)
+fi
+for commit in "${outgoing[@]}"; do
+  check_tree "$commit" docs/blog 4a1ec880dc0b93bd70e92a1e1062e9ef884ba423 || fail=1
+  check_tree "$commit" benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6 || fail=1
+  check_tree "$commit" results 0687541fa1cefe71faefb182d29cfcaf1f0c6096 || fail=1
+done
+
 PY=""
 for c in python3 python; do
   if command -v "$c" >/dev/null 2>&1; then PY="$c"; break; fi
 done
 if [ -z "$PY" ]; then
-  echo "pre-push: no 'python3'/'python' on PATH — skipping gates (install Python 3.11+)." >&2
+  echo "pre-push: no 'python3'/'python' on PATH — Python gates skipped." >&2
+  if [ "$fail" -ne 0 ]; then exit 1; fi
   exit 0
 fi
-
-fail=0
-
-echo "== pre-push 1/5: protected historical trees =="
-check_tree() {
-  path="$1"
-  expected="$2"
-  actual="$(git rev-parse "HEAD:$path" 2>/dev/null)" || return 1
-  if [ "$actual" != "$expected" ]; then
-    printf 'pre-push: protected tree changed: %s\n' "$path" >&2
-    return 1
-  fi
-}
-check_tree docs/blog 4a1ec880dc0b93bd70e92a1e1062e9ef884ba423 || fail=1
-check_tree benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6 || fail=1
-check_tree results 0687541fa1cefe71faefb182d29cfcaf1f0c6096 || fail=1
 
 echo "== pre-push 2/5: claim integrity gate =="
 if ! "$PY" scripts/check_claim_integrity.py check; then

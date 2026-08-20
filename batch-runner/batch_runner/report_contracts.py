@@ -354,6 +354,18 @@ class PTUCalculatorResult(StrictReportModel):
     rationale: Annotated[str, Field(min_length=1)]
     recommended_ptu_count: Annotated[int, Field(gt=0)]
 
+    @model_validator(mode="after")
+    def validate_rationale(self) -> "PTUCalculatorResult":
+        expected = (
+            "Modeled from successful-row request shape, declared expected RPM, "
+            "declared maximum output tokens, target utilization, and pinned PTU "
+            "pricing and density snapshots. Dominant modeled driver: "
+            f"{self.dominant_driver}."
+        )
+        if self.rationale != expected:
+            raise ValueError("PTU rationale differs from the modeled result")
+        return self
+
 
 class PTUSizingSummary(StrictReportModel):
     status: Literal["MODELED", "NOT_MODELED"]
@@ -371,14 +383,29 @@ class PTUSizingSummary(StrictReportModel):
             and self.density_snapshot is not None
             and self.result is not None
         )
-        if self.status == "MODELED" and not modeled_fields:
-            raise ValueError("modeled PTU sizing requires snapshots and result")
-        if self.status == "NOT_MODELED" and (
-            self.pricing_snapshot is not None
-            or self.density_snapshot is not None
-            or self.result is not None
-        ):
-            raise ValueError("unmodeled PTU sizing must not carry modeled data")
+        if self.status == "MODELED":
+            if not modeled_fields:
+                raise ValueError("modeled PTU sizing requires snapshots and result")
+            if self.reason != "existing batch_runner PTU calculator":
+                raise ValueError("modeled PTU sizing reason is invalid")
+            if self.missing_inputs:
+                raise ValueError("modeled PTU sizing cannot have missing inputs")
+        else:
+            if (
+                self.pricing_snapshot is not None
+                or self.density_snapshot is not None
+                or self.result is not None
+            ):
+                raise ValueError("unmodeled PTU sizing must not carry modeled data")
+            if self.reason == "existing batch_runner PTU calculator":
+                raise ValueError("unmodeled PTU sizing reason is invalid")
+            expected_missing = (
+                ["expected_rpm", "mean_max_output_tokens"]
+                if self.reason == "required capacity inputs were not supplied"
+                else []
+            )
+            if self.missing_inputs != expected_missing:
+                raise ValueError("PTU missing inputs contradict the reason")
         return self
 
 

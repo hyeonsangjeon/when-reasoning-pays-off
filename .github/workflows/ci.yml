@@ -104,7 +104,9 @@ jobs:
           python -m pip wheel . --no-deps --wheel-dir "$wheel_dir"
           python -m venv "$venv_dir"
           "$venv_dir/bin/python" -m pip install "$wheel_dir"/*.whl
-          "$venv_dir/bin/python" - <<'PY'
+          (
+            cd "$RUNNER_TEMP"
+            "$venv_dir/bin/python" - <<'PY'
           from pathlib import Path
           import batch_runner
           import scripts
@@ -124,8 +126,6 @@ jobs:
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY
-          (
-            cd "$RUNNER_TEMP"
             "$venv_dir/bin/reasoning-payoff" --version
             "$venv_dir/bin/reasoning-payoff" init --out wheel-sample
             "$venv_dir/bin/reasoning-payoff" analyze \

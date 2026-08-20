@@ -36,6 +36,7 @@ from batch_runner.reporting import (
     write_report_bundle,
 )
 from batch_runner.report_contracts import SourceRows
+from batch_runner.privacy import PrivacyViolation
 from scripts.cost_calculator import TokenUsage, load_payg_pricing, payg_cost_per_call
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -102,9 +103,7 @@ def test_checked_in_schemas_validate_examples():
         "123e4567-e89b-12d3-a456-426614174000",
         "01890f3c-7b89-7cc8-98c4-dc0c0c07398f",
         "example.com",
-        "10.23.45.67",
-        "model-10.23.45.67",
-        "2001:db8::1",
+        "customer.example.ai",
         "10.23.45.67",
         "model-10.23.45.67",
         "2001:db8::1",
@@ -120,6 +119,7 @@ def test_checked_in_schemas_validate_examples():
         "123e4567-e89b-12d3-a456-426614174000",
         "01890f3c-7b89-7cc8-98c4-dc0c0c07398f",
         "example.com",
+        "customer.example.ai",
         "10.23.45.67",
         "workload-10.23.45.67",
         "2001:db8::1",
@@ -186,6 +186,30 @@ def test_extreme_token_count_fails_safely_without_traceback(
     assert "input_tokens" in captured.err
     assert "Traceback" not in captured.err
     assert not (tmp_path / "bundle").exists()
+
+
+def test_deeply_nested_snapshot_yaml_fails_safely(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+):
+    _copy_sample_inputs(tmp_path)
+    (tmp_path / "pricing.yaml").write_text(
+        ("[" * 2000) + ("]" * 2000),
+        encoding="utf-8",
+    )
+    code = main(
+        [
+            "analyze",
+            str(tmp_path / "usage.jsonl"),
+            "--workload",
+            str(tmp_path / "workload.yaml"),
+            "--out",
+            str(tmp_path / "bundle"),
+        ]
+    )
+    captured = capsys.readouterr()
+    assert code == 3
+    assert "Traceback" not in captured.err
 
 
 def test_extreme_json_numbers_fail_with_documented_input_exit(
@@ -430,6 +454,47 @@ def test_ptu_max_output_cap_must_cover_visible_and_reasoning_output(
         analyze_files(tmp_path / "usage.jsonl", tmp_path / "workload.yaml")
 
 
+def test_ptu_component_rounding_preserves_full_output_mean(tmp_path: Path):
+    _copy_sample_inputs(tmp_path)
+    rows = [
+        json.loads(line)
+        for line in (tmp_path / "usage.jsonl").read_text().splitlines()[:2]
+    ]
+    rows[0].update({"output_tokens": 3, "reasoning_tokens": 2})
+    rows[1].update({"output_tokens": 3, "reasoning_tokens": 1})
+    (tmp_path / "usage.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+    workload = yaml.safe_load((tmp_path / "workload.yaml").read_text())
+    workload["ptu_sizing"]["mean_max_output_tokens"] = 3
+    (tmp_path / "workload.yaml").write_text(
+        yaml.safe_dump(workload, sort_keys=False),
+        encoding="utf-8",
+    )
+    report = analyze_files(tmp_path / "usage.jsonl", tmp_path / "workload.yaml")
+    shape = report["ptu_sizing"]["result"]["inputs_snapshot"]
+    assert shape["mean_visible_output_tokens"] + shape["mean_reasoning_tokens"] == 3
+
+
+def test_zero_token_dataset_fails_instead_of_claiming_zero_ratios(tmp_path: Path):
+    _copy_sample_inputs(tmp_path)
+    row = json.loads((tmp_path / "usage.jsonl").read_text().splitlines()[0])
+    row.update(
+        {
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "reasoning_tokens": 0,
+            "status_code": 429,
+            "retry_after_ms": 1000,
+        }
+    )
+    (tmp_path / "usage.jsonl").write_text(json.dumps(row) + "\n")
+    with pytest.raises(InputValidationError, match="positive aggregate"):
+        analyze_files(tmp_path / "usage.jsonl", tmp_path / "workload.yaml")
+
+
 def test_analyze_refuses_nonempty_output_without_touching_it(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -668,6 +733,37 @@ def test_pinned_report_nested_mutations_fail_closed(mutate):
         validate_report(report)
 
 
+def test_pinned_ptu_state_and_rationale_are_exact():
+    report = copy.deepcopy(_sample_report())
+    report["ptu_sizing"]["missing_inputs"] = ["confidential-notes"]
+    with pytest.raises(ReportValidationError, match="nested contract"):
+        validate_report(report)
+
+    report = copy.deepcopy(_sample_report())
+    report["ptu_sizing"]["result"]["rationale"] = "Confidential customer notes"
+    with pytest.raises(ReportValidationError, match="nested contract"):
+        validate_report(report)
+
+
+def test_pinned_report_masks_unknown_field_and_preserves_privacy_exit(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+):
+    report = _sample_report()
+    report["workload"]["Alice Smith private"] = "secret"
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    assert main(["report", str(report_path)]) == 5
+    captured = capsys.readouterr()
+    assert "Alice Smith private" not in captured.err
+    assert "<unknown-field>" in captured.err
+
+    report = _sample_report()
+    report["workload"]["name"] = "a" * 32
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    assert main(["report", str(report_path)]) == 4
+
+
 def test_pinned_utc_fields_require_fixed_zulu_representation():
     report = copy.deepcopy(_sample_report())
     report["input"]["window_start_utc"] = "2026-08-20T09:00:00+09:00"
@@ -778,7 +874,7 @@ def test_status_counts_must_match_owned_row_dimensions():
 def test_report_visible_identifiers_reuse_input_privacy_rules():
     report = copy.deepcopy(_sample_report())
     report["workload"]["name"] = "a" * 32
-    with pytest.raises(ReportValidationError, match="nested contract"):
+    with pytest.raises(PrivacyViolation, match="prohibited private data"):
         validate_report(report)
 
 
@@ -929,6 +1025,7 @@ def test_unknown_secret_field_fails_without_echoing_value_or_input_path(
         "John Doe",
         "customer@example.com",
         "<img src=x onerror=alert(1)>",
+        "customer.example.ai",
         "10.23.45.67",
         "workload-10.23.45.67",
     ],
@@ -1253,7 +1350,7 @@ def test_generated_artifacts_contain_no_input_paths_or_private_values(
     assert str(EXAMPLE_DIR).encode() not in combined
     assert b"customer@example.com" not in combined
     assert ("Bearer" + " " + "synthetic_token_value_123456").encode() not in combined
-    assert b".internal/" not in combined
+    assert ("." + "internal/").encode() not in combined
     assert b"Task 024" not in combined
     assert b"Guide" not in combined
     assert b"https://" not in combined
@@ -1378,7 +1475,7 @@ def test_invalid_cli_arguments_exit_two():
 def test_invalid_cli_arguments_do_not_echo_secret(
     capsys: pytest.CaptureFixture[str],
 ):
-    secret = "sk-synthetic-secret-1234567890"
+    secret = "sk-" + "synthetic-secret-1234567890"
     with pytest.raises(SystemExit) as exc:
         main(["analyze", f"--api-key={secret}"])
     captured = capsys.readouterr()

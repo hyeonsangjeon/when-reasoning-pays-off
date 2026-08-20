@@ -7,6 +7,7 @@ import html
 import json
 import math
 import os
+import re
 import shutil
 import stat
 import tempfile
@@ -33,7 +34,7 @@ from batch_runner.contracts import (
     load_workload_yaml,
     resolve_snapshot_path,
 )
-from batch_runner.privacy import ensure_safe_public_text
+from batch_runner.privacy import PrivacyViolation, ensure_safe_public_text
 from batch_runner.report_contracts import (
     QUALITY_FINDING,
     QUALITY_RECOMMENDATION,
@@ -110,6 +111,7 @@ def _load_payg_pricing_bytes(data: bytes) -> Any:
             OSError,
             UnicodeError,
             OverflowError,
+            RecursionError,
             ValueError,
             yaml.YAMLError,
         ) as exc:
@@ -234,28 +236,26 @@ def _ptu_sizing_analysis(
     mean_full_output_tokens = math.ceil(
         _mean([row.output_tokens for row in successful])
     )
+    mean_reasoning_tokens = round(
+        _mean([row.reasoning_tokens for row in successful])
+    )
+    mean_visible_output_tokens = mean_full_output_tokens - mean_reasoning_tokens
     if spec.mean_max_output_tokens < mean_full_output_tokens:
         raise InputValidationError(
             "workload failed fields: ptu_sizing.mean_max_output_tokens"
         )
-    shape = WorkloadShape(
-        mean_prompt_tokens=round(_mean([row.input_tokens for row in successful])),
-        mean_cached_fraction=_ratio(cached_total, input_total),
-        mean_visible_output_tokens=round(
-            _mean(
-                [
-                    row.output_tokens - row.reasoning_tokens
-                    for row in successful
-                ]
-            )
-        ),
-        mean_reasoning_tokens=round(
-            _mean([row.reasoning_tokens for row in successful])
-        ),
-        mean_max_output_tokens=spec.mean_max_output_tokens,
-        expected_rpm=float(spec.expected_rpm),
-        model_id=models[0],
-    )
+    try:
+        shape = WorkloadShape(
+            mean_prompt_tokens=round(_mean([row.input_tokens for row in successful])),
+            mean_cached_fraction=_ratio(cached_total, input_total),
+            mean_visible_output_tokens=mean_visible_output_tokens,
+            mean_reasoning_tokens=mean_reasoning_tokens,
+            mean_max_output_tokens=spec.mean_max_output_tokens,
+            expected_rpm=float(spec.expected_rpm),
+            model_id=models[0],
+        )
+    except (OverflowError, ValueError) as exc:
+        raise InputValidationError("PTU sizing inputs are incompatible") from exc
     with tempfile.TemporaryDirectory(prefix="reasoning-payoff-ptu-") as raw_dir:
         snapshot_dir = Path(raw_dir)
         payg_path = snapshot_dir / "payg.yaml"
@@ -287,6 +287,7 @@ def _ptu_sizing_analysis(
             OSError,
             UnicodeError,
             OverflowError,
+            RecursionError,
             ValueError,
             yaml.YAMLError,
         ) as exc:
@@ -651,6 +652,14 @@ def build_report(
     """Build a deterministic report object from validated local inputs."""
 
     indexed_rows = list(enumerate(rows, start=1))
+    if sum(row.input_tokens for row in rows) == 0:
+        raise InputValidationError(
+            "usage input requires positive aggregate input_tokens"
+        )
+    if sum(row.output_tokens for row in rows) == 0:
+        raise InputValidationError(
+            "usage input requires positive aggregate output_tokens"
+        )
     workload_sha256 = _sha256(workload_bytes)
     aggregate = _aggregate_rows(indexed_rows, pricing)
     pricing_metadata = _pricing_metadata(
@@ -1358,13 +1367,33 @@ def validate_report(report: Mapping[str, Any]) -> None:
     try:
         ReportContract.model_validate(report)
     except ValidationError as exc:
+        if any(
+            isinstance(error.get("ctx", {}).get("error"), PrivacyViolation)
+            for error in exc.errors(include_url=False)
+        ):
+            raise PrivacyViolation(
+                "pinned report contains prohibited private data"
+            ) from exc
         fields = set()
         errors = getattr(exc, "errors", lambda **_: [])(
             include_url=False,
             include_input=False,
         )
         for error in errors:
-            fields.add(".".join(str(part) for part in error.get("loc", ())))
+            parts = []
+            for index, part in enumerate(error.get("loc", ())):
+                if isinstance(part, int):
+                    parts.append(str(part))
+                elif (
+                    error.get("type") == "extra_forbidden"
+                    and index == len(error.get("loc", ())) - 1
+                ):
+                    parts.append("<unknown-field>")
+                elif re.fullmatch(r"[A-Za-z0-9_-]{1,64}", str(part)):
+                    parts.append(str(part))
+                else:
+                    parts.append("<field>")
+            fields.add(".".join(parts))
         summary = ", ".join(sorted(field for field in fields if field)) or "<root>"
         raise ReportValidationError(
             f"report failed nested contract fields: {summary}"
