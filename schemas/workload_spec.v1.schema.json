@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkloadSpecV1",
+  "description": "Minimal offline usage-analysis method, pricing snapshot, quality boundary, and safe thresholds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "method",
+    "pricing",
+    "quality",
+    "thresholds"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^(?!.*(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})(?![0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$)(?![A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.(?:[cC][oO][mM]|[nN][eE][tT]|[oO][rR][gG]|[iI][oO]|[dD][eE][vV]|[lL][oO][cC][aA][lL]|[iI][nN][tT][eE][rR][nN][aA][lL])$)(?![0-9A-Fa-f]{32,}$)(?![A-Za-z0-9_+/=]{40,}$)[A-Za-z0-9][A-Za-z0-9._-]{0,99}$"
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "const": "usage-profile"
+        },
+        "version": {
+          "const": "1.0.0"
+        }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_id",
+        "snapshot_file"
+      ],
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "pattern": "^(?!.*(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})(?![0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$)(?![A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.(?:[cC][oO][mM]|[nN][eE][tT]|[oO][rR][gG]|[iI][oO]|[dD][eE][vV]|[lL][oO][cC][aA][lL]|[iI][nN][tT][eE][rR][nN][aA][lL])$)(?![0-9A-Fa-f]{32,}$)(?![A-Za-z0-9_+/=]{40,}$)[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"
+        },
+        "snapshot_file": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "const": "NOT_MEASURED"
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_429_rate",
+        "max_p95_latency_ms",
+        "min_cached_input_ratio",
+        "max_reasoning_output_ratio"
+      ],
+      "properties": {
+        "max_429_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_p95_latency_ms": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 604800000
+        },
+        "min_cached_input_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_reasoning_output_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "ptu_sizing": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "expected_rpm",
+        "mean_max_output_tokens",
+        "target_utilization",
+        "pricing_snapshot_id",
+        "pricing_snapshot_file",
+        "density_snapshot_id",
+        "density_snapshot_file"
+      ],
+      "properties": {
+        "expected_rpm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000
+        },
+        "mean_max_output_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "target_utilization": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "pricing_snapshot_id": {
+          "type": "string",
+          "pattern": "^(?!.*(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})(?![0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$)(?![A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.(?:[cC][oO][mM]|[nN][eE][tT]|[oO][rR][gG]|[iI][oO]|[dD][eE][vV]|[lL][oO][cC][aA][lL]|[iI][nN][tT][eE][rR][nN][aA][lL])$)(?![0-9A-Fa-f]{32,}$)(?![A-Za-z0-9_+/=]{40,}$)[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"
+        },
+        "pricing_snapshot_file": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+        },
+        "density_snapshot_id": {
+          "type": "string",
+          "pattern": "^(?!.*(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})(?![0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$)(?![A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.(?:[cC][oO][mM]|[nN][eE][tT]|[oO][rR][gG]|[iI][oO]|[dD][eE][vV]|[lL][oO][cC][aA][lL]|[iI][nN][tT][eE][rR][nN][aA][lL])$)(?![0-9A-Fa-f]{32,}$)(?![A-Za-z0-9_+/=]{40,}$)[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"
+        },
+        "density_snapshot_file": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+        }
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "when-reasoning-pays-off"
-version = "0.1.0"
+version = "0.2.0"
 description = "When does GPT-5.2 reasoning model earn its cost?"
 requires-python = ">=3.11"
 dependencies = [
@@ -17,6 +17,9 @@ dependencies = [
     "pandas>=2.0",
     "numpy>=2.2",
 ]
+
+[project.scripts]
+reasoning-payoff = "batch_runner.cli:main"
 
 [project.optional-dependencies]
 dev = [
@@ -50,6 +53,12 @@ where = ["batch-runner", "."]
 include = ["batch_runner*", "scripts*"]
 exclude = ["tests*"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"batch_runner.data" = ["*.json", "*.jsonl", "*.yaml"]
+
+[tool.setuptools.data-files]
+"share/when-reasoning-pays-off/schemas" = ["schemas/*.schema.json"]
 
 [tool.pytest.ini_options]
 markers = [

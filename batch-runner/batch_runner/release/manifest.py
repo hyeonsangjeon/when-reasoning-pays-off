@@ -336,6 +336,7 @@ def deterministic_json_dumps(obj: Mapping[str, Any]) -> str:
             sort_keys=True,
             indent=2,
             ensure_ascii=False,
+            allow_nan=False,
             separators=(",", ": "),
         )
         + "\n"

@@ -44,6 +44,10 @@ node_modules/
 results/raw/
 *.local.json
 *.scratch.*
+/report/
+/.reasoning-payoff/
+.*.reasoning-payoff.lock
+.*.reasoning-payoff.lock
 
 # Operator local logs (Task 019 v2.2.1 live runs). Logs themselves are
 # nohup transcripts; the audit-grade artifacts live under

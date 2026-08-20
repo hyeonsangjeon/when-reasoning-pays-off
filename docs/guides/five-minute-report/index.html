@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Offline-first method for producing a provenance-rich reasoning usage report within five minutes.">
+  <link rel="canonical" href="https://hyeonsangjeon.github.io/when-reasoning-pays-off/guides/five-minute-report/">
+  <link rel="icon" type="image/svg+xml" href="../../assets/hero.svg">
+  <title>Five-minute offline provenance report</title>
+  <style>
+    :root { color-scheme: light dark; --bg:#f6f8fa; --fg:#1f2328; --card:#fff; --line:#d0d7de; --link:#0969da; --code:#eef1f4; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --fg:#e6edf3; --card:#161b22; --line:#30363d; --link:#58a6ff; --code:#21262d; } }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,sans-serif; }
+    a { color:var(--link); }
+    .skip { position:absolute; left:-9999px; }
+    .skip:focus { left:1rem; top:1rem; background:var(--card); padding:.5rem; z-index:2; }
+    header, main, footer { max-width:1000px; margin:auto; padding:1rem; }
+    nav { display:flex; gap:1rem; flex-wrap:wrap; }
+    .lede, section { background:var(--card); border:1px solid var(--line); border-radius:.75rem; padding:1.2rem; margin:1rem 0; }
+    pre, code { background:var(--code); border-radius:.3rem; }
+    pre { overflow-x:auto; padding:1rem; }
+    code { padding:.1rem .25rem; }
+    pre code { padding:0; }
+    .table-wrap { overflow-x:auto; }
+    table { border-collapse:collapse; width:100%; min-width:680px; }
+    th, td { border:1px solid var(--line); padding:.55rem; text-align:left; vertical-align:top; }
+    th { background:var(--code); }
+    h1, h2, h3 { line-height:1.25; }
+    .boundary { border-left:.35rem solid var(--link); padding-left:1rem; }
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <nav aria-label="Guide navigation">
+    <a href="../../guides/">All guides</a>
+    <a href="../../">Project site</a>
+    <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off">Repository</a>
+  </nav>
+  <h1>Five-minute offline provenance report</h1>
+  <p class="lede">Generate a useful local <code>report.html</code> from strict
+  operational metadata without Azure credentials, uploads, telemetry, a
+  browser uploader, or a live service call.</p>
+</header>
+<main id="main">
+  <section id="boundary">
+    <h2>1. Scope and evidence boundary</h2>
+    <p>The CLI measures tokens, cache accounting, latency, HTTP status behavior,
+    and models PAYG cost from a pinned snapshot. An optional narrow PTU block
+    calls the repository's existing sizing calculator.</p>
+    <p class="boundary"><strong>Quality is NOT_MEASURED.</strong> Usage metadata
+    cannot prove that an effort change preserves quality. The report recommends
+    a controlled experiment instead.</p>
+  </section>
+
+  <section id="install">
+    <h2>2. Install</h2>
+    <p>Use Python 3.11 or later. No Azure account is required, and the analyzer
+    makes zero runtime network calls. Initial dependency installation can need
+    package-index access unless dependencies are cached.</p>
+    <pre><code>python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install .
+reasoning-payoff --version</code></pre>
+  </section>
+
+  <section id="sample">
+    <h2>3. Run the credential-free sample</h2>
+    <pre><code>reasoning-payoff analyze examples/five-minute/usage.jsonl \
+  --workload examples/five-minute/workload.yaml \
+  --out report</code></pre>
+    <p>Open <code>report/report.html</code> directly from disk. The output
+    directory must be absent or empty.</p>
+    <pre><code>report/
+  report.json
+  report.md
+  report.html
+  policy.json</code></pre>
+  </section>
+
+  <section id="init">
+    <h2>4. Initialize a portable sample</h2>
+    <pre><code>reasoning-payoff init --out .reasoning-payoff
+reasoning-payoff analyze .reasoning-payoff/usage.jsonl \
+  --workload .reasoning-payoff/workload.yaml \
+  --out report</code></pre>
+    <p>Packaged resources make <code>init</code> independent of the current
+    working directory. It writes usage, workload, PAYG, PTU, and density
+    snapshots that match the committed examples byte for byte.</p>
+  </section>
+
+  <section id="byow">
+    <h2>5. Bring your own workload</h2>
+    <p>Export only the fields in the contract. Do not export prompt or
+    completion content, endpoints, hostnames, IP addresses, subscription or
+    tenant IDs, credentials, request or user IDs, or email addresses.</p>
+    <pre><code>reasoning-payoff analyze my-analysis/usage.jsonl \
+  --workload my-analysis/workload.yaml \
+  --out report</code></pre>
+  </section>
+
+  <section id="usage">
+    <h2>6. UsageEnvelope JSONL v1</h2>
+    <div class="table-wrap"><table>
+      <caption>Required fields; unknown fields fail closed.</caption>
+      <thead><tr><th>Field</th><th>Contract</th></tr></thead>
+      <tbody>
+        <tr><td><code>timestamp</code></td><td>RFC 3339 string with timezone</td></tr>
+        <tr><td><code>provider</code></td><td><code>azure-openai</code></td></tr>
+        <tr><td><code>model</code></td><td>Safe model identifier</td></tr>
+        <tr><td><code>reasoning_effort</code></td><td><code>none</code>, <code>minimal</code>, <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, or <code>max</code>; support varies by model</td></tr>
+        <tr><td><code>input_tokens</code></td><td>Non-negative integer</td></tr>
+        <tr><td><code>cached_input_tokens</code></td><td>Cached subset of input</td></tr>
+        <tr><td><code>output_tokens</code></td><td>Full output including reasoning</td></tr>
+        <tr><td><code>reasoning_tokens</code></td><td>Labeled subset of output</td></tr>
+        <tr><td><code>latency_ms</code></td><td>Non-negative client-side latency</td></tr>
+        <tr><td><code>status_code</code></td><td>Integer 100-599</td></tr>
+        <tr><td><code>retry_after_ms</code></td><td>Non-negative number or null</td></tr>
+      </tbody>
+    </table></div>
+    <p>Numeric strings are rejected. Cached input cannot exceed input, and
+    reasoning cannot exceed output. The reader streams and hashes JSONL under
+    bounded file, line, and row limits.</p>
+  </section>
+
+  <section id="workload">
+    <h2>7. WorkloadSpec YAML v1</h2>
+    <pre><code>schema_version: "1.0.0"
+name: my-workload-v1
+method:
+  id: usage-profile
+  version: "1.0.0"
+pricing:
+  snapshot_id: my-payg-snapshot
+  snapshot_file: pricing.yaml
+quality:
+  status: NOT_MEASURED
+thresholds:
+  max_429_rate: 0.05
+  max_p95_latency_ms: 5000
+  min_cached_input_ratio: 0.25
+  max_reasoning_output_ratio: 0.50</code></pre>
+    <p>The report-visible name is a safe slug. Snapshot files are safe relative
+    paths beside the workload file.</p>
+    <h3>Optional PTU sizing</h3>
+    <pre><code>ptu_sizing:
+  expected_rpm: 120.0
+  mean_max_output_tokens: 1024
+  target_utilization: 0.70
+  pricing_snapshot_id: my-ptu-pricing-snapshot
+  pricing_snapshot_file: ptu-pricing.yaml
+  density_snapshot_id: my-density-snapshot
+  density_snapshot_file: density.yaml</code></pre>
+    <p>When absent or inapplicable, PTU sizing is explicitly
+    <code>NOT_MODELED</code>. The calculator applies the pinned minimum,
+    maximum, and regional scale increment, rounding up before it models cost
+    and crossover.</p>
+  </section>
+
+  <section id="artifacts">
+    <h2>8. Artifacts and provenance</h2>
+    <ul>
+      <li><code>report.json</code>: input hashes, versions, snapshots,
+      measurements, boundaries, conclusions, and policy.</li>
+      <li><code>report.md</code>: deterministic review summary.</li>
+      <li><code>report.html</code>: self-contained, script-free, escaped local
+      report with inline CSS.</li>
+      <li><code>policy.json</code>: review-only candidates with evidence,
+      assumptions, confidence, source rows/selectors, and immutable hashes.
+      <code>auto_apply</code> is false.</li>
+    </ul>
+    <p>Every conclusion records evidence, assumptions, confidence, source rows,
+    selector, method/schema/CLI versions, claim-registry hash, and pricing or
+    PTU snapshot hashes when used.</p>
+  </section>
+
+  <section id="interpret">
+    <h2>9. Interpret measured and modeled values</h2>
+    <ul>
+      <li><strong>MEASURED:</strong> derived directly from accepted rows.</li>
+      <li><strong>MODELED:</strong> measured rows plus pinned snapshots and
+      explicit assumptions.</li>
+      <li><strong>NOT_MEASURED:</strong> no evidence supplied for the dimension.</li>
+      <li><strong>NOT_MODELED:</strong> required inputs or applicability are absent.</li>
+    </ul>
+    <p>Reasoning tokens are already part of output tokens and are billed once.
+    Cache semantics vary by model/API. PTU is planning evidence, not proof of
+    live capacity. A 429 rate does not identify one root cause.</p>
+  </section>
+
+  <section id="privacy">
+    <h2>10. Privacy and deterministic re-render</h2>
+    <p>Errors expose line and field locations, never the rejected line, input
+    path, or value. Artifacts are staged as a complete bundle. Re-rendering uses
+    failure-recoverable directory replacement: a reported swap failure restores
+    the previous bundle, and the next invocation recovers an abandoned backup
+    or stage after interruption. Portable filesystems can still expose a brief
+    rename gap, so this is not an atomic visibility guarantee.</p>
+    <p>A sibling <code>.report.reasoning-payoff.lock</code> proves bundle
+    ownership. The CLI refuses to replace a four-file lookalike directory that
+    lacks this marker.</p>
+    <pre><code>reasoning-payoff report report/report.json
+reasoning-payoff report report/report.json --out rerendered-report</code></pre>
+  </section>
+
+  <section id="errors">
+    <h2>11. Exit codes and troubleshooting</h2>
+    <div class="table-wrap"><table>
+      <caption>Stable command exit codes.</caption>
+      <thead><tr><th>Exit</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Success</td></tr>
+        <tr><td>2</td><td>CLI usage error</td></tr>
+        <tr><td>3</td><td>Input, schema, or snapshot error</td></tr>
+        <tr><td>4</td><td>Privacy rejection</td></tr>
+        <tr><td>5</td><td>Report or output conflict</td></tr>
+        <tr><td>6</td><td>Local I/O failure</td></tr>
+      </tbody>
+    </table></div>
+    <pre><code>python scripts/check_claim_integrity.py check
+python -m pytest -q batch-runner/tests/test_offline_cli.py</code></pre>
+  </section>
+
+  <section id="timing">
+    <h2>12. Verify timing and byte stability</h2>
+    <pre><code>/usr/bin/time -p reasoning-payoff analyze \
+  examples/five-minute/usage.jsonl \
+  --workload examples/five-minute/workload.yaml \
+  --out report
+shasum -a 256 report/report.json report/report.md \
+  report/report.html report/policy.json
+reasoning-payoff report report/report.json
+shasum -a 256 report/report.json report/report.md \
+  report/report.html report/policy.json</code></pre>
+    <p>The hash sets must match. The fresh-clone ceiling is five minutes; the
+    bundled sample target is under 60 seconds.</p>
+    <p>Measured on 2026-08-20: the installed sample <code>analyze</code> command
+    completed in <strong>0.12 seconds</strong>. This excludes environment
+    creation and dependency installation and is not a universal guarantee.</p>
+  </section>
+
+  <section id="references">
+    <h2>13. First-party Microsoft references</h2>
+    <ol>
+      <li><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/reasoning">Azure OpenAI reasoning models</a>:
+      reasoning-token fields, output billing, and model-specific effort support.</li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/prompt-caching">Azure OpenAI prompt caching</a>:
+      model/deployment-specific read, write, key, and breakpoint semantics.</li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/provisioned-throughput">Provisioned throughput</a>:
+      dedicated PTU capacity, billing, normalized sizing, and cache effects.</li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/foundry/openai/quotas-limits">Azure OpenAI quotas and limits</a>:
+      quota is not a capacity guarantee.</li>
+    </ol>
+    <p>Reviewed 2026-08-20. Recheck model-specific behavior before approving a
+    production change.</p>
+  </section>
+</main>
+<footer>
+  <p>Canonical method source:
+  <a href="../../19-five-minute-provenance-report.md">docs/19-five-minute-provenance-report.md</a>.</p>
+</footer>
+</body>
+</html>

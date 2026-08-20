@@ -1,0 +1,317 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PublicClaimContractV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "cohort_policy",
+    "source_registry",
+    "claims",
+    "comparisons"
+  ],
+  "properties": {
+    "schema": {
+      "const": "wrpo.public_claim_contract"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "cohort_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_cohort_prefix",
+        "forbidden_effort_by_model",
+        "legacy_headline_patterns"
+      ],
+      "properties": {
+        "current_cohort_prefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forbidden_effort_by_model": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "legacy_headline_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "source_registry": {
+      "$ref": "#/definitions/sourceRegistry"
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/measurementClaim"
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/comparisonClaim"
+      }
+    }
+  },
+  "definitions": {
+    "sourceRegistry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collection",
+        "where",
+        "field"
+      ],
+      "properties": {
+        "collection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "where": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "field": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "selector"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selector": {
+          "$ref": "#/definitions/selector"
+        }
+      }
+    },
+    "measurementClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "cohort",
+        "model",
+        "effort",
+        "metric",
+        "unit",
+        "value",
+        "changed_dimensions",
+        "format",
+        "publication_targets",
+        "source",
+        "chart_cross_check"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "cohort": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effort": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "changed_dimensions": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "format": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publication_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "source": {
+          "$ref": "#/definitions/evidenceReference"
+        },
+        "chart_cross_check": {
+          "$ref": "#/definitions/evidenceReference"
+        },
+        "registry_claim_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "comparisonSides": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "right"
+      ],
+      "properties": {
+        "left": {},
+        "right": {}
+      }
+    },
+    "comparisonClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "cohort",
+        "model",
+        "effort",
+        "metric",
+        "unit",
+        "value",
+        "changed_dimensions",
+        "format",
+        "publication_targets",
+        "source",
+        "operation",
+        "causal_attribution"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "cohort": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/definitions/comparisonSides"
+        },
+        "effort": {
+          "$ref": "#/definitions/comparisonSides"
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "changed_dimensions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "model",
+              "effort"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "format": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publication_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "left_claim_id",
+            "right_claim_id"
+          ],
+          "properties": {
+            "left_claim_id": {
+              "type": "string"
+            },
+            "right_claim_id": {
+              "type": "string"
+            }
+          }
+        },
+        "operation": {
+          "enum": [
+            "ratio",
+            "delta"
+          ]
+        },
+        "causal_attribution": {
+          "enum": [
+            "descriptive",
+            "descriptive_only"
+          ]
+        }
+      }
+    }
+  }
+}

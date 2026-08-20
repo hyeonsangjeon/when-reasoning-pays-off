@@ -35,6 +35,9 @@ HOURS_PER_MONTH = 24 * 30
 MINUTES_PER_MONTH = 60 * HOURS_PER_MONTH
 NEAR_CROSSOVER_RELATIVE_BAND = 0.05
 BALANCED_DRIVER_PERCENTAGE_POINTS = 5.0
+MAX_SUPPORTED_RATE = 1_000_000.0
+MAX_TOKEN_COUNT = 2_147_483_647
+MAX_EXPECTED_RPM = 1_000_000_000.0
 
 
 class CalculatorError(ValueError):
@@ -70,14 +73,21 @@ class WorkloadShape:
             "mean_max_output_tokens",
             self.mean_max_output_tokens,
         )
-        if self.mean_max_output_tokens < self.mean_visible_output_tokens:
+        full_output_tokens = (
+            self.mean_visible_output_tokens + self.mean_reasoning_tokens
+        )
+        if self.mean_max_output_tokens < full_output_tokens:
             raise CalculatorError(
-                "mean_max_output_tokens must be >= mean_visible_output_tokens"
+                "mean_max_output_tokens must be >= visible + reasoning output"
             )
         if not isinstance(self.model_id, str) or not self.model_id.strip():
             raise CalculatorError("model_id must be a non-empty string")
         _validate_fraction("mean_cached_fraction", self.mean_cached_fraction)
-        _validate_positive_finite("expected_rpm", self.expected_rpm)
+        _validate_positive_finite(
+            "expected_rpm",
+            self.expected_rpm,
+            maximum=MAX_EXPECTED_RPM,
+        )
         if self.mean_prompt_tokens == 0 and self.mean_max_output_tokens == 0:
             raise CalculatorError(
                 "workload must have positive prompt or max-output admission demand"
@@ -116,29 +126,45 @@ class _PaygRates:
 @dataclass(frozen=True)
 class _PtuRates:
     ptu_hourly_rate_usd: float
+    min_ptu: int
+    scale_increment: int
+    max_ptu_per_deployment: int
 
 
 def _validate_nonnegative_int(name: str, value: object) -> None:
     if isinstance(value, bool) or not isinstance(value, int):
         raise CalculatorError(f"{name} must be an integer")
-    if value < 0:
+    if value < 0 or value > MAX_TOKEN_COUNT:
         raise CalculatorError(f"{name} must be >= 0")
 
 
 def _validate_fraction(name: str, value: object) -> None:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise CalculatorError(f"{name} must be a number")
-    numeric = float(value)
+    try:
+        numeric = float(value)
+    except (OverflowError, ValueError) as exc:
+        raise CalculatorError(f"{name} must be between 0.0 and 1.0") from exc
     if not math.isfinite(numeric) or numeric < 0.0 or numeric > 1.0:
         raise CalculatorError(f"{name} must be between 0.0 and 1.0")
 
 
-def _validate_positive_finite(name: str, value: object) -> None:
+def _validate_positive_finite(
+    name: str,
+    value: object,
+    *,
+    maximum: float | None = None,
+) -> None:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise CalculatorError(f"{name} must be a number")
-    numeric = float(value)
+    try:
+        numeric = float(value)
+    except (OverflowError, ValueError) as exc:
+        raise CalculatorError(f"{name} must be a finite value > 0") from exc
     if not math.isfinite(numeric) or numeric <= 0.0:
         raise CalculatorError(f"{name} must be a finite value > 0")
+    if maximum is not None and numeric > maximum:
+        raise CalculatorError(f"{name} exceeds the supported maximum")
 
 
 def _load_yaml_mapping(path: str | Path, *, label: str) -> dict:
@@ -153,10 +179,25 @@ def _load_yaml_mapping(path: str | Path, *, label: str) -> dict:
 def _positive_rate(value: object, *, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise PricingSchemaError(f"{label} must be a number")
-    rate = float(value)
-    if not math.isfinite(rate) or rate <= 0.0:
+    try:
+        rate = float(value)
+    except (OverflowError, ValueError) as exc:
+        raise PricingSchemaError(f"{label} must be a finite value > 0") from exc
+    if (
+        not math.isfinite(rate)
+        or rate <= 0.0
+        or rate > MAX_SUPPORTED_RATE
+    ):
         raise PricingSchemaError(f"{label} must be a finite value > 0")
     return rate
+
+
+def _positive_int(value: object, *, label: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise PricingSchemaError(f"{label} must be an integer")
+    if value <= 0 or value > MAX_TOKEN_COUNT:
+        raise PricingSchemaError(f"{label} must be between 1 and {MAX_TOKEN_COUNT}")
+    return value
 
 
 def _load_payg_rates(path: str | Path, model_id: str) -> _PaygRates:
@@ -195,11 +236,24 @@ def _load_ptu_rates(path: str | Path, model_id: str) -> _PtuRates:
     block = models[model_id]
     if not isinstance(block, dict):
         raise PricingSchemaError(f"PTU pricing model {model_id!r} must be a mapping")
+    min_ptu = _positive_int(
+        block.get("min_ptu"),
+        label=f"PTU {model_id} min_ptu",
+    )
     return _PtuRates(
         ptu_hourly_rate_usd=_positive_rate(
             block.get("ptu_hourly_rate_usd"),
             label=f"PTU {model_id} ptu_hourly_rate_usd",
-        )
+        ),
+        min_ptu=min_ptu,
+        scale_increment=_positive_int(
+            block.get("scale_increment", min_ptu),
+            label=f"PTU {model_id} scale_increment",
+        ),
+        max_ptu_per_deployment=_positive_int(
+            block.get("max_ptu_per_deployment"),
+            label=f"PTU {model_id} max_ptu_per_deployment",
+        ),
     )
 
 
@@ -252,7 +306,9 @@ def _driver_percentages(
         "reasoning_accumulation": workload.mean_reasoning_tokens * output_weight,
         "cache_hit_drop": non_cached_prompt_tokens,
         "max_tokens_oversize": max(
-            workload.mean_max_output_tokens - workload.mean_visible_output_tokens,
+            workload.mean_max_output_tokens
+            - workload.mean_visible_output_tokens
+            - workload.mean_reasoning_tokens,
             0,
         )
         * output_weight,
@@ -364,6 +420,7 @@ def calculate(
     payg_rates_yaml: Path,
     ptu_rates_yaml: Path,
     leak_calibration_json: Path | None = None,
+    density_snapshot_yaml: Path | None = None,
 ) -> CalculatorResult:
     """Return deterministic PTU sizing, crossover, and diagnostic result."""
 
@@ -373,7 +430,11 @@ def calculate(
     if float(target_utilization) > 1.0:
         raise CalculatorError("target_utilization must be <= 1.0")
 
-    density = load_density_snapshot(DEFAULT_DENSITY_PATH)
+    density = load_density_snapshot(
+        DEFAULT_DENSITY_PATH
+        if density_snapshot_yaml is None
+        else density_snapshot_yaml
+    )
     try:
         density_tpm_per_ptu = density.input_tpm_per_ptu[workload.model_id]
     except KeyError as exc:
@@ -397,12 +458,25 @@ def calculate(
         raise CalculatorError("admission token demand must be > 0")
 
     demand_tpm = admission_tokens_per_call * float(workload.expected_rpm)
-    recommended_ptu_count = math.ceil(
+    raw_ptu_count = math.ceil(
         demand_tpm / float(density_tpm_per_ptu) / float(target_utilization)
     )
+    if raw_ptu_count <= ptu_rates.min_ptu:
+        recommended_ptu_count = ptu_rates.min_ptu
+    else:
+        increments = math.ceil(
+            (raw_ptu_count - ptu_rates.min_ptu) / ptu_rates.scale_increment
+        )
+        recommended_ptu_count = (
+            ptu_rates.min_ptu + increments * ptu_rates.scale_increment
+        )
+    if recommended_ptu_count > ptu_rates.max_ptu_per_deployment:
+        raise CalculatorError(
+            "required PTU count exceeds max_ptu_per_deployment"
+        )
 
     payg_cost_per_call = _payg_cost_per_call_usd(workload, payg_rates)
-    if payg_cost_per_call <= 0:
+    if not math.isfinite(payg_cost_per_call) or payg_cost_per_call <= 0:
         raise CalculatorError("PAYG per-call cost must be > 0")
     ptu_monthly = (
         float(recommended_ptu_count)
@@ -413,6 +487,11 @@ def calculate(
         payg_cost_per_call * float(workload.expected_rpm) * float(MINUTES_PER_MONTH)
     )
     crossover_rpm = ptu_monthly / (payg_cost_per_call * float(MINUTES_PER_MONTH))
+    if not all(
+        math.isfinite(value) and value > 0
+        for value in (ptu_monthly, current_payg_monthly, crossover_rpm)
+    ):
+        raise CalculatorError("modeled PTU/PAYG values must be finite and > 0")
 
     percentages = _driver_percentages(
         workload,

@@ -35,7 +35,24 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          fetch-depth: 1
+          fetch-depth: 0
+
+      - name: Protected historical trees unchanged
+        run: |
+          check_tree() {
+            path="$1"
+            expected="$2"
+            actual="$(git rev-parse "HEAD:$path")"
+            if [ "$actual" != "$expected" ]; then
+              printf 'Protected tree changed: %s\nexpected %s\nactual   %s\n' \
+                "$path" "$expected" "$actual" >&2
+              exit 1
+            fi
+          }
+          check_tree docs/blog 4a1ec880dc0b93bd70e92a1e1062e9ef884ba423
+          check_tree benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6
+          check_tree results 0687541fa1cefe71faefb182d29cfcaf1f0c6096
+          echo "Protected historical trees are unchanged."
 
       - name: Set up Python 3.11
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -56,6 +73,74 @@ jobs:
         run: |
           ruff --version
           ruff check .
+
+      - name: Claim integrity gate
+        run: python scripts/check_claim_integrity.py check
+
+      - name: Offline five-minute report smoke
+        env:
+          AZURE_OPENAI_API_KEY: ""
+          OPENAI_API_KEY: ""
+          HF_TOKEN: ""
+        run: |
+          out="$RUNNER_TEMP/reasoning-payoff-report"
+          reasoning-payoff analyze examples/five-minute/usage.jsonl \
+            --workload examples/five-minute/workload.yaml \
+            --out "$out"
+          reasoning-payoff report "$out/report.json"
+          test -s "$out/report.json"
+          test -s "$out/report.md"
+          test -s "$out/report.html"
+          test -s "$out/policy.json"
+
+      - name: Non-editable wheel smoke outside repository
+        env:
+          AZURE_OPENAI_API_KEY: ""
+          OPENAI_API_KEY: ""
+          HF_TOKEN: ""
+        run: |
+          wheel_dir="$RUNNER_TEMP/wrpo-wheel"
+          venv_dir="$RUNNER_TEMP/wrpo-wheel-venv"
+          python -m pip wheel . --no-deps --wheel-dir "$wheel_dir"
+          python -m venv "$venv_dir"
+          "$venv_dir/bin/python" -m pip install "$wheel_dir"/*.whl
+          "$venv_dir/bin/python" - <<'PY'
+          from pathlib import Path
+          import batch_runner
+          import scripts
+          import sys
+
+          prefix = Path(sys.prefix).resolve()
+          for module in (batch_runner, scripts):
+              module_path = Path(module.__file__).resolve()
+              assert module_path.is_relative_to(prefix), (module.__name__, module_path)
+          schema_dir = (
+              prefix / "share" / "when-reasoning-pays-off" / "schemas"
+          )
+          for name in (
+              "public_claim_contract.v1.schema.json",
+              "usage_envelope.v1.schema.json",
+              "workload_spec.v1.schema.json",
+          ):
+              assert (schema_dir / name).is_file(), schema_dir / name
+          PY
+          (
+            cd "$RUNNER_TEMP"
+            "$venv_dir/bin/reasoning-payoff" --version
+            "$venv_dir/bin/reasoning-payoff" init --out wheel-sample
+            "$venv_dir/bin/reasoning-payoff" analyze \
+              wheel-sample/usage.jsonl \
+              --workload wheel-sample/workload.yaml \
+              --out wheel-report
+            before="$(sha256sum wheel-report/report.json \
+              wheel-report/report.md wheel-report/report.html \
+              wheel-report/policy.json)"
+            "$venv_dir/bin/reasoning-payoff" report wheel-report/report.json
+            after="$(sha256sum wheel-report/report.json \
+              wheel-report/report.md wheel-report/report.html \
+              wheel-report/policy.json)"
+            test "$before" = "$after"
+          )
 
       - name: Pytest — batch-runner (unit, non-integration)
         env:

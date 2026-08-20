@@ -7,6 +7,7 @@ it does not import any SDK client or contact external services.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping as MappingABC
 from dataclasses import dataclass
 from pathlib import Path
@@ -56,7 +57,7 @@ def _require_mapping(value: object, *, label: str) -> MappingABC:
 def _require_positive_int(value: object, *, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise ModelDensityError(f"{label} must be an integer")
-    if value <= 0:
+    if value <= 0 or value > 2_147_483_647:
         raise ModelDensityError(f"{label} must be > 0")
     return value
 
@@ -64,9 +65,12 @@ def _require_positive_int(value: object, *, label: str) -> int:
 def _require_positive_ratio(value: object, *, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ModelDensityError(f"{label} must be a number")
-    ratio = float(value)
-    if ratio <= 0:
-        raise ModelDensityError(f"{label} must be > 0")
+    try:
+        ratio = float(value)
+    except (OverflowError, ValueError) as exc:
+        raise ModelDensityError(f"{label} must be finite and > 0") from exc
+    if not math.isfinite(ratio) or ratio <= 0 or ratio > 1_000_000.0:
+        raise ModelDensityError(f"{label} must be finite and > 0")
     return ratio
 
 

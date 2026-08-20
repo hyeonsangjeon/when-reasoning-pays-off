@@ -13,3 +13,7 @@ from pathlib import Path
 _BR_ROOT = Path(__file__).resolve().parent.parent
 if str(_BR_ROOT) not in sys.path:
     sys.path.insert(0, str(_BR_ROOT))
+
+_REPO_ROOT = _BR_ROOT.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))

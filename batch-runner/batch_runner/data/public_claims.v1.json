@@ -1,0 +1,415 @@
+{
+  "schema": "wrpo.public_claim_contract",
+  "schema_version": "1.0.0",
+  "cohort_policy": {
+    "current_cohort_prefix": "current-",
+    "forbidden_effort_by_model": {
+      "gpt-5.2": [
+        "minimal"
+      ]
+    },
+    "legacy_headline_patterns": [
+      "7.6x",
+      "7.6\u00d7",
+      "4 -> 311",
+      "4 \u2192 311",
+      "~4 to ~311",
+      "~311"
+    ]
+  },
+  "source_registry": {
+    "path": "docs/blog/articles/when-reasoning-pays-off/numeric-claims.json",
+    "sha256": "a3c6db62ba9de4cb9c17a3f7fcba83fad2eecd728d649e1200575d8b0bdfd5d5"
+  },
+  "claims": [
+    {
+      "claim_id": "short-factual-cost-none",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "none",
+      "metric": "mean_usd_per_request",
+      "unit": "USD/request",
+      "value": 0.000587,
+      "changed_dimensions": [],
+      "format": "$0.000587",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_usd_per_request"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_usd_per_request"
+        }
+      },
+      "registry_claim_id": "short-factual-none-cost"
+    },
+    {
+      "claim_id": "short-factual-cost-xhigh",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "xhigh",
+      "metric": "mean_usd_per_request",
+      "unit": "USD/request",
+      "value": 0.000598,
+      "changed_dimensions": [],
+      "format": "$0.000598",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_usd_per_request"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/cost-per-request.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_usd_per_request"
+        }
+      },
+      "registry_claim_id": "short-factual-xhigh-cost"
+    },
+    {
+      "claim_id": "short-factual-quality-none",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "none",
+      "metric": "mean_judge_score",
+      "unit": "judge-score",
+      "value": 1.95,
+      "changed_dimensions": [],
+      "format": "1.95",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "registry_claim_id": "short-factual-none-quality"
+    },
+    {
+      "claim_id": "short-factual-quality-xhigh",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "xhigh",
+      "metric": "mean_judge_score",
+      "unit": "judge-score",
+      "value": 1.95,
+      "changed_dimensions": [],
+      "format": "1.95",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-01/quality.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_judge_score"
+        }
+      }
+    },
+    {
+      "claim_id": "short-factual-reasoning-none",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "none",
+      "metric": "mean_reasoning_tokens",
+      "unit": "tokens/request",
+      "value": 0.0,
+      "changed_dimensions": [],
+      "format": "0",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      },
+      "registry_claim_id": "short-factual-none-reasoning-tokens"
+    },
+    {
+      "claim_id": "short-factual-reasoning-high",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "high",
+      "metric": "mean_reasoning_tokens",
+      "unit": "tokens/request",
+      "value": 1.35,
+      "changed_dimensions": [],
+      "format": "1.35",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "high"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "high"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      },
+      "registry_claim_id": "short-factual-high-reasoning-tokens"
+    },
+    {
+      "claim_id": "short-factual-reasoning-xhigh",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": "gpt-5.2",
+      "effort": "xhigh",
+      "metric": "mean_reasoning_tokens",
+      "unit": "tokens/request",
+      "value": 0.616667,
+      "changed_dimensions": [],
+      "format": "0.62",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/01-short-factual/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "xhigh"
+          },
+          "field": "mean_reasoning_tokens"
+        }
+      }
+    },
+    {
+      "claim_id": "multi-step-quality-baseline",
+      "cohort": "current-2026-05-benchmark-02",
+      "model": "gpt-4o",
+      "effort": null,
+      "metric": "mean_judge_score",
+      "unit": "judge-score",
+      "value": 1.5,
+      "changed_dimensions": [],
+      "format": "1.5",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/02-multi-step-reasoning/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-4o",
+            "effort": null
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-4o",
+            "effort": "na"
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "registry_claim_id": "multi-step-baseline-quality"
+    },
+    {
+      "claim_id": "multi-step-quality-none",
+      "cohort": "current-2026-05-benchmark-02",
+      "model": "gpt-5.2",
+      "effort": "none",
+      "metric": "mean_judge_score",
+      "unit": "judge-score",
+      "value": 2.0,
+      "changed_dimensions": [],
+      "format": "2.0",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "path": "benchmarks/02-multi-step-reasoning/analysis.json",
+        "selector": {
+          "collection": "cell_stats",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_judge_score"
+        }
+      },
+      "chart_cross_check": {
+        "path": "docs/blog/data/chart-data/cost-curves-effort/benchmark-02/quality.json",
+        "selector": {
+          "collection": "rows",
+          "where": {
+            "model": "gpt-5.2",
+            "effort": "none"
+          },
+          "field": "mean_judge_score"
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "claim_id": "short-factual-cost-none-to-xhigh",
+      "cohort": "current-2026-05-benchmark-01",
+      "model": {
+        "left": "gpt-5.2",
+        "right": "gpt-5.2"
+      },
+      "effort": {
+        "left": "none",
+        "right": "xhigh"
+      },
+      "metric": "mean_usd_per_request",
+      "unit": "ratio",
+      "value": 1.0187393526405453,
+      "changed_dimensions": [
+        "effort"
+      ],
+      "format": "1.02x",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "left_claim_id": "short-factual-cost-none",
+        "right_claim_id": "short-factual-cost-xhigh"
+      },
+      "operation": "ratio",
+      "causal_attribution": "descriptive"
+    },
+    {
+      "claim_id": "multi-step-baseline-to-none-quality",
+      "cohort": "current-2026-05-benchmark-02",
+      "model": {
+        "left": "gpt-4o",
+        "right": "gpt-5.2"
+      },
+      "effort": {
+        "left": null,
+        "right": "none"
+      },
+      "metric": "mean_judge_score",
+      "unit": "judge-score-delta",
+      "value": 0.5,
+      "changed_dimensions": [
+        "model",
+        "effort"
+      ],
+      "format": "1.5 -> 2.0",
+      "publication_targets": [
+        "README.md#current-headlines"
+      ],
+      "source": {
+        "left_claim_id": "multi-step-quality-baseline",
+        "right_claim_id": "multi-step-quality-none"
+      },
+      "operation": "delta",
+      "causal_attribution": "descriptive_only"
+    }
+  ]
+}

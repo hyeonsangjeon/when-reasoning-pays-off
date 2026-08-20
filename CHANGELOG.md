@@ -6,6 +6,26 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Evidence-first offline provenance report (2026-08-20)
+
+- Added the official `reasoning-payoff init`, `analyze`, and `report` commands.
+  A normal Python 3.11 install can generate deterministic JSON, Markdown,
+  self-contained HTML, and review-only policy artifacts without credentials or
+  runtime network access.
+- Added strict UsageEnvelope and WorkloadSpec v1 schemas, packaged sample
+  resources, pinned PAYG/PTU/density snapshots, privacy-safe errors,
+  failure-recoverable staged bundle replacement, and
+  measured/modeled/not-measured evidence boundaries.
+- Added a machine-readable public claim contract and Claim Integrity Gate that
+  resolves canonical selectors, cross-checks public chart JSON, renders the
+  owned README marker block, and rejects stale/cohort/causal-attribution drift.
+- Corrected the README's stale short-factual, multi-step attribution, and Hindi
+  publication statements without changing canonical benchmark, result, or blog
+  inputs.
+- Added the numbered five-minute method guide and a dependency-free standalone
+  GitHub Pages guide, with parity, privacy, no-network, deterministic-render,
+  mutation, CLI, schema, protected-tree, and practical timing coverage.
+
 ### Added — Complete overview topic essay set (2026-06-04)
 
 The public blog now promotes the remaining four overview-topic TBD cards into
