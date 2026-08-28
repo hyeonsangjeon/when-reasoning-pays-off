@@ -16,7 +16,7 @@ decision something you own rather than something the model reaches by default.
 
 **Companion to [`docs/04-decision-framework.md`](04-decision-framework.md) and
 [`docs/09-operator-guide-one-page.md`](09-operator-guide-one-page.md).** The
-decision framework routes a **single call** to a `(model, effort)` cell, and the
+decision framework routes a **single call** to a `(model, effort)` cell (a benchmark result for one model-and-effort setting), and the
 operator guide's levers L1–L5 each tune **one call or one deployment**. This
 document covers the axis those two leave open: governing a workload that issues
 **many calls in a loop** — a tool-using or agentic task whose iteration count
@@ -108,12 +108,12 @@ away. The production pattern comes directly from the runner's guard.
 *You hit this the first time one task quietly costs 40× its neighbors.*
 
 **Mechanism.** A loop needs **two** bounds a single call never does: a maximum
-iteration count, and a cumulative token/cost ceiling for the whole task. Either
+iteration count, and a cumulative token/cost ceiling (highest allowed total cost) for the whole task. Either
 one alone leaks — a step cap still allows an expensive runaway if each step is
 huge; a cost ceiling alone still allows an endless cheap spin.
 
 **Action.** Declare, per task class, a `max_iterations` step cap and a
-`hard_ceiling_usd` cumulative ceiling. Derive the ceiling from the p99 of a
+`hard_ceiling_usd` cumulative ceiling. Derive the ceiling from the p99 (99th-percentile) of a
 representative sample (step count and per-task cost), not from a round number
 that feels safe. Set both conservatively and raise them only with evidence
 (§3.5).
@@ -174,16 +174,16 @@ $0.003499 and latency from 2.9 s to 3.8 s
 In a loop the same finding governs the *continuation* decision: another step, or
 a higher effort on the next call, should have to earn its place.
 
-**Action.** Gate escalation — one more iteration, or a higher `reasoning_effort`
-on the next call — behind a **cheap eval**: a rubric score, a self-consistency or
-confidence signal, an explicit stop check. Default to **stop**, and make the
+**Action.** Put escalation — one more iteration, or a higher `reasoning_effort`
+on the next call — behind a **cheap eval** decision checkpoint: a rubric score,
+a self-consistency or confidence signal, an explicit stop check. Default to **stop**, and make the
 eval argue for continuing. That turns an open-ended "loop until done" into a
 bounded "loop until the eval stops paying", which is just the decision-framework
 routing tree (`docs/04` §2) in loop form.
 
 **In-repo evidence.** [`scripts/run_judge.py`](../scripts/run_judge.py) is the
-rubric judge already scoring quality in every benchmark; the same shape is the
-natural continuation gate. The 1.97–2.00 ceiling is the evidence that an ungated
+rubric judge already scoring quality in every benchmark; the same pattern is the
+natural continuation checkpoint. The 1.97–2.00 ceiling is the evidence that an ungated
 "think harder, loop again" default keeps spending well past the point of return.
 
 ### 3.4 Traceability — attribute cost per loop, per step
@@ -229,7 +229,7 @@ a scope change, and it should feel like one.
 
 **Action.** Declare per-task-class budget policy in **committed config**, not in
 constants scattered across services. Review every ceiling change; track the
-**overrun rate** (how often the breaker fires) as a first-class SLO; and give a
+**overrun rate** (how often the breaker fires) as a first-class service-level objective (SLO); and give a
 ceiling raise the same ceremony as a methodology change
 ([`GOVERNANCE.md`](../GOVERNANCE.md); the "silent overrun = silent scope change"
 rule from `docs/05` §6). The release-governance discipline in
@@ -287,7 +287,7 @@ This is **operational design (Tier 2)**, not a measurement. The following are
 claims:
 
 - **How often loops actually run away**, and the **distribution of step counts**
-  by task shape. A future *unbounded-loop runaway characterization* benchmark
+  by task profile. A future *unbounded-loop runaway characterization* benchmark
   would measure these; it does not exist yet.
 - **The long-context cost-scaling curve** (cost vs. context length within a
   loop). `docs/04` §4 already records that no benchmark here measures

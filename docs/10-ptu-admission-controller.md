@@ -1,4 +1,4 @@
-# Operator Guide — PTU Admission Controller (Header-Driven)
+# Operator Guide — Provisioned Throughput Unit (PTU) Admission Controller (Header-Driven)
 
 ![PTU admission controller honouring the retry-after-ms header: sleep, log, then resume.](assets/ptu-admission-controller.svg)
 
@@ -8,12 +8,13 @@
 
 ## 1. Why this exists
 
-The Azure OpenAI PTU Operations Guide §0 names `retry-after-ms` as the
-official admission signal for the next acceptable request time on a
-throttled PTU deployment. This module is the deployable code path that
-honours that signal explicitly and logs every decision, so a reviewer
-can answer "why did this client sleep that long?" from logs alone
-instead of inferring SDK retry behaviour. It is the runtime complement
+The Azure OpenAI provisioned throughput unit (PTU) Operations Guide §0
+names `retry-after-ms` as the official admission signal for the next
+acceptable request time on a throttled PTU deployment. This module is
+the deployable code path that honours that signal explicitly and logs
+every decision, so a reviewer can answer "why did this client sleep that long?"
+from logs alone instead of inferring software development kit (SDK)
+retry behaviour. It is the runtime complement
 to Task 020's offline characterization of the same header.
 
 ## 2. Three options the Guide names
@@ -22,9 +23,12 @@ The Guide §0 catalogues three deployable patterns:
 
 - **A. SDK Defaults** — let the `openai` Python SDK auto-retry honour
   `retry-after`. Minimal code; opaque to audit.
-- **B. PAYG Fallback** — read `retry-after-ms` and immediately route to
-  a fallback (e.g., PAYG) endpoint when the wait exceeds a ceiling.
-- **C. Native Spillover** — server-side `spilloverDeploymentName`
+- **B. pay-as-you-go (PAYG) Fallback** — read `retry-after-ms` and
+  immediately route to a fallback (e.g., PAYG) endpoint when the wait
+  exceeds the configured maximum.
+- **C. Native spillover** (automatic routing of overflow requests from
+  a saturated provisioned deployment to a standard deployment) —
+  server-side `spilloverDeploymentName`
   routing, owned by Task 021. Out of scope here.
 
 This module implements **A** and **B**. Use it when your caller cannot
@@ -104,7 +108,7 @@ The controller refuses to wrap an SDK/client object whose
 `max_retries` attribute is a positive integer; passing one raises
 `DoubleRetryError` at construction. If you cannot set the SDK's
 `max_retries` to `0`, do not pass that client to the controller — use
-the controller XOR the SDK's auto-retry, never both. A client without
+either the controller or the SDK's auto-retry, never both. A client without
 a `max_retries` attribute is accepted unchanged.
 
 ## 5. What this module does NOT do
@@ -136,7 +140,7 @@ The controller deliberately omits from its logs and event surface:
 
 - Request body, system prompt, `messages` content.
 - `Authorization` header and any bearer token.
-- API keys and `api-key` headers.
+- Application programming interface (API) keys and `api-key` headers.
 - Environment variable values.
 - Raw `prompt_cache_key` values.
 - Endpoint hostnames, tenant or subscription IDs.
@@ -157,7 +161,7 @@ runtime components. Until that schema lands, the controller's
 | `attempt_idx`        | int     | 1-based; matches the `send()` call index.   |
 | `parsed_from_header` | str?    | `"retry-after-ms"`, `"retry-after"`, or null.|
 | `wallclock_iso`      | str     | UTC, millisecond precision, ISO-8601.       |
-| `status_code`        | int     | HTTP status (always `429` today).           |
+| `status_code`        | int     | HTTP rate-limit status (always `429` today). |
 | `decision`           | str     | One of `sleep`, `fallback`, `give-up`. Decided from `parsed_wait_ms`, not from the jittered value. |
 | `headers`            | map     | Safe subset only: `x-request-id`, `x-ms-region`. |
 

@@ -1,6 +1,6 @@
-# PTU vs PAYG Decision Runbook
+# Provisioned Throughput Unit (PTU) vs Pay-As-You-Go (PAYG) Decision Runbook
 
-![PTU versus PAYG cost crossover: PAYG rises with request rate while PTU is flat; they cross at a crossover RPM.](assets/ptu-vs-payg-crossover.svg)
+![PTU versus PAYG cost crossover: PAYG rises with request rate while PTU is flat; they cross at a crossover requests-per-minute (RPM) rate.](assets/ptu-vs-payg-crossover.svg)
 
 > Module: `batch_runner.sizing`. Task 027.
 > Scope: single-deployment Azure OpenAI PTU sizing and PAYG crossover
@@ -16,8 +16,9 @@ This runbook answers one operating question:
 > current request rate, and how large is the PTU deployment implied by
 > the Guide §3 TPM/PTU table?
 
-The calculator returns a recommended PTU count, a crossover RPM, a
-decision label (`ptu_favorable`, `payg_favorable`, or
+The calculator returns a recommended provisioned throughput unit (PTU)
+count, a pay-as-you-go (PAYG) crossover rate in requests per minute
+(RPM), a decision label (`ptu_favorable`, `payg_favorable`, or
 `near_crossover`), and the dominant operational driver.
 
 ## 2. What This Runbook Does Not Answer
@@ -28,7 +29,7 @@ reasoning-vs-standard model selection.
 It does not compose `prompt_cache_key` values. Use
 `docs/12-prompt-cache-key-policy.md` and `batch_runner.cache`.
 
-It does not handle 429 recovery. Use `docs/10-ptu-admission-controller.md`
+It does not handle HTTP rate-limit status 429 recovery. Use `docs/10-ptu-admission-controller.md`
 and `batch_runner.ptu.admission_controller`.
 
 It does not optimize across regions, resources, negotiated discounts,
@@ -66,8 +67,9 @@ Guide §3 driver list, carried into the calculator:
    interpretation: if `max_output_tokens - visible_output_tokens` is
    large, right-size the cap before buying PTU.
 
-The Guide also publishes non-uniform Input TPM/PTU density by model.
-The calculator reads the frozen local snapshot in
+The Guide also publishes non-uniform Input tokens per minute per
+provisioned throughput unit (TPM/PTU) density by model.
+The calculator reads the frozen local data file in
 `pricing/ptu-density-2026-05.yaml`.
 
 ## 5. Run The Calculator
@@ -81,7 +83,7 @@ python -m scripts.ptu_sizing \
 ```
 
 The output is stable JSON on stdout. The calculator performs no live
-API calls and reads no environment variables.
+application programming interface (API) calls and reads no environment variables.
 
 ## 6. Worked Example
 
@@ -97,7 +99,7 @@ mean_max_output_tokens: 8000
 expected_rpm: 60.0
 ```
 
-With target utilization `0.7`, the sizing leg uses:
+With target utilization `0.7`, the sizing calculation uses:
 
 ```text
 non_cached_prompt = 1000 - 300 = 700
@@ -118,7 +120,7 @@ The 8:1 output-weight ratio for `gpt-5` and the 4:1 ratio for
 
 The 8:1 working assumption for `gpt-5.2`, `gpt-5.2-codex`,
 `gpt-5.3-codex`, `gpt-5.1`, and `gpt-5.1-codex` is **operational
-inference**. The YAML snapshot labels it as `# operational inference`
+inference**. The YAML file labels it as `# operational inference`
 and calculator rationales repeat the label.
 
 The `near_crossover` 5% band is operational policy. It exists so an
@@ -137,7 +139,7 @@ It uses on-demand PTU rates from the explicit `pricing/` YAML. PTU
 reservation discounts, enterprise agreements, and multi-resource
 packing are not included.
 
-It does not auto-fetch pricing. Create a new dated snapshot if Azure
+It does not auto-fetch pricing. Create a new dated pricing file if Azure
 publishes a rate or density change.
 
 When the calculator returns `near_crossover`, re-measure
@@ -146,7 +148,7 @@ reasoning tokens before committing to PTU.
 
 ## 9. Pricing References
 
-PAYG pricing snapshot:
+PAYG pricing file:
 `pricing/azure-openai-payg-2026-05.yaml`.
 
 Source URL:
@@ -154,7 +156,7 @@ Source URL:
 
 Access date: 2026-05-19.
 
-PTU on-demand pricing snapshot:
+PTU on-demand pricing file:
 `pricing/azure-openai-ptu-2026-05.yaml`.
 
 Source URL:
@@ -162,7 +164,7 @@ Source URL:
 
 Access date: 2026-05-19.
 
-PTU density snapshot:
+PTU density file:
 `pricing/ptu-density-2026-05.yaml`.
 
 Source URL:

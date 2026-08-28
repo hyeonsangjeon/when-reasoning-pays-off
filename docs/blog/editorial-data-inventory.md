@@ -57,8 +57,8 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
   `1.73–1.88` (no monotonic gain) — `results/cost-curves/benchmark-01-*.csv`.
 - **Takeaway:** default short-factual workloads to `minimal`/`none`.
 - **Readiness:** `ready`
-- **Safety:** PAYG lens; pricing from `pricing/azure-openai-payg-2026-05.yaml`;
-  N=20,R=3 ⇒ use std, not CI.
+- **Safety:** PAYG (pay-as-you-go) cost perspective; pricing from `pricing/azure-openai-payg-2026-05.yaml`;
+  N=20,R=3 ⇒ use std, not confidence intervals.
 
 ## T02 — When Reasoning Pays: Multi-Step Problems
 
@@ -91,7 +91,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
 - **Takeaway:** prefer lower effort near the quality ceiling; reserve high
   effort for hard tool-planning.
 - **Readiness:** `ready` (core); tool-efficiency angle `needs-light-aggregation`.
-- **Safety:** PAYG lens; the gpt-5.2 `minimal` cell has `n_used=0` — exclude it.
+- **Safety:** PAYG cost perspective; the gpt-5.2 `minimal` cell has `n_used=0` — exclude it.
 
 ## T04 — The Invisible Reasoning-Token Tax
 
@@ -111,7 +111,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
 - **Takeaway:** always capture `response.usage` reasoning tokens separately.
 - **Readiness:** `ready`
 
-## T05 — PTU vs PAYG: Where the Lines Cross
+## T05 — PTU (provisioned throughput) vs PAYG: Where the Lines Cross
 
 - **Public data:** `results/cost-curves/benchmark-0{1,2,3}-throughput-gain.csv`,
   `pricing/azure-openai-{payg,ptu}-2026-05.yaml`,
@@ -130,7 +130,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
   (`results/cost-curves/benchmark-01-throughput-gain.csv`; the factor is
   `baseline.tokens_per_request / target.tokens_per_request`, a same-model
   token-shape proxy, **not** a cross-model PTU throughput ratio); PTU density
-  gpt-5.2 `3400` vs gpt-4o `2500` input TPM/PTU
+  gpt-5.2 `3400` vs gpt-4o `2500` input TPM (tokens per minute)/PTU
   (`pricing/ptu-density-2026-05.yaml`).
 - **Takeaway:** size PTU on reasoning-inclusive token shape; run
   `scripts/ptu_sizing.py` with a measured `WorkloadShape` (which applies model
@@ -149,10 +149,10 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
   `docs/assets/cache-hit-degradation.svg`
 - **Charts:** cache-hit-degradation, ttft-degradation
 - **Why it exists:** measure how key cardinality + retention mode affect cache
-  hit ratio and TTFT.
+  hit ratio and TTFT (time to first token).
 - **Reader should learn:** whether a high-cardinality cache key quietly wrecks
   hit ratio / TTFT.
-- **Observed (public):** `in_memory` cardinality 1 → TTFT p95 `106389.96` ms vs
+- **Observed (public):** `in_memory` cardinality 1 → TTFT p95 (95th-percentile) `106389.96` ms vs
   `24h` cardinality 1 → `9899.74` ms (retention dominates TTFT here); hit ratio
   stays `0.9334–0.9612` — `results/cache-key-bucketing/*.csv`.
 - **Takeaway:** retention mode drives steady-state TTFT more than cardinality in
@@ -170,7 +170,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
 - **Charts:** retry-after-cdf (CDF + histogram + percentile table)
 - **Why it exists:** ground backoff/admission logic in observed Retry-After-ms.
 - **Reader should learn:** how long the service actually says to wait on a 429.
-- **Observed (public):** overall n=193; p50 `43.0` ms, p90 `50.8` ms, p99
+- **Observed (public):** overall n=193; p50 (50th-percentile) `43.0` ms, p90 `50.8` ms, p99
   `16921.12` ms, max `17258.0` ms (long tail) —
   `results/retry-after-characterization/retry_after_ms_percentiles.csv`.
   Mechanism split: task013 burst p50 `43.0` ms vs task019 reservation p50
@@ -276,7 +276,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
   source-content sha256 and fails any locale page whose recorded
   `i18n:source-content-sha256` differs.
 - **Takeaway:** a per-page source-content hash turns "is this stale?" into a
-  deterministic CI check.
+  deterministic continuous-integration check.
 - **Readiness:** `ready`
 
 ---

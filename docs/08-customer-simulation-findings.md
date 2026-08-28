@@ -1,6 +1,6 @@
-# Customer-Scenario Findings: PTU + Single-Call ReAct Cache & Spend
+# Customer-Scenario Findings: Provisioned Throughput Unit (PTU) + Single-Call Reasoning-and-Acting Agent Loop (ReAct) Cache & Spend
 
-![Single-call ReAct on PTU with spillover, where saturation reduces cache reuse and raises spend.](assets/single-call-react-spillover.svg)
+![Single-call reasoning-and-acting agent loop (ReAct) on provisioned throughput unit (PTU) capacity with spillover, where saturation reduces cache reuse and raises spend.](assets/single-call-react-spillover.svg)
 
 > **Forwardable to your dev team without translation.** End-to-end
 > story — symptom, mechanisms the in-repo measurements speak to, what
@@ -16,8 +16,10 @@ You are an engineer or architect on a deployment that:
 - Migrated from `gpt-4o` (often multi-node — retrieval, planning,
   generation as separate calls) to `gpt-5.2` (one large single-call
   ReAct call per turn that internally plans, retrieves, answers).
-- Runs on Azure OpenAI **PTU** with spillover configured (Azure-
-  native `spilloverDeploymentName` or a custom client-side router).
+- Runs on Azure OpenAI **PTU** with spillover configured: automatic
+  routing of overflow requests from a saturated provisioned deployment
+  to a standard deployment (Azure-native `spilloverDeploymentName` or
+  a custom client-side router).
 - Observed, after migration, that **prompt cache hit ratio dropped**
   and/or **PTU spend rose** without clean attribution.
 
@@ -52,8 +54,9 @@ those the in-repo measurement evidence supports.
   labels
   ([`benchmarks/04-spillover-simulation/analysis.md`](../benchmarks/04-spillover-simulation/analysis.md);
   effort = low, long stable system prompt).
-- **Phase 2 — two real deployments, real 429s, separate cache pools.**
-  Low-TPM throttled primary plus high-TPM spillover in one Foundry
+- **Phase 2 — two real deployments, real HTTP rate-limit 429s, separate cache pools.**
+  Low tokens per minute (TPM) on the throttled primary plus high-TPM
+  spillover in one Microsoft Foundry
   resource
   ([`benchmarks/05-dual-spillover/README.md`](../benchmarks/05-dual-spillover/README.md)
   + committed `runs/*.summary.json`; formal analysis.md is a follow-
@@ -61,13 +64,13 @@ those the in-repo measurement evidence supports.
   `CHANGELOG.md` Task 015 entry).
 - **Benchmarks 01 / 02 / 03 effort sweeps.** Per-effort cost,
   throughput, quality for short-factual, multi-step reasoning, tool-
-  using shapes ([`results/summary.md`](../results/summary.md);
+  using task profiles ([`results/summary.md`](../results/summary.md);
   [`docs/04-decision-framework.md`](04-decision-framework.md)).
 
 ### Not measured
 
 - Your actual deployment, prompt, workload mix, routing topology.
-- **PTU billing under load.** Simulator runs on PAYG; PTU mentions
+- **PTU billing under load.** Simulator runs on pay-as-you-go (PAYG); PTU mentions
   are token-pressure proxies, not billed PTU numbers.
 - **Native Azure-side spillover mechanics**
   (`spilloverDeploymentName` routing internals, slot allocation).
@@ -88,7 +91,7 @@ those the in-repo measurement evidence supports.
 |---|---|---|---|
 | **Phase 1** ([analysis.md](../benchmarks/04-spillover-simulation/analysis.md)) — single-endpoint simulator, shared cache pool, 2,136 requests per policy | G (weak form): does proactive spillover beat reactive on sustain-phase cache hit ratio? | Sustain cache hit ratio: reactive **99.2337 %**, proactive **99.0680 %** (proactive − reactive gap **−0.1657 pp**, §5/§7). Proactive **did not** beat reactive. Full-run PAYG: reactive $17.883347, proactive $17.924671 (§3, §8). | Single endpoint → primary and spillover share one Azure cache pool by design; absolute magnitudes do not transfer to deployments with truly separate cache pools (§10). |
 | **Phase 2** (`runs/*.summary.json` + CHANGELOG Task 015 entry) — two real deployments, separate cache pools, real 429s, 2,136 scheduled requests per policy | G (weak form) with cache-pool separation: does proactive policy avoid the cold-pool warm-up cost reactive's nearly-all-traffic-to-spillover behavior imposed? | Overall cache hit ratio: reactive **99.05 %**, proactive **98.21 %** (`.summary.json` `cache_hit_ratio_overall`). Primary real 429s: reactive **0**, proactive **167** (`primary_real_429_count`). Spillover request fraction: reactive **98.88 %**, proactive **43.33 %**. PAYG: reactive **$17.8957**, proactive **$18.8060**. | Custom Python-side router, not native Azure spillover; results do not adjudicate `spilloverDeploymentName` behavior. Two deployments in one Foundry resource; one capacity tier each. |
-| **H re-analysis** (planned `benchmarks/{01,02}-*/HYPOTHESIS_H_REANALYSIS.md`) | H′: single-call ReAct migration shifts input-side prefix shape independent of system-prompt edits | **Pending — not in the repo at write time.** Mechanism named in [`docs/07-cache-hit-degradation.md`](07-cache-hit-degradation.md) §9; no magnitude claim from this repo. | The diagnostic recipe (pin prompt + tool defs, vary only orchestration shape) is reusable; the measurement is not yet committed. |
+| **H re-analysis** (planned `benchmarks/{01,02}-*/HYPOTHESIS_H_REANALYSIS.md`) | H′: single-call ReAct migration shifts input-side prefix profile independent of system-prompt edits | **Pending — not in the repo at write time.** Mechanism named in [`docs/07-cache-hit-degradation.md`](07-cache-hit-degradation.md) §9; no magnitude claim from this repo. | The diagnostic recipe (pin prompt + tool defs, vary only orchestration profile) is reusable; the measurement is not yet committed. |
 
 Read together, the two phases agree: **the mitigation for weak-form G
 is not "flip reactive to proactive blindly."** Phase 1 (shared cache):
@@ -101,7 +104,7 @@ gives a clean proactive win.
 
 Each leverage names: (a) **mechanism** (Hypothesis letter from
 [`docs/07`](07-cache-hit-degradation.md)), (b) **in-repo evidence**,
-(c) **two-lens translation** (PAYG dollar impact / PTU throughput-
+(c) **two-perspective translation** (PAYG dollar impact / PTU throughput-
 gain framing).
 
 ### L1. First-token timeout tuning (mechanism G, Phase 1 / Phase 2)
@@ -111,7 +114,7 @@ token latency exceeds `first_token_timeout_ms` (default 3000;
 [`benchmarks/04-spillover-simulation/README.md`](../benchmarks/04-spillover-simulation/README.md)).
 Shorter timeout shrinks "throttled-but-not-yet-spilled" duration.
 
-**In-repo evidence.** Phase 1 sustain first-token p50 / p95: 8,490.6 /
+**In-repo evidence.** Phase 1 sustain first-token p50 (median/50th-percentile) / 95th-percentile latency (p95): 8,490.6 /
 13,617.5 ms (reactive), 7,620.9 / 12,107.8 ms (proactive)
 ([analysis.md §7](../benchmarks/04-spillover-simulation/analysis.md));
 Phase 2 across two deployments: 7,383.3 / 11,967.2 ms (reactive),
@@ -188,18 +191,18 @@ $0.000618 / correct vs gpt-4o $0.001064 (42 % PAYG saving). Tool-using
 `gpt-5.2 low` Pareto-optimal default.
 
 **Translation.**
-- **PAYG.** More reasoning tokens = higher bill. On the ceiling / mixed
-  cases the cost-per-correct floors at the lowest non-zero effort
+- **PAYG.** More reasoning tokens = higher bill. On the highest / mixed
+  cases the cost-per-correct is lowest at the lowest non-zero effort
   (`none` / `low`); on the null case reasoning tokens are ≈ 0, so the
-  bill is flat across the ladder and floors at `none`. Never default
+  bill is flat across the ladder and is lowest at `none`. Never default
   `high` or `xhigh` ([`results/summary.md` §3, §5](../results/summary.md)).
 - **PTU.** Throughput-gain factor vs gpt-4o on benchmark 01:
   `none = 0.989 ×`, `low = 0.989 ×`, `medium = 0.988 ×`,
   `high = 0.983 ×`, `xhigh = 0.986 ×`
   ([benchmark 01 §6](../benchmarks/01-short-factual/analysis.md)) —
   a ~1 % wash; fold in the higher null-case pass-rate and `gpt-5.2 none`
-  nets +4.4 % correct-answers-per-minute. Ceiling-
-  case (benchmark 02): `gpt-5.2 none` wins on both lenses
+  nets +4.4 % correct-answers-per-minute. Highest case
+  (benchmark 02): `gpt-5.2 none` wins on both perspectives
   ([results/summary.md §3](../results/summary.md)). See
   [`docs/04-decision-framework.md`](04-decision-framework.md).
 
@@ -210,7 +213,8 @@ $0.000618 / correct vs gpt-4o $0.001064 (42 % PAYG saving). Tool-using
 [`README.md`](../README.md)) frames `max_output_tokens` as a PTU
 *admission-time reservation*, not a soft cap. Inflating it for
 reasoning headroom silently reduces effective concurrency: at the
-same arrival rate, 429s surface at lower RPM and TTFT under load
+same arrival rate, 429s surface at lower requests per minute (RPM)
+and time-to-first-token (TTFT) under load
 rises while the bill per completed request is unchanged. The lever
 is *tightening*, not removing.
 
@@ -226,7 +230,7 @@ admission on the *reservation*, not the spend.
 
 **Tightening rule (apply now, re-measure after).**
 
-1. From a representative production sample, compute p99 of visible
+1. From a representative production sample, compute p99 (99th-percentile) of visible
    output (`usage.output_tokens − reasoning_tokens`) and p99 of
    `reasoning_tokens` per call class (tool-loop vs answer-synthesis
    p99s typically differ).
@@ -317,7 +321,7 @@ prefix likely). Bucketing trades cache reuse against overflow risk.
 | Bucketing choice | Per-bucket RPM | Behavior |
 |---|---|---|
 | One bucket (no key set) | All RPM on one key | Overflow above ~15 req/min |
-| Per-tenant or per-shape | RPM ÷ buckets | Warm bucket; overflow only above threshold |
+| Per-tenant or per-profile | RPM ÷ buckets | Warm bucket; overflow only above threshold |
 | Per-request unique | 1 RPM | Always cold; defeats the cache |
 
 Rule of thumb: `recommended_buckets ≈ ceil(common_prefix_rpm / 8–12)`,
@@ -343,7 +347,7 @@ this repo only captures and forwards the value.
 
 | Choice | Use when | Cost |
 |---|---|---|
-| **Azure-native spillover** (`spilloverDeploymentName`) | Operational simplicity priority; reactive (Azure-side) acceptable; re-route invisible at SDK call site | No proactive routing knob; diagnostic headers only |
+| **Azure-native spillover** (`spilloverDeploymentName`) | Operational simplicity priority; reactive (Azure-side) acceptable; re-route invisible at software development kit (SDK) call site | No proactive routing knob; diagnostic headers only |
 | **Custom client-side router** (Phase 2 pattern) | Need proactive routing (watch p95, ramp before throttle), per-deployment cache-pool visibility, or cache-key shaping per route | You own backoff, header capture, deployment selection, policy |
 
 Phase 2 captures native diagnostic headers
@@ -356,7 +360,7 @@ cache-pool segmentation, per-route key shaping).
 ## 8. Caveats and limits
 
 - **Single-tenant, single-region.** Both phases ran against one
-  Foundry resource. Methodology §9: absolute latency does not
+  Microsoft Foundry resource. Methodology §9: absolute latency does not
   transfer; cost and token numbers should.
 - **Simulator-bound numbers.** Phase 1's primary / spillover split
   is a routing label over one live deployment, not separate cache
@@ -377,7 +381,7 @@ cache-pool segmentation, per-route key shaping).
 ## 9. Where to go next
 
 - [`docs/04-decision-framework.md`](04-decision-framework.md) —
-  task-shape → model × effort decision tree (source for L4).
+  task-profile → model × effort decision tree (source for L4).
 - [`docs/05-methodology.md`](05-methodology.md) — measurement
   contract (§2 invariants, §4 cache, §6 cost, §8 stats, §9 limits).
 - [`docs/07-cache-hit-degradation.md`](07-cache-hit-degradation.md)

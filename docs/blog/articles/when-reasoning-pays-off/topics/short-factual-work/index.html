@@ -189,7 +189,7 @@
         $0.000598 at xhigh &mdash; about a 1.02x span, every gpt-5.2 tier below the
         $0.000665 baseline &mdash; while the paired judge score below stays around 1.95.
         <strong>Evidence boundary:</strong> N = 20 authored samples per cell, R = 3
-        repeats, this one short-factual slice, priced against a single dated PAYG
+        repeats, this one short-factual slice, priced against a single dated pay-as-you-go (PAYG)
         snapshot on one Azure OpenAI tenant and region; it is not proof for other
         workloads, regions, or future pricing.
         <strong>Source &amp; dashboard:</strong> bar values come from the public-mirror
@@ -360,7 +360,7 @@
       </p>
       <ul>
         <li>[1] <strong>Tier 1 — methodology contract:</strong> this repository, <code>docs/05-methodology.md</code> (v1.0). N = 20 authored samples per cell, R = 3 repeats, public aggregate slice only. The chart-reading prose assumes this frozen stance; error bars are standard deviation, not confidence intervals, and no p-values are claimed at N = 20.</li>
-        <li>[2] <strong>Tier 1 — PAYG pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at xhigh effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
+        <li>[2] <strong>Tier 1 — pay-as-you-go (PAYG) pricing snapshot:</strong> the per-request cost figures ($0.000587 at none effort, $0.000598 at xhigh effort, both below the $0.000665 baseline) are priced against <code>pricing/azure-openai-payg-2026-05.yaml</code> in this repository. Accessed 2026-05-19: <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/">Azure OpenAI pricing page</a>; <a href="https://web.archive.org/web/20260519042011/https://azure.microsoft.com/en-us/pricing/details/azure-openai/">archive</a>. The figures drift if list pricing moves.</li>
         <li>[3] <strong>Tier 2 — short-factual slice measurement:</strong> this repository, <code>benchmarks/01-short-factual/analysis.json</code>. Source of the flat per-request cost, the mean judge score of about 1.95 (gpt-4o baseline 1.9), the no-trend latency between about 1409 ms and 1713 ms, and the throughput factor holding near 0.99.</li>
         <li>[4] <strong>Tier 2 — rendered chart data:</strong> this repository, <code>docs/blog/data/chart-data/cost-curves-effort/benchmark-01/</code> (<code>cost-per-request.json</code>, <code>quality.json</code>, <code>latency.json</code>, <code>throughput-gain.json</code>) and <code>docs/blog/data/chart-data/token-composition/benchmark-01/tokens.json</code>. Source of the near-zero reasoning tokens (0.0 at none, 1.35 at high) against visible output that moves only from about 13.98 to 14.78 tokens.</li>
         <li>[5] <strong>Evidence dashboard:</strong> the per-cell tables and rendered source charts at the <a href="../../../../charts/?lang=en#chart-cost-curves-effort-benchmark-01-cost_per_request">evidence dashboard</a> are the auditable form of the same artifacts.</li>

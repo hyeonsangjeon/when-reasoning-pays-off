@@ -39,10 +39,10 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
-    <p class="article-kicker">Operations essay · PTU recovery and 429 handling</p>
+    <p class="article-kicker">Operations essay · Provisioned throughput recovery and 429 handling</p>
     <h1>429 is a recovery signal, not just an error</h1>
     <p class="lede">
-      A traffic burst pushes a PTU deployment to 100% utilization and the calls
+      A traffic burst pushes a provisioned throughput unit (PTU) deployment to 100% utilization and the calls
       start coming back as 429. The usual response is one of three moves:
       open a health-check polling loop until capacity looks free, retry on a
       blind fixed timer, or immediately route everything to another target. Each
@@ -88,7 +88,7 @@
         so a health-check loop or a blind fixed-interval backoff would
         usually wait far longer than the service actually asked for. But the tail
         was not negligible: a small share of waits stretched toward
-        17,000&nbsp;ms (overall p99 &asymp; 16,921&nbsp;ms). That short-median,
+        17,000&nbsp;ms (the overall 99th-percentile wait, p99, &asymp; 16,921&nbsp;ms). That short-median,
         long-tail shape is the operationally important fact: the header
         should be treated as an admission-control signal, not a fixed reset clock.
         The immediate 429 and the <code>retry-after-ms</code> contract are what
@@ -171,7 +171,7 @@
       </div>
       <figure class="article-figure" id="figure-429-admission">
         <figcaption>
-          <strong>Why a 429 is a signal, not a wall:</strong> the same burst of requests, two outcomes. Without a limiter the burst hits the API directly and it sheds load as 503. With a token-bucket limiter, within-limit requests reach a healthy API while over-limit requests get a 429 handed back to the caller, which is the admission signal this article is about. The header then says how long to wait. <em>Conceptual illustration, not measured data.</em>
+          <strong>Why a 429 is a signal, not a wall:</strong> the same burst of requests, two outcomes. Without a limiter the burst hits the application programming interface (API) directly and it sheds load as 503. With a token-bucket limiter, within-limit requests reach a healthy API while over-limit requests get a 429 handed back to the caller, which is the admission signal this article is about. The header then says how long to wait. <em>Conceptual illustration, not measured data.</em>
         </figcaption>
         <img src="../../../assets/429-rate-limit.gif" alt="A rate-limiting explainer animation. A burst of requests is shown twice. Without a limiter the burst hits the API directly and the API sheds load by returning 503. With a token-bucket limiter, within-limit requests reach a healthy API while over-limit requests get a 429 returned to the caller, so the API stays healthy. Conceptual illustration, not measured data." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
@@ -232,9 +232,9 @@
           <tr>
             <th>Source group</th>
             <th>429 count</th>
-            <th>p50</th>
-            <th>p90</th>
-            <th>p99</th>
+            <th>50th percentile</th>
+            <th>90th percentile</th>
+            <th>99th percentile</th>
             <th>Max</th>
           </tr>
         </thead>
@@ -264,7 +264,7 @@
       <p class="section-label">Operating pattern · one owner for retry</p>
       <h2>Do not stack retry loops</h2>
       <p>
-        Pick exactly one component to own 429 recovery. If the SDK is configured
+        Pick exactly one component to own 429 recovery. If the software development kit (SDK) is configured
         to retry, let it own the wait. If
         an application router owns recovery, disable SDK auto-retry and make the
         router parse <code>retry-after-ms</code> directly.

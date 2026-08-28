@@ -112,7 +112,7 @@
       </article>
       <article class="card">
         <h3>exp004: Spillover-policy simulation</h3>
-        <p>The first operations experiment after the effort trilogy (Phase 1). It pitted a proactive spillover policy against a reactive one under saturation load, and the answer came out close to a tie.</p>
+        <p>The first operations experiment after the effort trilogy (Phase 1). It pitted a proactive spillover policy (which automatically routes overflow to a standard deployment) against a reactive one under saturation load, and the answer came out close to a tie.</p>
         <p><a href="reasoning-effort-retrospective/experiments/exp004-spillover-simulation/">Read the experiment note</a></p>
       </article>
       <article class="card">
@@ -122,7 +122,7 @@
       </article>
       <article class="card">
         <h3>exp006: Cache-key bucketing</h3>
-        <p>On a live <code>gpt-5.2</code> PAYG deployment, does splitting <code>prompt_cache_key</code> from 1 bucket into 8 protect the cache-hit ratio? The docs' &ldquo;~15 requests/min per bucket&rdquo; limit proved soft, and the real lever turned out to be retention, not cardinality.</p>
+        <p>On a live <code>gpt-5.2</code> pay-as-you-go deployment, does splitting <code>prompt_cache_key</code> from 1 bucket into 8 protect the cache-hit ratio? The docs' &ldquo;~15 requests/min per bucket&rdquo; limit proved soft, and the real lever turned out to be retention, not cardinality.</p>
         <p><a href="reasoning-effort-retrospective/experiments/exp006-cache-key-bucketing/">Read the experiment note</a></p>
       </article>
       <article class="card">
@@ -160,7 +160,7 @@
         <p><a href="when-reasoning-pays-off/topics/agentic-loop-budget-governance/">Read this topic</a></p>
       </article>
       <article class="card">
-        <h3>PTU/PAYG planning</h3>
+        <h3>Provisioned throughput and pay-as-you-go planning</h3>
         <p>Modeled crossover is planning guidance, not direct capacity evidence.</p>
         <p><a href="when-reasoning-pays-off/topics/ptu-payg-planning/">Read this topic</a></p>
       </article>
@@ -192,7 +192,7 @@
     <div class="cards topic-cards">
       <article class="card">
         <h3>429 recovery with <code>retry-after-ms</code></h3>
-        <p>Why PTU recovery should follow the service header instead of health-check polling.</p>
+        <p>Why provisioned throughput recovery should follow the service header instead of health-check polling.</p>
         <p><a href="ptu-retry-after-recovery/">Read this article</a></p>
       </article>
       <article class="card">
@@ -207,7 +207,7 @@
       </article>
       <article class="card">
         <h3>Reasoning-model migration sizing</h3>
-        <p>Explain PTU demand through output weighting, reasoning tokens, cache shape, and max-token policy.</p>
+        <p>Explain provisioned throughput demand through output weighting, reasoning tokens, cache shape, and max-token policy.</p>
         <p><a href="reasoning-migration-sizing/">Read this article</a></p>
       </article>
     </div>

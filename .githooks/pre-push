@@ -45,7 +45,7 @@ if [ "${#outgoing[@]}" -eq 0 ]; then
   outgoing=(HEAD)
 fi
 for commit in "${outgoing[@]}"; do
-  check_tree "$commit" docs/blog 4a1ec880dc0b93bd70e92a1e1062e9ef884ba423 || fail=1
+  check_tree "$commit" docs/blog 468ed9af7153f43d7bf3ebdf13ad2e36f2f66b41 || fail=1
   check_tree "$commit" benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6 || fail=1
   check_tree "$commit" results 0687541fa1cefe71faefb182d29cfcaf1f0c6096 || fail=1
 done

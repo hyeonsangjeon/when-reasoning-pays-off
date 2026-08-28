@@ -21,7 +21,7 @@ Worked examples live in `docs/15-spec-vs-inference-taxonomy.examples.md`.
 
 ## 1. Why two tiers
 
-The Azure OpenAI PTU Operations Guide front matter states (internal
+The Azure OpenAI provisioned throughput unit (PTU) Operations Guide front matter states (internal
 Guide §0 — treated as Tier 2 per §3 below, since the internal Guide
 is not a public Microsoft Learn / OpenAI / Azure source):
 
@@ -46,8 +46,8 @@ accepted upstream sources, accessed on a known date.
 
 - Microsoft Learn pages (`learn.microsoft.com`, `docs.microsoft.com`)
 - OpenAI public documentation (`platform.openai.com`, `openai.com`)
-- Azure REST API references on `learn.microsoft.com`
-- Pinned Azure / OpenAI SDK source identified by file, line, and
+- Azure REST application programming interface (API) references on `learn.microsoft.com`
+- Pinned Azure / OpenAI software development kit (SDK) source identified by file, line, and
   version tag (for example `Azure SDK Python: openai/_base_client.py
   L417 (v1.42.0)`)
 

@@ -15,7 +15,7 @@ only measuring *when* they earn their token cost.
 
 ## 1. Goal
 
-We answer one question, three times, across three task shapes:
+We answer one question, three times, across three task profiles:
 
 > Given a task, does increasing `reasoning_effort` on GPT-5.2 produce enough quality lift
 > to justify the additional billed tokens?
@@ -26,8 +26,8 @@ Concretely, every benchmark produces:
    captured from `response.usage`, not estimated.
 2. A **quality score** per (sample, effort) pair from an independent judge model plus
    manual spot-checks.
-3. A **cost per call** in USD using the pricing snapshot committed under `pricing/`.
-4. A **decision implication** — for this task shape, which effort level is on the Pareto
+3. A **cost per call** in USD using the dated pricing snapshot committed under `pricing/`.
+4. A **decision implication** — for this task profile, which effort level is on the Pareto
    frontier of cost vs. quality.
 
 We deliberately do *not* try to produce a single "best effort level." The answer depends
@@ -66,7 +66,7 @@ deployment-side change would silently invalidate every prior result.
 | `cached_tokens` | `usage.prompt_tokens_details.cached_tokens` | Cache-hit portion of input |
 | `reasoning_tokens` | `usage.completion_tokens_details.reasoning_tokens` | Invisible, billed thinking |
 | `output_tokens` | `usage.output_tokens` minus reasoning | Visible response tokens |
-| `latency_ms` | Wall-clock around the API call | End-to-end, including network |
+| `latency_ms` | Wall-clock around the application programming interface (API) call | End-to-end, including network |
 | `response_text` | `response.output_text` | Required for quality eval |
 | `quality_score` | Judge model, later pass | 0–1 scalar, rubric per benchmark |
 
@@ -109,16 +109,17 @@ combination, yielding **240 API calls per benchmark** across 4 effort levels.
 ### Why N = 20
 
 We are not estimating a population mean to three decimal places. We are characterizing
-the *shape* of the cost-vs-effort curve for a task family. Twenty representative samples
+the *profile* of the cost-vs-effort curve for a task family. Twenty representative samples
 give us enough diversity to see when the curve is flat (effort buys nothing) and when it
 bends (effort buys quality), while keeping a single benchmark's cost in the low tens of
 dollars. Smaller N risks confusing a single hard sample for a trend; larger N spends
-budget without changing the conclusion shape for the questions we are asking.
+budget without changing the conclusion profile for the questions we are asking.
 
 ### Why R = 3 repeats
 
 Reasoning-model output is non-deterministic even at fixed `temperature` because the
-reasoning trace itself varies. A single call per cell is indistinguishable from noise.
+reasoning trace itself varies. A single call per sample-and-effort benchmark cell is
+indistinguishable from noise.
 Three repeats are the minimum that lets us:
 
 1. Compute a standard deviation that is not just `|x - y| / 2`.
@@ -187,7 +188,7 @@ purpose of the task. The flow:
 Each `(sample, effort, repeat)` response gets a quality score in `[0, 1]` from two
 sources:
 
-1. **LLM-as-judge** — a separate model evaluates the response against a per-benchmark
+1. **Large language model (LLM)-as-judge** — a separate model evaluates the response against a per-benchmark
    rubric. The judge model is *not* GPT-5.2 (to avoid self-evaluation bias). The judge
    prompt, judge model name, and judge model version are committed under
    `benchmarks/<name>/prompts/judge.md` and logged on every eval run.
@@ -290,7 +291,7 @@ benchmark's budget went to priming the cache.
 
 - Network egress, log storage, judge-model evaluation cost. These are real but separate;
   including them would muddle the per-call economics question we are answering.
-- Discounts from Provisioned Throughput Units, Enterprise Agreements, or any negotiated
+- Discounts from Provisioned Throughput Units (PTUs), Enterprise Agreements, or any negotiated
   pricing. We report list prices so the numbers are comparable across readers.
 
 ### Budget guards
@@ -332,7 +333,7 @@ satisfies all of the following before its results are committed:
 
 A reader with Azure OpenAI access, the committed experiment YAML, the dataset, and the
 prompt files should be able to re-run the experiment and obtain results of the same
-shape (within the variance we report). They will not get byte-identical responses —
+profile (within the variance we report). They will not get byte-identical responses —
 reasoning models are non-deterministic — but they will get the same conclusions.
 
 ---
@@ -349,15 +350,15 @@ per-sample means** (so a single high-variance sample does not dominate) and the
 **standard deviation of per-sample means**.
 
 We use standard deviation rather than confidence intervals because R = 3 does not
-support meaningful CI claims. Reporting an SD makes the limitation visible; reporting a
-CI from N = 3 would be misleading precision.
+support meaningful confidence-interval claims. Reporting an SD makes the limitation visible;
+reporting a confidence interval from N = 3 would be misleading precision.
 
 ### Outliers
 
 We do not silently remove outliers. The policy:
 
 1. An outlier is any repeat whose value is more than 3 SDs from the cell mean *and*
-   coincides with a flagged event (429 retry, cold start, truncated output).
+   coincides with a flagged event (HTTP rate-limit 429 retry, cold start, truncated output).
 2. Such repeats are tagged `"outlier_reason": "<event>"` in the raw record and excluded
    from the aggregate mean in the report, but the unexcluded mean is also shown.
 3. Outliers without a flagged event are kept in the aggregate. A surprising number is a
@@ -439,7 +440,7 @@ This section defines what these measurements do not tell you.
   characteristics (queue depth, head-of-line blocking, regional capacity) are not in
   scope.
 - **Streaming behavior.** All calls are non-streaming so that the `usage` object is
-  available at completion in one shape. Streaming changes the latency profile but not
+  available at completion in one response profile. Streaming changes the latency profile but not
   the token economics.
 - **Multi-turn conversations.** Each call is independent. Reasoning models in long
   conversations have additional dynamics this repo does not characterize.

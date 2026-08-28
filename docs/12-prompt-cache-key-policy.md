@@ -11,7 +11,7 @@
 
 ## 1. What `prompt_cache_key` actually is
 
-Three statements restated from the PTU Operations Guide §1
+Three statements restated from the provisioned throughput unit (PTU) Operations Guide §1
 ("prompt_cache_key Bucketing Guide"), per Microsoft Learn:
 
 1. The value is combined with the prefix hash to influence
@@ -95,8 +95,8 @@ for reason in anti_pattern_reasons(untrusted):
 message contains only short reason codes (`looks_like_uuid`,
 `contains_long_digit_run`, etc.). The offending key value is never
 included in the message and is never logged by this library. Callers
-that need the value for debugging must log it themselves, on their
-side of the trust boundary.
+that need the value for debugging must log it themselves, in their
+own trusted logging context.
 
 ## 3. Sizing buckets
 
@@ -116,7 +116,7 @@ should reconsider this default against the measured curve.
 
 ### Worked example (Guide §1 reproduced)
 
-A workload measured at **1.4 TPS** sharing a common prefix:
+A workload measured at **1.4 TPS (requests per second)** sharing a common prefix:
 
 ```python
 from batch_runner.cache import recommended_bucket_count
@@ -129,7 +129,7 @@ assert r.recommended_buckets == 9            # ceil(84 / 10)
 
 Operationally: split the workload across **9 cache-key buckets** so
 the per-bucket steady-state rate sits comfortably below the 15 req/min
-overflow point, with the 6-bucket minimum as the hard floor.
+overflow point, with the 6-bucket minimum as the hard minimum.
 
 ### Result dataclass
 
@@ -199,7 +199,8 @@ cached-read price; it changes the eligibility window for the discount.
 
 ## 5. Monitoring
 
-The operational loop the Guide §1 prescribes for cache-key buckets:
+The operational loop the Guide §1 prescribes for cache-key buckets tracks
+per-bucket requests per minute (RPM):
 
 1. **Measure** per-bucket RPM in production (Task 028 schema events).
 2. **Compare** the observed RPM to the 15 req/min threshold and the
@@ -230,7 +231,7 @@ and computes the target; observation is the caller's responsibility.
 | Value | Classification | Source |
 |---|---|---|
 | `15 req/min` per-bucket overflow threshold | **official spec** | PTU Operations Guide §1, citing Microsoft Learn |
-| Sizing formula shape (`rpm / target`) | **official spec** | PTU Operations Guide §1 |
+| Sizing formula structure (`rpm / target`) | **official spec** | PTU Operations Guide §1 |
 | `target_rpm_per_bucket = 10` default | **operational inference** | Midpoint of Guide §1's recommended `[8, 12]` range; to be revisited against Task 018's measured curve |
 | Retention default table | **official spec** | PTU Operations Guide §2 |
 | `ensure_explicit` "must be explicit" rule | **operational policy** | This repo's reading of the Guide §2 "common trap" — the Guide warns; this library enforces |

@@ -1,4 +1,4 @@
-# Operator Guide — Operator Levers for PTU + Reasoning Workloads
+# Operator Guide — Operator Levers for Provisioned Throughput Unit (PTU) + Reasoning Workloads
 
 ![Five per-call operator levers (L1–L5) for PTU and reasoning workloads, ordered for diagnostic application.](assets/operator-five-levers.svg)
 
@@ -6,7 +6,7 @@
 
 ## 1. Who this is for
 
-An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on PTU or PAYG, with or without spillover, looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 onset. Levers **L1–L5** below are ordered for diagnostic application, not by magnitude; **L6** (loop / budget governance) is a different class — it governs the multi-call loop that wraps L1–L5, not a single call.
+An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on provisioned throughput units (PTU, a block of dedicated fixed capacity) or pay-as-you-go (PAYG, shared capacity billed per token), with or without spillover (Azure automatically routing overflow requests from a saturated provisioned deployment to a standard one), looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 (HTTP rate-limit) onset. Levers **L1–L5** below are ordered for diagnostic application, not by magnitude; **L6** (loop / budget governance) is a different class — it governs the multi-call loop that wraps L1–L5, not a single call.
 
 ## 2. The levers
 
@@ -14,7 +14,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 **Mechanism.** When the primary deployment is near saturation, the client-side first-token timeout decides how long a request sits "throttled-but-not-yet-rerouted." A shorter timeout shrinks that window; a longer one inflates tail latency without changing cost.
 
-**Action.** Make `first_token_timeout_ms` an explicit per-deployment setting (Phase 1 / Phase 2 default `3000`). Tune from observed sustain TTFT p50/p95, not from a vendor default copied forward.
+**Action.** Make `first_token_timeout_ms` an explicit per-deployment setting (Phase 1 / Phase 2 default `3000`). Tune from observed sustain time-to-first-token (TTFT) at p50/p95 (the median and 95th-percentile marks), not from a vendor default copied forward.
 
 **In-repo evidence.** `benchmarks/04-spillover-simulation/analysis.md` §7 — sustain TTFT p50/p95 reactive `8,490.6 / 13,617.5 ms`, proactive `7,620.9 / 12,107.8 ms`. `benchmarks/05-dual-spillover/README.md` + committed `runs/*.summary.json` — Phase 2 reactive `7,383.3 / 11,967.2 ms`, proactive `10,239.9 / 34,631.7 ms` across two real deployments with real 429s.
 
@@ -22,7 +22,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 ### L2. Spillover policy — native vs proactive custom router
 
-![Same burst of requests, two outcomes. Without a limiter the burst hits the API directly and it sheds load as 503. With a token-bucket limiter, within-limit requests reach the API while over-limit requests get a 429 returned to the caller, so the API stays healthy.](assets/429-rate-limit.gif)
+![Same burst of requests, two outcomes. Without a limiter the burst hits the application programming interface (API) directly and it sheds load as 503. With a token-bucket limiter, within-limit requests reach the API while over-limit requests get a 429 returned to the caller, so the API stays healthy.](assets/429-rate-limit.gif)
 
 **Mechanism.** Azure-native spillover (`spilloverDeploymentName`) is reactive and PTU-scoped: it activates when the primary returns 429 and requires a PTU primary plus a configured target. Custom client-side routers can be proactive (route before the primary throttles) but pay for that with extra primary 429s when the heuristic mis-fires.
 
@@ -46,7 +46,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 **Mechanism.** `reasoning_effort` is per-request and reasoning tokens bill at the output rate while being invisible in the response. Higher tiers spend more reasoning tokens without necessarily lifting quality. On short-factual tasks reasoning tokens are ≈ 0 so the cost curve is flat from `none` up; on multi-step tasks the lowest non-zero effort already captures the quality lift.
 
-**Action.** Default new traffic to `none` (the measured effort floor; the live gpt-5.2 deployment rejects `minimal` with HTTP 400); raise per task class only when the task's quality evaluation justifies it. Never default to `high` or `xhigh`.
+**Action.** Default new traffic to `none` (the lowest measured effort level; the live gpt-5.2 deployment rejects `minimal` with HTTP 400); raise per task class only when the task's quality evaluation justifies it. Never default to `high` or `xhigh`.
 
 **In-repo evidence.** `docs/04-decision-framework.md` (Q1–Q3 routing tree). `benchmarks/01-short-factual/analysis.md` §5/§10 — `none` at `$0.000587 ± $0.000124 / req` vs `gpt-4o` `$0.000665 ± $0.000089` (12 % PAYG saving) at a marginally higher judge score (`1.95` vs `1.90`); with reasoning tokens ≈ 0, no tier above `none` raises quality or, materially, cost. `benchmarks/02-multi-step-reasoning/` via `results/summary.md` §3 — `effort = none` `$0.000618 / correct` vs `gpt-4o` `$0.001064` (42 % PAYG saving).
 
@@ -54,7 +54,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 ### L5. `max_output_tokens` tightening (TBD: Task 019 v2.3 evidence)
 
-**Mechanism.** On PTU, `max_output_tokens` is an admission-time reservation, not a soft cap: inflating it for reasoning headroom silently reduces effective concurrency, so 429s surface at a lower admitted RPM while the bill per completed request is unchanged. The lever is *tightening*, not removing.
+**Mechanism.** On PTU, `max_output_tokens` is an admission-time reservation, not a soft cap: inflating it for reasoning headroom silently reduces effective concurrency, so 429s surface at a lower admitted requests-per-minute rate (RPM) while the bill per completed request is unchanged. The lever is *tightening*, not removing.
 
 **Action.** Per call class, set `max_output_tokens = ceil((p99_visible + p99_reasoning) × 1.15)` from a representative production sample. Treat one-off long answers as per-call overrides, not a global cap raise.
 
@@ -84,7 +84,7 @@ An engineer or architect operating an Azure OpenAI deployment that serves a reas
 
 - **System prompt content.** L3 protects byte-stability; it does not decide what the bytes should be. Content is gated by your safety and quality teams.
 - **PTU sizing.** Throughput-gain framing in L4 / L5 is a token-pressure proxy, not a billed PTU magnitude; sizing decisions need deployment-side capacity data this repo does not have.
-- **Single-call ReAct planning variance** (Hypothesis H′). Mechanism named in `docs/07-cache-hit-degradation.md` §9; magnitude unmeasured — architectural, not a knob.
+- **Single-call ReAct (reasoning-and-acting) planning variance** (Hypothesis H′). Mechanism named in `docs/07-cache-hit-degradation.md` §9; magnitude unmeasured — architectural, not a knob.
 
 ## 5. Where to go next
 
