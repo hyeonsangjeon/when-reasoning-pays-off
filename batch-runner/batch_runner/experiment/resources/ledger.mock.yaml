@@ -1,0 +1,59 @@
+# Run ledger — the IN stage of one real experiment run.
+# Mock provider: deterministic and fully offline. This is a SHAPE PREVIEW only.
+# The answers and token counts are synthetic — not a measurement of any model.
+# Use it when you have neither Ollama nor Azure and just want to see the
+# DATA -> IN -> EXECUTE -> OUT artifacts.
+schema_version: "1.0.0"
+
+experiment:
+  id: five-minute-mock
+  purpose: >-
+    Offline shape preview. Produces the same artifact tree as a real run but
+    with synthetic, deterministic content. Not a measurement of any model.
+
+provider: mock
+model: mock-preview
+
+# The mock provider ignores the endpoint, but the field is still declared so
+# the ledger shape matches the real providers.
+endpoint:
+  env_var: MOCK_BASE_URL
+  default: http://localhost:11434
+
+auth:
+  mode: none
+  env_vars: []
+
+input:
+  path: sample.jsonl
+  format: jsonl
+  row_shape:
+    required_fields:
+      id: string
+      input: string
+    optional_fields:
+      expected: string
+  max_records: 50
+  sample_selector: first
+
+execution:
+  max_samples: 3
+  concurrency: 1
+  timeout_seconds: 60
+  max_output_tokens: 128
+  repeats: 1
+  capture_io: true
+  cost:
+    billed: false
+    confirmed: false
+
+output:
+  dir: out
+  artifacts:
+    - run.json
+    - records.jsonl
+    - summary.md
+
+provenance:
+  method_id: experiment-runner
+  method_version: "1.0.0"

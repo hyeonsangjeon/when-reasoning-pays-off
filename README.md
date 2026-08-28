@@ -18,6 +18,76 @@ models earn their cost, and when they just bill for thinking nobody reads.*
 
 Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
 
+## Run one real experiment in five minutes — DATA → IN → EXECUTE → OUT
+
+This path **calls a real model** and shows you every stage: the exact **data**
+that goes in, the **model / endpoint / provider** that were selected, the
+**command** that executed, and **where the output was written**. (A *provider*
+is who serves the model; an *endpoint* is the base web address the request is
+sent to; a *model* — also called a *deployment* on Azure — is the specific large
+language model that answers.)
+
+The fastest no-cloud-cost path is **[Ollama](https://ollama.com)**, which runs a
+small model on your own machine. The five-minute target assumes Ollama is
+already installed and the small model is available or quick to pull; the first
+`ollama pull` is network- and hardware-dependent and is not counted in the five
+minutes. Azure OpenAI in Microsoft Foundry is also supported, but it is a
+**billed** call and is refused unless you explicitly confirm the cost. Its
+preflight uses the ledger's pinned pricing model and separate input/output
+rates; verify them against current Azure pricing before confirmation.
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+python -m pip install .
+
+# 1. Copy a ready-to-run workspace (ledger + tiny dataset + .env.example):
+reasoning-payoff sample init --provider ollama --out sample-workspace
+
+# 2. (One-time) start Ollama and pull the small default model in another shell:
+#    ollama serve   &&   ollama pull qwen2.5:0.5b
+
+# 3. EXECUTE the run and read the OUT artifacts:
+reasoning-payoff sample run --ledger sample-workspace/ledger.yaml
+```
+
+You get a workspace like this — `ledger.yaml` is the **IN** contract (provider,
+model, endpoint env-var NAME, dataset shape, limits, cost boundary), and `out/`
+holds the **OUT** artifacts of the run:
+
+```text
+sample-workspace/
+├── ledger.yaml        # IN: what will run, how, and the cost boundary
+├── sample.jsonl       # DATA: 3 rows of {id, input, expected?}
+├── sample.json        # DATA: the same rows as one JSON array
+├── .env.example       # names of the environment variables (never secrets)
+└── out/
+    ├── run.json       # provider/model, input hash + row count, timings, usage
+    ├── records.jsonl  # one row per request: latency, token usage, answer text
+    ├── summary.md     # a short, safe answer preview + where the records live
+    └── .reasoning-payoff-experiment-owned   # marker: this dir is run output
+```
+
+> This is an **illustrative live sample — not the published benchmark**; there
+> is no quality judge and no comparable reasoning-effort sweep. It proves the
+> plumbing end to end, not a scientific result. Sample output is gitignored and
+> fixed to the workspace's owned `out/` directory.
+
+Prefer no install first? `reasoning-payoff sample init --provider mock` uses a
+deterministic **offline preview** provider that makes no network call — useful
+to see the exact artifact shapes before you run a live model.
+
+**Full walkthrough, data-shape tables, Azure setup, cost guard, troubleshooting,
+and exit codes:** [docs/20 — Run one real experiment in five
+minutes](docs/20-five-minute-experiment-run.md). To browse all 20 committed
+experiments and their DATA/IN/EXECUTE/OUT view without running anything, use
+`reasoning-payoff experiment list` and `reasoning-payoff experiment describe
+<id>`.
+
+> **Two different five-minute paths.** The command above *calls a model*. The
+> section just below (`reasoning-payoff analyze`) instead *analyzes usage you
+> already recorded* and makes **no** service call — use it when you have usage
+> logs and want a provenance report rather than a fresh model answer.
+
 ## Generate an offline report in under five minutes
 
 Python 3.11+, no credentials, no service calls, and no telemetry:
@@ -81,6 +151,7 @@ Historical benchmark, result, and blog inputs remain read-only.</sub>
 | --- | --- | :---: |
 | **See the evidence** | [Open the live dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) — interactive cost / quality / latency / crossover charts | ❌ |
 | **Read the story** | [Overview essay →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/) in English · 한국어 · 日本語 · 简体中文 · हिन्दी | ❌ |
+| **Run one real experiment** | `reasoning-payoff sample init --provider ollama --out sample-workspace && reasoning-payoff sample run --ledger sample-workspace/ledger.yaml` — a small real local model run (a few rows), no cloud cost ([guide](docs/20-five-minute-experiment-run.md)) | ❌ (Ollama) |
 | **Generate a provenance report** | `reasoning-payoff analyze examples/five-minute/usage.jsonl --workload examples/five-minute/workload.yaml --out report` | ❌ |
 | **Verify it runs locally** | `bash scripts/verify_setup.sh` — no credentials, ~10 s to a green check | ❌ |
 | **Run the test suite** | `pip install -r requirements-dev.txt && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |
@@ -94,6 +165,7 @@ Historical benchmark, result, and blog inputs remain read-only.</sub>
 - [The question](#the-question) · [Short answer](#short-answer) · [Which customer are you?](#which-customer-are-you)
 - [What's here](#whats-here) — [docs](#documentation), [code and data](#code-and-data)
 - [Five-minute offline report](#generate-an-offline-report-in-under-five-minutes) · [Method guide](docs/19-five-minute-provenance-report.md)
+- [Run one real experiment](#run-one-real-experiment-in-five-minutes--data--in--execute--out) · [Experiment guide](docs/20-five-minute-experiment-run.md)
 - [Operator levers (L1–L5)](#operator-levers-l1l5) · [Methodology](#methodology-summary) · [Reproducing](#reproducing-these-measurements)
 - [Data publication policy](#data-publication-policy) · [Contributing, governance, security](#contributing-governance-security)
 
@@ -220,6 +292,7 @@ measured magnitudes.
 | [`docs/17-foundry-packaging-relationship.md`](docs/17-foundry-packaging-relationship.md) | Publication boundaries and Azure AI Foundry packaging contract |
 | [`docs/18-agentic-loop-budget-governance.md`](docs/18-agentic-loop-budget-governance.md) | Operator lever L6 — governing unbounded agentic loops (thresholds, intervention, evals, traceability, governance) |
 | [`docs/19-five-minute-provenance-report.md`](docs/19-five-minute-provenance-report.md) | Official offline CLI method: install, sample/BYOW contracts, artifacts, privacy, interpretation, exit codes, and timing |
+| [`docs/20-five-minute-experiment-run.md`](docs/20-five-minute-experiment-run.md) | Run one real model experiment (Ollama local or Azure billed): DATA/IN/EXECUTE/OUT flow, ledger contract, data shapes, cost guard, output tree, exit codes, and mock preview |
 | [Standalone five-minute Pages guide](https://hyeonsangjeon.github.io/when-reasoning-pays-off/guides/five-minute-report/) | Dependency-free web rendering of the same command and contract guide |
 
 ### Code and data

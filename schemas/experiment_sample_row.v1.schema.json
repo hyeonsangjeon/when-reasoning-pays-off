@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/experiment_sample_row.v1.schema.json",
+  "title": "ExperimentSampleRow",
+  "description": "One input row for the five-minute experiment sample. JSONL: one object per line. JSON: an array of these objects.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "input"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Stable, unique row identifier used in output records."
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20000,
+      "description": "The prompt text sent to the model for this row."
+    },
+    "expected": {
+      "type": "string",
+      "maxLength": 20000,
+      "description": "Optional reference answer, for your own eyeballing. The sample runner does not judge quality against it."
+    }
+  }
+}

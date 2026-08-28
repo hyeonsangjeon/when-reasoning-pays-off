@@ -1,0 +1,338 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/experiment_ledger.v1.schema.json",
+  "title": "ExperimentRunLedger",
+  "description": "The strict, versioned IN contract for one real experiment run. Fail-closed: unknown fields are rejected. Endpoint and auth are given by environment-variable NAME only; no URL host or secret is ever stored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experiment",
+    "provider",
+    "model",
+    "endpoint",
+    "auth",
+    "input",
+    "execution",
+    "output",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "experiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "purpose"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["azure", "ollama", "mock"]
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["env_var"],
+      "properties": {
+        "env_var": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+        },
+        "default": {
+          "type": ["string", "null"],
+          "pattern": "^http://(localhost|127\\.0\\.0\\.1|\\[::1\\]):\\d{2,5}/?$",
+          "description": "Localhost-only fallback (Ollama). Azure must omit this."
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["none", "entra"]
+        },
+        "env_vars": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{0,63}$"
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "format", "row_shape", "max_records"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["json", "jsonl"]
+        },
+        "row_shape": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required_fields"],
+          "properties": {
+            "required_fields": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "enum": ["string", "integer", "number", "boolean"]
+              },
+              "required": ["id", "input"],
+              "properties": {
+                "id": { "const": "string" },
+                "input": { "const": "string" }
+              }
+            },
+            "optional_fields": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "enum": ["string", "integer", "number", "boolean"]
+              }
+            }
+          }
+        },
+        "max_records": {
+          "const": 50
+        },
+        "sample_selector": {
+          "type": "string",
+          "enum": ["first", "all"]
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_samples", "cost"],
+      "properties": {
+        "max_samples": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "concurrency": {
+          "const": 1,
+          "description": "This release runs one request at a time; concurrency must be exactly 1."
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32768
+        },
+        "repeats": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "reasoning_effort": {
+          "type": ["string", "null"],
+          "enum": [null, "none", "minimal", "low", "medium", "high", "xhigh", "max"],
+          "description": "Azure-only. Must be null for ollama and mock."
+        },
+        "capture_io": {
+          "type": "boolean"
+        },
+        "cost": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["billed"],
+          "properties": {
+            "billed": {
+              "type": "boolean"
+            },
+            "confirmed": {
+              "type": "boolean"
+            },
+            "estimated_usd": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1000000.0
+            },
+            "hard_ceiling_usd": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1000000.0
+            },
+            "pricing_snapshot_id": {
+              "type": ["string", "null"],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "pricing_model": {
+              "type": ["string", "null"],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "input_per_1m_usd": {
+              "type": ["number", "null"],
+              "exclusiveMinimum": 0.0,
+              "maximum": 1000000.0
+            },
+            "output_per_1m_usd": {
+              "type": ["number", "null"],
+              "exclusiveMinimum": 0.0,
+              "maximum": 1000000.0
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dir"],
+      "properties": {
+        "dir": {
+          "const": "out"
+        },
+        "artifacts": {
+          "const": ["run.json", "records.jsonl", "summary.md"],
+          "description": "The runner writes exactly these three files, in this order."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method_id", "method_version"],
+      "properties": {
+        "method_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "method_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "description": "Azure is a billed, Entra-authenticated provider with an env-only endpoint.",
+      "if": {
+        "properties": { "provider": { "const": "azure" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "entra" } }
+          },
+          "endpoint": {
+            "properties": { "default": { "const": null } }
+          },
+          "execution": {
+            "properties": {
+              "cost": {
+                "properties": {
+                  "billed": { "const": true },
+                  "hard_ceiling_usd": { "exclusiveMinimum": 0 }
+                },
+                "required": [
+                  "hard_ceiling_usd",
+                  "pricing_snapshot_id",
+                  "pricing_model",
+                  "input_per_1m_usd",
+                  "output_per_1m_usd"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Ollama is a local, unbilled provider with no auth and no reasoning effort.",
+      "if": {
+        "properties": { "provider": { "const": "ollama" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "none" } }
+          },
+          "execution": {
+            "properties": {
+              "reasoning_effort": { "const": null },
+              "cost": {
+                "properties": {
+                  "billed": { "const": false },
+                  "pricing_snapshot_id": { "const": null },
+                  "pricing_model": { "const": null },
+                  "input_per_1m_usd": { "const": null },
+                  "output_per_1m_usd": { "const": null }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Mock is an offline, unbilled preview with no auth and no reasoning effort.",
+      "if": {
+        "properties": { "provider": { "const": "mock" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "none" } }
+          },
+          "execution": {
+            "properties": {
+              "reasoning_effort": { "const": null },
+              "cost": {
+                "properties": {
+                  "billed": { "const": false },
+                  "pricing_snapshot_id": { "const": null },
+                  "pricing_model": { "const": null },
+                  "input_per_1m_usd": { "const": null },
+                  "output_per_1m_usd": { "const": null }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
