@@ -1,4 +1,4 @@
-# Operator Guide — Multi-Worker PTU Cooldown Coordination
+# Operator Guide — Multi-Worker Provisioned Throughput Unit (PTU) Cooldown Coordination
 
 ![Multi-worker PTU cooldown: without coordination workers resume together; jitter spreads them out.](assets/multi-worker-cooldown.svg)
 
@@ -10,8 +10,9 @@
 
 ## 1. The problem the Guide does not solve
 
-The PTU Operations Guide §0 establishes header-driven recovery as the
-per-request primary mechanism: when a worker receives a 429, it reads
+The provisioned throughput unit (PTU) Operations Guide §0 establishes
+header-driven recovery as the per-request primary mechanism: when a
+worker receives an HTTP rate-limit status 429, it reads
 `retry-after-ms` and resumes after that interval. Task 023 implements
 this for a single worker.
 
@@ -82,7 +83,7 @@ coordinator.call(send, *, request) -> response
 ```
 
 The coordinator has **no** `max_attempts` argument. Retry budget,
-ceiling decisions, and fallback policy remain owned by the wrapped
+maximum-wait decisions, and fallback policy remain owned by the wrapped
 `AdmissionController` (the single-owner retry rule from Task 023). The
 coordinator only augments sleep duration.
 
@@ -117,7 +118,7 @@ client object MUST expose:
 | Method | Semantics |
 | --- | --- |
 | `incr(key) -> int` | atomic monotonic counter |
-| `expire(key, seconds)` | TTL on the key |
+| `expire(key, seconds)` | Time-to-live (TTL) on the key |
 | `get(key) -> str \| bytes \| None` | read |
 
 A Redis client (`redis-py`) is one valid choice. **This project does
@@ -139,8 +140,8 @@ Skip the coordinator when:
 - A single worker is in use → the Task 023 controller alone is
   sufficient and the coordinator adds zero behavior anyway (verified
   by the N=1 invariant test).
-- The deployment is PAYG-only with no per-request throttling
-  guarantees → use the SDK's native retry instead and consult the
+- The deployment is pay-as-you-go (PAYG)-only with no per-request throttling
+  guarantees → use native retry in the software development kit (SDK) instead and consult the
   controller's `DoubleRetryError` guidance.
 
 ### N=1 invariant
@@ -171,7 +172,9 @@ coordinator's resulting clustering is zero pairs, satisfying the
 - PAYG fallback. Falling back from PTU to PAYG on `WaitExceedsCeiling`
   is the wrapped controller's responsibility (its `fallback` argument).
 - Native server-side spillover (Task 021). Spillover routes individual
-  requests; the coordinator schedules retry timing.
+  requests (automatic routing of overflow requests from a saturated
+  provisioned deployment to a standard deployment); the coordinator
+  schedules retry timing.
 - Replacing `retry-after-ms` parsing. Parsing remains in the Task 023
   controller; the coordinator consumes the parsed value via the
   `ThrottleEvent` it receives through the wrapped `on_throttle` hook.

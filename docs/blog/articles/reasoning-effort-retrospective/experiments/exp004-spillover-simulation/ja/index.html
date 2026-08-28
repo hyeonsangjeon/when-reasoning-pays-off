@@ -11,7 +11,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp004 · 先回りするスピルオーバーはキャッシュを守れたのか | when reasoning pays off</title>
-  <meta name="description" content="PTU スピルオーバーポリシーシミュレーション(Phase 1) exp004 の実験ノート。持続的な飽和近傍の負荷で、先回りする proactive スピルオーバーは事後対応の reactive よりプロンプトキャッシュを守れるのか。二つの live gpt-5.2 実行の答えは、ほぼ引き分けでした。proactive の定常状態キャッシュはむしろ 0.1657 pp 低く、スピルオーバーを一度も発動しませんでした。">
+  <meta name="description" content="ライブの従量課金(ペイアズユーゴー)呼び出しと内部飽和しきい値を用いた、プロビジョンドスループット・スピルオーバー挙動の Phase 1 シミュレーション exp004 の実験ノート。持続的な飽和近傍の負荷で、先回りする proactive スピルオーバーは事後対応の reactive よりプロンプトキャッシュを守れるのか。二つの live gpt-5.2 実行の答えは、ほぼ引き分けでした。proactive の定常状態キャッシュはむしろ 0.1657 pp 低く、スピルオーバーを一度も発動しませんでした。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -46,11 +46,11 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート · exp004</p>
-    <p class="article-kicker">実験ノート · exp004 · PTU スピルオーバーポリシーシミュレーション(Phase 1) · 賢いポリシーは割に合ったのか</p>
+    <p class="article-kicker">実験ノート · exp004 · 従量課金(ペイアズユーゴー)呼び出しによるプロビジョンドスループット・スピルオーバーシミュレーション(Phase 1) · 賢いポリシーは割に合ったのか</p>
     <h1>exp004 &mdash; 先回りするスピルオーバーは割に合ったのか</h1>
     <p class="muted-note">執筆 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">前の三つのベンチマークは、どれも &ldquo;推論強度の設定をどこまで上げるか&rdquo; の話でした。今回は軸を変え、推論強度ではなく<strong>デプロイ</strong>を扱います。PTU(固定容量)デプロイが飽和に近づくとき、トラフィックの一部を予備経路へ逃がす二つの<strong>スピルオーバー</strong>ポリシーを、同じ負荷で比較しました。</p>
+    <p class="lede">前の三つのベンチマークは、どれも &ldquo;推論強度の設定をどこまで上げるか&rdquo; の話でした。今回は軸を変え、推論強度ではなく<strong>デプロイ</strong>を扱います。この実験は、PTU(固定容量)デプロイが飽和に近づく状況を<strong>シミュレート</strong>します。トラフィックの一部を予備経路へ逃がす二つの<strong>スピルオーバー</strong>ポリシーを、同じ負荷で比較しました。</p>
     <p class="lede">私たちは<strong>事前登録した予測を残していました</strong>。遅延が上がる気配を見て<em>先回りする</em>(proactive)ポリシーは、タイムアウトや 429 が起きてから逃がす<em>事後対応</em>(reactive)ポリシーより、飽和区間でのキャッシュ低下が小さいはずだと予測しました。早めに手を打つほうがよい、という自然な直感です。</p>
     <p class="lede">実測は、その直感と異なる結果を示しました。飽和区間の定常状態キャッシュヒットは <strong>reactive 99.2337%, proactive 99.0680%</strong> &mdash; 先回りした側がむしろ <strong>0.1657 pp 低い</strong>結果でした。しかも reactive は持続区間をずっとスピルオーバーで走った一方、proactive は<em>一度も発動しませんでした</em>。このノートでは、その 22分間を<em>設計 → 入力 → 予測対実測 → 二つの曲線 → 判断</em>としてたどります。exp001 が &ldquo;易しい仕事では推論は割に合わない&rdquo; だったように、ここでは &ldquo;この条件では賢いポリシーは有効ではありません&rdquo;という結果です。</p>
 
@@ -59,7 +59,7 @@
       <h2>PTU が飽和に近づくと何が起きるのか</h2>
       <p>固定容量(PTU)でモデルをデプロイすると、トラフィックがその容量上限に<strong>近づく瞬間</strong>が訪れます。そこでプロンプトキャッシュが揺らぐと、固定料金そのものは変わらなくても、同じプレフィックスの再計算が容量の余裕を消費し、レイテンシとスループットを悪化させます。</p>
       <p>その揺らぎに対する緩衝材が<strong>スピルオーバー</strong>です。あふれそうな場合は、トラフィックの一部を予備経路へ逃がします。方法は二つあります。<strong>事後対応</strong>(reactive)はタイムアウトや 429 が<em>出てから</em>逃がし、<strong>先回り</strong>(proactive)は p95 遅延が徐々に上がる兆候を見て、<em>早めに</em>少しずつ逃がします。</p>
-      <p><strong>PTU デプロイ</strong>を運用していて、トラフィックが飽和にたびたび触れるなら、このノートが参考になります。&ldquo;より賢いポリシーを入れれば、キャッシュをもっと守れるのか?&rdquo; という、運用者なら一度は持つ問いに、この実験は一つの<strong>実測の答え</strong>を返します。そしてその答えは、おそらく予想と異なります。</p>
+      <p><strong>PTU デプロイ</strong>を運用していて、トラフィックが飽和にたびたび触れるなら、このノートは関連するポリシー上の問いを検証します。その答えは、単一エンドポイントの従量課金(ペイアズユーゴー)シミュレーション内で測っており、ライブの PTU 容量そのもので測ったものではありません。そしてその答えは、おそらく予想と異なります。</p>
     </section>
 
     <section id="reproduce" class="article-section">
@@ -89,12 +89,12 @@ python3 -c "import json; s=json.load(open('benchmarks/04-spillover-simulation/an
     <section id="design" class="article-section">
       <p class="section-label">設計</p>
       <h2>今回は推論強度ではなくデプロイです</h2>
-      <p><strong>なぜこれを測ったのか。</strong> 前の三つのノートでは、推論強度をどこまで上げるかを検討しました。推論強度を決めると、次の壁が訪れます。その設定にトラフィックが集まったとき、<strong>デプロイが持つのか</strong>です。PTU デプロイが飽和に近づくとプロンプトキャッシュが不安定になることがあり、スピルオーバーがその影響を緩和します。&ldquo;先回りするポリシーは事後対応よりよい&rdquo;という一般的な直感が正しいかを、推測ではなく実測で確かめました。</p>
+      <p><strong>なぜこれを測ったのか。</strong> 前の三つのノートでは、推論強度をどこまで上げるかを検討しました。推論強度を決めると、次の壁が訪れます。その設定にトラフィックが集まったとき、<strong>デプロイが持つのか</strong>です。シミュレートした PTU パターンでは、飽和近傍でプロンプトキャッシュが不安定になることがあり、スピルオーバーがその緩衝材になります。&ldquo;先回りするポリシーは事後対応よりよい&rdquo;という一般的な直感が正しいかを、推測ではなく実測で確かめました。</p>
       <p><strong>そこで、&lsquo;先回りのほうがよい&rsquo;という仮説を立てました。</strong> 文にすると次のとおりです &mdash; <em>持続的な飽和負荷では、先回りする(proactive)ポリシーは事後対応(reactive)より、飽和区間のキャッシュヒット低下が小さいと予測しました。</em> この仮説には判定条件も設けました。<strong>proactive が飽和キャッシュで reactive をはっきり上回れば &lsquo;先回りがよい&rsquo; は支持されます。勝てないか、むしろ低ければ、少なくともこの条件ではその直感は有効ではないと判断します。</strong></p>
       <p><strong>原因究明ではなく、緩和策の比較です。</strong> &ldquo;スピルオーバー自体がキャッシュ低下の根本原因だ&rdquo; という強い主張は、すでに現場観察で弱まっていました。だからこの実験は原因を掘る場ではありません。二つの緩和ポリシーのうち、<strong>どちらがよいか</strong>だけを競わせる場です。検証範囲を絞ったため、得られる結論も限定的ですが明確です。</p>
       <p><strong>なぜシミュレーションから始めるのか。</strong> Phase 1 では、gpt-5.2 デプロイ<em>一つ</em>の上でスピルオーバー状態だけを内部的に模擬します。物理的に分かれたキャッシュプールではありません。そのため、絶対値ではなく<strong>ポリシー間の差の向き</strong>を確認します。プライマリ/予備のキャッシュプールが本当に分かれる 2デプロイ負荷テストは Phase 2 の仕事です。このノートは、その基準値を先に確認します。</p>
       <p><strong>問いは一つです。</strong> 持続的な飽和近傍の ReAct 負荷で、先回りするスピルオーバーは事後対応よりキャッシュを守るのか。</p>
-      <p><strong>設計(負荷)。</strong> 同じ 22分の負荷を、二つのポリシーに同じように流しました(原資料ラベルでは 22-min / 2-min / 10-min / 10-min) &mdash; <strong>ウォームアップ 2-min</strong>(0.3 TPS) → <strong>ランプ 10-min</strong>(0.5→2.5 TPS) → <strong>持続 10-min</strong>(2.0 TPS)。gpt-5.2 の 1デプロイ、<code>effort=low</code>、約 <strong>30K tokens</strong> のシステムプロンプト(二つの実行がバイトまで同一になるよう SHA-256 で固定、<code>corpus_seed 4242</code>)。内部スロットルしきい値は <strong>90,000 TPM</strong>。各ポリシーで <strong>2,136</strong> リクエスト(warmup 36 / ramp 900 / sustain 1,200)を実行しました。</p>
+      <p><strong>設計(負荷)。</strong> 同じ 22分の負荷を、二つのポリシーに同じように流しました(原資料ラベルでは 22-min / 2-min / 10-min / 10-min) &mdash; <strong>ウォームアップ 2-min</strong>(0.3 リクエスト毎秒) → <strong>ランプ 10-min</strong>(0.5→2.5 リクエスト毎秒) → <strong>持続 10-min</strong>(2.0 リクエスト毎秒)。gpt-5.2 の 1デプロイ、<code>effort=low</code>、約 <strong>30K tokens</strong> のシステムプロンプト(二つの実行がバイトまで同一になるよう SHA-256 で固定、<code>corpus_seed 4242</code>)。内部スロットルしきい値は <strong>90,000 TPM</strong>。各ポリシーで <strong>2,136</strong> リクエスト(warmup 36 / ramp 900 / sustain 1,200)を実行しました。</p>
       <p><strong>変える軸は一つだけ</strong> &mdash; <code>policy.type</code> を <code>reactive</code> と <code>proactive</code> で切り替える。プロンプト&middot;負荷&middot;モデル&middot;推論強度&middot;しきい値はすべて固定なので、二つの成果物の差はポリシーだけに起因します。</p>
       <div class="article-summary-grid" aria-label="事前登録予測と役割">
         <section class="summary-tile"><h2>事前登録予測</h2><p>先回りする(<code>proactive</code>)ポリシーは飽和区間のキャッシュ低下が小さく、事後対応(<code>reactive</code>)より定常状態キャッシュヒットが<strong>高い</strong>はずです。</p></section>
@@ -193,8 +193,8 @@ proactive   0% (無効)              99.0680%  (±1.2802%p)                     
       <h2>次の人が迷いにくいように</h2>
       <p>根拠を残す仕事は、勝った結果だけを書くことではありません。予測が外れた実験も、なぜ外れ、どこまで信じられるのかまで残ってこそ、次の判断にもう一度使える。だからこのノートは回顧と前の実験へ戻ってつながります。</p>
       <ul>
-        <li><strong>回顧本文 →</strong> ハブの <a href="../../../ja/#next">次の判断 &middot; 次の実験</a>が予告した &ldquo;live PTU 負荷テスト&rdquo; が、この実験です。トークンベースの PTU <em>推定</em>の後に来た、最初の<em>実測</em>負荷結果。</li>
-        <li><strong>予告したノート →</strong> <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツールエージェント</a>は最後に &ldquo;次はライブ検索と実際の PTU 負荷テスト&rdquo; と書いた。このノートが、その負荷テストの <strong>Phase 1</strong> です。</li>
+        <li><strong>回顧本文 →</strong> ハブの <a href="../../../ja/#next">次の判断 &middot; 次の実験</a>が予告した &ldquo;live PTU 負荷テスト&rdquo;。Phase 1 は、トークンベースの PTU <em>推定</em>の後に、そのパターンを従量課金(ペイアズユーゴー)で<em>実測</em>したシミュレーションです。</li>
+        <li><strong>予告したノート →</strong> <a href="../../exp003-tool-using-agent/ja/">exp003 &mdash; ツールエージェント</a>は最後に &ldquo;次はライブ検索と実際の PTU 負荷テスト&rdquo; と書いた。このノートは従量課金(ペイアズユーゴー)によるシミュレーション段階であり、ライブの PTU 容量そのものでの測定ではありません。</li>
         <li><strong>原資料 →</strong> 二つのポリシー定義は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a>、分析は <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a> にある。</li>
       </ul>
       <p><strong>次の実験。</strong> Phase 1 は一つのデプロイ上でスピルオーバーをまねた。次は<strong>物理的に分離された二つのデプロイ</strong>に実際の TPM スロットルをかけ、同じ負荷を流す高忠実度の再測定です。プライマリ/予備キャッシュプールが本当に分かれたときも、ポリシー差はなお爪の先ほどなのかを見る。</p>

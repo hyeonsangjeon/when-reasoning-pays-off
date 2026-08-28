@@ -157,7 +157,7 @@
       <p>
         <strong>Action.</strong> Declare, per task class, a <code>max_iterations</code>
         step cap and a <code>hard_ceiling_usd</code> cumulative ceiling. Derive
-        the ceiling from the p99 of a representative sample — step count and
+        the ceiling from the p99 (99th-percentile) of a representative sample — step count and
         per-task cost — not from a round number that feels safe. Set both
         conservatively and raise them only with evidence.
       </p>
@@ -289,7 +289,7 @@
         <strong>Action.</strong> Declare per-task-class budget policy in committed
         config, not in constants scattered across services. Review every ceiling
         change; track the overrun rate — how often the breaker fires — as a
-        first-class SLO; and give a ceiling raise the same ceremony as a
+        first-class service-level objective (SLO); and give a ceiling raise the same ceremony as a
         methodology change. The release-governance discipline in
         <code>docs/16-release-tiers-and-redaction-policy.md</code> is the same
         shape applied to published data; this applies it to spend.

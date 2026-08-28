@@ -2,7 +2,7 @@
      aria-labelledby="fbTitle fbDesc" width="900" height="340">
   <title id="fbTitle">Track A and Track B: the packaging bridge</title>
   <desc id="fbDesc">A conceptual bridge: Track A is the public research repository and its surfaces
-  (Pages dashboard / blog); Track B is the downstream Azure AI Foundry sample. An arrow shows the
+  (Pages dashboard / blog); Track B is the downstream Microsoft Foundry sample. An arrow shows the
   one-way packaging relationship between the canonical research and the downstream sample. No
   measured numbers are shown.</desc>
   <defs>
@@ -38,7 +38,7 @@
   <!-- Track B -->
   <rect x="540" y="120" width="300" height="170" rx="12" fill="#16324f" stroke="#06d6a0" stroke-width="2"/>
   <text x="560" y="150" fill="#06d6a0" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="16" font-weight="700">Track B &#183; Foundry sample</text>
+        font-size="16" font-weight="700">Track B &#183; Microsoft Foundry sample</text>
   <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#bcd2e8">
     <text x="560" y="184">&#8226; downstream sample repo</text>
     <text x="560" y="212">&#8226; inherits the acceptance bar</text>

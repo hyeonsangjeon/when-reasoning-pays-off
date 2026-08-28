@@ -14,6 +14,11 @@
 > hypotheses, not verdicts (Task 011 Principle 6; methodology §6 /
 > §9).
 
+In this document, pay-as-you-go (PAYG) capacity is shared and billed per token;
+provisioned throughput is a deployment type with dedicated fixed capacity,
+measured in provisioned throughput units (PTUs); quota is a policy limit, not
+guaranteed capacity.
+
 ## 1. The observation
 
 Some teams report that after migrating from `gpt-4o` to a
@@ -24,14 +29,16 @@ drops measurably — sometimes several percentage points — even when
 The symptom is real; the mechanism is **not single-cause**. Strong-
 form "reactive PTU spillover thrashes the cache" was weakened by
 customer field evidence (PTU-only operation also maintained cache
-hit; see Hypothesis G). This document carves the space into
+hit; see Hypothesis G). Here, spillover means automatic routing of
+overflow requests from a saturated provisioned deployment to a
+standard deployment. This document carves the space into
 mutually-distinguishable hypotheses, marks the ones the repo has
 direct evidence on, and lists per-call telemetry to triage your own
 deployment. Reading guides: **by architecture**, multi-node
-orchestration triggers A / E first; single-call ReAct on
-PTU+spillover surfaces G + H first (§11); PTU reasoning-model
+orchestration triggers A / E first; single-call reasoning-and-acting
+agent loop (ReAct) on PTU+spillover surfaces G + H first (§11); PTU reasoning-model
 migrations that inflated `max_output_tokens` for reasoning headroom
-add I as a high-priority concurrency lens. Methodology baseline for
+add I as a high-priority concurrency perspective. Methodology baseline for
 `cached_tokens`: [`docs/05-methodology.md` §4](05-methodology.md) —
 captured (never inferred) from
 `usage.prompt_tokens_details.cached_tokens` on every call.
@@ -90,7 +97,7 @@ captured the same way on both families (methodology §4 rule 1).
 3. A persistent gap that does not close as both deployments warm up
    is evidence for B.
 
-## 4. Hypothesis C: Cache TTL differences
+## 4. Hypothesis C: Cache time-to-live (TTL) differences
 
 *Architecture applicability:* any; particularly visible on bursty
 workloads where idle gaps exceed the cache TTL.
@@ -124,13 +131,13 @@ directly measured in this repo:
 ## 5. Hypothesis D: Request pattern change
 
 *Architecture applicability:* multi-node → single-call ReAct
-migrations (the QPS shape changes), or vice versa.
+migrations (the queries-per-second (QPS) profile changes), or vice versa.
 
 *Status:* mechanism named; the repo does not directly measure the
 QPS-versus-cache-hit relationship. The Phase 1 simulator
 ([`benchmarks/04-spillover-simulation/README.md`](../benchmarks/04-spillover-simulation/README.md))
-chose a single-call ReAct shape with a long stable system prompt
-because that is the shape this hypothesis family is about. Migrating
+chose a single-call ReAct profile with a long stable system prompt
+because that is the task profile this hypothesis family is about. Migrating
 from N parallel small calls to one large call changes both per-key
 QPS into the cache and the prefix lifetime distribution; hit ratio
 is a joint function of both.
@@ -151,7 +158,8 @@ tool surface, JSON schema, or tool-description ordering changed
 during migration.
 
 *Status:* mechanism well-supported by benchmark 03 evidence. The
-tool-loop input tokens dominate per-cell cost because the system
+tool-loop input tokens dominate cost for each benchmark cell (one
+model-and-effort setting) because the system
 prompt + tool definitions get re-sent on every iteration
 ([`benchmarks/03-tool-using-agent/analysis.md` §5](../benchmarks/03-tool-using-agent/analysis.md)).
 Anything that mutates the tool-definition block invalidates the
@@ -212,6 +220,9 @@ Phase 2 measure.
 **Phase 1 — single-endpoint simulator, shared cache pool**
 ([`benchmarks/04-spillover-simulation/analysis.md`](../benchmarks/04-spillover-simulation/analysis.md)):
 
+In the tables below, time-to-first-token (TTFT) is reported as p50
+(median/50th-percentile) and 95th-percentile latency (p95).
+
 | Metric | Reactive | Proactive | Source |
 |---|---:|---:|---|
 | Sustain cache hit ratio | 99.2337 % | 99.0680 % | analysis.md §5, §7 |
@@ -233,7 +244,7 @@ entry):
 
 | Metric | Reactive | Proactive | Source |
 |---|---:|---:|---|
-| Scheduled / completed requests | 2,136 / 2,136 | 2,136 / 2,303 (incl. primary-429 follow-ups) | `*.summary.json` |
+| Scheduled / completed requests | 2,136 / 2,136 | 2,136 / 2,303 (incl. primary HTTP rate-limit 429 follow-ups) | `*.summary.json` |
 | Overall cache hit ratio | 99.05 % | 98.21 % | `*.summary.json` |
 | Primary-endpoint cache hit ratio | 95.11 % (24 reqs) | 97.75 % (1,305 reqs) | `*.summary.json` |
 | Spillover-endpoint cache hit ratio | 99.09 % (2,112 reqs) | 98.74 % (998 reqs) | `*.summary.json` |
@@ -246,7 +257,7 @@ Pricing: `pricing/azure-openai-payg-2026-05.yaml` (accessed 2026-05-19) for both
 
 Phase 2's contribution over Phase 1 is **cache-pool separation**
 (different deployment name → different Azure cache pool). Reactive
-routed nearly all traffic to the high-TPM spillover deployment
+routed nearly all traffic to the high tokens-per-minute (TPM) spillover deployment
 (98.88 %), which warmed quickly and held 99.09 % per-endpoint cache
 hit; the primary stayed cold (95.11 % over 24 requests). Proactive
 ramped spillover only as p95 latency drifted (43.33 % share); its
@@ -301,10 +312,10 @@ that survives even when "the system prompt is the same."
 1. Pin the system prompt and tool-definition block byte-identical
    between the multi-node and single-call ReAct architectures
    (methodology §2).
-2. Vary only the orchestration shape, holding everything else
+2. Vary only the orchestration profile, holding everything else
    constant.
 3. Compare per-call `cached_tokens`. A persistent gap that does not
-   close under matched prefixes is evidence the orchestration-shape
+   close under matched prefixes is evidence the orchestration profile
    itself is reducing prefix stability.
 4. If cached-prefix length varies per call (retrieved passages
    inlined into the system message), move variable content out of
@@ -326,7 +337,7 @@ the controlled `max_output_tokens` sweep — not yet landed under
 operational tightening rule in
 [`docs/08-customer-simulation-findings.md`](08-customer-simulation-findings.md)
 L5 can already cite the mechanism. [`README.md`](../README.md) lists
-I as one of the highest-priority lenses for PTU reasoning-model
+I as one of the highest-priority perspectives for PTU reasoning-model
 migration debugging.
 
 Mechanism: per the Azure PTU concept documentation, the admission
@@ -337,7 +348,8 @@ inflate `max_output_tokens` (e.g. ~4 K visible target bumped to ~16 K)
 to leave room for `reasoning_tokens` consumed invisibly. Even when
 actual visible output is unchanged, the larger reservation reduces
 effective PTU concurrency: at the same arrival rate, 429s arrive at
-lower RPM and TTFT under load rises. Bill per completed request and
+lower requests per minute (RPM) and TTFT under load rises. Bill per
+completed request and
 visible output bytes do not change; the lever is the asymmetry
 between *reserved* and *spent* tokens.
 
@@ -380,7 +392,7 @@ Phase 1 / Phase 2 schemas or methodology §7):
 - `real_429_observed`, `retry_after_ms`, `retry_count`
 - `wallclock_timestamp_iso` (per-minute aggregates)
 - `prompt_cache_retention` (extended-retention switch shows up as a step change)
-- `max_output_tokens_sent` (PTU admission-reservation lens — Hypothesis I)
+- `max_output_tokens_sent` (PTU admission-reservation perspective — Hypothesis I)
 
 A `cached_tokens` drop without a coincident change in any
 segmentation key above is a flag, not a footnote (methodology §4
@@ -420,7 +432,7 @@ Task 011 Principle 6).
 - [`docs/05-methodology.md`](05-methodology.md) — measurement
   contract (§2 invariants, §4 cache, §6 cost formula, §9 limits).
 - [`docs/04-decision-framework.md`](04-decision-framework.md) — which
-  `reasoning_effort` for which task shape.
+  `reasoning_effort` for which task profile.
 - [`docs/08-customer-simulation-findings.md`](08-customer-simulation-findings.md)
   — narrative payoff for a PTU + single-call ReAct customer.
 - [`benchmarks/04-spillover-simulation/analysis.md`](../benchmarks/04-spillover-simulation/analysis.md)

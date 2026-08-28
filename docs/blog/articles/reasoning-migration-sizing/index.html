@@ -43,7 +43,7 @@
     <h1>Do not resize a reasoning migration from the model name alone</h1>
     <p class="lede">
       A team plans to move its <code>gpt-4o</code> traffic to a GPT-5.x reasoning
-      model and needs a PTU number for the new deployment. One approach is to reuse
+      model and needs a provisioned throughput unit (PTU) number for the new deployment. One approach is to reuse
       what already works: carry the old <code>gpt-4o</code> PTU size forward, or
       apply a family-level “5.x” multiplier to it, on the assumption that the
       model name carries enough information to resize. But PTU sizing is driven by
@@ -76,8 +76,8 @@
       <p>
         Reusing the old size assumes that a working
         <code>gpt-4o</code> number, scaled by a family multiplier, will still
-        fit GPT-5.x. Microsoft Learn converts traffic into normalized TPM from
-        peak RPM, average prompt
+        fit GPT-5.x. Microsoft Learn converts traffic into normalized tokens per minute (TPM) from
+        peak requests per minute (RPM), average prompt
         and output tokens, cache rate, the model's output-to-input ratio, and its
         Input TPM per PTU, and it deducts cached prompt tokens from utilization;
         OpenAI documents reasoning tokens as non-visible output-side tokens
@@ -104,7 +104,7 @@
         <code>max_output_tokens</code> as PTU admission risk to test is
         operational inference this repository defends. The chart that follows is a
         synthetic worked example over a modeled workload with pinned pricing
-        snapshots, not measured capacity, live PTU throughput, or an SLA.
+        snapshots, not measured capacity, live PTU throughput, or a service-level agreement.
       </p>
     </section>
 
@@ -236,10 +236,10 @@
       <p class="section-label">Operator checklist · re-measure before buying capacity</p>
       <h2>Run the migration as a measurement, not a rename</h2>
       <ol>
-        <li><strong>Pin the task mix.</strong> Keep prompt, tools, schema, retrieval placement, and sample distribution byte-stable across model cells.</li>
-        <li><strong>Measure visible output.</strong> Compare mean and p95 visible output tokens before and after migration.</li>
+        <li><strong>Pin the task mix.</strong> Keep prompt, tools, schema, retrieval placement, and sample distribution byte-stable across model cells (one model-and-effort test setting each).</li>
+        <li><strong>Measure visible output.</strong> Compare mean and 95th-percentile visible output tokens before and after migration.</li>
         <li><strong>Measure reasoning output.</strong> Capture <code>reasoning_tokens</code>; do not infer it from the final answer text.</li>
-        <li><strong>Measure cache rate.</strong> Record <code>cached_tokens / prompt_tokens</code> per cache-key bucket, especially after ReAct or tool-schema changes.</li>
+        <li><strong>Measure cache rate.</strong> Record <code>cached_tokens / prompt_tokens</code> per cache-key bucket, especially after changes to the Reasoning and Acting (ReAct) pattern or tool schema.</li>
         <li><strong>Right-size the ceiling.</strong> Set <code>max_output_tokens</code> from a representative visible-plus-reasoning percentile, then use per-call overrides for rare long answers.</li>
         <li><strong>Only then size PTU.</strong> Apply the normalized-TPM formula with the current model table and your measured workload shape.</li>
       </ol>

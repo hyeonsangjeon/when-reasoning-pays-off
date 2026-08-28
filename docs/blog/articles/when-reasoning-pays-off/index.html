@@ -75,7 +75,7 @@
         We held the prompts and workload slices fixed and walked the same effort
         ladder across each one: short factual
         answers, multi-step reasoning, tool-using agents, token composition, and
-        latency and cost. We then added a modeled PTU/PAYG planning surface
+        latency and cost. We then added a planning view that models provisioned throughput against pay-as-you-go pricing
         based on the measured token shape. On short factual work, the extra
         effort mostly bought hidden reasoning tokens rather than a better answer;
         the invisible-token
@@ -93,7 +93,7 @@
       <figcaption>
         <strong>The series at a glance.</strong> A reasoning model can share the
         same per-token price card and still produce a very different bill. This
-        one-pager marks the evidence boundary for the series; the sections below
+        one-pager marks the evidence boundary for the series (where the measured evidence ends and modeling or inference begins); the sections below
         provide the measured detail.
         <a href="../../../assets/when-reasoning-pays-off-overview.svg">Open the one-pager SVG</a>.
       </figcaption>
@@ -524,7 +524,7 @@
           <h3>What it means</h3>
           <p>
             For the short-factual xhigh row, the PTU/PAYG crossover is a modeled
-            hypothesis at 2748 rpm with a 50 PTU floor. It is not measured PTU
+            hypothesis at 2748 rpm (requests per minute) with a 50 PTU floor. It is not measured PTU
             throughput.
           </p>
         </div>

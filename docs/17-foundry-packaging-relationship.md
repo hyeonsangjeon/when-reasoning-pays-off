@@ -1,6 +1,6 @@
-# Foundry packaging relationship — public research repo, Pages, and the downstream Azure AI Foundry sample
+# Microsoft Foundry packaging relationship — public research repo, Pages, and the downstream Microsoft Foundry sample
 
-![Track A research repo and its surfaces bridged to the downstream Track B Azure AI Foundry sample.](assets/foundry-track-a-track-b-bridge.svg)
+![Track A research repo and its surfaces bridged to the downstream Track B Microsoft Foundry sample.](assets/foundry-track-a-track-b-bridge.svg)
 
 **Companion to `docs/16-release-tiers-and-redaction-policy.md`.** That
 document defines the three release tiers (`RAW_PRIVATE`,
@@ -8,7 +8,7 @@ document defines the three release tiers (`RAW_PRIVATE`,
 the raw-data preservation rule, and the public-surface tier permission
 matrix. This document defines the public channel relationship that
 remains in this mirror: how the public research repo, the GitHub Pages
-dashboard / blog, and the downstream Azure AI Foundry sample repo relate
+dashboard / blog, and the downstream Microsoft Foundry sample repo relate
 to each other; which surface is canonical for which kind of content; and
 the acceptance bar each surface inherits.
 
@@ -24,13 +24,13 @@ approved.
 Two downstream tracks remain public here: **Track A — public research
 repo** (this repo, made public; methodology, hypothesis ledger,
 decision tools, citation taxonomy, sanitized benchmark slices) and
-**Track B — downstream Azure AI Foundry sample repo** (separately named,
-separately governed; Foundry-conformant structure, aggregate-only data,
+**Track B — downstream Microsoft Foundry sample repo** (separately named,
+separately governed; Microsoft Foundry-conformant structure, aggregate-only data,
 runnable notebooks cross-linked to public Azure documentation).
 
 Track A has two public surfaces in this mirror: the repository itself
 and the **GitHub Pages dashboard / blog**. Track B is the downstream
-operator-facing Foundry sample. Each surface has a defined tier allowance
+operator-facing Microsoft Foundry sample. Each surface has a defined tier allowance
 (`docs/16-release-tiers-and-redaction-policy.md` §4) and a defined
 channel role here.
 
@@ -39,7 +39,7 @@ channel role here.
             │                              │
    SANITIZED│                              │AGGREGATE
             ▼                              ▼
-   Track A — public          Track B — Azure AI Foundry
+   Track A — public          Track B — Microsoft Foundry
    research repo             sample repo (downstream)
        │ canonical                ▲ cites
        ▼                          │
@@ -60,25 +60,25 @@ channel role here.
    aggregates for operators and cross-links to Track A for depth.
 3. **One-way propagation.** Methodology changes land on the private
    working tree → Track A → Track B (never reversed). Track B may evolve
-   its Foundry packaging independently as long as no methodology drift is
+   its Microsoft Foundry packaging independently as long as no methodology drift is
    introduced.
 4. **Bidirectional citation cross-link.** Track A's public-facing pages
-   name the Foundry sample repo as the operator-facing downstream
+   name the Microsoft Foundry sample repo as the operator-facing downstream
    product; Track B's `README.md` and `PROVENANCE.md` name the Track A
    repo and the pinned upstream commit SHA.
 
 ---
 
-## 3. Track B — Foundry sample acceptance bar
+## 3. Track B — Microsoft Foundry sample acceptance bar
 
-- Microsoft sample-repo `LICENSE` (verified with the Foundry samples
+- Microsoft sample-repo `LICENSE` (verified with the Microsoft Foundry samples
   program at packaging time); Microsoft Open Source `CODE_OF_CONDUCT.md`;
   `SECURITY.md` pointing at the Microsoft MSRC vulnerability disclosure
   flow.
-- `README.md` structured per the Foundry sample template (overview →
+- `README.md` structured per the Microsoft Foundry sample template (overview →
   prerequisites → run → expected outputs → cleanup → next steps → links
   to public Azure documentation).
-- Notebook(s) runnable end-to-end on Azure AI Foundry with a pinned
+- Notebook(s) runnable end-to-end on Microsoft Foundry with a pinned
   dependency manifest; no undeclared local-toolchain assumptions.
 - Per-file `SPDX-License-Identifier` headers; no reference to private
   customer engagements, private communication channels, or private task
@@ -98,7 +98,7 @@ starts.
 The Pages site is the **canonical public source of truth** for every
 public-facing essay, analysis writeup, chart series, and numeric claim
 attached to Track A. Updates to a public claim land on Pages and the
-public research repo first; the downstream Foundry sample follows only
+public research repo first; the downstream Microsoft Foundry sample follows only
 when the claim has an aggregate operator-facing form.
 
 ### 4.1 Tier boundary
@@ -107,7 +107,7 @@ Consumes **only** `SANITIZED_PUBLIC` and `AGGREGATE_AZURE_SAMPLE`;
 `RAW_PRIVATE` MUST NOT appear in any page, chart series, shipped data
 file, analytics payload, embedded JSON, or source map. The build MUST
 fail if any input lacks a tier label, carries `RAW_PRIVATE`, or fails
-the redaction-detector CI job. The site MUST NOT introduce a new tier,
+the redaction-detector continuous integration (CI) job. The site MUST NOT introduce a new tier,
 relabel artifacts, or bypass the redaction rules.
 
 ### 4.2 i18n-first requirements
@@ -152,7 +152,7 @@ relabel artifacts, or bypass the redaction rules.
 2. **The public research repo is canonical for evidence.** Methodology,
    schemas, scripts, sanitized records, aggregate summaries, and release
    manifests live here.
-3. **Foundry sample is the operator-facing downstream product.** It is
+3. **Microsoft Foundry sample is the operator-facing downstream product.** It is
    `AGGREGATE_AZURE_SAMPLE` only and receives one-way propagation from
    the public research repo to the sample repo.
 4. **All public surfaces inherit** the tier permissions and redaction
@@ -165,7 +165,7 @@ relabel artifacts, or bypass the redaction rules.
 For each public publication of substance, the implementing task names a
 citation plan covering: the public research repo by URL + commit SHA;
 the Pages article by its locale URL; an archived-release DOI path when a
-stable external citation target is required; and the Foundry sample repo
+stable external citation target is required; and the Microsoft Foundry sample repo
 by URL + commit SHA where referenced.
 
 ---

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  DRAFT · 한국어 정본(canonical) 실험 노트 · exp004 (PTU 스필오버 정책 시뮬레이션 / Phase 1).
+  DRAFT · 한국어 정본(canonical) 실험 노트 · exp004 (PAYG 호출 기반 PTU 스필오버 시뮬레이션 / Phase 1).
   이 시리즈(reasoning-effort-retrospective)는 한국어를 원본 언어로 삼습니다.
   본문이 이야기로 짚은 판단을 여기서는 원자료와 재현 커맨드로 확인합니다.
   승인 후: en/ja/zh-CN/hi 번역본을 KO 원본에서 파생하고 i18n-parity.json 추가.
@@ -12,7 +12,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp004 · 스필오버 정책, 미리 대비하면 캐시를 더 지켰을까 | when reasoning pays off</title>
-  <meta name="description" content="PTU(고정 용량) 스필오버 정책 시뮬레이션(Phase 1) 실험 노트 exp004. 용량 한도에 닿는 지속 부하에서 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시 하락을 덜 겪는지 두 라이브 gpt-5.2 런으로 겨룬다. 결과는 무승부에 가까웠다 — 미리 대비한 쪽이 오히려 정상상태 캐시가 0.1657%p 낮았고 스필오버를 한 번도 켜지 않았다.">
+  <meta name="description" content="Phase 1 실험 노트 exp004 — 배포 하나에서 라이브 PAYG(종량제) 모델 호출과 내부 포화 임계값으로 PTU(고정 용량) 스필오버 동작을 시뮬레이션한다(라이브 PTU 용량 측정이 아니다). 용량 한도에 닿는 지속 부하에서 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시 하락을 덜 겪는지 두 라이브 gpt-5.2 런으로 겨룬다. 결과는 무승부에 가까웠다 — 미리 대비한 쪽이 오히려 정상상태 캐시가 0.1657%p 낮았고 스필오버를 한 번도 켜지 않았다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="canonical">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -47,11 +47,11 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp004</p>
-    <p class="article-kicker">실험 노트 · exp004 · PTU(고정 용량) 스필오버 정책 시뮬레이션(Phase 1) · 똑똑한 정책이 값을 했는가</p>
+    <p class="article-kicker">실험 노트 · exp004 · PAYG(종량제) 호출로 PTU(고정 용량) 스필오버를 시뮬레이션(Phase 1) · 똑똑한 정책이 값을 했는가</p>
     <h1>exp004 &mdash; 스필오버, 미리 대비하는 정책이 값을 했는가</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">앞선 세 벤치마크가 물은 건 모두 &lsquo;추론 강도를 어디까지 올릴까&rsquo;였다. 이번에는 모델 대신 <strong>배포</strong>로 축을 바꾼다. PTU 배포가 용량 한도에 가까워질 때 트래픽 일부를 예비 경로로 흘려보내는 <strong>스필오버</strong>(넘침 대비) 정책 두 가지에 같은 부하를 걸어 비교한다.</p>
+    <p class="lede">앞선 세 벤치마크가 물은 건 모두 &lsquo;추론 강도를 어디까지 올릴까&rsquo;였다. 이번에는 모델 대신 <strong>배포</strong>로 축을 바꾼다. 이 실험은 PTU 배포가 용량 한도에 가까워지는 상황을 시뮬레이션한다. 트래픽 일부를 예비 경로로 흘려보내는 <strong>스필오버</strong>(넘침 대비) 정책 두 가지에 같은 부하를 걸어 비교한다.</p>
     <p class="lede"><strong>사전 등록한 예측</strong>은 이랬다. 지연이 오르는 낌새를 보고 <em>미리 대비하는</em>(proactive) 정책이라면 문제가 터진 뒤에야 넘기는 <em>사후 반응</em>(reactive) 정책보다 한도 구간의 캐시 하락을 덜 겪을 것으로 봤다. 직관상 미리 대비하는 쪽이 낫다.</p>
     <p class="lede">실측은 그 직관과 반대였다. 한도 구간의 정상상태 캐시 히트는 <strong>reactive 99.2337%, proactive 99.0680%</strong>로, 미리 대비한 쪽이 오히려 <strong>0.1657%p 낮았다</strong>. reactive는 한도 구간 내내 스필오버를 켜고 달렸지만 proactive는 <em>한 번도 켜지 않았다</em>. 이 노트에서는 그 22분을 <em>설계 → 입력 → 예측 대 실측 → 두 곡선 → 결정</em> 순서로 되짚는다 &mdash; exp001이 &ldquo;쉬운 일엔 추론이 값을 못 한다&rdquo;였듯, 여기선 &ldquo;이 조건에선 똑똑한 정책이 값을 못 한다&rdquo;.</p>
 
@@ -60,7 +60,7 @@
       <h2>PTU가 용량 한도에 다가가면 무슨 일이 나나</h2>
       <p>모델을 고정 용량(PTU)으로 배포해도 트래픽이 그 한도에 <strong>가까워지는 순간</strong>은 온다. 이때 프롬프트 캐시가 흔들리면 같은 프롬프트를 다시 계산하느라 응답은 느려지고 비용은 샌다.</p>
       <p><strong>스필오버</strong>는 이 흔들림을 막는 완충책이다. 용량이 넘칠 듯하면 트래픽 일부를 예비 경로로 뺀다. <strong>사후 반응</strong>(reactive)은 타임아웃이나 429가 <em>뜬 뒤에</em> 넘기는 반면, <strong>사전 대비</strong>(proactive)는 p95 지연이 슬금슬금 오르는 낌새를 보고 <em>미리</em> 조금씩 넘긴다.</p>
-      <p><strong>PTU 배포</strong>의 트래픽이 용량 한도에 자주 닿는 운영자라면 &ldquo;더 똑똑한 정책을 넣으면 캐시를 더 지킬까?&rdquo;를 한 번쯤 묻게 된다. <strong>실측 결과</strong>는 아마 예상과 다르다.</p>
+      <p><strong>PTU 배포</strong>의 트래픽이 용량 한도에 자주 닿는 운영자라면 &ldquo;더 똑똑한 정책을 넣으면 캐시를 더 지킬까?&rdquo;를 한 번쯤 묻게 된다. 그 답은 라이브 PTU 용량이 아니라 단일 엔드포인트의 PAYG(종량제) 시뮬레이션 안에서 <strong>실측</strong>한 것이며, 아마 예상과 다르다.</p>
     </section>
 
     <section id="reproduce" class="article-section">
@@ -90,12 +90,12 @@ python3 -c "import json; s=json.load(open('benchmarks/04-spillover-simulation/an
     <section id="design" class="article-section">
       <p class="section-label">설계</p>
       <h2>이번엔 강도가 아니라 배포다</h2>
-      <p><strong>왜 이걸 쟀나.</strong> 앞선 세 노트는 &lsquo;추론 강도를 어디까지 올릴까&rsquo;를 다뤘다. 강도를 정하고 나면 다음 벽이 온다 &mdash; 그 설정으로 트래픽이 몰릴 때 <strong>배포가 버티는가</strong>. PTU 배포가 용량 한도에 가까워지면 프롬프트 캐시가 흔들릴 수 있고 스필오버가 이를 완충한다. &lsquo;미리 대비하는 정책이 사후 반응보다 낫다&rsquo;는 흔한 직관이 맞는지, 짐작 대신 실측으로 가리려 했다.</p>
+      <p><strong>왜 이걸 쟀나.</strong> 앞선 세 노트는 &lsquo;추론 강도를 어디까지 올릴까&rsquo;를 다뤘다. 강도를 정하고 나면 다음 벽이 온다 &mdash; 그 설정으로 트래픽이 몰릴 때 <strong>배포가 버티는가</strong>. 시뮬레이션한 PTU 패턴에서는 용량 한도 부근에서 프롬프트 캐시가 흔들릴 수 있고 스필오버가 이를 완충한다. &lsquo;미리 대비하는 정책이 사후 반응보다 낫다&rsquo;는 흔한 직관이 맞는지, 짐작 대신 실측으로 가리려 했다.</p>
       <p><strong>사전 등록한 예측은 &lsquo;미리 대비가 낫다&rsquo;였다.</strong> 문장은 이렇다 &mdash; <em>용량 한도에 닿는 지속 부하에서, 미리 대비하는(proactive) 정책이 사후 반응(reactive)보다 한도 구간 캐시 히트 하락을 덜 겪는다.</em> 이 예측에도 깨지는 선이 있다. <strong>proactive가 한도 구간 캐시에서 reactive를 뚜렷이 이기면 &lsquo;미리 대비가 낫다&rsquo;가 지지되고 못 이기거나 오히려 낮으면 적어도 이 조건에선 그 직관이 값을 못 한다.</strong></p>
       <p><strong>원인 규명이 아니라 완화책 비교다.</strong> &lsquo;스필오버 자체가 캐시 하락의 근본 원인&rsquo;이라는 강한 주장은 이미 현장 관찰에서 힘을 잃었다. 이 실험은 원인을 캐지 않고 두 완화 정책 중 <strong>어느 쪽이 나은지</strong>만 겨룬다. 범위를 좁힌 만큼 답도 좁고 분명하다.</p>
       <p><strong>왜 시뮬레이션부터인가.</strong> Phase 1에서는 gpt-5.2 배포 <em>하나</em> 위에서 스필오버 상태만 내부적으로 흉내 낸다. 물리적으로 분리된 캐시 풀이 아니므로 절대 수치 대신 <strong>정책 간 차이의 방향</strong>을 본다. 원래/예비 캐시 풀이 실제로 갈리는 2배포 부하 테스트는 Phase 2에서 다루며 이 노트는 그 바닥을 먼저 다진다.</p>
       <p><strong>질문은 하나다.</strong> 용량 한도에 닿는 지속 ReAct 부하에서, 미리 대비하는 스필오버가 사후 반응보다 캐시를 더 지키는가?</p>
-      <p><strong>설계(부하).</strong> 같은 22분 부하를 두 정책에 똑같이 흘린다 &mdash; <strong>웜업 2분</strong>(0.3 TPS) → <strong>램프 10분</strong>(0.5→2.5 TPS) → <strong>지속 10분</strong>(2.0 TPS). gpt-5.2 한 배포, <code>effort=low</code>, 시스템 프롬프트 약 <strong>30K 토큰</strong>(두 런이 바이트까지 동일하도록 SHA-256으로 고정, <code>corpus_seed 4242</code>). 내부 스로틀 임계는 <strong>90,000 TPM</strong>. 각 정책이 <strong>2,136요청</strong>(웜업 36 · 램프 900 · 지속 1,200)을 돌린다.</p>
+      <p><strong>설계(부하).</strong> 같은 22분 부하를 두 정책에 똑같이 흘린다 &mdash; <strong>웜업 2분</strong>(초당 0.3요청) → <strong>램프 10분</strong>(초당 0.5→2.5요청) → <strong>지속 10분</strong>(초당 2.0요청). gpt-5.2 한 배포, <code>effort=low</code>, 시스템 프롬프트 약 <strong>30K 토큰</strong>(두 런이 바이트까지 동일하도록 SHA-256으로 고정, <code>corpus_seed 4242</code>). 내부 스로틀 임계는 <strong>분당 90,000토큰</strong>이다. 각 정책이 <strong>2,136요청</strong>(웜업 36 · 램프 900 · 지속 1,200)을 돌린다.</p>
       <p><strong>변하는 축은 딱 하나</strong>다. <code>policy.type</code>만 <code>reactive</code>와 <code>proactive</code>로 바꾼다. 프롬프트&middot;부하&middot;모델&middot;강도&middot;임계를 모두 고정했으므로 두 산출물은 정책에서만 달라진다.</p>
       <div class="article-summary-grid" aria-label="사전 등록한 예측과 역할">
         <section class="summary-tile"><h2>사전 등록한 예측</h2><p>미리 대비하는(<code>proactive</code>) 정책이 한도 구간의 캐시 하락을 덜 겪어, 사후 반응(<code>reactive</code>)보다 정상상태 캐시 히트가 <strong>높을</strong> 것이다.</p></section>
@@ -194,8 +194,8 @@ proactive   0% (안 켬)      99.0680%  (±1.2802%p)               캐시 미스
       <h2>다음 사람이 덜 헤매도록</h2>
       <p>근거를 남긴다는 건 이긴 결과만 적는 일이 아닙니다. 예측이 빗나간 실험도 왜 빗나갔고 어디까지 믿을 수 있는지 남겨야 다음 결정에 다시 쓸 수 있습니다. 이 노트는 그래서 회고와 앞선 실험으로 되돌아 연결됩니다.</p>
       <ul>
-        <li><strong>회고 본문 →</strong> 허브의 <a href="../../../ko/#next">다음 판단 &middot; 다음 실험</a>이 예고한 &lsquo;라이브 PTU 부하 테스트&rsquo;가 바로 이 실험이다. 토큰 기반 PTU <em>추정</em> 뒤에 온 첫 <em>실측</em> 부하 결과.</li>
-        <li><strong>예고한 노트 →</strong> <a href="../../exp003-tool-using-agent/ko/">exp003 &mdash; 툴 에이전트</a>는 마지막에 &ldquo;다음은 라이브 검색과 실제 PTU 부하 테스트&rdquo;라 적었다. 이 노트가 그 부하 테스트의 <strong>Phase 1</strong>이다.</li>
+        <li><strong>회고 본문 →</strong> 허브의 <a href="../../../ko/#next">다음 판단 &middot; 다음 실험</a>이 예고한 &lsquo;라이브 PTU 부하 테스트&rsquo;를 잇는 실험이다. Phase 1은 토큰 기반 PTU <em>추정</em> 뒤에, 그 패턴을 PAYG(종량제)로 <em>실측 시뮬레이션</em>한 결과다.</li>
+        <li><strong>예고한 노트 →</strong> <a href="../../exp003-tool-using-agent/ko/">exp003 &mdash; 툴 에이전트</a>는 마지막에 &ldquo;다음은 라이브 검색과 실제 PTU 부하 테스트&rdquo;라 적었다. 이 노트는 그 부하 테스트의 PAYG(종량제) 시뮬레이션 단계이며, 라이브 PTU 용량을 실측한 것은 아니다.</li>
         <li><strong>원자료 →</strong> 두 정책 정의는 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a>, 분석은 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a>에 있다.</li>
       </ul>
       <p><strong>다음 실험.</strong> Phase 1은 배포 하나에서 스필오버를 흉내 냈다. 다음에는 <strong>물리적으로 분리된 두 배포</strong>에 실제 TPM 스로틀을 걸고 같은 부하를 흘려 고충실도로 다시 잰다. 원래/예비 캐시 풀이 실제로 갈릴 때도 정책 차이가 여전히 손톱만 한지 확인한다.</p>

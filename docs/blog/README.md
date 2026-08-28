@@ -24,7 +24,7 @@ that articles can draw on, and the published article surfaces.
 - **No claim drift.** Measured numbers are quoted verbatim with their exact
   source path. The only derived file is the clearly labelled CSV stub above,
   which re-projects values already present in public `analysis.json` files.
-- **Consumption-model honesty.** PAYG-vs-PTU caveats are preserved: benchmarks
+- **Consumption-model honesty.** Pay-as-you-go versus provisioned-throughput caveats are preserved: benchmarks
   06/07 are PAYG (not PTU) evidence; benchmark 08 is descriptive single-tenant;
   benchmark 09 is a calibration proxy, not direct PTU-pool observation.
 

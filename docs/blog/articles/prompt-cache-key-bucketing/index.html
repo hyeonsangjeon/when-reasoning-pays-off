@@ -65,7 +65,7 @@
         aggregate measured on pay-as-you-go, shown descriptively.
         <a href="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg">Open the cache-key bucketing one-pager SVG</a>.
       </figcaption>
-      <img src="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="One-pager for prompt cache key bucketing. It shows that one prefix-plus-key bucket routes to one machine, that roughly fifteen requests per minute per bucket is the documented overflow point, and that the source-run cache hit ratio stayed high and roughly flat while in-memory TTFT improved, so hit ratio should be read beside latency. Headline message: keep each bucket under the documented ceiling. Marked as official spec for the ceiling plus a sanitized measured aggregate for the shape, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
+      <img src="../../../assets/when-reasoning-pays-off-prompt-cache-key-bucketing.svg" alt="One-pager for prompt cache key bucketing. It shows that one prefix-plus-key bucket routes to one machine, that roughly fifteen requests per minute per bucket is the documented overflow point, and that the source-run cache hit ratio stayed high and roughly flat while in-memory time-to-first-token improved, so hit ratio should be read beside latency. Headline message: keep each bucket under the documented ceiling. Marked as official spec for the ceiling plus a sanitized measured aggregate for the shape, descriptive only." style="width:100%;height:auto;max-width:1200px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E1E5EA">
     </figure>
 
     <section id="why-bucket" class="article-section">
@@ -88,7 +88,7 @@
         the hit ratio stayed high and roughly flat as bucket cardinality rose, so
         reading it by itself would suggest the splitting cost nothing. The
         first-token latency tail showed a different pattern: a
-        single hot bucket carried a very large p95 that fell sharply once
+        single hot bucket carried a very large p95 (95th-percentile latency) that fell sharply once
         traffic was spread across more buckets. That is why the operating
         question is not &ldquo;did the cache hit?&rdquo; but &ldquo;is each
         bucket sized so the prefix keeps its locality without one bucket running
@@ -179,7 +179,7 @@
       <div class="evidence-grid">
         <div>
           <h3>Worked example</h3>
-          <p>At 1.4 TPS, the common prefix sees 84 RPM. The 15-RPM floor gives 6 buckets; a 10-RPM target gives 9.</p>
+          <p>At 1.4 TPS (requests per second), the common prefix sees 84 RPM (requests per minute). The 15-RPM floor gives 6 buckets; a 10-RPM target gives 9.</p>
         </div>
         <div>
           <h3>Why not one?</h3>
@@ -199,9 +199,9 @@
         <figcaption>
           <strong>Chart to read:</strong> public aggregate cache-key slice. The
           left panel shows cache hit ratio. The right panel shows p95 time to
-          first token. The X-axis is retention mode plus bucket cardinality.
+          first token. The X-axis is retention mode (how long a cached prefix stays reusable) plus bucket cardinality.
         </figcaption>
-        <img src="../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="Prompt cache key bucketing evidence chart comparing cache hit ratio and TTFT p95." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../assets/prompt-cache-key-bucketing-evidence.svg" alt="Prompt cache key bucketing evidence chart comparing cache hit ratio and first-token latency p95." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-keybucket-hit-ratio">
         <figcaption>
@@ -218,7 +218,7 @@
           the effect of bucketing appeared in the latency tail in the
           next panel, not in this one. <strong>Evidence boundary:</strong> a
           sparse sanitized public aggregate measured on pay-as-you-go gpt-5.2 on
-          one tenant and region (not PTU); it is descriptive, not a universal
+          one tenant and region (not provisioned throughput units); it is descriptive, not a universal
           cache-hit curve. <strong>Source:</strong> values come from this
           repository's
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
@@ -240,7 +240,7 @@
           appeared in the latency tail, which is why hit ratio must be read
           beside first-token latency rather than alone.
           <strong>Evidence boundary:</strong> the same sparse sanitized public
-          aggregate on pay-as-you-go gpt-5.2 (not PTU); descriptive, not a
+          aggregate on pay-as-you-go gpt-5.2 (not provisioned throughput units); descriptive, not a
           latency guarantee. <strong>Source:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
           (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/ttft_p95_vs_cardinality.csv">source CSV</a>).
@@ -254,7 +254,7 @@
             <th>Retention</th>
             <th>Cardinality</th>
             <th>Hit ratio</th>
-            <th>TTFT p95</th>
+            <th>First-token latency p95</th>
             <th>Per-bucket RPM</th>
           </tr>
         </thead>

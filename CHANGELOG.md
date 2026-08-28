@@ -6,6 +6,36 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Plain-language English documentation pass (2026-08-29)
+
+- Polished the English documentation under `docs/` so each page stands on its
+  own without the glossary: acronyms and specialist terms are now expanded or
+  explained inline at their first use per page (for example large language
+  model (LLM), provisioned throughput unit (PTU), pay-as-you-go (PAYG),
+  requests per minute (RPM), tokens per minute (TPM), 95th-percentile latency
+  (p95), service-level objective (SLO), continuous integration (CI), and the
+  application programming interface (API)), and unexplained insider terms such
+  as spillover and evidence boundary are described where first used.
+- Updated the general platform brand to `Microsoft Foundry` in prose, while
+  preserving `Azure OpenAI` where it names the service, API, or deployment
+  type, and leaving quoted historical titles, URLs, code identifiers, schema
+  fields, and fixed labels unchanged.
+- Corrected two pre-existing experiment descriptions against their source
+  configuration and preflight record: experiments 004 and 005 used
+  pay-as-you-go calls to simulate or proxy a provisioned-throughput pattern,
+  not live provisioned capacity, and experiment 005 sustained 2.0 requests per
+  second rather than 2.5. All published measurement results, prices, links,
+  citations, and protected data values remain unchanged.
+- Refreshed the per-page localized `i18n:source-content-sha256` and
+  `article:source-article-sha256` metadata to match the English source edits.
+  The same two experiment corrections were propagated to their four localized
+  pages; other localized prose was left untouched apart from the exact visible
+  legacy `Azure AI Foundry` brand string on the landing pages.
+- Deliberately advanced the `docs/blog` protected-tree pin in
+  `.github/workflows/ci.yml` and `.githooks/pre-push` to cover this
+  editorial and factual-correction pass. The pin was advanced, not loosened or
+  removed, and the `benchmarks` and `results` pins are unchanged.
+
 ### Added — Evidence-first offline provenance report (2026-08-20)
 
 - Added the official `reasoning-payoff init`, `analyze`, and `report` commands.

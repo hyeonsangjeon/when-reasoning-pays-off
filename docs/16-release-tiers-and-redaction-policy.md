@@ -13,8 +13,9 @@ It is a companion to:
 
 - `docs/05-methodology.md` (reproducibility contract — frozen) — how a
   measurement is reproducible. This document does not modify it.
-- `docs/14-observability-schema.md` (canonical per-request / per-cell
-  record contract) — *which* fields exist. This document classifies
+- `docs/14-observability-schema.md` (canonical record contracts for
+  individual requests and aggregate measurement windows) — *which* fields
+  exist. This document classifies
   those fields by publication sensitivity.
 - `docs/15-spec-vs-inference-taxonomy.md` (Tier 1 / Tier 2 claim-authority
   taxonomy) — *which* claims are vendor spec and which are this repo's
@@ -22,7 +23,7 @@ It is a companion to:
   claim-authority label (spec / inference) and a release tier label
   (raw / sanitized / aggregate).
 - `docs/17-foundry-packaging-relationship.md` — how this repo relates to
-  the downstream Azure AI Foundry sample repo and to the public Pages
+  the downstream Microsoft Foundry sample repo and to the public Pages
   surface.
 
 ---
@@ -65,7 +66,7 @@ archive (reads from archive, writes a sanitized derivative to a
 public tree, never modifies or removes the source).
 
 **Publication.** Forbidden. `RAW_PRIVATE` content does not appear in
-the public research repo, the Pages dashboard / blog, the Foundry sample
+the public research repo, the Pages dashboard / blog, the Microsoft Foundry sample
 repo, social-share previews, analytics payloads, build artifacts, or
 source maps. Any surface
 that detects a `RAW_PRIVATE` input MUST fail its build.
@@ -85,7 +86,7 @@ request IDs, and deployment-name response headers dropped; customer-
 shape fingerprints (prompts that encode a specific workload's data
 shape, schema, or identifier ranges) replaced with synthetic
 equivalents or dropped where no synthetic exists; secret patterns
-(API keys, bearer tokens, signed URL parameters, account keys) MUST
+(application programming interface (API) keys, bearer tokens, signed URL parameters, account keys) MUST
 be absent (a detected secret aborts the redaction run with a
 non-zero exit; the run does not produce a partial public artifact);
 wallclock timestamps rounded to the nearest UTC hour.
@@ -110,7 +111,7 @@ that do not reintroduce any forbidden token are tracked by re-running
 entry's `sanitized_sha256` to the new on-disk sha while leaving
 `source_raw_sha256` and `source_archive_id` pinned to the original
 `RAW_PRIVATE` source. When the private archive is not available (a
-public-tree edit, a contributor clone, or a CI-adjacent environment),
+public-tree edit, a contributor clone, or a continuous integration (CI)-adjacent environment),
 the identical re-pin is available offline via
 `scripts/sanitize_public_artifacts.py --refresh-hashes`: it updates
 only the `sanitized_sha256` of already-listed, in-scope, token-clean
@@ -139,15 +140,15 @@ blog.
 ### 2.3 `AGGREGATE_AZURE_SAMPLE`
 
 **Definition.** Per-cell or per-experiment aggregations only; no
-per-request rows. Designed for inclusion in a downstream Azure AI
+per-request rows. Designed for inclusion in a downstream Microsoft
 Foundry sample repo whose audience is operator-facing (decision
 tables, throughput / cost curves) and for whom per-request payloads
 carry no decision value.
 
 **Required transforms.** All `SANITIZED_PUBLIC` transforms apply,
 plus: per-request rows removed (only summary statistics remain:
-count, mean, median, p95, p99, standard deviation, cell identifier);
-free-text prompt / response fields removed entirely (only shape
+count, mean, median, 95th-percentile latency (p95), p99 (99th-percentile), standard deviation, cell identifier);
+free-text prompt / response fields removed entirely (only task profile
 metadata such as token counts, latency, status-code histograms
 remains); pseudonymized deployment names further generalized to role
 labels (`ptu-primary`, `ptu-spillover`, `payg-baseline`); cells with
@@ -157,7 +158,7 @@ labels (`ptu-primary`, `ptu-spillover`, `payg-baseline`); cells with
 list of contributing `SANITIZED_PUBLIC` source SHA-256s, the SHA-256
 of the aggregation script, and the semver of the aggregate schema.
 
-**Publication.** Primary surface is the downstream Azure AI Foundry
+**Publication.** Primary surface is the downstream Microsoft Foundry
 sample repo. MAY also appear in the public research repo as a
 convenience summary alongside the `SANITIZED_PUBLIC` per-request
 data, but does not replace it.
@@ -203,18 +204,18 @@ that detects an unlisted tier MUST fail its build.
 |---|---|---|---|
 | Public research repo (this repo, made public) | forbidden | allowed (per-request rows + per-cell aggregations) | allowed (as convenience summary alongside sanitized data) |
 | GitHub Pages dashboard / blog | forbidden | allowed (chart series, per-request rows referenced by sanitized path) | allowed (decision tables, throughput / cost curves) |
-| Downstream Azure AI Foundry sample repo | forbidden | forbidden (per-request rows are not part of the Foundry sample contract) | allowed (primary surface) |
+| Downstream Microsoft Foundry sample repo | forbidden | forbidden (per-request rows are not part of the Microsoft Foundry sample contract) | allowed (primary surface) |
 
 Notes on the matrix:
 
 - The Pages dashboard / blog is the canonical public surface for any
   public numeric claim in this repo.
-- The Foundry sample repo is `AGGREGATE_AZURE_SAMPLE`-only on purpose:
+- The Microsoft Foundry sample repo is `AGGREGATE_AZURE_SAMPLE`-only on purpose:
   per-request rows are the public research repo's contract with
-  researchers, not the Foundry sample's contract with operators.
+  researchers, not the Microsoft Foundry sample's contract with operators.
 - A single artifact may carry more than one tier label across its
   lifecycle (raw in the private archive, sanitized in the public repo,
-  aggregate in the Foundry sample).
+  aggregate in the Microsoft Foundry sample).
 
 ---
 
@@ -225,7 +226,7 @@ Notes on the matrix:
 | Per-request JSONL records | `SANITIZED_PUBLIC` only |
 | Per-cell summary statistics | `SANITIZED_PUBLIC` or `AGGREGATE_AZURE_SAMPLE` |
 | Throughput / latency / cost curves | `SANITIZED_PUBLIC` or `AGGREGATE_AZURE_SAMPLE` (sourced from numeric series of either tier) |
-| Decision tables (PTU vs PAYG, lever-effect summaries) | `AGGREGATE_AZURE_SAMPLE` preferred; `SANITIZED_PUBLIC` allowed when the table is built from sanitized per-cell summaries |
+| Decision tables (provisioned throughput unit (PTU) vs pay-as-you-go (PAYG), lever-effect summaries) | `AGGREGATE_AZURE_SAMPLE` preferred; `SANITIZED_PUBLIC` allowed when the table is built from sanitized per-cell summaries |
 | Free-text prompt / response excerpts | `SANITIZED_PUBLIC` only, and only when the excerpt is synthetic (allow-list); never in `AGGREGATE_AZURE_SAMPLE` |
 | Header captures (region, request ID, deployment name) | none — these fields are removed before any public tier |
 | Endpoint URLs | none — removed or placeholdered before any public tier |
@@ -273,7 +274,7 @@ the reproducibility of every prior public claim.
 ## 7. Channel-level rules (summary)
 
 Detailed per-channel rules — canonical Pages source-of-truth and
-downstream Foundry sample packaging — live in
+downstream Microsoft Foundry sample packaging — live in
 `docs/17-foundry-packaging-relationship.md`. Tier-level invariants
 each channel inherits from this document:
 
@@ -286,7 +287,7 @@ each channel inherits from this document:
   represents "Indian language"; additional Indian languages added
   only by explicit owner decision). `SANITIZED_PUBLIC` and
   `AGGREGATE_AZURE_SAMPLE` only.
-- **Downstream Azure AI Foundry sample repo.** Separately named,
+- **Downstream Microsoft Foundry sample repo.** Separately named,
   separately governed. `AGGREGATE_AZURE_SAMPLE` only. Cites the
   public research repo and does not author methodology.
 
@@ -295,7 +296,7 @@ each channel inherits from this document:
 ## 8. Governance and release-readiness checklist
 
 A maintainer runs this checklist before any public release (public
-research repo flip, Pages publication, or downstream Foundry sample
+research repo flip, Pages publication, or downstream Microsoft Foundry sample
 release). The checklist is the same across surfaces; the per-surface
 scope differs.
 
@@ -363,13 +364,13 @@ scope differs.
   link; per-translation status (`translated` / `machine_translated` /
   `stale` / `untranslated_fallback_to_en`) and `last_translated_at`
   timestamp; source-content hash check passed; glossary covers at
-  minimum *Foundry*, *PTU*, *PAYG*, *reasoning*, *cache*, *429* with
+  minimum *Microsoft Foundry*, *PTU*, *PAYG*, *reasoning*, *cache*, *429* with
   a fixed per-locale translation; chart series data files are
   locale-agnostic.
-- [ ] **Foundry sample repo:** Microsoft sample-repo `LICENSE`
-  verified with the Foundry samples program; Microsoft Open Source
+- [ ] **Microsoft Foundry sample repo:** Microsoft sample-repo `LICENSE`
+  verified with the Microsoft Foundry samples program; Microsoft Open Source
   `CODE_OF_CONDUCT.md`; MSRC `SECURITY.md`; `README.md` per the
-  Foundry sample template; notebooks runnable end-to-end on Azure AI
+  Microsoft Foundry sample template; notebooks runnable end-to-end on Microsoft
   Foundry with a pinned dependency manifest; per-file
   SPDX-License-Identifier headers; no reference to private customer
   engagements, private communication channels, or private task
@@ -390,7 +391,7 @@ Any of the following stops the release until remediated:
   recorded translation-time hash (the page is marked `stale` and the
   user-visible banner is shown; the release proceeds only with the
   stale banner visible, or after re-translation).
-- A Foundry sample artifact carrying per-request rows.
+- A Microsoft Foundry sample artifact carrying per-request rows.
 
 ---
 
@@ -407,7 +408,7 @@ Any of the following stops the release until remediated:
   published artifact carries both a claim-authority label (spec /
   inference) and a release tier label (raw / sanitized / aggregate).
 - `docs/17-foundry-packaging-relationship.md`: Pages i18n-first
-  acceptance bar and the Track A ↔ Track B Foundry packaging
+  acceptance bar and the Track A ↔ Track B Microsoft Foundry packaging
   relationship.
 
 ---
@@ -451,7 +452,7 @@ reason.
 
 The redaction sweep, the preflight spillover guard, and their unit
 tests assert that real Azure endpoint URLs, resource short-names, and
-Foundry/Cognitive-Services hostnames are detected and scrubbed. Those
+Microsoft Foundry/Cognitive-Services hostnames are detected and scrubbed. Those
 assertions require Azure-*shaped* but non-concrete placeholder strings
 as fixtures and as the redactor's replacement outputs — for example
 `example-host.services.ai.azure.com`,

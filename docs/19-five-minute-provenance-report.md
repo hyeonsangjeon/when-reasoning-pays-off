@@ -13,8 +13,8 @@ The first release analyzes operational metadata only:
 
 - token counts, including cached input and reasoning-token subsets;
 - latency and HTTP status behavior;
-- modeled PAYG cost from a pinned local pricing snapshot;
-- optional PTU/PAYG sizing from declared capacity inputs and pinned local
+- modeled pay-as-you-go (PAYG) cost from a pinned local pricing snapshot (versioned local pricing file);
+- optional provisioned throughput unit (PTU)/PAYG sizing from declared capacity inputs and pinned local
   pricing/density snapshots.
 
 It does **not** run a model or quality evaluator. Therefore every usage-only
@@ -25,7 +25,7 @@ effort preserves quality. Instead, it recommends a controlled experiment.
 
 - Python 3.11 or later.
 - A local clone of this repository.
-- No Azure account, credential, API key, browser uploader, or runtime network
+- No Azure account, credential, application programming interface (API) key, browser uploader, or runtime network
   access. Initial dependency installation can require package-index access
   unless dependencies are already cached.
 
@@ -200,7 +200,7 @@ The machine-readable source of truth. It contains:
 
 - input hashes and row/time-window boundaries, never input paths;
 - method, schema, CLI, pricing, density, and claim-registry versions/hashes;
-- aggregate and model/effort-cell measurements;
+- aggregate and model/effort-cell measurements (one cell is one model-and-effort setting);
 - measured, modeled, and not-measured boundaries;
 - conclusions with evidence, assumptions, confidence, source row ranges,
   selectors, and provenance;
@@ -242,9 +242,9 @@ Important interpretation rules:
 3. Cache behavior is model- and API-version-specific. Core fields retain only
    stable accounting values; current provider semantics stay in snapshots and
    citations.
-4. A PTU result is a planning model. PTU quota does not guarantee deployable
+4. A PTU result is a planning model. PTU quota is a policy limit and does not guarantee deployable
    capacity.
-5. A 429 rate is measured response behavior, not proof of one root cause.
+5. An HTTP rate-limit status 429 rate is measured response behavior, not proof of one root cause.
 
 ## 10. Privacy and failure behavior
 
@@ -312,7 +312,7 @@ shasum -a 256 report/report.json report/report.md \
   report/report.html report/policy.json
 ```
 
-The two hash sets must match. The acceptance ceiling is five minutes after a
+The two hash sets must match. The acceptance ceiling (highest allowed runtime) is five minutes after a
 fresh clone; the bundled sample target is under 60 seconds.
 
 On 2026-08-20, an isolated normal `pip install .` smoke run measured the
@@ -334,8 +334,9 @@ CLI or generated report.
    cached token accounting and newer cache-write, key, and breakpoint semantics
    vary by model family and deployment type.
 3. [Provisioned throughput](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/provisioned-throughput):
-   PTU is dedicated fixed capacity billed per PTU-hour; sizing uses request
-   shape, output weighting, cache rate, and expected request rate.
+   provisioned throughput is a deployment type with dedicated fixed capacity
+   billed per PTU-hour; sizing uses request profile, output weighting, cache
+   rate, and expected request rate.
 4. [Azure OpenAI quotas and limits](https://learn.microsoft.com/en-us/azure/foundry/openai/quotas-limits):
    quota is a limit, not a guarantee that deployment capacity is available.
 

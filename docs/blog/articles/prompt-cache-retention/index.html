@@ -91,7 +91,7 @@
         slice both modes held a high hit ratio (about 0.93 to 0.96), so reading
         hit ratio by itself would suggest the retention mode barely mattered.
         The first-token latency tail showed a different pattern: at cardinality&nbsp;1 the <code>in_memory</code> series sat near
-        106,000&nbsp;ms p95 while the <code>24h</code> series sat near
+        106,000&nbsp;ms p95 (the 95th-percentile latency) while the <code>24h</code> series sat near
         9,900&nbsp;ms, so the retention choice showed up in the latency tail,
         not in hit ratio. Retention should therefore be read with latency
         beside cached-token share. It is a request policy and a
@@ -170,7 +170,7 @@
           token. The right panel shows cache hit ratio. Each group compares
           <code>in_memory</code> with <code>24h</code> for the same cardinality.
         </figcaption>
-        <img src="../../../assets/prompt-cache-retention-evidence.svg" alt="Prompt cache retention evidence chart comparing TTFT p95 and cache hit ratio." style="width:100%;height:auto;display:block;border-radius:12px;">
+        <img src="../../../assets/prompt-cache-retention-evidence.svg" alt="Prompt cache retention evidence chart comparing first-token latency p95 and cache hit ratio." style="width:100%;height:auto;display:block;border-radius:12px;">
       </figure>
       <figure class="article-figure" id="figure-retention-ttft">
         <figcaption>
@@ -183,10 +183,10 @@
           frequency histogram. <strong>How to read it:</strong> at
           cardinality&nbsp;1 the <code>in_memory</code> series sat at about
           106,000&nbsp;ms p95 while the <code>24h</code> series sat at about
-          9,900&nbsp;ms; in this cell the retention choice was visible in
+          9,900&nbsp;ms; in this cell (this single test setting) the retention choice was visible in
           the latency tail, and the two series moved closer once traffic
           was spread across 8 buckets. <strong>Evidence boundary:</strong> one
-          sparse sanitized public aggregate on pay-as-you-go gpt-5.2 (not PTU);
+          sparse sanitized public aggregate on pay-as-you-go gpt-5.2 (not provisioned throughput units);
           source-run evidence, not a universal latency rule.
           <strong>Source:</strong>
           <code>results/cache-key-bucketing/ttft_p95_vs_cardinality.csv</code>
@@ -207,7 +207,7 @@
           showed up in the latency panel above, not in hit ratio. That is
           why retention should be read with latency beside cached-token share.
           <strong>Evidence boundary:</strong> the same sparse sanitized public
-          aggregate on pay-as-you-go gpt-5.2 (not PTU); descriptive, not a
+          aggregate on pay-as-you-go gpt-5.2 (not provisioned throughput units); descriptive, not a
           universal cache-hit rule. <strong>Source:</strong>
           <code>results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv</code>
           (<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/cache-key-bucketing/cache_hit_ratio_vs_cardinality.csv">source CSV</a>).
@@ -221,7 +221,7 @@
             <th>Retention</th>
             <th>Cardinality</th>
             <th>Hit ratio</th>
-            <th>TTFT p95</th>
+            <th>First-token latency p95</th>
             <th>Steady records</th>
           </tr>
         </thead>
@@ -351,8 +351,8 @@
         beside cached-token share to confirm the window you asked for is the
         window you got.</strong></p>
       <p>The next essay turns from a single request's cache policy to what changes
-        when a whole GPT-4o workload is re-sized for GPT-5.x on PTU.</p>
-      <p><a class="button-link" href="../reasoning-migration-sizing/">When GPT-4o traffic moves to GPT-5.x on PTU, what actually changes in the capacity math?</a></p>
+        when a whole GPT-4o workload is re-sized for GPT-5.x on provisioned throughput.</p>
+      <p><a class="button-link" href="../reasoning-migration-sizing/">When GPT-4o traffic moves to GPT-5.x on provisioned throughput, what actually changes in the capacity math?</a></p>
     </section>
   </main>
 

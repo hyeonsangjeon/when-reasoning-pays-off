@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  DRAFT · 한국어 정본(canonical) 실험 노트 · exp005 (PTU 이중 배포 스필오버 측정 / Phase 2).
+  DRAFT · 한국어 정본(canonical) 실험 노트 · exp005 (PAYG 이중 배포 기반 PTU 스필오버 대리 측정 / Phase 2).
   이 시리즈(reasoning-effort-retrospective)는 한국어를 원본 언어로 삼습니다.
   본문이 이야기로 짚은 판단을 여기서는 원자료와 재현 커맨드로 확인합니다.
   승인 후: en/ja/zh-CN/hi 번역본을 KO 원본에서 파생하고 i18n-parity.json 추가.
@@ -12,7 +12,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp005 · 캐시 풀을 진짜로 나눴더니 똑똑한 정책이 더 크게 졌다 | when reasoning pays off</title>
-  <meta name="description" content="PTU(고정 용량) 이중 배포 스필오버 측정(Phase 2) 실험 노트 exp005. 캐시 풀이 물리적으로 분리된 두 라이브 gpt-5.2 배포에서, 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨룬다. Phase 1의 무승부와 달리 이번엔 미리 대비한 쪽이 정상상태 캐시가 0.9923%p 낮았고 throttled 원래 배포에서 실제 429를 167번 맞았으며 비용도 0.91달러 더 들었다.">
+  <meta name="description" content="Phase 2 실험 노트 exp005 — GlobalStandard PAYG(종량제) 두 배포에서 커스텀 라우터로 재는 측정으로, PTU(고정 용량) 스필오버 패턴을 모사한다. 캐시 풀이 물리적으로 분리된 두 라이브 gpt-5.2 배포에서, 미리 대비하는(proactive) 스필오버가 사후 반응(reactive)보다 캐시를 더 지키는지 겨룬다. Phase 1의 무승부와 달리 이번엔 미리 대비한 쪽이 정상상태 캐시가 0.9923%p 낮았고 throttled 원래 배포에서 실제 429를 167번 맞았으며 비용도 0.91달러 더 들었다.">
   <meta name="article:locale" content="ko">
   <meta name="article:translation-status" content="canonical">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -47,7 +47,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ko/">글 목록</a> / <a href="../../../ko/">실험 회고</a> / 실험 노트 · exp005</p>
-    <p class="article-kicker">실험 노트 · exp005 · PTU(고정 용량) 이중 배포 스필오버 측정(Phase 2) · 캐시 풀을 진짜로 나눴을 때</p>
+    <p class="article-kicker">실험 노트 · exp005 · PAYG(종량제) 두 배포로 PTU(고정 용량) 스필오버를 대리 측정(Phase 2) · 캐시 풀을 진짜로 나눴을 때</p>
     <h1>exp005 &mdash; 캐시 풀을 진짜로 나눴더니, 똑똑한 정책이 더 크게 졌다</h1>
     <p class="muted-note">글 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
@@ -58,7 +58,8 @@
     <section class="article-section">
       <p class="section-label">왜 읽어야 하나</p>
       <h2>원래 배포와 예비 배포를 진짜로 나눠 쓰면 무슨 일이 나나</h2>
-      <p>PTU 배포가 한도에 가까워지면 트래픽 일부를 <strong>예비 배포</strong>로 흘려보내는데, 이를 스필오버라고 한다. Phase 1은 이 예비 경로를 배포 하나 안에서 <em>라벨</em>로만 흉내 냈다 &mdash; 원래 경로든 예비 경로든 같은 캐시(프롬프트를 재사용해 아껴 쓰는 저장고)를 봤다. 이 때문에 정책 차이가 캐시에 거의 영향을 주지 않았다.</p>
+      <p>이 실험은 PTU 배포가 한도에 가까워져 스필오버가 트래픽 일부를 <strong>예비 배포</strong>로 흘려보내는 패턴을 모사한다. Phase 1은 이 예비 경로를 배포 하나 안에서 <em>라벨</em>로만 흉내 냈다 &mdash; 원래 경로든 예비 경로든 같은 캐시(프롬프트를 재사용해 아껴 쓰는 저장고)를 봤다. 이 때문에 정책 차이가 캐시에 거의 영향을 주지 않았다.</p>
+      <p>Phase 2는 그 고정 용량 패턴의 대리(proxy)로 <strong>GlobalStandard PAYG(종량제) 두 배포</strong>를 썼다. 라우팅&middot;스로틀&middot;분리된 캐시 풀은 <em>직접</em> 측정했지만, 그 결과를 PTU 과금과 용량에 적용하는 것은 여전히 추론이다.</p>
       <p>Phase 2에서는 그 의심을 걷어낸다. 원래 배포와 예비 배포를 <strong>서로 다른 실제 배포</strong>로 두면 Azure 설계상 <strong>캐시 풀도 갈린다</strong>. &lsquo;어느 배포로 보냈나&rsquo;가 곧바로 캐시 온도를 좌우한다. 한쪽으로 몰면 그 풀만 뜨겁게 유지되지만 둘로 나누면 <em>양쪽이 다 미지근</em>해진다.</p>
       <p><strong>원래 배포 + 예비 배포</strong>를 물리적으로 나눠 운영할 때 생기는 질문은 &ldquo;원래 배포를 지키려고 트래픽을 미리 조금씩 나눠 흘리면 캐시를 더 지킬까?&rdquo;다. <strong>실측 결과</strong>는 &lsquo;나누지 마라&rsquo;에 가깝다.</p>
     </section>
@@ -93,9 +94,9 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
       <p><strong>왜 이걸 쟀나.</strong> Phase 1의 무승부에는 해석상 한계가 하나 있었다 &mdash; 배포가 하나라 캐시 풀이 공유였다. &lsquo;정책에 따른 차이가 원래 없는 것&rsquo;인지, 아니면 &lsquo;공유 캐시 때문에 차이가 나타나지 않은 것&rsquo;인지 가릴 수 없었다. Phase 2는 이 한계를 없앤다. 캐시 풀을 <strong>실제로 분리하고</strong>도 판정이 같은지 본다.</p>
       <p><strong>사전 등록한 예측은 &lsquo;격차의 크기&rsquo;에 걸었다.</strong> 두 갈래였다 &mdash; <em>Phase 2 격차가 Phase 1보다 뚜렷이 커지면, 캐시 풀이 갈릴 때 트래픽을 나누는 값(캐시 재구축 비용)이 진짜라는 뜻. 비슷하면, 캐시 풀 분리는 정책 타이밍보다 작은 요인이라는 뜻.</em> 어느 쪽인지 <strong>실측으로 가른다</strong>.</p>
       <p><strong>원인 규명이 아니라 완화책 비교다.</strong> &lsquo;스필오버가 캐시 하락의 근본 원인&rsquo;이라는 강한 주장은 이미 현장 관찰에서 힘을 잃었다. 이 실험은 원인을 캐지 않고 두 완화 정책 중 <strong>어느 쪽이 나은지</strong>만 겨룬다.</p>
-      <p><strong>왜 이중 배포인가.</strong> 원래 배포(<code>ptu-deploy-throttled</code>)에는 <strong>60,000 TPM</strong>(분당 토큰 한도)이라는 낮은 상한을 <em>일부러</em> 걸었다. 약 30K 토큰 부하가 <strong>진짜 429</strong>를 뱉게 하려는 설정이다. 예비 배포(<code>gpt-5.2</code>)에는 <strong>500,000 TPM</strong>의 넉넉한 여유를 줬다. 배포 이름이 다르면 캐시 풀도 다르므로 Phase 1이 흉내만 냈던 &lsquo;물리적 분리&rsquo;가 여기서는 실제로 일어난다.</p>
+      <p><strong>왜 이중 배포인가.</strong> 두 배포 모두 GlobalStandard PAYG(종량제) 계층을 쓴다. 원래 배포(<code>ptu-deploy-throttled</code>)에는 <strong>60,000 TPM</strong>(분당 토큰 한도)이라는 낮은 상한을 <em>일부러</em> 걸었다. 약 30K 토큰 부하가 <strong>진짜 429</strong>를 뱉게 하려는 설정이다. 예비 배포(<code>gpt-5.2</code>)에는 <strong>500,000 TPM</strong>의 넉넉한 여유를 줬다. 배포 이름이 다르면 캐시 풀도 다르므로 Phase 1이 흉내만 냈던 &lsquo;물리적 분리&rsquo;가 여기서는 실제로 일어난다.</p>
       <p><strong>질문은 하나다.</strong> 캐시 풀이 물리적으로 갈린 위에서, 미리 대비하는 스필오버가 사후 반응보다 캐시를 더 지키는가?</p>
-      <p><strong>설계(부하).</strong> Phase 1과 <em>바이트까지 같은</em> 22분 부하를 두 정책에 똑같이 흘린다 &mdash; <strong>웜업 2분</strong>(0.3 TPS) → <strong>램프 10분</strong>(0.5→2.5 TPS) → <strong>지속 10분</strong>(2.5 TPS). <code>effort=low</code>, 시스템 프롬프트 약 <strong>30K 토큰</strong>(두 런이 바이트까지 동일하도록 SHA-256 <code>98d3a5&hellip;088a</code>로 고정, <code>corpus_seed 4242</code>). 예정 요청은 정책당 <strong>2,136건</strong>(웜업 36 · 램프 900 · 지속 1,200).</p>
+      <p><strong>설계(부하).</strong> Phase 1과 <em>바이트까지 같은</em> 22분 부하를 두 정책에 똑같이 흘린다 &mdash; <strong>웜업 2분</strong>(초당 0.3요청) → <strong>램프 10분</strong>(초당 0.5→2.5요청) → <strong>지속 10분</strong>(초당 2.0요청). <code>effort=low</code>, 시스템 프롬프트 약 <strong>30K 토큰</strong>(두 런이 바이트까지 동일하도록 SHA-256 <code>98d3a5&hellip;088a</code>로 고정, <code>corpus_seed 4242</code>). 예정 요청은 정책당 <strong>2,136건</strong>(웜업 36 · 램프 900 · 지속 1,200).</p>
       <p><strong>변하는 축은 딱 하나</strong>다. <code>policy.type</code>만 <code>reactive</code>와 <code>proactive</code>로 바꾼다. 프롬프트&middot;부하&middot;모델&middot;강도&middot;두 배포 상한을 모두 고정했으므로 두 산출물은 정책에서만 달라진다.</p>
       <div class="article-summary-grid" aria-label="사전 등록한 예측과 역할">
         <section class="summary-tile"><h2>사전 등록한 예측</h2><p>캐시 풀이 진짜로 갈리면 <code>proactive</code>가 값을 할 수도 있다. 사전 등록한 판정선은 <strong>격차의 크기</strong> &mdash; Phase 1보다 커지면 캐시 재구축 비용이 진짜, 비슷하면 분리는 작은 요인.</p></section>

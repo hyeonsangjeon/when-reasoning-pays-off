@@ -8,7 +8,9 @@ A customer engineer or applied scientist evaluating an Azure OpenAI
 workload and deciding between **gpt-4o** and **gpt-5.2** at one of the
 five effort levels (`none`, `low`, `medium`, `high`, `xhigh`). You have a
 task description, a rough cost budget, and a consumption-model
-constraint (PAYG or PTU). You want a defensible starting point and a
+constraint: pay-as-you-go (PAYG), billed per token, or provisioned
+throughput capacity, measured in provisioned throughput units (PTUs) and
+billed at a flat rate. You want a defensible starting point and a
 plan for confirming it on your own data.
 
 This document **is**:
@@ -61,7 +63,8 @@ If yes, characterize the workload's per-call mix:
   pass-rate, [§7](../benchmarks/03-tool-using-agent/analysis.md)) shows
   gpt-4o falls to 83.3 % on the no-tool subset — the model over-uses
   the calculator on prompts that explicitly ask for general-knowledge
-  answers. Every gpt-5.2 cell holds 100 % on the same no-tool subset
+  answers. Every gpt-5.2 cell (a benchmark result for one
+  model-and-effort setting) holds 100 % on the same no-tool subset
   and 100 % on the one-tool subset.
   **Pick gpt-5.2 `low`** (or `none` if latency-sensitive) — both deliver
   100 % no-tool / 100 % one-tool pass-rate at ~$0.00277 / correct, vs
@@ -85,7 +88,7 @@ If yes, characterize the workload's per-call mix:
 ### Q3 — PAYG or PTU?
 
 The same workload's recommendation may differ across consumption models —
-though on the workloads measured here the two lenses largely agree on
+though on the workloads measured here the two cost perspectives largely agree on
 gpt-5.2 `low` or `none`.
 
 - **PAYG (pay-as-you-go; per-token billing):** the cost-per-correct
@@ -102,7 +105,8 @@ gpt-5.2 `low` or `none`.
     ([03 §5](../benchmarks/03-tool-using-agent/analysis.md)).
 
 - **PTU (provisioned throughput; fixed-capacity billing):** the
-  correct-answers-per-minute lens replaces the cost-per-correct lens.
+  correct-answers-per-minute perspective replaces the cost-per-correct
+  perspective.
   Throughput is the lever; you cannot save dollars (your bill is fixed)
   but you can shrink the workload's throughput footprint.
   - Short-factual (benchmark 01): **gpt-5.2 `none`** — raw throughput is
@@ -122,7 +126,7 @@ gpt-5.2 `low` or `none`.
     despite the slight throughput regression vs `low`, upsize the PTU
     allocation by ~10 % (medium runs at 0.915 × vs `low`'s 0.939 ×) —
     but the measurement here says `low` is already the optimal point
-    on every lens.
+    on every perspective.
 
 ## 3. Worked examples
 
@@ -143,7 +147,8 @@ gpt-5.2 `low` or `none`.
   sourced per-call delta by the daily call count). No latency trade-off:
   latency shows no effort trend on this benchmark
   ([01 §8](../benchmarks/01-short-factual/analysis.md)); still confirm
-  against p95 SLO before flipping production.
+  against your p95 (95th-percentile latency) service-level objective
+  (SLO) before flipping production.
 - Confirm-on-your-data plan: run 200 representative queries through both
   models, judge with the same gpt-4o judge prompt, verify pass-rate
   parity and latency tolerance.
@@ -239,11 +244,11 @@ and a single pricing snapshot. It will **not** generalize cleanly to:
 
 ## 5. Open questions / future measurements
 
-- **Effort < `none`?** Foundry v1 gpt-5.2 rejects `minimal` with HTTP
+- **Effort < `none`?** The Azure OpenAI v1 API rejects `minimal` for gpt-5.2 with HTTP
   400 (per Task 006 finding documented in
   [`scripts/run_benchmark.py`](../scripts/run_benchmark.py)); `none` is
   the lowest accepted level. If a future API version restores `minimal`
-  for gpt-5.2 the cost-per-correct floor on benchmark 02 may shift.
+  for gpt-5.2 the lowest achievable cost-per-correct on benchmark 02 may shift.
 - **PTU live-load measurement.** The throughput-gain figures here are
   derived from mean tokens-per-request. A real PTU load test would
   measure queueing, p95 latency under load, and actual

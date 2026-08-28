@@ -1,11 +1,11 @@
-# Observability schema — canonical PTU record contract
+# Observability schema — canonical Provisioned Throughput Unit (PTU) record contract
 
 ![One canonical per-request and per-cell record shape consumed by aggregators, audits, and Azure Monitor correlation.](assets/observability-record-schema.svg)
 
-**Task 028 anchor.** This document defines the single canonical
-per-request and per-cell record shape that every PTU-aware script in
-this repo emits. Downstream aggregators (Task 020, future analytics)
-and audits (Task 029 category labeling) rely on it.
+This document defines the canonical record profiles for individual
+requests and aggregate measurement windows that every
+provisioned-throughput-aware script in this repository emits. Downstream
+aggregators and audits rely on it.
 
 The schema is generated from
 `batch_runner/observability/schema.py` and emitted as JSON Schema files
@@ -19,7 +19,7 @@ under `schemas/`. The Azure Monitor correlation contract lives in
 Before Task 028, each measurement script (013, 019, 021, …) defined its
 own keyset. Task 020's aggregator had to translate between shapes.
 Adding more measurement tasks would multiply that cost. Task 028 fixes
-the shape once: header field names match the Azure OpenAI PTU
+the record profile once: header field names match the Azure OpenAI PTU
 Operations Guide Appendix A and B verbatim, Azure Monitor metric names
 match Appendix C verbatim, and every field carries an
 ``official_spec`` vs ``operational_inference`` tag per Task 029.
@@ -36,7 +36,7 @@ One record per Azure OpenAI request. Emitted as a JSON Lines row.
 |---|---|---|
 | `request_idx` | int | Monotonic index within a measurement run. Repo convention. |
 | `wallclock_timestamp_iso` | string (ISO 8601) | UTC. |
-| `deployment_name_requested` | string | What the client targeted, before any spillover. |
+| `deployment_name_requested` | string | What the client targeted, before any spillover (automatic routing of overflow requests from a saturated provisioned deployment to a standard deployment). |
 
 ### Azure response headers (official spec — Appendix A / B)
 
@@ -47,7 +47,7 @@ each.
 | Field | Type | `header_name` | Appendix | Notes |
 |---|---|---|---|---|
 | `response_status_code` | int | — | HTTP status line | |
-| `retry_after_ms` | number \| null | `retry-after-ms` | A | Contract-reliable on 429. Coexists with `retry_after_seconds` — both fields, no normalization. |
+| `retry_after_ms` | number \| null | `retry-after-ms` | A | Contract-reliable on HTTP rate-limit status 429. Coexists with `retry_after_seconds` — both fields, no normalization. |
 | `retry_after_seconds` | number \| null | `retry-after` | A | Contract-reliable on 429. |
 | `x_ms_region` | string \| null | `x-ms-region` | A | Observability. |
 | `x_request_id` | string \| null | `x-request-id` | A | Observability. |
@@ -99,8 +99,8 @@ One record per measurement cell window (see Task 013 cell taxonomy).
 | `request_count` | int | inference | Number of `PTURequestRecord` rows in the window. |
 | `real_429_count` | int | inference | Rows with `response_status_code == 429`. |
 | `mean_cached_fraction` | number | inference | `cached_tokens / prompt_tokens`, averaged. |
-| `p50_ttft_ms` | number | inference | Percentile of `first_token_latency_ms`. |
-| `p95_ttft_ms` | number | inference | |
+| `p50_ttft_ms` | number | inference | Median / 50th-percentile time-to-first-token (TTFT), computed from `first_token_latency_ms`. |
+| `p95_ttft_ms` | number | inference | 95th-percentile TTFT. |
 | `p99_ttft_ms` | number | inference | |
 | `mean_retry_after_ms_on_429` | number \| null | inference | Null if no 429s in the window. |
 | `azure_monitor_metrics_to_query` | array of string | **official_spec** | Frozen Appendix C list — see §4. |
@@ -130,7 +130,7 @@ record's `wallclock_timestamp_iso` with a symmetric pad (default 60 s)
 on each side — wide enough to land inside Azure Monitor's 1-minute
 aggregate bucket regardless of small clock skew.
 
-The helper is **pure**: no Azure SDK import, no network call, no
+The helper is **pure**: no Azure software development kit (SDK) import, no network call, no
 credential read. Operators (or downstream offline tools) perform the
 actual query using the returned window.
 
