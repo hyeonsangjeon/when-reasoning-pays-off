@@ -178,11 +178,6 @@ def _add_sample_parser(subparsers: argparse._SubParsersAction) -> None:
         help="Ledger describing the run (default: ledger.yaml)",
     )
     run.add_argument(
-        "--out",
-        metavar="DIR",
-        help="Output directory (default: the ledger's output.dir)",
-    )
-    run.add_argument(
         "--confirm-cost",
         action="store_true",
         help="Acknowledge Azure billing. Required for a billed provider.",
@@ -271,6 +266,7 @@ def _init_sample_workspace(out_dir: Path, provider: str) -> None:
             "# Created by `reasoning-payoff sample init`.\n"
             "out/\n"
             ".env\n"
+            ".reasoning-payoff-sample.lock\n"
             "*.tmp\n",
         )
         if out_dir.exists():
@@ -339,7 +335,6 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
     # documented LedgerError (mapped to exit 3), never a traceback or path leak.
     ledger = load_ledger(ledger_path)
     base_dir = ledger_path.parent
-    out_dir = Path(args.out).resolve() if args.out else None
 
     # Show the exact request count before running, so "a small run" is concrete.
     planned_requests = ledger.execution.max_samples * ledger.execution.repeats
@@ -356,7 +351,6 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
     result = run_ledger(
         ledger,
         base_dir=base_dir,
-        out_dir=out_dir,
         allow_remote_ollama=args.allow_remote_ollama,
         confirm_cost=args.confirm_cost,
         preflight_sink=_show_preflight,
@@ -367,12 +361,12 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
                 {
                     "status": result.status,
                     "exit_code": result.exit_code,
-                    "out_dir": str(result.out_dir),
+                    "out_dir": ledger.output.dir,
                     "ok_count": result.ok_count,
                     "error_count": result.error_count,
-                    "run_json": str(result.run_json_path),
-                    "records": str(result.records_path),
-                    "summary": str(result.summary_path),
+                    "run_json": f"{ledger.output.dir}/run.json",
+                    "records": f"{ledger.output.dir}/records.jsonl",
+                    "summary": f"{ledger.output.dir}/summary.md",
                     "answer_preview": result.answer_preview,
                     "failures": [
                         {

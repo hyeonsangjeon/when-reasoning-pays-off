@@ -32,7 +32,9 @@ small model on your own machine. The five-minute target assumes Ollama is
 already installed and the small model is available or quick to pull; the first
 `ollama pull` is network- and hardware-dependent and is not counted in the five
 minutes. Azure OpenAI in Microsoft Foundry is also supported, but it is a
-**billed** call and is refused unless you explicitly confirm the cost.
+**billed** call and is refused unless you explicitly confirm the cost. Its
+preflight uses the ledger's pinned pricing model and separate input/output
+rates; verify them against current Azure pricing before confirmation.
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
@@ -68,7 +70,7 @@ sample-workspace/
 > This is an **illustrative live sample — not the published benchmark**; there
 > is no quality judge and no comparable reasoning-effort sweep. It proves the
 > plumbing end to end, not a scientific result. Sample output is gitignored and
-> the runner refuses to write inside `benchmarks/**` or `results/**`.
+> fixed to the workspace's owned `out/` directory.
 
 Prefer no install first? `reasoning-payoff sample init --provider mock` uses a
 deterministic **offline preview** provider that makes no network call — useful

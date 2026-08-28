@@ -93,6 +93,10 @@ def _base_ledger(provider: str) -> dict[str, Any]:
             "confirmed": True,
             "estimated_usd": 0.05,
             "hard_ceiling_usd": 1.0,
+            "pricing_snapshot_id": "test-pricing-2026-03-08",
+            "pricing_model": "gpt-5.2",
+            "input_per_1m_usd": 2.0,
+            "output_per_1m_usd": 20.0,
         }
     return led
 
@@ -703,12 +707,40 @@ def test_cli_sample_init_then_run_mock(tmp_path: Path, monkeypatch):
     assert (ws / ".env.example").is_file()
 
     out_dir = ws / "out"
-    rc = main(["sample", "run", "--ledger", str(ws / "ledger.yaml"), "--out", str(out_dir)])
+    rc = main(["sample", "run", "--ledger", str(ws / "ledger.yaml")])
     assert rc == 0
     assert (out_dir / "run.json").is_file()
     assert (out_dir / "records.jsonl").is_file()
     assert (out_dir / "summary.md").is_file()
     assert (out_dir / ".reasoning-payoff-experiment-owned").is_file()
+
+
+def test_cli_sample_json_uses_workspace_relative_output_paths(
+    tmp_path: Path, monkeypatch, capsys
+):
+    _no_network(monkeypatch)
+    from batch_runner.cli import main
+
+    ws = tmp_path / "private-workspace-name"
+    assert main(["sample", "init", "--provider", "mock", "--out", str(ws)]) == 0
+    capsys.readouterr()
+    assert (
+        main(
+            [
+                "sample",
+                "run",
+                "--ledger",
+                str(ws / "ledger.yaml"),
+                "--json",
+            ]
+        )
+        == 0
+    )
+    payload = capsys.readouterr().out
+    assert str(tmp_path) not in payload
+    parsed = json.loads(payload)
+    assert parsed["out_dir"] == "out"
+    assert parsed["run_json"] == "out/run.json"
 
 
 def test_cli_sample_init_matches_packaged_bytes(tmp_path: Path):
@@ -788,13 +820,17 @@ class _CountingProvider:
 # --- HIGH1: hard ceiling is actually enforced pre-network -------------------
 def test_high1_azure_preflight_refuses_when_estimate_exceeds_ceiling(tmp_path: Path):
     led_dict = _base_ledger("azure")
-    # A $0.01 ceiling cannot cover 3 rows x 128 output tokens at the pinned
-    # conservative rate, so the run must be refused before any provider call.
+    # A $0.001 ceiling cannot cover 2 rows x 128 output tokens at the pinned
+    # output rate, so the run must be refused before any provider call.
     led_dict["execution"]["cost"] = {
         "billed": True,
         "confirmed": True,
         "estimated_usd": 0.0,
-        "hard_ceiling_usd": 0.01,
+        "hard_ceiling_usd": 0.001,
+        "pricing_snapshot_id": "test-pricing-2026-03-08",
+        "pricing_model": "gpt-5.2",
+        "input_per_1m_usd": 2.0,
+        "output_per_1m_usd": 20.0,
     }
     led = parse_ledger(led_dict)
     ws = _workspace(tmp_path)
@@ -830,6 +866,25 @@ def test_high1_within_ceiling_runs_and_records_preflight(tmp_path: Path):
     assert pf["within_ceiling"] is True
     assert pf["planned_requests"] == 2  # 2 rows x 1 repeat
     assert plans and plans[0].planned_requests == 2
+
+
+def test_high1_preflight_uses_pinned_separate_rates_and_utf8_bound():
+    from batch_runner.experiment.cost import estimate_azure_cost
+
+    ledger = parse_ledger(_base_ledger("azure"))
+    plan = estimate_azure_cost(ledger, ["é"])
+    assert plan.estimated_input_tokens == 10  # two UTF-8 bytes + framing allowance
+    assert plan.estimated_output_tokens == 128
+    assert plan.input_rate_usd_per_1m_tokens == 2.0
+    assert plan.output_rate_usd_per_1m_tokens == 20.0
+    assert plan.estimated_usd == pytest.approx((10 * 2 + 128 * 20) / 1_000_000)
+
+
+def test_high1_unpriced_azure_configuration_is_rejected():
+    ledger = _base_ledger("azure")
+    del ledger["execution"]["cost"]["output_per_1m_usd"]
+    with pytest.raises(LedgerError):
+        parse_ledger(ledger)
 
 
 # --- HIGH2: Responses call is stateless (store=False) -----------------------
@@ -890,6 +945,84 @@ def test_high4_foreign_dir_fails_with_zero_provider_calls(tmp_path: Path):
     assert (foreign / "keep.txt").read_text() == "keep"
 
 
+def test_high4_output_lock_is_held_until_the_run_finishes(tmp_path: Path):
+    import threading
+
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    entered = threading.Event()
+    release = threading.Event()
+    errors: list[BaseException] = []
+
+    class _BlockingProvider(_CountingProvider):
+        def prepare(self) -> None:
+            entered.set()
+            assert release.wait(timeout=5)
+
+    def first_run() -> None:
+        try:
+            run_ledger(
+                led,
+                base_dir=ws,
+                clock=_FIXED_CLOCK,
+                provider_builder=lambda *_a, **_k: _BlockingProvider(),
+            )
+        except BaseException as exc:  # pragma: no cover - reported below
+            errors.append(exc)
+
+    thread = threading.Thread(target=first_run)
+    thread.start()
+    assert entered.wait(timeout=5)
+    with pytest.raises(ExperimentOutputConflict, match="output lock"):
+        run_ledger(
+            led,
+            base_dir=ws,
+            clock=_FIXED_CLOCK,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    release.set()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert not errors
+    assert not (ws / ".reasoning-payoff-sample.lock").exists()
+
+
+def test_high4_tampered_artifact_fails_before_provider_build(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    run_ledger(led, base_dir=ws, clock=_FIXED_CLOCK)
+    artifact = ws / "out" / "run.json"
+    artifact.unlink()
+    artifact.mkdir()
+    _CountingProvider.built = 0
+    with pytest.raises(ExperimentOutputConflict, match="artifact path"):
+        run_ledger(
+            led,
+            base_dir=ws,
+            clock=_FIXED_CLOCK,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert _CountingProvider.built == 0
+
+
+def test_high4_symlinked_output_is_rejected_before_provider_build(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (ws / "out").symlink_to(outside, target_is_directory=True)
+    _CountingProvider.built = 0
+    with pytest.raises(ExperimentOutputConflict):
+        run_ledger(
+            led,
+            base_dir=ws,
+            clock=_FIXED_CLOCK,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert _CountingProvider.built == 0
+    assert not list(outside.iterdir())
+
+
 # --- HIGH5: writes do not follow a planted symlink --------------------------
 def test_high5_atomic_write_does_not_follow_symlink(tmp_path: Path):
     from batch_runner.experiment.runner import _atomic_write_text
@@ -928,7 +1061,7 @@ def test_high6_client_receives_timeout_and_no_retries(monkeypatch):
 
 
 # --- MED7: only status=="completed" is a success ----------------------------
-def _azure_provider_with_status(status: str):
+def _azure_provider_with_status(status: str | None):
     class _Resp:
         def __init__(self) -> None:
             self.output_text = "x"
@@ -957,7 +1090,7 @@ def _azure_provider_with_status(status: str):
 
 
 def test_med7_failed_status_is_typed_failure():
-    for status in ("failed", "cancelled", "incomplete", "in_progress"):
+    for status in (None, "", "failed", "cancelled", "incomplete", "in_progress"):
         prov = _azure_provider_with_status(status)
         prov.prepare()
         with pytest.raises(ResponseNotCompletedError):
@@ -975,6 +1108,44 @@ def test_med8_ollama_redirect_is_blocked():
     prov = OllamaProvider(ledger=led, endpoint=ep, capture_io=True, transport=transport)
     with pytest.raises(ProviderUnavailableError):
         prov.run_row("q1", 0, "hi")
+
+
+def test_med8_ollama_transport_disables_environment_proxies(monkeypatch):
+    import urllib.request
+
+    from batch_runner.experiment.providers.ollama import _urllib_transport
+
+    handlers: list[Any] = []
+
+    class _Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: Any) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return b"{}"
+
+    class _Opener:
+        def open(self, *_args: Any, **_kwargs: Any) -> _Response:
+            return _Response()
+
+    def fake_build_opener(*items: Any) -> _Opener:
+        handlers.extend(items)
+        return _Opener()
+
+    monkeypatch.setenv("HTTP_PROXY", "http://proxy.invalid:8080")
+    monkeypatch.delenv("NO_PROXY", raising=False)
+    monkeypatch.setattr(urllib.request, "build_opener", fake_build_opener)
+    assert _urllib_transport("http://localhost:11434/api/chat", b"{}", 1) == (
+        200,
+        b"{}",
+    )
+    proxy = next(item for item in handlers if isinstance(item, urllib.request.ProxyHandler))
+    assert proxy.proxies == {}
 
 
 # --- MED9: remote Ollama URL is never serialized ----------------------------
@@ -1050,6 +1221,31 @@ def test_med12_schema_runtime_parity_valid_and_invalid():
         parse_ledger(bad)
     assert list(validator.iter_errors(bad)), "schema must also reject azure+none auth"
 
+    invalid_docs: list[dict[str, Any]] = []
+    traversal = _base_ledger("mock")
+    traversal["input"]["path"] = "../sample.jsonl"
+    invalid_docs.append(traversal)
+    custom_output = _base_ledger("mock")
+    custom_output["output"]["dir"] = "../out"
+    invalid_docs.append(custom_output)
+    wrong_record_cap = _base_ledger("mock")
+    wrong_record_cap["input"]["max_records"] = 49
+    invalid_docs.append(wrong_record_cap)
+    too_many_samples = _base_ledger("mock")
+    too_many_samples["execution"]["max_samples"] = 51
+    invalid_docs.append(too_many_samples)
+    missing_id = _base_ledger("mock")
+    del missing_id["input"]["row_shape"]["required_fields"]["id"]
+    invalid_docs.append(missing_id)
+    unpriced = _base_ledger("azure")
+    del unpriced["execution"]["cost"]["input_per_1m_usd"]
+    invalid_docs.append(unpriced)
+
+    for doc in invalid_docs:
+        with pytest.raises(LedgerError):
+            parse_ledger(doc)
+        assert list(validator.iter_errors(doc)), doc
+
 
 # --- MED13: required non-empty, unique row ids ------------------------------
 def _dataset_spec():
@@ -1104,6 +1300,6 @@ def test_med15_sample_run_prints_request_count(tmp_path: Path, monkeypatch, caps
 
     ws = tmp_path / "ws"
     assert main(["sample", "init", "--provider", "mock", "--out", str(ws)]) == 0
-    main(["sample", "run", "--ledger", str(ws / "ledger.yaml"), "--out", str(ws / "out")])
+    main(["sample", "run", "--ledger", str(ws / "ledger.yaml")])
     err = capsys.readouterr().err
     assert "request(s)" in err

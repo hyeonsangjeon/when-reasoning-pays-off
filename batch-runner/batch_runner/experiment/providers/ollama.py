@@ -62,7 +62,9 @@ def _urllib_transport(url: str, payload: bytes, timeout: float) -> tuple[int, by
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    opener = urllib.request.build_opener(_NoRedirect)
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({}), _NoRedirect
+    )
     try:
         with opener.open(request, timeout=timeout) as response:  # noqa: S310 - localhost only, scheme validated upstream
             return int(response.status), response.read()

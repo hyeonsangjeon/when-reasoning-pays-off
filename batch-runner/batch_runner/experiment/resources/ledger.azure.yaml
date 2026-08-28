@@ -62,6 +62,12 @@ execution:
     confirmed: false
     estimated_usd: 0.05
     hard_ceiling_usd: 1.00
+    # Pinned estimator inputs, not a provider quote. Verify current Azure pricing
+    # for this deployment before changing confirmed to true.
+    pricing_snapshot_id: starter-assumption-gpt-5.2-2026-03-08
+    pricing_model: gpt-5.2
+    input_per_1m_usd: 1.75
+    output_per_1m_usd: 14.00
 
 output:
   dir: out

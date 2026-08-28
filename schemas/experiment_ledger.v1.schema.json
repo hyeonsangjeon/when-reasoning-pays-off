@@ -89,7 +89,8 @@
         "path": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 400
+          "maxLength": 400,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
         },
         "format": {
           "type": "string",
@@ -106,6 +107,11 @@
               "additionalProperties": {
                 "type": "string",
                 "enum": ["string", "integer", "number", "boolean"]
+              },
+              "required": ["id", "input"],
+              "properties": {
+                "id": { "const": "string" },
+                "input": { "const": "string" }
               }
             },
             "optional_fields": {
@@ -118,9 +124,7 @@
           }
         },
         "max_records": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100000
+          "const": 50
         },
         "sample_selector": {
           "type": "string",
@@ -136,7 +140,7 @@
         "max_samples": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 10000
+          "maximum": 50
         },
         "concurrency": {
           "const": 1,
@@ -185,6 +189,26 @@
               "type": "number",
               "minimum": 0.0,
               "maximum": 1000000.0
+            },
+            "pricing_snapshot_id": {
+              "type": ["string", "null"],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "pricing_model": {
+              "type": ["string", "null"],
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "input_per_1m_usd": {
+              "type": ["number", "null"],
+              "exclusiveMinimum": 0.0,
+              "maximum": 1000000.0
+            },
+            "output_per_1m_usd": {
+              "type": ["number", "null"],
+              "exclusiveMinimum": 0.0,
+              "maximum": 1000000.0
             }
           }
         }
@@ -196,9 +220,7 @@
       "required": ["dir"],
       "properties": {
         "dir": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 400
+          "const": "out"
         },
         "artifacts": {
           "const": ["run.json", "records.jsonl", "summary.md"],
@@ -245,7 +267,13 @@
                   "billed": { "const": true },
                   "hard_ceiling_usd": { "exclusiveMinimum": 0 }
                 },
-                "required": ["hard_ceiling_usd"]
+                "required": [
+                  "hard_ceiling_usd",
+                  "pricing_snapshot_id",
+                  "pricing_model",
+                  "input_per_1m_usd",
+                  "output_per_1m_usd"
+                ]
               }
             }
           }
@@ -266,7 +294,13 @@
             "properties": {
               "reasoning_effort": { "const": null },
               "cost": {
-                "properties": { "billed": { "const": false } }
+                "properties": {
+                  "billed": { "const": false },
+                  "pricing_snapshot_id": { "const": null },
+                  "pricing_model": { "const": null },
+                  "input_per_1m_usd": { "const": null },
+                  "output_per_1m_usd": { "const": null }
+                }
               }
             }
           }
@@ -287,7 +321,13 @@
             "properties": {
               "reasoning_effort": { "const": null },
               "cost": {
-                "properties": { "billed": { "const": false } }
+                "properties": {
+                  "billed": { "const": false },
+                  "pricing_snapshot_id": { "const": null },
+                  "pricing_model": { "const": null },
+                  "input_per_1m_usd": { "const": null },
+                  "output_per_1m_usd": { "const": null }
+                }
               }
             }
           }

@@ -45,12 +45,12 @@ from batch_runner.privacy import (
 LEDGER_SCHEMA_VERSION = "1.0.0"
 
 MAX_LEDGER_FILE_BYTES = 256 * 1024
-MAX_SAMPLES_CEILING = 10_000
+MAX_SAMPLES_CEILING = 50
 MAX_CONCURRENCY = 32
 MAX_TIMEOUT_SECONDS = 3_600
 MAX_OUTPUT_TOKENS_CEILING = 32_768
 MAX_REPEATS = 20
-MAX_RECORDS_CEILING = 100_000
+MAX_RECORDS_CEILING = 50
 
 #: The exact, ordered artifact set the runner writes. The ledger may not
 #: advertise a different set (see :class:`OutputSpec`).
@@ -206,10 +206,12 @@ class RowShape(_Strict):
         overlap = set(self.required_fields) & set(self.optional_fields)
         if overlap:
             raise ValueError("a field cannot be both required and optional")
-        if "id" not in self.required_fields and "id" not in self.optional_fields:
-            raise ValueError("row_shape must declare an 'id' field")
-        if "input" not in self.required_fields:
-            raise ValueError("row_shape.required_fields must include 'input'")
+        for required_name in ("id", "input"):
+            if self.required_fields.get(required_name) != "string":
+                raise ValueError(
+                    "row_shape.required_fields must include string fields "
+                    "'id' and 'input'"
+                )
         return self
 
 
@@ -219,7 +221,7 @@ class InputSpec(_Strict):
     path: str = Field(min_length=1, max_length=400)
     format: DataFormat
     row_shape: RowShape
-    max_records: int = Field(ge=1, le=MAX_RECORDS_CEILING)
+    max_records: Literal[50]
     sample_selector: SampleSelector = "first"
 
     @field_validator("path")
@@ -235,6 +237,10 @@ class CostSpec(_Strict):
     confirmed: bool = False
     estimated_usd: float = Field(default=0.0, ge=0.0, le=1_000_000.0)
     hard_ceiling_usd: float = Field(default=0.0, ge=0.0, le=1_000_000.0)
+    pricing_snapshot_id: str | None = Field(default=None, min_length=1, max_length=120)
+    pricing_model: str | None = Field(default=None, min_length=1, max_length=120)
+    input_per_1m_usd: float | None = Field(default=None, gt=0.0, le=1_000_000.0)
+    output_per_1m_usd: float | None = Field(default=None, gt=0.0, le=1_000_000.0)
 
     @model_validator(mode="after")
     def _ceiling_covers_estimate(self) -> CostSpec:
@@ -263,7 +269,7 @@ class ExecutionSpec(_Strict):
 class OutputSpec(_Strict):
     """The ``OUT`` stage: where artifacts are written."""
 
-    dir: str = Field(min_length=1, max_length=400)
+    dir: Literal["out"]
     # The runner writes exactly these three artifacts, in this order. The list
     # is fixed rather than free-form so the ledger cannot advertise files that
     # are never produced.
@@ -280,11 +286,6 @@ class OutputSpec(_Strict):
                 f"{FIXED_ARTIFACTS!r} for this release"
             )
         return value
-
-    @field_validator("dir")
-    @classmethod
-    def _safe_dir(cls, value: str) -> str:
-        return _require_safe_relative_path(value, field="output.dir")
 
     @field_validator("artifacts")
     @classmethod
@@ -344,6 +345,20 @@ class RunLedger(_Strict):
                 raise ValueError("azure provider must set execution.cost.billed true")
             if self.endpoint.default is not None:
                 raise ValueError("azure endpoint must not carry a committed default")
+            cost = self.execution.cost
+            if any(
+                value is None
+                for value in (
+                    cost.pricing_snapshot_id,
+                    cost.pricing_model,
+                    cost.input_per_1m_usd,
+                    cost.output_per_1m_usd,
+                )
+            ):
+                raise ValueError(
+                    "azure provider requires a pinned pricing snapshot ID, "
+                    "pricing model, and input/output rates"
+                )
             # gpt-5.2 rejects "minimal" at the service; refuse it up front so a
             # billed call never fails after the money is committed.
             if (
@@ -362,6 +377,19 @@ class RunLedger(_Strict):
             if billed:
                 raise ValueError(
                     f"{self.provider} provider must set execution.cost.billed false"
+                )
+            cost = self.execution.cost
+            if any(
+                value is not None
+                for value in (
+                    cost.pricing_snapshot_id,
+                    cost.pricing_model,
+                    cost.input_per_1m_usd,
+                    cost.output_per_1m_usd,
+                )
+            ):
+                raise ValueError(
+                    f"{self.provider} provider must not declare Azure pricing"
                 )
         if self.provider != "azure" and self.execution.reasoning_effort is not None:
             raise ValueError(

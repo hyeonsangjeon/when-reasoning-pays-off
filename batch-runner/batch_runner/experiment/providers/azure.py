@@ -216,16 +216,10 @@ class AzureFoundryProvider:
         # Only a terminal "completed" status is a success. Every other state is
         # surfaced as a typed error rather than read as a good record.
         status_word = getattr(response, "status", None)
-        if isinstance(status_word, str):
-            lowered = status_word.strip().lower()
-            if lowered in {"failed", "cancelled", "canceled"}:
-                raise ResponseNotCompletedError(
-                    f"azure response did not complete (status: {lowered})"
-                )
-            if lowered and lowered != "completed":
-                raise ResponseNotCompletedError(
-                    f"azure response is not terminal (status: {lowered})"
-                )
+        if not isinstance(status_word, str) or status_word.strip().lower() != "completed":
+            raise ResponseNotCompletedError(
+                "azure response did not report terminal status 'completed'"
+            )
 
         text = getattr(response, "output_text", None)
         if not isinstance(text, str):

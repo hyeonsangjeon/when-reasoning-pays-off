@@ -234,13 +234,28 @@ Two gates must both be satisfied: the CLI flag `--confirm-cost` **and** the
 ledger's `execution.cost.confirmed: true`. In a continuous-integration (CI)
 environment the billed run is hard-refused by default before any network call.
 
-**Cost ceiling (enforced).** Before any network call, the runner computes a
-deliberately pessimistic upper-bound estimate — every request is assumed to emit
-the full `max_output_tokens`, priced at a flat rate well above current `gpt-5.2`
-rates — and prints a plan line such as `cost plan: 3 request(s), <= 128 output
-tokens each; conservative estimate $0.0259 (ceiling $1.00)`. If that estimate
-exceeds `execution.cost.hard_ceiling_usd`, the run is refused with zero calls.
-This is a safety bound, not a quoted price; your real bill is smaller.
+**Cost preflight (enforced against pinned assumptions).** The Azure ledger names
+the pricing model, a pricing snapshot ID, and separate input/output rates per
+million tokens. Verify those values against the current price for your deployment
+before setting `confirmed: true`. Before any network call, the runner bounds
+input tokens by UTF-8 bytes plus framing overhead, assumes every request emits
+the full `max_output_tokens`, and applies those declared rates. It prints a plan
+line such as `cost plan: 3 request(s), <= 128 output tokens each; conservative
+estimate $0.0055 (ceiling $1.00)`. If the estimate exceeds
+`execution.cost.hard_ceiling_usd`, the run is refused with zero calls. This
+ceiling governs the recorded estimate, not Azure's invoice; changed prices,
+taxes, or provider billing rules can differ.
+
+```yaml
+cost:
+  billed: true
+  confirmed: true
+  hard_ceiling_usd: 1.00
+  pricing_snapshot_id: starter-assumption-gpt-5.2-2026-03-08
+  pricing_model: gpt-5.2
+  input_per_1m_usd: 1.75
+  output_per_1m_usd: 14.00
+```
 
 **Data retention.** Every sample Responses call sets `store=false`, the
 documented stateless mode: this call is not stored for later retrieval and no
@@ -250,9 +265,10 @@ data-processing policies are a separate service boundary; the default Responses
 API otherwise retains request data for 30 days. See Microsoft Learn,
 [Use the Responses API](https://learn.microsoft.com/azure/foundry/openai/how-to/responses).
 
-The runner sends the ledger `timeout_seconds` to the SDK and sets
-`max_retries=0`, so one confirmed run is exactly one billed request attempt — a
-timeout is not silently retried into extra charges.
+The planned request count is `selected rows × repeats` (three by default).
+The runner sends `timeout_seconds` to the SDK and sets `max_retries=0`, so each
+planned request is attempted at most once by this runner; a timeout is not
+silently retried.
 
 **Authentication.** The runner uses a refreshable Entra ID bearer-token provider
 with the audience `https://ai.azure.com/.default`; Azure Identity caches and
@@ -344,8 +360,9 @@ preserved safely; partial failures are visible and never reported as success.
   `execution.cost.confirmed: true`; billed runs are hard-refused in CI.
 - **Azure `minimal` rejected** — `gpt-5.2` does not support `minimal`; use
   `none` (default) or `low/medium/high/xhigh`.
-- **exit 5 writing output** — point `output.dir` at a fresh workspace directory;
-  the runner refuses `benchmarks/**` and `results/**`.
+- **exit 5 writing output** — output is fixed to the workspace's gitignored
+  `out/` directory. Remove unexpected files or a stale
+  `.reasoning-payoff-sample.lock` only after confirming no run is active.
 
 ## 14. Scope reminder
 

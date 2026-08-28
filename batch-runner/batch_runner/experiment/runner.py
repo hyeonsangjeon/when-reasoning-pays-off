@@ -26,9 +26,12 @@ import dataclasses
 import json
 import os
 import secrets
+import stat
 import time
+from contextlib import contextmanager
+from functools import wraps
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 from batch_runner.experiment.cost import CostPreflight, estimate_azure_cost
 from batch_runner.experiment.dataset import LoadedDataset, load_dataset, row_input_text
@@ -93,8 +96,8 @@ def _reject_evidence_tree(out_dir: Path) -> None:
     if parts & _EVIDENCE_DIR_NAMES:
         raise ExperimentOutputConflict(
             "refusing to write sample output inside the published evidence "
-            "tree (a path segment named 'benchmarks' or 'results'); choose a "
-            "different --out directory"
+            "tree (a path segment named 'benchmarks' or 'results'); move the "
+            "sample workspace"
         )
 
 
@@ -143,30 +146,174 @@ def _resolve_input_path(base_dir: Path, rel: str) -> Path:
     return candidate
 
 
-def _claim_output_dir(out_dir: Path) -> None:
+def _select_output_dir(
+    ledger: RunLedger, *, base_dir: Path, out_dir: Path | None
+) -> Path:
+    base = Path(os.path.abspath(base_dir))
+    if base.is_symlink() or not base.is_dir():
+        raise ExperimentOutputConflict(
+            "sample workspace must be a real directory, not a symlink"
+        )
+    declared = base / ledger.output.dir
+    if out_dir is None:
+        return declared
+    supplied = out_dir if out_dir.is_absolute() else base / out_dir
+    if Path(os.path.abspath(supplied)) != declared:
+        raise ExperimentOutputConflict(
+            "sample output is fixed to the workspace 'out' directory"
+        )
+    return declared
+
+
+def _claim_output_dir(
+    out_dir: Path, artifacts: tuple[str, str, str]
+) -> dict[Path, tuple[int, int]]:
     """Create/verify an owned output directory, refusing foreign non-empty dirs."""
+    marker_valid = False
+    if out_dir.is_symlink():
+        raise ExperimentOutputConflict("output path is not a real directory")
     if out_dir.exists():
-        if not out_dir.is_dir() or out_dir.is_symlink():
+        if not out_dir.is_dir():
             raise ExperimentOutputConflict("output path is not a real directory")
         marker = out_dir / OWNED_MARKER_NAME
         if marker.is_file() and not marker.is_symlink():
             try:
                 if marker.read_bytes() == _OWNED_MARKER_BYTES:
-                    return
+                    marker_valid = True
+                else:
+                    raise ExperimentOutputConflict("output directory marker is invalid")
             except OSError:
-                pass
-            raise ExperimentOutputConflict("output directory marker is invalid")
-        if any(out_dir.iterdir()):
+                raise ExperimentOutputConflict(
+                    "output directory marker could not be read"
+                ) from None
+        if not marker_valid and any(out_dir.iterdir()):
             raise ExperimentOutputConflict(
                 "output directory exists and is not owned by this tool; "
-                "choose an empty directory with --out"
+                "remove it or initialize a fresh sample workspace"
             )
-    out_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        out_dir.mkdir(parents=True, exist_ok=False)
     marker = out_dir / OWNED_MARKER_NAME
-    with marker.open("xb") as handle:
-        handle.write(_OWNED_MARKER_BYTES)
-        handle.flush()
-        os.fsync(handle.fileno())
+    if not marker_valid:
+        with marker.open("xb") as handle:
+            handle.write(_OWNED_MARKER_BYTES)
+            handle.flush()
+            os.fsync(handle.fileno())
+    allowed = {OWNED_MARKER_NAME, *artifacts}
+    for child in out_dir.iterdir():
+        if child.name not in allowed:
+            raise ExperimentOutputConflict(
+                "owned output directory contains an unexpected path"
+            )
+        if child.name != OWNED_MARKER_NAME and (
+            child.is_symlink() or not child.is_file()
+        ):
+            raise ExperimentOutputConflict(
+                "an output artifact path is not a regular file"
+            )
+    created: dict[Path, tuple[int, int]] = {}
+    for artifact_name in artifacts:
+        artifact = out_dir / artifact_name
+        flags = os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+        was_missing = not artifact.exists()
+        if was_missing:
+            flags |= os.O_CREAT | os.O_EXCL
+        try:
+            fd = os.open(artifact, flags, 0o600)
+            artifact_stat = os.fstat(fd)
+            if not stat.S_ISREG(artifact_stat.st_mode):
+                raise ExperimentOutputConflict(
+                    "an output artifact path is not a regular file"
+                )
+            if was_missing:
+                created[artifact] = (artifact_stat.st_dev, artifact_stat.st_ino)
+        except OSError as exc:
+            raise ExperimentOutputConflict(
+                "an output artifact path is not writable"
+            ) from exc
+        finally:
+            if "fd" in locals():
+                os.close(fd)
+                del fd
+    probe = out_dir / f".reasoning-payoff-write-probe-{secrets.token_hex(8)}"
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(probe, flags, 0o600)
+        os.write(fd, b"probe")
+        os.fsync(fd)
+    except OSError as exc:
+        raise ExperimentOutputConflict("output directory is not writable") from exc
+    finally:
+        if "fd" in locals():
+            os.close(fd)
+        try:
+            probe.unlink()
+        except FileNotFoundError:
+            pass
+    return created
+
+
+def _remove_unchanged_reservations(
+    reservations: dict[Path, tuple[int, int]],
+) -> None:
+    for path, identity in reservations.items():
+        try:
+            current = path.lstat()
+        except FileNotFoundError:
+            continue
+        if (
+            stat.S_ISREG(current.st_mode)
+            and current.st_size == 0
+            and (current.st_dev, current.st_ino) == identity
+        ):
+            path.unlink()
+
+
+@contextmanager
+def _exclusive_run_lock(base_dir: Path) -> Iterator[None]:
+    lock_path = base_dir / ".reasoning-payoff-sample.lock"
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(lock_path, flags, 0o600)
+    except FileExistsError:
+        raise ExperimentOutputConflict(
+            "another sample run holds the workspace output lock"
+        ) from None
+    locked = os.fstat(fd)
+    try:
+        os.write(fd, f"{os.getpid()}\n".encode("ascii"))
+        os.fsync(fd)
+        yield
+    finally:
+        os.close(fd)
+        try:
+            current = lock_path.lstat()
+        except FileNotFoundError:
+            return
+        if (current.st_dev, current.st_ino) == (locked.st_dev, locked.st_ino):
+            lock_path.unlink()
+
+
+def _hold_workspace_output_lock(
+    func: Callable[..., RunResult],
+) -> Callable[..., RunResult]:
+    @wraps(func)
+    def wrapped(*args: Any, **kwargs: Any) -> RunResult:
+        ledger = args[0] if args else kwargs["ledger"]
+        base_dir = kwargs["base_dir"]
+        selected = _select_output_dir(
+            ledger, base_dir=base_dir, out_dir=kwargs.get("out_dir")
+        )
+        kwargs["out_dir"] = selected
+        with _exclusive_run_lock(selected.parent):
+            reservations = _claim_output_dir(selected, ledger.output.artifacts)
+            try:
+                return func(*args, **kwargs)
+            except BaseException:
+                _remove_unchanged_reservations(reservations)
+                raise
+
+    return wrapped
 
 
 def _atomic_write_text(path: Path, text: str) -> None:
@@ -254,9 +401,8 @@ def run_ledger(
     """Execute ``ledger`` end to end and write owned artifacts.
 
     Args:
-        base_dir: Directory the ledger's relative ``input.path``/``output.dir``
-            resolve against (the sample workspace).
-        out_dir: Optional override for the output directory.
+        base_dir: Sample workspace containing the ledger and input data.
+        out_dir: Optional explicit workspace ``out`` path. Other paths are refused.
         environ: Environment mapping for endpoint resolution (defaults to os).
         allow_remote_ollama: Permit a non-localhost Ollama endpoint (opt-in).
         confirm_cost: The explicit CLI acknowledgement for a billed run.
@@ -287,11 +433,11 @@ def run_ledger(
     # --- OUT (claimed first): refuse the evidence tree and lock an owned dir
     # BEFORE resolving an endpoint, building a provider, or making any billable
     # call. A foreign/unwritable output directory fails here with zero calls.
-    resolved_out = (
-        out_dir if out_dir is not None else base_dir / ledger.output.dir
-    ).resolve()
+    resolved_out = _select_output_dir(
+        ledger, base_dir=base_dir, out_dir=out_dir
+    )
     _reject_evidence_tree(resolved_out)
-    _claim_output_dir(resolved_out)
+    _claim_output_dir(resolved_out, ledger.output.artifacts)
 
     # --- IN: cost gate + conservative pre-flight before anything is reached --
     preflight: CostPreflight | None = None
@@ -393,6 +539,9 @@ def run_ledger(
         failures=failures,
         _preview=preview,
     )
+
+
+run_ledger = _hold_workspace_output_lock(run_ledger)
 
 
 def _execute_one(

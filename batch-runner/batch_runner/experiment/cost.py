@@ -1,38 +1,11 @@
-"""Conservative pre-flight cost estimation for a billed Azure sample run.
-
-The ledger's ``hard_ceiling_usd`` is only meaningful if it is *enforced*. This
-module produces an intentionally conservative upper-bound estimate of what a
-billed run could cost, so the runner can refuse — before any network call — a
-plan that could exceed the ceiling. It never talks to a pricing service; it
-uses a single pinned constant chosen to over-estimate real gpt-5.2 pricing so
-the guard errs on the side of refusing.
-
-The estimate is deliberately pessimistic:
-
-* input tokens are approximated from the prompt text at ~3 characters/token
-  (fewer characters per token ⇒ a larger, safer token count);
-* every request is assumed to emit the full ``max_output_tokens``;
-* the per-token price is a flat ceiling that exceeds current gpt-5.2 rates.
-
-None of these values are a bill. They exist only to keep a $0.01 ceiling from
-launching a large call.
-"""
+"""Fail-closed cost preflight for a billed Azure sample run."""
 
 from __future__ import annotations
 
 import dataclasses
-import math
+from decimal import Decimal
 
 from batch_runner.experiment.ledger import RunLedger
-
-#: Flat, conservative USD-per-token ceiling used for the pre-flight guard only.
-#: This is ~$60 per million tokens — well above current gpt-5.2 input/output
-#: rates — so the estimate is an upper bound, never an under-count. It is NOT a
-#: quoted price and must not be presented as one.
-AZURE_CONSERVATIVE_USD_PER_TOKEN = 6e-5
-
-#: Assumed characters per token when approximating input length (pessimistic).
-_CHARS_PER_TOKEN = 3
 
 #: A small fixed per-request overhead added to the input estimate.
 _INPUT_TOKEN_OVERHEAD = 8
@@ -46,7 +19,12 @@ class CostPreflight:
     max_output_tokens_per_request: int
     estimated_input_tokens: int
     estimated_output_tokens: int
-    usd_per_token: float
+    pricing_snapshot_id: str
+    pricing_model: str
+    input_rate_usd_per_1m_tokens: float
+    output_rate_usd_per_1m_tokens: float
+    estimated_input_usd: float
+    estimated_output_usd: float
     estimated_usd: float
     hard_ceiling_usd: float
 
@@ -60,7 +38,12 @@ class CostPreflight:
             "max_output_tokens_per_request": self.max_output_tokens_per_request,
             "estimated_input_tokens": self.estimated_input_tokens,
             "estimated_output_tokens": self.estimated_output_tokens,
-            "conservative_usd_per_token": self.usd_per_token,
+            "pricing_snapshot_id": self.pricing_snapshot_id,
+            "pricing_model": self.pricing_model,
+            "input_rate_usd_per_1m_tokens": self.input_rate_usd_per_1m_tokens,
+            "output_rate_usd_per_1m_tokens": self.output_rate_usd_per_1m_tokens,
+            "estimated_input_usd": round(self.estimated_input_usd, 6),
+            "estimated_output_usd": round(self.estimated_output_usd, 6),
             "estimated_usd": round(self.estimated_usd, 6),
             "hard_ceiling_usd": self.hard_ceiling_usd,
             "within_ceiling": self.within_ceiling,
@@ -77,7 +60,8 @@ class CostPreflight:
 
 
 def _estimate_input_tokens(prompt: str) -> int:
-    return math.ceil(len(prompt) / _CHARS_PER_TOKEN) + _INPUT_TOKEN_OVERHEAD
+    # UTF-8 bytes are a conservative tokenizer-independent upper bound.
+    return len(prompt.encode("utf-8")) + _INPUT_TOKEN_OVERHEAD
 
 
 def estimate_azure_cost(ledger: RunLedger, prompts: list[str]) -> CostPreflight:
@@ -92,20 +76,40 @@ def estimate_azure_cost(ledger: RunLedger, prompts: list[str]) -> CostPreflight:
     planned_requests = len(prompts) * repeats
     input_tokens = sum(_estimate_input_tokens(p) for p in prompts) * repeats
     output_tokens = planned_requests * max_output
-    estimated_usd = (input_tokens + output_tokens) * AZURE_CONSERVATIVE_USD_PER_TOKEN
+    cost = ledger.execution.cost
+    if any(
+        value is None
+        for value in (
+            cost.pricing_snapshot_id,
+            cost.pricing_model,
+            cost.input_per_1m_usd,
+            cost.output_per_1m_usd,
+        )
+    ):
+        raise ValueError("Azure pricing assumptions are incomplete")
+    input_rate = Decimal(str(cost.input_per_1m_usd))
+    output_rate = Decimal(str(cost.output_per_1m_usd))
+    million = Decimal(1_000_000)
+    estimated_input = Decimal(input_tokens) * input_rate / million
+    estimated_output = Decimal(output_tokens) * output_rate / million
+    estimated_usd = estimated_input + estimated_output
     return CostPreflight(
         planned_requests=planned_requests,
         max_output_tokens_per_request=max_output,
         estimated_input_tokens=input_tokens,
         estimated_output_tokens=output_tokens,
-        usd_per_token=AZURE_CONSERVATIVE_USD_PER_TOKEN,
-        estimated_usd=estimated_usd,
+        pricing_snapshot_id=str(cost.pricing_snapshot_id),
+        pricing_model=str(cost.pricing_model),
+        input_rate_usd_per_1m_tokens=float(input_rate),
+        output_rate_usd_per_1m_tokens=float(output_rate),
+        estimated_input_usd=float(estimated_input),
+        estimated_output_usd=float(estimated_output),
+        estimated_usd=float(estimated_usd),
         hard_ceiling_usd=ledger.execution.cost.hard_ceiling_usd,
     )
 
 
 __all__ = [
-    "AZURE_CONSERVATIVE_USD_PER_TOKEN",
     "CostPreflight",
     "estimate_azure_cost",
 ]
