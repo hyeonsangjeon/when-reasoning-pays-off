@@ -39,7 +39,7 @@ channel role here.
             │                              │
    SANITIZED│                              │AGGREGATE
             ▼                              ▼
-   Track A — public          Track B — Azure AI Foundry
+   Track A — public          Track B — Microsoft Foundry
    research repo             sample repo (downstream)
        │ canonical                ▲ cites
        ▼                          │

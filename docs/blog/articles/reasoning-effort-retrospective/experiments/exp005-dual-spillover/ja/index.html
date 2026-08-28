@@ -11,7 +11,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp005 · キャッシュプールを本当に分けたら、賢いポリシーがさらに大きく負けた | when reasoning pays off</title>
-  <meta name="description" content="PTU 二重デプロイスピルオーバー測定(フェーズ 2)の実験ノート exp005。キャッシュプールが物理的に分かれた二つのライブ gpt-5.2 デプロイで、先回り型スピルオーバーは事後対応型よりキャッシュを守れるのかを競わせる。フェーズ 1 の引き分けと違い、今回は先回りした側の定常状態キャッシュが 0.9923%p 低く、スロットルされた元デプロイで実 429 を 167 回受け、費用も 0.91 ドル高かった。">
+  <meta name="description" content="二つの従量課金(ペイアズユーゴー)デプロイ上でカスタムルーターにより測定し、プロビジョンドスループットのスピルオーバーパターンを模したフェーズ 2 の実験ノート exp005。キャッシュプールが物理的に分かれた二つのライブ gpt-5.2 デプロイで、先回り型スピルオーバーは事後対応型よりキャッシュを守れるのかを競わせる。フェーズ 1 の引き分けと違い、今回は先回りした側の定常状態キャッシュが 0.9923%p 低く、スロットルされた元デプロイで実 429 を 167 回受け、費用も 0.91 ドル高かった。">
   <meta name="article:locale" content="ja">
   <meta name="article:translation-status" content="translated">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -46,7 +46,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../ja/">記事一覧</a> / <a href="../../../ja/">実験回顧</a> / 実験ノート · exp005</p>
-    <p class="article-kicker">実験ノート · exp005 · PTU 二重デプロイスピルオーバー測定(フェーズ 2) · キャッシュプールを本当に分けたとき</p>
+    <p class="article-kicker">実験ノート · exp005 · 二デプロイの従量課金(ペイアズユーゴー)スピルオーバープロキシ(フェーズ 2) · キャッシュプールを本当に分けたとき</p>
     <h1>exp005 &mdash; キャッシュプールを本当に分けたら、賢いポリシーがさらに大きく負けた</h1>
     <p class="muted-note">執筆 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
@@ -57,7 +57,8 @@
     <section class="article-section">
       <p class="section-label">なぜ読むのか</p>
       <h2>元デプロイと予備デプロイを本当に分けて使うと何が起きるのか</h2>
-      <p>PTU(固定容量)デプロイが上限に近づくと、トラフィックの一部を<strong>予備デプロイ</strong>へ流します。これがスピルオーバーです。フェーズ 1 はこの予備経路を、デプロイ一つの中で<em>ラベル</em>としてまねただけでした &mdash; 元経路でも予備経路でも同じキャッシュ(プロンプトを再利用して節約する仕組み)を参照していました。だからポリシー差がキャッシュにほとんど刻まれませんでした。</p>
+      <p>このテストは、PTU(固定容量)デプロイが上限に近づき、トラフィックの一部を<strong>予備デプロイ</strong>へ逃がすパターンを模したものです。これがスピルオーバーです。フェーズ 1 はこの予備経路を、デプロイ一つの中で<em>ラベル</em>としてまねただけでした &mdash; 元経路でも予備経路でも同じキャッシュ(プロンプトを再利用して節約する仕組み)を参照していました。だからポリシー差がキャッシュにほとんど刻まれませんでした。</p>
+      <p>フェーズ 2 では、この provisioned-throughput パターンの代理として、二つの GlobalStandard 従量課金(ペイアズユーゴー)デプロイを使いました。ルーティング・スロットリング・分離したキャッシュプールは直接測定していますが、PTU の課金と容量への当てはめは推論にとどまります。</p>
       <p>フェーズ 2 では、この不確実性を取り除きます。元デプロイと予備デプロイを<strong>実際に別のデプロイ</strong>にすると、Azure の設計上、<strong>キャッシュプールも分かれます</strong>。これにより、&lsquo;どのデプロイへ送ったか&rsquo;がキャッシュの状態に直接反映されます。一方に集約すればそのプールだけが温かく保たれ、二つに分ければ<em>両方が冷えやすく</em>なります。</p>
       <p><strong>元デプロイ + 予備デプロイ</strong>を物理的に分けて運用しているなら、このノートが参考になります。&ldquo;元デプロイを守るためにトラフィックを先に少しずつ分ければ、キャッシュをもっと守れるのか?&rdquo; という問いに、この実験は一つの<strong>実測の答え</strong>を示します &mdash; そして結果は、むやみに分けない方がよいことを示しています。</p>
     </section>
@@ -92,9 +93,9 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
       <p><strong>なぜこれを測ったのか。</strong> フェーズ 1 の引き分けには解釈上の制約が一つありました &mdash; デプロイが一つなのでキャッシュプールが共有でした。つまり &lsquo;ポリシー差がもともと刻まれない&rsquo; のか、&lsquo;共有キャッシュだから刻まれない&rsquo; のかを切り分けられませんでした。フェーズ 2 はこの不確実性を解消します。キャッシュプールを<strong>実際に分けて</strong>、それでも判定が同じかを確認します。</p>
       <p><strong>そこで、仮説の判定基準を&lsquo;差の大きさ&rsquo;に置きました。</strong> 事前登録した読みは二つです &mdash; <em>フェーズ 2 の差がフェーズ 1 よりはっきり大きくなれば、キャッシュプールが分かれるときにトラフィックを分けるコスト(キャッシュ再構築コスト)が実際に生じると判断します。似ていれば、キャッシュプール分離はポリシーのタイミングより影響の小さい要因だと判断します。</em> どちらにせよ<strong>実測で判定します</strong>。</p>
       <p><strong>原因究明ではなく、緩和策の比較です。</strong> &lsquo;スピルオーバーがキャッシュ低下の根本原因だ&rsquo; という強い主張は、すでに現場観察で支持を失っていました。この実験は原因を掘る場ではなく、二つの緩和ポリシーのうち<strong>どちらがよいか</strong>だけを競わせる場です。</p>
-      <p><strong>なぜ二重デプロイか。</strong> 元デプロイ(<code>ptu-deploy-throttled</code>)に <strong>60,000 TPM</strong>(分あたりトークン上限)という低い上限を<em>あえて</em>かけ、約 30K トークン負荷が<strong>実 429</strong>を返すようにしました。予備デプロイ(<code>gpt-5.2</code>)には <strong>500,000 TPM</strong> の十分な余裕を与えました。デプロイ名が異なればキャッシュプールも分かれます &mdash; フェーズ 1 では模擬にとどまった &lsquo;物理分離&rsquo; が、ここでは実際に分離されています。</p>
+      <p><strong>なぜ二重デプロイか。</strong> 二つのデプロイはどちらも GlobalStandard の従量課金(ペイアズユーゴー)ティアを使います。元デプロイ(<code>ptu-deploy-throttled</code>)に <strong>60,000 TPM</strong>(分あたりトークン上限)という低い上限を<em>あえて</em>かけ、約 30K トークン負荷が<strong>実 429</strong>を返すようにしました。予備デプロイ(<code>gpt-5.2</code>)には <strong>500,000 TPM</strong> の十分な余裕を与えました。デプロイ名が異なればキャッシュプールも分かれます &mdash; フェーズ 1 では模擬にとどまった &lsquo;物理分離&rsquo; が、ここでは実際に分離されています。</p>
       <p><strong>問いは一つです。</strong> キャッシュプールが物理的に分かれた上で、先回りするスピルオーバーは事後対応よりキャッシュを守るのか。</p>
-      <p><strong>設計(負荷)。</strong> フェーズ 1 と<em>バイトまで同じ</em> 22分の負荷を、二つのポリシーへ同じように流す &mdash; <strong>ウォームアップ 2分</strong>(0.3 TPS) → <strong>ランプ 10分</strong>(0.5→2.5 TPS) → <strong>持続 10分</strong>(2.5 TPS)。<code>effort=low</code>、システムプロンプトは約 <strong>30K トークン</strong>(二つの実行がバイトまで同一になるよう SHA-256 <code>98d3a5&hellip;088a</code> で固定、<code>corpus_seed 4242</code>)。予定リクエストはポリシーごとに <strong>2,136件</strong>(ウォームアップ 36 · ランプ 900 · 持続 1,200)。</p>
+      <p><strong>設計(負荷)。</strong> フェーズ 1 と<em>バイトまで同じ</em> 22分の負荷を、二つのポリシーへ同じように流す &mdash; <strong>ウォームアップ 2分</strong>(0.3 リクエスト毎秒) → <strong>ランプ 10分</strong>(0.5→2.5 リクエスト毎秒) → <strong>持続 10分</strong>(2.0 リクエスト毎秒)。<code>effort=low</code>、システムプロンプトは約 <strong>30K トークン</strong>(二つの実行がバイトまで同一になるよう SHA-256 <code>98d3a5&hellip;088a</code> で固定、<code>corpus_seed 4242</code>)。予定リクエストはポリシーごとに <strong>2,136件</strong>(ウォームアップ 36 · ランプ 900 · 持続 1,200)。</p>
       <p><strong>変える軸は一つだけ</strong> &mdash; <code>policy.type</code> を <code>reactive</code> と <code>proactive</code> で切り替える。プロンプト&middot;負荷&middot;モデル&middot;推論強度&middot;二つのデプロイ上限はすべて固定なので、二つの成果物の差はポリシーだけに起因します。</p>
       <div class="article-summary-grid" aria-label="事前登録予測と役割">
         <section class="summary-tile"><h2>事前登録予測</h2><p>キャッシュプールが本当に分かれれば <code>proactive</code> が割に合うかもしれない。事前登録した判定線は<strong>差の大きさ</strong> &mdash; フェーズ 1 より大きくなればキャッシュ再構築コストが実際に生じ、似ていれば分離の影響は小さいと判定します。</p></section>

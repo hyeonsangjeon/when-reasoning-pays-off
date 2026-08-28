@@ -9,8 +9,8 @@ workload and deciding between **gpt-4o** and **gpt-5.2** at one of the
 five effort levels (`none`, `low`, `medium`, `high`, `xhigh`). You have a
 task description, a rough cost budget, and a consumption-model
 constraint: pay-as-you-go (PAYG), billed per token, or provisioned
-throughput (PTU), a fixed block of dedicated capacity billed at a flat
-rate. You want a defensible starting point and a
+throughput capacity, measured in provisioned throughput units (PTUs) and
+billed at a flat rate. You want a defensible starting point and a
 plan for confirming it on your own data.
 
 This document **is**:
@@ -244,7 +244,7 @@ and a single pricing snapshot. It will **not** generalize cleanly to:
 
 ## 5. Open questions / future measurements
 
-- **Effort < `none`?** Foundry v1 gpt-5.2 rejects `minimal` with HTTP
+- **Effort < `none`?** The Azure OpenAI v1 API rejects `minimal` for gpt-5.2 with HTTP
   400 (per Task 006 finding documented in
   [`scripts/run_benchmark.py`](../scripts/run_benchmark.py)); `none` is
   the lowest accepted level. If a future API version restores `minimal`

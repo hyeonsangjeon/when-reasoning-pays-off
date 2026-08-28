@@ -3,7 +3,7 @@
   "schema_semver": "0.1.0",
   "article": "when-reasoning-pays-off",
   "canonical_locale": "en",
-  "canonical_article_sha256": "64fbe1e72dc6c8dfa432a4a1bf09a6484bfdd9a5c4e6953ce0e7775b950b2014",
+  "canonical_article_sha256": "798f10838ab02eb7cdd0adc687d352f1671a13b075dd66d6e0b7f2848fad6a06",
   "claims": [
     {
       "id": "short-factual-none-cost",

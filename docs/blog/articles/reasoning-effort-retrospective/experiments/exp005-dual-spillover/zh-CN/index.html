@@ -12,7 +12,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp005 · 真正拆分缓存池后，聪明策略输得更明显 | when reasoning pays off</title>
-  <meta name="description" content="PTU 双部署溢出测量(Phase 2)实验笔记 exp005。在缓存池物理分离的两个真实 gpt-5.2 部署上，提前准备的 proactive 溢出是否比事后反应的 reactive 更能保护缓存？不同于 Phase 1 的平手，这次 proactive 的稳态缓存低 0.9923 pp，在 throttled 主部署上实际遭遇 167 次 429，成本也多出 0.910366 美元。">
+  <meta name="description" content="在两个按量付费(PAYG)部署上用自定义路由器进行、用以模拟预置吞吐(PTU)溢出模式的 Phase 2 测量实验笔记 exp005。在缓存池物理分离的两个真实 gpt-5.2 部署上，提前准备的 proactive 溢出是否比事后反应的 reactive 更能保护缓存？不同于 Phase 1 的平手，这次 proactive 的稳态缓存低 0.9923 pp，在 throttled 主部署上实际遭遇 167 次 429，成本也多出 0.910366 美元。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -47,7 +47,7 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">实验回顾</a> / 实验笔记 · exp005</p>
-    <p class="article-kicker">实验笔记 · exp005 · PTU 双部署溢出测量(Phase 2) · 当缓存池真的被拆开</p>
+    <p class="article-kicker">实验笔记 · exp005 · 双部署按量付费(PAYG)溢出代理(Phase 2) · 当缓存池真的被拆开</p>
     <h1>exp005 &mdash; 真正拆分缓存池后，聪明策略输得更明显</h1>
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
@@ -58,7 +58,8 @@
     <section class="article-section">
       <p class="section-label">为什么值得读</p>
       <h2>主部署和备用部署真的分开用，会发生什么？</h2>
-      <p>PTU(固定容量)部署接近上限时，把一部分流量导向<strong>备用部署</strong>，这就是溢出。Phase 1 只是在一个部署里用<em>标签</em>模拟这条备用路径 &mdash; 无论走主路径还是备用路径，看到的都是同一个缓存(重复利用提示、节省计算的存储池)。所以策略差异几乎没有写进缓存。</p>
+      <p>本测试模拟这样一种模式：PTU(固定容量)部署接近上限时，溢出会把一部分流量导向<strong>备用部署</strong>。Phase 1 只是在一个部署里用<em>标签</em>模拟这条备用路径 &mdash; 无论走主路径还是备用路径，看到的都是同一个缓存(重复利用提示、节省计算的存储池)。所以策略差异几乎没有写进缓存。</p>
+      <p>Phase 2 用两个 GlobalStandard 按量付费(PAYG)部署，作为这种预置吞吐模式的代理。它直接测量了路由、限流与分离的缓存池；至于它对 PTU 计费与容量的适用性，仍属推断。</p>
       <p>Phase 2 去掉这个疑点。把主部署和备用部署放成<strong>真正不同的部署</strong>时，按 Azure 设计，<strong>缓存池也会分开</strong>。现在&ldquo;送到哪个部署&rdquo;会直接写进缓存温度。只往一边打，那一个池会保持热；分成两边打，<em>两边都会变温</em>。</p>
       <p>如果你在物理上分开运营<strong>主部署 + 备用部署</strong>，这篇就很贴近你的场景。&ldquo;为了保护主部署，提前把流量一点点分出去，会不会更保护缓存？&rdquo;这个问题，实验给出一个<strong>实测答案</strong> &mdash; 而答案更接近&ldquo;别分&rdquo;。</p>
     </section>
@@ -93,9 +94,9 @@ python3 -c "import json; s=json.load(open('benchmarks/05-dual-spillover/analysis
       <p><strong>为什么测这个。</strong> Phase 1 的平手有一个缺口 &mdash; 只有一个部署，所以缓存池是共享的。于是我们无法分辨，究竟是&ldquo;策略差异本来就写不进去&rdquo;，还是&ldquo;因为共享缓存才写不进去&rdquo;。Phase 2 堵上这个缺口。把缓存池<strong>真正拆开</strong>，再看判决是否相同。</p>
       <p><strong>所以假设押在&ldquo;差距大小&rdquo;上。</strong> 预先登记的读法分两条 &mdash; <em>如果 Phase 2 的差距明显大于 Phase 1，说明缓存池分开时分流的代价(缓存重建成本)是真的。如果差不多，说明缓存池分离小于策略时机这个因素。</em> 无论哪边，<strong>实测来选答案</strong>。</p>
       <p><strong>这是缓解策略比较，不是根因追捕。</strong> &ldquo;溢出是缓存下降根因&rdquo;这个强说法，已经在现场观察里失去力量。本实验不是挖根因，而只是比较两种缓解策略<strong>哪一个更好</strong>。</p>
-      <p><strong>为什么双部署。</strong> 我们有意给主部署(<code>ptu-deploy-throttled</code>)设下 <strong>60,000 TPM</strong>(每分钟 token 上限)的低上限，让约 30K token 的负载<strong>真的吐出 429</strong>。备用部署(<code>gpt-5.2</code>)则给足 <strong>500,000 TPM</strong> 的余量。部署名不同，缓存池也不同 &mdash; Phase 1 只是模拟的&ldquo;物理分离&rdquo;，这里是真的。</p>
+      <p><strong>为什么双部署。</strong> 两个部署都使用 GlobalStandard 按量付费(PAYG)层级。我们有意给主部署(<code>ptu-deploy-throttled</code>)设下 <strong>60,000 TPM</strong>(每分钟 token 上限)的低上限，让约 30K token 的负载<strong>真的吐出 429</strong>。备用部署(<code>gpt-5.2</code>)则给足 <strong>500,000 TPM</strong> 的余量。部署名不同，缓存池也不同 &mdash; Phase 1 只是模拟的&ldquo;物理分离&rdquo;，这里是真的。</p>
       <p><strong>问题只有一个。</strong> 在缓存池物理分离之上，提前准备的溢出是否比事后反应更保护缓存？</p>
-      <p><strong>设计(负载)。</strong> 与 Phase 1 <em>字节级相同</em>的 22 分钟负载，原样流过两种策略 &mdash; <strong>warmup 2 分钟</strong>(0.3 TPS) → <strong>ramp 10 分钟</strong>(0.5→2.5 TPS) → <strong>sustain 10 分钟</strong>(2.5 TPS)。<code>effort=low</code>，系统提示约 <strong>30K token</strong>(为保证两次运行字节级一致，用 SHA-256 <code>98d3a5&hellip;088a</code> 固定，<code>corpus_seed 4242</code>)。计划请求为每种策略 <strong>2,136</strong> 个(warmup 36 · ramp 900 · sustain 1,200)。</p>
+      <p><strong>设计(负载)。</strong> 与 Phase 1 <em>字节级相同</em>的 22 分钟负载，原样流过两种策略 &mdash; <strong>warmup 2 分钟</strong>(0.3 请求/秒) → <strong>ramp 10 分钟</strong>(0.5→2.5 请求/秒) → <strong>sustain 10 分钟</strong>(2.0 请求/秒)。<code>effort=low</code>，系统提示约 <strong>30K token</strong>(为保证两次运行字节级一致，用 SHA-256 <code>98d3a5&hellip;088a</code> 固定，<code>corpus_seed 4242</code>)。计划请求为每种策略 <strong>2,136</strong> 个(warmup 36 · ramp 900 · sustain 1,200)。</p>
       <p><strong>只改一条轴线</strong> &mdash; 把 <code>policy.type</code> 在 <code>reactive</code> 与 <code>proactive</code> 之间切换。提示、负载、模型、强度、两个部署上限全部固定，因此两个产物的差异只来自策略。</p>
       <div class="article-summary-grid" aria-label="预先登记预测与作用">
         <section class="summary-tile"><h2>预先登记预测</h2><p>缓存池真的分开后，<code>proactive</code> 也许会值回成本。预先登记的判定线是<strong>差距大小</strong> &mdash; 大于 Phase 1 说明缓存重建成本是真的；差不多说明分离只是小因素。</p></section>

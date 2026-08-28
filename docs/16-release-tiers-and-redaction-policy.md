@@ -13,9 +13,9 @@ It is a companion to:
 
 - `docs/05-methodology.md` (reproducibility contract — frozen) — how a
   measurement is reproducible. This document does not modify it.
-- `docs/14-observability-schema.md` (canonical per-request / per-cell
-  record contract; one cell is one combination of model, reasoning
-  effort, and input sample) — *which* fields exist. This document classifies
+- `docs/14-observability-schema.md` (canonical record contracts for
+  individual requests and aggregate measurement windows) — *which* fields
+  exist. This document classifies
   those fields by publication sensitivity.
 - `docs/15-spec-vs-inference-taxonomy.md` (Tier 1 / Tier 2 claim-authority
   taxonomy) — *which* claims are vendor spec and which are this repo's

@@ -239,7 +239,7 @@
         <li><strong>Pin the task mix.</strong> Keep prompt, tools, schema, retrieval placement, and sample distribution byte-stable across model cells (one model-and-effort test setting each).</li>
         <li><strong>Measure visible output.</strong> Compare mean and 95th-percentile visible output tokens before and after migration.</li>
         <li><strong>Measure reasoning output.</strong> Capture <code>reasoning_tokens</code>; do not infer it from the final answer text.</li>
-        <li><strong>Measure cache rate.</strong> Record <code>cached_tokens / prompt_tokens</code> per cache-key bucket, especially after the ReAct reasoning-and-action pattern or tool-schema changes.</li>
+        <li><strong>Measure cache rate.</strong> Record <code>cached_tokens / prompt_tokens</code> per cache-key bucket, especially after changes to the Reasoning and Acting (ReAct) pattern or tool schema.</li>
         <li><strong>Right-size the ceiling.</strong> Set <code>max_output_tokens</code> from a representative visible-plus-reasoning percentile, then use per-call overrides for rare long answers.</li>
         <li><strong>Only then size PTU.</strong> Apply the normalized-TPM formula with the current model table and your measured workload shape.</li>
       </ol>

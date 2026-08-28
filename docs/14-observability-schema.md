@@ -2,11 +2,10 @@
 
 ![One canonical per-request and per-cell record shape consumed by aggregators, audits, and Azure Monitor correlation.](assets/observability-record-schema.svg)
 
-**Task 028 anchor.** This document defines the single canonical
-per-request and per-cell record profile (a cell is one combination of
-model, reasoning effort, and input sample) that every PTU-aware script in
-this repo emits. Downstream aggregators (Task 020, future analytics)
-and audits (Task 029 category labeling) rely on it.
+This document defines the canonical record profiles for individual
+requests and aggregate measurement windows that every
+provisioned-throughput-aware script in this repository emits. Downstream
+aggregators and audits rely on it.
 
 The schema is generated from
 `batch_runner/observability/schema.py` and emitted as JSON Schema files

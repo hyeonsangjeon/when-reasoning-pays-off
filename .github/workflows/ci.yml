@@ -49,7 +49,7 @@ jobs:
               exit 1
             fi
           }
-          check_tree docs/blog 468ed9af7153f43d7bf3ebdf13ad2e36f2f66b41
+          check_tree docs/blog d69b0a42cdb125e8903efe1e3ab5ac91c1161d22
           check_tree benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6
           check_tree results 0687541fa1cefe71faefb182d29cfcaf1f0c6096
           echo "Protected historical trees are unchanged."

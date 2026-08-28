@@ -113,13 +113,13 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
         </section>
         <section class="summary-tile">
           <h2>Artifacts (out)</h2>
-          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (raw Foundry v1 Responses payloads).<br>
+          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (raw Azure OpenAI v1 Responses API payloads).<br>
           <strong>Grading:</strong> <code>judge_runs/*.json</code>.<br>
           <strong>Aggregate:</strong> <code>analysis.json</code>.<br>
           <strong>Charts/tables:</strong> <code>results/cost-curves/benchmark-02-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>0</strong>. Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful (0 failures, 0 retries)</strong>. The judge gives 0 for a miss, 1 for a partial pass, and 2 for a full pass &mdash; so a mean of <strong>2.00 means all 60 passed</strong>, while gpt-4o's <strong>1.50 is the average of 45 passes and 15 misses</strong>. Every JSON is a real Foundry v1 call with not one <code>"fixture": true</code> marker (159 of the 360 rows have <code>reasoning_tokens &gt; 0</code>).</p>
+      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>0</strong>. Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful (0 failures, 0 retries)</strong>. The judge gives 0 for a miss, 1 for a partial pass, and 2 for a full pass &mdash; so a mean of <strong>2.00 means all 60 passed</strong>, while gpt-4o's <strong>1.50 is the average of 45 passes and 15 misses</strong>. Every JSON records a real Azure OpenAI v1 API call made through Microsoft Foundry, with not one <code>"fixture": true</code> marker (159 of the 360 rows have <code>reasoning_tokens &gt; 0</code>).</p>
     </section>
 
     <section id="predict" class="article-section">

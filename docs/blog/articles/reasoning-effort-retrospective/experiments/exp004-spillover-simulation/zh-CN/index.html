@@ -11,7 +11,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>exp004 · 提前溢出能不能更好保护缓存 | when reasoning pays off</title>
-  <meta name="description" content="PTU 溢出策略模拟(Phase 1)实验笔记 exp004。在持续接近饱和的负载下，提前行动的 proactive 溢出策略是否比事后反应的 reactive 更能保护提示缓存？两次真实 gpt-5.2 运行给出的答案接近平手：proactive 的稳态缓存反而低 0.1657 pp，而且一次也没有触发溢出。">
+  <meta name="description" content="使用真实按量付费(PAYG)模型调用与内部饱和阈值、模拟预置吞吐(PTU)溢出行为的 Phase 1 实验笔记 exp004。在持续接近饱和的负载下，提前行动的 proactive 溢出策略是否比事后反应的 reactive 更能保护提示缓存？两次真实 gpt-5.2 运行给出的答案接近平手：proactive 的稳态缓存反而低 0.1657 pp，而且一次也没有触发溢出。">
   <meta name="article:locale" content="zh-CN">
   <meta name="article:translation-status" content="translated">
   <link rel="stylesheet" href="../../../../../../assets/styles.css">
@@ -46,11 +46,11 @@
 
   <main id="article-content" class="article-page topic-page">
     <p class="breadcrumb"><a href="../../../../zh-CN/">文章列表</a> / <a href="../../../zh-CN/">实验回顾</a> / 实验笔记 · exp004</p>
-    <p class="article-kicker">实验笔记 · exp004 · PTU 溢出策略模拟(Phase 1) · 聪明策略有没有值回成本</p>
+    <p class="article-kicker">实验笔记 · exp004 · 用按量付费(PAYG)调用模拟 PTU 溢出(Phase 1) · 聪明策略有没有值回成本</p>
     <h1>exp004 &mdash; 提前溢出的策略值不值</h1>
     <p class="muted-note">作者 Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
-    <p class="lede">前三个基准都在问一件事：推理强度这只旋钮该拧到哪里。这一次轴线换了，不是模型，而是<strong>部署</strong>。当 PTU(预置容量)部署接近饱和，系统可以把一部分流量导到备用路径，我们把两种<strong>溢出</strong>策略放到同一段负载下对打。</p>
+    <p class="lede">前三个基准都在问一件事：推理强度这只旋钮该拧到哪里。这一次轴线换了，不是模型，而是<strong>部署</strong>。本实验模拟 PTU(预置容量)部署接近饱和的状态。两种<strong>溢出</strong>策略各把一部分流量导到备用路径，放到同一段负载下对打。</p>
     <p class="lede">我们<strong>提前写下预测</strong>：盯着 p95 延迟上升、在问题真正出现前就动作的 <em>proactive</em>，会比等到超时或 429 之后才转移的 <em>reactive</em> 更少损失缓存。这个直觉很常见：提前准备，总该更稳。</p>
     <p class="lede">测量安静地推翻了这个直觉。持续阶段稳态缓存命中率是 <strong>reactive 99.2337%, proactive 99.0680%</strong>，提前行动的一侧反而<strong>低了 0.1657 pp</strong>。更反常的是，reactive 在整个持续阶段都走在溢出路径上，而 proactive <em>一次也没有触发</em>。本文按<em>设计 → 输入 → 预测对实测 → 两条曲线 → 决定</em>回看这 22 分钟。就像 exp001 的结论是“容易工作里推理不划算”，这里的结论是：在这些条件下，聪明策略也回不了本。</p>
 
@@ -59,7 +59,7 @@
       <h2>PTU 接近饱和时会发生什么？</h2>
       <p>用固定容量(PTU)部署模型，流量总会有逼近<strong>容量上限</strong>的时候。如果提示缓存这时晃动，响应会变慢，账单也会漏钱，因为同一段提示又要重新计算。</p>
       <p>应对这类晃动的缓冲垫就是<strong>溢出</strong>：眼看要顶到上限，就把一部分流量移到备用路径。做法有两种。<strong>Reactive</strong> 等超时或 429 <em>出现之后</em>再转移；<strong>proactive</strong> 则观察 p95 延迟一点点抬头，提前、小幅地转移。</p>
-      <p>如果你在运营<strong>PTU 部署</strong>，流量又经常摸到饱和线，这篇最贴近你的问题。运营者总会问：“换一个更聪明的策略，缓存会不会更稳？”这个实验给出一个<strong>实测答案</strong>，而答案大概不是你预期的那个。</p>
+      <p>如果你在运营<strong>PTU 部署</strong>，流量又经常摸到饱和线，这篇测试的是一个相关的策略问题。它的答案是在单端点按量付费(PAYG)模拟中测得的，而非在真实 PTU 容量上测量。而答案大概不是你预期的那个。</p>
     </section>
 
     <section id="reproduce" class="article-section">
@@ -89,12 +89,12 @@ python3 -c "import json; s=json.load(open('benchmarks/04-spillover-simulation/an
     <section id="design" class="article-section">
       <p class="section-label">设计</p>
       <h2>这次不是强度，而是部署</h2>
-      <p><strong>为什么测这个。</strong> 前三篇笔记问的是“推理强度要抬到哪里”。但旋钮定好之后，下一个墙面会出现：流量压到这个设置上时，<strong>部署能不能扛住</strong>？PTU 部署接近饱和时，提示缓存可能晃动，而溢出就是缓冲。常见直觉是 proactive 会胜过 reactive，我们想用实测而不是猜测把它拆开。</p>
+      <p><strong>为什么测这个。</strong> 前三篇笔记问的是“推理强度要抬到哪里”。但旋钮定好之后，下一个墙面会出现：流量压到这个设置上时，<strong>部署能不能扛住</strong>？在模拟的 PTU 场景里，提示缓存在接近饱和时可能晃动，而溢出就是缓冲。常见直觉是 proactive 会胜过 reactive，我们想用实测而不是猜测把它检验清楚。</p>
       <p><strong>所以把“提前行动更好”写成假设。</strong> 句子是：<em>在持续饱和负载下，proactive 策略比 reactive 更少遭遇持续阶段缓存命中率衰减。</em> 这条假设也有破线：<strong>如果 proactive 在持续缓存上明显高于 reactive，“提前行动更好”就得到支持；如果没赢，甚至更低，那么至少在这些条件下，这个直觉不划算。</strong></p>
       <p><strong>这是缓解策略比较，不是根因追捕。</strong> “溢出本身就是缓存衰减根因”这个更强的说法，已经被现场观察削弱了。所以这次实验不负责挖根因，只比较两种缓解策略<strong>哪一个更好</strong>。野心收窄，答案也更清楚。</p>
       <p><strong>为什么先做模拟。</strong> Phase 1 在<em>单个</em> gpt-5.2 部署上，只在内部模拟溢出状态，不是物理分离的缓存池。因此它看的是<strong>策略间差异的方向</strong>，不是绝对数值。主路径与备用路径缓存池真正分开的双部署负载测试，留给 Phase 2。本文先把地板铺好。</p>
       <p><strong>问题只有一个。</strong> 在持续接近饱和的 ReAct 负载下，proactive 溢出是否比 reactive 更能保护缓存？</p>
-      <p><strong>设计(负载)。</strong> 同一段 22 分钟负载，原样流过两种策略：<strong>warmup 2 分钟</strong>(0.3 TPS) → <strong>ramp 10 分钟</strong>(0.5→2.5 TPS) → <strong>sustain 10 分钟</strong>(2.0 TPS)。一个 gpt-5.2 部署，<code>effort=low</code>，系统提示约 <strong>~30K tokens</strong>(用 SHA-256 固定，确保两次运行字节级一致，<code>corpus_seed 4242</code>)。内部限流阈值是 <strong>90,000 TPM</strong>。每种策略各跑 <strong>2,136 请求</strong>(warmup 36 / ramp 900 / sustain 1,200)。</p>
+      <p><strong>设计(负载)。</strong> 同一段 22 分钟负载，原样流过两种策略：<strong>warmup 2 分钟</strong>(0.3 请求/秒) → <strong>ramp 10 分钟</strong>(0.5→2.5 请求/秒) → <strong>sustain 10 分钟</strong>(2.0 请求/秒)。一个 gpt-5.2 部署，<code>effort=low</code>，系统提示约 <strong>~30K tokens</strong>(用 SHA-256 固定，确保两次运行字节级一致，<code>corpus_seed 4242</code>)。内部限流阈值是 <strong>90,000 TPM</strong>。每种策略各跑 <strong>2,136 请求</strong>(warmup 36 / ramp 900 / sustain 1,200)。</p>
       <p><strong>只改一条轴线</strong>：把 <code>policy.type</code> 在 <code>reactive</code> 和 <code>proactive</code> 之间切换。提示、负载、模型、强度、阈值全部固定，因此两个产物之间的差异只来自策略。</p>
       <div class="article-summary-grid" aria-label="预先登记预测与作用">
         <section class="summary-tile"><h2>预先登记预测</h2><p><code>proactive</code> 策略会更少遭遇持续阶段缓存衰减，因此稳态缓存命中率会比 <code>reactive</code> 基线<strong>更高</strong>。</p></section>
@@ -193,8 +193,8 @@ proactive   0% (从未触发)     99.0680%  (±1.2802 pp)          2 次缓存�
       <h2>让后来的人少绕弯</h2>
       <p>记录证据不只是写下赢了的结果。预测落空的实验，也要把为什么落空、可以相信到哪里留下来，下一次决策才用得上。所以本文会回连到回顾和前一项实验。</p>
       <ul>
-        <li><strong>回顾正文 →</strong> 枢纽里的<a href="../../../zh-CN/#next">下一次判断 · 下一项实验</a>所预告的“真实 PTU 负载测试”，就是这个实验。它是 token 基 PTU <em>估算</em>之后，第一份<em>实测</em>负载结果。</li>
-        <li><strong>预告它的笔记 →</strong> <a href="../../exp003-tool-using-agent/zh-CN/">exp003 &mdash; 工具使用智能体</a>在结尾写到“下一步是实时搜索和真实 PTU 负载测试”。本文就是这场负载测试的 <strong>Phase 1</strong>。</li>
+        <li><strong>回顾正文 →</strong> 枢纽里的<a href="../../../zh-CN/#next">下一次判断 · 下一项实验</a>所预告的“真实 PTU 负载测试”。Phase 1 在 token 基 PTU <em>估算</em>之后，对该模式产出了一份<em>实测</em>的按量付费(PAYG)模拟。</li>
+        <li><strong>预告它的笔记 →</strong> <a href="../../exp003-tool-using-agent/zh-CN/">exp003 &mdash; 工具使用智能体</a>在结尾写到“下一步是实时搜索和真实 PTU 负载测试”。本文就是这场测试的按量付费(PAYG)模拟阶段，而非在真实 PTU 容量上的测量。</li>
         <li><strong>原始材料 →</strong> 两个策略定义在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/experiments/exp004_spillover_proactive.yaml"><code>experiments/exp004_spillover_*.yaml</code></a>，分析在 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/benchmarks/04-spillover-simulation/analysis.md"><code>benchmarks/04-spillover-simulation/analysis.md</code></a>。</li>
       </ul>
       <p><strong>下一项实验。</strong> Phase 1 在单个部署上模拟了溢出。下一步是在<strong>物理分离的两个部署</strong>上施加真实 TPM 限流，并用同样负载做高保真重测，看主路径和备用路径的缓存池真正分开后，策略差异是否仍然薄到几乎看不见。</p>

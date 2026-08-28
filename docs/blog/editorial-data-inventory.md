@@ -111,7 +111,7 @@ See `chart_families[]` in `chart-candidates.json` for axis/type detail.
 - **Takeaway:** always capture `response.usage` reasoning tokens separately.
 - **Readiness:** `ready`
 
-## T05 — PTU (provisioned throughput) vs PAYG: Where the Lines Cross
+## T05 — Provisioned Throughput vs Pay-As-You-Go: Where the Lines Cross
 
 - **Public data:** `results/cost-curves/benchmark-0{1,2,3}-throughput-gain.csv`,
   `pricing/azure-openai-{payg,ptu}-2026-05.yaml`,

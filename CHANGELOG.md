@@ -19,16 +19,22 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 - Updated the general platform brand to `Microsoft Foundry` in prose, while
   preserving `Azure OpenAI` where it names the service, API, or deployment
   type, and leaving quoted historical titles, URLs, code identifiers, schema
-  fields, and fixed labels unchanged. No factual claim, number, date, unit,
-  link target, citation, or protected data value was changed.
+  fields, and fixed labels unchanged.
+- Corrected two pre-existing experiment descriptions against their source
+  configuration and preflight record: experiments 004 and 005 used
+  pay-as-you-go calls to simulate or proxy a provisioned-throughput pattern,
+  not live provisioned capacity, and experiment 005 sustained 2.0 requests per
+  second rather than 2.5. All published measurement results, prices, links,
+  citations, and protected data values remain unchanged.
 - Refreshed the per-page localized `i18n:source-content-sha256` and
-  `article:source-article-sha256` metadata to match the meaning-preserving
-  English source edits; localized prose was left untouched apart from the exact
-  visible legacy `Azure AI Foundry` brand string on the landing pages.
+  `article:source-article-sha256` metadata to match the English source edits.
+  The same two experiment corrections were propagated to their four localized
+  pages; other localized prose was left untouched apart from the exact visible
+  legacy `Azure AI Foundry` brand string on the landing pages.
 - Deliberately advanced the `docs/blog` protected-tree pin in
   `.github/workflows/ci.yml` and `.githooks/pre-push` to cover this
-  meaning-preserving English editorial pass. The pin was advanced, not loosened
-  or removed, and the `benchmarks` and `results` pins are unchanged.
+  editorial and factual-correction pass. The pin was advanced, not loosened or
+  removed, and the `benchmarks` and `results` pins are unchanged.
 
 ### Added — Evidence-first offline provenance report (2026-08-20)
 

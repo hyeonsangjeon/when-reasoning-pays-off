@@ -39,11 +39,11 @@
 
   <main id="article-content" class="article-page">
     <p class="breadcrumb"><a href="../">Articles</a> / Operations essay</p>
-    <p class="article-kicker">Operations essay · Provisioned throughput recovery and 429 handling</p>
-    <h1>429 is a recovery signal, not just an error</h1>
+    <p class="article-kicker">Operations essay · Provisioned throughput recovery and HTTP 429 handling</p>
+    <h1>HTTP 429 is a recovery signal, not just an error</h1>
     <p class="lede">
       A traffic burst pushes a provisioned throughput unit (PTU) deployment to 100% utilization and the calls
-      start coming back as 429. The usual response is one of three moves:
+      start coming back as HTTP 429 (Too Many Requests) rate-limit responses. The usual response is one of three moves:
       open a health-check polling loop until capacity looks free, retry on a
       blind fixed timer, or immediately route everything to another target. Each
       one assumes the client has to guess when it is safe to try again. It does

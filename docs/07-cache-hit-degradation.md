@@ -131,7 +131,7 @@ directly measured in this repo:
 ## 5. Hypothesis D: Request pattern change
 
 *Architecture applicability:* multi-node → single-call ReAct
-migrations (the requests-per-second (QPS) profile changes), or vice versa.
+migrations (the queries-per-second (QPS) profile changes), or vice versa.
 
 *Status:* mechanism named; the repo does not directly measure the
 QPS-versus-cache-hit relationship. The Phase 1 simulator

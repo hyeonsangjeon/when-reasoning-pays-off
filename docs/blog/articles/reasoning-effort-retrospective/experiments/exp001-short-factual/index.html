@@ -51,7 +51,7 @@
     <p class="muted-note">By Hyeonsang Jeon &middot; Global Black Belt, Cloud &amp; AI Apps</p>
 
     <p class="lede">We laid the <strong>floor</strong> of the three benchmarks first. Extraction, formatting, classification, transliteration, arithmetic &mdash; <strong>short factual tasks</strong> that answer in a single pass. Raising the reasoning effort here is close to convening a committee over &ldquo;1 plus 1.&rdquo; The prediction was simple. <em>Reasoning does not pay.</em></p>
-    <p class="lede">There is one way this note differs from the previous two. It is <strong>measured, not a synthetic fixture</strong>. We actually called all 360 cells through Microsoft Foundry v1 and graded <strong>360/360</strong>, once per cell, with the neutral judge gpt-4o. Nowhere is there a <code>"fixture": true</code> marker. So this floor is not a &lsquo;plausibly synthesized floor&rsquo; but a <em>measured floor</em>.</p>
+    <p class="lede">There is one way this note differs from the previous two. It is <strong>measured, not a synthetic fixture</strong>. We made all 360 calls through the Azure OpenAI v1 API in Microsoft Foundry and graded <strong>360/360</strong>, once per cell, with the neutral judge gpt-4o. Nowhere is there a <code>"fixture": true</code> marker. So this floor is not a &lsquo;plausibly synthesized floor&rsquo; but a <em>measured floor</em>.</p>
     <p class="lede">The measurement <strong>confirmed the prediction exactly</strong> &mdash; the only place across the three benchmarks where the prediction held without a reversal. Measurement did add two details. First, gpt-5.2 already beat gpt-4o <strong>on quality too</strong> at <code>none</code>, with <em>no reasoning switched on</em>. Second, even raising effort to <code>xhigh</code>, the hidden reasoning tokens stayed <strong>stuck near 0</strong> &mdash; a place where the effort dial connects to nothing. This note retraces that floor as <em>design &rarr; inputs &rarr; artifacts &rarr; prediction vs. measurement &rarr; where failure hid &rarr; decision</em> &mdash; so the next person wanders less on the same road.</p>
 
     <section class="article-section">
@@ -113,13 +113,13 @@ python -c "import experiments; print(experiments.run('exp001_short-factual_basel
         </section>
         <section class="summary-tile">
           <h2>Artifacts (out)</h2>
-          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (Foundry v1 payloads + raw usage/latency).<br>
+          <p><strong>Raw calls:</strong> <code>runs/*.json</code> (Azure OpenAI v1 API payloads + raw usage/latency).<br>
           <strong>Grading:</strong> <code>judge_runs_real/*.json</code> (measured gpt-4o judge, once per cell).<br>
           <strong>Aggregate:</strong> <code>analysis.json</code> (measured data).<br>
           <strong>Charts/tables:</strong> <code>results/cost-curves/benchmark-01-*.png</code>·<code>.csv</code>.</p>
         </section>
       </div>
-      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>0</strong> &mdash; not a single row landed far outside the normal range (3σ) with an operational-problem marker (cold start, retry, output truncation). Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful</strong>. Every JSON is a real Microsoft Foundry v1 call with not one <code>"fixture": true</code> marker. The aggregate was regenerated selecting only the measured data via <code>--experiment-prefix exp001_short-factual_baseline</code>, and rerunning it gives byte-for-byte the same result (the same inputs always produce the same output).</p>
+      <p><strong>The measurement surface is 360 cells</strong> (gpt-4o 60 + gpt-5.2 300, five effort steps). Cells excluded as outliers: <strong>0</strong> &mdash; not a single row landed far outside the normal range (3σ) with an operational-problem marker (cold start, retry, output truncation). Grading was one pass per cell by the neutral judge gpt-4o, <strong>360/360 successful</strong>. Every JSON records a real Azure OpenAI v1 API call made through Microsoft Foundry, with not one <code>"fixture": true</code> marker. The aggregate was regenerated selecting only the measured data via <code>--experiment-prefix exp001_short-factual_baseline</code>, and rerunning it gives byte-for-byte the same result (the same inputs always produce the same output).</p>
     </section>
 
     <section id="predict" class="article-section">

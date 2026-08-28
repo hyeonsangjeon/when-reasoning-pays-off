@@ -6,7 +6,7 @@
 
 ## 1. Who this is for
 
-An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on provisioned throughput units (PTU, a block of dedicated fixed capacity) or pay-as-you-go (PAYG, shared capacity billed per token), with or without spillover (Azure automatically routing overflow requests from a saturated provisioned deployment to a standard one), looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 (HTTP rate-limit) onset. Levers **L1–L5** below are ordered for diagnostic application, not by magnitude; **L6** (loop / budget governance) is a different class — it governs the multi-call loop that wraps L1–L5, not a single call.
+An engineer or architect operating an Azure OpenAI deployment that serves a reasoning model (e.g. `gpt-5.2`) on provisioned throughput units (PTUs, fixed blocks of dedicated capacity) or pay-as-you-go (PAYG, shared capacity billed per token), with or without spillover (Azure automatically routing overflow requests from a saturated provisioned deployment to a standard one), looking for the operational knobs with measured or methodology-grade effect on cost, latency, cache behavior, and 429 (HTTP rate-limit) onset. Levers **L1–L5** below are ordered for diagnostic application, not by magnitude; **L6** (loop / budget governance) is a different class — it governs the multi-call loop that wraps L1–L5, not a single call.
 
 ## 2. The levers
 
