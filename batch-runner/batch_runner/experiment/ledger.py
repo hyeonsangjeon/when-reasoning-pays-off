@@ -52,6 +52,10 @@ MAX_OUTPUT_TOKENS_CEILING = 32_768
 MAX_REPEATS = 20
 MAX_RECORDS_CEILING = 100_000
 
+#: The exact, ordered artifact set the runner writes. The ledger may not
+#: advertise a different set (see :class:`OutputSpec`).
+FIXED_ARTIFACTS = ["run.json", "records.jsonl", "summary.md"]
+
 Provider = Literal["azure", "ollama", "mock"]
 DataFormat = Literal["json", "jsonl"]
 AuthMode = Literal["none", "entra"]
@@ -245,7 +249,9 @@ class ExecutionSpec(_Strict):
     """The ``EXECUTE`` stage limits."""
 
     max_samples: int = Field(ge=1, le=MAX_SAMPLES_CEILING)
-    concurrency: int = Field(default=1, ge=1, le=MAX_CONCURRENCY)
+    # This first release runs strictly one request at a time. Concurrency is
+    # constrained to exactly 1 rather than recorded as an unimplemented knob.
+    concurrency: int = Field(default=1, ge=1, le=1)
     timeout_seconds: int = Field(default=60, ge=1, le=MAX_TIMEOUT_SECONDS)
     max_output_tokens: int = Field(default=256, ge=1, le=MAX_OUTPUT_TOKENS_CEILING)
     repeats: int = Field(default=1, ge=1, le=MAX_REPEATS)
@@ -258,11 +264,22 @@ class OutputSpec(_Strict):
     """The ``OUT`` stage: where artifacts are written."""
 
     dir: str = Field(min_length=1, max_length=400)
+    # The runner writes exactly these three artifacts, in this order. The list
+    # is fixed rather than free-form so the ledger cannot advertise files that
+    # are never produced.
     artifacts: list[str] = Field(
         default_factory=lambda: ["run.json", "records.jsonl", "summary.md"],
-        min_length=1,
-        max_length=16,
     )
+
+    @field_validator("artifacts")
+    @classmethod
+    def _fixed_artifacts(cls, value: list[str]) -> list[str]:
+        if value != FIXED_ARTIFACTS:
+            raise ValueError(
+                "output.artifacts must be exactly "
+                f"{FIXED_ARTIFACTS!r} for this release"
+            )
+        return value
 
     @field_validator("dir")
     @classmethod

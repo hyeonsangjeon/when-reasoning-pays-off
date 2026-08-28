@@ -42,6 +42,19 @@ from batch_runner.experiment.record import (
 Transport = Callable[[str, bytes, float], "tuple[int, bytes]"]
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """A redirect handler that refuses to follow any redirect.
+
+    A 3xx from a localhost Ollama could otherwise bounce the request (and its
+    body) to an arbitrary remote host. We install this so urllib returns the
+    redirect response itself instead of transparently following it; the caller
+    then treats any 3xx as a blocked, value-free failure.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001, D102
+        return None
+
+
 def _urllib_transport(url: str, payload: bytes, timeout: float) -> tuple[int, bytes]:
     request = urllib.request.Request(
         url,
@@ -49,11 +62,19 @@ def _urllib_transport(url: str, payload: bytes, timeout: float) -> tuple[int, by
         headers={"Content-Type": "application/json"},
         method="POST",
     )
+    opener = urllib.request.build_opener(_NoRedirect)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310 - localhost only, scheme validated upstream
+        with opener.open(request, timeout=timeout) as response:  # noqa: S310 - localhost only, scheme validated upstream
             return int(response.status), response.read()
     except urllib.error.HTTPError as exc:
-        return int(exc.code), exc.read()
+        code = int(exc.code)
+        if 300 <= code < 400:
+            # A redirect that would escape localhost — refuse to follow it.
+            raise ProviderUnavailableError(
+                "ollama endpoint returned a redirect; refusing to follow it "
+                "(a redirect could send the request off localhost)"
+            ) from None
+        return code, exc.read()
     except TimeoutError:
         raise RequestTimeoutError("ollama did not respond before the timeout") from None
     except urllib.error.URLError:
@@ -131,6 +152,12 @@ class OllamaProvider:
         )
         wall_ms = int((time.monotonic() - started) * 1000)
 
+        if 300 <= status < 400:
+            # A redirect must never be followed off localhost (defense in depth;
+            # the default transport already refuses to follow it).
+            raise ProviderUnavailableError(
+                "ollama endpoint returned a redirect; refusing to follow it"
+            )
         if status == 404:
             raise ModelUnavailableError(
                 f"ollama model {self._ledger.model!r} is not installed; "

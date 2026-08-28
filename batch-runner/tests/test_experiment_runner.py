@@ -30,6 +30,7 @@ from batch_runner.experiment.record import (
     OutputRecord,
     ProviderCapabilities,
     ProviderUnavailableError,
+    ResponseNotCompletedError,
 )
 from batch_runner.experiment.runner import (
     EXIT_OK,
@@ -70,7 +71,10 @@ def _base_ledger(provider: str) -> dict[str, Any]:
             "capture_io": True,
             "cost": {"billed": False, "confirmed": False},
         },
-        "output": {"dir": "out", "artifacts": ["run.json", "records.jsonl"]},
+        "output": {
+            "dir": "out",
+            "artifacts": ["run.json", "records.jsonl", "summary.md"],
+        },
         "provenance": {"method_id": "experiment-runner", "method_version": "1.0.0"},
     }
     if provider == "ollama":
@@ -449,13 +453,16 @@ def _azure_provider(monkeypatch, environ: dict[str, str] | None = None):
     holder: dict[str, Any] = {}
 
     class _FakeResponses:
-        def create(self, **_kwargs: Any) -> _FakeResponse:
+        def create(self, **kwargs: Any) -> _FakeResponse:
             # Simulate the OpenAI client calling api_key() per request.
             holder["api_key"]()
+            holder.setdefault("create_kwargs", []).append(kwargs)
             return _FakeResponse()
 
-    def client_factory(*, base_url: str, api_key):  # noqa: ANN001
+    def client_factory(*, base_url: str, api_key, **kwargs: Any):  # noqa: ANN001
         holder["api_key"] = api_key
+        holder["client_kwargs"] = kwargs
+        holder["base_url"] = base_url
         client = type("C", (), {})()
         client.responses = _FakeResponses()
         return client
@@ -476,6 +483,7 @@ def _azure_provider(monkeypatch, environ: dict[str, str] | None = None):
     def _api_key_getter():
         return holder["api_key"]
 
+    counters["holder"] = holder
     return prov, counters, _api_key_getter
 
 
@@ -737,3 +745,365 @@ def test_cli_sample_run_help_states_scope_and_cost(capsys):
     assert exc.value.code == 0
     out = capsys.readouterr().out.lower()
     assert "sample" in out
+
+
+# --------------------------------------------------------------------------
+# Independent review blockers: regression coverage (HIGH1-6, MED7-15)
+# --------------------------------------------------------------------------
+class _CountingProvider:
+    """Fake provider that counts construction and per-row calls."""
+
+    name = "mock"
+    built = 0
+
+    def __init__(self) -> None:
+        type(self).built += 1
+        self.rows = 0
+
+    def capabilities(self) -> ProviderCapabilities:
+        return ProviderCapabilities(
+            provider="mock",
+            billed=False,
+            token_usage="synthetic",
+            reasoning_tokens="not_supported",
+            cached_tokens="not_supported",
+        )
+
+    def prepare(self) -> None:
+        return None
+
+    def run_row(self, row_id: str, repeat_index: int, prompt: str) -> OutputRecord:
+        self.rows += 1
+        return OutputRecord(
+            row_id=row_id,
+            repeat_index=repeat_index,
+            provider="mock",
+            model="mock-1",
+            status="ok",
+            latency_ms=1,
+            response_text="ok",
+        )
+
+
+# --- HIGH1: hard ceiling is actually enforced pre-network -------------------
+def test_high1_azure_preflight_refuses_when_estimate_exceeds_ceiling(tmp_path: Path):
+    led_dict = _base_ledger("azure")
+    # A $0.01 ceiling cannot cover 3 rows x 128 output tokens at the pinned
+    # conservative rate, so the run must be refused before any provider call.
+    led_dict["execution"]["cost"] = {
+        "billed": True,
+        "confirmed": True,
+        "estimated_usd": 0.0,
+        "hard_ceiling_usd": 0.01,
+    }
+    led = parse_ledger(led_dict)
+    ws = _workspace(tmp_path)
+    _CountingProvider.built = 0
+    with pytest.raises(BudgetNotConfirmedError) as exc:
+        run_ledger(
+            led,
+            base_dir=ws,
+            environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": "https://h/openai/v1/"},
+            confirm_cost=True,
+            clock=_FIXED_CLOCK,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert "ceiling" in str(exc.value).lower()
+    assert _CountingProvider.built == 0  # refused BEFORE building a provider
+
+
+def test_high1_within_ceiling_runs_and_records_preflight(tmp_path: Path):
+    led = parse_ledger(_base_ledger("azure"))  # ceiling 1.0 -> ~0.03 est is fine
+    ws = _workspace(tmp_path)
+    plans: list[Any] = []
+    run_ledger(
+        led,
+        base_dir=ws,
+        environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": "https://h/openai/v1/"},
+        confirm_cost=True,
+        clock=_FIXED_CLOCK,
+        provider_builder=lambda *_a, **_k: _CountingProvider(),
+        preflight_sink=plans.append,
+    )
+    run_json = json.loads((tmp_path / "out" / "run.json").read_text())
+    pf = run_json["cost"]["preflight"]
+    assert pf["within_ceiling"] is True
+    assert pf["planned_requests"] == 2  # 2 rows x 1 repeat
+    assert plans and plans[0].planned_requests == 2
+
+
+# --- HIGH2: Responses call is stateless (store=False) -----------------------
+def test_high2_azure_sets_store_false(monkeypatch):
+    prov, counters, _ = _azure_provider(monkeypatch)
+    prov.prepare()
+    prov.run_row("q1", 0, "hi")
+    kwargs = counters["holder"]["create_kwargs"][0]
+    assert kwargs["store"] is False
+
+
+# --- HIGH3: endpoint URL hardening ------------------------------------------
+def test_high3_azure_requires_https(monkeypatch):
+    led = parse_ledger(_base_ledger("azure"))
+    with pytest.raises(EndpointResolutionError):
+        resolve_endpoint(
+            led, environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": "http://h/openai/v1/"}
+        )
+
+
+def test_high3_endpoint_rejects_userinfo_query_fragment(monkeypatch):
+    led = parse_ledger(_base_ledger("azure"))
+    for bad in (
+        "https://user:pw@h/openai/v1/",
+        "https://h/openai/v1/?x=1",
+        "https://h/openai/v1/#frag",
+    ):
+        with pytest.raises(EndpointResolutionError):
+            resolve_endpoint(led, environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": bad})
+
+
+def test_high3_openai_v1_base_is_idempotent():
+    from batch_runner.experiment.providers.azure import _openai_v1_base
+
+    assert _openai_v1_base("https://h") == "https://h/openai/v1/"
+    assert _openai_v1_base("https://h/") == "https://h/openai/v1/"
+    assert _openai_v1_base("https://h/openai/v1") == "https://h/openai/v1/"
+    assert _openai_v1_base("https://h/openai/v1/") == "https://h/openai/v1/"
+
+
+# --- HIGH4: owned output claimed before any provider/network call -----------
+def test_high4_foreign_dir_fails_with_zero_provider_calls(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / "keep.txt").write_text("keep")
+    _CountingProvider.built = 0
+    with pytest.raises(ExperimentOutputConflict):
+        run_ledger(
+            led,
+            base_dir=ws,
+            out_dir=foreign,
+            clock=_FIXED_CLOCK,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert _CountingProvider.built == 0
+    assert (foreign / "keep.txt").read_text() == "keep"
+
+
+# --- HIGH5: writes do not follow a planted symlink --------------------------
+def test_high5_atomic_write_does_not_follow_symlink(tmp_path: Path):
+    from batch_runner.experiment.runner import _atomic_write_text
+
+    outside = tmp_path / "outside.txt"
+    outside.write_text("original")
+    owned = tmp_path / "owned"
+    owned.mkdir()
+    link = owned / "run.json"
+    link.symlink_to(outside)  # attacker plants a symlink at the target name
+    _atomic_write_text(link, "safe")
+    # The final path is replaced with a real file; the symlink target is intact.
+    assert outside.read_text() == "original"
+    assert not link.is_symlink()
+    assert link.read_text() == "safe"
+
+
+def test_high5_sequential_writes_do_not_collide(tmp_path: Path):
+    from batch_runner.experiment.runner import _atomic_write_text
+
+    target = tmp_path / "f.txt"
+    _atomic_write_text(target, "one")
+    _atomic_write_text(target, "two")
+    assert target.read_text() == "two"
+    # No leftover unpredictable temp files remain in the directory.
+    assert [p.name for p in tmp_path.iterdir()] == ["f.txt"]
+
+
+# --- HIGH6: SDK timeout + max_retries=0 reach the client --------------------
+def test_high6_client_receives_timeout_and_no_retries(monkeypatch):
+    prov, counters, _ = _azure_provider(monkeypatch)
+    prov.prepare()
+    ck = counters["holder"]["client_kwargs"]
+    assert ck["timeout"] == 60.0
+    assert ck["max_retries"] == 0
+
+
+# --- MED7: only status=="completed" is a success ----------------------------
+def _azure_provider_with_status(status: str):
+    class _Resp:
+        def __init__(self) -> None:
+            self.output_text = "x"
+            self.usage = _FakeUsage()
+            self.status = status
+
+    class _Responses:
+        def create(self, **_k: Any) -> Any:
+            return _Resp()
+
+    def client_factory(*, base_url, api_key, **_k):  # noqa: ANN001
+        c = type("C", (), {})()
+        c.responses = _Responses()
+        return c
+
+    led = parse_ledger(_base_ledger("azure"))
+    ep = ResolvedEndpoint(base_url="https://x/", source="env")
+    return AzureFoundryProvider(
+        ledger=led,
+        endpoint=ep,
+        capture_io=True,
+        client_factory=client_factory,
+        token_provider_factory=lambda: (lambda: "t"),
+        environ={},
+    )
+
+
+def test_med7_failed_status_is_typed_failure():
+    for status in ("failed", "cancelled", "incomplete", "in_progress"):
+        prov = _azure_provider_with_status(status)
+        prov.prepare()
+        with pytest.raises(ResponseNotCompletedError):
+            prov.run_row("q1", 0, "hi")
+
+
+# --- MED8: Ollama redirect is blocked ---------------------------------------
+def test_med8_ollama_redirect_is_blocked():
+    led = parse_ledger(_base_ledger("ollama"))
+    ep = ResolvedEndpoint(base_url="http://localhost:11434", source="endpoint.default")
+
+    def transport(url: str, payload: bytes, timeout: float) -> tuple[int, bytes]:
+        return 302, b""  # a 3xx that would bounce to another host
+
+    prov = OllamaProvider(ledger=led, endpoint=ep, capture_io=True, transport=transport)
+    with pytest.raises(ProviderUnavailableError):
+        prov.run_row("q1", 0, "hi")
+
+
+# --- MED9: remote Ollama URL is never serialized ----------------------------
+def test_med9_remote_ollama_url_is_redacted(tmp_path: Path):
+    led = parse_ledger(_base_ledger("ollama"))
+    ws = _workspace(tmp_path)
+    env = {"OLLAMA_BASE_URL": "http://remote.example.com:11434"}
+    run_ledger(
+        led,
+        base_dir=ws,
+        environ=env,
+        allow_remote_ollama=True,
+        clock=_FIXED_CLOCK,
+        provider_builder=lambda *_a, **_k: _CountingProvider(),
+    )
+    text = (tmp_path / "out" / "run.json").read_text()
+    assert "remote.example.com" not in text
+    endpoint = json.loads(text)["endpoint"]
+    assert "base_url" not in endpoint
+    assert endpoint["locality"] == "remote"
+    assert endpoint["remote_opt_in"] is True
+
+
+# --- MED10: malformed ledger exits cleanly (no traceback/path) --------------
+def test_med10_malformed_ledger_exits_three(tmp_path: Path, capsys):
+    from batch_runner.cli import main
+
+    bad = tmp_path / "ledger.yaml"
+    bad.write_text("this: : : not valid : yaml\n\t- broken", encoding="utf-8")
+    rc = main(["sample", "run", "--ledger", str(bad)])
+    assert rc == 3
+    err = capsys.readouterr().err
+    assert "Traceback" not in err
+    assert str(bad) not in err
+
+
+# --- MED11: concurrency and artifacts are constrained -----------------------
+def test_med11_rejects_concurrency_above_one():
+    led = _base_ledger("mock")
+    led["execution"]["concurrency"] = 2
+    with pytest.raises(LedgerError):
+        parse_ledger(led)
+
+
+def test_med11_rejects_nonstandard_artifacts():
+    led = _base_ledger("mock")
+    led["output"]["artifacts"] = ["run.json", "records.jsonl"]  # missing summary
+    with pytest.raises(LedgerError):
+        parse_ledger(led)
+
+
+# --- MED12: JSON Schema and runtime agree on a shared corpus ----------------
+def _ledger_schema() -> dict[str, Any]:
+    return json.loads(
+        (_repo_root() / "schemas" / "experiment_ledger.v1.schema.json").read_text()
+    )
+
+
+def test_med12_schema_runtime_parity_valid_and_invalid():
+    import jsonschema
+
+    schema = _ledger_schema()
+    validator = jsonschema.Draft7Validator(schema)
+    # Valid docs: both accept.
+    for provider in ("mock", "ollama", "azure"):
+        doc = _base_ledger(provider)
+        parse_ledger(doc)  # runtime accepts
+        validator.validate(doc)  # schema accepts
+    # Invalid: azure must use entra auth -> both reject.
+    bad = _base_ledger("azure")
+    bad["auth"] = {"mode": "none", "env_vars": []}
+    with pytest.raises(LedgerError):
+        parse_ledger(bad)
+    assert list(validator.iter_errors(bad)), "schema must also reject azure+none auth"
+
+
+# --- MED13: required non-empty, unique row ids ------------------------------
+def _dataset_spec():
+    return parse_ledger(_base_ledger("mock")).input
+
+
+def test_med13_empty_input_rejected(tmp_path: Path):
+    ws = _workspace(tmp_path, rows=[{"id": "a", "input": "   "}])
+    with pytest.raises(DatasetError):
+        load_dataset(ws / "sample.jsonl", _dataset_spec())
+
+
+def test_med13_empty_id_rejected(tmp_path: Path):
+    ws = _workspace(tmp_path, rows=[{"id": "", "input": "hi"}])
+    with pytest.raises(DatasetError):
+        load_dataset(ws / "sample.jsonl", _dataset_spec())
+
+
+def test_med13_duplicate_id_rejected(tmp_path: Path):
+    ws = _workspace(
+        tmp_path, rows=[{"id": "a", "input": "hi"}, {"id": "a", "input": "yo"}]
+    )
+    with pytest.raises(DatasetError):
+        load_dataset(ws / "sample.jsonl", _dataset_spec())
+
+
+# --- MED14: workspace-local .gitignore covers out/ and .env -----------------
+def test_med14_workspace_gitignore_present(tmp_path: Path):
+    from batch_runner.cli import main
+
+    ws = tmp_path / "custom-name-ws"
+    assert main(["sample", "init", "--provider", "mock", "--out", str(ws)]) == 0
+    gi = (ws / ".gitignore").read_text()
+    assert "out/" in gi
+    assert ".env" in gi
+
+
+# --- MED15: help says a small run; run prints exact request count -----------
+def test_med15_sample_help_says_small_run(capsys):
+    from batch_runner.cli import main
+
+    with pytest.raises(SystemExit) as exc:
+        main(["--help"])
+    assert exc.value.code == 0
+    out = capsys.readouterr().out.lower()
+    assert "small" in out
+
+
+def test_med15_sample_run_prints_request_count(tmp_path: Path, monkeypatch, capsys):
+    _no_network(monkeypatch)
+    from batch_runner.cli import main
+
+    ws = tmp_path / "ws"
+    assert main(["sample", "init", "--provider", "mock", "--out", str(ws)]) == 0
+    main(["sample", "run", "--ledger", str(ws / "ledger.yaml"), "--out", str(ws / "out")])
+    err = capsys.readouterr().err
+    assert "request(s)" in err

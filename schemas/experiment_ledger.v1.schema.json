@@ -139,9 +139,8 @@
           "maximum": 10000
         },
         "concurrency": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 32
+          "const": 1,
+          "description": "This release runs one request at a time; concurrency must be exactly 1."
         },
         "timeout_seconds": {
           "type": "integer",
@@ -202,13 +201,8 @@
           "maxLength": 400
         },
         "artifacts": {
-          "type": "array",
-          "minItems": 1,
-          "maxItems": 16,
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
-          }
+          "const": ["run.json", "records.jsonl", "summary.md"],
+          "description": "The runner writes exactly these three files, in this order."
         }
       }
     },
@@ -229,5 +223,76 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "description": "Azure is a billed, Entra-authenticated provider with an env-only endpoint.",
+      "if": {
+        "properties": { "provider": { "const": "azure" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "entra" } }
+          },
+          "endpoint": {
+            "properties": { "default": { "const": null } }
+          },
+          "execution": {
+            "properties": {
+              "cost": {
+                "properties": {
+                  "billed": { "const": true },
+                  "hard_ceiling_usd": { "exclusiveMinimum": 0 }
+                },
+                "required": ["hard_ceiling_usd"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Ollama is a local, unbilled provider with no auth and no reasoning effort.",
+      "if": {
+        "properties": { "provider": { "const": "ollama" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "none" } }
+          },
+          "execution": {
+            "properties": {
+              "reasoning_effort": { "const": null },
+              "cost": {
+                "properties": { "billed": { "const": false } }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "Mock is an offline, unbilled preview with no auth and no reasoning effort.",
+      "if": {
+        "properties": { "provider": { "const": "mock" } }
+      },
+      "then": {
+        "properties": {
+          "auth": {
+            "properties": { "mode": { "const": "none" } }
+          },
+          "execution": {
+            "properties": {
+              "reasoning_effort": { "const": null },
+              "cost": {
+                "properties": { "billed": { "const": false } }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

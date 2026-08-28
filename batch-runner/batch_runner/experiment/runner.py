@@ -25,10 +25,12 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
+import secrets
 import time
 from pathlib import Path
 from typing import Any, Callable
 
+from batch_runner.experiment.cost import CostPreflight, estimate_azure_cost
 from batch_runner.experiment.dataset import LoadedDataset, load_dataset, row_input_text
 from batch_runner.experiment.ledger import RunLedger
 from batch_runner.experiment.providers.azure import FOUNDRY_AUDIENCE
@@ -168,12 +170,37 @@ def _claim_output_dir(out_dir: Path) -> None:
 
 
 def _atomic_write_text(path: Path, text: str) -> None:
-    tmp = path.with_name(path.name + ".tmp")
-    with tmp.open("w", encoding="utf-8") as handle:
-        handle.write(text)
-        handle.flush()
-        os.fsync(handle.fileno())
-    os.replace(tmp, path)
+    """Write ``text`` to ``path`` via an unpredictable, no-follow temp file.
+
+    A predictable ``*.tmp`` name opened with a normal ``open`` follows a symlink
+    an attacker could plant, letting a write escape the owned directory. Instead
+    we create a fresh same-directory temp file with an unguessable name using
+    ``O_CREAT|O_EXCL|O_WRONLY|O_NOFOLLOW`` (so an existing symlink at that name
+    is refused, not followed), then atomically ``os.replace`` it onto ``path``.
+    """
+    directory = path.parent
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+    for _ in range(8):
+        tmp = directory / f".{path.name}.{secrets.token_hex(8)}.tmp"
+        try:
+            fd = os.open(tmp, flags, 0o600)
+        except FileExistsError:  # pragma: no cover - name collision is rare
+            continue
+        break
+    else:  # pragma: no cover - exhausting 8 random names is effectively impossible
+        raise ExperimentOutputConflict("could not create a temp file for output")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 def _endpoint_identity(
@@ -196,13 +223,19 @@ def _endpoint_identity(
             "audience": FOUNDRY_AUDIENCE,
         }
     if ledger.provider == "ollama":
-        return {
+        identity: dict[str, Any] = {
             "provider": "ollama",
             "endpoint_env_var": ledger.endpoint.env_var,
             "endpoint_source": endpoint.source,
-            "base_url": endpoint.base_url,
             "model": ledger.model,
+            "locality": "local" if endpoint.is_local else "remote",
+            "remote_opt_in": not endpoint.is_local,
         }
+        # A localhost base URL is safe to record; a remote (opt-in) URL is not
+        # persisted at all — only its env-var source and locality class are.
+        if endpoint.is_local:
+            identity["base_url"] = endpoint.base_url
+        return identity
     return {"provider": "mock", "model": ledger.model}
 
 
@@ -216,6 +249,7 @@ def run_ledger(
     confirm_cost: bool = False,
     clock: Clock | None = None,
     provider_builder: ProviderBuilder | None = None,
+    preflight_sink: Callable[[CostPreflight], None] | None = None,
 ) -> RunResult:
     """Execute ``ledger`` end to end and write owned artifacts.
 
@@ -228,6 +262,9 @@ def run_ledger(
         confirm_cost: The explicit CLI acknowledgement for a billed run.
         clock: Injectable wall clock (epoch seconds) for deterministic tests.
         provider_builder: Injectable provider factory for tests.
+        preflight_sink: Optional callback invoked with the conservative Azure
+            cost plan *before* the run is authorized, so a caller can display
+            the planned request count/estimate/ceiling.
 
     Raises:
         DatasetError, LedgerError, ProviderError, ExperimentOutputConflict,
@@ -242,19 +279,39 @@ def run_ledger(
     # --- DATA ---------------------------------------------------------------
     input_path = _resolve_input_path(base_dir, ledger.input.path)
     dataset = load_dataset(input_path, ledger.input)
+    rows = dataset.selected(
+        selector=ledger.input.sample_selector, limit=ledger.execution.max_samples
+    )
+    prompts = [row_input_text(row) for row in rows]
 
-    # Refuse the published evidence tree up front, before any provider work.
-    _early_out = (
+    # --- OUT (claimed first): refuse the evidence tree and lock an owned dir
+    # BEFORE resolving an endpoint, building a provider, or making any billable
+    # call. A foreign/unwritable output directory fails here with zero calls.
+    resolved_out = (
         out_dir if out_dir is not None else base_dir / ledger.output.dir
     ).resolve()
-    _reject_evidence_tree(_early_out)
+    _reject_evidence_tree(resolved_out)
+    _claim_output_dir(resolved_out)
 
-    # --- IN: cost gate before anything is built or reached ------------------
+    # --- IN: cost gate + conservative pre-flight before anything is reached --
+    preflight: CostPreflight | None = None
     if ledger.provider == "azure":
         if not (ledger.execution.cost.confirmed and confirm_cost):
             raise BudgetNotConfirmedError(
                 "billed Azure run requires both execution.cost.confirmed in the "
                 "ledger and the explicit --confirm-cost flag"
+            )
+        preflight = estimate_azure_cost(ledger, prompts)
+        if preflight_sink is not None:
+            preflight_sink(preflight)
+        if not preflight.within_ceiling:
+            raise BudgetNotConfirmedError(
+                "refusing billed Azure run: the conservative pre-flight "
+                f"estimate (${preflight.estimated_usd:.4f} over "
+                f"{preflight.planned_requests} request(s)) exceeds "
+                f"execution.cost.hard_ceiling_usd "
+                f"(${preflight.hard_ceiling_usd:.2f}); lower max_samples/repeats/"
+                "max_output_tokens or raise the ceiling"
             )
 
     # --- EXECUTE: resolve endpoint, prepare provider (may abort globally) ----
@@ -263,10 +320,6 @@ def run_ledger(
     )
     provider = build(ledger, endpoint, ledger.execution.capture_io)
     provider.prepare()
-
-    rows = dataset.selected(
-        selector=ledger.input.sample_selector, limit=ledger.execution.max_samples
-    )
 
     started = now()
     records: list[OutputRecord] = []
@@ -298,11 +351,6 @@ def run_ledger(
     else:
         status, exit_code = "partial", EXIT_PARTIAL
 
-    resolved_out = out_dir if out_dir is not None else base_dir / ledger.output.dir
-    resolved_out = resolved_out.resolve()
-    _reject_evidence_tree(resolved_out)
-    _claim_output_dir(resolved_out)
-
     preview = _answer_preview(records)
     run_json = _build_run_json(
         ledger=ledger,
@@ -315,6 +363,7 @@ def run_ledger(
         started=started,
         ended=ended,
         selected=len(rows),
+        preflight=preflight,
     )
     records_path = resolved_out / "records.jsonl"
     run_json_path = resolved_out / "run.json"
@@ -401,8 +450,17 @@ def _build_run_json(
     started: float,
     ended: float,
     selected: int,
+    preflight: CostPreflight | None = None,
 ) -> dict[str, Any]:
     ok_records = [r for r in records if r.ok]
+    cost_block: dict[str, Any] = {
+        "billed": ledger.execution.cost.billed,
+        "confirmed": ledger.execution.cost.confirmed,
+        "estimated_usd": ledger.execution.cost.estimated_usd,
+        "hard_ceiling_usd": ledger.execution.cost.hard_ceiling_usd,
+    }
+    if preflight is not None:
+        cost_block["preflight"] = preflight.to_json()
     return {
         "schema_version": ledger.schema_version,
         "banner": sample_banner(ledger.provider),
@@ -435,12 +493,7 @@ def _build_run_json(
             "reasoning_effort": ledger.execution.reasoning_effort,
             "capture_io": ledger.execution.capture_io,
         },
-        "cost": {
-            "billed": ledger.execution.cost.billed,
-            "confirmed": ledger.execution.cost.confirmed,
-            "estimated_usd": ledger.execution.cost.estimated_usd,
-            "hard_ceiling_usd": ledger.execution.cost.hard_ceiling_usd,
-        },
+        "cost": cost_block,
         "started_at": _iso(started),
         "ended_at": _iso(ended),
         "status": status,

@@ -61,6 +61,18 @@ class ResponseFormatError(ProviderError):
     error_type = "bad_response"
 
 
+class ResponseNotCompletedError(ProviderError):
+    """The provider returned a non-terminal or failed response status.
+
+    Azure OpenAI Responses report a ``status`` (``completed``, ``incomplete``,
+    ``failed``, ``cancelled``, ...). Only ``completed`` is a success; every
+    other state is surfaced as this typed error instead of being read as a
+    successful record. The message names the status word, never any content.
+    """
+
+    error_type = "response_not_completed"
+
+
 class BudgetNotConfirmedError(ProviderError):
     """A billed provider was asked to run without an explicit cost confirmation."""
 
@@ -177,5 +189,6 @@ __all__ = [
     "AuthenticationError",
     "RequestTimeoutError",
     "ResponseFormatError",
+    "ResponseNotCompletedError",
     "BudgetNotConfirmedError",
 ]

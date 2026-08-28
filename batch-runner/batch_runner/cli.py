@@ -140,7 +140,7 @@ def _add_experiment_parser(subparsers: argparse._SubParsersAction) -> None:
 def _add_sample_parser(subparsers: argparse._SubParsersAction) -> None:
     sample = subparsers.add_parser(
         "sample",
-        help="Make ONE tiny real model call (Ollama/Azure) or an offline preview",
+        help="Do a small real model run (Ollama/Azure) or an offline preview",
         description=(
             "Run a handful of committed public prompts against a real model so "
             "you can confirm the DATA -> IN -> EXECUTE -> OUT flow end to end. "
@@ -238,6 +238,13 @@ def _write_resource(target: Path, resource: object) -> None:
         os.fsync(handle.fileno())
 
 
+def _write_text_resource(target: Path, text: str) -> None:
+    with target.open("w", encoding="utf-8") as handle:
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def _init_sample_workspace(out_dir: Path, provider: str) -> None:
     out_dir = out_dir.resolve()
     if out_dir.exists() and not out_dir.is_dir():
@@ -257,6 +264,15 @@ def _init_sample_workspace(out_dir: Path, provider: str) -> None:
         _write_resource(stage / "ledger.yaml", data_root.joinpath(ledger_resource))
         for resource_name, output_name in _SAMPLE_DATA_RESOURCES.items():
             _write_resource(stage / output_name, data_root.joinpath(resource_name))
+        # A workspace-local .gitignore so a cloner's run outputs and any local
+        # .env never get committed, regardless of the chosen workspace name.
+        _write_text_resource(
+            stage / ".gitignore",
+            "# Created by `reasoning-payoff sample init`.\n"
+            "out/\n"
+            ".env\n"
+            "*.tmp\n",
+        )
         if out_dir.exists():
             out_dir.rmdir()
         os.replace(stage, out_dir)
@@ -314,32 +330,36 @@ def _cmd_experiment_describe(target: str, as_json: bool) -> int:
     return 0
 
 
-def _load_ledger_file(path: Path) -> object:
-    import yaml  # noqa: PLC0415
-
-    from batch_runner.experiment.ledger import parse_ledger  # noqa: PLC0415
-
-    try:
-        raw = path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise OSError(str(exc)) from exc
-    data = yaml.safe_load(raw)
-    return parse_ledger(data)
-
-
 def _cmd_sample_run(args: argparse.Namespace) -> int:
+    from batch_runner.experiment.ledger import load_ledger  # noqa: PLC0415
     from batch_runner.experiment.runner import run_ledger  # noqa: PLC0415
 
     ledger_path = Path(args.ledger).resolve()
-    ledger = _load_ledger_file(ledger_path)
+    # Bounded, value-free loader: a malformed or oversized YAML fails with a
+    # documented LedgerError (mapped to exit 3), never a traceback or path leak.
+    ledger = load_ledger(ledger_path)
     base_dir = ledger_path.parent
     out_dir = Path(args.out).resolve() if args.out else None
+
+    # Show the exact request count before running, so "a small run" is concrete.
+    planned_requests = ledger.execution.max_samples * ledger.execution.repeats
+    print(
+        f"plan: up to {planned_requests} request(s) "
+        f"({ledger.execution.max_samples} row(s) x {ledger.execution.repeats} "
+        f"repeat(s)) via provider {ledger.provider!r}",
+        file=sys.stderr,
+    )
+
+    def _show_preflight(plan: object) -> None:
+        print(plan.plan_line(), file=sys.stderr)  # type: ignore[attr-defined]
+
     result = run_ledger(
-        ledger,  # type: ignore[arg-type]
+        ledger,
         base_dir=base_dir,
         out_dir=out_dir,
         allow_remote_ollama=args.allow_remote_ollama,
         confirm_cost=args.confirm_cost,
+        preflight_sink=_show_preflight,
     )
     if args.json:
         print(

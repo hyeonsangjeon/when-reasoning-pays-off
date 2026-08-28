@@ -42,6 +42,7 @@ from batch_runner.experiment.record import (
     ProviderUnavailableError,
     RequestTimeoutError,
     ResponseFormatError,
+    ResponseNotCompletedError,
 )
 
 #: Entra ID audience for Microsoft Foundry data-plane calls.
@@ -68,7 +69,9 @@ def _default_token_provider_factory() -> TokenProvider:
     return get_bearer_token_provider(DefaultAzureCredential(), FOUNDRY_AUDIENCE)
 
 
-def _default_client_factory(*, base_url: str, api_key: TokenProvider) -> Any:
+def _default_client_factory(
+    *, base_url: str, api_key: TokenProvider, timeout: float, max_retries: int
+) -> Any:
     try:
         from openai import OpenAI  # noqa: PLC0415 - lazy: heavy optional dep
     except ImportError:
@@ -77,8 +80,28 @@ def _default_client_factory(*, base_url: str, api_key: TokenProvider) -> Any:
             "install it with `pip install openai`"
         ) from None
     # api_key accepts a callable token provider; the client invokes it per
-    # request. Do NOT call api_key() here.
-    return OpenAI(base_url=base_url, api_key=api_key)
+    # request. Do NOT call api_key() here. max_retries=0 keeps one billed run to
+    # exactly one attempt so a retry storm can't multiply spend; timeout bounds
+    # the single request to the ledger's configured limit.
+    return OpenAI(
+        base_url=base_url,
+        api_key=api_key,
+        timeout=timeout,
+        max_retries=max_retries,
+    )
+
+
+def _openai_v1_base(endpoint_base: str) -> str:
+    """Return the ``/openai/v1/`` data-plane base, appended at most once.
+
+    The resolver hands us either a resource root or a URL that already ends in
+    ``/openai/v1``. Appending unconditionally would produce ``/openai/v1/openai/
+    v1/``; this normalizes both to exactly one suffix.
+    """
+    trimmed = endpoint_base.rstrip("/")
+    if trimmed.endswith("/openai/v1"):
+        return trimmed + "/"
+    return trimmed + "/openai/v1/"
 
 
 def _usage_int(usage: Any, name: str) -> int | None:
@@ -123,7 +146,7 @@ class AzureFoundryProvider:
         )
         self._environ = os.environ if environ is None else environ
         self._client: Any = None
-        self._base_url = endpoint.base_url.rstrip("/") + "/openai/v1/"
+        self._base_url = _openai_v1_base(endpoint.base_url)
 
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(
@@ -160,7 +183,10 @@ class AzureFoundryProvider:
         token_provider = self._token_provider_factory()
         # Pass the callable through untouched — the client refreshes per request.
         self._client = self._client_factory(
-            base_url=self._base_url, api_key=token_provider
+            base_url=self._base_url,
+            api_key=token_provider,
+            timeout=float(self._ledger.execution.timeout_seconds),
+            max_retries=0,
         )
 
     def run_row(self, row_id: str, repeat_index: int, prompt: str) -> OutputRecord:
@@ -171,6 +197,12 @@ class AzureFoundryProvider:
             "model": self._ledger.model,
             "input": prompt,
             "max_output_tokens": self._ledger.execution.max_output_tokens,
+            # Stateless call: do not store the response for later retrieval or
+            # conversation state. This does NOT promise zero data retention —
+            # Azure abuse-monitoring/data-processing is a separate service
+            # boundary (Microsoft Learn: Responses API stores data 30 days by
+            # default; store=false is the documented stateless mode).
+            "store": False,
         }
         effort = self._ledger.execution.reasoning_effort
         if effort is not None:
@@ -180,6 +212,20 @@ class AzureFoundryProvider:
             response = self._client.responses.create(**kwargs)
         except Exception as exc:  # noqa: BLE001 - normalized to typed errors below
             raise _classify_error(exc) from None
+
+        # Only a terminal "completed" status is a success. Every other state is
+        # surfaced as a typed error rather than read as a good record.
+        status_word = getattr(response, "status", None)
+        if isinstance(status_word, str):
+            lowered = status_word.strip().lower()
+            if lowered in {"failed", "cancelled", "canceled"}:
+                raise ResponseNotCompletedError(
+                    f"azure response did not complete (status: {lowered})"
+                )
+            if lowered and lowered != "completed":
+                raise ResponseNotCompletedError(
+                    f"azure response is not terminal (status: {lowered})"
+                )
 
         text = getattr(response, "output_text", None)
         if not isinstance(text, str):

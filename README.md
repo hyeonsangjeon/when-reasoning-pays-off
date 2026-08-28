@@ -149,7 +149,7 @@ Historical benchmark, result, and blog inputs remain read-only.</sub>
 | --- | --- | :---: |
 | **See the evidence** | [Open the live dashboard →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) — interactive cost / quality / latency / crossover charts | ❌ |
 | **Read the story** | [Overview essay →](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/) in English · 한국어 · 日本語 · 简体中文 · हिन्दी | ❌ |
-| **Run one real experiment** | `reasoning-payoff sample init --provider ollama --out sample-workspace && reasoning-payoff sample run --ledger sample-workspace/ledger.yaml` — a real local model call, no cloud cost ([guide](docs/20-five-minute-experiment-run.md)) | ❌ (Ollama) |
+| **Run one real experiment** | `reasoning-payoff sample init --provider ollama --out sample-workspace && reasoning-payoff sample run --ledger sample-workspace/ledger.yaml` — a small real local model run (a few rows), no cloud cost ([guide](docs/20-five-minute-experiment-run.md)) | ❌ (Ollama) |
 | **Generate a provenance report** | `reasoning-payoff analyze examples/five-minute/usage.jsonl --workload examples/five-minute/workload.yaml --out report` | ❌ |
 | **Verify it runs locally** | `bash scripts/verify_setup.sh` — no credentials, ~10 s to a green check | ❌ |
 | **Run the test suite** | `pip install -r requirements-dev.txt && pytest -q -m "not adaptive_calibration" batch-runner/tests/` | ❌ |

@@ -163,6 +163,11 @@ The full machine-readable contract is
 environment at run time — the ledger records only the variable **name**, never a
 resolved URL or secret.
 
+For this first release the quickstart runs one row at a time: `concurrency` is
+fixed at `1` and `artifacts` is exactly `[run.json, records.jsonl, summary.md]`.
+The ledger rejects any other value rather than silently ignoring it, so the file
+never records settings the runner does not honor.
+
 ### `capture_io` and privacy
 
 The packaged sample uses **public** prompts, so `capture_io: true` — the model's
@@ -228,6 +233,26 @@ reasoning-payoff sample run --ledger azure-workspace/ledger.yaml --confirm-cost
 Two gates must both be satisfied: the CLI flag `--confirm-cost` **and** the
 ledger's `execution.cost.confirmed: true`. In a continuous-integration (CI)
 environment the billed run is hard-refused by default before any network call.
+
+**Cost ceiling (enforced).** Before any network call, the runner computes a
+deliberately pessimistic upper-bound estimate — every request is assumed to emit
+the full `max_output_tokens`, priced at a flat rate well above current `gpt-5.2`
+rates — and prints a plan line such as `cost plan: 3 request(s), <= 128 output
+tokens each; conservative estimate $0.0259 (ceiling $1.00)`. If that estimate
+exceeds `execution.cost.hard_ceiling_usd`, the run is refused with zero calls.
+This is a safety bound, not a quoted price; your real bill is smaller.
+
+**Data retention.** Every sample Responses call sets `store=false`, the
+documented stateless mode: this call is not stored for later retrieval and no
+conversation state is kept for it. This is only the stored-response boundary —
+it does not promise zero data retention. Azure's abuse-monitoring and
+data-processing policies are a separate service boundary; the default Responses
+API otherwise retains request data for 30 days. See Microsoft Learn,
+[Use the Responses API](https://learn.microsoft.com/azure/foundry/openai/how-to/responses).
+
+The runner sends the ledger `timeout_seconds` to the SDK and sets
+`max_retries=0`, so one confirmed run is exactly one billed request attempt — a
+timeout is not silently retried into extra charges.
 
 **Authentication.** The runner uses a refreshable Entra ID bearer-token provider
 with the audience `https://ai.azure.com/.default`; Azure Identity caches and

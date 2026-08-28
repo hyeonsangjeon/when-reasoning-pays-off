@@ -13,6 +13,7 @@ import os
 import re
 from dataclasses import dataclass
 from typing import Protocol
+from urllib.parse import urlsplit
 
 from batch_runner.experiment.ledger import RunLedger
 from batch_runner.experiment.record import (
@@ -51,6 +52,28 @@ class EndpointResolutionError(ProviderError):
     error_type = "endpoint_unresolved"
 
 
+def _reject_unsafe_url_parts(name: str, base_url: str) -> None:
+    """Reject userinfo/query/fragment in an endpoint URL (value-free).
+
+    A bearer token must never be sent to a URL carrying embedded credentials,
+    a query string, or a fragment, which could redirect or leak it. The offend-
+    ing URL is never echoed back.
+    """
+    parts = urlsplit(base_url)
+    if parts.username or parts.password or "@" in parts.netloc:
+        raise EndpointResolutionError(
+            f"endpoint from {name} must not contain embedded credentials"
+        )
+    if parts.query:
+        raise EndpointResolutionError(
+            f"endpoint from {name} must not contain a query string"
+        )
+    if parts.fragment:
+        raise EndpointResolutionError(
+            f"endpoint from {name} must not contain a URL fragment"
+        )
+
+
 def resolve_endpoint(
     ledger: RunLedger,
     *,
@@ -62,8 +85,9 @@ def resolve_endpoint(
     The endpoint host is never included in raised errors or in ``source``.
 
     Raises:
-        EndpointResolutionError: If no endpoint is configured, or a non-local
-            endpoint is used without ``allow_remote`` for a local-only provider.
+        EndpointResolutionError: If no endpoint is configured, the URL is
+            malformed/unsafe, or a non-local endpoint is used without
+            ``allow_remote`` for a local-only provider.
     """
     env = os.environ if environ is None else environ
     name = ledger.endpoint.env_var
@@ -79,10 +103,20 @@ def resolve_endpoint(
             f"no endpoint configured: set the {name} environment variable"
         )
 
-    if not re.match(r"^https?://", base_url, re.IGNORECASE):
+    scheme = urlsplit(base_url).scheme.lower()
+    # Azure carries an Entra bearer token and must be HTTPS. Ollama may be plain
+    # http on localhost, so it accepts http or https.
+    if ledger.provider == "azure":
+        if scheme != "https":
+            raise EndpointResolutionError(
+                f"endpoint from {name} must be an https URL for a billed Azure run"
+            )
+    elif scheme not in {"http", "https"}:
         raise EndpointResolutionError(
             f"endpoint from {name} must be an http(s) URL"
         )
+
+    _reject_unsafe_url_parts(name, base_url)
 
     # Ollama is a local-only provider by default. Refuse a non-local endpoint
     # unless the operator explicitly opted in.

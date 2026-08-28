@@ -142,6 +142,8 @@ def load_dataset(path: Path, spec: InputSpec) -> LoadedDataset:
     if not rows:
         raise DatasetError("dataset contains no rows")
 
+    _enforce_identity(rows, spec.row_shape)
+
     return LoadedDataset(
         path=str(spec.path),
         format=spec.format,
@@ -149,6 +151,30 @@ def load_dataset(path: Path, spec: InputSpec) -> LoadedDataset:
         total_records=len(rows),
         sha256=digest,
     )
+
+
+def _enforce_identity(rows: list[dict[str, Any]], shape: RowShape) -> None:
+    """Enforce nonempty ``id``/``input`` and unique row ids before any run.
+
+    A blank id/input or a duplicate id is rejected here, before a provider is
+    built or the network is touched, so a malformed dataset can never reach a
+    billable call. Row values are never echoed — only the 1-based index.
+    """
+    checks_id = "id" in shape.required_fields
+    checks_input = "input" in shape.required_fields
+    seen: set[str] = set()
+    for index, row in enumerate(rows, start=1):
+        if checks_input:
+            value = row.get("input")
+            if not isinstance(value, str) or not value.strip():
+                raise DatasetError(f"row {index} field 'input' must be non-empty")
+        if checks_id:
+            row_id = row.get("id")
+            if not isinstance(row_id, str) or not row_id.strip():
+                raise DatasetError(f"row {index} field 'id' must be non-empty")
+            if row_id in seen:
+                raise DatasetError(f"row {index} repeats an earlier 'id'")
+            seen.add(row_id)
 
 
 def row_input_text(row: dict[str, Any]) -> str:
