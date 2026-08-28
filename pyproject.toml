@@ -56,6 +56,12 @@ namespaces = false
 
 [tool.setuptools.package-data]
 "batch_runner.data" = ["*.json", "*.jsonl", "*.yaml"]
+# Five-minute experiment quickstart: the packaged ledger templates, tiny
+# sample dataset, derived catalog, and config example must ship in the wheel so
+# `reasoning-payoff experiment list/describe` and `sample init/run` work from a
+# non-editable install outside the source checkout. (The full 20-experiment
+# clone-relative configs under experiments/ are NOT wheel data by design.)
+"batch_runner.experiment.resources" = ["*.json", "*.jsonl", "*.yaml", "*.example"]
 
 [tool.setuptools.data-files]
 "share/when-reasoning-pays-off/schemas" = ["schemas/*.schema.json"]

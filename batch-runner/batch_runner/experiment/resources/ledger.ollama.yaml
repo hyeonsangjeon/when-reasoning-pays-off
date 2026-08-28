@@ -1,0 +1,66 @@
+# Run ledger — the IN stage of one real experiment run.
+# This is the HEADLINE quickstart: a real, free, local run against Ollama.
+# Every field is validated before anything executes. Unknown fields are rejected.
+schema_version: "1.0.0"
+
+experiment:
+  id: five-minute-ollama
+  purpose: >-
+    Illustrative live sample against a local Ollama model. Confirms the
+    DATA -> IN -> EXECUTE -> OUT plumbing end to end. Not the published
+    benchmark and not a reasoning-effort sweep.
+
+# Which model runs this. "ollama" calls a model on your own machine (no cloud
+# cost, but it uses local compute). Change `model` to any tag you have pulled.
+provider: ollama
+model: qwen2.5:0.5b
+
+# Where the base URL comes from. The env-var NAME is recorded; the value is
+# read at run time. `default` is a localhost-only fallback for Ollama.
+endpoint:
+  env_var: OLLAMA_BASE_URL
+  default: http://localhost:11434
+
+# Ollama needs no credentials.
+auth:
+  mode: none
+  env_vars: []
+
+# DATA: the dataset file, its format, and the shape every row must match.
+input:
+  path: sample.jsonl
+  format: jsonl
+  row_shape:
+    required_fields:
+      id: string
+      input: string
+    optional_fields:
+      expected: string
+  max_records: 50
+  sample_selector: first
+
+# EXECUTE: how much to run. capture_io is true here because the dataset is
+# public prompts, so saving the model's answer is safe and lets you confirm
+# the model really ran. For your own data, set capture_io to false to redact.
+execution:
+  max_samples: 3
+  concurrency: 1
+  timeout_seconds: 60
+  max_output_tokens: 128
+  repeats: 1
+  capture_io: true
+  cost:
+    billed: false
+    confirmed: false
+
+# OUT: where artifacts land (a gitignored workspace directory).
+output:
+  dir: out
+  artifacts:
+    - run.json
+    - records.jsonl
+    - summary.md
+
+provenance:
+  method_id: experiment-runner
+  method_version: "1.0.0"

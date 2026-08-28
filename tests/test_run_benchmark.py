@@ -763,6 +763,21 @@ def test_source_invariants() -> None:
         f"{literal_key_hits}"
     )
 
+    # (3b) The bearer token must be passed as the *callable* ``token_provider``,
+    # never eagerly resolved at construction (``api_key=token_provider()``). The
+    # OpenAI SDK invokes the callable before each request, so Azure Identity
+    # refreshes the token transparently over a long run.
+    pat_eager = re.compile(r"api_key\s*=\s*token_provider\s*\(\s*\)")
+    eager_hits = [i for i, ln in enumerate(src_lines, 1) if pat_eager.search(ln)]
+    assert not eager_hits, (
+        f"eager token resolution api_key=token_provider() found at lines "
+        f"{eager_hits}; pass the callable token_provider instead"
+    )
+    pat_callable = re.compile(r"api_key\s*=\s*token_provider\b(?!\s*\()")
+    assert any(pat_callable.search(ln) for ln in src_lines), (
+        "expected api_key=token_provider (callable) in the live client builder"
+    )
+
     # (4) ``reasoning={...}`` literal — must be guarded by a gpt-5.2 family
     # branch within the preceding 10 source lines.
     pat_reasoning = re.compile(r"reasoning\s*=\s*\{")
@@ -2049,3 +2064,65 @@ def test_tool_loop_usage_summation_invariant_three_iterations() -> None:
     # Per-iteration row usage matches the per-call payload one-for-one.
     assert trajectory[0]["usage"]["input_tokens"] == payloads[0]["input_tokens"]
     assert trajectory[1]["usage"]["input_tokens"] == payloads[1]["input_tokens"]
+
+
+# ---------------------------------------------------------------------------
+# Functional regression: live client passes the token_provider *callable*,
+# never an eagerly resolved static token. Fakes are injected for azure.identity
+# and openai so the test stays fully offline (no credential, no network).
+# ---------------------------------------------------------------------------
+def test_build_live_client_uses_refreshable_callable(monkeypatch):
+    import types
+
+    counters = {"token": 0, "factory": 0, "credential": 0}
+    captured: dict = {}
+
+    def _token_provider() -> str:
+        counters["token"] += 1
+        return f"bearer-{counters['token']}"
+
+    def _get_bearer_token_provider(credential, audience):
+        counters["factory"] += 1
+        captured["audience"] = audience
+        captured["credential"] = credential
+        return _token_provider
+
+    class _FakeCredential:
+        def __init__(self, *a, **k) -> None:
+            counters["credential"] += 1
+
+    fake_identity = types.ModuleType("azure.identity")
+    fake_identity.DefaultAzureCredential = _FakeCredential
+    fake_identity.get_bearer_token_provider = _get_bearer_token_provider
+    fake_azure = types.ModuleType("azure")
+    fake_azure.identity = fake_identity
+
+    class _FakeAsyncOpenAI:
+        def __init__(self, *, base_url: str, api_key) -> None:
+            captured["base_url"] = base_url
+            captured["api_key"] = api_key
+
+    fake_openai = types.ModuleType("openai")
+    fake_openai.AsyncOpenAI = _FakeAsyncOpenAI
+
+    monkeypatch.setitem(sys.modules, "azure", fake_azure)
+    monkeypatch.setitem(sys.modules, "azure.identity", fake_identity)
+    monkeypatch.setitem(sys.modules, "openai", fake_openai)
+
+    client = rb._build_live_client(endpoint_value="https://example-foundry")
+    assert isinstance(client, _FakeAsyncOpenAI)
+
+    # Foundry v1 audience and wire path.
+    assert captured["audience"] == "https://ai.azure.com/.default"
+    assert captured["base_url"] == "https://example-foundry/openai/v1/"
+
+    # The client received the CALLABLE, not a resolved string, and the token
+    # was NOT fetched during construction.
+    assert callable(captured["api_key"])
+    assert captured["api_key"] is _token_provider
+    assert counters["token"] == 0, "token must not be resolved at construction"
+
+    # The SDK invokes the callable per request; each call refreshes.
+    assert captured["api_key"]() == "bearer-1"
+    assert captured["api_key"]() == "bearer-2"
+    assert counters["token"] == 2

@@ -99,3 +99,12 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 .claude/
+
+# Five-minute experiment quickstart: sample/probe run output. These are
+# illustrative live/offline PREVIEW samples (see the DATA -> IN -> EXECUTE ->
+# OUT guide), never published benchmark evidence, so they must not be committed.
+# The runner also hard-refuses to write anywhere under benchmarks/** or
+# results/** and marks every output directory it owns with
+# .reasoning-payoff-experiment-owned.
+/sample-workspace/
+.reasoning-payoff-experiment-owned

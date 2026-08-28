@@ -52,7 +52,7 @@ is the classic Azure OpenAI audience and produces 401 ``audience is incorrect
     )
     client = AsyncOpenAI(
         base_url=os.environ["AZURE_OPENAI_FOUNDRY_ENDPOINT"].rstrip("/") + "/openai/v1/",
-        api_key=token_provider(),  # bearer token; refreshed per client build
+        api_key=token_provider,  # callable; SDK invokes it and refreshes per request
     )
 
 This module performs **zero** outbound HTTPS calls when invoked with
@@ -2065,10 +2065,12 @@ def _build_live_client(*, endpoint_value: str) -> Any:
     audience ``https://cognitiveservices.azure.com/.default`` produces a 401
     ``audience is incorrect (https://ai.azure.com)`` against this endpoint.
 
-    The bearer token is acquired at client construction time and embedded as
-    ``api_key``. Tokens have a ~60-minute TTL; runs longer than the TTL must
-    rebuild the client (acceptable for the 6-call smoke and the 300-call
-    Task 007 full run; revisit for any multi-hour run).
+    The bearer token is supplied as the ``token_provider`` *callable*. The
+    OpenAI SDK accepts either a string or a zero-argument callable for
+    ``api_key`` and invokes the callable before each request, so Azure Identity
+    caches the token and refreshes it transparently when it nears expiry. The
+    provider is never called at construction time, so a long run does not need
+    to rebuild the client when the ~60-minute token TTL elapses.
 
     Lazy-imports the SDK so dry-run execution does not require the
     ``openai`` / ``azure.identity`` packages to be initialized.
@@ -2095,9 +2097,12 @@ def _build_live_client(*, endpoint_value: str) -> Any:
     # api_version="preview" — methodology label recorded verbatim in every
     # raw JSON's api_version field; the wire-level "/openai/v1/" path is the
     # Foundry v1 preview surface, so no api-version query parameter is sent.
+    #
+    # Pass the token_provider *callable* (not token_provider()) so the SDK
+    # invokes it per request and Azure Identity refreshes the token as needed.
     return AsyncOpenAI(
         base_url=base_url,
-        api_key=token_provider(),
+        api_key=token_provider,
     )
 
 

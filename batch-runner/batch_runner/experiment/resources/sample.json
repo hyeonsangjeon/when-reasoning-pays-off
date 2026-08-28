@@ -1,0 +1,17 @@
+[
+  {
+    "id": "q1",
+    "input": "What is the capital of France? Answer with just the city name.",
+    "expected": "Paris"
+  },
+  {
+    "id": "q2",
+    "input": "What is 2 + 2? Answer with a single number.",
+    "expected": "4"
+  },
+  {
+    "id": "q3",
+    "input": "Name the three additive primary colors of light (RGB).",
+    "expected": "red, green, blue"
+  }
+]

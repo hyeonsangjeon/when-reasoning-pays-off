@@ -1,0 +1,75 @@
+# Run ledger — the IN stage of one real experiment run.
+# Azure provider: a REAL, BILLED call to Azure OpenAI in Microsoft Foundry.
+# This costs money. The run refuses to start until BOTH are true:
+#   1. cost.confirmed is set to true in this file, AND
+#   2. you pass --confirm-cost on the command line.
+# It also hard-refuses to run in CI by default.
+schema_version: "1.0.0"
+
+experiment:
+  id: five-minute-azure
+  purpose: >-
+    Illustrative live sample against an Azure OpenAI (Microsoft Foundry)
+    deployment. A real, billed call. Not the published benchmark and not a
+    reasoning-effort sweep.
+
+# `model` is the Foundry deployment name you created in the portal.
+provider: azure
+model: gpt-5.2
+
+# Azure has NO committed default: the base URL is read only from this env-var
+# NAME at run time. The resolved URL is never written to any artifact.
+endpoint:
+  env_var: AZURE_OPENAI_FOUNDRY_ENDPOINT
+
+# Entra ID (Microsoft's identity system) auth via DefaultAzureCredential.
+# No secret is stored. DefaultAzureCredential uses your ambient sign-in (Azure
+# CLI, managed identity, etc.), so no variable NAMES are required here by
+# default. The endpoint variable belongs under `endpoint`, not here — it is
+# configuration, not a credential. List real identity variable NAMES only if
+# your environment needs them (e.g. AZURE_CLIENT_ID for a specific identity).
+auth:
+  mode: entra
+  env_vars: []
+
+input:
+  path: sample.jsonl
+  format: jsonl
+  row_shape:
+    required_fields:
+      id: string
+      input: string
+    optional_fields:
+      expected: string
+  max_records: 50
+  sample_selector: first
+
+execution:
+  max_samples: 3
+  concurrency: 1
+  timeout_seconds: 60
+  max_output_tokens: 128
+  repeats: 1
+  # reasoning_effort is Azure-only. gpt-5.2 supports: none, low, medium, high,
+  # xhigh. `none` is set explicitly here for cost-safe, predictable behaviour;
+  # leaving it unset can invoke a non-lowest service default. Unsupported effort
+  # values are rejected before any billed call is made.
+  reasoning_effort: none
+  capture_io: true
+  cost:
+    billed: true
+    # Set to true ONLY when you accept the charge. Also pass --confirm-cost.
+    confirmed: false
+    estimated_usd: 0.05
+    hard_ceiling_usd: 1.00
+
+output:
+  dir: out
+  artifacts:
+    - run.json
+    - records.jsonl
+    - summary.md
+
+provenance:
+  method_id: experiment-runner
+  method_version: "1.0.0"

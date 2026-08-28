@@ -1,0 +1,1161 @@
+{
+  "experiment_count": 20,
+  "experiments": [
+    {
+      "benchmark": "01-short-factual",
+      "config_path": "experiments/exp001_short-factual_baseline.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/01-short-factual/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/system.md",
+            "top_level": "system prompt text"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/user_template.md",
+            "top_level": "user prompt template"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp001_short-factual_baseline.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp001_short-factual_baseline",
+      "family": "A1",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/01-short-factual/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/01-short-factual/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/01-short-factual/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-01/"
+        ],
+        "output_dir": "benchmarks/01-short-factual/runs/"
+      },
+      "question": "On short factual Q&A, does higher reasoning effort buy enough quality to justify its extra (mostly hidden) reasoning tokens? Expectation: quality stays roughly flat while cost climbs, so effort should not pay here.",
+      "read_benchmark": "01-short-factual",
+      "runner_module": "run_benchmark",
+      "task": "Ask the same 20 questions 3x each at five effort levels on gpt-5.2, with a gpt-4o column as the no-reasoning floor.",
+      "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "config_path": "experiments/exp001_short-factual_baseline_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/01-short-factual/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/system.md",
+            "top_level": "system prompt text"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/user_template.md",
+            "top_level": "user prompt template"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp001_short-factual_baseline_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp001_short-factual_baseline_gpt4o",
+      "family": "A1",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/01-short-factual/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/01-short-factual/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/01-short-factual/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-01/"
+        ],
+        "output_dir": "benchmarks/01-short-factual/runs/"
+      },
+      "question": "On short factual Q&A, does higher reasoning effort buy enough quality to justify its extra (mostly hidden) reasoning tokens? Expectation: quality stays roughly flat while cost climbs, so effort should not pay here.",
+      "read_benchmark": "01-short-factual",
+      "runner_module": "run_benchmark",
+      "task": "Ask the same 20 questions 3x each at five effort levels on gpt-5.2, with a gpt-4o column as the no-reasoning floor.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "config_path": "experiments/exp002_benchmark02_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/02-multi-step-reasoning/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/02-multi-step-reasoning/prompts/system.md",
+            "top_level": "system prompt text"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp002_benchmark02_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp002_benchmark02_gpt4o",
+      "family": "A2",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/02-multi-step-reasoning/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/02-multi-step-reasoning/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/02-multi-step-reasoning/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-02/"
+        ],
+        "output_dir": "benchmarks/02-multi-step-reasoning/runs/"
+      },
+      "question": "On genuinely multi-step problems, does effort start earning its cost -- does quality climb enough at some tier to beat the flat short-factual case?",
+      "read_benchmark": "02-multi-step-reasoning",
+      "runner_module": "run_benchmark",
+      "task": "Same 20x3 design across five effort levels on gpt-5.2 (plus a gpt-4o baseline), over the multi-step-reasoning dataset.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "config_path": "experiments/exp002_benchmark02_gpt5_2.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/02-multi-step-reasoning/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/02-multi-step-reasoning/prompts/system.md",
+            "top_level": "system prompt text"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp002_benchmark02_gpt5_2.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp002_benchmark02_gpt5_2",
+      "family": "A2",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/02-multi-step-reasoning/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/02-multi-step-reasoning/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/02-multi-step-reasoning/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-02/"
+        ],
+        "output_dir": "benchmarks/02-multi-step-reasoning/runs/"
+      },
+      "question": "On genuinely multi-step problems, does effort start earning its cost -- does quality climb enough at some tier to beat the flat short-factual case?",
+      "read_benchmark": "02-multi-step-reasoning",
+      "runner_module": "run_benchmark",
+      "task": "Same 20x3 design across five effort levels on gpt-5.2 (plus a gpt-4o baseline), over the multi-step-reasoning dataset.",
+      "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+    },
+    {
+      "benchmark": "03-tool-using-agent",
+      "config_path": "experiments/exp003_benchmark03_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "expected_tool_calls": "array",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/search_kb.json",
+            "top_level": "object mapping query string -> answer string"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/03-tool-using-agent/prompts/system.md",
+            "top_level": "system prompt text (with tool instructions)"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp003_benchmark03_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp003_benchmark03_gpt4o",
+      "family": "A3",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/03-tool-using-agent/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/03-tool-using-agent/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/03-tool-using-agent/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-03/"
+        ],
+        "output_dir": "benchmarks/03-tool-using-agent/runs/"
+      },
+      "question": "For tool-using agent tasks, where is the quality ceiling, and what latency does each effort tier cost? Agent work must be read on quality AND latency together.",
+      "read_benchmark": "03-tool-using-agent",
+      "runner_module": "run_benchmark",
+      "task": "Same 20x3 five-effort design (plus a gpt-4o baseline) over the agent dataset, which adds a tool knowledge base and tool schemas.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    },
+    {
+      "benchmark": "03-tool-using-agent",
+      "config_path": "experiments/exp003_benchmark03_gpt5_2.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "expected_tool_calls": "array",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/search_kb.json",
+            "top_level": "object mapping query string -> answer string"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/03-tool-using-agent/prompts/system.md",
+            "top_level": "system prompt text (with tool instructions)"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp003_benchmark03_gpt5_2.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp003_benchmark03_gpt5_2",
+      "family": "A3",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/03-tool-using-agent/runs/*.json  (raw per-cell usage + latency)",
+          "benchmarks/03-tool-using-agent/judge_runs/  (LLM-judge quality grades)",
+          "benchmarks/03-tool-using-agent/analysis.{json,md}  (aggregated verdict)",
+          "results/public/chart-data/{cost-curves-effort,token-composition,ptu-payg-crossover}/benchmark-03/"
+        ],
+        "output_dir": "benchmarks/03-tool-using-agent/runs/"
+      },
+      "question": "For tool-using agent tasks, where is the quality ceiling, and what latency does each effort tier cost? Agent work must be read on quality AND latency together.",
+      "read_benchmark": "03-tool-using-agent",
+      "runner_module": "run_benchmark",
+      "task": "Same 20x3 five-effort design (plus a gpt-4o baseline) over the agent dataset, which adds a tool knowledge base and tool schemas.",
+      "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
+    },
+    {
+      "benchmark": "04-spillover-simulation",
+      "config_path": "experiments/exp004_spillover_baseline_reactive.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/system_prompt_corpus.json",
+            "top_level": "array of 132 strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/user_prompts.json",
+            "top_level": "array of 30 strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.simulate_spillover --experiment experiments/exp004_spillover_baseline_reactive.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "simulate_spillover"
+      },
+      "experiment_id": "exp004_spillover_baseline_reactive",
+      "family": "B4",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/04-spillover-simulation/runs/*.jsonl  (+ *.summary.json)",
+          "benchmarks/04-spillover-simulation/analysis.{json,md}",
+          "results/spillover-recovery-curves/*.png  (cache-hit ratio over time)"
+        ],
+        "output_dir": "benchmarks/04-spillover-simulation/runs/"
+      },
+      "question": "Which spillover routing policy recovers cache-hit ratio faster after throttling -- a reactive (timeout/429-triggered) router or a proactive (p95-latency ramp) one? Phase 1 isolates the policy layer, not the network.",
+      "read_benchmark": "04-spillover-simulation",
+      "runner_module": "simulate_spillover",
+      "task": "Replay a ~30K-token ReAct workload (corpus seed 4242) through the policy router over a 22-minute ramp-then-sustain load; the reactive and proactive policies are two sibling YAMLs.",
+      "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+    },
+    {
+      "benchmark": "04-spillover-simulation",
+      "config_path": "experiments/exp004_spillover_proactive.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/system_prompt_corpus.json",
+            "top_level": "array of 132 strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/user_prompts.json",
+            "top_level": "array of 30 strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.simulate_spillover --experiment experiments/exp004_spillover_proactive.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "simulate_spillover"
+      },
+      "experiment_id": "exp004_spillover_proactive",
+      "family": "B4",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/04-spillover-simulation/runs/*.jsonl  (+ *.summary.json)",
+          "benchmarks/04-spillover-simulation/analysis.{json,md}",
+          "results/spillover-recovery-curves/*.png  (cache-hit ratio over time)"
+        ],
+        "output_dir": "benchmarks/04-spillover-simulation/runs/"
+      },
+      "question": "Which spillover routing policy recovers cache-hit ratio faster after throttling -- a reactive (timeout/429-triggered) router or a proactive (p95-latency ramp) one? Phase 1 isolates the policy layer, not the network.",
+      "read_benchmark": "04-spillover-simulation",
+      "runner_module": "simulate_spillover",
+      "task": "Replay a ~30K-token ReAct workload (corpus seed 4242) through the policy router over a 22-minute ramp-then-sustain load; the reactive and proactive policies are two sibling YAMLs.",
+      "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+    },
+    {
+      "benchmark": "05-dual-spillover",
+      "config_path": "experiments/exp005_dual_spillover_proactive.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/05-dual-spillover/system_prompt_corpus.json",
+            "top_level": "array of strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/05-dual-spillover/user_prompts.json",
+            "top_level": "array of strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.measure_dual_spillover --experiment experiments/exp005_dual_spillover_proactive.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "measure_dual_spillover"
+      },
+      "experiment_id": "exp005_dual_spillover_proactive",
+      "family": "B5",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/05-dual-spillover/runs/*.jsonl  (+ *.summary.json)",
+          "results/dual-spillover-curves/*.png  (per-endpoint, aggregate, real-429 timeline)"
+        ],
+        "output_dir": "benchmarks/05-dual-spillover/runs/"
+      },
+      "question": "Does the reactive-vs-proactive comparison hold under REAL throttling across two live deployments -- a low-TPM primary that emits real 429s and a high-TPM spillover pool?",
+      "read_benchmark": "05-dual-spillover",
+      "runner_module": "measure_dual_spillover",
+      "task": "Phase-2 dual-endpoint measurement of the same policy pair against two real gpt-5.2 deployments under the same load profile.",
+      "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+    },
+    {
+      "benchmark": "05-dual-spillover",
+      "config_path": "experiments/exp005_dual_spillover_reactive.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/05-dual-spillover/system_prompt_corpus.json",
+            "top_level": "array of strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/05-dual-spillover/user_prompts.json",
+            "top_level": "array of strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.measure_dual_spillover --experiment experiments/exp005_dual_spillover_reactive.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "measure_dual_spillover"
+      },
+      "experiment_id": "exp005_dual_spillover_reactive",
+      "family": "B5",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/05-dual-spillover/runs/*.jsonl  (+ *.summary.json)",
+          "results/dual-spillover-curves/*.png  (per-endpoint, aggregate, real-429 timeline)"
+        ],
+        "output_dir": "benchmarks/05-dual-spillover/runs/"
+      },
+      "question": "Does the reactive-vs-proactive comparison hold under REAL throttling across two live deployments -- a low-TPM primary that emits real 429s and a high-TPM spillover pool?",
+      "read_benchmark": "05-dual-spillover",
+      "runner_module": "measure_dual_spillover",
+      "task": "Phase-2 dual-endpoint measurement of the same policy pair against two real gpt-5.2 deployments under the same load profile.",
+      "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
+    },
+    {
+      "benchmark": "06-cache-key-bucketing",
+      "config_path": "experiments/exp006_cache_key_bucketing_24h.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/06-cache-key-bucketing/system_prompt_corpus.json",
+            "top_level": "array of strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/06-cache-key-bucketing/user_prompts.json",
+            "top_level": "array of strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.measure_cache_key_bucketing --experiment experiments/exp006_cache_key_bucketing_24h.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "measure_cache_key_bucketing"
+      },
+      "experiment_id": "exp006_cache_key_bucketing_24h",
+      "family": "B6",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/06-cache-key-bucketing/runs/*.jsonl  (+ *.summary.json)",
+          "benchmarks/06-cache-key-bucketing/analysis.md"
+        ],
+        "output_dir": "benchmarks/06-cache-key-bucketing/runs/"
+      },
+      "question": "Is prompt_cache_key bucket cardinality a real capacity lever? Splitting one hot key into 8 buckets should change routing affinity (and cache-hit ratio), and 24h retention should reshape the overflow threshold vs the in_memory default.",
+      "read_benchmark": "06-cache-key-bucketing",
+      "runner_module": "measure_cache_key_bucketing",
+      "task": "Async-scheduled sweep on one unthrottled gpt-5.2 pool over bucket_cardinality {1, 8}, run once under in_memory retention and once under 24h (~9.5K-token corpus, seed 4242).",
+      "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
+    },
+    {
+      "benchmark": "06-cache-key-bucketing",
+      "config_path": "experiments/exp006_cache_key_bucketing_inmemory.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/06-cache-key-bucketing/system_prompt_corpus.json",
+            "top_level": "array of strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/06-cache-key-bucketing/user_prompts.json",
+            "top_level": "array of strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.measure_cache_key_bucketing --experiment experiments/exp006_cache_key_bucketing_inmemory.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "measure_cache_key_bucketing"
+      },
+      "experiment_id": "exp006_cache_key_bucketing_inmemory",
+      "family": "B6",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/06-cache-key-bucketing/runs/*.jsonl  (+ *.summary.json)",
+          "benchmarks/06-cache-key-bucketing/analysis.md"
+        ],
+        "output_dir": "benchmarks/06-cache-key-bucketing/runs/"
+      },
+      "question": "Is prompt_cache_key bucket cardinality a real capacity lever? Splitting one hot key into 8 buckets should change routing affinity (and cache-hit ratio), and 24h retention should reshape the overflow threshold vs the in_memory default.",
+      "read_benchmark": "06-cache-key-bucketing",
+      "runner_module": "measure_cache_key_bucketing",
+      "task": "Async-scheduled sweep on one unthrottled gpt-5.2 pool over bucket_cardinality {1, 8}, run once under in_memory retention and once under 24h (~9.5K-token corpus, seed 4242).",
+      "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
+    },
+    {
+      "benchmark": "07-max-output-tokens-reservation",
+      "config_path": "experiments/exp007_max_output_tokens_sweep.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/system_prompt_corpus.json",
+            "top_level": "array of 132 strings"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/04-spillover-simulation/user_prompts.json",
+            "top_level": "array of 30 strings"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.measure_max_output_tokens_sweep --experiment experiments/exp007_max_output_tokens_sweep.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "measure_max_output_tokens_sweep"
+      },
+      "experiment_id": "exp007_max_output_tokens_sweep",
+      "family": "B7",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "max_output_tokens ∈ {256, 512, 1024, 2048, 4096, 8192, 16384}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/07-max-output-tokens-reservation/runs/*.jsonl  (+ *.summary.json)",
+          "benchmarks/07-max-output-tokens-reservation/analysis.md"
+        ],
+        "output_dir": "benchmarks/07-max-output-tokens-reservation/runs/"
+      },
+      "question": "Does admission-time token reservation scale with the requested max_output_tokens even when the actual output is tiny? A PAYG proxy for how PTU reservation consumes throughput budget.",
+      "read_benchmark": "04-spillover-simulation",
+      "runner_module": "measure_max_output_tokens_sweep",
+      "task": "Log2 sweep of max_output_tokens {256..16384} on a deliberately throttled low-TPM deployment, reusing benchmark 04's corpus read-only (~2K-token prompt, SHA-pinned).",
+      "variable": "max_output_tokens ∈ {256, 512, 1024, 2048, 4096, 8192, 16384}"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "config_path": "experiments/exp_smoke_01.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/01-short-factual/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/system.md",
+            "top_level": "system prompt text"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/user_template.md",
+            "top_level": "user prompt template"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_01.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_01",
+      "family": "A1",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {low, high}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/01-short-factual/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/01-short-factual/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "01-short-factual",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "reasoning.effort ∈ {low, high}"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "config_path": "experiments/exp_smoke_01_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/01-short-factual/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/system.md",
+            "top_level": "system prompt text"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/user_template.md",
+            "top_level": "user prompt template"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_01_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_01_gpt4o",
+      "family": "A1",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/01-short-factual/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/01-short-factual/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "01-short-factual",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    },
+    {
+      "benchmark": "01-short-factual",
+      "config_path": "experiments/exp_smoke_01_warmprobe.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/01-short-factual/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/system.md",
+            "top_level": "system prompt text"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/01-short-factual/prompts/user_template.md",
+            "top_level": "user prompt template"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_01_warmprobe.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_01_warmprobe",
+      "family": "A1",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {high}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/01-short-factual/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/01-short-factual/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "01-short-factual",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "reasoning.effort ∈ {high}"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "config_path": "experiments/exp_smoke_02.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/02-multi-step-reasoning/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/02-multi-step-reasoning/prompts/system.md",
+            "top_level": "system prompt text"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_02.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_02",
+      "family": "A2",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {low, high}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/02-multi-step-reasoning/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/02-multi-step-reasoning/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "02-multi-step-reasoning",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "reasoning.effort ∈ {low, high}"
+    },
+    {
+      "benchmark": "02-multi-step-reasoning",
+      "config_path": "experiments/exp_smoke_02_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/02-multi-step-reasoning/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/02-multi-step-reasoning/prompts/system.md",
+            "top_level": "system prompt text"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_02_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_02_gpt4o",
+      "family": "A2",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/02-multi-step-reasoning/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/02-multi-step-reasoning/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "02-multi-step-reasoning",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    },
+    {
+      "benchmark": "03-tool-using-agent",
+      "config_path": "experiments/exp_smoke_03.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "expected_tool_calls": "array",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/search_kb.json",
+            "top_level": "object mapping query string -> answer string"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/03-tool-using-agent/prompts/system.md",
+            "top_level": "system prompt text (with tool instructions)"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_03.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_03",
+      "family": "A3",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-5.2",
+        "provider": "azure",
+        "variable": "reasoning.effort ∈ {low, high}"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/03-tool-using-agent/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/03-tool-using-agent/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "03-tool-using-agent",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "reasoning.effort ∈ {low, high}"
+    },
+    {
+      "benchmark": "03-tool-using-agent",
+      "config_path": "experiments/exp_smoke_03_gpt4o.yaml",
+      "data": {
+        "files": [
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/dataset.json",
+            "row_fields": {
+              "expected_output_shape": "string",
+              "expected_tool_calls": "array",
+              "id": "string",
+              "input": "string",
+              "quality_rubric_notes": "string",
+              "tags": "array of string",
+              "verifiable_answer": "string"
+            },
+            "top_level": "array of 20 objects"
+          },
+          {
+            "format": "json",
+            "path": "benchmarks/03-tool-using-agent/search_kb.json",
+            "top_level": "object mapping query string -> answer string"
+          },
+          {
+            "format": "markdown",
+            "path": "benchmarks/03-tool-using-agent/prompts/system.md",
+            "top_level": "system prompt text (with tool instructions)"
+          }
+        ]
+      },
+      "execute": {
+        "command": "python -m scripts.run_benchmark --experiment experiments/exp_smoke_03_gpt4o.yaml",
+        "cost_status": "billed — Azure OpenAI live calls; needs confirmation and budget",
+        "provider": "azure",
+        "runner_module": "run_benchmark"
+      },
+      "experiment_id": "exp_smoke_03_gpt4o",
+      "family": "A3",
+      "in": {
+        "audience": "https://ai.azure.com/.default",
+        "auth_mode": "entra",
+        "auth_mode_env": "AZURE_AUTH_MODE",
+        "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
+        "model": "gpt-4o",
+        "provider": "azure",
+        "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+      },
+      "live_support": "azure",
+      "mock_support": false,
+      "ollama_support": false,
+      "out": {
+        "artifacts": [
+          "benchmarks/03-tool-using-agent/runs/  (smoke records only; not analyzed)"
+        ],
+        "output_dir": "benchmarks/03-tool-using-agent/runs/"
+      },
+      "question": "Pipeline pre-flight -- exercises auth, the runner, budget guards, and aggregation end-to-end. Deliberately too small to be evidence.",
+      "read_benchmark": "03-tool-using-agent",
+      "runner_module": "run_benchmark",
+      "task": "Tiny smoke run (N=2, R=1) at effort {low, high}; excluded from every published analysis and chart.",
+      "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
