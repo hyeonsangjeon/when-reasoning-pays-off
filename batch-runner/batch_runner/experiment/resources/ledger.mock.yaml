@@ -53,6 +53,8 @@ output:
     - run.json
     - records.jsonl
     - summary.md
+    - manifest.json
+    - artifacts.sha256
 
 provenance:
   method_id: experiment-runner

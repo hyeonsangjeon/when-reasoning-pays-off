@@ -36,12 +36,14 @@ from batch_runner.experiment.runner import (
     EXIT_OK,
     EXIT_PARTIAL,
     ExperimentOutputConflict,
+    retry_failed_run,
     run_ledger,
     sample_banner,
 )
 
 _RESOURCES = "batch_runner.experiment.resources"
 _FIXED_CLOCK = lambda: 1_700_000_000.0  # noqa: E731 - test clock
+_FIXED_RANDOM = lambda _n: "0123abcd"  # noqa: E731 - test randomness
 
 
 # --------------------------------------------------------------------------
@@ -73,7 +75,13 @@ def _base_ledger(provider: str) -> dict[str, Any]:
         },
         "output": {
             "dir": "out",
-            "artifacts": ["run.json", "records.jsonl", "summary.md"],
+            "artifacts": [
+                "run.json",
+                "records.jsonl",
+                "summary.md",
+                "manifest.json",
+                "artifacts.sha256",
+            ],
         },
         "provenance": {"method_id": "experiment-runner", "method_version": "1.0.0"},
     }
@@ -110,6 +118,11 @@ def _workspace(tmp_path: Path, rows: list[dict[str, Any]] | None = None) -> Path
     tmp_path.mkdir(parents=True, exist_ok=True)
     (tmp_path / "sample.jsonl").write_text(text, encoding="utf-8")
     return tmp_path
+
+
+def _latest_run(workspace: Path) -> Path:
+    pointer = json.loads((workspace / "out" / "latest.json").read_text())
+    return workspace / "out" / pointer["run_path"]
 
 
 def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -232,8 +245,12 @@ def test_mock_run_is_byte_deterministic(tmp_path: Path, monkeypatch):
     led = parse_ledger(_base_ledger("mock"))
     ws1 = _workspace(tmp_path / "a")
     ws2 = _workspace(tmp_path / "b")
-    r1 = run_ledger(led, base_dir=ws1, clock=_FIXED_CLOCK)
-    r2 = run_ledger(led, base_dir=ws2, clock=_FIXED_CLOCK)
+    r1 = run_ledger(
+        led, base_dir=ws1, clock=_FIXED_CLOCK, random_hex=_FIXED_RANDOM
+    )
+    r2 = run_ledger(
+        led, base_dir=ws2, clock=_FIXED_CLOCK, random_hex=_FIXED_RANDOM
+    )
     assert r1.exit_code == r2.exit_code == EXIT_OK
     assert r1.run_json_path.read_text() == r2.run_json_path.read_text()
     assert r1.records_path.read_text() == r2.records_path.read_text()
@@ -242,18 +259,19 @@ def test_mock_run_is_byte_deterministic(tmp_path: Path, monkeypatch):
 def test_mock_capabilities_never_fabricate_zero(tmp_path: Path):
     led = parse_ledger(_base_ledger("mock"))
     run_ledger(led, base_dir=_workspace(tmp_path), clock=_FIXED_CLOCK)
-    run_json = json.loads((tmp_path / "out" / "run.json").read_text())
+    run_dir = _latest_run(tmp_path)
+    run_json = json.loads((run_dir / "run.json").read_text())
     assert run_json["usage"]["reasoning_tokens"] is None
     assert run_json["usage"]["cached_tokens"] is None
     assert run_json["capabilities"]["reasoning_tokens"] == "not_supported"
-    rec = json.loads((tmp_path / "out" / "records.jsonl").read_text().splitlines()[0])
+    rec = json.loads((run_dir / "records.jsonl").read_text().splitlines()[0])
     assert rec["reasoning_tokens"] is None
 
 
 def test_sample_banner_present(tmp_path: Path):
     led = parse_ledger(_base_ledger("mock"))
     run_ledger(led, base_dir=_workspace(tmp_path), clock=_FIXED_CLOCK)
-    run_json = json.loads((tmp_path / "out" / "run.json").read_text())
+    run_json = json.loads((_latest_run(tmp_path) / "run.json").read_text())
     assert "not the published benchmark" in run_json["banner"]
 
 
@@ -281,7 +299,7 @@ def test_banner_is_provider_specific():
 def test_mock_run_json_uses_offline_preview_banner(tmp_path: Path):
     led = parse_ledger(_base_ledger("mock"))
     run_ledger(led, base_dir=_workspace(tmp_path), clock=_FIXED_CLOCK)
-    run_json = json.loads((tmp_path / "out" / "run.json").read_text())
+    run_json = json.loads((_latest_run(tmp_path) / "run.json").read_text())
     assert "illustrative offline preview" in run_json["banner"]
     assert "illustrative live sample" not in run_json["banner"]
 
@@ -601,7 +619,7 @@ def test_partial_failure_preserves_rows_and_exits_nonzero(tmp_path: Path):
     assert result.ok_count == 1
     assert result.error_count == 1
     assert any(f.row_id == "q2" for f in result.failures)
-    lines = (tmp_path / "out" / "records.jsonl").read_text().splitlines()
+    lines = (result.records_path).read_text().splitlines()
     assert len(lines) == 2  # completed row + failure record both preserved
 
 
@@ -651,7 +669,7 @@ def test_azure_run_json_has_no_secret_endpoint(tmp_path: Path):
         clock=_FIXED_CLOCK,
         provider_builder=builder,
     )
-    text = (tmp_path / "out" / "run.json").read_text()
+    text = (_latest_run(tmp_path) / "run.json").read_text()
     # The resolved host must never be serialized; only the env-var NAME and the
     # fixed public audience URL may appear.
     assert "secret-host.example.com" not in text
@@ -709,10 +727,14 @@ def test_cli_sample_init_then_run_mock(tmp_path: Path, monkeypatch):
     out_dir = ws / "out"
     rc = main(["sample", "run", "--ledger", str(ws / "ledger.yaml")])
     assert rc == 0
-    assert (out_dir / "run.json").is_file()
-    assert (out_dir / "records.jsonl").is_file()
-    assert (out_dir / "summary.md").is_file()
+    run_dir = _latest_run(ws)
+    assert (run_dir / "run.json").is_file()
+    assert (run_dir / "records.jsonl").is_file()
+    assert (run_dir / "summary.md").is_file()
+    assert (run_dir / "manifest.json").is_file()
+    assert (run_dir / "artifacts.sha256").is_file()
     assert (out_dir / ".reasoning-payoff-experiment-owned").is_file()
+    assert (out_dir / "latest.json").is_file()
 
 
 def test_cli_sample_json_uses_workspace_relative_output_paths(
@@ -739,8 +761,8 @@ def test_cli_sample_json_uses_workspace_relative_output_paths(
     payload = capsys.readouterr().out
     assert str(tmp_path) not in payload
     parsed = json.loads(payload)
-    assert parsed["out_dir"] == "out"
-    assert parsed["run_json"] == "out/run.json"
+    assert parsed["out_dir"] == f"out/runs/{parsed['run_id']}"
+    assert parsed["run_json"] == f"{parsed['out_dir']}/run.json"
 
 
 def test_cli_sample_init_matches_packaged_bytes(tmp_path: Path):
@@ -861,7 +883,7 @@ def test_high1_within_ceiling_runs_and_records_preflight(tmp_path: Path):
         provider_builder=lambda *_a, **_k: _CountingProvider(),
         preflight_sink=plans.append,
     )
-    run_json = json.loads((tmp_path / "out" / "run.json").read_text())
+    run_json = json.loads((_latest_run(tmp_path) / "run.json").read_text())
     pf = run_json["cost"]["preflight"]
     assert pf["within_ceiling"] is True
     assert pf["planned_requests"] == 2  # 2 rows x 1 repeat
@@ -878,6 +900,25 @@ def test_high1_preflight_uses_pinned_separate_rates_and_utf8_bound():
     assert plan.input_rate_usd_per_1m_tokens == 2.0
     assert plan.output_rate_usd_per_1m_tokens == 20.0
     assert plan.estimated_usd == pytest.approx((10 * 2 + 128 * 20) / 1_000_000)
+
+
+def test_high1_preflight_counts_each_repeat_once(tmp_path: Path):
+    led_dict = _base_ledger("azure")
+    led_dict["execution"]["repeats"] = 3
+    led = parse_ledger(led_dict)
+    plans: list[Any] = []
+    result = run_ledger(
+        led,
+        base_dir=_workspace(tmp_path),
+        environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": "https://h/openai/v1/"},
+        confirm_cost=True,
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+        provider_builder=lambda *_a, **_k: _CountingProvider(),
+        preflight_sink=plans.append,
+    )
+    assert result.ok_count == 6
+    assert plans[0].planned_requests == 6
 
 
 def test_high1_unpriced_azure_configuration_is_rejected():
@@ -991,7 +1032,7 @@ def test_high4_tampered_artifact_fails_before_provider_build(tmp_path: Path):
     led = parse_ledger(_base_ledger("mock"))
     ws = _workspace(tmp_path)
     run_ledger(led, base_dir=ws, clock=_FIXED_CLOCK)
-    artifact = ws / "out" / "run.json"
+    artifact = _latest_run(ws) / "run.json"
     artifact.unlink()
     artifact.mkdir()
     _CountingProvider.built = 0
@@ -1161,7 +1202,7 @@ def test_med9_remote_ollama_url_is_redacted(tmp_path: Path):
         clock=_FIXED_CLOCK,
         provider_builder=lambda *_a, **_k: _CountingProvider(),
     )
-    text = (tmp_path / "out" / "run.json").read_text()
+    text = (_latest_run(tmp_path) / "run.json").read_text()
     assert "remote.example.com" not in text
     endpoint = json.loads(text)["endpoint"]
     assert "base_url" not in endpoint
@@ -1303,3 +1344,424 @@ def test_med15_sample_run_prints_request_count(tmp_path: Path, monkeypatch, caps
     main(["sample", "run", "--ledger", str(ws / "ledger.yaml")])
     err = capsys.readouterr().err
     assert "request(s)" in err
+
+
+# --------------------------------------------------------------------------
+# Phase 2 provenance: immutable runs, complete manifest, and retry lineage
+# --------------------------------------------------------------------------
+def _tree_hashes(directory: Path) -> dict[str, str]:
+    import hashlib
+
+    return {
+        path.relative_to(directory).as_posix(): hashlib.sha256(
+            path.read_bytes()
+        ).hexdigest()
+        for path in sorted(directory.rglob("*"))
+        if path.is_file()
+    }
+
+
+def test_sequential_runs_are_distinct_and_first_is_byte_immutable(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    suffixes = iter(("00000001", "00000002"))
+    first = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: next(suffixes),
+    )
+    first_hashes = _tree_hashes(first.out_dir)
+    second = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: next(suffixes),
+    )
+    assert first.run_id != second.run_id
+    assert _tree_hashes(first.out_dir) == first_hashes
+    latest = json.loads((ws / "out" / "latest.json").read_text())
+    assert latest["run_id"] == second.run_id
+    assert not (ws / "out" / "latest.json").is_symlink()
+
+
+def test_run_id_collision_refuses_before_provider_build(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+    _CountingProvider.built = 0
+    with pytest.raises(ExperimentOutputConflict, match="collision"):
+        run_ledger(
+            led,
+            base_dir=ws,
+            clock=_FIXED_CLOCK,
+            random_hex=_FIXED_RANDOM,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert _CountingProvider.built == 0
+
+
+def test_latest_is_not_written_when_staged_publication_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    import batch_runner.experiment.runner as runner
+
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    original = runner._atomic_write_text
+
+    def fail_manifest(path: Path, text: str) -> None:
+        if path.name == "manifest.json":
+            raise OSError("synthetic publication failure")
+        original(path, text)
+
+    monkeypatch.setattr(runner, "_atomic_write_text", fail_manifest)
+    with pytest.raises(OSError):
+        run_ledger(
+            led,
+            base_dir=ws,
+            clock=_FIXED_CLOCK,
+            random_hex=_FIXED_RANDOM,
+        )
+    assert not (ws / "out" / "latest.json").exists()
+    assert {
+        child.name
+        for child in (ws / "out" / "runs").iterdir()
+    } == {".reasoning-payoff-experiment-owned"}
+
+
+def test_owned_stale_root_temp_files_are_recovered(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    first = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000001",
+    )
+    out = ws / "out"
+    (out / ".latest.json.0123456789abcdef.tmp").write_text("partial")
+    (out / ".reasoning-payoff-write-probe-fedcba9876543210").write_text("probe")
+    second = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000002",
+    )
+    assert second.run_id != first.run_id
+    assert not (out / ".latest.json.0123456789abcdef.tmp").exists()
+    assert not (out / ".reasoning-payoff-write-probe-fedcba9876543210").exists()
+
+
+def test_latest_is_written_only_after_complete_run_publish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    import batch_runner.experiment.runner as runner
+
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    original = runner._atomic_write_text
+
+    def observe_latest(path: Path, text: str) -> None:
+        if path.name == "latest.json":
+            run_id = json.loads(text)["run_id"]
+            published = ws / "out" / "runs" / run_id
+            assert {
+                child.name for child in published.iterdir()
+            } == {
+                ".reasoning-payoff-experiment-owned",
+                "run.json",
+                "records.jsonl",
+                "summary.md",
+                "manifest.json",
+                "artifacts.sha256",
+            }
+        original(path, text)
+
+    monkeypatch.setattr(runner, "_atomic_write_text", observe_latest)
+    run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+
+
+def test_manifest_and_pointer_conform_and_checksums_match(tmp_path: Path):
+    import hashlib
+
+    import jsonschema
+
+    led = parse_ledger(_base_ledger("mock"))
+    result = run_ledger(
+        led,
+        base_dir=_workspace(tmp_path),
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+    manifest = json.loads(result.manifest_path.read_text())
+    pointer = json.loads(result.latest_path.read_text())
+    manifest_schema = json.loads(
+        (
+            _repo_root() / "schemas" / "experiment_run_manifest.v1.schema.json"
+        ).read_text()
+    )
+    pointer_schema = json.loads(
+        (
+            _repo_root() / "schemas" / "experiment_latest_pointer.v1.schema.json"
+        ).read_text()
+    )
+    jsonschema.validate(manifest, manifest_schema)
+    jsonschema.validate(pointer, pointer_schema)
+    checksum_lines = result.artifacts_sha256_path.read_text().splitlines()
+    checksums = dict(line.split("  ", 1)[::-1] for line in checksum_lines)
+    assert set(checksums) == {
+        "manifest.json",
+        "records.jsonl",
+        "run.json",
+        "summary.md",
+    }
+    for name, expected in checksums.items():
+        assert hashlib.sha256((result.out_dir / name).read_bytes()).hexdigest() == expected
+
+
+def test_manifest_schema_rejects_missing_groups_and_privacy_field(tmp_path: Path):
+    import copy
+
+    import jsonschema
+
+    led = parse_ledger(_base_ledger("mock"))
+    result = run_ledger(
+        led,
+        base_dir=_workspace(tmp_path),
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+    manifest = json.loads(result.manifest_path.read_text())
+    schema = json.loads(
+        (
+            _repo_root() / "schemas" / "experiment_run_manifest.v1.schema.json"
+        ).read_text()
+    )
+    for group in (
+        "code",
+        "runtime",
+        "input",
+        "provider",
+        "pricing",
+        "execution",
+        "lineage",
+        "artifacts",
+    ):
+        mutated = copy.deepcopy(manifest)
+        del mutated[group]
+        assert list(jsonschema.Draft7Validator(schema).iter_errors(mutated))
+    mutated = copy.deepcopy(manifest)
+    mutated["code"]["absolute_path"] = "/private/customer/repository"
+    assert list(jsonschema.Draft7Validator(schema).iter_errors(mutated))
+
+
+def test_manifest_git_unavailable_is_explicit_unknown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    import batch_runner.experiment.manifest as manifest_module
+
+    def unavailable(*_args: Any, **_kwargs: Any) -> None:
+        raise OSError
+
+    monkeypatch.setattr(manifest_module.subprocess, "run", unavailable)
+    led = parse_ledger(_base_ledger("mock"))
+    result = run_ledger(
+        led,
+        base_dir=_workspace(tmp_path),
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+    manifest = json.loads(result.manifest_path.read_text())
+    assert manifest["code"]["vcs_state"] == "unknown"
+    assert manifest["code"]["commit_sha"] == "unknown"
+    assert manifest["code"]["dirty"] == "unknown"
+    assert manifest["runtime"]["dependency_lock"] == {
+        "state": "unknown",
+        "kind": "unknown",
+        "sha256": "unknown",
+    }
+
+
+def test_manifest_verified_git_checkout_records_commit(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    import batch_runner.experiment.manifest as manifest_module
+
+    monkeypatch.setattr(manifest_module, "_repository_root", _repo_root)
+    identity = manifest_module._git_identity()
+    lock = manifest_module._dependency_lock()
+    assert identity["vcs_state"] == "available"
+    assert len(identity["commit_sha"]) == 40
+    assert isinstance(identity["dirty"], bool)
+    assert lock["state"] == "available"
+    assert len(lock["sha256"]) == 64
+
+
+def test_manifest_privacy_boundary_omits_paths_hosts_and_row_ids(tmp_path: Path):
+    led = parse_ledger(_base_ledger("azure"))
+    private_root = tmp_path / "customer-alpha" / "users" / "local-name"
+    ws = _workspace(
+        private_root,
+        rows=[{"id": "customer-alpha-request", "input": "private prompt"}],
+    )
+    result = run_ledger(
+        led,
+        base_dir=ws,
+        environ={
+            "AZURE_OPENAI_FOUNDRY_ENDPOINT": (
+                "https://private-customer-host.example.com/openai/v1/"
+            )
+        },
+        confirm_cost=True,
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+        provider_builder=lambda *_a, **_k: _CountingProvider(),
+    )
+    text = result.manifest_path.read_text()
+    for forbidden in (
+        str(tmp_path),
+        "customer-alpha",
+        "local-name",
+        "private-customer-host.example.com",
+        "customer-alpha-request",
+        "private prompt",
+    ):
+        assert forbidden not in text
+
+
+def test_retry_failed_creates_child_and_never_recalls_success(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    parent = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000001",
+        provider_builder=lambda *_a, **_k: _FlakyProvider("q2"),
+    )
+    parent_hashes = _tree_hashes(parent.out_dir)
+
+    class _TrackingProvider(_CountingProvider):
+        def __init__(self) -> None:
+            super().__init__()
+            self.called: list[tuple[str, int]] = []
+
+        def run_row(
+            self, row_id: str, repeat_index: int, prompt: str
+        ) -> OutputRecord:
+            self.called.append((row_id, repeat_index))
+            return super().run_row(row_id, repeat_index, prompt)
+
+    provider = _TrackingProvider()
+    child = retry_failed_run(
+        led,
+        base_dir=ws,
+        parent_run_id=parent.run_id,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000002",
+        provider_builder=lambda *_a, **_k: provider,
+    )
+    assert provider.called == [("q2", 0)]
+    assert _tree_hashes(parent.out_dir) == parent_hashes
+    child_run = json.loads(child.run_json_path.read_text())
+    child_manifest = json.loads(child.manifest_path.read_text())
+    assert child_run["lineage"]["parent_run_id"] == parent.run_id
+    assert child_manifest["lineage"] == {
+        "kind": "retry_failed",
+        "parent_run_id": parent.run_id,
+        "retried_failed_count": 1,
+    }
+
+
+def test_cli_retry_failed_writes_only_failed_parent_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys
+):
+    _no_network(monkeypatch)
+    from batch_runner.cli import main
+    from batch_runner.experiment.ledger import load_ledger
+
+    ws = tmp_path / "ws"
+    assert main(["sample", "init", "--provider", "mock", "--out", str(ws)]) == 0
+    led = load_ledger(ws / "ledger.yaml")
+    parent = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000001",
+        provider_builder=lambda *_a, **_k: _FlakyProvider("q2"),
+    )
+    capsys.readouterr()
+    assert (
+        main(
+            [
+                "sample",
+                "retry-failed",
+                "--ledger",
+                str(ws / "ledger.yaml"),
+                "--parent-run-id",
+                parent.run_id,
+                "--json",
+            ]
+        )
+        == 0
+    )
+    payload = json.loads(capsys.readouterr().out)
+    records = [
+        json.loads(line)
+        for line in (
+            ws / payload["records"]
+        ).read_text().splitlines()
+    ]
+    assert [(record["row_id"], record["repeat_index"]) for record in records] == [
+        ("q2", 0)
+    ]
+
+
+def test_retry_refuses_tampered_parent_and_successful_parent(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    successful = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000001",
+    )
+    with pytest.raises(ExperimentOutputConflict, match="no failed rows"):
+        retry_failed_run(led, base_dir=ws, parent_run_id=successful.run_id)
+
+    partial = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=lambda _n: "00000002",
+        provider_builder=lambda *_a, **_k: _FlakyProvider("q2"),
+    )
+    partial.run_json_path.write_text("{}")
+    with pytest.raises(ExperimentOutputConflict, match="checksum mismatch"):
+        retry_failed_run(led, base_dir=ws, parent_run_id=partial.run_id)
+
+
+def test_retry_rejects_non_ascii_checksum_without_leaking_traceback(tmp_path: Path):
+    led = parse_ledger(_base_ledger("mock"))
+    ws = _workspace(tmp_path)
+    parent = run_ledger(
+        led,
+        base_dir=ws,
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+        provider_builder=lambda *_a, **_k: _FlakyProvider("q2"),
+    )
+    parent.artifacts_sha256_path.write_bytes(b"\xff")
+    with pytest.raises(ExperimentOutputConflict, match="checksum file is invalid"):
+        retry_failed_run(led, base_dir=ws, parent_run_id=parent.run_id)

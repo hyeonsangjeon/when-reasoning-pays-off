@@ -12,8 +12,9 @@ This package turns every experiment into the same explicit four-stage flow::
 * ``EXECUTE`` — a real call to Azure OpenAI in Microsoft Foundry (billed) or a
   local Ollama server (no cloud cost), or a deterministic offline mock preview
   (see :mod:`batch_runner.experiment.providers`).
-* ``OUT``     — deterministic-structure artifacts under an owned output
-  directory: ``run.json``, ``records.jsonl``, and ``summary.md``
+* ``OUT``     — deterministic-structure artifacts under an immutable owned run
+  directory: ``run.json``, ``records.jsonl``, ``summary.md``,
+  ``manifest.json``, and ``artifacts.sha256``
   (see :mod:`batch_runner.experiment.runner`).
 
 Everything here is import-safe with no network access: constructing a ledger,

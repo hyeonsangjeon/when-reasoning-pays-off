@@ -171,6 +171,26 @@
         "HTTPS to Azure OpenAI",
         "Billed; CLI + ledger confirmation, hard ceiling, and CI refusal"
       ]
+    },
+    {
+      "id": "sample-retry-failed",
+      "cli_path": "reasoning-payoff sample retry-failed",
+      "variant": "parent-provider",
+      "execution": "failed-attempts-only",
+      "network": "same boundary as the parent provider",
+      "cost": "same boundary as the parent provider",
+      "guards": [
+        "immutable parent checksum verification",
+        "matching ledger and input hashes",
+        "successful-attempt exclusion"
+      ],
+      "readme_row": [
+        "`sample-retry-failed`",
+        "`reasoning-payoff sample retry-failed`",
+        "Child run for failed attempts only",
+        "Same boundary as the parent provider",
+        "Same boundary as the parent provider"
+      ]
     }
   ]
 }

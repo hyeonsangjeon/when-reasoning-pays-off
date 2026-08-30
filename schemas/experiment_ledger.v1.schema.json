@@ -223,8 +223,14 @@
           "const": "out"
         },
         "artifacts": {
-          "const": ["run.json", "records.jsonl", "summary.md"],
-          "description": "The runner writes exactly these three files, in this order."
+          "const": [
+            "run.json",
+            "records.jsonl",
+            "summary.md",
+            "manifest.json",
+            "artifacts.sha256"
+          ],
+          "description": "The runner writes exactly these five files, in this order."
         }
       }
     },

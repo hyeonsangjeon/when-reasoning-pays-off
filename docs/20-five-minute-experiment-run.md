@@ -61,13 +61,13 @@ python -m pip install .        # or: pip install when-reasoning-pays-off (once p
 reasoning-payoff --help        # one command, discoverable with --help
 ```
 
-`sample` has three subcommands:
+`sample` has three operational subcommands:
 
 | Command | What it does |
 | --- | --- |
 | `reasoning-payoff sample init --provider <p> --out <dir>` | Copy a ready-to-run workspace (ledger + dataset + `.env.example`). |
-| `reasoning-payoff sample run --ledger <dir>/ledger.yaml` | Validate the ledger, call the model, write artifacts. |
-| `reasoning-payoff sample run --help` | Show scope and cost before running. |
+| `reasoning-payoff sample run --ledger <dir>/ledger.yaml` | Validate the ledger, call the model, publish a new immutable run. |
+| `reasoning-payoff sample retry-failed --ledger <dir>/ledger.yaml --parent-run-id <id>` | Verify a parent and create a child run for failed attempts only. |
 
 The durable machine-readable source for every installed CLI command's
 execution, network, cost, and guard boundary is
@@ -160,7 +160,8 @@ execution:
   cost: {billed: false, confirmed: false}
 output:
   dir: out                  # artifacts land here (gitignored)
-  artifacts: [run.json, records.jsonl, summary.md]
+  artifacts:
+    [run.json, records.jsonl, summary.md, manifest.json, artifacts.sha256]
 provenance:
   method_id: experiment-runner
   method_version: "1.0.0"
@@ -172,7 +173,8 @@ environment at run time — the ledger records only the variable **name**, never
 resolved URL or secret.
 
 For this first release the quickstart runs one row at a time: `concurrency` is
-fixed at `1` and `artifacts` is exactly `[run.json, records.jsonl, summary.md]`.
+fixed at `1` and `artifacts` is exactly `[run.json, records.jsonl, summary.md,
+manifest.json, artifacts.sha256]`.
 The ledger rejects any other value rather than silently ignoring it, so the file
 never records settings the runner does not honor.
 
@@ -198,20 +200,58 @@ Ollama calls `POST http://localhost:11434/api/chat` with
 
 ## 8. OUT — the artifacts
 
-Output lands in an owned directory marked with
-`.reasoning-payoff-experiment-owned`. The runner refuses to write inside
-`benchmarks/**` or `results/**`, so a sample can never contaminate published
-evidence. The whole workspace is gitignored.
+Output is staged and then published once in an owned run directory marked with
+`.reasoning-payoff-experiment-owned`. The run ID combines UTC time, the first
+eight hexadecimal digits of the ledger and input hashes, and an unpredictable
+eight-digit suffix. A collision is refused; an existing run is never reused.
+The runner refuses to write inside `benchmarks/**` or `results/**`, so a sample
+can never contaminate published evidence. The whole workspace is gitignored.
 
 ```text
 sample-workspace/out/
-├── run.json     # provider, model, input schema + hash + row count, ledger hash,
-│                #   start/end/status, method version, aggregate usage, cost boundary
-├── records.jsonl  # one line per request: id, status, latency_ms, token usage,
-│                  #   answer text (only when capture_io is true)
-├── summary.md     # a short answer preview + the exact records path
-└── .reasoning-payoff-experiment-owned
+├── latest.json    # regular-file pointer, advanced atomically after full publish
+├── .reasoning-payoff-experiment-owned
+└── runs/
+    ├── .reasoning-payoff-experiment-owned
+    └── 20260830T090914Z_a1b2c3d4_e5f6a7b8_1a2b3c4d/
+        ├── run.json          # provider/model, status, usage, and lineage
+        ├── records.jsonl     # one line per attempted request
+        ├── summary.md        # a short answer preview
+        ├── manifest.json     # complete secret-safe provenance groups
+        ├── artifacts.sha256  # hashes run/records/summary/manifest
+        └── .reasoning-payoff-experiment-owned
 ```
+
+`manifest.json` records repository identity, commit and dirty state when
+available, package version, Python/OS/architecture, dependency-lock identity,
+selected package versions, input and selected-ID hashes, a provider fingerprint,
+pricing provenance, execution knobs, status/lineage, and payload artifact
+hashes. It deliberately omits absolute paths, local usernames, endpoint hosts,
+credentials, request IDs, row IDs, customer names, and prompt/response text.
+An installed wheel running outside a Git checkout records explicit `unknown`
+states for Git and lock identity instead of failing or searching user paths.
+
+Two sequential runs create two sibling directories. Publishing the second only
+replaces `latest.json`; every byte in the first directory remains unchanged.
+Workspaces created by an older release may have flat files directly under
+`out/`. Move that legacy `out/` aside before the first immutable run; the runner
+refuses to overwrite or silently migrate it.
+
+### Retry only failed attempts
+
+If a run is partial or failed, use its ID from `latest.json`:
+
+```bash
+reasoning-payoff sample retry-failed \
+  --ledger sample-workspace/ledger.yaml \
+  --parent-run-id 20260830T090914Z_a1b2c3d4_e5f6a7b8_1a2b3c4d
+```
+
+The command verifies the parent's checksums and ownership, confirms the current
+ledger and input hashes still match, and publishes a child run with
+`parent_run_id`. Only parent records whose status is `error` are called;
+successful rows are never re-called. Provider, cost, CI, endpoint, no-retry,
+and redaction guards are identical to a normal run.
 
 Token usage is reported per the provider's real response. Ollama does **not**
 report cached-input or reasoning tokens, so those appear as `not_supported`
@@ -342,7 +382,8 @@ These are the inputs the full experiments read (reported for orientation; the
 
 ## 12. Exit codes
 
-The `sample run` command returns a typed exit status. Completed rows are always
+The `sample run` and `sample retry-failed` commands return typed exit statuses.
+Completed rows are always
 preserved safely; partial failures are visible and never reported as success.
 
 | Code | Meaning |
@@ -369,7 +410,8 @@ preserved safely; partial failures are visible and never reported as success.
 - **Azure `minimal` rejected** — `gpt-5.2` does not support `minimal`; use
   `none` (default) or `low/medium/high/xhigh`.
 - **exit 5 writing output** — output is fixed to the workspace's gitignored
-  `out/` directory. Remove unexpected files or a stale
+  `out/runs/` hierarchy. Move legacy flat `out/run.json` output aside. Remove
+  unexpected files or a stale
   `.reasoning-payoff-sample.lock` only after confirming no run is active.
 
 ## 14. Scope reminder
