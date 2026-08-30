@@ -25,6 +25,9 @@ tracks the benchmark task series specified under the private task-spec tree (lab
   locked release graph, and current compatible dependencies, including callable
   Azure token-provider/OpenAI client construction and billed-sample preflight
   with fakes and zero live calls.
+- Set the Python 3.11-compatible PyYAML floor to `6.0.1` and compare optional
+  dependency versions with PEP 440 ordering so prerelease and development builds
+  do not satisfy the corresponding final-version floor.
 
 ### Changed — Immutable Azure sample pricing provenance (2026-08-30)
 

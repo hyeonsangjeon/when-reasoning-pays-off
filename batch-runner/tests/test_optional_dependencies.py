@@ -13,6 +13,7 @@ from batch_runner import __version__
 from batch_runner.optional_dependencies import (
     EXTRA_REQUIREMENTS,
     OptionalDependencyError,
+    _version_at_least,
     require_extra,
 )
 
@@ -108,3 +109,65 @@ def test_unsupported_extra_reports_installed_and_required_versions(
     message = str(caught.value)
     assert "azure-identity 1.0.0 (requires >= 1.19.0)" in message
     assert "openai 1.0.0 (requires >= 2.37.0)" in message
+
+
+@pytest.mark.parametrize(
+    ("installed", "minimum", "expected"),
+    [
+        ("2.36.9", "2.37.0", False),
+        ("2.37", "2.37.0", True),
+        ("2.37.0.0", "2.37.0", True),
+        ("2.38.0", "2.37.0", True),
+        ("2.37.0a1", "2.37.0", False),
+        ("2.37.0b2", "2.37.0", False),
+        ("2.37.0rc3", "2.37.0", False),
+        ("2.37.0.dev4", "2.37.0", False),
+        ("2.37.0.post1", "2.37.0", True),
+        ("2.37.0+vendor.1", "2.37.0", True),
+        ("not-a-version", "2.37.0", False),
+        ("0!2.36.9", "2.37.0", False),
+        ("1!1.0", "2.37.0", True),
+    ],
+)
+def test_version_floor_uses_pep_440_ordering(
+    installed: str,
+    minimum: str,
+    expected: bool,
+) -> None:
+    assert _version_at_least(installed, minimum) is expected
+
+
+def test_malformed_installed_version_has_actionable_extra_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(metadata, "version", lambda _name: "not-a-version")
+    with pytest.raises(OptionalDependencyError) as caught:
+        require_extra("azure")
+    message = str(caught.value)
+    assert "openai not-a-version (requires >= 2.37.0)" in message
+    assert 'pip install "when-reasoning-pays-off[azure]"' in message
+
+
+@pytest.mark.parametrize("installed", ["2.37.0a1", "2.37.0b1", "2.37.0rc1", "2.37.0.dev1"])
+def test_prerelease_extra_failure_is_actionable(
+    installed: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    versions = {"azure-identity": "1.19.0", "openai": installed}
+    monkeypatch.setattr(metadata, "version", versions.__getitem__)
+    with pytest.raises(OptionalDependencyError) as caught:
+        require_extra("azure")
+    message = str(caught.value)
+    assert f"openai {installed} (requires >= 2.37.0)" in message
+    assert 'pip install "when-reasoning-pays-off[azure]"' in message
+
+
+def test_unrelated_metadata_error_is_not_swallowed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail(_name: str) -> str:
+        raise RuntimeError("metadata backend failed")
+
+    monkeypatch.setattr(metadata, "version", fail)
+    with pytest.raises(RuntimeError, match="metadata backend failed"):
+        require_extra("azure")

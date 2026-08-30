@@ -6,4 +6,4 @@ numpy==2.2.0
 openai==2.37.0
 pandas==2.2.3
 pydantic==2.4.0
-pyyaml==6.0
+pyyaml==6.0.1
