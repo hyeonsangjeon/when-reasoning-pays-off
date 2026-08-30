@@ -405,8 +405,8 @@ def _atomic_write_text(path: Path, text: str) -> None:
     else:  # pragma: no cover - exhausting 8 random names is effectively impossible
         raise ExperimentOutputConflict("could not create a temp file for output")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as handle:
-            handle.write(text)
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(text.encode("utf-8"))
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, path)

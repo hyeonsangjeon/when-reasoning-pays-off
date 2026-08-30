@@ -1189,6 +1189,14 @@ def test_high5_sequential_writes_do_not_collide(tmp_path: Path):
     assert [p.name for p in tmp_path.iterdir()] == ["f.txt"]
 
 
+def test_atomic_write_preserves_canonical_lf_bytes(tmp_path: Path):
+    from batch_runner.experiment.runner import _atomic_write_text
+
+    target = tmp_path / "canonical.txt"
+    _atomic_write_text(target, "one\ntwo\n")
+    assert target.read_bytes() == b"one\ntwo\n"
+
+
 # --- HIGH6: SDK timeout + max_retries=0 reach the client --------------------
 def test_high6_client_receives_timeout_and_no_retries(monkeypatch):
     prov, counters, _ = _azure_provider(monkeypatch)
