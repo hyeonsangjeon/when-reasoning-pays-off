@@ -3,7 +3,15 @@
 *Same token price, different bill — a **measured** guide to when reasoning
 models earn their cost, and when they just bill for thinking nobody reads.*
 
-[![CI](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml) [![Live evidence dashboard](https://img.shields.io/badge/live-evidence%20dashboard-2563eb?logo=github&logoColor=white)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) [![Docs: 5 languages](https://img.shields.io/badge/docs-EN%20%C2%B7%20KO%20%C2%B7%20JA%20%C2%B7%20ZH%20%C2%B7%20HI-0ea5e9)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/hyeonsangjeon/when-reasoning-pays-off)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/commits/main) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Star this repo](https://img.shields.io/github/stars/hyeonsangjeon/when-reasoning-pays-off?style=social)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/stargazers)
+[![PR fast CI](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml) [![Nightly offline full campaign](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml) [![Live evidence dashboard](https://img.shields.io/badge/live-evidence%20dashboard-2563eb?logo=github&logoColor=white)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) [![Docs: 5 languages](https://img.shields.io/badge/docs-EN%20%C2%B7%20KO%20%C2%B7%20JA%20%C2%B7%20ZH%20%C2%B7%20HI-0ea5e9)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/hyeonsangjeon/when-reasoning-pays-off)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/commits/main) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Star this repo](https://img.shields.io/github/stars/hyeonsangjeon/when-reasoning-pays-off?style=social)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/stargazers)
+
+**Badge scope:** green **PR fast CI** proves the required deterministic PR
+checks, platform wheel matrix, schemas, claims, and fast test surfaces. Green
+**Nightly offline full campaign** separately proves machine-verified collection
+and isolated execution of all three large campaign suites plus batch and root
+tests under locked/current dependency graphs, with credentials blank and
+network blocked. Neither badge proves a live Azure/model call. See
+[`docs/21-pricing-policy-and-nightly-ci.md`](docs/21-pricing-policy-and-nightly-ci.md).
 
 ![Same token price, different bill: a reasoning workload pays the same per-token price but bills extra hidden reasoning tokens, so its total bill is taller.](docs/assets/hero.svg)
 
@@ -529,7 +537,17 @@ Run the unit-test suite (add the dev tools first):
 ```bash
 pip install -r requirements-dev.txt
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
+bash scripts/run_nightly_offline_tests.sh
 ```
+
+The nightly command uses separate pytest processes and blocks socket/DNS access.
+For pricing-aware campaign dry-runs, select
+`--pricing-policy historical-replay`; it verifies the immutable pinned snapshot
+but ignores wall-clock age and refuses any non-dry execution. Commands capable
+of billed work default to `live-measurement`, which requires a snapshot no more
+than 90 days old and fails before endpoint or credential resolution. Full
+policy and badge contracts are documented in
+[`docs/21`](docs/21-pricing-policy-and-nightly-ci.md).
 
 > A normal `pip install .` exposes the minimal official CLI and packaged sample
 > resources without analysis or Azure SDKs. Install `.[analysis]`, `.[azure]`,

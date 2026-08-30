@@ -28,6 +28,7 @@ The five test cases enumerated in Task 013 §Tests are covered by the
 from __future__ import annotations
 
 import asyncio
+import datetime
 import inspect
 import json
 import pathlib
@@ -58,6 +59,16 @@ TEST_ENDPOINT_VALUE = (
 )
 PRIMARY_DEPLOYMENT_NAME = "test-primary-throttled"
 SPILLOVER_DEPLOYMENT_NAME = "test-spillover"
+
+
+def _pin_live_pricing_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    run_measurement = mdual.run_measurement
+
+    def _run_with_pinned_clock(*args: Any, **kwargs: Any):
+        kwargs.setdefault("today", datetime.date(2026, 5, 20))
+        return run_measurement(*args, **kwargs)
+
+    monkeypatch.setattr(mdual, "run_measurement", _run_with_pinned_clock)
 
 
 # ----------------------------------------------------------------------------
@@ -232,7 +243,7 @@ def _write_synthetic_yaml(
             "deployment": "${AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED}",
             "deployment_name": "test-primary-throttled-name",
             "family": "gpt-5.2",
-            "version": "test-5.2",
+            "version": "2025-12-11",
             "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
             "auth_mode": "entra",
             "tpm": 60000,
@@ -242,7 +253,7 @@ def _write_synthetic_yaml(
             "deployment": "${AZURE_OPENAI_DEPLOYMENT_GPT_5_2}",
             "deployment_name": "test-spillover-name",
             "family": "gpt-5.2",
-            "version": "test-5.2",
+            "version": "2025-12-11",
             "endpoint_env": "AZURE_OPENAI_FOUNDRY_ENDPOINT",
             "auth_mode": "entra",
             "tpm": 500000,
@@ -309,6 +320,15 @@ def _write_synthetic_yaml(
     path = exp_dir / f"{exp_id}.yaml"
     path.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
     return path
+
+
+def test_loader_rejects_mismatched_pricing_versions(tmp_path: pathlib.Path) -> None:
+    path = _write_synthetic_yaml(tmp_path, policy_type="reactive")
+    body = yaml.safe_load(path.read_text(encoding="utf-8"))
+    body["spillover"]["version"] = "different-version"
+    path.write_text(yaml.safe_dump(body, sort_keys=False), encoding="utf-8")
+    with pytest.raises(ValueError, match="must be the same non-empty"):
+        mdual.load_experiment(path)
 
 
 @pytest.fixture(autouse=True)
@@ -440,6 +460,7 @@ def test_reactive_real_429_from_primary_triggers_spillover(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -561,6 +582,7 @@ def test_spillover_429_retries_once_then_halts_at_one_percent(
                 dry_run=False,
                 smoke=False,
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
             )
     finally:
         os.chdir(cwd_before)
@@ -639,6 +661,7 @@ def test_two_clients_constructed_one_per_deployment(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -735,6 +758,7 @@ def test_cache_pool_field_equals_deployment_used_for_every_record(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -814,6 +838,7 @@ def test_phase1_simulated_field_absent_from_phase2_records(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -915,6 +940,7 @@ def test_smoke_criteria_fails_when_primary_observes_no_429(
                 dry_run=False,
                 smoke=True,
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
             )
     finally:
         os.chdir(cwd_before)
@@ -990,6 +1016,7 @@ def test_smoke_criteria_fails_when_spillover_observes_429(
                 dry_run=False,
                 smoke=True,
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
             )
     finally:
         os.chdir(cwd_before)
@@ -1056,6 +1083,7 @@ def test_smoke_criteria_passes_when_primary_429_and_spillover_clean(
             dry_run=False,
             smoke=True,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -1111,6 +1139,7 @@ def test_smoke_criteria_not_enforced_in_dry_run(
             dry_run=True,
             smoke=True,
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
     finally:
         os.chdir(cwd_before)
@@ -1135,6 +1164,7 @@ def test_cli_main_exits_5_on_smoke_criteria_failure(
     run did not progress to a full benchmark.
     """
     _patch_smoke_durations(monkeypatch, duration_seconds=12, sustain_seconds=4)
+    _pin_live_pricing_clock(monkeypatch)
     exp_path = _write_synthetic_yaml(
         tmp_path,
         policy_type="reactive",
@@ -1275,6 +1305,7 @@ def test_success_response_headers_captured_via_with_raw_response(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)
@@ -1363,6 +1394,7 @@ def test_success_response_headers_captured_for_spillover_endpoint(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
         )
     finally:
         os.chdir(cwd_before)

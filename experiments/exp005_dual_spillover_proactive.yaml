@@ -104,6 +104,10 @@ target_system_prompt_tokens: 30000
 system_prompt_corpus_path: benchmarks/05-dual-spillover/system_prompt_corpus.json
 user_prompts_path: benchmarks/05-dual-spillover/user_prompts.json
 
+# Immutable PAYG pricing identity. Runtime policy is explicit at the CLI:
+# historical-replay is offline-only; live-measurement enforces freshness.
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+
 budget:
   # 2026-05-28: budget envelope aligned with exp004 v3 HOTFIX after the
   # effort=minimal → low migration. The conservative no-cache pre-run

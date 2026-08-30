@@ -118,9 +118,14 @@ from typing import Any
 
 import yaml
 
+from scripts._azure_pricing import (
+    LIVE_MEASUREMENT,
+    PRICING_POLICY_MODES,
+    PricingPolicyError,
+    verify_campaign_pricing,
+)
 from scripts._pricing_types import PaygPricing, TokenUsage
 from scripts.cost_calculator import (
-    load_payg_pricing,
     payg_cost_per_call,
 )
 
@@ -2150,6 +2155,7 @@ async def _run_measurement_async(
     timestamp_label: str,
     run_id_short: str,
     today: datetime.date,
+    pricing_policy_provenance: dict[str, Any] | None = None,
 ) -> MeasurementResult:
     cardinalities = (
         list(SMOKE_CARDINALITIES) if stage == "smoke"
@@ -2163,9 +2169,6 @@ async def _run_measurement_async(
         calls_per_cell = int(cfg.runtime.cell_duration_seconds * sustain)
         hard_ceiling = cfg.budget.evidence_hard_ceiling_usd
     sustain_tps = cfg.runtime.sustain_tps
-
-    # ---- Pricing freshness gate ----
-    _check_pricing_freshness(pricing, today)
 
     # ---- v2.3 TPM feasibility preflight gate ----
     # Computed BEFORE the live client is constructed so a misconfigured
@@ -2434,6 +2437,7 @@ async def _run_measurement_async(
         "pricing_snapshot_path": cfg.pricing_snapshot_path,
         "pricing_source_url": pricing.source_url,
         "pricing_accessed_date": pricing.accessed_date,
+        "pricing_policy": pricing_policy_provenance or {},
         "projected_usd": round(projected_usd, 6),
         "hard_ceiling_usd": hard_ceiling,
         "preflight_threshold_usd": round(preflight_threshold, 6),
@@ -2495,29 +2499,41 @@ def run_measurement(
     allow_dirty: bool,
     env: dict[str, str] | None = None,
     today: datetime.date | None = None,
+    pricing_policy: str = LIVE_MEASUREMENT,
     run_id_short_override: str | None = None,
     timestamp_label_override: str | None = None,
 ) -> MeasurementResult:
     """Synchronous wrapper around the async runner."""
     src_env = env if env is not None else dict(os.environ)
+    today_date = today if today is not None else _utc_now().date()
 
-    endpoint_value = _require_env(
-        cfg.deployment.endpoint_env, env=src_env
+    verified_pricing = verify_campaign_pricing(
+        snapshot_path=cfg.pricing_snapshot_path,
+        model_family=cfg.deployment.family,
+        model_version=cfg.deployment.version,
+        policy_mode=pricing_policy,
+        today=today_date,
     )
-    deployment = _resolve_env_template(
-        cfg.deployment.deployment_template, env=src_env
-    )
+    verified_pricing.policy.require_offline_if_historical(dry_run=dry_run)
+    pricing = verified_pricing.snapshot
+
+    if dry_run:
+        endpoint_value = src_env.get(cfg.deployment.endpoint_env, "")
+        deployment = (
+            src_env.get(cfg.deployment.deployment_env, "")
+            or cfg.deployment.deployment_name
+        )
+    else:
+        endpoint_value = _require_env(
+            cfg.deployment.endpoint_env, env=src_env
+        )
+        deployment = _resolve_env_template(
+            cfg.deployment.deployment_template, env=src_env
+        )
     if not deployment:
         raise EndpointMisconfiguredError(
             f"deployment env-var {cfg.deployment.deployment_env} resolved empty"
         )
-
-    pricing_path = pathlib.Path(cfg.pricing_snapshot_path)
-    if not pricing_path.is_file():
-        raise PricingStaleError(
-            f"pricing snapshot file does not exist: {pricing_path}"
-        )
-    pricing = load_payg_pricing(pricing_path)
 
     git_commit, dirty = _resolve_git_commit(allow_dirty=allow_dirty)
 
@@ -2551,8 +2567,6 @@ def run_measurement(
         if run_id_short_override is not None
         else uuid.uuid4().hex[:8]
     )
-    today_date = today if today is not None else _utc_now().date()
-
     return asyncio.run(
         _run_measurement_async(
             cfg=cfg,
@@ -2570,6 +2584,7 @@ def run_measurement(
             timestamp_label=timestamp_label,
             run_id_short=run_id_short,
             today=today_date,
+            pricing_policy_provenance=verified_pricing.provenance(),
         )
     )
 
@@ -2597,6 +2612,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--experiment", required=True)
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--smoke", action="store_true")
+    p.add_argument(
+        "--pricing-policy",
+        choices=PRICING_POLICY_MODES,
+        default=LIVE_MEASUREMENT,
+        help=(
+            "Versioned pricing semantics. live-measurement (default) requires "
+            "fresh pricing; historical-replay is offline-only."
+        ),
+    )
     p.add_argument(
         "--stage",
         choices=("dry-run", "smoke", "evidence"),
@@ -2676,8 +2700,9 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=dry_run,
             stage=inner_stage,
             allow_dirty=args.allow_dirty,
+            pricing_policy=args.pricing_policy,
         )
-    except PricingStaleError as exc:
+    except (PricingStaleError, PricingPolicyError) as exc:
         logger.error("PRICING_STALE %s", exc)
         return EXIT_PRICING
     except TpmFeasibilityAbortError as exc:

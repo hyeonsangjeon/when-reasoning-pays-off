@@ -92,7 +92,7 @@ target_system_prompt_tokens: 9500
 system_prompt_corpus_path: benchmarks/06-cache-key-bucketing/system_prompt_corpus.json
 user_prompts_path: benchmarks/06-cache-key-bucketing/user_prompts.json
 
-pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
 
 metadata:
   consumption_model_context: paygo_standard

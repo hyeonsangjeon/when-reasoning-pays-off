@@ -133,6 +133,9 @@ SCHEMA_EXEMPTIONS = {
     "schemas/cold_mock_timing.v1.schema.json": (
         "runtime-generated timing reports are uploaded by CI and not committed"
     ),
+    "schemas/campaign_pricing_policy.v1.schema.json": (
+        "runtime-generated campaign summaries carry this embedded provenance"
+    ),
 }
 
 # These committed manifests have code-level validators but no JSON Schema. They

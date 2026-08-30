@@ -51,8 +51,10 @@ for s in experiments.list_experiments():
 ```
 
 - **Input is the YAML; output is an `ExperimentResult`.** `run()` picks the right
-  runner from the YAML and forwards `--dry-run` / `--allow-dirty` for you, then
-  returns the exit code and the location of the records.
+  runner from the YAML and forwards `--dry-run` / `--allow-dirty` for you. For
+  pricing-aware campaign dry-runs it also selects the versioned
+  `historical-replay` policy; live runs keep the fail-closed
+  `live-measurement` default.
 - `describe()` and `list_experiments()` need only `pyyaml` — no credentials, no
   runner imports — so you can inspect the catalog for free.
 - Zero-setup, network-free demos of the deterministic primitives the runners are
@@ -372,6 +374,12 @@ python -m scripts.measure_dual_spillover --experiment experiments/exp005_dual_sp
 python -m scripts.measure_cache_key_bucketing --experiment experiments/exp006_cache_key_bucketing_inmemory.yaml
 python -m scripts.measure_max_output_tokens_sweep --experiment experiments/exp007_max_output_tokens_sweep.yaml
 ```
+
+The three live measurement commands default to
+`--pricing-policy live-measurement` and require a current immutable snapshot.
+For an offline committed-evidence dry-run, add
+`--dry-run --pricing-policy historical-replay`; historical mode cannot issue a
+live request.
 
 Or skip the runner names entirely and let the Python interface pick the right
 one (see **The easy way** above):

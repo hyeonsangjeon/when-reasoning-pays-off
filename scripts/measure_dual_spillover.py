@@ -79,11 +79,16 @@ from typing import Any
 
 import yaml
 
+from scripts._azure_pricing import (
+    CANONICAL_PAYG_SNAPSHOT_PATH,
+    LIVE_MEASUREMENT,
+    PRICING_POLICY_MODES,
+    PricingPolicyError,
+    verify_campaign_pricing,
+)
 from scripts._pricing_types import PaygPricing, TokenUsage
 from scripts.cost_calculator import (
-    load_payg_pricing,
     payg_cost_per_call,
-    resolve_active_snapshot,
 )
 from scripts.simulate_spillover import (
     ProactiveObservation,
@@ -179,6 +184,7 @@ EXIT_DATASET = 3
 EXIT_CONFIG = 4
 EXIT_PREFLIGHT = 2
 EXIT_SMOKE = 5
+EXIT_PRICING = 6
 
 
 # ----------------------------------------------------------------------------
@@ -342,6 +348,7 @@ class DualExperimentConfig:
     budget_estimated_usd: float
     budget_hard_ceiling_usd: float
     budget_confirmed: bool
+    pricing_snapshot_path: str
     metadata: dict
     concurrency: int
 
@@ -427,6 +434,11 @@ def load_experiment(path: str | pathlib.Path) -> DualExperimentConfig:
             f"{where}: primary.deployment_name and spillover.deployment_name "
             f"must differ (different cache pool requires different deployment "
             f"name); both are {primary_block.deployment_name!r}"
+        )
+    if not primary_block.version or primary_block.version != spillover_block.version:
+        raise ValueError(
+            f"{where}: primary.version and spillover.version must be the same "
+            "non-empty immutable model version for exact pricing selection"
         )
 
     call_params = raw.get("call_params") or {}
@@ -620,6 +632,9 @@ def load_experiment(path: str | pathlib.Path) -> DualExperimentConfig:
         budget_estimated_usd=est,
         budget_hard_ceiling_usd=hard,
         budget_confirmed=confirmed,
+        pricing_snapshot_path=str(
+            raw.get("pricing_snapshot_path", CANONICAL_PAYG_SNAPSHOT_PATH)
+        ),
         metadata=dict(metadata),
         concurrency=concurrency,
     )
@@ -2034,6 +2049,7 @@ async def _run_measurement_async(
     dry_run: bool,
     smoke: bool,
     timestamp_label: str,
+    pricing_policy_provenance: dict[str, Any],
 ) -> MeasurementResult:
     schedule = _build_arrival_schedule(cfg.simulation)
     if not schedule:
@@ -2430,6 +2446,7 @@ async def _run_measurement_async(
     summary["pricing_snapshot_path"] = pricing_snapshot_path
     summary["pricing_source_url"] = pricing.source_url
     summary["pricing_accessed_date"] = pricing.accessed_date
+    summary["pricing_policy"] = pricing_policy_provenance
     summary["halt_reason"] = halt_reason
     summary["smoke"] = smoke
     summary["dry_run"] = dry_run
@@ -2649,18 +2666,55 @@ def run_measurement(
     smoke: bool,
     allow_dirty: bool,
     env: dict[str, str] | None = None,
+    today: datetime.date | None = None,
+    pricing_policy: str = LIVE_MEASUREMENT,
 ) -> MeasurementResult:
     """Synchronous wrapper around the async measurement core."""
     src_env = env if env is not None else dict(os.environ)
     if smoke:
         cfg = _apply_smoke_overrides(cfg)
 
-    primary_endpoint_value = _require_env(
-        cfg.primary.endpoint_env, env=src_env
+    verified_pricing = verify_campaign_pricing(
+        snapshot_path=cfg.pricing_snapshot_path,
+        model_family=cfg.primary.family,
+        model_version=cfg.primary.version,
+        policy_mode=pricing_policy,
+        today=today,
     )
-    spillover_endpoint_value = _require_env(
-        cfg.spillover.endpoint_env, env=src_env
-    )
+    verified_pricing.policy.require_offline_if_historical(dry_run=dry_run)
+    pricing = verified_pricing.snapshot
+    snapshot_path = cfg.pricing_snapshot_path
+
+    if dry_run:
+        primary_endpoint_value = src_env.get(cfg.primary.endpoint_env, "")
+        spillover_endpoint_value = src_env.get(cfg.spillover.endpoint_env, "")
+        primary_match = _ENV_TEMPLATE_RE.fullmatch(cfg.primary.deployment_template)
+        spillover_match = _ENV_TEMPLATE_RE.fullmatch(
+            cfg.spillover.deployment_template
+        )
+        primary_deployment = (
+            src_env.get(primary_match.group(1), "")
+            if primary_match
+            else cfg.primary.deployment_name
+        ) or cfg.primary.deployment_name
+        spillover_deployment = (
+            src_env.get(spillover_match.group(1), "")
+            if spillover_match
+            else cfg.spillover.deployment_name
+        ) or cfg.spillover.deployment_name
+    else:
+        primary_endpoint_value = _require_env(
+            cfg.primary.endpoint_env, env=src_env
+        )
+        spillover_endpoint_value = _require_env(
+            cfg.spillover.endpoint_env, env=src_env
+        )
+        primary_deployment = _resolve_env_template(
+            cfg.primary.deployment_template, env=src_env
+        )
+        spillover_deployment = _resolve_env_template(
+            cfg.spillover.deployment_template, env=src_env
+        )
     if primary_endpoint_value != spillover_endpoint_value:
         # Phase 2 happens to use one endpoint base; future variants may
         # diverge. Log + permit. Each client is built with its own
@@ -2671,12 +2725,6 @@ def run_measurement(
             cfg.spillover.endpoint_env,
         )
 
-    primary_deployment = _resolve_env_template(
-        cfg.primary.deployment_template, env=src_env
-    )
-    spillover_deployment = _resolve_env_template(
-        cfg.spillover.deployment_template, env=src_env
-    )
     if not primary_deployment or not spillover_deployment:
         raise EndpointMisconfiguredError(
             "primary or spillover deployment resolved to empty"
@@ -2687,11 +2735,6 @@ def run_measurement(
             f"({primary_deployment!r}); Phase 2 requires DIFFERENT deployment "
             f"names so the cache pools are physically separate"
         )
-
-    snapshot_path = resolve_active_snapshot(
-        kind="payg", target_date=None, pricing_dir=pricing_dir
-    )
-    pricing = load_payg_pricing(snapshot_path)
 
     schedule = _build_arrival_schedule(cfg.simulation)
     est_n = len(schedule)
@@ -2780,6 +2823,7 @@ def run_measurement(
             dry_run=dry_run,
             smoke=smoke,
             timestamp_label=timestamp_label,
+            pricing_policy_provenance=verified_pricing.provenance(),
         )
     )
 
@@ -2812,6 +2856,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--allow-dirty", action="store_true")
     p.add_argument("--benchmarks-root", default="benchmarks")
     p.add_argument("--pricing-dir", default="pricing")
+    p.add_argument(
+        "--pricing-policy",
+        choices=PRICING_POLICY_MODES,
+        default=LIVE_MEASUREMENT,
+        help=(
+            "Versioned pricing semantics. live-measurement (default) requires "
+            "fresh pricing; historical-replay is offline-only."
+        ),
+    )
     p.add_argument(
         "--log-level",
         default="INFO",
@@ -2857,6 +2910,7 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=args.dry_run,
             smoke=args.smoke,
             allow_dirty=args.allow_dirty,
+            pricing_policy=args.pricing_policy,
         )
     except PreflightReachabilityError as exc:
         logger.error("PREFLIGHT_REACHABILITY_FAILED %s", exc)
@@ -2876,6 +2930,9 @@ def main(argv: list[str] | None = None) -> int:
     except SmokeCriteriaError as exc:
         logger.error("SMOKE_CRITERIA_FAILED %s", exc)
         return EXIT_SMOKE
+    except PricingPolicyError as exc:
+        logger.error("PRICING_POLICY_REFUSED %s", exc)
+        return EXIT_PRICING
 
     summary_line = (
         f"\n=== measure_dual_spillover summary ===\n"

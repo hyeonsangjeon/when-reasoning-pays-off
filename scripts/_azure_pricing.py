@@ -9,13 +9,21 @@ import re
 from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 
 SNAPSHOT_SCHEMA_VERSION = "1.0.0"
+PRICING_POLICY_VERSION = "1.0.0"
+HISTORICAL_REPLAY = "historical-replay"
+LIVE_MEASUREMENT = "live-measurement"
+PRICING_POLICY_MODES = (HISTORICAL_REPLAY, LIVE_MEASUREMENT)
+LIVE_PRICING_MAX_AGE_DAYS = 90
 CANONICAL_PAYG_SNAPSHOT_ID = "azure-openai-payg-sample-2026-05"
 CANONICAL_PAYG_SNAPSHOT_PATH = "pricing/azure-openai-payg-sample-2026-05.yaml"
+CANONICAL_PAYG_SNAPSHOT_SHA256 = (
+    "858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd"
+)
 PACKAGED_PAYG_RESOURCE = "azure_sample_pricing.yaml"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -55,6 +63,32 @@ class PaygSchemaError(ValueError):
 
 class PricingSelectionError(ValueError):
     """Raised when a ledger cannot select its exact declared price record."""
+
+
+class PricingPolicyError(PricingSelectionError):
+    """Raised when a runtime pricing policy is unknown or unsafe."""
+
+
+@dataclass(frozen=True)
+class PricingPolicy:
+    """Versioned runtime semantics for immutable pricing evidence."""
+
+    mode: Literal["historical-replay", "live-measurement"]
+    version: str = PRICING_POLICY_VERSION
+    live_max_age_days: int = LIVE_PRICING_MAX_AGE_DAYS
+
+    @classmethod
+    def parse(cls, mode: str) -> PricingPolicy:
+        if mode not in PRICING_POLICY_MODES:
+            raise PricingPolicyError("unknown pricing policy; refusing to continue")
+        return cls(mode=mode)
+
+    def require_offline_if_historical(self, *, dry_run: bool) -> None:
+        if self.mode == HISTORICAL_REPLAY and not dry_run:
+            raise PricingPolicyError(
+                "historical-replay is offline-only; use live-measurement for "
+                "any command that can issue billed requests"
+            )
 
 
 @dataclass(frozen=True)
@@ -103,6 +137,48 @@ class PaygPricing:
 class PricingSelection:
     snapshot: PaygPricing
     record: AzurePriceRecord
+
+
+@dataclass(frozen=True)
+class CampaignPricing:
+    """A verified campaign record plus its runtime policy provenance."""
+
+    selection: PricingSelection
+    policy: PricingPolicy
+
+    @property
+    def snapshot(self) -> PaygPricing:
+        return self.selection.snapshot
+
+    def provenance(self) -> dict[str, Any]:
+        snapshot = self.selection.snapshot
+        record = self.selection.record
+        return {
+            "policy_version": self.policy.version,
+            "mode": self.policy.mode,
+            "freshness": {
+                "required": self.policy.mode == LIVE_MEASUREMENT,
+                "max_age_days": (
+                    self.policy.live_max_age_days
+                    if self.policy.mode == LIVE_MEASUREMENT
+                    else None
+                ),
+            },
+            "snapshot": {
+                "snapshot_id": snapshot.snapshot_id,
+                "snapshot_path": CANONICAL_PAYG_SNAPSHOT_PATH,
+                "snapshot_sha256": snapshot.snapshot_sha256,
+                "source_url": snapshot.source_url,
+                "accessed_date": snapshot.accessed_date,
+                "price_key": record.price_key,
+                "model_family": record.model_family,
+                "model_version": record.model_version,
+                "geography": record.geography,
+                "region": record.region,
+                "deployment_type": record.deployment_type,
+                "currency": snapshot.currency,
+            },
+        }
 
 
 def _date(value: object) -> str:
@@ -380,11 +456,21 @@ def _safe_snapshot_path(value: str) -> str:
 
 
 def _packaged_snapshot_bytes() -> bytes:
-    return (
-        resources.files("batch_runner.data")
-        .joinpath(PACKAGED_PAYG_RESOURCE)
-        .read_bytes()
-    )
+    try:
+        return (
+            resources.files("batch_runner.data")
+            .joinpath(PACKAGED_PAYG_RESOURCE)
+            .read_bytes()
+        )
+    except ModuleNotFoundError:
+        source_copy = (
+            Path(__file__).resolve().parents[1]
+            / "batch-runner"
+            / "batch_runner"
+            / "data"
+            / PACKAGED_PAYG_RESOURCE
+        )
+        return source_copy.read_bytes()
 
 
 def resolve_pinned_payg_snapshot(
@@ -467,17 +553,75 @@ def select_price_record(
     return PricingSelection(snapshot=snapshot, record=record)
 
 
+def verify_campaign_pricing(
+    *,
+    snapshot_path: str,
+    model_family: str,
+    model_version: str,
+    policy_mode: str,
+    today: datetime.date | None = None,
+) -> CampaignPricing:
+    """Verify the commit-pinned snapshot and apply explicit runtime semantics."""
+    policy = PricingPolicy.parse(policy_mode)
+    try:
+        normalized_path = _safe_snapshot_path(snapshot_path)
+        snapshot = resolve_pinned_payg_snapshot(
+            snapshot_id=CANONICAL_PAYG_SNAPSHOT_ID,
+            snapshot_path=normalized_path,
+            snapshot_sha256=CANONICAL_PAYG_SNAPSHOT_SHA256,
+        )
+        price_key = (
+            f"azure-openai:{model_family}:{model_version}:global:global-standard"
+        )
+        selection = select_price_record(
+            snapshot,
+            price_key=price_key,
+            model_family=model_family,
+            model_version=model_version,
+            geography="global",
+            region="global",
+            deployment_type="Global Standard",
+            currency="USD",
+        )
+    except (OSError, PaygSchemaError, PricingSelectionError) as exc:
+        raise PricingPolicyError(f"pricing verification failed: {exc}") from exc
+    if policy.mode == LIVE_MEASUREMENT:
+        effective_today = today if today is not None else datetime.date.today()
+        accessed = datetime.date.fromisoformat(snapshot.accessed_date)
+        age_days = (effective_today - accessed).days
+        if age_days < 0:
+            raise PricingPolicyError(
+                "live pricing snapshot accessed_date is in the future"
+            )
+        if age_days > policy.live_max_age_days:
+            raise PricingPolicyError(
+                f"live pricing snapshot is {age_days} days old "
+                f"(> {policy.live_max_age_days}); add a new immutable snapshot"
+            )
+    return CampaignPricing(selection=selection, policy=policy)
+
+
 __all__ = [
     "AzurePriceRecord",
+    "CANONICAL_PAYG_SNAPSHOT_SHA256",
     "CANONICAL_PAYG_SNAPSHOT_ID",
     "CANONICAL_PAYG_SNAPSHOT_PATH",
+    "CampaignPricing",
     "Gpt4oRates",
     "Gpt52Rates",
+    "HISTORICAL_REPLAY",
+    "LIVE_MEASUREMENT",
+    "LIVE_PRICING_MAX_AGE_DAYS",
     "PaygPricing",
     "PaygSchemaError",
+    "PRICING_POLICY_MODES",
+    "PRICING_POLICY_VERSION",
+    "PricingPolicy",
+    "PricingPolicyError",
     "PricingSelection",
     "PricingSelectionError",
     "load_payg_pricing",
     "resolve_pinned_payg_snapshot",
     "select_price_record",
+    "verify_campaign_pricing",
 ]

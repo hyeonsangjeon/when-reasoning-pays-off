@@ -230,6 +230,12 @@ RUNNERS: dict[str, str] = {
     "measure_max_output_tokens_sweep": "Family B — max_output_tokens reservation sweep",
 }
 
+_PRICING_POLICY_RUNNERS = {
+    "measure_dual_spillover",
+    "measure_cache_key_bucketing",
+    "measure_max_output_tokens_sweep",
+}
+
 # Candidate input files, in read-order, probed against a benchmark directory.
 _INPUT_CANDIDATES = (
     "dataset.json",
@@ -469,9 +475,9 @@ def run(
 
     Args:
         config: The experiment YAML (see :func:`describe` for accepted forms).
-        dry_run: If True, forward ``--dry-run``: the runner writes synthetic,
-            zero-usage records and makes no HTTPS call. Ideal for verifying
-            wiring end-to-end without spending tokens.
+        dry_run: If True, forward ``--dry-run``. Pricing-aware campaign runners
+            also receive ``--pricing-policy historical-replay`` so committed
+            evidence remains deterministic without authorizing a live call.
         allow_dirty: Forward ``--allow-dirty`` (tolerate an uncommitted git
             tree). Defaults to the value of ``dry_run`` — evidence runs
             (``dry_run=False``) require a clean tree so the ``git_commit``
@@ -497,6 +503,8 @@ def run(
     argv: list[str] = ["--experiment", _repo_rel(path)]
     if dry_run:
         argv.append("--dry-run")
+        if spec.runner_module in _PRICING_POLICY_RUNNERS:
+            argv.extend(["--pricing-policy", "historical-replay"])
     if allow_dirty:
         argv.append("--allow-dirty")
     if extra_args:
