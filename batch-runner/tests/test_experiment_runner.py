@@ -719,6 +719,16 @@ def test_cli_experiment_list_shows_twenty(capsys):
     assert "20 experiments" in out or out.count("exp") >= 20
 
 
+def test_cli_catalog_json_is_ascii_transport_safe(capsys):
+    from batch_runner.cli import main
+
+    assert main(["experiment", "list", "--json"]) == 0
+    out = capsys.readouterr().out
+    out.encode("ascii")
+    assert json.loads(out)["experiment_count"] == 20
+    assert "\\u2208" in out
+
+
 def test_cli_has_no_experiment_run_verb():
     # `experiment` is a read-only catalog; the one-row real call is `sample run`.
     from batch_runner.cli import main
