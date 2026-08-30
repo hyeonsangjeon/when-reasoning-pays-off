@@ -6,6 +6,12 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Fixed — Protected Azure live-provider smoke
+
+- Evaluate `runner.temp` only in step-level `env`, where the GitHub runner
+  context is available, and enforce the context scope with a static regression
+  test.
+
 ### Added — Protected Azure live-provider smoke
 
 - Added a schedule/manual-only `main` workflow behind a protected GitHub

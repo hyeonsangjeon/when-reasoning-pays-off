@@ -28,7 +28,6 @@ jobs:
       PROTECTED_AZURE_SMOKE_ENVIRONMENT: ${{ vars.PROTECTED_AZURE_SMOKE_ENVIRONMENT }}
       PROTECTED_AZURE_SMOKE_RUNNER_CLASS: ${{ vars.PROTECTED_AZURE_SMOKE_RUNNER_CLASS }}
       PROTECTED_AZURE_SMOKE_ENDPOINT_ENV: AZURE_OPENAI_FOUNDRY_ENDPOINT
-      PROTECTED_AZURE_SMOKE_OUTPUT_DIR: ${{ runner.temp }}/protected-azure-smoke
       AZURE_OPENAI_FOUNDRY_ENDPOINT: ${{ secrets.AZURE_OPENAI_FOUNDRY_ENDPOINT }}
       PROTECTED_AZURE_SMOKE_DEPLOYMENT: ${{ secrets.PROTECTED_AZURE_SMOKE_DEPLOYMENT }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_MANAGED_IDENTITY_CLIENT_ID }}
@@ -58,6 +57,8 @@ jobs:
           python -m pip install --no-deps .
 
       - name: Run one protected managed-identity request
+        env:
+          PROTECTED_AZURE_SMOKE_OUTPUT_DIR: ${{ runner.temp }}/protected-azure-smoke
         run: python -m scripts.run_protected_azure_smoke --live
 
       - name: Upload sanitized health only
