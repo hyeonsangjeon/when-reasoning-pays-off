@@ -421,6 +421,13 @@ def _atomic_write_text(path: Path, text: str) -> None:
 
 def _fsync_directory(directory: Path) -> None:
     """Make a completed rename durable before publishing a parent pointer."""
+    if os.name == "nt":
+        # CPython cannot open directories for fsync on Windows. The same-directory
+        # replace remains atomic; validate that the target is a real directory and
+        # document the narrower crash-durability boundary instead of hiding it.
+        if directory.is_symlink() or not directory.is_dir():
+            raise ExperimentOutputConflict("output parent is not a safe directory")
+        return
     fd = os.open(directory, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
     try:
         os.fsync(fd)

@@ -32,6 +32,7 @@ from batch_runner.experiment.providers.base import (
 )
 from batch_runner.experiment.providers.ollama import OllamaProvider, Transport
 from batch_runner.experiment.record import ProviderError
+from batch_runner.experiment.record import ModelUnavailableError
 
 _RUN_ID_RE = re.compile(
     r"^\d{8}T\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
@@ -84,6 +85,13 @@ class DoctorResult:
                 f"family={ollama['family'] or 'not-reported'}; "
                 f"parameters={ollama['parameter_size'] or 'not-reported'}; "
                 f"quantization={ollama['quantization'] or 'not-reported'}"
+            )
+            warm = ollama["warm_prerequisites"]
+            lines.append(
+                "warm timing prerequisites: "
+                f"{'ready' if warm['ready'] else 'not ready'}; "
+                "Ollama install and model pull are excluded; "
+                "doctor sent no prompt"
             )
         repair = self.payload["repair"]
         if repair["requested"]:
@@ -224,6 +232,19 @@ def _ollama_diagnosis(
         "template_sha256": None,
         "model_info_sha256": None,
         "error_type": None,
+        "warm_prerequisites": {
+            "ready": False,
+            "service_reachable": False,
+            "model_installed": None,
+            "expected_digest": (
+                "not-configured"
+                if ledger.expected_model_digest is None
+                else "not-verified"
+            ),
+            "install_excluded": True,
+            "model_pull_excluded": True,
+            "prompt_sent": False,
+        },
     }
     try:
         endpoint = resolve_endpoint(
@@ -249,6 +270,8 @@ def _ollama_diagnosis(
     except ProviderError as exc:
         base["reachability"] = "unavailable"
         base["error_type"] = exc.error_type
+        if isinstance(exc, ModelUnavailableError):
+            base["warm_prerequisites"]["service_reachable"] = True
         return base, 7
     fingerprint = provider.fingerprint()
     if fingerprint is None:
@@ -258,6 +281,18 @@ def _ollama_diagnosis(
     base.update(fingerprint)
     base["requested_tag"] = requested_tag
     base["reachability"] = "reachable"
+    base["warm_prerequisites"].update(
+        {
+            "ready": True,
+            "service_reachable": True,
+            "model_installed": True,
+            "expected_digest": (
+                "not-configured"
+                if ledger.expected_model_digest is None
+                else "matched"
+            ),
+        }
+    )
     return base, 0
 
 
@@ -355,7 +390,7 @@ def diagnose_workspace(
         status = "ok"
     return DoctorResult(
         payload={
-            "schema_version": "1.0.0",
+            "schema_version": "1.1.0",
             "status": status,
             "package": _package_diagnosis(),
             "workspace": {

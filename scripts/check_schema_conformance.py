@@ -130,6 +130,9 @@ SCHEMA_EXEMPTIONS = {
     "schemas/sample_doctor.v1.schema.json": (
         "runtime-generated doctor results are emitted to stdout and not committed"
     ),
+    "schemas/cold_mock_timing.v1.schema.json": (
+        "runtime-generated timing reports are uploaded by CI and not committed"
+    ),
 }
 
 # These committed manifests have code-level validators but no JSON Schema. They

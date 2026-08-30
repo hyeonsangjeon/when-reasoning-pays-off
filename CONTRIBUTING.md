@@ -70,11 +70,13 @@ formalizes this. Briefly:
    + ISO access date, or `OPERATIONAL_INFERENCE` (Tier 2) with rationale
    and in-repo evidence.
 4. **Tests pass.** `pytest -m "not adaptive_calibration" batch-runner/tests/`
-   must pass locally. CI also runs the relevant subset of `tests/`.
+   must pass locally. CI also runs the relevant subset of `tests/` and the
+   non-editable minimal wheel on Ubuntu, macOS, and Windows with CPython 3.11
+   and 3.13.
 5. **Ruff clean.** `ruff check .` on any Python you change.
-6. **Frozen files untouched.** `docs/05-methodology.md` and approved
-   `benchmarks/*/analysis.md` must not be modified by your PR. CI does
-   not enforce this yet; reviewers do.
+6. **Frozen method changes are explicit.** Approved `benchmarks/*/analysis.md`
+   stays untouched. A change to `docs/05-methodology.md` must identify the
+   methodology-version change and follow the governance escalation.
 
 ## Local development
 
@@ -88,7 +90,15 @@ ruff check .
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
 python scripts/check_schema_conformance.py schema-meta
 python scripts/check_schema_conformance.py artifact-conformance
+python scripts/measure_cold_mock.py \
+  --threshold-seconds 300 --output cold-mock-timing.json
+python scripts/verify_core_wheel.py
 ```
+
+The installed package supports CPython 3.11–3.13. The minimal core/sample CLI
+is supported on Linux, macOS, and Windows; the full research campaign is not a
+native-Windows contract because its release and measurement paths require
+POSIX/Bash, `fcntl`, and shell SHA-256 utilities. Use WSL/Linux for a campaign.
 
 ### Dependency compatibility and release lock
 

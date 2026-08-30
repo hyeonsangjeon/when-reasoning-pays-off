@@ -6,6 +6,30 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Reproducibility SLO and platform contracts (2026-08-30)
+
+- Defined non-overlapping Cold Mock, Warm Ollama, and full research rerun
+  contracts with exact timing boundaries, prerequisites, exclusions, expected
+  artifacts, and explicit statements of what functional success does not prove.
+- Added a cache-disabled Cold Mock reference job and local runner. It records a
+  path- and secret-free structured timing artifact with checkout, venv, build,
+  install, help, init, run, and inspection durations and enforces a 300-second
+  threshold only for the Ubuntu/CPython 3.13 GitHub-hosted reference.
+- Bounded package support to CPython 3.11–3.13 and added a non-editable minimal
+  wheel matrix on Ubuntu, macOS, and Windows at 3.11 and 3.13. The matrix makes
+  no provider call and verifies Mock lifecycle, catalog, immutable outputs, and
+  optional-extra refusal without installing analysis or Azure extras.
+- Extended `sample doctor` with explicit Warm Ollama readiness: service, model,
+  optional digest, excluded setup/pull, and proof that doctor sent no prompt.
+  Model pulls remain operator-controlled and never run in CI.
+- Fixed Windows sample durability/safety paths: process liveness now uses
+  process handles instead of POSIX signal semantics, repair-event appends verify
+  file identity when `O_NOFOLLOW` is unavailable, and directory-fsync limits
+  are explicit without weakening exclusive lock or symlink protections.
+- Published separate minimal-CLI and research-campaign matrices. Native Windows
+  is supported for core but not the full POSIX/Bash/`fcntl`/SHA-256-shell
+  campaign; Linux remains the release-lock reference.
+
 ### Changed — Split dependencies and reproducible release graph (2026-08-30)
 
 - Split the installed CLI into a minimal core, `analysis`, `azure`, and `all`

@@ -44,7 +44,7 @@ DATA  ->  IN  ->  EXECUTE  ->  OUT
 
 ## 2. Prerequisites
 
-- Python 3.11 or later and a virtual environment.
+- CPython 3.11, 3.12, or 3.13 and a virtual environment.
 - For the free local path: [Ollama](https://ollama.com) installed.
 - For the billed path: an Azure OpenAI resource in Microsoft Foundry and the
   Azure CLI signed in (or a managed identity). No key is stored by this tool.
@@ -52,6 +52,57 @@ DATA  ->  IN  ->  EXECUTE  ->  OUT
   *pull* the model the first time. An Ollama run still makes a live HTTP call,
   but the default endpoint is loopback-only (`localhost`); a remote Ollama
   endpoint requires `--allow-remote-ollama`.
+
+### Three non-overlapping reproducibility contracts
+
+1. **Cold Mock functional verification** starts when tracked files are available
+   in a source checkout. It materializes a checkout-equivalent tracked tree,
+   creates a fresh virtual environment, builds and installs the minimal core
+   wheel with pip caches disabled, runs help and Mock init/run, and ends only
+   after schemas, checksums, the immutable run, and `latest.json` are inspected.
+   The GitHub-hosted Ubuntu/CPython 3.13 reference threshold is **300 seconds**.
+   Remote clone/fetch and runner provisioning are excluded. The uploaded
+   `cold-mock-timing.json` is reference evidence, not a universal machine
+   guarantee.
+2. **Warm Ollama functional verification** starts immediately before
+   `sample run` and ends when its immutable artifacts and pointer are published.
+   Before timing, `sample doctor --json` must report
+   `ollama.warm_prerequisites.ready: true`. The operator target is **300
+   seconds**. Ollama installation, service startup, and model pull are excluded;
+   the runner and doctor never pull a model, and doctor sends no prompt.
+3. **Full research rerun** starts only after the environment, provider access,
+   quota, deployment, pricing, prompts, and datasets are pinned. It ends after
+   all benchmark and judge cells have terminal records and every aggregate,
+   sanitizer, manifest, and chart gate has regenerated successfully. There is
+   **no wall-clock SLO** because quota and live-service latency dominate.
+
+Cold Mock and Warm Ollama prove their respective plumbing only. Neither has a
+quality judge or comparable reasoning-effort sweep, and neither reproduces the
+published benchmark.
+
+Generate the Cold Mock timing report locally with the same cache policy:
+
+```bash
+python scripts/measure_cold_mock.py \
+  --threshold-seconds 300 --output cold-mock-timing.json
+```
+
+### Platform support
+
+| Surface | Linux | macOS | Windows |
+| --- | --- | --- | --- |
+| Minimal core/sample CLI | Supported on CPython 3.11–3.13 | Supported on CPython 3.11–3.13 | Supported on CPython 3.11–3.13 |
+| Full research campaign | Reference platform: Linux x86-64, CPython 3.11 release lock | Operator-supported with platform-specific dependency resolution | **Not supported; use WSL/Linux** |
+
+CI builds non-editable minimal wheels on Ubuntu, macOS, and Windows at CPython
+3.11 and 3.13. The matrix runs only Mock and offline catalog/doctor paths,
+installs no analysis or Azure extras, and makes no provider call. Full campaign
+and release workflows assume POSIX/Bash; the max-output-token sweep imports
+`fcntl`, and validation paths use platform shell SHA-256 tools. Windows core
+locking retains exclusive creation and symlink/file-identity checks and uses
+Windows process handles for liveness. Atomic replace is supported, but Python
+does not expose POSIX directory `fsync` on Windows, so that stronger
+power-loss-durability claim is POSIX-only.
 
 ## 3. Install the single entry point
 
@@ -83,9 +134,9 @@ parser, provider choices, and the public README table.
 
 ## 4. The headline path — Ollama, local and free
 
-The five-minute target assumes Ollama is installed and the small model is
-available or quick to pull. The first `ollama pull` depends on your network and
-hardware and is **not** counted in the five minutes.
+The Warm Ollama five-minute target assumes Ollama is installed and running and
+the exact model is already present. Installation, service startup, and every
+`ollama pull` depend on the operator environment and are **not** counted.
 
 ```bash
 # One-time setup in a separate shell:
@@ -99,7 +150,9 @@ reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml
 reasoning-payoff sample run --ledger sample-workspace/ledger.yaml
 ```
 
-The default model tag is configurable — edit `model:` in the ledger to any tag
+Start the timer only after doctor reports `warm timing prerequisites: ready`
+(or `warm_prerequisites.ready: true` in JSON). The default model tag is
+configurable — edit `model:` in the ledger to any tag
 you have pulled. The runner **never** pulls a model for you; if the model is
 missing it stops with an actionable message telling you the exact
 `ollama pull ...` command to run.

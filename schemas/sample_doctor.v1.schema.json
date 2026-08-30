@@ -14,7 +14,7 @@
     "repair"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "1.1.0" },
     "status": { "enum": ["ok", "blocked", "repaired"] },
     "package": {
       "type": "object",
@@ -173,7 +173,8 @@
         "quantization",
         "template_sha256",
         "model_info_sha256",
-        "error_type"
+        "error_type",
+        "warm_prerequisites"
       ],
       "properties": {
         "endpoint_source": { "type": ["string", "null"], "maxLength": 80 },
@@ -195,7 +196,31 @@
         "quantization": { "$ref": "#/definitions/nullableText" },
         "template_sha256": { "$ref": "#/definitions/nullableSha256" },
         "model_info_sha256": { "$ref": "#/definitions/nullableSha256" },
-        "error_type": { "type": ["string", "null"], "maxLength": 80 }
+        "error_type": { "type": ["string", "null"], "maxLength": 80 },
+        "warm_prerequisites": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ready",
+            "service_reachable",
+            "model_installed",
+            "expected_digest",
+            "install_excluded",
+            "model_pull_excluded",
+            "prompt_sent"
+          ],
+          "properties": {
+            "ready": { "type": "boolean" },
+            "service_reachable": { "type": "boolean" },
+            "model_installed": { "type": ["boolean", "null"] },
+            "expected_digest": {
+              "enum": ["not-configured", "not-verified", "matched"]
+            },
+            "install_excluded": { "const": true },
+            "model_pull_excluded": { "const": true },
+            "prompt_sent": { "const": false }
+          }
+        }
       }
     }
   }

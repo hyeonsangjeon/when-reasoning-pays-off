@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/cold_mock_timing.v1.schema.json",
+  "title": "ColdMockTimingReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "reference_label",
+    "commit",
+    "source_state",
+    "environment",
+    "cache_policy",
+    "start_point",
+    "end_point",
+    "started_at",
+    "ended_at",
+    "steps_seconds",
+    "total_seconds",
+    "threshold_seconds",
+    "passed",
+    "error_step",
+    "error_type"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "contract_id": { "const": "cold-mock" },
+    "reference_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"
+    },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "source_state": { "enum": ["clean", "dirty"] },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "os_release", "python", "implementation", "architecture"],
+      "properties": {
+        "os": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "os_release": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "python": { "type": "string", "pattern": "^3\\.(11|12|13)(\\.|$)" },
+        "implementation": { "const": "CPython" },
+        "architecture": { "type": "string", "minLength": 1, "maxLength": 80 }
+      }
+    },
+    "cache_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pip_no_cache_dir", "preexisting_venv_reused"],
+      "properties": {
+        "pip_no_cache_dir": { "const": true },
+        "preexisting_venv_reused": { "const": false }
+      }
+    },
+    "start_point": { "const": "tracked files available in the source checkout" },
+    "end_point": {
+      "const": "Mock run schemas, checksums, and immutable artifacts inspected"
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "steps_seconds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "checkout": { "$ref": "#/definitions/duration" },
+        "venv": { "$ref": "#/definitions/duration" },
+        "build": { "$ref": "#/definitions/duration" },
+        "install": { "$ref": "#/definitions/duration" },
+        "help": { "$ref": "#/definitions/duration" },
+        "sample_init": { "$ref": "#/definitions/duration" },
+        "sample_run": { "$ref": "#/definitions/duration" },
+        "artifact_inspection": { "$ref": "#/definitions/duration" }
+      }
+    },
+    "total_seconds": { "$ref": "#/definitions/duration" },
+    "threshold_seconds": { "type": "number", "exclusiveMinimum": 0 },
+    "passed": { "type": "boolean" },
+    "error_step": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "checkout",
+        "venv",
+        "build",
+        "install",
+        "help",
+        "sample_init",
+        "sample_run",
+        "artifact_inspection"
+      ]
+    },
+    "error_type": { "type": ["string", "null"], "maxLength": 80 }
+  },
+  "definitions": {
+    "duration": { "type": "number", "minimum": 0 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "passed": { "const": true } },
+        "required": ["passed"]
+      },
+      "then": {
+        "properties": {
+          "steps_seconds": {
+            "required": [
+              "checkout",
+              "venv",
+              "build",
+              "install",
+              "help",
+              "sample_init",
+              "sample_run",
+              "artifact_inspection"
+            ]
+          },
+          "error_step": { "const": null },
+          "error_type": { "const": null }
+        }
+      }
+    }
+  ]
+}

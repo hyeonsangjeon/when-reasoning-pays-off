@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  release:
+    types: [published]
 
 # No secrets are used by this workflow. Read-only token by default.
 permissions:
@@ -21,6 +23,72 @@ defaults:
     shell: bash
 
 jobs:
+  cold-mock-reference:
+    name: Cold Mock reference (cache disabled)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_CACHE_DIR: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.13 without package cache
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Measure tracked checkout to inspected Mock artifacts
+        run: |
+          python scripts/measure_cold_mock.py \
+            --threshold-seconds 300 \
+            --reference-label github-actions-ubuntu-latest-py313 \
+            --output "$RUNNER_TEMP/cold-mock-timing.json"
+
+      - name: Upload Cold Mock timing evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cold-mock-timing-${{ github.sha }}
+          path: ${{ runner.temp }}/cold-mock-timing.json
+          if-no-files-found: error
+          retention-days: 90
+
+  core-wheel-matrix:
+    name: Core wheel (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.11", "3.13"]
+    env:
+      AZURE_OPENAI_API_KEY: ""
+      OPENAI_API_KEY: ""
+      HF_TOKEN: ""
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_CACHE_DIR: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python }} without package cache
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Build and verify non-editable minimal core wheel
+        run: python scripts/verify_core_wheel.py
+
   minimal-core:
     name: Minimal core without analysis or Azure SDKs
     runs-on: ubuntu-latest
@@ -339,6 +407,7 @@ jobs:
               "experiment_run.v2.schema.json",
               "experiment_latest_pointer.v1.schema.json",
               "sample_doctor.v1.schema.json",
+              "cold_mock_timing.v1.schema.json",
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY

@@ -352,6 +352,41 @@ prompt files should be able to re-run the experiment and obtain results of the s
 profile (within the variance we report). They will not get byte-identical responses —
 reasoning models are non-deterministic — but they will get the same conclusions.
 
+### Functional SLOs versus a research rerun
+
+The reproducibility levels above describe evidence access. The following three
+operational contracts describe what a runnable path includes:
+
+| Contract | Start and end | Prerequisites / exclusions | Success criterion and limitation |
+| --- | --- | --- | --- |
+| **Cold Mock** | Tracked files available → checkout-equivalent tracked copy, fresh venv, cache-disabled minimal wheel build/install, help, Mock init/run → schema/checksum/immutable-artifact inspection complete. | CPython 3.11–3.13, Git, package index. Remote fetch and runner provisioning excluded; no existing package or venv cache reused. | GitHub `ubuntu-latest` / CPython 3.13 reference total **≤300 s**, machine-enforced and uploaded as `cold-mock-timing.json`. Proves packaging and offline plumbing only. |
+| **Warm Ollama** | Immediately before `sample run`, after doctor reports warm-ready → immutable artifacts and `latest.json` published. | Core installed, service running, exact tag installed, optional digest matched. Install, service startup, and pull excluded. | Operator target **≤300 s**. Proves one live sample path, not benchmark quality or cross-hardware performance. |
+| **Full research rerun** | Environment/access/quota/deployment/pricing/input pinning complete → all run/judge cells terminal and analyses/public aggregates/charts regenerated. | `.[all,dev]`, funded provider access, quota, POSIX campaign toolchain, release review. Provisioning and private archive access are external. | **No wall-clock SLO**. Completion requires full cell accounting and every schema, claim, sanitizer, manifest, and chart gate. |
+
+The Cold Mock number is a measured reference-environment SLO, not an
+individual-machine expectation. Its report records only commit/source state,
+OS/Python/architecture, named step durations, total, threshold, and pass/fail;
+paths, usernames, endpoints, and environment secrets are excluded.
+
+### Platform support boundary
+
+The minimal installed core/sample CLI supports CPython **3.11 through 3.13** on
+Linux, macOS, and Windows. CI tests non-editable wheels at both endpoints (3.11
+and 3.13) on all three operating systems with Mock-only execution and no
+analysis/Azure extras. Python 3.14 and later are intentionally rejected until a
+new compatibility review.
+
+The full research campaign is narrower. Linux x86-64 / CPython 3.11 is the
+release-lock reference; macOS is operator-supported with its own dependency
+resolution. Native Windows is not a full-campaign platform: use WSL/Linux.
+Campaign/release paths assume Bash and POSIX commands,
+`scripts/measure_max_output_tokens_sweep.py` uses `fcntl`, and validation
+workflows call SHA-256 shell utilities. The Windows core path still preserves
+exclusive lock creation, symlink/file-identity checks, and fail-closed repair;
+it uses Windows process handles rather than POSIX signals. Atomic
+same-directory replacement is supported, but POSIX directory-`fsync`
+power-loss durability is not claimed on Windows.
+
 ---
 
 ## 8. Statistical Reporting
@@ -502,6 +537,6 @@ Changes to this document are themselves a measurement event. The protocol:
 4. Each change bumps the methodology version recorded in the header of every new
    `analysis.md` and every new experiment YAML's `metadata.methodology_version`.
 
-The current methodology version is **v1.1**. Version 1.1 clarifies the three
-reproducibility levels and the public/private audit boundary; it does not
-change the measurement procedure or any benchmark result.
+The current methodology version is **v1.2**. Version 1.2 adds the Cold Mock,
+Warm Ollama, and full-rerun operational contracts plus the bounded platform
+support matrix; it does not change any benchmark result.
