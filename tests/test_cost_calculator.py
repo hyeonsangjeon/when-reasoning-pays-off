@@ -9,6 +9,7 @@ raise so any accidental wall-clock call fails loudly).
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 import pathlib
 import subprocess
@@ -22,6 +23,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from scripts import cost_calculator as cc  # noqa: E402
+from scripts import _azure_pricing as azure_pricing  # noqa: E402
 
 FIXTURE_DIR = REPO_ROOT / "tests" / "fixtures"
 FIXTURE_PAYG = FIXTURE_DIR / "pricing" / "azure-openai-payg-2026-05.yaml"
@@ -51,6 +53,65 @@ def test_load_payg_pricing_accepts_canonical_fixture() -> None:
     assert g52.reasoning_per_1m_usd > 0
 
 
+def test_canonical_and_packaged_sample_pricing_bytes_are_identical() -> None:
+    paths = (
+        REPO_ROOT / "pricing" / "azure-openai-payg-sample-2026-05.yaml",
+        REPO_ROOT
+        / "batch-runner"
+        / "batch_runner"
+        / "data"
+        / "azure_sample_pricing.yaml",
+    )
+    payloads = [path.read_bytes() for path in paths]
+    assert payloads[0] == payloads[1]
+    assert hashlib.sha256(payloads[0]).hexdigest() == (
+        "858c3c39ca36a7495d2754d8b5e32e7"
+        "7e6478d38e2e0da8d7d9cd154ab1f08cd"
+    )
+
+
+def test_historical_pricing_snapshot_remains_immutable_and_unselectable() -> None:
+    historical = REPO_ROOT / "pricing" / "azure-openai-payg-2026-05.yaml"
+    raw = historical.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == (
+        "fc19f0ecd4945c883e3e67032ee9877e"
+        "155f132c4efcb7f42b58d54b739b64be"
+    )
+    parsed = cc.load_payg_pricing(historical)
+    assert parsed.snapshot_id is None
+    assert parsed.records == {}
+    with pytest.raises(azure_pricing.PricingSelectionError):
+        azure_pricing.resolve_pinned_payg_snapshot(
+            snapshot_id="azure-openai-payg-2026-05",
+            snapshot_path="pricing/azure-openai-payg-2026-05.yaml",
+            snapshot_sha256=hashlib.sha256(raw).hexdigest(),
+        )
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [
+        "model_family",
+        "model_version",
+        "geography",
+        "region",
+        "deployment_type",
+        "sku",
+        "price_key",
+        "meters",
+        "rates",
+    ],
+)
+def test_load_payg_pricing_rejects_missing_record_identity(
+    tmp_path: pathlib.Path, missing: str
+) -> None:
+    payload = _canonical_payg_dict()
+    key = "test:gpt-5.2:2025-12-11:global:global-standard"
+    del payload["records"][key][missing]
+    with pytest.raises(cc.PaygSchemaError):
+        cc.load_payg_pricing(_write_yaml(tmp_path, payload))
+
+
 def _write_yaml(tmp_path: pathlib.Path, payload: dict, *, name: str = "p.yaml") -> pathlib.Path:
     p = tmp_path / name
     with p.open("w", encoding="utf-8") as fh:
@@ -64,21 +125,55 @@ def _write_yaml(tmp_path: pathlib.Path, payload: dict, *, name: str = "p.yaml") 
 
 def _canonical_payg_dict() -> dict:
     return {
+        "schema_version": "1.0.0",
+        "snapshot_id": "synthetic-payg-2026-05",
         "source_url": "https://example.test/payg",
         "accessed_date": "2026-05-19",
         "archive_url": "https://web.archive.org/x",
         "currency": "USD",
-        "models": {
-            "gpt-4o": {
-                "input_per_1m_usd": 2.5,
-                "cached_input_per_1m_usd": 1.25,
-                "output_per_1m_usd": 10.0,
+        "selection_policy": {
+            "mode": "deterministic-pinned",
+            "freshness_policy": "not-applied",
+        },
+        "records": {
+            "test:gpt-4o:2024-11-20:global:global-standard": {
+                "model_family": "gpt-4o",
+                "model_version": "2024-11-20",
+                "geography": "global",
+                "region": "global",
+                "deployment_type": "Global Standard",
+                "sku": "Global Standard",
+                "price_key": "test:gpt-4o:2024-11-20:global:global-standard",
+                "meters": {
+                    "input": "gpt-4o input",
+                    "cached_input": "gpt-4o cached",
+                    "output": "gpt-4o output",
+                },
+                "rates": {
+                    "input_per_1m_usd": 2.5,
+                    "cached_input_per_1m_usd": 1.25,
+                    "output_per_1m_usd": 10.0,
+                },
             },
-            "gpt-5.2": {
-                "input_per_1m_usd": 1.75,
-                "cached_input_per_1m_usd": 0.175,
-                "reasoning_per_1m_usd": 14.0,
-                "output_per_1m_usd": 14.0,
+            "test:gpt-5.2:2025-12-11:global:global-standard": {
+                "model_family": "gpt-5.2",
+                "model_version": "2025-12-11",
+                "geography": "global",
+                "region": "global",
+                "deployment_type": "Global Standard",
+                "sku": "Global Standard",
+                "price_key": "test:gpt-5.2:2025-12-11:global:global-standard",
+                "meters": {
+                    "input": "gpt-5.2 input",
+                    "cached_input": "gpt-5.2 cached",
+                    "output": "gpt-5.2 output",
+                },
+                "rates": {
+                    "input_per_1m_usd": 1.75,
+                    "cached_input_per_1m_usd": 0.175,
+                    "reasoning_per_1m_usd": 14.0,
+                    "output_per_1m_usd": 14.0,
+                },
             },
         },
     }
@@ -117,7 +212,8 @@ def test_load_payg_pricing_rejects_extra_top_level_key(tmp_path: pathlib.Path) -
 
 def test_load_payg_pricing_rejects_gpt4o_with_reasoning_field(tmp_path: pathlib.Path) -> None:
     d = _canonical_payg_dict()
-    d["models"]["gpt-4o"]["reasoning_per_1m_usd"] = 10.0
+    record = d["records"]["test:gpt-4o:2024-11-20:global:global-standard"]
+    record["rates"]["reasoning_per_1m_usd"] = 10.0
     path = _write_yaml(tmp_path, d)
     with pytest.raises(cc.PaygSchemaError):
         cc.load_payg_pricing(path)
@@ -125,7 +221,8 @@ def test_load_payg_pricing_rejects_gpt4o_with_reasoning_field(tmp_path: pathlib.
 
 def test_load_payg_pricing_rejects_gpt52_missing_reasoning_field(tmp_path: pathlib.Path) -> None:
     d = _canonical_payg_dict()
-    del d["models"]["gpt-5.2"]["reasoning_per_1m_usd"]
+    record = d["records"]["test:gpt-5.2:2025-12-11:global:global-standard"]
+    del record["rates"]["reasoning_per_1m_usd"]
     path = _write_yaml(tmp_path, d)
     with pytest.raises(cc.PaygSchemaError):
         cc.load_payg_pricing(path)
@@ -133,7 +230,8 @@ def test_load_payg_pricing_rejects_gpt52_missing_reasoning_field(tmp_path: pathl
 
 def test_load_payg_pricing_rejects_zero_rate(tmp_path: pathlib.Path) -> None:
     d = _canonical_payg_dict()
-    d["models"]["gpt-4o"]["input_per_1m_usd"] = 0
+    record = d["records"]["test:gpt-4o:2024-11-20:global:global-standard"]
+    record["rates"]["input_per_1m_usd"] = 0
     path = _write_yaml(tmp_path, d)
     with pytest.raises(cc.PaygSchemaError):
         cc.load_payg_pricing(path)
@@ -172,26 +270,11 @@ def test_load_payg_pricing_rejects_wrong_top_level_key_order(
     the file. Set-comparison alone (the prior implementation) would have
     silently accepted this.
     """
-    # Canonical PAYG order is: source_url, accessed_date, archive_url,
-    # currency, models. Swap source_url and accessed_date.
+    canonical = _canonical_payg_dict()
     reordered = {
-        "accessed_date": "2026-05-19",
-        "source_url": "https://example.test/payg",
-        "archive_url": "https://web.archive.org/x",
-        "currency": "USD",
-        "models": {
-            "gpt-4o": {
-                "input_per_1m_usd": 2.5,
-                "cached_input_per_1m_usd": 1.25,
-                "output_per_1m_usd": 10.0,
-            },
-            "gpt-5.2": {
-                "input_per_1m_usd": 1.75,
-                "cached_input_per_1m_usd": 0.175,
-                "reasoning_per_1m_usd": 14.0,
-                "output_per_1m_usd": 14.0,
-            },
-        },
+        "snapshot_id": canonical["snapshot_id"],
+        "schema_version": canonical["schema_version"],
+        **{k: v for k, v in canonical.items() if k not in {"schema_version", "snapshot_id"}},
     }
     path = _write_yaml(tmp_path, reordered)
     with pytest.raises(cc.PaygSchemaError, match="wrong order"):
@@ -201,25 +284,13 @@ def test_load_payg_pricing_rejects_wrong_top_level_key_order(
 def test_load_payg_pricing_rejects_models_before_currency_order(
     tmp_path: pathlib.Path,
 ) -> None:
-    """Second wrong-order variant: ``models`` moved ahead of ``currency``."""
+    """Second wrong-order variant: ``records`` moved ahead of ``currency``."""
+    canonical = _canonical_payg_dict()
     reordered = {
-        "source_url": "https://example.test/payg",
-        "accessed_date": "2026-05-19",
-        "archive_url": "https://web.archive.org/x",
-        "models": {
-            "gpt-4o": {
-                "input_per_1m_usd": 2.5,
-                "cached_input_per_1m_usd": 1.25,
-                "output_per_1m_usd": 10.0,
-            },
-            "gpt-5.2": {
-                "input_per_1m_usd": 1.75,
-                "cached_input_per_1m_usd": 0.175,
-                "reasoning_per_1m_usd": 14.0,
-                "output_per_1m_usd": 14.0,
-            },
-        },
-        "currency": "USD",
+        **{k: canonical[k] for k in list(canonical)[:5]},
+        "records": canonical["records"],
+        "currency": canonical["currency"],
+        "selection_policy": canonical["selection_policy"],
     }
     path = _write_yaml(tmp_path, reordered)
     with pytest.raises(cc.PaygSchemaError, match="wrong order"):
@@ -542,31 +613,15 @@ def _make_payg_yaml_file(
     a ``datetime.date``, it goes into the YAML unquoted and parses back as
     ``datetime.date``.
     """
-    if isinstance(accessed_date, str) and quoted_date:
-        date_yaml = f'"{accessed_date}"'
-    elif isinstance(accessed_date, datetime.date):
-        date_yaml = accessed_date.isoformat()
+    payload = _canonical_payg_dict()
+    if isinstance(accessed_date, datetime.date):
+        payload["accessed_date"] = accessed_date
+    elif quoted_date:
+        payload["accessed_date"] = accessed_date
     else:
-        date_yaml = str(accessed_date)
-    body = textwrap.dedent(
-        f"""\
-        source_url: https://example.test/payg
-        accessed_date: {date_yaml}
-        currency: USD
-        models:
-          gpt-4o:
-            input_per_1m_usd: 2.5
-            cached_input_per_1m_usd: 1.25
-            output_per_1m_usd: 10.0
-          gpt-5.2:
-            input_per_1m_usd: 1.75
-            cached_input_per_1m_usd: 0.175
-            reasoning_per_1m_usd: 14.0
-            output_per_1m_usd: 14.0
-        """
-    )
+        payload["accessed_date"] = datetime.date.fromisoformat(accessed_date)
     p = dir_path / filename
-    p.write_text(body, encoding="utf-8")
+    p.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
     return p
 
 
@@ -875,25 +930,12 @@ def test_load_payg_pricing_accepts_quoted_yaml_string_date(tmp_path: pathlib.Pat
 
 def test_load_payg_pricing_rejects_yaml_datetime_object(tmp_path: pathlib.Path) -> None:
     # datetime literal in YAML → datetime.datetime; must reject.
-    body = textwrap.dedent(
-        """\
-        source_url: https://example.test/payg
-        accessed_date: 2026-05-19T12:00:00Z
-        currency: USD
-        models:
-          gpt-4o:
-            input_per_1m_usd: 2.5
-            cached_input_per_1m_usd: 1.25
-            output_per_1m_usd: 10.0
-          gpt-5.2:
-            input_per_1m_usd: 1.75
-            cached_input_per_1m_usd: 0.175
-            reasoning_per_1m_usd: 14.0
-            output_per_1m_usd: 14.0
-        """
+    payload = _canonical_payg_dict()
+    payload["accessed_date"] = datetime.datetime(
+        2026, 5, 19, 12, tzinfo=datetime.timezone.utc
     )
     p = tmp_path / "azure-openai-payg-bad.yaml"
-    p.write_text(body, encoding="utf-8")
+    p.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
     with pytest.raises(cc.PaygSchemaError):
         cc.load_payg_pricing(p)
 

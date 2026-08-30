@@ -14,12 +14,13 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from batch_runner import __version__
+from batch_runner.experiment.cost import CostPreflight
 from batch_runner.experiment.dataset import LoadedDataset
 from batch_runner.experiment.ledger import RunLedger
 from batch_runner.experiment.providers.base import ResolvedEndpoint
 from batch_runner.experiment.record import ProviderCapabilities
 
-MANIFEST_SCHEMA_VERSION = "1.1.0"
+MANIFEST_SCHEMA_VERSION = "1.2.0"
 REPOSITORY_IDENTITY = "hyeonsangjeon/when-reasoning-pays-off"
 _SHA256_RE = r"^[0-9a-f]{64}$"
 _COMMIT_RE = r"^(unknown|[0-9a-f]{40})$"
@@ -86,6 +87,10 @@ class ProviderFingerprint(_StrictModel):
     endpoint_source: str = Field(min_length=1, max_length=80)
     endpoint_locality: Literal["local", "remote", "environment", "none"]
     auth_mode: Literal["none", "entra"]
+    model_identity_source: Literal[
+        "ledger_model", "pricing_snapshot_intended_model"
+    ]
+    live_service_metadata_verified: bool
     capabilities: dict[str, str | bool]
     ollama: OllamaRuntimeFingerprint | None
     fingerprint_sha256: str = Field(pattern=_SHA256_RE)
@@ -100,12 +105,28 @@ class ProviderFingerprint(_StrictModel):
 
 
 class PricingProvenance(_StrictModel):
-    state: Literal["available", "not_applicable"]
+    state: Literal["declared_snapshot_validated", "not_applicable"]
     snapshot_id: str | None = Field(default=None, max_length=120)
+    snapshot_path: str | None = Field(default=None, max_length=400)
     snapshot_sha256: str | None = Field(default=None, pattern=_SHA256_RE)
-    pricing_model: str | None = Field(default=None, max_length=120)
+    source_url: str | None = Field(default=None, max_length=500)
+    archive_url: str | None = Field(default=None, max_length=500)
+    accessed_date: str | None = Field(default=None, max_length=10)
+    currency: str | None = Field(default=None, max_length=8)
+    model_family: str | None = Field(default=None, max_length=120)
+    model_version: str | None = Field(default=None, max_length=120)
+    geography: str | None = Field(default=None, max_length=120)
+    region: str | None = Field(default=None, max_length=120)
+    deployment_type: str | None = Field(default=None, max_length=120)
+    sku: str | None = Field(default=None, max_length=160)
+    price_key: str | None = Field(default=None, max_length=240)
+    meters: dict[str, str] | None = None
     input_per_1m_usd: float | None = Field(default=None, gt=0)
+    cached_input_per_1m_usd: float | None = Field(default=None, gt=0)
+    reasoning_per_1m_usd: float | None = Field(default=None, gt=0)
     output_per_1m_usd: float | None = Field(default=None, gt=0)
+    identity_scope: Literal["declared_snapshot_only", "not_applicable"]
+    live_service_metadata_verified: bool
 
 
 class ExecutionKnobs(_StrictModel):
@@ -142,7 +163,7 @@ class ArtifactIdentity(_StrictModel):
 
 
 class RunManifest(_StrictModel):
-    schema_version: Literal["1.1.0"]
+    schema_version: Literal["1.2.0"]
     run_id: str
     ledger_sha256: str = Field(pattern=_SHA256_RE)
     code: CodeIdentity
@@ -312,6 +333,7 @@ def _provider_fingerprint(
     endpoint: ResolvedEndpoint,
     capabilities: ProviderCapabilities,
     ollama_fingerprint: dict[str, str | None] | None,
+    preflight: CostPreflight | None,
 ) -> dict[str, Any]:
     if ledger.provider == "mock":
         locality = "none"
@@ -329,37 +351,80 @@ def _provider_fingerprint(
     }
     identity = {
         "provider": ledger.provider,
-        "model": ledger.model,
+        "model": (
+            f"{preflight.pricing_model_family}@{preflight.pricing_model_version}"
+            if ledger.provider == "azure" and preflight is not None
+            else ledger.model
+        ),
         "endpoint_source": endpoint.source,
         "endpoint_locality": locality,
         "auth_mode": ledger.auth.mode,
+        "model_identity_source": (
+            "pricing_snapshot_intended_model"
+            if ledger.provider == "azure"
+            else "ledger_model"
+        ),
+        "live_service_metadata_verified": ledger.provider == "ollama",
         "capabilities": safe_capabilities,
         "ollama": ollama_fingerprint,
     }
     return {**identity, "fingerprint_sha256": sha256_bytes(canonical_json(identity))}
 
 
-def _pricing(ledger: RunLedger) -> dict[str, Any]:
+def _pricing(ledger: RunLedger, preflight: CostPreflight | None) -> dict[str, Any]:
     cost = ledger.execution.cost
     if not cost.billed:
         return {
             "state": "not_applicable",
             "snapshot_id": None,
+            "snapshot_path": None,
             "snapshot_sha256": None,
-            "pricing_model": None,
+            "source_url": None,
+            "archive_url": None,
+            "accessed_date": None,
+            "currency": None,
+            "model_family": None,
+            "model_version": None,
+            "geography": None,
+            "region": None,
+            "deployment_type": None,
+            "sku": None,
+            "price_key": None,
+            "meters": None,
             "input_per_1m_usd": None,
+            "cached_input_per_1m_usd": None,
+            "reasoning_per_1m_usd": None,
             "output_per_1m_usd": None,
+            "identity_scope": "not_applicable",
+            "live_service_metadata_verified": False,
         }
-    snapshot = {
-        "snapshot_id": cost.pricing_snapshot_id,
-        "pricing_model": cost.pricing_model,
-        "input_per_1m_usd": cost.input_per_1m_usd,
-        "output_per_1m_usd": cost.output_per_1m_usd,
-    }
+    if preflight is None:
+        raise ValueError("billed manifest requires verified pricing preflight")
     return {
-        "state": "available",
-        **snapshot,
-        "snapshot_sha256": sha256_bytes(canonical_json(snapshot)),
+        "state": "declared_snapshot_validated",
+        "snapshot_id": preflight.pricing_snapshot_id,
+        "snapshot_path": preflight.pricing_snapshot_path,
+        "snapshot_sha256": preflight.pricing_snapshot_sha256,
+        "source_url": preflight.pricing_source_url,
+        "archive_url": preflight.pricing_archive_url,
+        "accessed_date": preflight.pricing_accessed_date,
+        "currency": preflight.pricing_currency,
+        "model_family": preflight.pricing_model_family,
+        "model_version": preflight.pricing_model_version,
+        "geography": preflight.pricing_geography,
+        "region": preflight.pricing_region,
+        "deployment_type": preflight.pricing_deployment_type,
+        "sku": preflight.pricing_sku,
+        "price_key": preflight.pricing_price_key,
+        "meters": preflight.pricing_meters,
+        "input_per_1m_usd": preflight.input_rate_usd_per_1m_tokens,
+        "cached_input_per_1m_usd": (
+            preflight.cached_input_rate_usd_per_1m_tokens
+        ),
+        "reasoning_per_1m_usd": preflight.reasoning_rate_usd_per_1m_tokens,
+        "output_per_1m_usd": preflight.output_rate_usd_per_1m_tokens,
+        "identity_scope": "declared_snapshot_only",
+        "live_service_metadata_verified": False,
     }
 
 
@@ -378,6 +443,7 @@ def build_manifest(
     cost_confirmed_by_cli: bool,
     remote_ollama_opt_in: bool,
     ollama_fingerprint: dict[str, str | None] | None = None,
+    pricing_preflight: CostPreflight | None = None,
 ) -> RunManifest:
     """Build and validate one complete, path-free run manifest."""
     artifacts = {
@@ -404,9 +470,9 @@ def build_manifest(
             "selected_ids_sha256": sha256_bytes(canonical_json(selected_ids)),
         },
         "provider": _provider_fingerprint(
-            ledger, endpoint, capabilities, ollama_fingerprint
+            ledger, endpoint, capabilities, ollama_fingerprint, pricing_preflight
         ),
-        "pricing": _pricing(ledger),
+        "pricing": _pricing(ledger, pricing_preflight),
         "execution": {
             "max_samples": ledger.execution.max_samples,
             "concurrency": ledger.execution.concurrency,

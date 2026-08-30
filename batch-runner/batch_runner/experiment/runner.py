@@ -677,6 +677,7 @@ def run_ledger(
             cost_confirmed_by_cli=confirm_cost,
             remote_ollama_opt_in=allow_remote_ollama,
             ollama_fingerprint=ollama_fingerprint,
+            pricing_preflight=preflight,
         )
         manifest_bytes = (
             json.dumps(

@@ -6,6 +6,29 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Immutable Azure sample pricing provenance (2026-08-30)
+
+- Replaced free-form Azure sample rates with one strict immutable PAYG snapshot
+  selected by stable ID, repository path, SHA-256, price key, intended model
+  family/version, geography, region, deployment type, and currency.
+- Added a new enriched sample snapshot without mutating the historical
+  hash-pinned May snapshot. Packaged a byte-identical mirror for non-editable
+  wheels and added schema and hash-parity gates across the canonical and
+  packaged copies. Snapshot selection remains deterministic and explicitly
+  leaves wall-clock freshness policy unapplied for F-05.
+- Azure cost preflight now derives input, cached-input, reasoning-documentary,
+  and output rates only from the verified record. Any missing, unknown, or
+  mismatched identity fails before endpoint resolution, provider construction,
+  token acquisition, or network access.
+- Immutable manifests now record the verified snapshot citation, safe pricing
+  identity, meter keys, and rates while excluding deployment aliases and
+  endpoint values. They distinguish declared snapshot identity from Azure live
+  service metadata that was not independently verified.
+- Advanced ledger schema `1.1.0` and immutable manifest schema `1.2.0`.
+  `hard_ceiling_usd` remains a local conservative-estimate ceiling, not an Azure
+  invoice ceiling; dual confirmation, CI refusal, `store=false`, and
+  `max_retries=0` are unchanged.
+
 ### Added — Safe sample recovery and Ollama identity pinning (2026-08-30)
 
 - Added `reasoning-payoff sample doctor` with human and strict JSON output for

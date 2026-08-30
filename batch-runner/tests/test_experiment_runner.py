@@ -14,6 +14,7 @@ from typing import Any
 
 import pytest
 
+from scripts._azure_pricing import PricingSelectionError
 from batch_runner.experiment.catalog import build_catalog, load_packaged_catalog
 from batch_runner.experiment.dataset import DatasetError, load_dataset
 from batch_runner.experiment.ledger import LedgerError, parse_ledger
@@ -51,7 +52,7 @@ _FIXED_RANDOM = lambda _n: "0123abcd"  # noqa: E731 - test randomness
 # --------------------------------------------------------------------------
 def _base_ledger(provider: str) -> dict[str, Any]:
     led: dict[str, Any] = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "experiment": {"id": f"t-{provider}", "purpose": "unit test"},
         "provider": provider,
         "model": "mock-preview" if provider == "mock" else "test-model",
@@ -101,10 +102,23 @@ def _base_ledger(provider: str) -> dict[str, Any]:
             "confirmed": True,
             "estimated_usd": 0.05,
             "hard_ceiling_usd": 1.0,
-            "pricing_snapshot_id": "test-pricing-2026-03-08",
-            "pricing_model": "gpt-5.2",
-            "input_per_1m_usd": 2.0,
-            "output_per_1m_usd": 20.0,
+            "pricing": {
+                "snapshot_id": "azure-openai-payg-sample-2026-05",
+                "snapshot_path": "pricing/azure-openai-payg-sample-2026-05.yaml",
+                "snapshot_sha256": (
+                    "858c3c39ca36a7495d2754d8b5e32e7"
+                    "7e6478d38e2e0da8d7d9cd154ab1f08cd"
+                ),
+                "price_key": (
+                    "azure-openai:gpt-5.2:2025-12-11:global:global-standard"
+                ),
+                "model_family": "gpt-5.2",
+                "model_version": "2025-12-11",
+                "geography": "global",
+                "region": "global",
+                "deployment_type": "Global Standard",
+                "currency": "USD",
+            },
         }
     return led
 
@@ -849,10 +863,7 @@ def test_high1_azure_preflight_refuses_when_estimate_exceeds_ceiling(tmp_path: P
         "confirmed": True,
         "estimated_usd": 0.0,
         "hard_ceiling_usd": 0.001,
-        "pricing_snapshot_id": "test-pricing-2026-03-08",
-        "pricing_model": "gpt-5.2",
-        "input_per_1m_usd": 2.0,
-        "output_per_1m_usd": 20.0,
+        "pricing": _base_ledger("azure")["execution"]["cost"]["pricing"],
     }
     led = parse_ledger(led_dict)
     ws = _workspace(tmp_path)
@@ -897,9 +908,10 @@ def test_high1_preflight_uses_pinned_separate_rates_and_utf8_bound():
     plan = estimate_azure_cost(ledger, ["é"])
     assert plan.estimated_input_tokens == 10  # two UTF-8 bytes + framing allowance
     assert plan.estimated_output_tokens == 128
-    assert plan.input_rate_usd_per_1m_tokens == 2.0
-    assert plan.output_rate_usd_per_1m_tokens == 20.0
-    assert plan.estimated_usd == pytest.approx((10 * 2 + 128 * 20) / 1_000_000)
+    assert plan.input_rate_usd_per_1m_tokens == 1.75
+    assert plan.cached_input_rate_usd_per_1m_tokens == 0.175
+    assert plan.output_rate_usd_per_1m_tokens == 14.0
+    assert plan.estimated_usd == pytest.approx((10 * 1.75 + 128 * 14) / 1_000_000)
 
 
 def test_high1_preflight_counts_each_repeat_once(tmp_path: Path):
@@ -923,9 +935,94 @@ def test_high1_preflight_counts_each_repeat_once(tmp_path: Path):
 
 def test_high1_unpriced_azure_configuration_is_rejected():
     ledger = _base_ledger("azure")
-    del ledger["execution"]["cost"]["output_per_1m_usd"]
+    del ledger["execution"]["cost"]["pricing"]
     with pytest.raises(LedgerError):
         parse_ledger(ledger)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("snapshot_id", "azure-openai-payg-2099-01"),
+        ("snapshot_path", "pricing/azure-openai-payg-2099-01.yaml"),
+        ("snapshot_sha256", "0" * 64),
+        ("price_key", "azure-openai:unknown:global:global-standard"),
+        ("model_family", "gpt-4o"),
+        ("model_version", "2099-01-01"),
+        ("geography", "US"),
+        ("region", "eastus2"),
+        ("deployment_type", "Regional Standard"),
+    ],
+)
+def test_azure_pricing_mismatch_fails_before_endpoint_or_provider(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    field: str,
+    value: str,
+):
+    import batch_runner.experiment.runner as runner
+
+    payload = _base_ledger("azure")
+    payload["execution"]["cost"]["pricing"][field] = value
+    ledger = parse_ledger(payload)
+    endpoint_calls = 0
+
+    def forbidden_endpoint(*_args: Any, **_kwargs: Any) -> None:
+        nonlocal endpoint_calls
+        endpoint_calls += 1
+        raise AssertionError("endpoint resolution must follow pricing validation")
+
+    monkeypatch.setattr(runner, "resolve_endpoint", forbidden_endpoint)
+    _CountingProvider.built = 0
+    with pytest.raises(PricingSelectionError):
+        run_ledger(
+            ledger,
+            base_dir=_workspace(tmp_path),
+            confirm_cost=True,
+            provider_builder=lambda *_a, **_k: _CountingProvider(),
+        )
+    assert endpoint_calls == 0
+    assert _CountingProvider.built == 0
+
+
+def test_azure_pricing_currency_and_unknown_field_fail_at_ledger_validation():
+    for mutate in (
+        lambda pricing: pricing.update({"currency": "EUR"}),
+        lambda pricing: pricing.update({"unknown_dimension": "x"}),
+    ):
+        payload = _base_ledger("azure")
+        mutate(payload["execution"]["cost"]["pricing"])
+        with pytest.raises(LedgerError):
+            parse_ledger(payload)
+
+
+def test_azure_manifest_uses_safe_declared_identity_not_deployment_alias(
+    tmp_path: Path,
+):
+    payload = _base_ledger("azure")
+    payload["model"] = "private-customer-deployment"
+    ledger = parse_ledger(payload)
+    result = run_ledger(
+        ledger,
+        base_dir=_workspace(tmp_path),
+        environ={"AZURE_OPENAI_FOUNDRY_ENDPOINT": "https://private.example.test"},
+        confirm_cost=True,
+        provider_builder=lambda *_a, **_k: _CountingProvider(),
+        clock=_FIXED_CLOCK,
+        random_hex=_FIXED_RANDOM,
+    )
+    raw_manifest = result.manifest_path.read_text()
+    manifest = json.loads(raw_manifest)
+    assert "private-customer-deployment" not in raw_manifest
+    assert "private.example.test" not in raw_manifest
+    assert manifest["provider"]["model"] == "gpt-5.2@2025-12-11"
+    assert manifest["provider"]["model_identity_source"] == (
+        "pricing_snapshot_intended_model"
+    )
+    assert manifest["pricing"]["state"] == "declared_snapshot_validated"
+    assert manifest["pricing"]["live_service_metadata_verified"] is False
+    assert manifest["pricing"]["identity_scope"] == "declared_snapshot_only"
+    assert manifest["pricing"]["price_key"].endswith("global:global-standard")
 
 
 # --- HIGH2: Responses call is stateless (store=False) -----------------------
@@ -1279,7 +1376,7 @@ def test_med12_schema_runtime_parity_valid_and_invalid():
     del missing_id["input"]["row_shape"]["required_fields"]["id"]
     invalid_docs.append(missing_id)
     unpriced = _base_ledger("azure")
-    del unpriced["execution"]["cost"]["input_per_1m_usd"]
+    del unpriced["execution"]["cost"]["pricing"]
     invalid_docs.append(unpriced)
 
     for doc in invalid_docs:

@@ -24,16 +24,18 @@ import re
 from dataclasses import dataclass, field
 from typing import Literal
 
+from scripts._azure_pricing import (
+    Gpt4oRates as Gpt4oRates,
+    Gpt52Rates as Gpt52Rates,
+    PaygPricing,
+    PaygSchemaError as PaygSchemaError,
+)
 
 # ----------------------------------------------------------------------------
 # Typed errors
 # ----------------------------------------------------------------------------
 
 MAX_SUPPORTED_RATE = 1_000_000.0
-
-
-class PaygSchemaError(ValueError):
-    """Raised when a PAYG pricing YAML fails schema validation. CLI exit 2."""
 
 
 class PtuSchemaError(ValueError):
@@ -68,69 +70,6 @@ class ThroughputGainError(ValueError):
 # ----------------------------------------------------------------------------
 # Frozen data models (immutable; field types and units in docstrings)
 # ----------------------------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class Gpt4oRates:
-    """PAYG per-token rates for ``gpt-4o`` (USD per 1,000,000 tokens).
-
-    gpt-4o has no reasoning column — this dataclass deliberately has no
-    ``reasoning_per_1m_usd`` field. That field, if present in a gpt-4o YAML
-    block, is rejected at load time. This is the §6.1 "dedicated separate
-    line / never collapsed" invariant enforced at the type level.
-
-    Attributes:
-        input_per_1m_usd: Standard input rate (USD per 1M tokens).
-        cached_input_per_1m_usd: Discounted cached-input rate.
-        output_per_1m_usd: Standard output rate.
-    """
-
-    input_per_1m_usd: float
-    cached_input_per_1m_usd: float
-    output_per_1m_usd: float
-
-
-@dataclass(frozen=True)
-class Gpt52Rates:
-    """PAYG per-token rates for ``gpt-5.2`` (USD per 1,000,000 tokens).
-
-    ``reasoning_per_1m_usd`` is mandatory and is a dedicated separate line —
-    never collapsed into ``output_per_1m_usd``. Even when the two are
-    numerically equal (as in the 2026-05 snapshot), they are stored
-    independently so a future divergence is captured automatically.
-
-    Attributes:
-        input_per_1m_usd: Standard input rate (USD per 1M tokens).
-        cached_input_per_1m_usd: Discounted cached-input rate.
-        reasoning_per_1m_usd: Reasoning-token rate (separate billed category).
-        output_per_1m_usd: Standard output rate.
-    """
-
-    input_per_1m_usd: float
-    cached_input_per_1m_usd: float
-    reasoning_per_1m_usd: float
-    output_per_1m_usd: float
-
-
-@dataclass(frozen=True)
-class PaygPricing:
-    """Parsed contents of a ``pricing/azure-openai-payg-{YYYY-MM}.yaml`` file.
-
-    Attributes:
-        source_url: HTTPS URL of the pricing page. Cited in every output header.
-        accessed_date: ``YYYY-MM-DD`` string (normalized from YAML date if needed).
-        archive_url: Optional ``https://web.archive.org/...`` snapshot URL.
-        currency: Must be ``"USD"``.
-        models: Mapping of deployment name to model-specific rate dataclass.
-        snapshot_path: Filesystem path of the loaded YAML (citation).
-    """
-
-    source_url: str
-    accessed_date: str
-    archive_url: str | None
-    currency: str
-    models: dict[str, Gpt4oRates | Gpt52Rates]
-    snapshot_path: str
 
 
 @dataclass(frozen=True)

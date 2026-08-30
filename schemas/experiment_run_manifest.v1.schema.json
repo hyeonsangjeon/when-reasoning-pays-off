@@ -19,7 +19,7 @@
     "artifacts"
   ],
   "properties": {
-    "schema_version": { "const": "1.1.0" },
+    "schema_version": { "const": "1.2.0" },
     "run_id": {
       "type": "string",
       "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
@@ -97,6 +97,8 @@
         "endpoint_source",
         "endpoint_locality",
         "auth_mode",
+        "model_identity_source",
+        "live_service_metadata_verified",
         "capabilities",
         "ollama",
         "fingerprint_sha256"
@@ -107,6 +109,10 @@
         "endpoint_source": { "type": "string", "minLength": 1, "maxLength": 80 },
         "endpoint_locality": { "enum": ["local", "remote", "environment", "none"] },
         "auth_mode": { "enum": ["none", "entra"] },
+        "model_identity_source": {
+          "enum": ["ledger_model", "pricing_snapshot_intended_model"]
+        },
+        "live_service_metadata_verified": { "type": "boolean" },
         "capabilities": {
           "type": "object",
           "additionalProperties": {
@@ -145,23 +151,71 @@
       "required": [
         "state",
         "snapshot_id",
+        "snapshot_path",
         "snapshot_sha256",
-        "pricing_model",
+        "source_url",
+        "archive_url",
+        "accessed_date",
+        "currency",
+        "model_family",
+        "model_version",
+        "geography",
+        "region",
+        "deployment_type",
+        "sku",
+        "price_key",
+        "meters",
         "input_per_1m_usd",
-        "output_per_1m_usd"
+        "cached_input_per_1m_usd",
+        "reasoning_per_1m_usd",
+        "output_per_1m_usd",
+        "identity_scope",
+        "live_service_metadata_verified"
       ],
       "properties": {
-        "state": { "enum": ["available", "not_applicable"] },
+        "state": { "enum": ["declared_snapshot_validated", "not_applicable"] },
         "snapshot_id": { "type": ["string", "null"], "maxLength": 120 },
+        "snapshot_path": { "type": ["string", "null"], "maxLength": 400 },
         "snapshot_sha256": {
           "oneOf": [
             { "$ref": "#/definitions/sha256" },
             { "type": "null" }
           ]
         },
-        "pricing_model": { "type": ["string", "null"], "maxLength": 120 },
+        "source_url": { "type": ["string", "null"], "maxLength": 500 },
+        "archive_url": { "type": ["string", "null"], "maxLength": 500 },
+        "accessed_date": { "type": ["string", "null"], "maxLength": 10 },
+        "currency": { "type": ["string", "null"], "maxLength": 8 },
+        "model_family": { "type": ["string", "null"], "maxLength": 120 },
+        "model_version": { "type": ["string", "null"], "maxLength": 120 },
+        "geography": { "type": ["string", "null"], "maxLength": 120 },
+        "region": { "type": ["string", "null"], "maxLength": 120 },
+        "deployment_type": { "type": ["string", "null"], "maxLength": 120 },
+        "sku": { "type": ["string", "null"], "maxLength": 160 },
+        "price_key": { "type": ["string", "null"], "maxLength": 240 },
+        "meters": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": { "type": "string", "minLength": 1 }
+            },
+            { "type": "null" }
+          ]
+        },
         "input_per_1m_usd": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-        "output_per_1m_usd": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+        "cached_input_per_1m_usd": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "reasoning_per_1m_usd": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "output_per_1m_usd": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "identity_scope": {
+          "enum": ["declared_snapshot_only", "not_applicable"]
+        },
+        "live_service_metadata_verified": { "type": "boolean" }
       }
     },
     "execution": {

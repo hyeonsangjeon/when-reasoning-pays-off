@@ -42,7 +42,7 @@ from batch_runner.privacy import (
     ensure_safe_public_text,
 )
 
-LEDGER_SCHEMA_VERSION = "1.0.0"
+LEDGER_SCHEMA_VERSION = "1.1.0"
 
 MAX_LEDGER_FILE_BYTES = 256 * 1024
 MAX_SAMPLES_CEILING = 50
@@ -237,6 +237,47 @@ class InputSpec(_Strict):
         return _require_safe_relative_path(value, field="input.path")
 
 
+class PricingSelectionSpec(_Strict):
+    """Safe identity used to select exactly one immutable snapshot record."""
+
+    snapshot_id: str = Field(min_length=1, max_length=120)
+    snapshot_path: str = Field(min_length=1, max_length=400)
+    snapshot_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    price_key: str = Field(min_length=1, max_length=240)
+    model_family: str = Field(min_length=1, max_length=120)
+    model_version: str = Field(min_length=1, max_length=120)
+    geography: str = Field(min_length=1, max_length=120)
+    region: str = Field(min_length=1, max_length=120)
+    deployment_type: Literal[
+        "Global Standard",
+        "Data Zone Standard",
+        "Regional Standard",
+        "Provisioned",
+    ]
+    currency: Literal["USD"]
+
+    @field_validator("snapshot_path")
+    @classmethod
+    def _safe_snapshot_path(cls, value: str) -> str:
+        return _require_safe_relative_path(value, field="cost.pricing.snapshot_path")
+
+    @field_validator(
+        "snapshot_id",
+        "price_key",
+        "model_family",
+        "model_version",
+        "geography",
+        "region",
+    )
+    @classmethod
+    def _safe_pricing_identity(cls, value: str) -> str:
+        try:
+            ensure_safe_identifier(value, label="cost.pricing identity")
+        except PrivacyViolation as exc:
+            raise ValueError(str(exc)) from None
+        return value
+
+
 class CostSpec(_Strict):
     """Cost boundary for the run. Only ``azure`` is billed."""
 
@@ -244,10 +285,7 @@ class CostSpec(_Strict):
     confirmed: bool = False
     estimated_usd: float = Field(default=0.0, ge=0.0, le=1_000_000.0)
     hard_ceiling_usd: float = Field(default=0.0, ge=0.0, le=1_000_000.0)
-    pricing_snapshot_id: str | None = Field(default=None, min_length=1, max_length=120)
-    pricing_model: str | None = Field(default=None, min_length=1, max_length=120)
-    input_per_1m_usd: float | None = Field(default=None, gt=0.0, le=1_000_000.0)
-    output_per_1m_usd: float | None = Field(default=None, gt=0.0, le=1_000_000.0)
+    pricing: PricingSelectionSpec | None = None
 
     @model_validator(mode="after")
     def _ceiling_covers_estimate(self) -> CostSpec:
@@ -363,18 +401,9 @@ class RunLedger(_Strict):
             if self.endpoint.default is not None:
                 raise ValueError("azure endpoint must not carry a committed default")
             cost = self.execution.cost
-            if any(
-                value is None
-                for value in (
-                    cost.pricing_snapshot_id,
-                    cost.pricing_model,
-                    cost.input_per_1m_usd,
-                    cost.output_per_1m_usd,
-                )
-            ):
+            if cost.pricing is None:
                 raise ValueError(
-                    "azure provider requires a pinned pricing snapshot ID, "
-                    "pricing model, and input/output rates"
+                    "azure provider requires an immutable cost.pricing selection"
                 )
             # gpt-5.2 rejects "minimal" at the service; refuse it up front so a
             # billed call never fails after the money is committed.
@@ -396,15 +425,7 @@ class RunLedger(_Strict):
                     f"{self.provider} provider must set execution.cost.billed false"
                 )
             cost = self.execution.cost
-            if any(
-                value is not None
-                for value in (
-                    cost.pricing_snapshot_id,
-                    cost.pricing_model,
-                    cost.input_per_1m_usd,
-                    cost.output_per_1m_usd,
-                )
-            ):
+            if cost.pricing is not None:
                 raise ValueError(
                     f"{self.provider} provider must not declare Azure pricing"
                 )
@@ -500,6 +521,7 @@ __all__ = [
     "AuthSpec",
     "RowShape",
     "InputSpec",
+    "PricingSelectionSpec",
     "CostSpec",
     "ExecutionSpec",
     "OutputSpec",

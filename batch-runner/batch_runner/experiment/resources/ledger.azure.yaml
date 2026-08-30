@@ -4,7 +4,7 @@
 #   1. cost.confirmed is set to true in this file, AND
 #   2. you pass --confirm-cost on the command line.
 # It also hard-refuses to run in CI by default.
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 
 experiment:
   id: five-minute-azure
@@ -62,12 +62,19 @@ execution:
     confirmed: false
     estimated_usd: 0.05
     hard_ceiling_usd: 1.00
-    # Pinned estimator inputs, not a provider quote. Verify current Azure pricing
-    # for this deployment before changing confirmed to true.
-    pricing_snapshot_id: starter-assumption-gpt-5.2-2026-03-08
-    pricing_model: gpt-5.2
-    input_per_1m_usd: 1.75
-    output_per_1m_usd: 14.00
+    # Safe intended identity only. `model` above may be a private deployment
+    # alias; it is never copied into the pricing snapshot or run manifest.
+    pricing:
+      snapshot_id: azure-openai-payg-sample-2026-05
+      snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+      snapshot_sha256: 858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd
+      price_key: azure-openai:gpt-5.2:2025-12-11:global:global-standard
+      model_family: gpt-5.2
+      model_version: "2025-12-11"
+      geography: global
+      region: global
+      deployment_type: Global Standard
+      currency: USD
 
 output:
   dir: out

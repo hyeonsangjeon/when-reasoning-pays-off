@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/azure_pricing_snapshot.v1.schema.json",
+  "title": "ImmutableAzureOpenAIPaygPricingSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "source_url",
+    "accessed_date",
+    "currency",
+    "selection_policy",
+    "records"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "snapshot_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "source_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "accessed_date": { "type": "string", "format": "date" },
+    "archive_url": {
+      "oneOf": [
+        { "type": "string", "format": "uri", "pattern": "^https://" },
+        { "type": "null" }
+      ]
+    },
+    "currency": { "const": "USD" },
+    "selection_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "freshness_policy"],
+      "properties": {
+        "mode": { "const": "deterministic-pinned" },
+        "freshness_policy": { "const": "not-applied" }
+      }
+    },
+    "records": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/definitions/priceRecord" }
+    }
+  },
+  "definitions": {
+    "priceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_family",
+        "model_version",
+        "geography",
+        "region",
+        "deployment_type",
+        "sku",
+        "price_key",
+        "meters",
+        "rates"
+      ],
+      "properties": {
+        "model_family": { "enum": ["gpt-4o", "gpt-5.2"] },
+        "model_version": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "geography": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "region": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "deployment_type": {
+          "enum": [
+            "Global Standard",
+            "Data Zone Standard",
+            "Regional Standard",
+            "Provisioned"
+          ]
+        },
+        "sku": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "price_key": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "meters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["input", "cached_input", "output"],
+          "properties": {
+            "input": { "type": "string", "minLength": 1, "maxLength": 240 },
+            "cached_input": { "type": "string", "minLength": 1, "maxLength": 240 },
+            "output": { "type": "string", "minLength": 1, "maxLength": 240 }
+          }
+        },
+        "rates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_per_1m_usd",
+            "cached_input_per_1m_usd",
+            "output_per_1m_usd"
+          ],
+          "properties": {
+            "input_per_1m_usd": { "type": "number", "exclusiveMinimum": 0 },
+            "cached_input_per_1m_usd": { "type": "number", "exclusiveMinimum": 0 },
+            "reasoning_per_1m_usd": { "type": "number", "exclusiveMinimum": 0 },
+            "output_per_1m_usd": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "model_family": { "const": "gpt-5.2" } }
+          },
+          "then": {
+            "properties": {
+              "rates": { "required": ["reasoning_per_1m_usd"] }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "model_family": { "const": "gpt-4o" } }
+          },
+          "then": {
+            "properties": {
+              "rates": {
+                "not": { "required": ["reasoning_per_1m_usd"] }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

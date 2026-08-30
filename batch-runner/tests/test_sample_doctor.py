@@ -41,7 +41,7 @@ _FIXED_RANDOM = lambda _n: "0123abcd"  # noqa: E731
 
 def _ledger(provider: str = "mock") -> dict[str, Any]:
     value: dict[str, Any] = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "experiment": {"id": "doctor-test", "purpose": "offline acceptance test"},
         "provider": provider,
         "model": "mock-preview" if provider == "mock" else "qwen2.5:0.5b",
@@ -489,7 +489,7 @@ def test_ollama_manifest_contains_fingerprint_and_no_raw_metadata(
         provider_builder=build,
     )
     manifest = json.loads(result.manifest_path.read_text())
-    assert manifest["schema_version"] == "1.1.0"
+    assert manifest["schema_version"] == "1.2.0"
     assert manifest["provider"]["ollama"]["digest"] == _DIGEST
     text = result.manifest_path.read_text()
     assert "{{ .System }}" not in text
