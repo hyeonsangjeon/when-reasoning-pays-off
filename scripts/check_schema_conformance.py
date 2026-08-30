@@ -27,6 +27,15 @@ class InstanceGroup:
 
 INSTANCE_GROUPS = (
     InstanceGroup(
+        "schemas/azure_pricing_snapshot.v1.schema.json",
+        (
+            "pricing/azure-openai-payg-sample-2026-05.yaml",
+            "batch-runner/batch_runner/data/azure_sample_pricing.yaml",
+            "tests/fixtures/pricing/azure-openai-payg-2026-05.yaml",
+        ),
+        "yaml",
+    ),
+    InstanceGroup(
         "schemas/experiment_ledger.v1.schema.json",
         (
             "batch-runner/batch_runner/experiment/resources/ledger.azure.yaml",
@@ -78,6 +87,8 @@ INSTANCE_GROUPS = (
 )
 
 GOVERNED_ARTIFACT_PATTERNS = (
+    "pricing/azure-openai-payg-sample-2026-05.yaml",
+    "batch-runner/batch_runner/data/azure_sample_pricing.yaml",
     "batch-runner/batch_runner/experiment/resources/ledger.*.yaml",
     "batch-runner/batch_runner/experiment/resources/sample*.json",
     "batch-runner/batch_runner/experiment/resources/sample*.jsonl",

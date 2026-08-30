@@ -160,6 +160,7 @@
       "guards": [
         "--confirm-cost",
         "ledger execution.cost.confirmed",
+        "immutable pricing snapshot identity and SHA-256",
         "hard ceiling",
         "CI refusal"
       ],

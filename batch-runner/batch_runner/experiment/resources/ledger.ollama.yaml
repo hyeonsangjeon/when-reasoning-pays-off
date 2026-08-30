@@ -1,7 +1,7 @@
 # Run ledger — the IN stage of one real experiment run.
 # This is the HEADLINE quickstart: a real, free, local run against Ollama.
 # Every field is validated before anything executes. Unknown fields are rejected.
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 
 experiment:
   id: five-minute-ollama

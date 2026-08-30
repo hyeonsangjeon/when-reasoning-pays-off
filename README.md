@@ -55,8 +55,9 @@ already installed and the small model is available or quick to pull; the first
 `ollama pull` is network- and hardware-dependent and is not counted in the five
 minutes. Azure OpenAI in Microsoft Foundry is also supported, but it is a
 **billed** call and is refused unless you explicitly confirm the cost. Its
-preflight uses the ledger's pinned pricing model and separate input/output
-rates; verify them against current Azure pricing before confirmation.
+preflight verifies the ledger's snapshot ID, repository path, SHA-256, price
+key, and safe model/region/deployment identity, then derives input, cached-input,
+and output rates only from that immutable snapshot record.
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate

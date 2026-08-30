@@ -19,7 +19,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "experiment": {
       "type": "object",
@@ -195,25 +195,50 @@
               "minimum": 0.0,
               "maximum": 1000000.0
             },
-            "pricing_snapshot_id": {
-              "type": ["string", "null"],
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "pricing_model": {
-              "type": ["string", "null"],
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "input_per_1m_usd": {
-              "type": ["number", "null"],
-              "exclusiveMinimum": 0.0,
-              "maximum": 1000000.0
-            },
-            "output_per_1m_usd": {
-              "type": ["number", "null"],
-              "exclusiveMinimum": 0.0,
-              "maximum": 1000000.0
+            "pricing": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "snapshot_id",
+                    "snapshot_path",
+                    "snapshot_sha256",
+                    "price_key",
+                    "model_family",
+                    "model_version",
+                    "geography",
+                    "region",
+                    "deployment_type",
+                    "currency"
+                  ],
+                  "properties": {
+                    "snapshot_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "snapshot_path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 400,
+                      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+                    },
+                    "snapshot_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+                    "price_key": { "type": "string", "minLength": 1, "maxLength": 240 },
+                    "model_family": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "model_version": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "geography": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "region": { "type": "string", "minLength": 1, "maxLength": 120 },
+                    "deployment_type": {
+                      "enum": [
+                        "Global Standard",
+                        "Data Zone Standard",
+                        "Regional Standard",
+                        "Provisioned"
+                      ]
+                    },
+                    "currency": { "const": "USD" }
+                  }
+                },
+                { "type": "null" }
+              ]
             }
           }
         }
@@ -281,10 +306,7 @@
                 },
                 "required": [
                   "hard_ceiling_usd",
-                  "pricing_snapshot_id",
-                  "pricing_model",
-                  "input_per_1m_usd",
-                  "output_per_1m_usd"
+                  "pricing"
                 ]
               }
             }
@@ -308,10 +330,7 @@
               "cost": {
                 "properties": {
                   "billed": { "const": false },
-                  "pricing_snapshot_id": { "const": null },
-                  "pricing_model": { "const": null },
-                  "input_per_1m_usd": { "const": null },
-                  "output_per_1m_usd": { "const": null }
+                  "pricing": { "const": null }
                 }
               }
             }
@@ -336,10 +355,7 @@
               "cost": {
                 "properties": {
                   "billed": { "const": false },
-                  "pricing_snapshot_id": { "const": null },
-                  "pricing_model": { "const": null },
-                  "input_per_1m_usd": { "const": null },
-                  "output_per_1m_usd": { "const": null }
+                  "pricing": { "const": null }
                 }
               }
             }

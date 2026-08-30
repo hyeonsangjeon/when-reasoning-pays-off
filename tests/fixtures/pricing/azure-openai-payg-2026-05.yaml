@@ -1,19 +1,44 @@
-# Synthetic PAYG pricing fixture for unit tests.
-# NOT production data. Rates chosen to make hand-computed cost easy:
-#   - gpt-4o:   input=10, cached=1, output=40 per 1M USD
-#   - gpt-5.2:  input=10, cached=1, reasoning=40, output=40 per 1M USD
-# Matches the worked example in .internal/tasks/003-cost-calculator.md.
+# Synthetic PAYG pricing fixture for unit tests; not production data.
+schema_version: "1.0.0"
+snapshot_id: synthetic-payg-2026-05
 source_url: https://example.test/azure-openai-pricing
-accessed_date: 2026-05-19
+accessed_date: "2026-05-19"
 archive_url: https://web.archive.org/web/20260519000000/https://example.test/azure-openai-pricing
 currency: USD
-models:
-  gpt-4o:
-    input_per_1m_usd: 10
-    cached_input_per_1m_usd: 1
-    output_per_1m_usd: 40
-  gpt-5.2:
-    input_per_1m_usd: 10
-    cached_input_per_1m_usd: 1
-    reasoning_per_1m_usd: 40
-    output_per_1m_usd: 40
+selection_policy:
+  mode: deterministic-pinned
+  freshness_policy: not-applied
+records:
+  test:gpt-4o:2024-11-20:global:global-standard:
+    model_family: gpt-4o
+    model_version: "2024-11-20"
+    geography: global
+    region: global
+    deployment_type: Global Standard
+    sku: Global Standard
+    price_key: test:gpt-4o:2024-11-20:global:global-standard
+    meters:
+      input: test gpt-4o input
+      cached_input: test gpt-4o cached input
+      output: test gpt-4o output
+    rates:
+      input_per_1m_usd: 10
+      cached_input_per_1m_usd: 1
+      output_per_1m_usd: 40
+  test:gpt-5.2:2025-12-11:global:global-standard:
+    model_family: gpt-5.2
+    model_version: "2025-12-11"
+    geography: global
+    region: global
+    deployment_type: Global Standard
+    sku: Global Standard
+    price_key: test:gpt-5.2:2025-12-11:global:global-standard
+    meters:
+      input: test gpt-5.2 input
+      cached_input: test gpt-5.2 cached input
+      output: test gpt-5.2 output
+    rates:
+      input_per_1m_usd: 10
+      cached_input_per_1m_usd: 1
+      reasoning_per_1m_usd: 40
+      output_per_1m_usd: 40

@@ -15,7 +15,7 @@
   ],
   "properties": {
     "schema_version": { "const": "2.0.0" },
-    "ledger_schema_version": { "const": "1.0.0" },
+    "ledger_schema_version": { "const": "1.1.0" },
     "run_id": {
       "type": "string",
       "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"

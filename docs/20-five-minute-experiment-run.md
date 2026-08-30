@@ -333,12 +333,16 @@ Two gates must both be satisfied: the CLI flag `--confirm-cost` **and** the
 ledger's `execution.cost.confirmed: true`. In a continuous-integration (CI)
 environment the billed run is hard-refused by default before any network call.
 
-**Cost preflight (enforced against pinned assumptions).** The Azure ledger names
-the pricing model, a pricing snapshot ID, and separate input/output rates per
-million tokens. Verify those values against the current price for your deployment
-before setting `confirmed: true`. Before any network call, the runner bounds
-input tokens by UTF-8 bytes plus framing overhead, assumes every request emits
-the full `max_output_tokens`, and applies those declared rates. It prints a plan
+**Cost preflight (enforced against an immutable snapshot).** The Azure ledger
+pins a repository snapshot by stable ID, path, and SHA-256, then selects one
+record by price key plus intended model family/version, geography, region,
+deployment type, and currency. Every dimension must match. Missing, unknown, or
+mismatched identities fail before endpoint resolution, provider construction,
+token acquisition, or any network call. Rates are never copied into the ledger:
+the runner derives separate input, cached-input, and output rates from the
+verified record. Before any network call, it bounds input tokens by UTF-8 bytes
+plus framing overhead, assumes every request emits the full
+`max_output_tokens`, and applies those snapshot rates. It prints a plan
 line such as `cost plan: 3 request(s), <= 128 output tokens each; conservative
 estimate $0.0055 (ceiling $1.00)`. If the estimate exceeds
 `execution.cost.hard_ceiling_usd`, the run is refused with zero calls. This
@@ -350,11 +354,26 @@ cost:
   billed: true
   confirmed: true
   hard_ceiling_usd: 1.00
-  pricing_snapshot_id: starter-assumption-gpt-5.2-2026-03-08
-  pricing_model: gpt-5.2
-  input_per_1m_usd: 1.75
-  output_per_1m_usd: 14.00
+  pricing:
+    snapshot_id: azure-openai-payg-sample-2026-05
+    snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+    snapshot_sha256: 858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd
+    price_key: azure-openai:gpt-5.2:2025-12-11:global:global-standard
+    model_family: gpt-5.2
+    model_version: "2025-12-11"
+    geography: global
+    region: global
+    deployment_type: Global Standard
+    currency: USD
 ```
+
+The snapshot contains only public pricing identity. The `model` field may be
+your private deployment alias; manifests replace it with the intended
+`family@version` and mark live Azure service metadata as not independently
+verified. Endpoint values and deployment aliases are never written to the
+snapshot or immutable manifest. Snapshot selection is deterministic and applies
+no wall-clock freshness rule; `selection_policy.freshness_policy:
+not-applied` is the explicit extension point for the later freshness policy.
 
 **Data retention.** Every sample Responses call sets `store=false`, the
 documented stateless mode: this call is not stored for later retrieval and no

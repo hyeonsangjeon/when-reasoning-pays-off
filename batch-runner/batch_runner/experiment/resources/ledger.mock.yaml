@@ -3,7 +3,7 @@
 # The answers and token counts are synthetic — not a measurement of any model.
 # Use it when you have neither Ollama nor Azure and just want to see the
 # DATA -> IN -> EXECUTE -> OUT artifacts.
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 
 experiment:
   id: five-minute-mock

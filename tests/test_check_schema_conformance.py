@@ -4,6 +4,8 @@ import json
 import shutil
 from pathlib import Path
 
+import yaml
+
 from scripts.check_schema_conformance import (
     InstanceGroup,
     check_artifact_conformance,
@@ -20,6 +22,32 @@ def test_schema_meta_validation_passes() -> None:
 
 def test_committed_artifact_instances_conform() -> None:
     assert check_artifact_conformance(REPO_ROOT) == []
+
+
+def test_pricing_schema_rejects_model_incompatible_reasoning_rates(
+    tmp_path: Path,
+) -> None:
+    schema = json.loads(
+        (REPO_ROOT / "schemas/azure_pricing_snapshot.v1.schema.json").read_text()
+    )
+    source = yaml.safe_load(
+        (
+            REPO_ROOT / "pricing/azure-openai-payg-sample-2026-05.yaml"
+        ).read_text()
+    )
+    gpt4o = "azure-openai:gpt-4o:2024-11-20:global:global-standard"
+    gpt52 = "azure-openai:gpt-5.2:2025-12-11:global:global-standard"
+
+    source["records"][gpt4o]["rates"]["reasoning_per_1m_usd"] = 10.0
+    invalid_gpt4o = tmp_path / "gpt4o-reasoning.yaml"
+    invalid_gpt4o.write_text(yaml.safe_dump(source, sort_keys=False))
+    assert validate_instance(invalid_gpt4o, schema, "yaml")
+
+    del source["records"][gpt4o]["rates"]["reasoning_per_1m_usd"]
+    del source["records"][gpt52]["rates"]["reasoning_per_1m_usd"]
+    invalid_gpt52 = tmp_path / "gpt52-missing-reasoning.yaml"
+    invalid_gpt52.write_text(yaml.safe_dump(source, sort_keys=False))
+    assert validate_instance(invalid_gpt52, schema, "yaml")
 
 
 def test_mutated_sample_row_is_rejected(tmp_path: Path) -> None:
