@@ -6,7 +6,7 @@ stages together::
     DATA     load_dataset(...)          -> validated rows + sha256
     IN       load_ledger(...)           -> strict RunLedger + sha256
     EXECUTE  provider.run_row(...)      -> normalized OutputRecord per row/repeat
-    OUT      write run.json/records.jsonl/summary.md into an *owned* directory
+    OUT      publish five artifacts into a new *immutable owned* run directory
 
 It is deliberately small and honest:
 
@@ -14,8 +14,8 @@ It is deliberately small and honest:
   ``--confirm-cost`` acknowledgement before any client is built.
 * Partial failures are preserved: completed rows are still written, the failing
   rows are listed, and the process exits non-zero.
-* Output goes only into a directory this tool owns (marked with a sentinel
-  file); it never overwrites an unrelated directory.
+* Output goes only into directories this tool owns (marked with sentinel files);
+  a completed run is never overwritten.
 * The run is an *illustrative live sample*, not the published benchmark — the
   summary says so in plain words.
 """
@@ -25,8 +25,9 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
+import re
 import secrets
-import stat
+import shutil
 import time
 from contextlib import contextmanager
 from functools import wraps
@@ -36,6 +37,11 @@ from typing import Any, Callable, Iterator
 from batch_runner.experiment.cost import CostPreflight, estimate_azure_cost
 from batch_runner.experiment.dataset import LoadedDataset, load_dataset, row_input_text
 from batch_runner.experiment.ledger import RunLedger
+from batch_runner.experiment.manifest import (
+    RunManifest,
+    build_manifest,
+    sha256_bytes,
+)
 from batch_runner.experiment.providers.azure import FOUNDRY_AUDIENCE
 from batch_runner.experiment.providers.base import (
     Provider,
@@ -87,7 +93,11 @@ EXIT_ALL_FAILED = 21
 _EVIDENCE_DIR_NAMES = frozenset({"benchmarks", "results"})
 
 Clock = Callable[[], float]
+RandomHex = Callable[[int], str]
 ProviderBuilder = Callable[[RunLedger, ResolvedEndpoint, bool], Provider]
+_RUN_ID_RE = re.compile(
+    r"^\d{8}T\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
+)
 
 
 def _reject_evidence_tree(out_dir: Path) -> None:
@@ -119,11 +129,15 @@ class RunResult:
     status: str  # "ok" | "partial" | "failed"
     exit_code: int
     out_dir: Path
+    run_id: str
     ok_count: int
     error_count: int
     run_json_path: Path
     records_path: Path
     summary_path: Path
+    manifest_path: Path
+    artifacts_sha256_path: Path
+    latest_path: Path
     failures: list[RowFailure]
 
     @property
@@ -165,76 +179,145 @@ def _select_output_dir(
     return declared
 
 
-def _claim_output_dir(
-    out_dir: Path, artifacts: tuple[str, str, str]
-) -> dict[Path, tuple[int, int]]:
-    """Create/verify an owned output directory, refusing foreign non-empty dirs."""
+def _valid_owned_marker(directory: Path) -> bool:
+    marker = directory / OWNED_MARKER_NAME
+    if marker.is_symlink() or not marker.is_file():
+        return False
+    try:
+        return marker.read_bytes() == _OWNED_MARKER_BYTES
+    except OSError:
+        return False
+
+
+def _ensure_owned_directory(directory: Path, *, label: str) -> None:
+    """Create or verify a real runner-owned directory."""
     marker_valid = False
-    if out_dir.is_symlink():
-        raise ExperimentOutputConflict("output path is not a real directory")
-    if out_dir.exists():
-        if not out_dir.is_dir():
-            raise ExperimentOutputConflict("output path is not a real directory")
-        marker = out_dir / OWNED_MARKER_NAME
-        if marker.is_file() and not marker.is_symlink():
-            try:
-                if marker.read_bytes() == _OWNED_MARKER_BYTES:
-                    marker_valid = True
-                else:
-                    raise ExperimentOutputConflict("output directory marker is invalid")
-            except OSError:
-                raise ExperimentOutputConflict(
-                    "output directory marker could not be read"
-                ) from None
-        if not marker_valid and any(out_dir.iterdir()):
+    if directory.is_symlink():
+        raise ExperimentOutputConflict(f"{label} path is not a real directory")
+    if directory.exists():
+        if not directory.is_dir():
+            raise ExperimentOutputConflict(f"{label} path is not a real directory")
+        marker_valid = _valid_owned_marker(directory)
+        if not marker_valid and any(directory.iterdir()):
             raise ExperimentOutputConflict(
-                "output directory exists and is not owned by this tool; "
+                f"{label} directory exists and is not owned by this tool; "
                 "remove it or initialize a fresh sample workspace"
             )
     else:
-        out_dir.mkdir(parents=True, exist_ok=False)
-    marker = out_dir / OWNED_MARKER_NAME
+        directory.mkdir(parents=True, exist_ok=False, mode=0o700)
+    marker = directory / OWNED_MARKER_NAME
     if not marker_valid:
         with marker.open("xb") as handle:
             handle.write(_OWNED_MARKER_BYTES)
             handle.flush()
             os.fsync(handle.fileno())
-    allowed = {OWNED_MARKER_NAME, *artifacts}
-    for child in out_dir.iterdir():
+
+
+def _claim_output_root(out_dir: Path) -> Path:
+    """Claim the immutable output root and its owned ``runs`` directory."""
+    _ensure_owned_directory(out_dir, label="output")
+    allowed = {OWNED_MARKER_NAME, "runs", "latest.json"}
+    for child in list(out_dir.iterdir()):
+        runner_temp = (
+            re.fullmatch(r"\.latest\.json\.[0-9a-f]{16}\.tmp", child.name)
+            or re.fullmatch(
+                r"\.reasoning-payoff-write-probe-[0-9a-f]{16}", child.name
+            )
+        )
+        if runner_temp and (child.is_symlink() or child.is_file()):
+            child.unlink()
+            continue
         if child.name not in allowed:
             raise ExperimentOutputConflict(
-                "owned output directory contains an unexpected path"
+                "owned output directory contains an unexpected path; legacy "
+                "flat outputs must be moved before using immutable runs"
             )
-        if child.name != OWNED_MARKER_NAME and (
-            child.is_symlink() or not child.is_file()
-        ):
+        if child.name == "latest.json" and (child.is_symlink() or not child.is_file()):
             raise ExperimentOutputConflict(
-                "an output artifact path is not a regular file"
+                "latest pointer path is not a regular file"
             )
-    created: dict[Path, tuple[int, int]] = {}
-    for artifact_name in artifacts:
-        artifact = out_dir / artifact_name
-        flags = os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
-        was_missing = not artifact.exists()
-        if was_missing:
-            flags |= os.O_CREAT | os.O_EXCL
-        try:
-            fd = os.open(artifact, flags, 0o600)
-            artifact_stat = os.fstat(fd)
-            if not stat.S_ISREG(artifact_stat.st_mode):
+        if child.name == "latest.json":
+            try:
+                if child.stat().st_size > 16_384:
+                    raise ValueError
+                pointer = json.loads(child.read_text(encoding="utf-8"))
+                run_id = pointer["run_id"]
+                if (
+                    set(pointer)
+                    != {
+                        "schema_version",
+                        "run_id",
+                        "run_path",
+                        "status",
+                        "manifest_sha256",
+                    }
+                    or pointer["schema_version"] != "1.0.0"
+                    or not isinstance(run_id, str)
+                    or not _RUN_ID_RE.fullmatch(run_id)
+                    or pointer["run_path"] != f"runs/{run_id}"
+                    or pointer["status"] not in {"ok", "partial", "failed"}
+                    or not re.fullmatch(
+                        r"[0-9a-f]{64}", pointer["manifest_sha256"]
+                    )
+                ):
+                    raise ValueError
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError, KeyError):
                 raise ExperimentOutputConflict(
-                    "an output artifact path is not a regular file"
+                    "latest pointer is invalid or unsafe"
+                ) from None
+    runs_dir = out_dir / "runs"
+    _ensure_owned_directory(runs_dir, label="runs")
+    for child in runs_dir.iterdir():
+        if child.name == OWNED_MARKER_NAME:
+            continue
+        if child.is_symlink() or not child.is_dir():
+            raise ExperimentOutputConflict("runs directory contains an unsafe path")
+        if child.name.startswith("."):
+            if not _valid_owned_marker(child):
+                raise ExperimentOutputConflict(
+                    "runs directory contains an unowned staging path"
                 )
-            if was_missing:
-                created[artifact] = (artifact_stat.st_dev, artifact_stat.st_ino)
-        except OSError as exc:
+            continue
+        if not _RUN_ID_RE.fullmatch(child.name) or not _valid_owned_marker(child):
             raise ExperimentOutputConflict(
-                "an output artifact path is not writable"
-            ) from exc
-        finally:
-            if "fd" in locals():
-                os.close(fd)
-                del fd
+                "runs directory contains an invalid or unowned run directory"
+            )
+        expected = {
+            OWNED_MARKER_NAME,
+            "run.json",
+            "records.jsonl",
+            "summary.md",
+            "manifest.json",
+            "artifacts.sha256",
+        }
+        children = {entry.name: entry for entry in child.iterdir()}
+        if set(children) != expected:
+            raise ExperimentOutputConflict(
+                "an immutable run has an incomplete artifact set"
+            )
+        for name, artifact in children.items():
+            if name != OWNED_MARKER_NAME and (
+                artifact.is_symlink() or not artifact.is_file()
+            ):
+                raise ExperimentOutputConflict(
+                    "an immutable run artifact path is not a regular file"
+                )
+    latest_path = out_dir / "latest.json"
+    if latest_path.exists():
+        try:
+            pointer = json.loads(latest_path.read_text(encoding="utf-8"))
+            manifest = runs_dir / pointer["run_id"] / "manifest.json"
+            if (
+                manifest.is_symlink()
+                or not manifest.is_file()
+                or sha256_bytes(manifest.read_bytes())
+                != pointer["manifest_sha256"]
+            ):
+                raise ValueError
+        except (OSError, json.JSONDecodeError, ValueError, KeyError):
+            raise ExperimentOutputConflict(
+                "latest pointer does not match a complete immutable run"
+            ) from None
     probe = out_dir / f".reasoning-payoff-write-probe-{secrets.token_hex(8)}"
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
     try:
@@ -250,23 +333,32 @@ def _claim_output_dir(
             probe.unlink()
         except FileNotFoundError:
             pass
-    return created
+    return runs_dir
 
 
-def _remove_unchanged_reservations(
-    reservations: dict[Path, tuple[int, int]],
-) -> None:
-    for path, identity in reservations.items():
+def _new_run_id(
+    *, epoch: float, ledger_sha256: str, input_sha256: str, random_hex: RandomHex
+) -> str:
+    suffix = random_hex(4)
+    if not re.fullmatch(r"[0-9a-f]{8}", suffix):
+        raise ExperimentOutputConflict("run ID randomness source returned invalid data")
+    utc = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(epoch))
+    return f"{utc}_{ledger_sha256[:8]}_{input_sha256[:8]}_{suffix}"
+
+
+def _create_run_stage(runs_dir: Path, run_id: str) -> tuple[Path, Path]:
+    final = runs_dir / run_id
+    if final.exists() or final.is_symlink():
+        raise ExperimentOutputConflict("run ID collision; refusing to reuse a run")
+    for _ in range(8):
+        stage = runs_dir / f".{run_id}.staging-{secrets.token_hex(8)}"
         try:
-            current = path.lstat()
-        except FileNotFoundError:
+            stage.mkdir(mode=0o700)
+        except FileExistsError:
             continue
-        if (
-            stat.S_ISREG(current.st_mode)
-            and current.st_size == 0
-            and (current.st_dev, current.st_ino) == identity
-        ):
-            path.unlink()
+        _ensure_owned_directory(stage, label="run staging")
+        return stage, final
+    raise ExperimentOutputConflict("could not reserve a staging directory for the run")
 
 
 @contextmanager
@@ -306,12 +398,9 @@ def _hold_workspace_output_lock(
         )
         kwargs["out_dir"] = selected
         with _exclusive_run_lock(selected.parent):
-            reservations = _claim_output_dir(selected, ledger.output.artifacts)
-            try:
-                return func(*args, **kwargs)
-            except BaseException:
-                _remove_unchanged_reservations(reservations)
-                raise
+            _reject_evidence_tree(selected)
+            _claim_output_root(selected)
+            return func(*args, **kwargs)
 
     return wrapped
 
@@ -342,6 +431,7 @@ def _atomic_write_text(path: Path, text: str) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, path)
+        _fsync_directory(directory)
     except BaseException:
         try:
             os.unlink(tmp)
@@ -350,14 +440,22 @@ def _atomic_write_text(path: Path, text: str) -> None:
         raise
 
 
+def _fsync_directory(directory: Path) -> None:
+    """Make a completed rename durable before publishing a parent pointer."""
+    fd = os.open(directory, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def _endpoint_identity(
     ledger: RunLedger, endpoint: ResolvedEndpoint
 ) -> dict[str, Any]:
     """Return a discriminated, secret-free endpoint description for artifacts.
 
-    Azure's resolved host is deliberately omitted: only the env-var *name*, the
-    deployment (model), the auth mode, and the audience are recorded. Ollama's
-    localhost base URL is safe to record; the mock has none.
+    A resolved host is always omitted. Only the endpoint env-var *name*, source
+    class, deployment/model, auth mode, and safe locality metadata are recorded.
     """
     if ledger.provider == "azure":
         return {
@@ -378,10 +476,6 @@ def _endpoint_identity(
             "locality": "local" if endpoint.is_local else "remote",
             "remote_opt_in": not endpoint.is_local,
         }
-        # A localhost base URL is safe to record; a remote (opt-in) URL is not
-        # persisted at all — only its env-var source and locality class are.
-        if endpoint.is_local:
-            identity["base_url"] = endpoint.base_url
         return identity
     return {"provider": "mock", "model": ledger.model}
 
@@ -395,8 +489,11 @@ def run_ledger(
     allow_remote_ollama: bool = False,
     confirm_cost: bool = False,
     clock: Clock | None = None,
+    random_hex: RandomHex | None = None,
     provider_builder: ProviderBuilder | None = None,
     preflight_sink: Callable[[CostPreflight], None] | None = None,
+    parent_run_id: str | None = None,
+    retry_keys: set[tuple[str, int]] | None = None,
 ) -> RunResult:
     """Execute ``ledger`` end to end and write owned artifacts.
 
@@ -407,6 +504,7 @@ def run_ledger(
         allow_remote_ollama: Permit a non-localhost Ollama endpoint (opt-in).
         confirm_cost: The explicit CLI acknowledgement for a billed run.
         clock: Injectable wall clock (epoch seconds) for deterministic tests.
+        random_hex: Injectable lowercase hex source for deterministic run IDs.
         provider_builder: Injectable provider factory for tests.
         preflight_sink: Optional callback invoked with the conservative Azure
             cost plan *before* the run is authorized, so a caller can display
@@ -418,6 +516,7 @@ def run_ledger(
     """
     env = os.environ if environ is None else environ
     now = time.time if clock is None else clock
+    token_hex = secrets.token_hex if random_hex is None else random_hex
     build = provider_builder or (
         lambda lg, ep, cap: build_provider(lg, ep, capture_io=cap)
     )
@@ -425,55 +524,86 @@ def run_ledger(
     # --- DATA ---------------------------------------------------------------
     input_path = _resolve_input_path(base_dir, ledger.input.path)
     dataset = load_dataset(input_path, ledger.input)
-    rows = dataset.selected(
+    selected_rows = dataset.selected(
         selector=ledger.input.sample_selector, limit=ledger.execution.max_samples
     )
-    prompts = [row_input_text(row) for row in rows]
+    planned = [
+        (row, repeat_index)
+        for row in selected_rows
+        for repeat_index in range(ledger.execution.repeats)
+    ]
+    if parent_run_id is None and retry_keys is not None:
+        raise ExperimentOutputConflict("retry keys require a parent run")
+    if parent_run_id is not None:
+        if not _RUN_ID_RE.fullmatch(parent_run_id):
+            raise ExperimentOutputConflict("parent run ID is invalid")
+        if not retry_keys:
+            raise ExperimentOutputConflict("parent run has no failed rows to retry")
+        planned_keys = {
+            (str(row.get("id")), repeat_index) for row, repeat_index in planned
+        }
+        if not retry_keys <= planned_keys:
+            raise ExperimentOutputConflict(
+                "parent run does not match the current input selection"
+            )
+        execution_items = [
+            (row, repeat_index)
+            for row, repeat_index in planned
+            if (str(row.get("id")), repeat_index) in retry_keys
+        ]
+    else:
+        execution_items = planned
+    prompts = [row_input_text(row) for row, _ in execution_items]
 
-    # --- OUT (claimed first): refuse the evidence tree and lock an owned dir
-    # BEFORE resolving an endpoint, building a provider, or making any billable
-    # call. A foreign/unwritable output directory fails here with zero calls.
+    # --- OUT (claimed first): stage a fresh immutable run before resolving an
+    # endpoint, building a provider, or making any billable call.
     resolved_out = _select_output_dir(
         ledger, base_dir=base_dir, out_dir=out_dir
     )
     _reject_evidence_tree(resolved_out)
-    _claim_output_dir(resolved_out, ledger.output.artifacts)
-
-    # --- IN: cost gate + conservative pre-flight before anything is reached --
-    preflight: CostPreflight | None = None
-    if ledger.provider == "azure":
-        if not (ledger.execution.cost.confirmed and confirm_cost):
-            raise BudgetNotConfirmedError(
-                "billed Azure run requires both execution.cost.confirmed in the "
-                "ledger and the explicit --confirm-cost flag"
-            )
-        preflight = estimate_azure_cost(ledger, prompts)
-        if preflight_sink is not None:
-            preflight_sink(preflight)
-        if not preflight.within_ceiling:
-            raise BudgetNotConfirmedError(
-                "refusing billed Azure run: the conservative pre-flight "
-                f"estimate (${preflight.estimated_usd:.4f} over "
-                f"{preflight.planned_requests} request(s)) exceeds "
-                f"execution.cost.hard_ceiling_usd "
-                f"(${preflight.hard_ceiling_usd:.2f}); lower max_samples/repeats/"
-                "max_output_tokens or raise the ceiling"
-            )
-
-    # --- EXECUTE: resolve endpoint, prepare provider (may abort globally) ----
-    endpoint = resolve_endpoint(
-        ledger, environ=env, allow_remote=allow_remote_ollama
+    runs_dir = _claim_output_root(resolved_out)
+    run_id = _new_run_id(
+        epoch=now(),
+        ledger_sha256=ledger.sha256(),
+        input_sha256=dataset.sha256,
+        random_hex=token_hex,
     )
-    provider = build(ledger, endpoint, ledger.execution.capture_io)
-    provider.prepare()
+    stage_dir, final_dir = _create_run_stage(runs_dir, run_id)
+    try:
+        # --- IN: cost gate + conservative pre-flight -------------------------
+        preflight: CostPreflight | None = None
+        if ledger.provider == "azure":
+            if not (ledger.execution.cost.confirmed and confirm_cost):
+                raise BudgetNotConfirmedError(
+                    "billed Azure run requires both execution.cost.confirmed in the "
+                    "ledger and the explicit --confirm-cost flag"
+                )
+            preflight = estimate_azure_cost(ledger, prompts, repeats=1)
+            if preflight_sink is not None:
+                preflight_sink(preflight)
+            if not preflight.within_ceiling:
+                raise BudgetNotConfirmedError(
+                    "refusing billed Azure run: the conservative pre-flight "
+                    f"estimate (${preflight.estimated_usd:.4f} over "
+                    f"{preflight.planned_requests} request(s)) exceeds "
+                    f"execution.cost.hard_ceiling_usd "
+                    f"(${preflight.hard_ceiling_usd:.2f}); lower "
+                    "max_samples/repeats/max_output_tokens or raise the ceiling"
+                )
 
-    started = now()
-    records: list[OutputRecord] = []
-    failures: list[RowFailure] = []
-    for row in rows:
-        row_id = str(row.get("id"))
-        prompt = row_input_text(row)
-        for repeat_index in range(ledger.execution.repeats):
+        # --- EXECUTE: resolve endpoint, prepare provider ---------------------
+        endpoint = resolve_endpoint(
+            ledger, environ=env, allow_remote=allow_remote_ollama
+        )
+        provider = build(ledger, endpoint, ledger.execution.capture_io)
+        provider.prepare()
+
+        started = now()
+        records: list[OutputRecord] = []
+        failures: list[RowFailure] = []
+        for row, repeat_index in execution_items:
+            row_id = str(row.get("id"))
+            prompt = row_input_text(row)
             record = _execute_one(
                 provider, row_id, repeat_index, prompt, model=ledger.model
             )
@@ -486,62 +616,265 @@ def run_ledger(
                         error_type=record.error_type or "provider_error",
                     )
                 )
-    ended = now()
+        ended = now()
 
-    ok_count = sum(1 for r in records if r.ok)
-    error_count = len(records) - ok_count
-    if error_count == 0:
-        status, exit_code = "ok", EXIT_OK
-    elif ok_count == 0:
-        status, exit_code = "failed", EXIT_ALL_FAILED
-    else:
-        status, exit_code = "partial", EXIT_PARTIAL
+        ok_count = sum(1 for record in records if record.ok)
+        error_count = len(records) - ok_count
+        if error_count == 0:
+            status, exit_code = "ok", EXIT_OK
+        elif ok_count == 0:
+            status, exit_code = "failed", EXIT_ALL_FAILED
+        else:
+            status, exit_code = "partial", EXIT_PARTIAL
 
-    preview = _answer_preview(records)
-    run_json = _build_run_json(
-        ledger=ledger,
-        endpoint=endpoint,
-        dataset=dataset,
-        provider=provider,
-        records=records,
-        failures=failures,
-        status=status,
-        started=started,
-        ended=ended,
-        selected=len(rows),
-        preflight=preflight,
-    )
-    records_path = resolved_out / "records.jsonl"
-    run_json_path = resolved_out / "run.json"
-    summary_path = resolved_out / "summary.md"
+        preview = _answer_preview(records)
+        run_json = _build_run_json(
+            ledger=ledger,
+            endpoint=endpoint,
+            dataset=dataset,
+            provider=provider,
+            records=records,
+            failures=failures,
+            status=status,
+            started=started,
+            ended=ended,
+            selected=len({str(row.get("id")) for row, _ in execution_items}),
+            preflight=preflight,
+            run_id=run_id,
+            parent_run_id=parent_run_id,
+        )
+        records_bytes = "".join(
+            json.dumps(record.to_json(), ensure_ascii=False, sort_keys=True) + "\n"
+            for record in records
+        ).encode("utf-8")
+        run_json_bytes = (
+            json.dumps(run_json, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
+        ).encode("utf-8")
+        summary_bytes = _build_summary_md(
+            run_json, preview=preview, records_name="records.jsonl"
+        ).encode("utf-8")
+        payload_artifacts = {
+            "records.jsonl": records_bytes,
+            "run.json": run_json_bytes,
+            "summary.md": summary_bytes,
+        }
+        manifest = build_manifest(
+            run_id=run_id,
+            ledger=ledger,
+            dataset=dataset,
+            selected_ids=sorted(
+                {str(row.get("id")) for row, _ in execution_items}
+            ),
+            endpoint=endpoint,
+            capabilities=provider.capabilities(),
+            status=status,
+            parent_run_id=parent_run_id,
+            retried_failed_count=len(execution_items) if parent_run_id else 0,
+            artifact_bytes=payload_artifacts,
+            cost_confirmed_by_cli=confirm_cost,
+            remote_ollama_opt_in=allow_remote_ollama,
+        )
+        manifest_bytes = (
+            json.dumps(
+                manifest.model_dump(mode="json"),
+                indent=2,
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+            + "\n"
+        ).encode("utf-8")
+        checksummed = {**payload_artifacts, "manifest.json": manifest_bytes}
+        checksum_bytes = "".join(
+            f"{sha256_bytes(content)}  {name}\n"
+            for name, content in sorted(checksummed.items())
+        ).encode("ascii")
 
-    _atomic_write_text(
-        records_path,
-        "".join(json.dumps(r.to_json(), ensure_ascii=False) + "\n" for r in records),
-    )
-    _atomic_write_text(
-        run_json_path, json.dumps(run_json, indent=2, ensure_ascii=False) + "\n"
-    )
-    _atomic_write_text(
-        summary_path,
-        _build_summary_md(run_json, preview=preview, records_name="records.jsonl"),
-    )
+        for name, content in {
+            **checksummed,
+            "artifacts.sha256": checksum_bytes,
+        }.items():
+            _atomic_write_text(stage_dir / name, content.decode("utf-8"))
 
-    return RunResult(
-        status=status,
-        exit_code=exit_code,
-        out_dir=resolved_out,
-        ok_count=ok_count,
-        error_count=error_count,
-        run_json_path=run_json_path,
-        records_path=records_path,
-        summary_path=summary_path,
-        failures=failures,
-        _preview=preview,
-    )
+        if final_dir.exists() or final_dir.is_symlink():
+            raise ExperimentOutputConflict("run ID collision; refusing to reuse a run")
+        os.rename(stage_dir, final_dir)
+        _fsync_directory(runs_dir)
+        latest = {
+            "schema_version": "1.0.0",
+            "run_id": run_id,
+            "run_path": f"runs/{run_id}",
+            "status": status,
+            "manifest_sha256": sha256_bytes(manifest_bytes),
+        }
+        latest_path = resolved_out / "latest.json"
+        _atomic_write_text(
+            latest_path,
+            json.dumps(latest, indent=2, sort_keys=True) + "\n",
+        )
+
+        return RunResult(
+            status=status,
+            exit_code=exit_code,
+            out_dir=final_dir,
+            run_id=run_id,
+            ok_count=ok_count,
+            error_count=error_count,
+            run_json_path=final_dir / "run.json",
+            records_path=final_dir / "records.jsonl",
+            summary_path=final_dir / "summary.md",
+            manifest_path=final_dir / "manifest.json",
+            artifacts_sha256_path=final_dir / "artifacts.sha256",
+            latest_path=latest_path,
+            failures=failures,
+            _preview=preview,
+        )
+    except BaseException:
+        if stage_dir.exists() and not stage_dir.is_symlink():
+            shutil.rmtree(stage_dir)
+        raise
 
 
 run_ledger = _hold_workspace_output_lock(run_ledger)
+
+
+def _read_run_artifact(run_dir: Path, name: str, *, max_bytes: int) -> bytes:
+    path = run_dir / name
+    if path.is_symlink() or not path.is_file():
+        raise ExperimentOutputConflict("parent run contains an unsafe artifact path")
+    try:
+        if path.stat().st_size > max_bytes:
+            raise ExperimentOutputConflict("parent run artifact is too large")
+        return path.read_bytes()
+    except OSError:
+        raise ExperimentOutputConflict("parent run artifact could not be read") from None
+
+
+def _retry_keys_for_parent(
+    ledger: RunLedger, *, base_dir: Path, parent_run_id: str
+) -> set[tuple[str, int]]:
+    """Validate an immutable parent and return only its failed row attempts."""
+    if not _RUN_ID_RE.fullmatch(parent_run_id):
+        raise ExperimentOutputConflict("parent run ID is invalid")
+    out_dir = _select_output_dir(ledger, base_dir=base_dir, out_dir=None)
+    run_dir = out_dir / "runs" / parent_run_id
+    if run_dir.is_symlink() or not run_dir.is_dir() or not _valid_owned_marker(run_dir):
+        raise ExperimentOutputConflict("parent run is missing or not safely owned")
+    expected_children = {
+        OWNED_MARKER_NAME,
+        "run.json",
+        "records.jsonl",
+        "summary.md",
+        "manifest.json",
+        "artifacts.sha256",
+    }
+    if {child.name for child in run_dir.iterdir()} != expected_children:
+        raise ExperimentOutputConflict("parent run artifact set is incomplete")
+
+    try:
+        checksum_text = _read_run_artifact(
+            run_dir, "artifacts.sha256", max_bytes=16_384
+        ).decode("ascii")
+    except UnicodeDecodeError:
+        raise ExperimentOutputConflict("parent checksum file is invalid") from None
+    expected_hashes: dict[str, str] = {}
+    for line in checksum_text.splitlines():
+        parts = line.split("  ", 1)
+        if len(parts) != 2 or not re.fullmatch(r"[0-9a-f]{64}", parts[0]):
+            raise ExperimentOutputConflict("parent checksum file is invalid")
+        expected_hashes[parts[1]] = parts[0]
+    if set(expected_hashes) != {
+        "manifest.json",
+        "records.jsonl",
+        "run.json",
+        "summary.md",
+    }:
+        raise ExperimentOutputConflict("parent checksum coverage is incomplete")
+
+    artifacts = {
+        name: _read_run_artifact(run_dir, name, max_bytes=32 * 1024 * 1024)
+        for name in expected_hashes
+    }
+    if any(
+        sha256_bytes(artifacts[name]) != expected_hashes[name]
+        for name in expected_hashes
+    ):
+        raise ExperimentOutputConflict("parent run artifact checksum mismatch")
+    try:
+        manifest = RunManifest.model_validate_json(artifacts["manifest.json"])
+        records = [
+            json.loads(line)
+            for line in artifacts["records.jsonl"].decode("utf-8").splitlines()
+            if line.strip()
+        ]
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        raise ExperimentOutputConflict("parent run metadata is invalid") from None
+    input_path = _resolve_input_path(base_dir, ledger.input.path)
+    dataset = load_dataset(input_path, ledger.input)
+    if (
+        manifest.run_id != parent_run_id
+        or manifest.ledger_sha256 != ledger.sha256()
+        or manifest.input.sha256 != dataset.sha256
+    ):
+        raise ExperimentOutputConflict(
+            "parent run does not match the current ledger and input"
+        )
+
+    retry_keys: set[tuple[str, int]] = set()
+    seen: set[tuple[str, int]] = set()
+    for record in records:
+        if not isinstance(record, dict):
+            raise ExperimentOutputConflict("parent run record is invalid")
+        row_id = record.get("row_id")
+        repeat_index = record.get("repeat_index")
+        status = record.get("status")
+        if (
+            not isinstance(row_id, str)
+            or not isinstance(repeat_index, int)
+            or isinstance(repeat_index, bool)
+            or status not in {"ok", "error"}
+        ):
+            raise ExperimentOutputConflict("parent run record is invalid")
+        key = (row_id, repeat_index)
+        if key in seen:
+            raise ExperimentOutputConflict("parent run contains duplicate attempts")
+        seen.add(key)
+        if status == "error":
+            retry_keys.add(key)
+    if not retry_keys:
+        raise ExperimentOutputConflict("parent run has no failed rows to retry")
+    return retry_keys
+
+
+def retry_failed_run(
+    ledger: RunLedger,
+    *,
+    base_dir: Path,
+    parent_run_id: str,
+    environ: dict[str, str] | None = None,
+    allow_remote_ollama: bool = False,
+    confirm_cost: bool = False,
+    clock: Clock | None = None,
+    random_hex: RandomHex | None = None,
+    provider_builder: ProviderBuilder | None = None,
+    preflight_sink: Callable[[CostPreflight], None] | None = None,
+) -> RunResult:
+    """Create a child run containing calls for failed parent attempts only."""
+    retry_keys = _retry_keys_for_parent(
+        ledger, base_dir=base_dir, parent_run_id=parent_run_id
+    )
+    return run_ledger(
+        ledger,
+        base_dir=base_dir,
+        environ=environ,
+        allow_remote_ollama=allow_remote_ollama,
+        confirm_cost=confirm_cost,
+        clock=clock,
+        random_hex=random_hex,
+        provider_builder=provider_builder,
+        preflight_sink=preflight_sink,
+        parent_run_id=parent_run_id,
+        retry_keys=retry_keys,
+    )
 
 
 def _execute_one(
@@ -600,6 +933,8 @@ def _build_run_json(
     ended: float,
     selected: int,
     preflight: CostPreflight | None = None,
+    run_id: str,
+    parent_run_id: str | None,
 ) -> dict[str, Any]:
     ok_records = [r for r in records if r.ok]
     cost_block: dict[str, Any] = {
@@ -611,7 +946,13 @@ def _build_run_json(
     if preflight is not None:
         cost_block["preflight"] = preflight.to_json()
     return {
-        "schema_version": ledger.schema_version,
+        "schema_version": "2.0.0",
+        "ledger_schema_version": ledger.schema_version,
+        "run_id": run_id,
+        "lineage": {
+            "kind": "retry_failed" if parent_run_id else "initial",
+            "parent_run_id": parent_run_id,
+        },
         "banner": sample_banner(ledger.provider),
         "method": {
             "method_id": ledger.provenance.method_id,
@@ -670,6 +1011,8 @@ def _build_run_json(
             "run_json": "run.json",
             "records_jsonl": "records.jsonl",
             "summary_md": "summary.md",
+            "manifest_json": "manifest.json",
+            "artifacts_sha256": "artifacts.sha256",
         },
     }
 
@@ -687,6 +1030,7 @@ def _build_summary_md(
         f"- provider: **{run_json['provider']}**  model: **{run_json['model']}**",
         f"- status: **{run_json['status']}**  "
         f"(ok {counts['ok']} / error {counts['error']} of {counts['total']})",
+        f"- immutable run ID: `{run_json['run_id']}`",
         f"- input: `{run_json['input']['path']}` "
         f"({run_json['input']['format']}, {run_json['input']['total_records']} rows, "
         f"sha256 `{run_json['input']['sha256'][:12]}…`)",
@@ -728,6 +1072,8 @@ def _build_summary_md(
         "",
         f"- per-row records: `{records_name}`",
         "- full run metadata: `run.json`",
+        "- code/environment manifest: `manifest.json`",
+        "- artifact checksums: `artifacts.sha256`",
         "",
     ]
     return "\n".join(lines)
@@ -735,6 +1081,7 @@ def _build_summary_md(
 
 __all__ = [
     "run_ledger",
+    "retry_failed_run",
     "RunResult",
     "RowFailure",
     "ExperimentOutputConflict",

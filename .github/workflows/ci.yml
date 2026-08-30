@@ -129,6 +129,9 @@ jobs:
               "public_claim_contract.v1.schema.json",
               "usage_envelope.v1.schema.json",
               "workload_spec.v1.schema.json",
+              "experiment_run_manifest.v1.schema.json",
+              "experiment_run.v2.schema.json",
+              "experiment_latest_pointer.v1.schema.json",
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY
@@ -173,25 +176,36 @@ jobs:
           out_dir = workspace / "out"
           assert {path.name for path in out_dir.iterdir()} == {
               ".reasoning-payoff-experiment-owned",
-              "records.jsonl",
-              "run.json",
-              "summary.md",
+              "latest.json",
+              "runs",
           }
           sample_run = json.loads((cwd / "wheel-sample-run.json").read_text())
           assert sample_run["status"] == "ok"
           assert sample_run["ok_count"] == 3
           assert sample_run["error_count"] == 0
-          assert sample_run["out_dir"] == "out"
-          assert sample_run["run_json"] == "out/run.json"
-          assert sample_run["records"] == "out/records.jsonl"
-          assert sample_run["summary"] == "out/summary.md"
-          run = json.loads((out_dir / "run.json").read_text())
+          run_id = sample_run["run_id"]
+          assert sample_run["out_dir"] == f"out/runs/{run_id}"
+          assert sample_run["run_json"] == f"out/runs/{run_id}/run.json"
+          assert sample_run["records"] == f"out/runs/{run_id}/records.jsonl"
+          assert sample_run["summary"] == f"out/runs/{run_id}/summary.md"
+          run_dir = out_dir / "runs" / run_id
+          assert {path.name for path in run_dir.iterdir()} == {
+              ".reasoning-payoff-experiment-owned",
+              "artifacts.sha256",
+              "manifest.json",
+              "records.jsonl",
+              "run.json",
+              "summary.md",
+          }
+          run = json.loads((run_dir / "run.json").read_text())
           assert run["artifacts"] == {
+              "artifacts_sha256": "artifacts.sha256",
+              "manifest_json": "manifest.json",
               "run_json": "run.json",
               "records_jsonl": "records.jsonl",
               "summary_md": "summary.md",
           }
-          assert len((out_dir / "records.jsonl").read_text().splitlines()) == 3
+          assert len((run_dir / "records.jsonl").read_text().splitlines()) == 3
           catalog = json.loads((cwd / "wheel-experiment-list.json").read_text())
           assert catalog["experiment_count"] == 20
           assert len(catalog["experiments"]) == 20

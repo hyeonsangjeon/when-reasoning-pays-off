@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/experiment_run_manifest.v1.schema.json",
+  "title": "ImmutableExperimentRunManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "ledger_sha256",
+    "code",
+    "runtime",
+    "input",
+    "provider",
+    "pricing",
+    "execution",
+    "status",
+    "lineage",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "run_id": {
+      "type": "string",
+      "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
+    },
+    "ledger_sha256": { "$ref": "#/definitions/sha256" },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "vcs_state", "commit_sha", "dirty", "package_version"],
+      "properties": {
+        "repository": { "const": "hyeonsangjeon/when-reasoning-pays-off" },
+        "vcs_state": { "enum": ["available", "unknown"] },
+        "commit_sha": {
+          "type": "string",
+          "pattern": "^(unknown|[0-9a-f]{40})$"
+        },
+        "dirty": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "const": "unknown" }
+          ]
+        },
+        "package_version": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["python", "os", "architecture", "dependency_lock", "selected_packages"],
+      "properties": {
+        "python": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "os": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "architecture": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "dependency_lock": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "kind", "sha256"],
+          "properties": {
+            "state": { "enum": ["available", "unknown"] },
+            "kind": { "enum": ["requirements.txt", "unknown"] },
+            "sha256": {
+              "type": "string",
+              "pattern": "^(unknown|[0-9a-f]{64})$"
+            }
+          }
+        },
+        "selected_packages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "sha256", "total_count", "selected_count", "selected_ids_sha256"],
+      "properties": {
+        "format": { "enum": ["json", "jsonl"] },
+        "sha256": { "$ref": "#/definitions/sha256" },
+        "total_count": { "type": "integer", "minimum": 1 },
+        "selected_count": { "type": "integer", "minimum": 1 },
+        "selected_ids_sha256": { "$ref": "#/definitions/sha256" }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model",
+        "endpoint_source",
+        "endpoint_locality",
+        "auth_mode",
+        "capabilities",
+        "fingerprint_sha256"
+      ],
+      "properties": {
+        "provider": { "enum": ["azure", "ollama", "mock"] },
+        "model": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "endpoint_source": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "endpoint_locality": { "enum": ["local", "remote", "environment", "none"] },
+        "auth_mode": { "enum": ["none", "entra"] },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["string", "boolean"]
+          }
+        },
+        "fingerprint_sha256": { "$ref": "#/definitions/sha256" }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "snapshot_id",
+        "snapshot_sha256",
+        "pricing_model",
+        "input_per_1m_usd",
+        "output_per_1m_usd"
+      ],
+      "properties": {
+        "state": { "enum": ["available", "not_applicable"] },
+        "snapshot_id": { "type": ["string", "null"], "maxLength": 120 },
+        "snapshot_sha256": {
+          "oneOf": [
+            { "$ref": "#/definitions/sha256" },
+            { "type": "null" }
+          ]
+        },
+        "pricing_model": { "type": ["string", "null"], "maxLength": 120 },
+        "input_per_1m_usd": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "output_per_1m_usd": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_samples",
+        "concurrency",
+        "timeout_seconds",
+        "max_output_tokens",
+        "repeats",
+        "reasoning_effort",
+        "capture_io",
+        "cost_confirmed_in_ledger",
+        "cost_confirmed_by_cli",
+        "remote_ollama_opt_in"
+      ],
+      "properties": {
+        "max_samples": { "type": "integer", "minimum": 1 },
+        "concurrency": { "const": 1 },
+        "timeout_seconds": { "type": "integer", "minimum": 1 },
+        "max_output_tokens": { "type": "integer", "minimum": 1 },
+        "repeats": { "type": "integer", "minimum": 1 },
+        "reasoning_effort": { "type": ["string", "null"] },
+        "capture_io": { "type": "boolean" },
+        "cost_confirmed_in_ledger": { "type": "boolean" },
+        "cost_confirmed_by_cli": { "type": "boolean" },
+        "remote_ollama_opt_in": { "type": "boolean" }
+      }
+    },
+    "status": { "enum": ["ok", "partial", "failed"] },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "parent_run_id", "retried_failed_count"],
+      "properties": {
+        "kind": { "enum": ["initial", "retry_failed"] },
+        "parent_run_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
+            },
+            { "type": "null" }
+          ]
+        },
+        "retried_failed_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["records.jsonl", "run.json", "summary.md"],
+      "properties": {
+        "records.jsonl": { "$ref": "#/definitions/artifact" },
+        "run.json": { "$ref": "#/definitions/artifact" },
+        "summary.md": { "$ref": "#/definitions/artifact" }
+      }
+    }
+  },
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "bytes"],
+      "properties": {
+        "sha256": { "$ref": "#/definitions/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

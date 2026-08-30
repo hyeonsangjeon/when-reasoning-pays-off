@@ -64,17 +64,24 @@ def _estimate_input_tokens(prompt: str) -> int:
     return len(prompt.encode("utf-8")) + _INPUT_TOKEN_OVERHEAD
 
 
-def estimate_azure_cost(ledger: RunLedger, prompts: list[str]) -> CostPreflight:
+def estimate_azure_cost(
+    ledger: RunLedger, prompts: list[str], *, repeats: int | None = None
+) -> CostPreflight:
     """Return a conservative :class:`CostPreflight` for ``prompts``.
 
-    ``prompts`` are the actual selected prompt strings (one per row); each is
-    executed ``repeats`` times. The estimate assumes the maximum output for
-    every request.
+    By default, ``prompts`` contains one string per selected row and the ledger's
+    repeat count is applied. A retry caller may instead pass one string per
+    actual attempt with ``repeats=1``. The estimate assumes the maximum output
+    for every request.
     """
-    repeats = ledger.execution.repeats
+    effective_repeats = ledger.execution.repeats if repeats is None else repeats
+    if effective_repeats < 1:
+        raise ValueError("repeats must be at least one")
     max_output = ledger.execution.max_output_tokens
-    planned_requests = len(prompts) * repeats
-    input_tokens = sum(_estimate_input_tokens(p) for p in prompts) * repeats
+    planned_requests = len(prompts) * effective_repeats
+    input_tokens = (
+        sum(_estimate_input_tokens(p) for p in prompts) * effective_repeats
+    )
     output_tokens = planned_requests * max_output
     cost = ledger.execution.cost
     if any(

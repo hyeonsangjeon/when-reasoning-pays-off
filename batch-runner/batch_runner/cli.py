@@ -169,27 +169,38 @@ def _add_sample_parser(subparsers: argparse._SubParsersAction) -> None:
         help="Empty output directory (default: sample-workspace)",
     )
     run = sample_sub.add_parser(
-        "run", help="Execute a ledger.yaml: DATA -> IN -> EXECUTE -> OUT"
+        "run", help="Execute a ledger.yaml into a new immutable run"
     )
-    run.add_argument(
-        "--ledger",
-        default="ledger.yaml",
-        metavar="LEDGER_YAML",
-        help="Ledger describing the run (default: ledger.yaml)",
+    retry = sample_sub.add_parser(
+        "retry-failed",
+        help="Create a child run that calls only failed parent attempts",
     )
-    run.add_argument(
-        "--confirm-cost",
-        action="store_true",
-        help="Acknowledge Azure billing. Required for a billed provider.",
+    retry.add_argument(
+        "--parent-run-id",
+        required=True,
+        metavar="RUN_ID",
+        help="Immutable parent run ID under out/runs/",
     )
-    run.add_argument(
-        "--allow-remote-ollama",
-        action="store_true",
-        help="Permit a non-localhost Ollama base URL (off by default).",
-    )
-    run.add_argument(
-        "--json", action="store_true", help="Emit the run summary as JSON"
-    )
+    for command in (run, retry):
+        command.add_argument(
+            "--ledger",
+            default="ledger.yaml",
+            metavar="LEDGER_YAML",
+            help="Ledger describing the run (default: ledger.yaml)",
+        )
+        command.add_argument(
+            "--confirm-cost",
+            action="store_true",
+            help="Acknowledge Azure billing. Required for a billed provider.",
+        )
+        command.add_argument(
+            "--allow-remote-ollama",
+            action="store_true",
+            help="Permit a non-localhost Ollama base URL (off by default).",
+        )
+        command.add_argument(
+            "--json", action="store_true", help="Emit the run summary as JSON"
+        )
     return
 
 
@@ -264,6 +275,7 @@ def _init_sample_workspace(out_dir: Path, provider: str) -> None:
         _write_text_resource(
             stage / ".gitignore",
             "# Created by `reasoning-payoff sample init`.\n"
+            "# Immutable sample runs live under out/runs/.\n"
             "out/\n"
             ".env\n"
             ".reasoning-payoff-sample.lock\n"
@@ -328,7 +340,10 @@ def _cmd_experiment_describe(target: str, as_json: bool) -> int:
 
 def _cmd_sample_run(args: argparse.Namespace) -> int:
     from batch_runner.experiment.ledger import load_ledger  # noqa: PLC0415
-    from batch_runner.experiment.runner import run_ledger  # noqa: PLC0415
+    from batch_runner.experiment.runner import (  # noqa: PLC0415
+        retry_failed_run,
+        run_ledger,
+    )
 
     ledger_path = Path(args.ledger).resolve()
     # Bounded, value-free loader: a malformed or oversized YAML fails with a
@@ -348,25 +363,39 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
     def _show_preflight(plan: object) -> None:
         print(plan.plan_line(), file=sys.stderr)  # type: ignore[attr-defined]
 
-    result = run_ledger(
-        ledger,
-        base_dir=base_dir,
-        allow_remote_ollama=args.allow_remote_ollama,
-        confirm_cost=args.confirm_cost,
-        preflight_sink=_show_preflight,
-    )
+    run_kwargs = {
+        "base_dir": base_dir,
+        "allow_remote_ollama": args.allow_remote_ollama,
+        "confirm_cost": args.confirm_cost,
+        "preflight_sink": _show_preflight,
+    }
+    if args.sample_command == "retry-failed":
+        result = retry_failed_run(
+            ledger,
+            parent_run_id=args.parent_run_id,
+            **run_kwargs,
+        )
+    else:
+        result = run_ledger(ledger, **run_kwargs)
+    relative_run_dir = f"{ledger.output.dir}/runs/{result.run_id}"
     if args.json:
         print(
             json.dumps(
                 {
                     "status": result.status,
                     "exit_code": result.exit_code,
-                    "out_dir": ledger.output.dir,
+                    "run_id": result.run_id,
+                    "out_dir": relative_run_dir,
                     "ok_count": result.ok_count,
                     "error_count": result.error_count,
-                    "run_json": f"{ledger.output.dir}/run.json",
-                    "records": f"{ledger.output.dir}/records.jsonl",
-                    "summary": f"{ledger.output.dir}/summary.md",
+                    "run_json": f"{relative_run_dir}/run.json",
+                    "records": f"{relative_run_dir}/records.jsonl",
+                    "summary": f"{relative_run_dir}/summary.md",
+                    "manifest": f"{relative_run_dir}/manifest.json",
+                    "artifacts_sha256": (
+                        f"{relative_run_dir}/artifacts.sha256"
+                    ),
+                    "latest": f"{ledger.output.dir}/latest.json",
                     "answer_preview": result.answer_preview,
                     "failures": [
                         {
@@ -385,7 +414,8 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
         print(
             f"{result.status}: {result.ok_count} ok, {result.error_count} failed"
         )
-        print(f"output: {result.out_dir}")
+        print(f"run: {result.run_id}")
+        print(f"output: {relative_run_dir}")
         if result.answer_preview:
             print(f"preview: {result.answer_preview}")
         if result.failures:

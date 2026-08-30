@@ -107,6 +107,15 @@ SCHEMA_EXEMPTIONS = {
     "schemas/redaction_rules.schema.json": (
         "the governed rules file is private and intentionally gitignored"
     ),
+    "schemas/experiment_run_manifest.v1.schema.json": (
+        "runtime-generated immutable sample manifests are intentionally gitignored"
+    ),
+    "schemas/experiment_run.v2.schema.json": (
+        "runtime-generated immutable sample run metadata is intentionally gitignored"
+    ),
+    "schemas/experiment_latest_pointer.v1.schema.json": (
+        "runtime-generated latest pointers are intentionally gitignored"
+    ),
 }
 
 # These committed manifests have code-level validators but no JSON Schema. They

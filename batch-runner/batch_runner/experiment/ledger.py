@@ -54,7 +54,13 @@ MAX_RECORDS_CEILING = 50
 
 #: The exact, ordered artifact set the runner writes. The ledger may not
 #: advertise a different set (see :class:`OutputSpec`).
-FIXED_ARTIFACTS = ["run.json", "records.jsonl", "summary.md"]
+FIXED_ARTIFACTS = [
+    "run.json",
+    "records.jsonl",
+    "summary.md",
+    "manifest.json",
+    "artifacts.sha256",
+]
 
 Provider = Literal["azure", "ollama", "mock"]
 DataFormat = Literal["json", "jsonl"]
@@ -270,11 +276,11 @@ class OutputSpec(_Strict):
     """The ``OUT`` stage: where artifacts are written."""
 
     dir: Literal["out"]
-    # The runner writes exactly these three artifacts, in this order. The list
+    # The runner writes exactly these five artifacts, in this order. The list
     # is fixed rather than free-form so the ledger cannot advertise files that
     # are never produced.
     artifacts: list[str] = Field(
-        default_factory=lambda: ["run.json", "records.jsonl", "summary.md"],
+        default_factory=lambda: list(FIXED_ARTIFACTS),
     )
 
     @field_validator("artifacts")

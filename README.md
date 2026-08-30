@@ -36,6 +36,7 @@ The table below is checked against that file and the live argparse command tree.
 | `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
 | `sample-run-ollama-remote` | `reasoning-payoff sample run --allow-remote-ollama` | Live remote-provider call | Remote HTTP only after explicit opt-in | No Azure bill; operator infrastructure may cost money |
 | `sample-run-azure` | `reasoning-payoff sample run --confirm-cost` (Azure) | Live cloud-provider call | HTTPS to Azure OpenAI | Billed; CLI + ledger confirmation, hard ceiling, and CI refusal |
+| `sample-retry-failed` | `reasoning-payoff sample retry-failed` | Child run for failed attempts only | Same boundary as the parent provider | Same boundary as the parent provider |
 <!-- CLI-CAPABILITIES:END -->
 
 ## Run one real experiment in five minutes — DATA → IN → EXECUTE → OUT
@@ -81,16 +82,22 @@ sample-workspace/
 ├── sample.json        # DATA: the same rows as one JSON array
 ├── .env.example       # names of the environment variables (never secrets)
 └── out/
-    ├── run.json       # provider/model, input hash + row count, timings, usage
-    ├── records.jsonl  # one row per request: latency, token usage, answer text
-    ├── summary.md     # a short, safe answer preview + where the records live
-    └── .reasoning-payoff-experiment-owned   # marker: this dir is run output
+    ├── latest.json    # atomic pointer to the last completely published run
+    ├── .reasoning-payoff-experiment-owned
+    └── runs/
+        └── <utc>_<ledger8>_<input8>_<random8>/
+            ├── run.json       # provider/model, timings, usage, lineage
+            ├── records.jsonl  # one row per attempted request
+            ├── summary.md     # short, safe answer preview
+            ├── manifest.json  # code/runtime/input/provider/pricing provenance
+            └── artifacts.sha256
 ```
 
 > This is an **illustrative live sample — not the published benchmark**; there
 > is no quality judge and no comparable reasoning-effort sweep. It proves the
 > plumbing end to end, not a scientific result. Sample output is gitignored and
-> fixed to the workspace's owned `out/` directory.
+> fixed to immutable directories under the workspace's owned `out/runs/`.
+> A later run never rewrites an earlier run.
 
 Prefer no install first? `reasoning-payoff sample init --provider mock` uses a
 deterministic **offline preview** provider that makes no network call — useful
