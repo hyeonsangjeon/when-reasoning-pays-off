@@ -157,6 +157,23 @@ jobs:
             <<<"$analysis_error"
           grep -F 'pip install "when-reasoning-pays-off[azure]"' <<<"$azure_error"
 
+      - name: Wheel-honest experiment run needs the source checkout
+        run: |
+          # From a wheel-only install with no source in scope, `experiment run`
+          # must refuse with the source-missing exit code (8), stay actionable,
+          # and leak no absolute path. Read-only catalog browsing still works.
+          cli="$RUNNER_TEMP/core/bin/reasoning-payoff"
+          work="$RUNNER_TEMP/wheel-only"
+          mkdir -p "$work"
+          set +e
+          run_error="$(cd "$work" && "$cli" experiment run \
+            exp001_short-factual_baseline --stage dry-run 2>&1)"
+          run_status=$?
+          set -e
+          test "$run_status" -eq 8
+          grep -F 'source checkout' <<<"$run_error"
+          ( cd "$work" && "$cli" experiment list --json >/dev/null )
+
   dependency-compatibility:
     name: Dependency graph (${{ matrix.graph }})
     runs-on: ubuntu-latest
@@ -459,6 +476,7 @@ jobs:
               "sample_doctor.v1.schema.json",
               "cold_mock_timing.v1.schema.json",
               "protected_azure_smoke_health.v1.schema.json",
+              "experiment_execution_plan.v1.schema.json",
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY
@@ -646,6 +664,44 @@ jobs:
             -p "no:cacheprovider" \
             --timeout=30 \
             batch-runner/tests/
+
+      - name: Offline all-20 experiment dry-run sweep
+        env:
+          AZURE_OPENAI_API_KEY: ""
+          OPENAI_API_KEY: ""
+          HF_TOKEN: ""
+        run: |
+          # Every catalogued experiment must produce a schema-valid,
+          # zero-network, zero-billing dry-run plan through the dispatcher.
+          # A socket guard proves no connection is opened; the immutable plan
+          # publication stays outside every protected tree.
+          out="$RUNNER_TEMP/experiment-plans"
+          python - "$out" <<'PY'
+          import json, socket, sys
+          from pathlib import Path
+          from jsonschema import Draft7Validator, FormatChecker
+          from batch_runner.experiment.catalog import load_packaged_catalog
+          from batch_runner.experiment.dispatch import dispatch_dry_run
+
+          out_root = Path(sys.argv[1])
+          schema = json.loads(Path("schemas/experiment_execution_plan.v1.schema.json").read_text())
+          Draft7Validator.check_schema(schema)
+          validator = Draft7Validator(schema, format_checker=FormatChecker())
+
+          def blocked(*_a, **_k):
+              raise AssertionError("network access attempted during a dry-run sweep")
+          socket.socket.connect = blocked
+
+          ids = [e["experiment_id"] for e in load_packaged_catalog()["experiments"]]
+          assert len(ids) == 20, ids
+          for eid in ids:
+              outcome = dispatch_dry_run(eid, out_dir=out_root / eid)
+              doc = json.loads(outcome.plan_path.read_text())
+              errs = list(validator.iter_errors(doc))
+              assert not errs, (eid, [e.message for e in errs])
+              assert doc["network_calls"] == 0 and doc["billed_calls"] == 0, eid
+          print(f"dry-run sweep: {len(ids)} schema-valid zero-network plans")
+          PY
 
       - name: Pytest — scripts (unit, fast subset)
         env:

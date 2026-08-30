@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/experiment_execution_plan.v1.schema.json",
+  "title": "ExperimentExecutionPlan",
+  "description": "Normalized, immutable dry-run execution plan written by `reasoning-payoff experiment run --stage dry-run`. A dry-run opens no socket, resolves no credential/endpoint, and makes no provider call; network_calls and billed_calls are pinned to 0.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "stage",
+    "network_calls",
+    "billed_calls",
+    "generated_by",
+    "identity",
+    "adapter",
+    "data",
+    "input",
+    "pricing",
+    "knobs",
+    "outputs",
+    "command_scope"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "plan_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "stage": { "const": "dry-run" },
+    "network_calls": { "const": 0 },
+    "billed_calls": { "const": 0 },
+    "generated_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool",
+        "package_version",
+        "adapter_registry_version",
+        "catalog_schema_version"
+      ],
+      "properties": {
+        "tool": { "const": "reasoning-payoff" },
+        "package_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "adapter_registry_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+        "catalog_schema_version": { "type": "string", "minLength": 1, "maxLength": 32 }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experiment_id",
+        "config_path",
+        "config_sha256",
+        "family",
+        "read_benchmark"
+      ],
+      "properties": {
+        "experiment_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "config_path": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "config_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "family": { "type": "string", "minLength": 1, "maxLength": 16 },
+        "read_benchmark": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "source_module",
+        "supports_live",
+        "live_kind",
+        "pricing_policy_aware"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 32 },
+        "source_module": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "supports_live": { "type": "boolean" },
+        "live_kind": { "enum": ["azure-billed", "offline-simulation"] },
+        "pricing_policy_aware": { "type": "boolean" }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputs"],
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "format", "shape", "present"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1, "maxLength": 400 },
+              "format": { "type": "string", "minLength": 1, "maxLength": 40 },
+              "shape": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "present": { "type": "boolean" },
+              "sha256": {
+                "type": ["string", "null"],
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model_family",
+        "endpoint_env",
+        "auth_mode",
+        "auth_mode_env",
+        "audience",
+        "credentials_resolved",
+        "endpoint_resolved"
+      ],
+      "properties": {
+        "provider": { "const": "azure" },
+        "model_family": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "endpoint_env": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "auth_mode": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "auth_mode_env": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "audience": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "credentials_resolved": { "const": false },
+        "endpoint_resolved": { "const": false }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicable", "policy"],
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "policy": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "snapshot_path": { "type": ["string", "null"], "maxLength": 400 },
+        "snapshot_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "knobs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variable", "bounded"],
+      "properties": {
+        "variable": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "bounded": { "type": "object" }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_dir", "artifacts"],
+      "properties": {
+        "output_dir": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "artifacts": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "command_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_argv", "reference_invocation", "executed"],
+      "properties": {
+        "adapter_argv": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reference_invocation": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "executed": { "const": false }
+      }
+    }
+  }
+}

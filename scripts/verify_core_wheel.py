@@ -187,6 +187,26 @@ def verify(source: Path) -> None:
             or described["experiment_id"] != "exp001_short-factual_baseline"
         ):
             raise RuntimeError("packaged experiment catalog is incomplete")
+        # `experiment run` needs the clone-only experiments/scripts source. From
+        # this wheel-only temp root it must refuse with the source-missing exit
+        # code (8), stay actionable, and leak no absolute path.
+        experiment_run = _run(
+            [
+                str(cli),
+                "experiment",
+                "run",
+                "exp001_short-factual_baseline",
+                "--stage",
+                "dry-run",
+            ],
+            cwd=root,
+            expected=8,
+            capture=True,
+        )
+        if "source checkout" not in experiment_run.stderr:
+            raise RuntimeError("wheel-only experiment run was not actionable")
+        if str(root) in experiment_run.stdout + experiment_run.stderr:
+            raise RuntimeError("wheel-only experiment run leaked an absolute path")
         analysis = _run(
             [
                 str(cli),

@@ -141,6 +141,10 @@ SCHEMA_EXEMPTIONS = {
     "schemas/protected_azure_smoke_health.v1.schema.json": (
         "runtime-generated protected health is uploaded briefly and never committed"
     ),
+    "schemas/experiment_execution_plan.v1.schema.json": (
+        "runtime-generated immutable dry-run plans are written to an owned, "
+        "gitignored output directory and not committed"
+    ),
 }
 
 # These committed manifests have code-level validators but no JSON Schema. They

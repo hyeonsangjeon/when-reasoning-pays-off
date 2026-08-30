@@ -133,6 +133,39 @@ def _add_experiment_parser(subparsers: argparse._SubParsersAction) -> None:
     exp_desc.add_argument(
         "--json", action="store_true", help="Emit the entry as JSON"
     )
+    exp_run = exp_sub.add_parser(
+        "run",
+        help="Plan a dry-run (default) or start a billed live run for one experiment",
+        description=(
+            "Dispatch one catalogued experiment through its typed adapter. "
+            "--stage dry-run (default) writes an immutable, normalized execution "
+            "plan and makes zero network/provider/billed calls. --stage live "
+            "--confirm-cost delegates to the validated runner (billed Azure "
+            "OpenAI). Both stages require the source checkout."
+        ),
+    )
+    exp_run.add_argument("target", metavar="ID_OR_FILE")
+    exp_run.add_argument(
+        "--stage",
+        choices=("dry-run", "live"),
+        default="dry-run",
+        help="dry-run (default, no calls) or live (billed, needs --confirm-cost)",
+    )
+    exp_run.add_argument(
+        "--confirm-cost",
+        action="store_true",
+        help="Acknowledge Azure billing. Required for --stage live.",
+    )
+    exp_run.add_argument(
+        "--out",
+        default=".reasoning-payoff-plans",
+        metavar="DIR",
+        help="Owned output directory for dry-run plans (default: "
+        ".reasoning-payoff-plans)",
+    )
+    exp_run.add_argument(
+        "--json", action="store_true", help="Emit the dispatch result as JSON"
+    )
 
 
 def _add_sample_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -468,12 +501,83 @@ def _cmd_sample_doctor(args: argparse.Namespace) -> int:
     return result.exit_code
 
 
+def _cmd_experiment_run(args: argparse.Namespace) -> int:
+    from batch_runner.experiment.dispatch import (  # noqa: PLC0415
+        DispatchError,
+        PlanConflictError,
+        dispatch_dry_run,
+        dispatch_live,
+    )
+
+    try:
+        if args.stage == "dry-run":
+            outcome = dispatch_dry_run(args.target, out_dir=Path(args.out))
+            plan = outcome.plan
+            if args.json:
+                print(
+                    json.dumps(
+                        {
+                            "stage": "dry-run",
+                            "experiment_id": outcome.experiment_id,
+                            "adapter": outcome.adapter_id,
+                            "plan_id": outcome.plan_id,
+                            "plan_path": str(outcome.plan_path),
+                            "network_calls": plan.network_calls,
+                            "billed_calls": plan.billed_calls,
+                        },
+                        indent=2,
+                        ensure_ascii=True,
+                    )
+                )
+            else:
+                print(
+                    f"dry-run: wrote immutable plan for {outcome.experiment_id} "
+                    f"via adapter {outcome.adapter_id}"
+                )
+                print(f"plan   : {outcome.plan_id}")
+                print(f"output : {outcome.plan_path}")
+                print("calls  : network=0 billed=0 (no provider contacted)")
+            return 0
+        # --stage live
+        result = dispatch_live(args.target, confirm_cost=args.confirm_cost)
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "stage": "live",
+                        "experiment_id": result.experiment_id,
+                        "adapter": result.adapter_id,
+                        "runner_exit_code": result.exit_code,
+                    },
+                    indent=2,
+                    ensure_ascii=True,
+                )
+            )
+        else:
+            print(
+                f"live: {result.experiment_id} via adapter {result.adapter_id} "
+                f"exited {result.exit_code}"
+            )
+        return result.exit_code
+    except PlanConflictError as exc:
+        print(f"report error: {exc}", file=sys.stderr)
+        return 5
+    except DispatchError as exc:
+        label = {3: "input error", 5: "report error", 7: "cost error", 8: "source error"}.get(
+            exc.exit_code, "error"
+        )
+        print(f"{label}: {exc}", file=sys.stderr)
+        return exc.exit_code
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         if args.command == "experiment":
             if args.experiment_command == "list":
                 return _cmd_experiment_list(args.json)
+            if args.experiment_command == "run":
+                return _cmd_experiment_run(args)
             return _cmd_experiment_describe(args.target, args.json)
         if args.command == "sample":
             if args.sample_command == "init":

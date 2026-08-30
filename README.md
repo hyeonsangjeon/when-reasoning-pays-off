@@ -43,6 +43,8 @@ The table below is checked against that file and the live argparse command tree.
 | `report` | `reasoning-payoff report` | Deterministic offline render | No runtime network | No provider cost |
 | `experiment-list` | `reasoning-payoff experiment list` | Read-only local catalog | No runtime network | No provider cost |
 | `experiment-describe` | `reasoning-payoff experiment describe` | Read-only local catalog | No runtime network | No provider cost |
+| `experiment-run-dry-run` | `reasoning-payoff experiment run --stage dry-run` | Offline plan via validated adapter | No runtime network | No provider cost; immutable plan, refuses protected trees |
+| `experiment-run-live` | `reasoning-payoff experiment run --stage live --confirm-cost` | Live cloud-provider call via validated runner | HTTPS to Azure OpenAI | Billed; --confirm-cost plus runner budget/CI guards |
 | `sample-init` | `reasoning-payoff sample init` | Offline workspace copy | No runtime network | No provider cost |
 | `sample-run-mock` | `reasoning-payoff sample run` (Mock) | Deterministic offline preview | No runtime network | No provider cost |
 | `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
