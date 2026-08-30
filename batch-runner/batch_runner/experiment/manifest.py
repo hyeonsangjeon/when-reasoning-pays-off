@@ -7,7 +7,7 @@ import json
 import platform
 import re
 import subprocess
-from importlib import metadata
+from importlib import metadata, resources
 from pathlib import Path
 from typing import Any, Literal
 
@@ -20,23 +20,23 @@ from batch_runner.experiment.ledger import RunLedger
 from batch_runner.experiment.providers.base import ResolvedEndpoint
 from batch_runner.experiment.record import ProviderCapabilities
 
-MANIFEST_SCHEMA_VERSION = "1.2.0"
+MANIFEST_SCHEMA_VERSION = "1.3.0"
 REPOSITORY_IDENTITY = "hyeonsangjeon/when-reasoning-pays-off"
 _SHA256_RE = r"^[0-9a-f]{64}$"
 _COMMIT_RE = r"^(unknown|[0-9a-f]{40})$"
 _SELECTED_PACKAGES = (
     "azure-identity",
+    "matplotlib",
     "numpy",
     "openai",
     "pandas",
     "pydantic",
     "pyyaml",
-    "python-dotenv",
 )
 
 
 class _StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="forbid", strict=True, protected_namespaces=())
 
 
 class CodeIdentity(_StrictModel):
@@ -49,8 +49,11 @@ class CodeIdentity(_StrictModel):
 
 class DependencyLockIdentity(_StrictModel):
     state: Literal["available", "unknown"]
-    kind: Literal["requirements.txt", "unknown"]
+    kind: Literal["uv-compiled-requirements", "unknown"]
+    scope: str
     sha256: str = Field(pattern=r"^(unknown|[0-9a-f]{64})$")
+    inventory_sha256: str = Field(pattern=r"^(unknown|[0-9a-f]{64})$")
+    environment: Literal["matches", "differs", "unknown"]
 
 
 class RuntimeIdentity(_StrictModel):
@@ -163,7 +166,7 @@ class ArtifactIdentity(_StrictModel):
 
 
 class RunManifest(_StrictModel):
-    schema_version: Literal["1.2.0"]
+    schema_version: Literal["1.3.0"]
     run_id: str
     ledger_sha256: str = Field(pattern=_SHA256_RE)
     code: CodeIdentity
@@ -302,20 +305,50 @@ def _git_identity() -> dict[str, Any]:
 
 
 def _dependency_lock() -> dict[str, str]:
-    root = _repository_root()
     try:
-        if root is None:
-            raise OSError
-        lock = Path(root) / "requirements.txt"
-        if not lock.is_file() or lock.is_symlink():
-            raise OSError
+        dependency_data = resources.files("batch_runner.data").joinpath("dependencies")
+        lock = dependency_data.joinpath("release-py311-linux-x86_64.txt")
+        inventory = dependency_data.joinpath(
+            "release-py311-linux-x86_64.inventory.json"
+        )
+        lock_bytes = lock.read_bytes()
+        inventory_bytes = inventory.read_bytes()
+        inventory_payload = json.loads(inventory_bytes)
+        lock_sha256 = sha256_bytes(lock_bytes)
+        if inventory_payload["source"]["sha256"] != lock_sha256:
+            raise ValueError("packaged dependency inventory does not match its lock")
+        packages = inventory_payload["packages"]
+        if not isinstance(packages, list) or not packages:
+            raise ValueError("packaged dependency inventory has no packages")
+        environment = "matches"
+        for package in packages:
+            if not isinstance(package, dict):
+                raise ValueError("packaged dependency inventory entry is invalid")
+            try:
+                installed = metadata.version(package["name"])
+            except metadata.PackageNotFoundError:
+                environment = "differs"
+                break
+            if installed != package["version"]:
+                environment = "differs"
+                break
         return {
             "state": "available",
-            "kind": "requirements.txt",
-            "sha256": sha256_bytes(lock.read_bytes()),
+            "kind": "uv-compiled-requirements",
+            "scope": str(inventory_payload["scope"]),
+            "sha256": lock_sha256,
+            "inventory_sha256": sha256_bytes(inventory_bytes),
+            "environment": environment,
         }
-    except (OSError, subprocess.SubprocessError):
-        return {"state": "unknown", "kind": "unknown", "sha256": "unknown"}
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return {
+            "state": "unknown",
+            "kind": "unknown",
+            "scope": "unknown",
+            "sha256": "unknown",
+            "inventory_sha256": "unknown",
+            "environment": "unknown",
+        }
 
 
 def _package_versions() -> dict[str, str]:

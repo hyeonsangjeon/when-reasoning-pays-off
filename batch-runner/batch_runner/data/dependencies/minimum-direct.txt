@@ -1,0 +1,9 @@
+# Exact declared minimums exercised by the minimum-supported CI job.
+# Keep these pins in parity with pyproject.toml and optional_dependencies.py.
+azure-identity==1.19.0
+matplotlib==3.9.2
+numpy==2.2.0
+openai==2.37.0
+pandas==2.2.3
+pydantic==2.4.0
+pyyaml==6.0

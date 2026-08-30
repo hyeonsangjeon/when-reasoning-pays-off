@@ -25,6 +25,7 @@
       "execution": "offline",
       "network": "none",
       "cost": "none",
+      "requires_extra": "analysis",
       "guards": [],
       "readme_row": [
         "`analyze`",
@@ -41,6 +42,7 @@
       "execution": "offline",
       "network": "none",
       "cost": "none",
+      "requires_extra": "analysis",
       "guards": [],
       "readme_row": [
         "`report`",
@@ -157,6 +159,7 @@
       "execution": "live-provider",
       "network": "azure-https",
       "cost": "billed",
+      "requires_extra": "azure",
       "guards": [
         "--confirm-cost",
         "ledger execution.cost.confirmed",

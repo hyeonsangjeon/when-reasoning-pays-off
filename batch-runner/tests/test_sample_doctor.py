@@ -489,7 +489,7 @@ def test_ollama_manifest_contains_fingerprint_and_no_raw_metadata(
         provider_builder=build,
     )
     manifest = json.loads(result.manifest_path.read_text())
-    assert manifest["schema_version"] == "1.2.0"
+    assert manifest["schema_version"] == "1.3.0"
     assert manifest["provider"]["ollama"]["digest"] == _DIGEST
     text = result.manifest_path.read_text()
     assert "{{ .System }}" not in text

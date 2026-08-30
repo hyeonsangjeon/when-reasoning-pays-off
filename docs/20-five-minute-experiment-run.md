@@ -57,9 +57,14 @@ DATA  ->  IN  ->  EXECUTE  ->  OUT
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
-python -m pip install .        # or: pip install when-reasoning-pays-off (once published)
+python -m pip install .        # minimal core/sample install
 reasoning-payoff --help        # one command, discoverable with --help
 ```
+
+The core install intentionally excludes NumPy, pandas, matplotlib, OpenAI, and
+Azure Identity. Add `.[analysis]` for offline `analyze`/`report`, `.[azure]` for
+the billed Azure provider, or `.[all]` for both. Mock and Ollama samples, retry,
+doctor, and read-only experiment browsing remain in the core install.
 
 `sample` has four operational subcommands:
 
@@ -321,6 +326,7 @@ Azure runs are **billed** and are refused unless you explicitly confirm the
 cost, so the default command can never spend money by accident.
 
 ```bash
+python -m pip install ".[azure]"
 reasoning-payoff sample init --provider azure --out azure-workspace
 export AZURE_OPENAI_FOUNDRY_ENDPOINT="https://<your-resource>.openai.azure.com"
 az login    # or a managed identity — no key is stored by this tool
@@ -332,6 +338,9 @@ reasoning-payoff sample run --ledger azure-workspace/ledger.yaml --confirm-cost
 Two gates must both be satisfied: the CLI flag `--confirm-cost` **and** the
 ledger's `execution.cost.confirmed: true`. In a continuous-integration (CI)
 environment the billed run is hard-refused by default before any network call.
+If the Azure extra is absent or below its supported version, the command stops
+before endpoint resolution or authentication and prints the exact
+`pip install "when-reasoning-pays-off[azure]"` remediation.
 
 **Cost preflight (enforced against an immutable snapshot).** The Azure ledger
 pins a repository snapshot by stable ID, path, and SHA-256, then selects one

@@ -93,7 +93,9 @@ class LedgerError(ValueError):
 class _Strict(BaseModel):
     """Base model: reject unknown fields, strict types, no inf/NaN."""
 
-    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    model_config = ConfigDict(
+        extra="forbid", strict=True, allow_inf_nan=False, protected_namespaces=()
+    )
 
 
 def _require_env_name(value: str, *, field: str) -> str:

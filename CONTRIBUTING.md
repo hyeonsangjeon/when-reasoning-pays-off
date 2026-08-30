@@ -83,12 +83,40 @@ git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
 cd when-reasoning-pays-off
 python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[all,dev]"
 ruff check .
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
 python scripts/check_schema_conformance.py schema-meta
 python scripts/check_schema_conformance.py artifact-conformance
 ```
+
+### Dependency compatibility and release lock
+
+`pyproject.toml` is the dependency source of truth. `requirements.txt` selects
+`.[all]`, while `requirements-dev.txt` selects editable `.[all,dev]`; neither
+repeats version floors. CI verifies the duplicated runtime guard floors and
+`minimum-direct.txt` pins against project metadata.
+
+The release lock is
+`batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt`.
+It is a hash-pinned resolution specifically for CPython 3.11 on Linux x86_64
+using manylinux_2_17 wheels. It is not a promise of bit-for-bit resolution on
+other platforms. Regenerate and verify it with:
+
+```bash
+uv pip compile pyproject.toml --extra all --generate-hashes \
+  --python-platform x86_64-manylinux_2_17 --python-version 3.11 \
+  --no-emit-package when-reasoning-pays-off \
+  --output-file batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt
+python scripts/dependency_inventory.py generate
+python scripts/dependency_inventory.py verify
+```
+
+The adjacent deterministic inventory records the lock SHA-256, resolver command,
+index provenance, scope, and exact package/version list. Release CI installs the
+lock with `--require-hashes` in a clean environment and verifies the installed
+inventory. Immutable sample manifests record both the lock and inventory hashes,
+plus whether the active runtime matches the locked graph.
 
 Enable the shared git hooks once per clone so the same read-only release
 and docs gates that run in CI (schema meta-validation, committed artifact

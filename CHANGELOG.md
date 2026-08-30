@@ -6,6 +6,26 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Split dependencies and reproducible release graph (2026-08-30)
+
+- Split the installed CLI into a minimal core, `analysis`, `azure`, and `all`
+  extras. Core keeps help, fixture/sample init, Mock/Ollama sample execution,
+  retry/doctor, and read-only experiment browsing without NumPy, pandas,
+  matplotlib, OpenAI, or Azure Identity.
+- Added precise optional-capability failures. Analysis commands name the
+  `analysis` extra; Azure execution checks the `azure` extra and supported SDK
+  floors before endpoint resolution, authentication, token acquisition, or
+  network access. Existing no-network, privacy, billing, and CI refusal guards
+  remain unchanged.
+- Added a hash-pinned CPython 3.11/Linux x86_64 manylinux_2_17 release
+  constraints artifact and deterministic 39-package dependency inventory with
+  resolver/index provenance. Immutable manifest schema `1.3.0` records both
+  artifact hashes and whether the active graph matches the lock.
+- Added isolated CI coverage for minimal core, exact declared minimums, the
+  locked release graph, and current compatible dependencies, including callable
+  Azure token-provider/OpenAI client construction and billed-sample preflight
+  with fakes and zero live calls.
+
 ### Changed — Immutable Azure sample pricing provenance (2026-08-30)
 
 - Replaced free-form Azure sample rates with one strict immutable PAYG snapshot

@@ -65,7 +65,9 @@ SafeWorkloadIdentifier = Annotated[
 
 
 class StrictReportModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    model_config = ConfigDict(
+        extra="forbid", strict=True, allow_inf_nan=False, protected_namespaces=()
+    )
 
 
 class SourceRows(StrictReportModel):

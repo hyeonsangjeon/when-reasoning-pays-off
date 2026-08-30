@@ -1672,6 +1672,7 @@ def test_manifest_git_unavailable_is_explicit_unknown(
         raise OSError
 
     monkeypatch.setattr(manifest_module.subprocess, "run", unavailable)
+    monkeypatch.setattr(manifest_module.resources, "files", unavailable)
     led = parse_ledger(_base_ledger("mock"))
     result = run_ledger(
         led,
@@ -1686,7 +1687,10 @@ def test_manifest_git_unavailable_is_explicit_unknown(
     assert manifest["runtime"]["dependency_lock"] == {
         "state": "unknown",
         "kind": "unknown",
+        "scope": "unknown",
         "sha256": "unknown",
+        "inventory_sha256": "unknown",
+        "environment": "unknown",
     }
 
 
@@ -1703,6 +1707,7 @@ def test_manifest_verified_git_checkout_records_commit(
     assert isinstance(identity["dirty"], bool)
     assert lock["state"] == "available"
     assert len(lock["sha256"]) == 64
+    assert len(lock["inventory_sha256"]) == 64
 
 
 def test_manifest_privacy_boundary_omits_paths_hosts_and_row_ids(tmp_path: Path):

@@ -1,11 +1,7 @@
-# Development dependencies: runtime deps + the test/lint toolchain.
+# Development dependencies: every runtime extra plus test/lint tools.
 #
 #     pip install -r requirements-dev.txt
 #     pytest -q -m "not adaptive_calibration" batch-runner/tests/
 #
-# Mirrors [project.optional-dependencies].dev in pyproject.toml.
--r requirements.txt
-pytest>=8.0
-pytest-asyncio>=0.23
-ruff>=0.4
-jsonschema>=4.0
+# pyproject.toml remains the single dependency source.
+-e .[all,dev]

@@ -19,7 +19,7 @@
     "artifacts"
   ],
   "properties": {
-    "schema_version": { "const": "1.2.0" },
+    "schema_version": { "const": "1.3.0" },
     "run_id": {
       "type": "string",
       "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
@@ -56,14 +56,20 @@
         "dependency_lock": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["state", "kind", "sha256"],
+          "required": ["state", "kind", "scope", "sha256", "inventory_sha256", "environment"],
           "properties": {
             "state": { "enum": ["available", "unknown"] },
-            "kind": { "enum": ["requirements.txt", "unknown"] },
+            "kind": { "enum": ["uv-compiled-requirements", "unknown"] },
+            "scope": { "type": "string", "minLength": 1, "maxLength": 160 },
             "sha256": {
               "type": "string",
               "pattern": "^(unknown|[0-9a-f]{64})$"
-            }
+            },
+            "inventory_sha256": {
+              "type": "string",
+              "pattern": "^(unknown|[0-9a-f]{64})$"
+            },
+            "environment": { "enum": ["matches", "differs", "unknown"] }
           }
         },
         "selected_packages": {

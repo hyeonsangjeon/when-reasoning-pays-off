@@ -22,6 +22,7 @@ import yaml
 from pydantic import ValidationError
 
 from batch_runner import __version__
+from batch_runner.errors import OutputConflictError, ReportValidationError
 from batch_runner.contracts import (
     METHOD_ID,
     METHOD_VERSION,
@@ -74,14 +75,6 @@ _EFFORT_ORDER = {
     "xhigh": 5,
     "max": 6,
 }
-
-
-class ReportValidationError(ValueError):
-    """Raised for malformed pinned reports without echoing their content."""
-
-
-class OutputConflictError(ValueError):
-    """Raised when an output directory is non-empty or unsafe to replace."""
 
 
 def _sha256(data: bytes) -> str:
