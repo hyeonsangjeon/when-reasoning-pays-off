@@ -108,3 +108,8 @@ Thumbs.db
 # .reasoning-payoff-experiment-owned.
 /sample-workspace/
 .reasoning-payoff-experiment-owned
+
+# `reasoning-payoff experiment run --stage dry-run` writes immutable, normalized
+# execution plans into an owned output directory (default: .reasoning-payoff-plans/).
+# Plans are runtime-generated provenance, never committed evidence.
+/.reasoning-payoff-plans/

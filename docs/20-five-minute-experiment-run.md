@@ -500,6 +500,60 @@ not a separate hand-maintained source of truth. Every `exp*.yaml` (excluding
 clone-relative data; the wheel only packages the tiny quickstart workspace, not
 the benchmark datasets.
 
+### Dispatch one experiment: `experiment run`
+
+`experiment run` is the single safe entry point for all 20 catalogued
+experiments. It resolves an id (or config filename) to exactly one experiment,
+looks up the **typed adapter** that owns it (no shell string, no `eval`), and
+dispatches one of two stages:
+
+```bash
+# DRY-RUN (default): write an immutable, normalized execution plan. No socket is
+# opened, no credential/endpoint is resolved, and no provider is called.
+reasoning-payoff experiment run exp001_short-factual_baseline --stage dry-run
+reasoning-payoff experiment run exp001_short-factual_baseline --json   # machine-readable
+
+# LIVE: delegate through the typed adapter to the validated runner (billed Azure OpenAI). The
+# runner enforces CI hard-refusal, the YAML budget confirmation, secret
+# redaction, store=false, max_retries=0, output locks, and campaign gates.
+reasoning-payoff experiment run exp001_short-factual_baseline --stage live --confirm-cost
+```
+
+Both stages require the **source checkout** — the `experiments/` configs and the
+`scripts/` runners are clone-only and are never shipped in the wheel. From a
+wheel-only install the command fails with an actionable message (exit `8`) and
+no absolute path is leaked; read-only `experiment list` / `experiment describe`
+still work from the wheel.
+
+**What a dry-run writes.** Each dry-run publishes one immutable plan under an
+owned, gitignored output directory (default `.reasoning-payoff-plans/plans/`).
+The plan is a strict, versioned JSON document (schema
+`schemas/experiment_execution_plan.v1.schema.json`) capturing the same
+DATA → IN → EXECUTE → OUT view, grounded in the real bytes on disk:
+
+- `identity` — experiment id, repo-relative config path, and the config's
+  SHA-256 (the plan id is derived from it, so re-planning is deterministic).
+- `adapter` — the typed adapter id + version, its source module, and whether it
+  has a billed live path.
+- `data.inputs` — each input corpus with its format, shape, presence, and
+  SHA-256 (or `null` when a source asset is missing).
+- `input` — the safe provider/model-family identity and the endpoint/auth
+  environment-variable **names only**; `credentials_resolved` and
+  `endpoint_resolved` are pinned `false`.
+- `pricing` — the policy and snapshot identity (dry-run uses the offline-only
+  `historical-replay` policy for pricing-aware runners).
+- `knobs.bounded` — the swept variable and a capped set of numeric knobs.
+- `outputs` — the artifacts a real run would write.
+- `network_calls` and `billed_calls` — both pinned to `0`.
+
+Plans are immutable: a second publication of the same plan id is **refused**,
+never overwritten, and the command refuses to write inside a protected tree
+(`benchmarks/`, `results/`, `docs/blog`).
+
+**Coverage stays one-to-one.** Every catalogued experiment binds to exactly one
+registered adapter; an unknown adapter or a duplicate id fails closed. Unknown
+or ambiguous experiment ids are rejected with the candidate list (exit `3`).
+
 ### Source-data shapes of the full experiments
 
 These are the inputs the full experiments read (reported for orientation; the
@@ -528,6 +582,20 @@ preserved safely; partial failures are visible and never reported as success.
 | `5` | Output/lock conflict — the target is unsafe, a lock is live/unknown, or doctor repair cannot prove safety. |
 | `6` | Filesystem error while writing artifacts. |
 | `7` | Cost or provider error — billed run not confirmed, or the provider/model was unavailable or refused. |
+
+### `experiment run` exit codes
+
+`experiment run` returns typed statuses. A dry-run never contacts a provider; a
+live run delegates to the validated runner, whose own exit code is surfaced.
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Dry-run plan written, or the live runner completed. |
+| `3` | Unknown or ambiguous experiment id, or the config failed the runner's strict loader. |
+| `5` | Plan conflict — the immutable plan already exists, the output is unowned, or the target is a protected tree. Never overwritten. |
+| `6` | Filesystem error while publishing the plan. |
+| `7` | Cost/live error — `--stage live` without `--confirm-cost`, or the adapter has no billed live path. |
+| `8` | Source checkout (or its base runtime) is unavailable; `experiment run` needs the clone. |
 
 ## 13. Troubleshooting
 

@@ -147,6 +147,50 @@
       ]
     },
     {
+      "id": "experiment-run-dry-run",
+      "cli_path": "reasoning-payoff experiment run",
+      "variant": "dry-run",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [
+        "source checkout required",
+        "typed adapter registry (no shell/eval)",
+        "immutable plan; no overwrite",
+        "refuses protected trees"
+      ],
+      "readme_row": [
+        "`experiment-run-dry-run`",
+        "`reasoning-payoff experiment run --stage dry-run`",
+        "Offline plan via validated adapter",
+        "No runtime network",
+        "No provider cost; immutable plan, refuses protected trees"
+      ]
+    },
+    {
+      "id": "experiment-run-live",
+      "cli_path": "reasoning-payoff experiment run",
+      "variant": "live",
+      "execution": "live-provider",
+      "network": "azure-https",
+      "cost": "billed",
+      "requires_extra": "azure",
+      "provider": "azure",
+      "guards": [
+        "source checkout required",
+        "--confirm-cost",
+        "delegates to the validated runner (CI refusal, budget, store=false, max_retries=0, locks)",
+        "historical-replay never initiates a live call"
+      ],
+      "readme_row": [
+        "`experiment-run-live`",
+        "`reasoning-payoff experiment run --stage live --confirm-cost`",
+        "Live cloud-provider call via validated runner",
+        "HTTPS to Azure OpenAI",
+        "Billed; --confirm-cost plus runner budget/CI guards"
+      ]
+    },
+    {
       "id": "sample-init",
       "cli_path": "reasoning-payoff sample init",
       "variant": "all-providers",

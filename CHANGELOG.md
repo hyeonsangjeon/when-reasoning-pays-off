@@ -29,6 +29,39 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 - Added the immutable August 2026 PAYG pricing snapshot and retained the May
   snapshot unchanged for historical replay.
 
+### Added — Safe unified experiment run dispatcher (F-06)
+
+- Added `reasoning-payoff experiment run <id-or-file> --stage dry-run|live`, a
+  single safe entry point for all 20 catalogued experiments. Resolution is
+  deterministic (exact id, config filename, or unique prefix); unknown or
+  ambiguous targets are rejected with the candidate list. Dispatch goes through
+  a typed adapter registry only — no shell string, no `eval`.
+- `--stage dry-run` (default) opens zero sockets, resolves no
+  credential/token/endpoint, and makes no provider call. It validates the config
+  through the runner's own strict loader and writes one immutable, normalized,
+  versioned execution plan (schema
+  `schemas/experiment_execution_plan.v1.schema.json`): identity + config SHA-256,
+  adapter id/version, input files with shapes and hashes, safe provider/model
+  family identity (env-var names only), pricing policy/snapshot identity, bounded
+  knobs, intended outputs, command scope, and `network_calls: 0` /
+  `billed_calls: 0`. Plans publish atomically into an owned, gitignored directory
+  outside all protected trees; the immutable plan id is refused on conflict and
+  never overwritten.
+- `--stage live --confirm-cost` delegates directly through the registered typed
+  adapter to the already-validated runner, preserving every live guard (CI hard
+  refusal, YAML budget confirmation, secret redaction, `store=false`,
+  `max_retries=0`, output locks, campaign gates). Live is rejected for any
+  adapter without a billed path, and
+  the offline-only `historical-replay` pricing policy can never initiate a live
+  call. Both stages require the source checkout; from a wheel-only install the
+  command fails with an actionable, path-free message while `experiment list` /
+  `experiment describe` stay honest.
+- The derived catalog now records each experiment's strict adapter id and its
+  safe normalized argv mapping, keeping the 20-YAML coverage one-to-one;
+  duplicate or unknown adapters fail closed. Added the CLI capability/network
+  contract rows, README/guide/exit-code docs, a schema, and a PR-CI all-20
+  offline dry-run sweep under a socket guard.
+
 ### Added — Phase 4 pricing policy and nightly campaign CI
 
 - Added pricing policy `1.0.0` across dual spillover, cache-key bucketing, and

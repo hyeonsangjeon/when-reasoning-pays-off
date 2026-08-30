@@ -26,7 +26,9 @@ from dataclasses import dataclass
 from importlib import resources
 from typing import Any
 
-CATALOG_SCHEMA_VERSION = "1.0.0"
+from batch_runner.experiment.adapters import get_adapter
+
+CATALOG_SCHEMA_VERSION = "1.1.0"
 
 # The Entra ID audience and environment-variable NAMES the Azure runners read.
 # These are names only — never a resolved endpoint URL or a secret value.
@@ -178,6 +180,7 @@ class CatalogEntry:
     in_stage: dict[str, Any]
     execute: dict[str, Any]
     out: dict[str, Any]
+    adapter: dict[str, Any]
     live_support: str
     ollama_support: bool
     mock_support: bool
@@ -197,6 +200,7 @@ class CatalogEntry:
             "in": self.in_stage,
             "execute": self.execute,
             "out": self.out,
+            "adapter": self.adapter,
             "live_support": self.live_support,
             "ollama_support": self.ollama_support,
             "mock_support": self.mock_support,
@@ -266,6 +270,28 @@ def build_catalog(repo_root: Any | None = None) -> dict[str, Any]:
         }
         out = {"artifacts": list(spec.outputs), "output_dir": spec.output_dir}
 
+        # Derived adapter binding: the strict adapter id equals the runner
+        # module. get_adapter rejects an unknown adapter (fail closed) and the
+        # registry itself rejects a duplicate id at import time. The normalized
+        # arg mapping is the exact, safe argv the dispatcher would forward to
+        # the runner's main([...]) — no shell string, no eval.
+        adapter = get_adapter(spec.runner_module)
+        adapter_block = {
+            "id": adapter.adapter_id,
+            "version": adapter.version,
+            "source_module": adapter.source_module,
+            "supports_dry_run": adapter.supports_dry_run,
+            "supports_live": adapter.supports_live,
+            "live_kind": adapter.live_kind,
+            "pricing_policy_aware": adapter.pricing_policy_aware,
+            "dry_run_argv": adapter.dry_run_argv(spec.config_path),
+            "live_argv": (
+                adapter.live_argv(spec.config_path)
+                if adapter.supports_live
+                else None
+            ),
+        }
+
         entry = CatalogEntry(
             experiment_id=spec.experiment_id,
             config_path=spec.config_path,
@@ -280,6 +306,7 @@ def build_catalog(repo_root: Any | None = None) -> dict[str, Any]:
             in_stage=in_stage,
             execute=execute,
             out=out,
+            adapter=adapter_block,
             live_support="azure",
             ollama_support=False,
             mock_support=False,
@@ -340,6 +367,22 @@ def render_entry(entry: dict[str, Any]) -> str:
     lines.append("OUT (artifacts a real run writes)")
     for artifact in entry["out"]["artifacts"]:
         lines.append(f"  - {artifact}")
+    adapter = entry.get("adapter") or {}
+    if adapter:
+        lines.append("")
+        lines.append("RUN (dispatcher stages)")
+        lines.append(f"  adapter : {adapter.get('id')} v{adapter.get('version')}")
+        lines.append(
+            "  dry-run : reasoning-payoff experiment run "
+            f"{entry['experiment_id']} --stage dry-run"
+        )
+        live = (
+            "reasoning-payoff experiment run "
+            f"{entry['experiment_id']} --stage live --confirm-cost"
+            if adapter.get("supports_live")
+            else "(no billed live path)"
+        )
+        lines.append(f"  live    : {live}")
     support = []
     support.append(f"live={entry['live_support']}")
     support.append(f"ollama={'yes' if entry['ollama_support'] else 'no'}")

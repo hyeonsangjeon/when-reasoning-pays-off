@@ -2,6 +2,25 @@
   "experiment_count": 20,
   "experiments": [
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp001_short-factual_baseline.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp001_short-factual_baseline.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "01-short-factual",
       "config_path": "experiments/exp001_short-factual_baseline.yaml",
       "data": {
@@ -66,6 +85,25 @@
       "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp001_short-factual_baseline_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp001_short-factual_baseline_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "01-short-factual",
       "config_path": "experiments/exp001_short-factual_baseline_gpt4o.yaml",
       "data": {
@@ -130,6 +168,25 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp002_benchmark02_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp002_benchmark02_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "02-multi-step-reasoning",
       "config_path": "experiments/exp002_benchmark02_gpt4o.yaml",
       "data": {
@@ -190,6 +247,25 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp002_benchmark02_gpt5_2.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp002_benchmark02_gpt5_2.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "02-multi-step-reasoning",
       "config_path": "experiments/exp002_benchmark02_gpt5_2.yaml",
       "data": {
@@ -250,6 +326,25 @@
       "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp003_benchmark03_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp003_benchmark03_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "03-tool-using-agent",
       "config_path": "experiments/exp003_benchmark03_gpt4o.yaml",
       "data": {
@@ -316,6 +411,25 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp003_benchmark03_gpt5_2.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp003_benchmark03_gpt5_2.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "03-tool-using-agent",
       "config_path": "experiments/exp003_benchmark03_gpt5_2.yaml",
       "data": {
@@ -382,6 +496,25 @@
       "variable": "reasoning.effort ∈ {none, low, medium, high, xhigh}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp004_spillover_baseline_reactive.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "simulate_spillover",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp004_spillover_baseline_reactive.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.simulate_spillover",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "04-spillover-simulation",
       "config_path": "experiments/exp004_spillover_baseline_reactive.yaml",
       "data": {
@@ -433,6 +566,25 @@
       "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp004_spillover_proactive.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "simulate_spillover",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp004_spillover_proactive.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.simulate_spillover",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "04-spillover-simulation",
       "config_path": "experiments/exp004_spillover_proactive.yaml",
       "data": {
@@ -484,6 +636,27 @@
       "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp005_dual_spillover_proactive.yaml",
+          "--dry-run",
+          "--pricing-policy",
+          "historical-replay",
+          "--allow-dirty"
+        ],
+        "id": "measure_dual_spillover",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp005_dual_spillover_proactive.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": true,
+        "source_module": "scripts.measure_dual_spillover",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "05-dual-spillover",
       "config_path": "experiments/exp005_dual_spillover_proactive.yaml",
       "data": {
@@ -534,6 +707,27 @@
       "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp005_dual_spillover_reactive.yaml",
+          "--dry-run",
+          "--pricing-policy",
+          "historical-replay",
+          "--allow-dirty"
+        ],
+        "id": "measure_dual_spillover",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp005_dual_spillover_reactive.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": true,
+        "source_module": "scripts.measure_dual_spillover",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "05-dual-spillover",
       "config_path": "experiments/exp005_dual_spillover_reactive.yaml",
       "data": {
@@ -584,6 +778,27 @@
       "variable": "policy.type = reactive vs proactive (two sibling YAMLs)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp006_cache_key_bucketing_24h.yaml",
+          "--dry-run",
+          "--pricing-policy",
+          "historical-replay",
+          "--allow-dirty"
+        ],
+        "id": "measure_cache_key_bucketing",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp006_cache_key_bucketing_24h.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": true,
+        "source_module": "scripts.measure_cache_key_bucketing",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "06-cache-key-bucketing",
       "config_path": "experiments/exp006_cache_key_bucketing_24h.yaml",
       "data": {
@@ -634,6 +849,27 @@
       "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp006_cache_key_bucketing_inmemory.yaml",
+          "--dry-run",
+          "--pricing-policy",
+          "historical-replay",
+          "--allow-dirty"
+        ],
+        "id": "measure_cache_key_bucketing",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp006_cache_key_bucketing_inmemory.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": true,
+        "source_module": "scripts.measure_cache_key_bucketing",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "06-cache-key-bucketing",
       "config_path": "experiments/exp006_cache_key_bucketing_inmemory.yaml",
       "data": {
@@ -684,6 +920,27 @@
       "variable": "sweep.bucket_cardinality {1, 8} × prompt_cache_retention {in_memory, 24h}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp007_max_output_tokens_sweep.yaml",
+          "--dry-run",
+          "--pricing-policy",
+          "historical-replay",
+          "--allow-dirty"
+        ],
+        "id": "measure_max_output_tokens_sweep",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp007_max_output_tokens_sweep.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": true,
+        "source_module": "scripts.measure_max_output_tokens_sweep",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "07-max-output-tokens-reservation",
       "config_path": "experiments/exp007_max_output_tokens_sweep.yaml",
       "data": {
@@ -734,6 +991,25 @@
       "variable": "max_output_tokens ∈ {256, 512, 1024, 2048, 4096, 8192, 16384}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "01-short-factual",
       "config_path": "experiments/exp_smoke_01.yaml",
       "data": {
@@ -795,6 +1071,25 @@
       "variable": "reasoning.effort ∈ {low, high}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "01-short-factual",
       "config_path": "experiments/exp_smoke_01_gpt4o.yaml",
       "data": {
@@ -856,6 +1151,25 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01_warmprobe.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_01_warmprobe.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "01-short-factual",
       "config_path": "experiments/exp_smoke_01_warmprobe.yaml",
       "data": {
@@ -917,6 +1231,25 @@
       "variable": "reasoning.effort ∈ {high}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_02.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_02.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "02-multi-step-reasoning",
       "config_path": "experiments/exp_smoke_02.yaml",
       "data": {
@@ -974,6 +1307,25 @@
       "variable": "reasoning.effort ∈ {low, high}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_02_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_02_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "02-multi-step-reasoning",
       "config_path": "experiments/exp_smoke_02_gpt4o.yaml",
       "data": {
@@ -1031,6 +1383,25 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_03.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_03.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "03-tool-using-agent",
       "config_path": "experiments/exp_smoke_03.yaml",
       "data": {
@@ -1094,6 +1465,25 @@
       "variable": "reasoning.effort ∈ {low, high}"
     },
     {
+      "adapter": {
+        "dry_run_argv": [
+          "--experiment",
+          "experiments/exp_smoke_03_gpt4o.yaml",
+          "--dry-run",
+          "--allow-dirty"
+        ],
+        "id": "run_benchmark",
+        "live_argv": [
+          "--experiment",
+          "experiments/exp_smoke_03_gpt4o.yaml"
+        ],
+        "live_kind": "azure-billed",
+        "pricing_policy_aware": false,
+        "source_module": "scripts.run_benchmark",
+        "supports_dry_run": true,
+        "supports_live": true,
+        "version": "1.0.0"
+      },
       "benchmark": "03-tool-using-agent",
       "config_path": "experiments/exp_smoke_03_gpt4o.yaml",
       "data": {
@@ -1157,5 +1547,5 @@
       "variable": "baseline column — gpt-4o sends no reasoning parameter (temperature=0.0)"
     }
   ],
-  "schema_version": "1.0.0"
+  "schema_version": "1.1.0"
 }
