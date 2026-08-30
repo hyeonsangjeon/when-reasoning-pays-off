@@ -230,6 +230,41 @@ jobs:
             "$py" -m pytest -q -p no:cacheprovider batch-runner/tests/
           fi
 
+  nightly-locked-regression:
+    name: Nightly locked environment regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      AZURE_OPENAI_API_KEY: ""
+      AZURE_OPENAI_FOUNDRY_ENDPOINT: ""
+      OPENAI_API_KEY: ""
+      HF_TOKEN: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install exact locked nightly graph
+        run: |
+          bash scripts/install_nightly_test_environment.sh \
+             "$RUNNER_TEMP/nightly-locked" locked
+
+      - name: Run locked PR-fast surfaces offline
+        env:
+          PYTHON_BIN: ${{ runner.temp }}/nightly-locked/bin/python
+        run: |
+          sudo --preserve-env=PYTHON_BIN unshare --net -- \
+             bash scripts/run_nightly_locked_regression.sh
+
   optional-extra-isolation:
     name: Optional extra (${{ matrix.extra }})
     runs-on: ubuntu-latest

@@ -41,9 +41,25 @@ by manual dispatch against locked and current dependency graphs. It
 machine-verifies collection of each campaign module, then runs batch tests,
 non-campaign root tests, and each campaign module in separate pytest processes.
 The locked graph layers a separate hash-pinned test-tool lock on the release
-lock. During test execution, credentials are blank, an OS network namespace has
-no external interface, and Python socket/DNS entry points are blocked as
-defense in depth. Package installation may use the network before these guards
-are enabled. Uploaded diagnostics contain only sanitized test outcomes plus
-commit, Python, OS, lock hashes, dependency graph, and installed-package
-metadata.
+lock. The release lock contains runtime and provider packages only; the nightly
+test-tool lock contains pytest, pytest plugins, JSON Schema validation, and
+their transitive dependencies. Both nightly matrix jobs and the PR-fast locked
+regression use `scripts/install_nightly_test_environment.sh`, preventing their
+setup paths from drifting apart.
+
+Regenerate the test-only lock without changing the runtime release lock:
+
+```bash
+uv pip compile \
+  batch-runner/batch_runner/data/dependencies/nightly-test-tools.in \
+  --constraint batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt \
+  --generate-hashes --python-platform x86_64-manylinux_2_17 \
+  --python-version 3.11 \
+  --output-file batch-runner/batch_runner/data/dependencies/nightly-test-tools-py311-linux-x86_64.txt
+```
+
+During test execution, credentials are blank, an OS network namespace has no
+external interface, and Python socket/DNS entry points are blocked as defense
+in depth. Package installation may use the network before these guards are
+enabled. Uploaded diagnostics contain only sanitized test outcomes plus commit,
+Python, OS, lock hashes, dependency graph, and installed-package metadata.

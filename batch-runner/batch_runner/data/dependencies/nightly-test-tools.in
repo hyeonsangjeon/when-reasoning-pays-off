@@ -1,4 +1,5 @@
 # Test-only packages layered on the hash-pinned release graph for nightly CI.
+jsonschema==4.26.0
 pytest==9.0.2
 pytest-asyncio==1.3.0
 pytest-timeout==2.4.0

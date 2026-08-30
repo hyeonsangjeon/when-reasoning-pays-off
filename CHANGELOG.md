@@ -20,6 +20,10 @@ tracks the benchmark task series specified under the private task-spec tree (lab
   uses hash-pinned test tooling for the locked graph, blocks network and
   credentials during tests, and uploads sanitized failure summaries with
   secret-safe runtime and lock metadata.
+- Fixed the locked nightly graph to include the complete JSON Schema test stack
+  in its separate test-only lock. PR CI now recreates that exact locked nightly
+  environment and runs the fast batch/root surfaces offline, preventing the
+  nightly and PR setup paths from drifting.
 - Split the README badges and documented exactly what PR-fast and nightly green
   states prove. Historical dry-runs through `experiments.run` now select the
   historical policy explicitly; live runs never inherit it.
