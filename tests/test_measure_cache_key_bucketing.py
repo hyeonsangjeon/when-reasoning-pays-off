@@ -637,6 +637,7 @@ class TestTpmFeasibilityPreflight(unittest.TestCase):
             dry_run=True,
             stage="evidence",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         with open(str(result.jsonl_path) + ".summary.json") as fh:
             summary = json.load(fh)
@@ -793,6 +794,7 @@ class TestMidRunHaltAfterCell(unittest.TestCase):
                 dry_run=True,
                 stage="evidence",
                 allow_dirty=True,
+                pricing_policy="historical-replay",
             )
         finally:
             m._run_cell = orig_run_cell
@@ -897,6 +899,7 @@ class TestTokenCapEnforcement(unittest.TestCase):
                 dry_run=False,
                 stage="smoke",
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
             )
         finally:
             m._build_system_prompt = orig_build
@@ -965,6 +968,7 @@ class TestTokenCapEnforcement(unittest.TestCase):
                 dry_run=False,
                 stage="smoke",
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
             )
         finally:
             m._build_system_prompt = orig_build
@@ -1588,6 +1592,7 @@ class TestConcurrencyDispatcherEcho(unittest.TestCase):
             dry_run=True,
             stage="smoke",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         with open(result.jsonl_path) as fh:
             for line in fh:
@@ -1692,6 +1697,7 @@ class TestDryRunEndToEnd(unittest.TestCase):
             dry_run=True,
             stage="evidence",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         # v2.4 default sweep is [1, 8] → 2 cells planned.
         self.assertEqual(result.cells_completed, 2)
@@ -1747,7 +1753,15 @@ class TestDryRunEndToEnd(unittest.TestCase):
         self.assertIn("pricing", summary["citations"])
         self.assertEqual(
             summary["citations"]["pricing"]["path"],
-            "pricing/azure-openai-payg-2026-05.yaml",
+            "pricing/azure-openai-payg-sample-2026-05.yaml",
+        )
+        self.assertEqual(
+            summary["pricing_policy"]["mode"], "historical-replay"
+        )
+        self.assertEqual(summary["pricing_policy"]["policy_version"], "1.0.0")
+        self.assertEqual(
+            summary["pricing_policy"]["snapshot"]["snapshot_sha256"],
+            "858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd",
         )
         # Metadata pass-through.
         self.assertEqual(summary["metadata"]["consumption_model_context"], "paygo_standard")
@@ -1805,6 +1819,7 @@ class TestDryRunEndToEnd(unittest.TestCase):
             dry_run=True,
             stage="evidence",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         summary_path = pathlib.Path(str(result.jsonl_path) + ".summary.json")
         with summary_path.open("r", encoding="utf-8") as fh:
@@ -1823,6 +1838,7 @@ class TestDryRunEndToEnd(unittest.TestCase):
             dry_run=True,
             stage="smoke",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         with open(str(result.jsonl_path) + ".summary.json") as fh:
             summary = json.load(fh)

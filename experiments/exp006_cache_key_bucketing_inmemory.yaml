@@ -166,11 +166,10 @@ target_system_prompt_tokens: 9500
 system_prompt_corpus_path: benchmarks/06-cache-key-bucketing/system_prompt_corpus.json
 user_prompts_path: benchmarks/06-cache-key-bucketing/user_prompts.json
 
-# Pricing snapshot reference. The runner aborts (exit 5) if this file is
-# missing OR its accessed_date is older than 90 days. When Azure publishes
-# a rate change, add a new dated snapshot under pricing/ and update this
-# field; never silently overwrite an existing dated snapshot.
-pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+# Immutable pricing snapshot reference. Historical replay verifies the pinned
+# snapshot and record identity without wall-clock freshness; live measurement
+# additionally applies the 90-day freshness gate. Never edit this snapshot.
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
 
 # PAYG / PTU / live-vs-simulation declaration (Task 018 v2.4 spec, unchanged
 # from v2.3). The runner echoes this block verbatim into every

@@ -6,6 +6,24 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Phase 4 pricing policy and nightly campaign CI
+
+- Added pricing policy `1.0.0` across dual spillover, cache-key bucketing, and
+  max-output sweep/calibration. `historical-replay` verifies the commit-pinned
+  immutable snapshot and exact record without wall-clock expiry, records
+  provenance in summaries, and is offline-only. `live-measurement` is the
+  default for potentially billed work and refuses stale/future pricing before
+  endpoint, credential, provider, or network access.
+- Added a scheduled and manually dispatchable offline nightly workflow for
+  locked/current dependency graphs. It machine-verifies collection of every
+  campaign suite, runs batch/root/campaign suites in isolated pytest processes,
+  uses hash-pinned test tooling for the locked graph, blocks network and
+  credentials during tests, and uploads sanitized failure summaries with
+  secret-safe runtime and lock metadata.
+- Split the README badges and documented exactly what PR-fast and nightly green
+  states prove. Historical dry-runs through `experiments.run` now select the
+  historical policy explicitly; live runs never inherit it.
+
 ### Changed — Reproducibility SLO and platform contracts (2026-08-30)
 
 - Defined non-overlapping Cold Mock, Warm Ollama, and full research rerun

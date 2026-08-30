@@ -127,6 +127,12 @@ from typing import Any
 
 import yaml
 
+from scripts._azure_pricing import (
+    LIVE_MEASUREMENT,
+    PRICING_POLICY_MODES,
+    PricingPolicyError,
+    verify_campaign_pricing,
+)
 from scripts._pricing_types import PaygPricing, TokenUsage
 from scripts.cost_calculator import (
     load_payg_pricing,
@@ -5465,6 +5471,7 @@ async def _run_measurement_async(
     v24_now_provider: Callable[[], datetime.datetime] | None = None,
     v24_terminal_report_lists_calibration_sha_payg_not_ptu: bool = False,
     v24_repo_root: pathlib.Path | None = None,
+    pricing_policy_provenance: dict[str, Any] | None = None,
 ) -> MeasurementResult:
     sweep_vals = list(cfg.sweep.max_output_tokens)
     if stage == "smoke":
@@ -5486,9 +5493,6 @@ async def _run_measurement_async(
     )
     prewarm_tps = cfg.runtime.prewarm_tps
     prewarm_calls = cfg.runtime.prewarm_calls_per_cell
-
-    # ---- Pricing freshness gate ----
-    _check_pricing_freshness(pricing, today=today)
 
     # ---- USD preflight gate (v2.3 — evaluated BEFORE the v2.1 TPM
     # feasibility gate for smoke/evidence so a high `selected_peak_tps`
@@ -6051,6 +6055,7 @@ async def _run_measurement_async(
             "pricing_snapshot_path": cfg.pricing_snapshot_path,
             "pricing_source_url": pricing.source_url,
             "pricing_accessed_date": pricing.accessed_date,
+            "pricing_policy": pricing_policy_provenance or {},
             "projected_usd": round(projected_usd, 6),
             "hard_ceiling_usd": hard_ceiling,
             "preflight_threshold_usd": round(preflight_threshold, 6),
@@ -6299,6 +6304,7 @@ def run_measurement(
     allow_dirty: bool,
     env: dict[str, str] | None = None,
     today: datetime.date | None = None,
+    pricing_policy: str = LIVE_MEASUREMENT,
     run_id_short_override: str | None = None,
     timestamp_label_override: str | None = None,
     calibration_result_path: str | None = None,
@@ -6322,6 +6328,17 @@ def run_measurement(
     metadata is echoed into ``runs/*.summary.json``.
     """
     src_env = env if env is not None else dict(os.environ)
+    today_date = today if today is not None else _utc_now().date()
+
+    verified_pricing = verify_campaign_pricing(
+        snapshot_path=cfg.pricing_snapshot_path,
+        model_family=cfg.deployment.family,
+        model_version=cfg.deployment.version,
+        policy_mode=pricing_policy,
+        today=today_date,
+    )
+    verified_pricing.policy.require_offline_if_historical(dry_run=dry_run)
+    pricing = verified_pricing.snapshot
 
     # Endpoint + deployment resolution. In dry-run mode the runner never
     # opens a network client, so missing Azure env vars are tolerated
@@ -6337,14 +6354,6 @@ def run_measurement(
         deployment = _resolve_env_value(
             cfg.deployment.deployment_template, env=src_env
         )
-
-    # Pricing snapshot.
-    pricing_path = pathlib.Path(cfg.pricing_snapshot_path)
-    if not pricing_path.is_file():
-        raise PricingStaleError(
-            f"pricing snapshot file does not exist: {pricing_path}"
-        )
-    pricing = load_payg_pricing(pricing_path)
 
     git_commit = _resolve_git_commit()
     dirty = not _git_is_clean()
@@ -6593,8 +6602,6 @@ def run_measurement(
         if run_id_short_override is not None
         else uuid.uuid4().hex[:8]
     )
-    today_date = today if today is not None else _utc_now().date()
-
     # Estimate expected duration (minutes) for the lock holder metadata.
     if stage == "smoke":
         per_cell_min = (
@@ -6666,6 +6673,7 @@ def run_measurement(
                 timestamp_label=timestamp_label,
                 run_id_short=run_id_short,
                 today=today_date,
+                pricing_policy_provenance=verified_pricing.provenance(),
                 run_lock_metadata=lock_metadata,
                 source_corpus_sha=source_corpus_sha,
                 user_prompts_source_sha=user_prompts_source_sha,
@@ -6957,6 +6965,7 @@ def run_calibration(
     allow_dirty: bool,
     env: dict[str, str] | None = None,
     today: datetime.date | None = None,
+    pricing_policy: str = LIVE_MEASUREMENT,
     run_id_short_override: str | None = None,
     timestamp_label_override: str | None = None,
 ) -> MeasurementResult:
@@ -7000,20 +7009,24 @@ def run_calibration(
             reason="calibration_result_invalid_schema",
         )
     src_env = env if env is not None else dict(os.environ)
-    # Resolve endpoint + deployment (auth-mandatory: live probes only).
+    today_date = today if today is not None else _utc_now().date()
+    verified_pricing = verify_campaign_pricing(
+        snapshot_path=cfg.pricing_snapshot_path,
+        model_family=cfg.deployment.family,
+        model_version=cfg.deployment.version,
+        policy_mode=pricing_policy,
+        today=today_date,
+    )
+    verified_pricing.policy.require_offline_if_historical(dry_run=False)
+    pricing = verified_pricing.snapshot
+
+    # Resolve endpoint + deployment only after pricing is admitted.
     endpoint_value = _resolve_env_value(
         f"${{{cfg.deployment.endpoint_env}}}", env=src_env
     )
     deployment = _resolve_env_value(
         cfg.deployment.deployment_template, env=src_env
     )
-
-    pricing_path = pathlib.Path(cfg.pricing_snapshot_path)
-    if not pricing_path.is_file():
-        raise PricingStaleError(
-            f"pricing snapshot file does not exist: {pricing_path}"
-        )
-    pricing = load_payg_pricing(pricing_path)
 
     git_commit = _resolve_git_commit()
     dirty = not _git_is_clean()
@@ -7056,10 +7069,6 @@ def run_calibration(
         if run_id_short_override is not None
         else uuid.uuid4().hex[:8]
     )
-
-    # Pricing freshness gate.
-    today_date = today if today is not None else _utc_now().date()
-    _check_pricing_freshness(pricing, today=today_date)
 
     # ---- v2.2.1 USD preflight: deterministic conservative pessimistic
     # calibration projection vs 0.9 × calibration.total_max_usd. ----
@@ -7116,6 +7125,7 @@ def run_calibration(
                 timestamp_label=timestamp_label,
                 run_id_short=run_id_short,
                 today=today_date,
+                pricing_policy_provenance=verified_pricing.provenance(),
                 run_lock_metadata=lock_metadata,
                 source_corpus_sha=source_corpus_sha,
                 user_prompts_source_sha=user_prompts_source_sha,
@@ -8280,6 +8290,7 @@ async def _run_calibration_async(
     user_prompts_source_sha: str,
     result_path: pathlib.Path,
     summary_path: pathlib.Path,
+    pricing_policy_provenance: dict[str, Any] | None = None,
 ) -> MeasurementResult:
     """v2.3 async implementation of Stage 0.5 two-phase calibration.
 
@@ -9319,6 +9330,7 @@ async def _run_calibration_async(
         "pricing_snapshot_path": pricing_snapshot_path,
         "pricing_source_url": pricing.source_url,
         "pricing_accessed_date": pricing.accessed_date,
+        "pricing_policy": pricing_policy_provenance or {},
         "started_at_iso": _iso8601_z(started_at),
         "completed_at_iso": _iso8601_z(completed_at),
         "total_usd": round(total_usd, 6),
@@ -11808,6 +11820,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--smoke", action="store_true")
     p.add_argument(
+        "--pricing-policy",
+        choices=PRICING_POLICY_MODES,
+        default=LIVE_MEASUREMENT,
+        help=(
+            "Versioned pricing semantics. live-measurement (default) requires "
+            "fresh pricing; historical-replay is offline-only."
+        ),
+    )
+    p.add_argument(
         "--stage",
         choices=("dry-run", "calibration", "smoke", "evidence"),
         default=None,
@@ -12025,6 +12046,7 @@ def main(argv: list[str] | None = None) -> int:
                 cfg=cfg,
                 benchmarks_root=pathlib.Path(args.benchmarks_root),
                 allow_dirty=args.allow_dirty,
+                pricing_policy=args.pricing_policy,
             )
         else:
             result = run_measurement(
@@ -12035,6 +12057,7 @@ def main(argv: list[str] | None = None) -> int:
                 allow_dirty=args.allow_dirty,
                 calibration_result_path=args.calibration_result,
                 smoke_summary_path=args.smoke_summary,
+                pricing_policy=args.pricing_policy,
             )
     except CalibrationTerminalError as exc:
         logger.error(
@@ -12105,7 +12128,7 @@ def main(argv: list[str] | None = None) -> int:
     except RunLockHeldError as exc:
         logger.error("RUN_LOCK_HELD %s", exc)
         return EXIT_RUNLOCK
-    except PricingStaleError as exc:
+    except (PricingStaleError, PricingPolicyError) as exc:
         logger.error("PRICING_STALE %s", exc)
         return EXIT_PRICING
     except TpmFeasibilityAbortError as exc:

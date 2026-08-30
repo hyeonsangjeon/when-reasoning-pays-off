@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/campaign_pricing_policy.v1.schema.json",
+  "title": "CampaignPricingPolicyProvenance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "mode", "freshness", "snapshot"],
+  "properties": {
+    "policy_version": { "const": "1.0.0" },
+    "mode": { "enum": ["historical-replay", "live-measurement"] },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "max_age_days"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "max_age_days": { "type": ["integer", "null"], "minimum": 1 }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_id",
+        "snapshot_path",
+        "snapshot_sha256",
+        "source_url",
+        "accessed_date",
+        "price_key",
+        "model_family",
+        "model_version",
+        "geography",
+        "region",
+        "deployment_type",
+        "currency"
+      ],
+      "properties": {
+        "snapshot_id": { "type": "string", "minLength": 1 },
+        "snapshot_path": {
+          "const": "pricing/azure-openai-payg-sample-2026-05.yaml"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_url": { "type": "string", "pattern": "^https://" },
+        "accessed_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "price_key": { "type": "string", "minLength": 1 },
+        "model_family": { "type": "string", "minLength": 1 },
+        "model_version": { "type": "string", "minLength": 1 },
+        "geography": { "type": "string", "minLength": 1 },
+        "region": { "type": "string", "minLength": 1 },
+        "deployment_type": { "type": "string", "minLength": 1 },
+        "currency": { "const": "USD" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "mode": { "const": "historical-replay" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "freshness": {
+            "properties": {
+              "required": { "const": false },
+              "max_age_days": { "const": null }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "freshness": {
+            "properties": {
+              "required": { "const": true },
+              "max_age_days": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

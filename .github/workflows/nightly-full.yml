@@ -1,0 +1,100 @@
+name: Nightly offline full campaign
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-offline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-full:
+    name: Nightly offline full (${{ matrix.graph }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        graph: [locked, current]
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      AZURE_OPENAI_API_KEY: ""
+      AZURE_OPENAI_FOUNDRY_ENDPOINT: ""
+      AZURE_OPENAI_DEPLOYMENT_GPT_5_2: ""
+      AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED: ""
+      OPENAI_API_KEY: ""
+      HF_TOKEN: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install isolated dependency graph
+        env:
+          GRAPH: ${{ matrix.graph }}
+        run: |
+          python -m venv "$RUNNER_TEMP/nightly"
+          py="$RUNNER_TEMP/nightly/bin/python"
+          lock="batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt"
+          test_lock="batch-runner/batch_runner/data/dependencies/nightly-test-tools-py311-linux-x86_64.txt"
+          if [ "$GRAPH" = locked ]; then
+            "$py" -m pip install --require-hashes -r "$lock"
+            "$py" -m pip install --no-deps .
+            "$py" -m pip install --require-hashes -r "$test_lock"
+          else
+            "$py" -m pip install --upgrade --upgrade-strategy eager \
+              ".[all,dev]" pytest-timeout
+          fi
+          "$py" -m pip check
+
+      - name: Record secret-safe execution metadata
+        env:
+          GRAPH: ${{ matrix.graph }}
+        run: |
+          py="$RUNNER_TEMP/nightly/bin/python"
+          {
+            printf 'commit=%s\n' "$GITHUB_SHA"
+            printf 'dependency_graph=%s\n' "$GRAPH"
+            "$py" --version
+            uname -srm
+            shasum -a 256 \
+              pyproject.toml \
+              batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt \
+              batch-runner/batch_runner/data/dependencies/nightly-test-tools.in \
+              batch-runner/batch_runner/data/dependencies/nightly-test-tools-py311-linux-x86_64.txt
+            "$py" -m pip freeze
+          } >"$RUNNER_TEMP/nightly-metadata.txt"
+
+      - name: Run complete offline test surface in isolated processes
+        env:
+          PYTHON_BIN: ${{ runner.temp }}/nightly/bin/python
+          NIGHTLY_LOG_DIR: ${{ runner.temp }}/nightly-logs
+        run: |
+          sudo --preserve-env=PYTHON_BIN,NIGHTLY_LOG_DIR \
+            unshare --net -- bash scripts/run_nightly_offline_tests.sh
+
+      - name: Upload secret-safe nightly diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nightly-offline-${{ matrix.graph }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/nightly-logs/*.log
+            ${{ runner.temp }}/nightly-metadata.txt
+          if-no-files-found: error
+          retention-days: 30

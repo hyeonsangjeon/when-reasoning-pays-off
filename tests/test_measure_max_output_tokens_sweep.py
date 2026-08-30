@@ -51,6 +51,16 @@ from scripts import measure_max_output_tokens_sweep as M  # noqa: E402
 YAML_PATH = REPO_ROOT / "experiments" / "exp007_max_output_tokens_sweep.yaml"
 
 
+def _pin_live_pricing_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    run_measurement = M.run_measurement
+
+    def _run_with_pinned_clock(*args, **kwargs):
+        kwargs.setdefault("today", datetime.date(2026, 5, 20))
+        return run_measurement(*args, **kwargs)
+
+    monkeypatch.setattr(M, "run_measurement", _run_with_pinned_clock)
+
+
 class _SentinelType:
     """Sentinel marker so callers can distinguish "omitted" from
     "explicitly None" on optional kwargs (e.g. fix-loop-#7 tests pass
@@ -859,6 +869,7 @@ class TestRunLockMetadataEcho:
             dry_run=True,
             stage="evidence",
             allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         assert result.run_lock_metadata is not None
         summary = json.loads(result.summary_path.read_text(encoding="utf-8"))
@@ -1016,6 +1027,7 @@ class TestSdkMaxRetriesEcho:
         result = M.run_measurement(
             cfg=cfg, benchmarks_root=benchmarks_root,
             dry_run=True, stage="evidence", allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         n = 0
         with result.jsonl_path.open("r", encoding="utf-8") as fh:
@@ -1171,6 +1183,7 @@ class TestDryRunEndToEnd:
         result = M.run_measurement(
             cfg=cfg, benchmarks_root=benchmarks_root,
             dry_run=True, stage="evidence", allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         assert result.cells_completed == result.cells_planned == 7
         assert result.total_usd == 0.0
@@ -1242,6 +1255,7 @@ class TestDryRunEndToEnd:
         M.run_measurement(
             cfg=cfg, benchmarks_root=benchmarks_root,
             dry_run=True, stage="evidence", allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         # Verify nothing under benchmarks/07-* matches a corpus/prompt file
         # name.
@@ -1408,6 +1422,7 @@ class TestSummaryHasGateBlocks:
         result = M.run_measurement(
             cfg=cfg, benchmarks_root=benchmarks_root,
             dry_run=True, stage="evidence", allow_dirty=True,
+            pricing_policy="historical-replay",
         )
         summary = json.loads(result.summary_path.read_text(encoding="utf-8"))
         assert "n_429_records_per_cell" in summary
@@ -2043,6 +2058,7 @@ class TestSmokeRefusalPaths:
         monkeypatch.setenv(
             "AZURE_OPENAI_DEPLOYMENT_GPT_5_2_THROTTLED", "ptu-deploy-throttled",
         )
+        _pin_live_pricing_clock(monkeypatch)
         caplog.set_level("ERROR")
         rc = M.main([
             "--experiment", str(YAML_PATH),
@@ -2490,6 +2506,7 @@ class TestThreeTimestampSchema:
             dry_run=True,
             stage="dry-run",
             allow_dirty=True,
+            pricing_policy="historical-replay",
             run_id_short_override=run_id,
             timestamp_label_override=ts,
         )
@@ -2512,6 +2529,7 @@ class TestThreeTimestampSchema:
             dry_run=True,
             stage="dry-run",
             allow_dirty=True,
+            pricing_policy="historical-replay",
             run_id_short_override="deadbe02",
             timestamp_label_override="20260530T000001Z",
         )
@@ -4022,10 +4040,7 @@ class TestSmokeEvidencePreflightOrderingAndReason_AuditorMicrofix:
         conservative estimator at TPS=12 projects ~$46.30 > $45 (= 0.9
         × $50 SMOKE_HARD_CEILING_USD) — abort triggers naturally
         without the prior `compute_projected_usd` monkeypatch."""
-        # Skip pricing freshness in CI (snapshot may be older than the
-        # freshness window in stale dev environments; the preflight-
-        # ordering bug is independent of pricing freshness).
-        monkeypatch.setattr(M, "_check_pricing_freshness", lambda *a, **k: None)
+        _pin_live_pricing_clock(monkeypatch)
         # Provide Azure env vars so we don't trip EXIT_AUTH first.
         monkeypatch.setenv(
             "AZURE_OPENAI_FOUNDRY_ENDPOINT", "https://example.test/"
@@ -4072,7 +4087,7 @@ class TestSmokeEvidencePreflightOrderingAndReason_AuditorMicrofix:
         ~$228.50 > $90 (= 0.9 × $100 EVIDENCE_HARD_CEILING_USD) —
         abort triggers naturally without the prior
         `compute_projected_usd` monkeypatch."""
-        monkeypatch.setattr(M, "_check_pricing_freshness", lambda *a, **k: None)
+        _pin_live_pricing_clock(monkeypatch)
         monkeypatch.setenv(
             "AZURE_OPENAI_FOUNDRY_ENDPOINT", "https://example.test/"
         )
@@ -5223,7 +5238,7 @@ class TestSmokeEvidenceDeterministicPreflight_FixLoop4:
         """Shared helper that runs main() with the documented argv set
         for a given stage + selected_peak_tps and returns (rc, caplog
         text). Pricing freshness is skipped (orthogonal to this test)."""
-        monkeypatch.setattr(M, "_check_pricing_freshness", lambda *a, **k: None)
+        _pin_live_pricing_clock(monkeypatch)
         monkeypatch.setenv(
             "AZURE_OPENAI_FOUNDRY_ENDPOINT", "https://example.test/"
         )
@@ -9663,6 +9678,7 @@ class TestV24ReviewFix1_StaleCalibrationReachesV24Gate:
             dry_run=False,
             stage="smoke",
             allow_dirty=True,
+            today=datetime.date(2026, 5, 20),
             calibration_result_path=str(stale_cal_path),
         )
         assert result is not None
@@ -9869,6 +9885,7 @@ class TestV24ReviewFix2_EvidenceEchoAbortWired_11_21:
                 dry_run=False,
                 stage="evidence",
                 allow_dirty=True,
+                today=datetime.date(2026, 5, 20),
                 calibration_result_path=str(stale_cal_path),
                 smoke_summary_path=str(smoke_path),
             )
@@ -9893,6 +9910,7 @@ class TestV24ReviewFix2_EvidenceEchoAbortWired_11_21:
         cfg, benchmarks_root = _prepare_run_measurement_workspace(
             tmp_path, monkeypatch
         )
+        _pin_live_pricing_clock(monkeypatch)
         stale_cal_path = _copy_v23_calibration_fixture_to(tmp_path)
         cal_data = json.loads(stale_cal_path.read_text(encoding="utf-8"))
         cal_sha = M.compute_calibration_result_sha256(stale_cal_path)

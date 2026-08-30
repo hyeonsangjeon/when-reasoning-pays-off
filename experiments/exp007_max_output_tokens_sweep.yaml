@@ -315,15 +315,15 @@ user_prompts_index_set:
   - 24
   - 27
 
-# Pricing snapshot reference. The runner aborts (exit 5) if this file is
-# missing OR its accessed_date is older than 90 days. When Azure publishes
-# a rate change, add a new dated snapshot under pricing/ and update this
-# field; never silently overwrite an existing dated snapshot. Note: the
+# Immutable pricing snapshot reference. Historical replay verifies the
+# commit-pinned ID, SHA-256, source, accessed date, and record identity without
+# consulting wall-clock freshness. Live measurement additionally enforces the
+# 90-day freshness gate. Add a new snapshot; never edit this one. Note: the
 # v2.3 smoke/evidence USD preflight gate does NOT consume this pricing
 # snapshot — it uses the deterministic $0.009/call conservative
 # estimator. The snapshot is still required for per-record cost
 # attribution and for the dry-run pricing-driven projection.
-pricing_snapshot_path: pricing/azure-openai-payg-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
 
 # PAYG / PTU / live-vs-simulation declaration. The runner echoes this
 # block verbatim into every runs/*.summary.json so downstream readers

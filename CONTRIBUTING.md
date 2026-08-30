@@ -70,9 +70,10 @@ formalizes this. Briefly:
    + ISO access date, or `OPERATIONAL_INFERENCE` (Tier 2) with rationale
    and in-repo evidence.
 4. **Tests pass.** `pytest -m "not adaptive_calibration" batch-runner/tests/`
-   must pass locally. CI also runs the relevant subset of `tests/` and the
+   must pass locally. PR fast CI runs the deterministic root subset and the
    non-editable minimal wheel on Ubuntu, macOS, and Windows with CPython 3.11
-   and 3.13.
+   and 3.13. The separate nightly workflow runs the complete offline surface,
+   including each large campaign suite in its own pytest process.
 5. **Ruff clean.** `ruff check .` on any Python you change.
 6. **Frozen method changes are explicit.** Approved `benchmarks/*/analysis.md`
    stays untouched. A change to `docs/05-methodology.md` must identify the
@@ -88,12 +89,22 @@ source .venv/bin/activate
 pip install -e ".[all,dev]"
 ruff check .
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
+bash scripts/run_nightly_offline_tests.sh
 python scripts/check_schema_conformance.py schema-meta
 python scripts/check_schema_conformance.py artifact-conformance
 python scripts/measure_cold_mock.py \
   --threshold-seconds 300 --output cold-mock-timing.json
 python scripts/verify_core_wheel.py
 ```
+
+`run_nightly_offline_tests.sh` blanks provider credentials and blocks Python
+socket/DNS access for test execution. It machine-verifies collection of all
+three campaign modules without `--ignore`, then runs batch, root, and campaign
+suites in isolated processes. For a pricing-aware campaign dry-run, pass
+`--pricing-policy historical-replay`; any potentially billed command defaults
+to `live-measurement` and must pass the 90-day freshness gate before endpoint
+or credential resolution. See
+[`docs/21-pricing-policy-and-nightly-ci.md`](docs/21-pricing-policy-and-nightly-ci.md).
 
 The installed package supports CPython 3.11–3.13. The minimal core/sample CLI
 is supported on Linux, macOS, and Windows; the full research campaign is not a
