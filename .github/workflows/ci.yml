@@ -400,6 +400,21 @@ jobs:
           test -s "$out/report.html"
           test -s "$out/policy.json"
 
+      - name: Protected Azure orchestration — offline fake only
+        env:
+          AZURE_OPENAI_API_KEY: ""
+          AZURE_OPENAI_FOUNDRY_ENDPOINT: ""
+          OPENAI_API_KEY: ""
+          AZURE_CLIENT_ID: ""
+          AZURE_CLIENT_SECRET: ""
+        run: |
+          sudo --preserve-env=PATH,PYTHONPATH,RUNNER_TEMP,AZURE_OPENAI_API_KEY,AZURE_OPENAI_FOUNDRY_ENDPOINT,OPENAI_API_KEY,AZURE_CLIENT_ID,AZURE_CLIENT_SECRET \
+            unshare --net -- bash -c '
+              python -m scripts.run_protected_azure_smoke \
+                --offline-fake --output "$RUNNER_TEMP/protected-smoke-fake"
+              test -s "$RUNNER_TEMP/protected-smoke-fake/health.json"
+            '
+
       - name: Non-editable wheel smoke outside repository
         env:
           AZURE_OPENAI_API_KEY: ""
@@ -443,6 +458,7 @@ jobs:
               "experiment_latest_pointer.v1.schema.json",
               "sample_doctor.v1.schema.json",
               "cold_mock_timing.v1.schema.json",
+              "protected_azure_smoke_health.v1.schema.json",
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY
@@ -582,7 +598,7 @@ jobs:
           assert manifest["pricing"]["state"] == "declared_snapshot_validated"
           assert (
              manifest["pricing"]["snapshot_id"]
-             == "azure-openai-payg-sample-2026-05"
+             == "azure-openai-payg-sample-2026-08"
           )
 
           azure_refusal = cwd / "wheel-azure-refusal"

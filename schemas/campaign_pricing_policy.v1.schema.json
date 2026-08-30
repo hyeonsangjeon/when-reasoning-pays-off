@@ -37,7 +37,10 @@
       "properties": {
         "snapshot_id": { "type": "string", "minLength": 1 },
         "snapshot_path": {
-          "const": "pricing/azure-openai-payg-sample-2026-05.yaml"
+          "enum": [
+            "pricing/azure-openai-payg-sample-2026-05.yaml",
+            "pricing/azure-openai-payg-sample-2026-08.yaml"
+          ]
         },
         "snapshot_sha256": {
           "type": "string",

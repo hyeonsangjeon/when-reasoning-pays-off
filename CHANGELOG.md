@@ -6,6 +6,23 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Protected Azure live-provider smoke
+
+- Added a schedule/manual-only `main` workflow behind a protected GitHub
+  environment and Azure self-hosted runner labels. The single model request
+  uses a managed-identity-only `DefaultAzureCredential` chain, explicit timeout
+  and output limits, no retry, `store=false`, hidden I/O, fresh immutable
+  pricing, dual cost confirmation, and a `$0.001` estimator ceiling.
+- Added the exact-orchestration offline fake to PR CI under an isolated network
+  namespace. The ordinary Azure sample still refuses every generic CI run;
+  public CI has no switch that authorizes the live path.
+- Added a strict health schema, privacy scanner, typed failure taxonomy, and
+  three-day health-only artifact. Prompt/response, endpoint/deployment identity,
+  request/trace identifiers, credentials, Azure resource identifiers, users,
+  environment contents, and absolute paths are excluded.
+- Added the immutable August 2026 PAYG pricing snapshot and retained the May
+  snapshot unchanged for historical replay.
+
 ### Added — Phase 4 pricing policy and nightly campaign CI
 
 - Added pricing policy `1.0.0` across dual spillover, cache-key bucketing, and

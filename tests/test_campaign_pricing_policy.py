@@ -21,6 +21,7 @@ from scripts._azure_pricing import (
     PRICING_POLICY_VERSION,
     PricingPolicy,
     PricingPolicyError,
+    resolve_pinned_payg_snapshot,
     verify_campaign_pricing,
 )
 
@@ -39,10 +40,22 @@ def test_historical_replay_is_deterministic_under_2030_clock() -> None:
     assert provenance["freshness"] == {"required": False, "max_age_days": None}
     assert provenance["snapshot"]["snapshot_id"] == CANONICAL_PAYG_SNAPSHOT_ID
     assert provenance["snapshot"]["snapshot_sha256"] == CANONICAL_PAYG_SNAPSHOT_SHA256
-    assert provenance["snapshot"]["accessed_date"] == "2026-05-19"
+    assert provenance["snapshot"]["accessed_date"] == "2026-08-30"
     assert provenance["snapshot"]["price_key"] == (
         "azure-openai:gpt-5.2:2025-12-11:global:global-standard"
     )
+
+
+def test_retained_may_snapshot_still_resolves_by_immutable_identity() -> None:
+    snapshot = resolve_pinned_payg_snapshot(
+        snapshot_id="azure-openai-payg-sample-2026-05",
+        snapshot_path="pricing/azure-openai-payg-sample-2026-05.yaml",
+        snapshot_sha256=(
+            "858c3c39ca36a7495d2754d8b5e32e7"
+            "7e6478d38e2e0da8d7d9cd154ab1f08cd"
+        ),
+    )
+    assert snapshot.snapshot_id == "azure-openai-payg-sample-2026-05"
 
 
 def test_live_measurement_rejects_stale_snapshot_under_2030_clock() -> None:

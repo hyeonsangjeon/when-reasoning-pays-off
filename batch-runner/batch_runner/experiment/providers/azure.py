@@ -35,11 +35,13 @@ from batch_runner.experiment.record import (
     METRIC_MODEL_DEPENDENT,
     METRIC_REPORTED,
     AuthenticationError,
+    ApiCompatibilityError,
     BudgetNotConfirmedError,
     ModelUnavailableError,
     OutputRecord,
     ProviderCapabilities,
     ProviderUnavailableError,
+    QuotaExceededError,
     RequestTimeoutError,
     ResponseFormatError,
     ResponseNotCompletedError,
@@ -259,12 +261,21 @@ def _classify_error(exc: Exception) -> Exception:
     status = getattr(exc, "status_code", None)
     if name in {"AuthenticationError", "PermissionDeniedError"} or status in {401, 403}:
         return AuthenticationError("azure authentication failed")
+    if name == "RateLimitError" or status == 429:
+        return QuotaExceededError("azure quota or rate capacity was unavailable")
     if name == "NotFoundError" or status == 404:
         return ModelUnavailableError(
             "azure deployment not found; check the deployment name in the ledger"
         )
     if name in {"APITimeoutError"} or status == 408:
         return RequestTimeoutError("azure request timed out")
+    if name in {"BadRequestError", "UnprocessableEntityError"} or status in {
+        400,
+        405,
+        409,
+        422,
+    }:
+        return ApiCompatibilityError("azure request was not API-compatible")
     return ProviderUnavailableError(f"azure request failed ({name})")
 
 

@@ -133,7 +133,7 @@ user_prompts_path: benchmarks/05-dual-spillover/user_prompts.json
 
 # Immutable PAYG pricing identity. Runtime policy is explicit at the CLI:
 # historical-replay is offline-only; live-measurement enforces freshness.
-pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-08.yaml
 
 # Per-policy YAML budget. Phase 2 spend is higher than Phase 1 because
 # real 429 churn forces cache rebuild on both pools; typical actual

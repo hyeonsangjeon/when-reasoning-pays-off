@@ -106,7 +106,7 @@ user_prompts_path: benchmarks/05-dual-spillover/user_prompts.json
 
 # Immutable PAYG pricing identity. Runtime policy is explicit at the CLI:
 # historical-replay is offline-only; live-measurement enforces freshness.
-pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-08.yaml
 
 budget:
   # 2026-05-28: budget envelope aligned with exp004 v3 HOTFIX after the

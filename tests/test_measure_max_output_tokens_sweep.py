@@ -55,7 +55,7 @@ def _pin_live_pricing_clock(monkeypatch: pytest.MonkeyPatch) -> None:
     run_measurement = M.run_measurement
 
     def _run_with_pinned_clock(*args, **kwargs):
-        kwargs.setdefault("today", datetime.date(2026, 5, 20))
+        kwargs.setdefault("today", datetime.date(2026, 8, 31))
         return run_measurement(*args, **kwargs)
 
     monkeypatch.setattr(M, "run_measurement", _run_with_pinned_clock)
@@ -9678,7 +9678,7 @@ class TestV24ReviewFix1_StaleCalibrationReachesV24Gate:
             dry_run=False,
             stage="smoke",
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
             calibration_result_path=str(stale_cal_path),
         )
         assert result is not None
@@ -9885,7 +9885,7 @@ class TestV24ReviewFix2_EvidenceEchoAbortWired_11_21:
                 dry_run=False,
                 stage="evidence",
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
                 calibration_result_path=str(stale_cal_path),
                 smoke_summary_path=str(smoke_path),
             )

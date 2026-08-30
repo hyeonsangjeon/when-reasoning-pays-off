@@ -29,6 +29,7 @@ INSTANCE_GROUPS = (
     InstanceGroup(
         "schemas/azure_pricing_snapshot.v1.schema.json",
         (
+            "pricing/azure-openai-payg-sample-2026-08.yaml",
             "pricing/azure-openai-payg-sample-2026-05.yaml",
             "batch-runner/batch_runner/data/azure_sample_pricing.yaml",
             "tests/fixtures/pricing/azure-openai-payg-2026-05.yaml",
@@ -87,6 +88,7 @@ INSTANCE_GROUPS = (
 )
 
 GOVERNED_ARTIFACT_PATTERNS = (
+    "pricing/azure-openai-payg-sample-2026-08.yaml",
     "pricing/azure-openai-payg-sample-2026-05.yaml",
     "batch-runner/batch_runner/data/azure_sample_pricing.yaml",
     "batch-runner/batch_runner/experiment/resources/ledger.*.yaml",
@@ -135,6 +137,9 @@ SCHEMA_EXEMPTIONS = {
     ),
     "schemas/campaign_pricing_policy.v1.schema.json": (
         "runtime-generated campaign summaries carry this embedded provenance"
+    ),
+    "schemas/protected_azure_smoke_health.v1.schema.json": (
+        "runtime-generated protected health is uploaded briefly and never committed"
     ),
 }
 

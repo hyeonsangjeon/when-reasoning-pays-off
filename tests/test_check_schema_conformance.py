@@ -32,7 +32,7 @@ def test_pricing_schema_rejects_model_incompatible_reasoning_rates(
     )
     source = yaml.safe_load(
         (
-            REPO_ROOT / "pricing/azure-openai-payg-sample-2026-05.yaml"
+            REPO_ROOT / "pricing/azure-openai-payg-sample-2026-08.yaml"
         ).read_text()
     )
     gpt4o = "azure-openai:gpt-4o:2024-11-20:global:global-standard"

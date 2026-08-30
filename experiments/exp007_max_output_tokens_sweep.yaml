@@ -323,7 +323,7 @@ user_prompts_index_set:
 # snapshot — it uses the deterministic $0.009/call conservative
 # estimator. The snapshot is still required for per-record cost
 # attribution and for the dry-run pricing-driven projection.
-pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-08.yaml
 
 # PAYG / PTU / live-vs-simulation declaration. The runner echoes this
 # block verbatim into every runs/*.summary.json so downstream readers
