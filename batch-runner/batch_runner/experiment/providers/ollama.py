@@ -20,12 +20,14 @@ mock-style success.
 from __future__ import annotations
 
 import json
+import re
 import time
 import urllib.error
 import urllib.request
-from typing import Callable
+from typing import Any, Callable
 
 from batch_runner.experiment.ledger import RunLedger
+from batch_runner.experiment.manifest import canonical_json, sha256_bytes
 from batch_runner.experiment.providers.base import ResolvedEndpoint
 from batch_runner.experiment.record import (
     METRIC_NOT_SUPPORTED,
@@ -37,9 +39,10 @@ from batch_runner.experiment.record import (
     RequestTimeoutError,
     ResponseFormatError,
 )
+from batch_runner.privacy import PrivacyViolation, ensure_safe_public_text
 
-# transport(url, payload_bytes, timeout_seconds) -> (status_code, body_bytes)
-Transport = Callable[[str, bytes, float], "tuple[int, bytes]"]
+# A ``None`` payload means GET; bytes mean POST.
+Transport = Callable[[str, bytes | None, float], "tuple[int, bytes]"]
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -55,12 +58,14 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def _urllib_transport(url: str, payload: bytes, timeout: float) -> tuple[int, bytes]:
+def _urllib_transport(
+    url: str, payload: bytes | None, timeout: float
+) -> tuple[int, bytes]:
     request = urllib.request.Request(
         url,
         data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
+        headers={"Content-Type": "application/json"} if payload is not None else {},
+        method="POST" if payload is not None else "GET",
     )
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({}), _NoRedirect
@@ -101,6 +106,39 @@ def _int_or_none(value: object) -> int | None:
     return None
 
 
+def _reported_text(value: object, *, label: str) -> str | None:
+    if not isinstance(value, str) or not value or len(value) > 160:
+        return None
+    try:
+        ensure_safe_public_text(value, label=label)
+    except PrivacyViolation:
+        return None
+    if any(ord(character) < 32 for character in value):
+        return None
+    return value
+
+
+def _response_object(body: bytes, *, label: str) -> dict[str, Any]:
+    try:
+        value = json.loads(body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise ResponseFormatError(f"ollama {label} response was not valid JSON") from None
+    if not isinstance(value, dict):
+        raise ResponseFormatError(f"ollama {label} response was not a JSON object")
+    return value
+
+
+def _detail(
+    tag_details: dict[str, Any],
+    show_details: dict[str, Any],
+    key: str,
+) -> str | None:
+    return _reported_text(
+        tag_details.get(key, show_details.get(key)),
+        label=f"ollama {key}",
+    )
+
+
 class OllamaProvider:
     """A real, local Ollama chat call normalized to :class:`OutputRecord`."""
 
@@ -119,6 +157,7 @@ class OllamaProvider:
         self._capture_io = capture_io
         self._transport = transport or _urllib_transport
         self._url = endpoint.base_url.rstrip("/") + "/api/chat"
+        self._fingerprint: dict[str, str | None] | None = None
 
     def capabilities(self) -> ProviderCapabilities:
         return ProviderCapabilities(
@@ -134,9 +173,115 @@ class OllamaProvider:
         )
 
     def prepare(self) -> None:
-        # No pre-flight socket: a down server or missing model surfaces as a
-        # typed per-row error with an actionable message.
-        return None
+        """Resolve the exact installed model before any prompt is submitted."""
+        base = self._endpoint.base_url.rstrip("/")
+        timeout = float(self._ledger.execution.timeout_seconds)
+        version = self._get_object(base + "/api/version", timeout, label="version")
+        tags = self._get_object(base + "/api/tags", timeout, label="tags")
+        models = tags.get("models")
+        if not isinstance(models, list):
+            raise ResponseFormatError("ollama tags response is missing models")
+        selected: dict[str, Any] | None = None
+        for item in models:
+            if not isinstance(item, dict):
+                continue
+            if (
+                item.get("name") == self._ledger.model
+                or item.get("model") == self._ledger.model
+            ):
+                selected = item
+                break
+        if selected is None:
+            raise ModelUnavailableError(
+                f"ollama model {self._ledger.model!r} is not installed; "
+                f"pull it with `ollama pull {self._ledger.model}`"
+            )
+        digest = selected.get("digest")
+        if digest is not None and (
+            not isinstance(digest, str)
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest)
+        ):
+            raise ResponseFormatError("ollama tags response contains an invalid digest")
+        expected = self._ledger.expected_model_digest
+        if expected is not None and digest != expected:
+            raise ModelUnavailableError(
+                "ollama model digest does not match expected_model_digest; "
+                "refusing before prompt submission"
+            )
+        show_payload = json.dumps(
+            {"model": self._ledger.model, "verbose": False},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        show = self._post_object(
+            base + "/api/show", show_payload, timeout, label="show"
+        )
+        tag_details = selected.get("details")
+        show_details = show.get("details")
+        if not isinstance(tag_details, dict):
+            tag_details = {}
+        if not isinstance(show_details, dict):
+            show_details = {}
+        template = show.get("template")
+        model_info = show.get("model_info")
+        self._fingerprint = {
+            "runtime_version": _reported_text(
+                version.get("version"), label="ollama runtime version"
+            ),
+            "tag": self._ledger.model,
+            "digest": digest,
+            "format": _detail(tag_details, show_details, "format"),
+            "family": _detail(tag_details, show_details, "family"),
+            "parameter_size": _detail(
+                tag_details, show_details, "parameter_size"
+            ),
+            "quantization": _detail(
+                tag_details, show_details, "quantization_level"
+            ),
+            "template_sha256": (
+                sha256_bytes(canonical_json(template))
+                if isinstance(template, str)
+                else None
+            ),
+            "model_info_sha256": (
+                sha256_bytes(canonical_json(model_info))
+                if isinstance(model_info, dict)
+                else None
+            ),
+        }
+
+    def fingerprint(self) -> dict[str, str | None] | None:
+        """Return the prepared, content-free runtime/model fingerprint."""
+        return dict(self._fingerprint) if self._fingerprint is not None else None
+
+    def _request_object(
+        self,
+        url: str,
+        payload: bytes | None,
+        timeout: float,
+        *,
+        label: str,
+    ) -> dict[str, Any]:
+        status, body = self._transport(url, payload, timeout)
+        if 300 <= status < 400:
+            raise ProviderUnavailableError(
+                "ollama endpoint returned a redirect; refusing to follow it"
+            )
+        if status >= 400:
+            raise ProviderUnavailableError(
+                f"ollama {label} endpoint returned HTTP {status}"
+            )
+        return _response_object(body, label=label)
+
+    def _get_object(
+        self, url: str, timeout: float, *, label: str
+    ) -> dict[str, Any]:
+        return self._request_object(url, None, timeout, label=label)
+
+    def _post_object(
+        self, url: str, payload: bytes, timeout: float, *, label: str
+    ) -> dict[str, Any]:
+        return self._request_object(url, payload, timeout, label=label)
 
     def run_row(self, row_id: str, repeat_index: int, prompt: str) -> OutputRecord:
         payload = json.dumps(
@@ -170,12 +315,7 @@ class OllamaProvider:
                 f"ollama returned HTTP {status}"
             )
 
-        try:
-            data = json.loads(body.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            raise ResponseFormatError("ollama response was not valid JSON") from None
-        if not isinstance(data, dict):
-            raise ResponseFormatError("ollama response was not a JSON object")
+        data = _response_object(body, label="chat")
 
         message = data.get("message")
         if not isinstance(message, dict) or not isinstance(message.get("content"), str):

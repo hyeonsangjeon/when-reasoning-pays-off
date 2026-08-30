@@ -181,6 +181,29 @@ def _add_sample_parser(subparsers: argparse._SubParsersAction) -> None:
         metavar="RUN_ID",
         help="Immutable parent run ID under out/runs/",
     )
+    doctor = sample_sub.add_parser(
+        "doctor",
+        help="Diagnose package, workspace, lock, and Ollama runtime health",
+    )
+    doctor.add_argument(
+        "--ledger",
+        default="ledger.yaml",
+        metavar="LEDGER_YAML",
+        help="Ledger in the sample workspace (default: ledger.yaml)",
+    )
+    doctor.add_argument(
+        "--repair-stale-lock",
+        action="store_true",
+        help="Repair only a proven same-host stale lock and owned staging dirs",
+    )
+    doctor.add_argument(
+        "--allow-remote-ollama",
+        action="store_true",
+        help="Permit diagnosis to contact a non-local Ollama endpoint explicitly",
+    )
+    doctor.add_argument(
+        "--json", action="store_true", help="Emit the doctor result as JSON"
+    )
     for command in (run, retry):
         command.add_argument(
             "--ledger",
@@ -279,6 +302,7 @@ def _init_sample_workspace(out_dir: Path, provider: str) -> None:
             "out/\n"
             ".env\n"
             ".reasoning-payoff-sample.lock\n"
+            ".reasoning-payoff-sample-repairs.jsonl\n"
             "*.tmp\n",
         )
         if out_dir.exists():
@@ -429,6 +453,21 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
     return result.exit_code
 
 
+def _cmd_sample_doctor(args: argparse.Namespace) -> int:
+    from batch_runner.experiment.doctor import diagnose_workspace  # noqa: PLC0415
+
+    result = diagnose_workspace(
+        Path(args.ledger),
+        repair_stale_lock=args.repair_stale_lock,
+        allow_remote_ollama=args.allow_remote_ollama,
+    )
+    if args.json:
+        print(json.dumps(result.payload, indent=2, ensure_ascii=False, sort_keys=True))
+    else:
+        print(result.render())
+    return result.exit_code
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
@@ -445,6 +484,8 @@ def main(argv: list[str] | None = None) -> int:
                     f"reasoning-payoff sample run --ledger {args.out}/ledger.yaml"
                 )
                 return 0
+            if args.sample_command == "doctor":
+                return _cmd_sample_doctor(args)
             return _cmd_sample_run(args)
         if args.command == "init":
             _init_sample(Path(args.out))

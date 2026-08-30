@@ -61,13 +61,14 @@ python -m pip install .        # or: pip install when-reasoning-pays-off (once p
 reasoning-payoff --help        # one command, discoverable with --help
 ```
 
-`sample` has three operational subcommands:
+`sample` has four operational subcommands:
 
 | Command | What it does |
 | --- | --- |
 | `reasoning-payoff sample init --provider <p> --out <dir>` | Copy a ready-to-run workspace (ledger + dataset + `.env.example`). |
 | `reasoning-payoff sample run --ledger <dir>/ledger.yaml` | Validate the ledger, call the model, publish a new immutable run. |
 | `reasoning-payoff sample retry-failed --ledger <dir>/ledger.yaml --parent-run-id <id>` | Verify a parent and create a child run for failed attempts only. |
+| `reasoning-payoff sample doctor --ledger <dir>/ledger.yaml` | Diagnose installation, workspace ownership/output structure, lock safety, and Ollama runtime/model identity. |
 
 The durable machine-readable source for every installed CLI command's
 execution, network, cost, and guard boundary is
@@ -89,6 +90,7 @@ ollama ls               # confirm the tag is present
 
 # From your project directory:
 reasoning-payoff sample init --provider ollama --out sample-workspace
+reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml
 reasoning-payoff sample run --ledger sample-workspace/ledger.yaml
 ```
 
@@ -136,6 +138,7 @@ experiment:
     Illustrative live sample. Confirms DATA -> IN -> EXECUTE -> OUT end to end.
 provider: ollama            # ollama | azure | mock
 model: qwen2.5:0.5b         # the model tag (Ollama) or deployment name (Azure)
+expected_model_digest: null # optional Ollama sha256:... identity pin
 endpoint:
   env_var: OLLAMA_BASE_URL  # the NAME of the env var read at run time
   default: http://localhost:11434   # localhost-only fallback for Ollama
@@ -172,6 +175,12 @@ The full machine-readable contract is
 environment at run time — the ledger records only the variable **name**, never a
 resolved URL or secret.
 
+For Ollama, `expected_model_digest` may be `null` or the exact lowercase
+`sha256:...` digest reported by `sample doctor --json`. Pinning it converts a
+mutable model tag into an explicit allowlist: the runner rejects a missing or
+different digest before submitting any prompt. It never pulls or updates a
+model automatically.
+
 For this first release the quickstart runs one row at a time: `concurrency` is
 fixed at `1` and `artifacts` is exactly `[run.json, records.jsonl, summary.md,
 manifest.json, artifacts.sha256]`.
@@ -195,8 +204,12 @@ reasoning-payoff sample run --ledger sample-workspace/ledger.yaml
 
 `sample run --help` states the scope and cost before you run. The command
 validates the ledger and dataset, then sends `max_samples` rows to the provider.
-Ollama calls `POST http://localhost:11434/api/chat` with
-`{model, messages, stream:false}` and reads the answer from `message.content`.
+Before an Ollama prompt, it calls official `/api/version`, `/api/tags`, and
+`/api/show` endpoints. All four Ollama requests, including the final
+`/api/chat`, use the validated endpoint, bypass environment proxies, and refuse
+redirects. The first three calls confirm reachability, the requested installed
+tag, and its digest/details; only then does `/api/chat` receive
+`{model, messages, stream:false}`.
 
 ## 8. OUT — the artifacts
 
@@ -231,6 +244,14 @@ credentials, request IDs, row IDs, customer names, and prompt/response text.
 An installed wheel running outside a Git checkout records explicit `unknown`
 states for Git and lock identity instead of failing or searching user paths.
 
+For Ollama, manifest schema `1.1.0` adds runtime version, requested tag, digest,
+format, family, parameter size, quantization, and SHA-256 hashes of the
+canonical JSON representation of `/api/show` template and `model_info` values.
+Raw template and model metadata are never stored. A field the runtime does not
+report is explicit `null`, not an inferred value. Hardware identity is
+deliberately absent: operators may record hardware separately for performance
+provenance, but it does not establish model-byte identity.
+
 Two sequential runs create two sibling directories. Publishing the second only
 replaces `latest.json`; every byte in the first directory remains unchanged.
 Workspaces created by an older release may have flat files directly under
@@ -252,6 +273,36 @@ ledger and input hashes still match, and publishes a child run with
 `parent_run_id`. Only parent records whose status is `error` are called;
 successful rows are never re-called. Provider, cost, CI, endpoint, no-retry,
 and redaction guards are identical to a normal run.
+
+### Diagnose and safely recover a crashed workspace
+
+Every sample run holds `.reasoning-payoff-sample.lock` for its full lifetime.
+The versioned JSON lock stores a PID, one-way host fingerprint, creation time,
+one-way process-start token when available, ledger/operation identity, and tool
+version. It stores neither hostname nor username.
+
+```bash
+reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml
+reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml --json
+
+# Mutating recovery is always explicit:
+reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml \
+  --repair-stale-lock
+```
+
+Doctor removes a lock only when its metadata is valid, its host fingerprint
+matches this machine, and the recorded PID is proven absent. A live PID is
+never removed. Cross-host, malformed, symlinked, unknown-liveness, and
+PID-reuse states fail closed with manual guidance. Recovery rechecks the exact
+lock inode, then acquires a fresh exclusive/no-follow lock before touching
+output. Under that lock it deletes only hidden staging directories whose names
+match the runner format and whose ownership marker is valid. Completed run
+directories and foreign paths are never removed.
+
+Each actual repair appends a private workspace event containing only time,
+tool version, the old lock-content hash, same-host proof, and cleanup count. It
+does not contain usernames, absolute paths, endpoint hosts, request IDs, or
+secrets. Doctor JSON conforms to `schemas/sample_doctor.v1.schema.json`.
 
 Token usage is reported per the provider's real response. Ollama does **not**
 report cached-input or reasoning tokens, so those appear as `not_supported`
@@ -393,7 +444,7 @@ preserved safely; partial failures are visible and never reported as success.
 | `21` | All rows failed. |
 | `3` | Invalid input — ledger or dataset failed validation (unknown fields, bad types, unsafe paths, oversized input). |
 | `4` | Privacy violation — a redaction/capture rule was breached. |
-| `5` | Output conflict — the target directory is not an owned, safe location. |
+| `5` | Output/lock conflict — the target is unsafe, a lock is live/unknown, or doctor repair cannot prove safety. |
 | `6` | Filesystem error while writing artifacts. |
 | `7` | Cost or provider error — billed run not confirmed, or the provider/model was unavailable or refused. |
 
@@ -409,10 +460,14 @@ preserved safely; partial failures are visible and never reported as success.
   `execution.cost.confirmed: true`; billed runs are hard-refused in CI.
 - **Azure `minimal` rejected** — `gpt-5.2` does not support `minimal`; use
   `none` (default) or `low/medium/high/xhigh`.
-- **exit 5 writing output** — output is fixed to the workspace's gitignored
-  `out/runs/` hierarchy. Move legacy flat `out/run.json` output aside. Remove
-  unexpected files or a stale
-  `.reasoning-payoff-sample.lock` only after confirming no run is active.
+- **exit 5 writing output or diagnosing a lock** — output is fixed to the
+  workspace's gitignored `out/runs/` hierarchy. Move legacy flat
+  `out/run.json` output aside. Run `sample doctor`; never delete
+  `.reasoning-payoff-sample.lock` blindly. Use `--repair-stale-lock` only when
+  doctor reports a proven same-host stale lock.
+- **Ollama digest mismatch** — verify the installed tag with `sample doctor
+  --json`. Update `expected_model_digest` only after independently approving
+  the new model bytes; the runner never pulls a replacement.
 
 ## 14. Scope reminder
 
