@@ -6,6 +6,22 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — Public reproducibility and CLI network contracts (2026-08-30)
+
+- Defined public evidence verification, same-method reruns on new
+  environments, and exact original raw reproduction as separate levels.
+  Public sanitized evidence remains publicly verifiable; original
+  `RAW_PRIVATE` bytes and transformations remain owner-auditable only.
+- Added a packaged machine-readable CLI capability manifest and a documentation
+  gate that compares it with the installed command tree, provider choices,
+  README network/cost table, and every public result page's methodology link.
+- Scoped offline claims to `init`/`analyze`/`report`, catalog browsing, Mock
+  preview, and static views while documenting local/remote Ollama and guarded,
+  billed Azure calls separately.
+- Advanced the `docs/blog` protected-tree pin to include only the new
+  reproducibility-scope links; the `benchmarks` and `results` pins are
+  unchanged.
+
 ### Changed — Plain-language English documentation pass (2026-08-29)
 
 - Polished the English documentation under `docs/` so each page stands on its

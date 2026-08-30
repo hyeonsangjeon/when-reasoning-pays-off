@@ -48,8 +48,10 @@ DATA  ->  IN  ->  EXECUTE  ->  OUT
 - For the free local path: [Ollama](https://ollama.com) installed.
 - For the billed path: an Azure OpenAI resource in Microsoft Foundry and the
   Azure CLI signed in (or a managed identity). No key is stored by this tool.
-- Network access is only needed to *install* the package and, for Ollama, to
-  *pull* the model the first time. The run itself is local for Ollama.
+- Internet access is needed to *install* uncached packages and, for Ollama, to
+  *pull* the model the first time. An Ollama run still makes a live HTTP call,
+  but the default endpoint is loopback-only (`localhost`); a remote Ollama
+  endpoint requires `--allow-remote-ollama`.
 
 ## 3. Install the single entry point
 
@@ -66,6 +68,12 @@ reasoning-payoff --help        # one command, discoverable with --help
 | `reasoning-payoff sample init --provider <p> --out <dir>` | Copy a ready-to-run workspace (ledger + dataset + `.env.example`). |
 | `reasoning-payoff sample run --ledger <dir>/ledger.yaml` | Validate the ledger, call the model, write artifacts. |
 | `reasoning-payoff sample run --help` | Show scope and cost before running. |
+
+The durable machine-readable source for every installed CLI command's
+execution, network, cost, and guard boundary is
+[`batch-runner/batch_runner/data/cli_capabilities.v1.json`](../batch-runner/batch_runner/data/cli_capabilities.v1.json).
+`scripts/check_docs_contracts.py` compares that manifest with the actual CLI
+parser, provider choices, and the public README table.
 
 ## 4. The headline path — Ollama, local and free
 

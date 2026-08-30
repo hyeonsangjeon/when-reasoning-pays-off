@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0.0",
+  "scope": "installed reasoning-payoff CLI",
+  "commands": [
+    {
+      "id": "init",
+      "cli_path": "reasoning-payoff init",
+      "variant": "default",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "readme_row": [
+        "`init`",
+        "`reasoning-payoff init`",
+        "Offline fixture copy",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "analyze",
+      "cli_path": "reasoning-payoff analyze",
+      "variant": "default",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "readme_row": [
+        "`analyze`",
+        "`reasoning-payoff analyze`",
+        "Offline analysis",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "report",
+      "cli_path": "reasoning-payoff report",
+      "variant": "default",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "readme_row": [
+        "`report`",
+        "`reasoning-payoff report`",
+        "Deterministic offline render",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "experiment-list",
+      "cli_path": "reasoning-payoff experiment list",
+      "variant": "default",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "readme_row": [
+        "`experiment-list`",
+        "`reasoning-payoff experiment list`",
+        "Read-only local catalog",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "experiment-describe",
+      "cli_path": "reasoning-payoff experiment describe",
+      "variant": "default",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "readme_row": [
+        "`experiment-describe`",
+        "`reasoning-payoff experiment describe`",
+        "Read-only local catalog",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "sample-init",
+      "cli_path": "reasoning-payoff sample init",
+      "variant": "all-providers",
+      "execution": "offline",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "providers": ["azure", "mock", "ollama"],
+      "readme_row": [
+        "`sample-init`",
+        "`reasoning-payoff sample init`",
+        "Offline workspace copy",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "sample-run-mock",
+      "cli_path": "reasoning-payoff sample run",
+      "variant": "mock",
+      "execution": "deterministic-preview",
+      "network": "none",
+      "cost": "none",
+      "guards": [],
+      "provider": "mock",
+      "readme_row": [
+        "`sample-run-mock`",
+        "`reasoning-payoff sample run` (Mock)",
+        "Deterministic offline preview",
+        "No runtime network",
+        "No provider cost"
+      ]
+    },
+    {
+      "id": "sample-run-ollama-local",
+      "cli_path": "reasoning-payoff sample run",
+      "variant": "ollama-local",
+      "execution": "live-provider",
+      "network": "loopback-http",
+      "cost": "local-compute",
+      "guards": ["localhost-default"],
+      "provider": "ollama",
+      "readme_row": [
+        "`sample-run-ollama-local`",
+        "`reasoning-payoff sample run` (Ollama local)",
+        "Live local-provider call",
+        "Loopback HTTP to local Ollama; no Internet required after model pull",
+        "No cloud bill; uses local CPU/GPU"
+      ]
+    },
+    {
+      "id": "sample-run-ollama-remote",
+      "cli_path": "reasoning-payoff sample run",
+      "variant": "ollama-remote",
+      "execution": "live-provider",
+      "network": "operator-selected-remote-http",
+      "cost": "operator-infrastructure",
+      "guards": ["--allow-remote-ollama"],
+      "provider": "ollama",
+      "readme_row": [
+        "`sample-run-ollama-remote`",
+        "`reasoning-payoff sample run --allow-remote-ollama`",
+        "Live remote-provider call",
+        "Remote HTTP only after explicit opt-in",
+        "No Azure bill; operator infrastructure may cost money"
+      ]
+    },
+    {
+      "id": "sample-run-azure",
+      "cli_path": "reasoning-payoff sample run",
+      "variant": "azure",
+      "execution": "live-provider",
+      "network": "azure-https",
+      "cost": "billed",
+      "guards": [
+        "--confirm-cost",
+        "ledger execution.cost.confirmed",
+        "hard ceiling",
+        "CI refusal"
+      ],
+      "provider": "azure",
+      "readme_row": [
+        "`sample-run-azure`",
+        "`reasoning-payoff sample run --confirm-cost` (Azure)",
+        "Live cloud-provider call",
+        "HTTPS to Azure OpenAI",
+        "Billed; CLI + ledger confirmation, hard ceiling, and CI refusal"
+      ]
+    }
+  ]
+}

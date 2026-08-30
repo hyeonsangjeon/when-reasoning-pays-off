@@ -1,8 +1,11 @@
 # 19. Five-minute offline provenance report
 
-This guide is the operating contract for the `reasoning-payoff` command. It
-turns strict usage metadata into a local, evidence-first report bundle without
-calling Azure, uploading data, starting a server, or enabling telemetry.
+This guide is the operating contract for the offline `reasoning-payoff
+analyze` and `reasoning-payoff report` commands. They turn strict usage
+metadata into a local, evidence-first report bundle without calling Azure,
+uploading data, starting a server, or enabling telemetry. The separate
+`reasoning-payoff sample run` command has provider-specific network boundaries
+documented in guide 20 and the CLI capability manifest.
 
 The target is practical: from a fresh clone, produce a useful `report.html`
 within five minutes. The bundled sample normally completes in seconds.
