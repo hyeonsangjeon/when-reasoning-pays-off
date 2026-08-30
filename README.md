@@ -132,11 +132,25 @@ Python 3.11+, no credentials, no service calls, and no telemetry:
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
-python -m pip install .
+python -m pip install ".[analysis]"
 reasoning-payoff analyze examples/five-minute/usage.jsonl \
   --workload examples/five-minute/workload.yaml \
   --out report
 ```
+
+The default installation is deliberately the small core/sample surface. Choose
+an extra only for the capability you need:
+
+| Install | Capability |
+| --- | --- |
+| `pip install .` | Help, fixture/sample init, Mock and Ollama sample run/retry/doctor, and read-only experiment list/describe |
+| `pip install ".[analysis]"` | Core plus offline `analyze`/`report` and analysis libraries |
+| `pip install ".[azure]"` | Core plus OpenAI/Azure Identity for guarded Azure samples |
+| `pip install ".[all]"` | Analysis and Azure capabilities together |
+
+Missing or older optional packages stop at the command boundary with the exact
+extra-install command. Azure dependency checks happen before endpoint
+resolution, credential setup, token acquisition, or network access.
 
 Open `report/report.html` directly from disk. The same run also creates
 `report.json`, `report.md`, and review-only `policy.json`. See the
@@ -429,7 +443,7 @@ cd when-reasoning-pays-off
 
 # Python 3.11+ required. If `python` is missing, use `python3` everywhere below.
 python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
-python -m pip install .
+python -m pip install ".[analysis]"
 
 # Generate the four-artifact provenance bundle:
 reasoning-payoff analyze examples/five-minute/usage.jsonl \
@@ -454,9 +468,10 @@ pip install -r requirements-dev.txt
 pytest -q -m "not adaptive_calibration" batch-runner/tests/
 ```
 
-> A normal `pip install .` exposes the official CLI and keeps the packaged
-> `init` resources available outside the repository. Editable install remains
-> suitable for contributors; measurement runners are still invoked as
+> A normal `pip install .` exposes the minimal official CLI and packaged sample
+> resources without analysis or Azure SDKs. Install `.[analysis]`, `.[azure]`,
+> or `.[all]` for those optional surfaces. Editable install remains suitable for
+> contributors; measurement runners are still invoked as
 > `python -m scripts.<runner>` from the repository root.
 
 ### Path C — same-method benchmark rerun against Azure
@@ -466,6 +481,7 @@ This needs Azure OpenAI access with a **GPT-5.2 deployment**. The repo uses
 cached token is auto-refreshed by `DefaultAzureCredential`.
 
 ```bash
+python -m pip install ".[azure]"
 az login                       # one-time
 cp .env.example .env           # then edit the endpoint + deployment names
 

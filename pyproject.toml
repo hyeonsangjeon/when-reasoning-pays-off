@@ -8,20 +8,30 @@ version = "0.2.0"
 description = "When does GPT-5.2 reasoning model earn its cost?"
 requires-python = ">=3.11"
 dependencies = [
-    "openai>=2.37.0",
-    "azure-identity>=1.19.0",
-    "pydantic>=2.0",
-    "pyyaml>=6.0",
-    "python-dotenv>=1.0",
-    "matplotlib>=3.8",
-    "pandas>=2.0",
-    "numpy>=2.2",
+    "pydantic>=2.4.0",
+    "pyyaml>=6.0.1",
 ]
 
 [project.scripts]
 reasoning-payoff = "batch_runner.cli:main"
 
 [project.optional-dependencies]
+analysis = [
+    "matplotlib>=3.9.2",
+    "numpy>=2.2.0",
+    "pandas>=2.2.3",
+]
+azure = [
+    "azure-identity>=1.19.0",
+    "openai>=2.37.0",
+]
+all = [
+    "azure-identity>=1.19.0",
+    "matplotlib>=3.9.2",
+    "numpy>=2.2.0",
+    "openai>=2.37.0",
+    "pandas>=2.2.3",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
@@ -55,7 +65,13 @@ exclude = ["tests*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-"batch_runner.data" = ["*.json", "*.jsonl", "*.yaml"]
+"batch_runner.data" = [
+    "*.json",
+    "*.jsonl",
+    "*.yaml",
+    "dependencies/*.json",
+    "dependencies/*.txt",
+]
 # Five-minute experiment quickstart: the packaged ledger templates, tiny
 # sample dataset, derived catalog, and config example must ship in the wheel so
 # `reasoning-payoff experiment list/describe` and `sample init/run` work from a

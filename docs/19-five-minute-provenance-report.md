@@ -38,7 +38,7 @@ Create an isolated environment:
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install .
+python -m pip install ".[analysis]"
 ```
 
 The normal, non-editable install exposes one official console command:

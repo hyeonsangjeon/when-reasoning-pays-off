@@ -53,7 +53,9 @@ class InputValidationError(ValueError):
 class StrictContract(BaseModel):
     """Base model that rejects unknown fields at every nesting level."""
 
-    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+    model_config = ConfigDict(
+        extra="forbid", strict=True, allow_inf_nan=False, protected_namespaces=()
+    )
 
 
 _KNOWN_ERROR_FIELDS = {

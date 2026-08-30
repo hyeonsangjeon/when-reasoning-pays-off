@@ -21,6 +21,205 @@ defaults:
     shell: bash
 
 jobs:
+  minimal-core:
+    name: Minimal core without analysis or Azure SDKs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install only the core wheel
+        run: |
+          python -m venv "$RUNNER_TEMP/core"
+          "$RUNNER_TEMP/core/bin/python" -m pip install .
+
+      - name: Prove core surfaces and fail-fast extras
+        run: |
+          py="$RUNNER_TEMP/core/bin/python"
+          cli="$RUNNER_TEMP/core/bin/reasoning-payoff"
+          "$py" - <<'PY'
+          import importlib.metadata as metadata
+          import sys
+
+          for name in ("azure-identity", "matplotlib", "numpy", "openai", "pandas"):
+              try:
+                  metadata.version(name)
+              except metadata.PackageNotFoundError:
+                  continue
+              raise AssertionError(f"optional package installed in core environment: {name}")
+          import batch_runner.cli
+          blocked = {"azure", "matplotlib", "numpy", "openai", "pandas"}
+          loaded = sorted(name for name in sys.modules if name.split(".")[0] in blocked)
+          assert not loaded, loaded
+          PY
+          "$cli" --help >/dev/null
+          "$cli" experiment list --json >"$RUNNER_TEMP/catalog.json"
+          "$cli" experiment describe exp001_short-factual_baseline --json \
+            >"$RUNNER_TEMP/experiment.json"
+          "$cli" sample init --provider mock --out "$RUNNER_TEMP/mock"
+          "$cli" sample doctor --ledger "$RUNNER_TEMP/mock/ledger.yaml" --json \
+            >"$RUNNER_TEMP/doctor.json"
+          "$cli" sample run --ledger "$RUNNER_TEMP/mock/ledger.yaml" --json \
+            >"$RUNNER_TEMP/run.json"
+          "$cli" sample init --provider azure --out "$RUNNER_TEMP/azure"
+
+          set +e
+          analysis_error="$("$cli" analyze missing.jsonl --workload missing.yaml \
+            --out "$RUNNER_TEMP/report" 2>&1)"
+          analysis_status=$?
+          azure_error="$("$cli" sample run --ledger "$RUNNER_TEMP/azure/ledger.yaml" \
+            --confirm-cost 2>&1)"
+          azure_status=$?
+          set -e
+          test "$analysis_status" -eq 8
+          test "$azure_status" -eq 8
+          grep -F 'pip install "when-reasoning-pays-off[analysis]"' \
+            <<<"$analysis_error"
+          grep -F 'pip install "when-reasoning-pays-off[azure]"' <<<"$azure_error"
+
+  dependency-compatibility:
+    name: Dependency graph (${{ matrix.graph }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        graph: [minimum, locked, current]
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      AZURE_OPENAI_API_KEY: ""
+      OPENAI_API_KEY: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install isolated dependency graph
+        env:
+          GRAPH: ${{ matrix.graph }}
+        run: |
+          python -m venv "$RUNNER_TEMP/compat"
+          py="$RUNNER_TEMP/compat/bin/python"
+          lock="batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt"
+          minimum="batch-runner/batch_runner/data/dependencies/minimum-direct.txt"
+          case "$GRAPH" in
+            minimum)
+              "$py" -m pip install -c "$minimum" ".[all,dev]"
+              ;;
+            locked)
+              "$py" -m pip install --require-hashes -r "$lock"
+              "$py" -m pip install --no-deps .
+              ;;
+            current)
+              "$py" -m pip install --upgrade --upgrade-strategy eager ".[all]"
+              ;;
+          esac
+          "$py" -m pip check
+
+      - name: Verify graph and zero-network Azure compatibility
+        env:
+          GRAPH: ${{ matrix.graph }}
+        run: |
+          py="$RUNNER_TEMP/compat/bin/python"
+          if [ "$GRAPH" = locked ]; then
+            "$py" scripts/dependency_inventory.py verify --installed
+          elif [ "$GRAPH" = minimum ]; then
+            "$py" - <<'PY'
+          from importlib import metadata
+          from pathlib import Path
+
+          pins = Path(
+              "batch-runner/batch_runner/data/dependencies/minimum-direct.txt"
+          ).read_text().splitlines()
+          for line in pins:
+              if line and not line.startswith("#"):
+                  name, expected = line.split("==", 1)
+                  assert metadata.version(name) == expected, (name, metadata.version(name))
+          PY
+          fi
+          "$py" scripts/dependency_compatibility_smoke.py
+          if [ "$GRAPH" = minimum ]; then
+            "$py" -m pytest -q -p no:cacheprovider batch-runner/tests/
+          fi
+
+  optional-extra-isolation:
+    name: Optional extra (${{ matrix.extra }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        extra: [analysis, azure]
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      AZURE_OPENAI_API_KEY: ""
+      OPENAI_API_KEY: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install and verify one optional extra
+        env:
+          EXTRA: ${{ matrix.extra }}
+        run: |
+          python -m venv "$RUNNER_TEMP/extra"
+          py="$RUNNER_TEMP/extra/bin/python"
+          cli="$RUNNER_TEMP/extra/bin/reasoning-payoff"
+          "$py" -m pip install ".[${EXTRA}]"
+          "$py" -m pip check
+          "$py" - <<'PY'
+          import os
+          from importlib import metadata
+
+          absent = {
+              "analysis": ("azure-identity", "openai"),
+              "azure": ("matplotlib", "numpy", "pandas"),
+          }[os.environ["EXTRA"]]
+          for name in absent:
+              try:
+                  metadata.version(name)
+              except metadata.PackageNotFoundError:
+                  continue
+              raise AssertionError(f"cross-extra dependency installed: {name}")
+          PY
+          "$py" scripts/dependency_compatibility_smoke.py \
+            --capability "$EXTRA"
+          if [ "$EXTRA" = analysis ]; then
+            "$cli" analyze examples/five-minute/usage.jsonl \
+              --workload examples/five-minute/workload.yaml \
+              --out "$RUNNER_TEMP/report"
+            "$cli" report "$RUNNER_TEMP/report/report.json"
+          fi
+
   lint-test-validate:
     name: Lint, test, schema meta, artifact conformance, redaction
     runs-on: ubuntu-latest
@@ -67,7 +266,7 @@ jobs:
           # pyproject.toml) plus the dev extras (pytest, ruff,
           # jsonschema). No optional Azure credentials are required for
           # the unit test suite covered by this workflow.
-          python -m pip install -e ".[dev]" pytest-timeout
+          python -m pip install -e ".[all,dev]" pytest-timeout
 
       - name: Ruff (lint)
         run: |
@@ -76,6 +275,11 @@ jobs:
 
       - name: Claim integrity gate
         run: python scripts/check_claim_integrity.py check
+
+      - name: Dependency inventory and metadata parity
+        run: |
+          python scripts/dependency_inventory.py verify
+          pytest -q batch-runner/tests/test_optional_dependencies.py
 
       - name: Offline five-minute report smoke
         env:
@@ -103,7 +307,8 @@ jobs:
           venv_dir="$RUNNER_TEMP/wrpo-wheel-venv"
           python -m pip wheel . --no-deps --wheel-dir "$wheel_dir"
           python -m venv "$venv_dir"
-          "$venv_dir/bin/python" -m pip install "$wheel_dir"/*.whl
+          wheel_path="$(echo "$wheel_dir"/*.whl)"
+          "$venv_dir/bin/python" -m pip install "${wheel_path}[all]"
           (
             cd "$RUNNER_TEMP"
             "$venv_dir/bin/python" - <<'PY'

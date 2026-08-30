@@ -44,6 +44,7 @@ from batch_runner.experiment.record import (
     ResponseFormatError,
     ResponseNotCompletedError,
 )
+from batch_runner.optional_dependencies import require_extra
 
 #: Entra ID audience for Microsoft Foundry data-plane calls.
 FOUNDRY_AUDIENCE = "https://ai.azure.com/.default"
@@ -56,29 +57,20 @@ ClientFactory = Callable[..., Any]
 
 
 def _default_token_provider_factory() -> TokenProvider:
-    try:
-        from azure.identity import (  # noqa: PLC0415 - lazy: heavy optional dep
-            DefaultAzureCredential,
-            get_bearer_token_provider,
-        )
-    except ImportError:
-        raise ProviderUnavailableError(
-            "the azure-identity package is required for an Azure run; "
-            "install it with `pip install azure-identity`"
-        ) from None
+    require_extra("azure")
+    from azure.identity import (  # noqa: PLC0415 - lazy: heavy optional dep
+        DefaultAzureCredential,
+        get_bearer_token_provider,
+    )
+
     return get_bearer_token_provider(DefaultAzureCredential(), FOUNDRY_AUDIENCE)
 
 
 def _default_client_factory(
     *, base_url: str, api_key: TokenProvider, timeout: float, max_retries: int
 ) -> Any:
-    try:
-        from openai import OpenAI  # noqa: PLC0415 - lazy: heavy optional dep
-    except ImportError:
-        raise ProviderUnavailableError(
-            "the openai package is required for an Azure run; "
-            "install it with `pip install openai`"
-        ) from None
+    require_extra("azure")
+    from openai import OpenAI  # noqa: PLC0415 - lazy: heavy optional dep
     # api_key accepts a callable token provider; the client invokes it per
     # request. Do NOT call api_key() here. max_retries=0 keeps one billed run to
     # exactly one attempt so a retry storm can't multiply spend; timeout bounds

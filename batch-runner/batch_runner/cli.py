@@ -17,14 +17,12 @@ from batch_runner.experiment.dataset import DatasetError
 from batch_runner.experiment.ledger import LedgerError
 from batch_runner.experiment.record import BudgetNotConfirmedError, ProviderError
 from batch_runner.experiment.runner import ExperimentOutputConflict
-from batch_runner.privacy import PrivacyViolation
-from batch_runner.reporting import (
-    OutputConflictError,
-    ReportValidationError,
-    analyze_files,
-    load_report,
-    write_report_bundle,
+from batch_runner.errors import OutputConflictError, ReportValidationError
+from batch_runner.optional_dependencies import (
+    OptionalDependencyError,
+    require_extra,
 )
+from batch_runner.privacy import PrivacyViolation
 
 _EXPERIMENT_INPUT_ERRORS = (LedgerError, DatasetError)
 _BUDGET_ERRORS = (BudgetNotConfirmedError,)
@@ -373,6 +371,8 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
     # Bounded, value-free loader: a malformed or oversized YAML fails with a
     # documented LedgerError (mapped to exit 3), never a traceback or path leak.
     ledger = load_ledger(ledger_path)
+    if ledger.provider == "azure":
+        require_extra("azure")
     base_dir = ledger_path.parent
 
     # Show the exact request count before running, so "a small run" is concrete.
@@ -496,6 +496,12 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.command == "analyze":
+            require_extra("analysis")
+            from batch_runner.reporting import (  # noqa: PLC0415
+                analyze_files,
+                write_report_bundle,
+            )
+
             report = analyze_files(
                 Path(args.usage_jsonl),
                 Path(args.workload),
@@ -507,6 +513,12 @@ def main(argv: list[str] | None = None) -> int:
             )
             print("Created report.json, report.md, report.html, and policy.json")
             return 0
+        require_extra("analysis")
+        from batch_runner.reporting import (  # noqa: PLC0415
+            load_report,
+            write_report_bundle,
+        )
+
         pinned = load_report(Path(args.report_json))
         out_dir = (
             Path(args.out)
@@ -526,6 +538,9 @@ def main(argv: list[str] | None = None) -> int:
     except InputValidationError as exc:
         print(f"input error: {exc}", file=sys.stderr)
         return 3
+    except OptionalDependencyError as exc:
+        print(f"dependency error: {exc}", file=sys.stderr)
+        return 8
     except _BUDGET_ERRORS as exc:
         print(f"cost error: {exc}", file=sys.stderr)
         return 7
