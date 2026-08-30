@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 import socket
 import subprocess
 import sys
@@ -333,6 +334,7 @@ def test_azure_failure_taxonomy(status: int, expected: type[Exception]) -> None:
 def test_protected_workflow_is_separate_least_privilege_contract() -> None:
     data = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     assert set(data["on"]) == {"schedule", "workflow_dispatch"}
+    assert data["on"]["schedule"][0]["cron"]
     assert data["permissions"] == {"contents": "read"}
     assert data["concurrency"]["cancel-in-progress"] == "false"
     job = data["jobs"]["live-smoke"]
@@ -348,12 +350,44 @@ def test_protected_workflow_is_separate_least_privilege_contract() -> None:
     assert job["timeout-minutes"] == "10"
     assert "refs/heads/main" in job["if"]
     assert "github.repository" in job["if"]
+    assert _expression_contexts(f"${{{{ {job['if']} }}}}") == {"github"}
+    assert _expression_contexts(job["env"]) == {"secrets", "vars"}
+
+    workflow_env = data.get("env", {})
+    for scope in (workflow_env, job["env"]):
+        assert "runner" not in _expression_contexts(scope)
+
+    steps = {step["name"]: step for step in job["steps"]}
+    live_step = steps["Run one protected managed-identity request"]
+    assert live_step["env"] == {
+        "PROTECTED_AZURE_SMOKE_OUTPUT_DIR": (
+            "${{ runner.temp }}/protected-azure-smoke"
+        )
+    }
+    assert _expression_contexts(live_step) == {"runner"}
+    upload_step = steps["Upload sanitized health only"]
+    assert upload_step["with"]["path"] == (
+        "${{ runner.temp }}/protected-azure-smoke/health.json"
+    )
+    assert _expression_contexts(upload_step) == {
+        "github",
+        "runner",
+    }
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "pull_request" not in text
     assert "id-token: write" not in text
     assert "retention-days: 3" in text
     assert "protected-azure-smoke/health.json" in text
     assert "run_protected_azure_smoke --live" in text
+
+
+def _expression_contexts(value: object) -> set[str]:
+    return set(
+        re.findall(
+            r"\$\{\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*\.",
+            json.dumps(value, sort_keys=True),
+        )
+    )
 
 
 def test_public_ci_invokes_only_offline_fake() -> None:
