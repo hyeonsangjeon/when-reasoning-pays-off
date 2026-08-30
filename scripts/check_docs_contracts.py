@@ -13,6 +13,7 @@ CAPABILITIES = ROOT / "batch-runner/batch_runner/data/cli_capabilities.v1.json"
 README = ROOT / "README.md"
 METHODOLOGY = ROOT / "docs/05-methodology.md"
 RELEASE_POLICY = ROOT / "docs/16-release-tiers-and-redaction-policy.md"
+SAMPLE_GUIDE = ROOT / "docs/20-five-minute-experiment-run.md"
 README_START = "<!-- CLI-CAPABILITIES:START -->"
 README_END = "<!-- CLI-CAPABILITIES:END -->"
 METHODOLOGY_URL = (
@@ -28,7 +29,7 @@ def require(condition: bool, message: str) -> None:
 
 def load_manifest() -> dict[str, object]:
     manifest = json.loads(CAPABILITIES.read_text(encoding="utf-8"))
-    require(manifest.get("schema_version") == "1.0.0", "unsupported capability schema")
+    require(manifest.get("schema_version") == "1.1.0", "unsupported capability schema")
     commands = manifest.get("commands")
     require(isinstance(commands, list) and commands, "capability commands must be a list")
     return manifest
@@ -134,6 +135,31 @@ def check() -> None:
     expected = {item["id"]: item["readme_row"] for item in commands}
     require(documented == expected, "README capability table drifted from the manifest")
 
+    python_support = manifest.get("python_support")
+    require(
+        python_support
+        == {
+            "implementation": "CPython",
+            "minimum": "3.11",
+            "maximum_exclusive": "3.14",
+            "ci_endpoints": ["3.11", "3.13"],
+        },
+        "bounded Python support contract drifted",
+    )
+    contracts = manifest.get("reproducibility_contracts")
+    require(isinstance(contracts, list), "reproducibility contracts must be a list")
+    require(
+        [item["id"] for item in contracts]
+        == ["cold-mock", "warm-ollama", "full-research-rerun"],
+        "reproducibility contract IDs or order drifted",
+    )
+    require(
+        contracts[0]["threshold_seconds"] == 300
+        and contracts[1]["threshold_seconds"] == 300
+        and contracts[2]["threshold_seconds"] is None,
+        "reproducibility thresholds drifted",
+    )
+
     for path in public_result_pages():
         require(path.is_file(), f"missing public result surface: {path.relative_to(ROOT)}")
         require(
@@ -151,6 +177,22 @@ def check() -> None:
             "source_raw_sha256",
         ):
             require(term in text, f"{path.relative_to(ROOT)} missing contract term: {term}")
+
+    for path in (README, METHODOLOGY, SAMPLE_GUIDE):
+        text = path.read_text(encoding="utf-8")
+        for term in (
+            "Cold Mock",
+            "Warm Ollama",
+            "Full research rerun",
+            "300",
+            "CPython 3.11",
+            "Windows",
+            "fcntl",
+        ):
+            require(
+                term in text,
+                f"{path.relative_to(ROOT)} missing SLO/platform term: {term}",
+            )
 
     print(
         "docs contracts: "

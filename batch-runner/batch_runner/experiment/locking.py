@@ -116,6 +116,8 @@ def process_start_token(pid: int) -> str | None:
     """Return a one-way process-start token when the platform exposes one."""
     if pid <= 0:
         return None
+    if platform.system() == "Windows":
+        return _windows_process_identity(pid)[1]
     if platform.system() == "Linux":
         try:
             fields = Path(f"/proc/{pid}/stat").read_text(encoding="ascii").split()
@@ -137,6 +139,8 @@ def process_start_token(pid: int) -> str | None:
 
 
 def _pid_liveness(pid: int) -> PidLiveness:
+    if platform.system() == "Windows":
+        return _windows_process_identity(pid)[0]
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -146,6 +150,68 @@ def _pid_liveness(pid: int) -> PidLiveness:
     except OSError:
         return "unknown"
     return "alive"
+
+
+def _windows_process_identity(pid: int) -> tuple[PidLiveness, str | None]:
+    """Read Windows process liveness and creation time without sending a signal."""
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    except (AttributeError, ImportError, OSError):
+        return "unknown", None
+
+    process_query_limited_information = 0x1000
+    synchronize = 0x00100000
+    wait_object_0 = 0x00000000
+    wait_timeout = 0x00000102
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+    kernel32.WaitForSingleObject.restype = wintypes.DWORD
+    kernel32.GetProcessTimes.argtypes = [
+        wintypes.HANDLE,
+        ctypes.POINTER(wintypes.FILETIME),
+        ctypes.POINTER(wintypes.FILETIME),
+        ctypes.POINTER(wintypes.FILETIME),
+        ctypes.POINTER(wintypes.FILETIME),
+    ]
+    kernel32.GetProcessTimes.restype = wintypes.BOOL
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.CloseHandle.restype = wintypes.BOOL
+    handle = kernel32.OpenProcess(
+        process_query_limited_information | synchronize,
+        False,
+        wintypes.DWORD(pid),
+    )
+    if not handle:
+        error = ctypes.get_last_error()
+        if error == 87:  # ERROR_INVALID_PARAMETER: no process with this PID.
+            return "missing", None
+        return "unknown", None
+    try:
+        wait_result = kernel32.WaitForSingleObject(handle, 0)
+        if wait_result == wait_object_0:
+            return "missing", None
+        if wait_result != wait_timeout:
+            return "unknown", None
+        creation = wintypes.FILETIME()
+        exit_time = wintypes.FILETIME()
+        kernel = wintypes.FILETIME()
+        user = wintypes.FILETIME()
+        if not kernel32.GetProcessTimes(
+            handle,
+            ctypes.byref(creation),
+            ctypes.byref(exit_time),
+            ctypes.byref(kernel),
+            ctypes.byref(user),
+        ):
+            return "alive", None
+        raw = (creation.dwHighDateTime << 32) | creation.dwLowDateTime
+        return "alive", _sha256(f"windows:{raw}".encode("ascii"))
+    finally:
+        kernel32.CloseHandle(handle)
 
 
 def _utc_iso(epoch: float | None = None) -> str:
@@ -457,16 +523,24 @@ def record_repair_event(
 ) -> None:
     """Append a bounded, secret-free recovery event."""
     path = base_dir / REPAIR_LOG_NAME
-    flags = (
-        os.O_CREAT
-        | os.O_APPEND
-        | os.O_WRONLY
-        | getattr(os, "O_NOFOLLOW", 0)
-    )
+    try:
+        before = path.lstat()
+    except FileNotFoundError:
+        before = None
+    if before is not None and (
+        stat.S_ISLNK(before.st_mode) or not stat.S_ISREG(before.st_mode)
+    ):
+        raise LockSafetyError("repair event log is not an owned regular file")
+    flags = os.O_APPEND | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+    if before is None:
+        flags |= os.O_CREAT | os.O_EXCL
     fd = os.open(path, flags, 0o600)
     try:
         info = os.fstat(fd)
-        if not stat.S_ISREG(info.st_mode):
+        if not stat.S_ISREG(info.st_mode) or (
+            before is not None
+            and (info.st_dev, info.st_ino) != (before.st_dev, before.st_ino)
+        ):
             raise LockSafetyError("repair event log is not a regular file")
         event = {
             "schema_version": "1.0.0",

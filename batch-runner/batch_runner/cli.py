@@ -320,7 +320,7 @@ def _cmd_experiment_list(as_json: bool) -> int:
 
     catalog = load_packaged_catalog()
     if as_json:
-        print(json.dumps(catalog, indent=2, ensure_ascii=False, sort_keys=True))
+        print(json.dumps(catalog, indent=2, ensure_ascii=True, sort_keys=True))
     else:
         print(render_list(catalog))
     return 0
@@ -354,7 +354,7 @@ def _cmd_experiment_describe(target: str, as_json: bool) -> int:
             )
         return 3
     if as_json:
-        print(json.dumps(entry, indent=2, ensure_ascii=False, sort_keys=True))
+        print(json.dumps(entry, indent=2, ensure_ascii=True, sort_keys=True))
     else:
         print(render_entry(entry))
     return 0
@@ -431,7 +431,7 @@ def _cmd_sample_run(args: argparse.Namespace) -> int:
                     ],
                 },
                 indent=2,
-                ensure_ascii=False,
+                ensure_ascii=True,
             )
         )
     else:
@@ -462,7 +462,7 @@ def _cmd_sample_doctor(args: argparse.Namespace) -> int:
         allow_remote_ollama=args.allow_remote_ollama,
     )
     if args.json:
-        print(json.dumps(result.payload, indent=2, ensure_ascii=False, sort_keys=True))
+        print(json.dumps(result.payload, indent=2, ensure_ascii=True, sort_keys=True))
     else:
         print(result.render())
     return result.exit_code

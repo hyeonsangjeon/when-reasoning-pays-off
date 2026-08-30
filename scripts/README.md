@@ -41,6 +41,17 @@ For the article-topic registry and generator contracts, see
   paired with the quality series and must not be described as measured live PTU
   throughput.
 
+## Reproducibility reference tools
+
+| Script | Contract |
+| --- | --- |
+| `measure_cold_mock.py` | Materializes a checkout-equivalent tracked tree, creates a fresh virtual environment, builds and installs the minimal wheel with pip caches disabled, runs help plus Mock init/run, inspects immutable artifacts, and writes the structured Cold Mock timing report. The GitHub reference threshold is 300 seconds; local results are machine-specific. |
+| `verify_core_wheel.py` | Builds a non-editable minimal wheel and verifies help, Mock init/run/retry/doctor, experiment list/describe, immutable manifests/checksums, and fail-fast extras without provider network or billing. CI runs it on Ubuntu, macOS, and Windows at CPython 3.11 and 3.13. |
+
+The full research campaign remains POSIX-oriented. Bash release gates,
+`fcntl` in `measure_max_output_tokens_sweep.py`, and shell SHA-256 validation
+paths are not a native-Windows campaign contract; use WSL/Linux.
+
 ## Usual review commands
 
 ```bash

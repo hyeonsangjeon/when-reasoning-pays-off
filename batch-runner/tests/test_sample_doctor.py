@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import os
 import socket
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -19,11 +21,14 @@ from batch_runner.experiment.locking import (
     OWNED_MARKER_BYTES,
     OWNED_MARKER_NAME,
     REPAIR_LOG_NAME,
+    LockSafetyError,
     diagnose_lock,
     exclusive_run_lock,
     host_fingerprint,
     process_start_token,
+    record_repair_event,
 )
+from batch_runner.experiment import locking
 from batch_runner.experiment.manifest import canonical_json, sha256_bytes
 from batch_runner.experiment.providers.base import ResolvedEndpoint
 from batch_runner.experiment.providers.ollama import OllamaProvider
@@ -262,6 +267,40 @@ def test_lock_symlink_and_unknown_liveness_fail_closed(tmp_path: Path) -> None:
     )
     assert diagnosis.state == "unknown"
     assert not diagnosis.repairable
+
+
+def test_windows_liveness_uses_query_without_signaling(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(locking.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(
+        locking,
+        "_windows_process_identity",
+        lambda _pid: ("alive", "a" * 64),
+    )
+    assert locking._pid_liveness(123) == "alive"
+    assert process_start_token(123) == "a" * 64
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows process-handle semantics")
+def test_windows_exit_code_259_is_not_treated_as_alive() -> None:
+    process = subprocess.Popen([sys.executable, "-c", "raise SystemExit(259)"])
+    process.wait(timeout=10)
+    assert locking._windows_process_identity(process.pid)[0] == "missing"
+
+
+def test_repair_event_refuses_symlink_without_touching_target(tmp_path: Path) -> None:
+    target = tmp_path / "foreign"
+    target.write_text("keep\n", encoding="utf-8")
+    (tmp_path / REPAIR_LOG_NAME).symlink_to(target)
+    with pytest.raises(LockSafetyError):
+        record_repair_event(
+            tmp_path,
+            prior_lock_sha256=None,
+            lock_removed=False,
+            staging_removed=1,
+        )
+    assert target.read_text(encoding="utf-8") == "keep\n"
 
 
 @pytest.mark.parametrize("state", ["cross_host", "malformed", "pid_reuse"])
@@ -516,6 +555,15 @@ def test_doctor_ollama_json_and_remote_opt_in_boundary(
     assert local.payload["ollama"]["reachability"] == "reachable"
     assert local.payload["ollama"]["proxy_bypass"] is True
     assert local.payload["ollama"]["digest"] == _DIGEST
+    assert local.payload["ollama"]["warm_prerequisites"] == {
+        "ready": True,
+        "service_reachable": True,
+        "model_installed": True,
+        "expected_digest": "not-configured",
+        "install_excluded": True,
+        "model_pull_excluded": True,
+        "prompt_sent": False,
+    }
 
     contacted = False
 
@@ -533,13 +581,14 @@ def test_doctor_ollama_json_and_remote_opt_in_boundary(
     assert remote.payload["ollama"]["contacted"] is False
     assert remote.payload["ollama"]["endpoint_locality"] == "remote"
     assert remote.payload["ollama"]["error_type"] == "remote_opt_in_required"
+    assert remote.payload["ollama"]["warm_prerequisites"]["ready"] is False
     assert contacted is False
     assert "remote.example.com" not in json.dumps(remote.payload)
 
     mock_workspace, mock_ledger = _workspace(tmp_path / "mock")
     assert main(["sample", "doctor", "--ledger", str(mock_ledger), "--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["schema_version"] == "1.0.0"
+    assert payload["schema_version"] == "1.1.0"
     assert payload["package"]["installation"]
     assert payload["workspace"]["state"] == "real-directory"
     assert mock_workspace.is_dir()

@@ -719,6 +719,16 @@ def test_cli_experiment_list_shows_twenty(capsys):
     assert "20 experiments" in out or out.count("exp") >= 20
 
 
+def test_cli_catalog_json_is_ascii_transport_safe(capsys):
+    from batch_runner.cli import main
+
+    assert main(["experiment", "list", "--json"]) == 0
+    out = capsys.readouterr().out
+    out.encode("ascii")
+    assert json.loads(out)["experiment_count"] == 20
+    assert "\\u2208" in out
+
+
 def test_cli_has_no_experiment_run_verb():
     # `experiment` is a read-only catalog; the one-row real call is `sample run`.
     from batch_runner.cli import main
@@ -1187,6 +1197,14 @@ def test_high5_sequential_writes_do_not_collide(tmp_path: Path):
     assert target.read_text() == "two"
     # No leftover unpredictable temp files remain in the directory.
     assert [p.name for p in tmp_path.iterdir()] == ["f.txt"]
+
+
+def test_atomic_write_preserves_canonical_lf_bytes(tmp_path: Path):
+    from batch_runner.experiment.runner import _atomic_write_text
+
+    target = tmp_path / "canonical.txt"
+    _atomic_write_text(target, "one\ntwo\n")
+    assert target.read_bytes() == b"one\ntwo\n"
 
 
 # --- HIGH6: SDK timeout + max_retries=0 reach the client --------------------

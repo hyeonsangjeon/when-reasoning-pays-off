@@ -1,6 +1,48 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "scope": "installed reasoning-payoff CLI",
+  "python_support": {
+    "implementation": "CPython",
+    "minimum": "3.11",
+    "maximum_exclusive": "3.14",
+    "ci_endpoints": ["3.11", "3.13"]
+  },
+  "platform_support": {
+    "minimal_core": {
+      "operating_systems": ["Linux", "macOS", "Windows"],
+      "non_editable_wheel_ci": true,
+      "provider_network_in_ci": false
+    },
+    "full_research_campaign": {
+      "reference": "Linux x86-64 / CPython 3.11",
+      "macos": "operator-supported with platform-specific dependency resolution",
+      "windows": "unsupported; use WSL/Linux",
+      "posix_dependencies": [
+        "Bash/POSIX campaign and release commands",
+        "fcntl in scripts/measure_max_output_tokens_sweep.py",
+        "SHA-256 shell utilities in validation workflows"
+      ]
+    }
+  },
+  "reproducibility_contracts": [
+    {
+      "id": "cold-mock",
+      "threshold_seconds": 300,
+      "enforcement": "github-actions-ubuntu-latest-py313",
+      "network": "package index only; no provider"
+    },
+    {
+      "id": "warm-ollama",
+      "threshold_seconds": 300,
+      "enforcement": "operator-timed after doctor warm readiness",
+      "excluded": ["Ollama installation", "service startup", "model pull"]
+    },
+    {
+      "id": "full-research-rerun",
+      "threshold_seconds": null,
+      "enforcement": "all planned cells terminal and all publication gates pass"
+    }
+  ],
   "commands": [
     {
       "id": "init",
@@ -188,7 +230,8 @@
         "same-host stale proof",
         "--allow-remote-ollama",
         "no proxy",
-        "no redirects"
+        "no redirects",
+        "warm prerequisite readiness without prompt or model pull"
       ],
       "readme_row": [
         "`sample-doctor`",

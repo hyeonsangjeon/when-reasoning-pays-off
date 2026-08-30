@@ -50,10 +50,11 @@ sent to; a *model* — also called a *deployment* on Azure — is the specific l
 language model that answers.)
 
 The fastest no-cloud-cost path is **[Ollama](https://ollama.com)**, which runs a
-small model on your own machine. The five-minute target assumes Ollama is
-already installed and the small model is available or quick to pull; the first
-`ollama pull` is network- and hardware-dependent and is not counted in the five
-minutes. Azure OpenAI in Microsoft Foundry is also supported, but it is a
+small model on your own machine. The five-minute target is the **Warm Ollama**
+contract: Ollama is already installed and running, and the exact model is
+already present. Ollama installation, service startup, and every
+`ollama pull` are outside the timer. Azure OpenAI in Microsoft Foundry is also
+supported, but it is a
 **billed** call and is refused unless you explicitly confirm the cost. Its
 preflight verifies the ledger's snapshot ID, repository path, SHA-256, price
 key, and safe model/region/deployment identity, then derives input, cached-input,
@@ -126,9 +127,71 @@ experiments and their DATA/IN/EXECUTE/OUT view without running anything, use
 > already recorded* and makes **no** service call — use it when you have usage
 > logs and want a provenance report rather than a fresh model answer.
 
+## Reproducibility service objectives
+
+These contracts do not overlap. A fast sample is functional verification, not
+benchmark reproduction.
+
+| Contract | Exact start → end | Prerequisites and exclusions | Expected artifacts | Success does **not** prove |
+| --- | --- | --- | --- | --- |
+| **Cold Mock** | Start with tracked files available; materialize a clean checkout-equivalent copy → create a fresh virtual environment → build and install the minimal wheel with `--no-cache-dir` → run `--help`, Mock init/run → inspect schemas, checksums, immutable run files, and `latest.json`. | CPython 3.11–3.13, Git, and package-index access. Remote clone/fetch and runner provisioning are excluded; package and virtual-environment caches are not reused. | `cold-mock-timing.json` plus the Mock run artifact set. | Model quality, provider connectivity, benchmark reproduction, or a universal install time. |
+| **Warm Ollama** | Start immediately before `sample run`, after `sample doctor` reports `warm_prerequisites.ready: true` → stop when the immutable run and `latest.json` are published. | Minimal wheel installed, Ollama service running, exact tag already installed, optional digest matched. Ollama install, service startup, and model pull are excluded and never automated. | Live sample `run.json`, `records.jsonl`, `summary.md`, `manifest.json`, checksums, and pointer. | Published benchmark results, a quality score, comparable effort sweep, or performance on other hardware. |
+| **Full research rerun** | Start after environment, Azure access/quota, deployment, pricing, prompts, and datasets are pinned → execute all planned benchmark/judge cells → aggregate and regenerate analyses and charts. | `.[all,dev]`, funded Azure access, quota, POSIX campaign tools, and operator review. Provisioning, quota acquisition, and private raw-archive access are external prerequisites. | Raw run/judge records, analyses, public sanitized aggregates, manifests, and regenerated charts. | Byte-identical provider responses or access to owner-only `RAW_PRIVATE` bytes. |
+
+**Thresholds.** Cold Mock is machine-enforced at **≤300 seconds** only on the
+cache-disabled `ubuntu-latest` / CPython 3.13 GitHub-hosted reference job. Warm
+Ollama has a **≤300-second operator target** under the stated warm
+prerequisites. Full research reruns have **no wall-clock SLO** because service
+quota and live-call latency dominate; completion means every planned cell has a
+terminal record and every aggregate/chart gate passes. The measured reference
+SLO is evidence about that CI environment, not an expectation for every
+individual machine.
+
+Generate the same structured Cold Mock report locally:
+
+```bash
+python scripts/measure_cold_mock.py \
+  --threshold-seconds 300 --output cold-mock-timing.json
+```
+
+The JSON records commit, source cleanliness, OS/Python/architecture, each
+checkout/build/install/help/init/run/inspection duration, total, threshold, and
+pass/fail. It contains no absolute paths, usernames, endpoints, or secrets.
+
+## Platform support
+
+### Minimal core and sample CLI
+
+| Platform | CPython | Contract |
+| --- | --- | --- |
+| Ubuntu/Linux | 3.11–3.13 | Supported; non-editable wheels are tested on `ubuntu-latest` at 3.11 and 3.13. |
+| macOS | 3.11–3.13 | Supported; non-editable wheels are tested on `macos-latest` at 3.11 and 3.13. |
+| Windows | 3.11–3.13 | Supported for the minimal CLI, Mock/Ollama sample, retry/doctor, and catalog; non-editable wheels are tested on `windows-latest` at 3.11 and 3.13. |
+| Other Python/platforms | — | Not in the support contract. `requires-python` is bounded to `<3.14`; future Python releases require an explicit compatibility update. |
+
+The matrix installs no analysis/Azure extras and makes no provider call. It
+checks help, Mock init/run/retry/doctor, experiment list/describe, immutable
+manifests/checksums, and fail-fast optional extras. Lock creation remains
+exclusive on every platform. Windows uses process handles instead of POSIX
+signals for liveness and verifies file identity around no-follow-sensitive
+opens. CPython cannot directory-`fsync` on Windows, so atomic same-directory
+replace is supported but the stronger POSIX power-loss durability boundary is
+not claimed.
+
+### Full research campaign
+
+| Platform | Support | Boundary |
+| --- | --- | --- |
+| Linux | Reference campaign platform | CPython 3.11 release lock; POSIX shell and GNU-compatible utilities expected. |
+| macOS | Operator-supported, not the release-lock reference | POSIX and `fcntl` paths are available; dependency resolution is platform-specific. |
+| Windows | **Not supported for the full campaign** | Use WSL/Linux. Campaign and release paths depend on Bash/POSIX commands, `fcntl` locking in `scripts/measure_max_output_tokens_sweep.py`, and SHA-256 shell utilities in validation workflows. |
+
+This Windows boundary applies to the full campaign, not the minimal installed
+CLI.
+
 ## Generate an offline report in under five minutes
 
-Python 3.11+, no credentials, no service calls, and no telemetry:
+CPython 3.11–3.13, no credentials, no service calls, and no telemetry:
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
@@ -441,7 +504,7 @@ every published number.
 git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
 cd when-reasoning-pays-off
 
-# Python 3.11+ required. If `python` is missing, use `python3` everywhere below.
+# CPython 3.11-3.13 required. If `python` is missing, use `python3` below.
 python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
 python -m pip install ".[analysis]"
 
