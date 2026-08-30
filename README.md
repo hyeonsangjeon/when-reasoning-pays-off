@@ -331,8 +331,13 @@ measured magnitudes.
 - [`scripts/article_topics/`](scripts/article_topics/) — Article-topic registry
   that maps public articles to generators, input evidence, sample units, and
   output contracts.
-- [`schemas/`](schemas/) — JSON Schemas for the observability and
-  release-manifest record contracts.
+- [`schemas/`](schemas/) — JSON Schemas for the observability, sample-run, and
+  release-manifest contracts. CI's **schema meta-validation** checks that every
+  schema document is valid Draft 7; the separate **artifact instance
+  conformance** gate validates each mapped committed provider ledger, sample
+  JSON/JSONL, usage/workload sample, and public manifest. Schemas whose governed
+  instances are intentionally private or not yet committed require an explicit
+  exemption in [`scripts/check_schema_conformance.py`](scripts/check_schema_conformance.py).
 - [`pricing/`](pricing/) — Pricing snapshots used by the cost calculator (PAYG
   and PTU density tables).
 - [`release/public_sanitized_manifest.json`](release/public_sanitized_manifest.json)

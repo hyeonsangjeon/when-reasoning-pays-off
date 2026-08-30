@@ -23,7 +23,7 @@ cd "$ROOT" || exit 0
 
 fail=0
 
-echo "== pre-push 1/5: protected historical trees =="
+echo "== pre-push 1/7: protected historical trees =="
 check_tree() {
   commit="$1"
   path="$2"
@@ -60,12 +60,22 @@ if [ -z "$PY" ]; then
   exit 0
 fi
 
-echo "== pre-push 2/5: claim integrity gate =="
+echo "== pre-push 2/7: claim integrity gate =="
 if ! "$PY" scripts/check_claim_integrity.py check; then
   fail=1
 fi
 
-echo "== pre-push 3/5: sanitizer release gate (public manifest integrity) =="
+echo "== pre-push 3/7: schema meta-validation =="
+if ! "$PY" scripts/check_schema_conformance.py schema-meta; then
+  fail=1
+fi
+
+echo "== pre-push 4/7: committed artifact instance conformance =="
+if ! "$PY" scripts/check_schema_conformance.py artifact-conformance; then
+  fail=1
+fi
+
+echo "== pre-push 5/7: sanitizer release gate (public manifest integrity) =="
 if ! "$PY" scripts/sanitize_public_artifacts.py --verify --require-public-manifest; then
   fail=1
   cat >&2 <<'EOF'
@@ -84,14 +94,14 @@ if ! "$PY" scripts/sanitize_public_artifacts.py --verify --require-public-manife
 EOF
 fi
 
-echo "== pre-push 4/5: defensive public-surface grep =="
+echo "== pre-push 6/7: defensive public-surface grep =="
 if [ -f scripts/check_public_surface.sh ]; then
   bash scripts/check_public_surface.sh || fail=1
 else
   echo "pre-push: scripts/check_public_surface.sh not found — skipped." >&2
 fi
 
-echo "== pre-push 5/5: static Pages site validation =="
+echo "== pre-push 7/7: static Pages site validation =="
 if [ -f docs/validate.sh ]; then
   bash docs/validate.sh || fail=1
 else
