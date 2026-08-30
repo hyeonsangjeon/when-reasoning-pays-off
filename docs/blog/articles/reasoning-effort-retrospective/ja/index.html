@@ -170,6 +170,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p>この回顧では新たな測定を追加せず、公開済みの数値を 1,000件当たりに正規化して再引用しています。原資料と適用範囲は次のとおりです。</p>
       <ul>
         <li>横断要約: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 ヘッドライン, §5 判断境界, §6 限界)。すべてのコストはベンチマーク別の <code>benchmarks/0[123]-*/analysis.md</code> から再引用しています。</li>
+        <li>公開再現性の範囲: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §7 では、公開証拠の検証、新しい環境での同一手法の再実行、所有者のみが監査できる元証拠を区別しています。</li>
         <li>価格: 単一スナップショット <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, アクセス日 2026-05-19)。料率が変わればスナップショットを更新し、分析を再実行する必要があります。</li>
         <li>標本: ベンチマーク当たり N=20 · R=3。方法論 §8 では、この標本サイズで信頼区間/標準誤差を報告しません。方向性の結論は堅いものの、絶対値の大きさは小標本の結果として慎重に解釈する必要があります。</li>
         <li>採点: 評価モデルには gpt-4o を使用しました。評価プロンプトの SHA-256 を各採点 JSON に記録し、後から変更の有無を確認できるようにしています。</li>

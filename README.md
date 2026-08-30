@@ -18,6 +18,26 @@ models earn their cost, and when they just bill for thinking nobody reads.*
 
 Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
 
+This repository is **offline-first, not offline-only**. The installed CLI's
+machine-readable network and cost contract is
+[`batch-runner/batch_runner/data/cli_capabilities.v1.json`](batch-runner/batch_runner/data/cli_capabilities.v1.json).
+The table below is checked against that file and the live argparse command tree.
+
+<!-- CLI-CAPABILITIES:START -->
+| Contract ID | CLI surface | Execution boundary | Network boundary | Cost boundary and guard |
+| --- | --- | --- | --- | --- |
+| `init` | `reasoning-payoff init` | Offline fixture copy | No runtime network | No provider cost |
+| `analyze` | `reasoning-payoff analyze` | Offline analysis | No runtime network | No provider cost |
+| `report` | `reasoning-payoff report` | Deterministic offline render | No runtime network | No provider cost |
+| `experiment-list` | `reasoning-payoff experiment list` | Read-only local catalog | No runtime network | No provider cost |
+| `experiment-describe` | `reasoning-payoff experiment describe` | Read-only local catalog | No runtime network | No provider cost |
+| `sample-init` | `reasoning-payoff sample init` | Offline workspace copy | No runtime network | No provider cost |
+| `sample-run-mock` | `reasoning-payoff sample run` (Mock) | Deterministic offline preview | No runtime network | No provider cost |
+| `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
+| `sample-run-ollama-remote` | `reasoning-payoff sample run --allow-remote-ollama` | Live remote-provider call | Remote HTTP only after explicit opt-in | No Azure bill; operator infrastructure may cost money |
+| `sample-run-azure` | `reasoning-payoff sample run --confirm-cost` (Azure) | Live cloud-provider call | HTTPS to Azure OpenAI | Billed; CLI + ledger confirmation, hard ceiling, and CI refusal |
+<!-- CLI-CAPABILITIES:END -->
+
 ## Run one real experiment in five minutes — DATA → IN → EXECUTE → OUT
 
 This path **calls a real model** and shows you every stage: the exact **data**
@@ -355,17 +375,30 @@ Detailed methodology: [`docs/05-methodology.md`](docs/05-methodology.md).
 
 ## Reproducing these measurements
 
-**No Azure account is needed for anything here except the final, optional live
-re-run.** Three tiers, cheapest first.
+These three reproducibility levels are distinct:
 
-### Tier 0 — read the evidence (nothing to install)
+| Level | Availability | Meaning |
+| --- | --- | --- |
+| **Public evidence verification** | **Publicly verifiable** | Anyone can inspect the sanitized or aggregate evidence, verify published-byte hashes, and rerun public analysis/reporting code from public inputs. |
+| **Same-method rerun on a new environment** | **Available with your own environment/provider access** | Run the committed method against a new local Ollama or Azure environment and compare the result profile within reported variance. This is not a byte-identical replay. |
+| **Exact original raw reproduction** | **Not publicly available; owner-auditable only** | The original `RAW_PRIVATE` bytes and private redaction inputs stay in the owner-controlled archive. `source_raw_sha256` is a commitment to those bytes, not public access to them and not enough to reconstruct or independently verify the raw-to-public transform. |
+
+The complete scope statement is in
+[`docs/05-methodology.md` §7](docs/05-methodology.md#7-reproducibility-requirements).
+“Publicly verifiable” refers only to the first level. “Owner-auditable” refers
+to the private archive and transformation audit; the terms are not
+interchangeable.
+
+**No Azure account is needed except for an optional Azure live rerun.**
+
+### Path A — verify the public evidence (nothing to install)
 
 The [live dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en),
 [`results/summary.md`](results/summary.md), and the committed `runs/` +
 `analysis.md` under each [`benchmarks/`](benchmarks/) directory already contain
 every published number.
 
-### Tier 1 — run it locally, no cloud account
+### Path B — exercise the method locally, no cloud account
 
 ```bash
 git clone https://github.com/hyeonsangjeon/when-reasoning-pays-off.git
@@ -403,7 +436,7 @@ pytest -q -m "not adaptive_calibration" batch-runner/tests/
 > suitable for contributors; measurement runners are still invoked as
 > `python -m scripts.<runner>` from the repository root.
 
-### Tier 2 — re-run the benchmarks against a live model (Azure required)
+### Path C — same-method benchmark rerun against Azure
 
 This needs Azure OpenAI access with a **GPT-5.2 deployment**. The repo uses
 **Entra ID authentication** — no API keys in `.env`; run `az login` once and the
@@ -445,7 +478,11 @@ For every sanitized file we publish, the **release manifest**
 [`release/public_sanitized_manifest.json`](release/public_sanitized_manifest.json)
 records the SHA-256 of the published bytes and the SHA-256 of the original raw
 source it derives from. The raw source is preserved, not deleted, so any
-published result can be traced back to its untouched origin if questioned.
+published result can be traced back to its untouched origin by the owner if
+questioned. Public readers can verify `sanitized_sha256` against published
+bytes. They cannot verify `source_raw_sha256`, recover the private source, or
+independently replay the raw-to-sanitized transformation without `RAW_PRIVATE`
+and the owner-only redaction inputs.
 
 ## Contributing, governance, security
 

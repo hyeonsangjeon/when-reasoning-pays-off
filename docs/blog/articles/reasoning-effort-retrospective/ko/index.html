@@ -174,6 +174,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p>이 회고에는 새 측정을 더하지 않았습니다. 게시된 수치를 1,000건당으로 정규화해 재인용하며 원자료와 근거 경계를 아래에 적습니다.</p>
       <ul>
         <li>교차 요약: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 헤드라인, §5 의사결정 경계, §6 한계). 모든 비용은 벤치마크별 <code>benchmarks/0[123]-*/analysis.md</code>에서 재인용.</li>
+        <li>공개 재현성 범위: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §7은 공개 근거 검증, 새 환경에서의 동일 방법 재실행, 소유자만 감사할 수 있는 원본 근거를 구분합니다.</li>
         <li>가격: 단일 스냅샷 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 접근일 2026-05-19). 요율이 바뀌면 스냅샷을 갱신하고 분석을 재실행해야 함.</li>
         <li>표본: 벤치마크당 N=20 · R=3. 방법론 §8이 이 표본 크기에서 신뢰구간/표준오차 보고를 금지 &mdash; 방향성 결론은 견고하나 절대 크기는 소표본 주의.</li>
         <li>채점: 심판 모델로는 중립을 위해 gpt-4o를 사용. 심판 프롬프트 SHA-256을 매 채점 JSON에 기록해 나중에 바뀌었는지 확인.</li>

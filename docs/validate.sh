@@ -20,7 +20,8 @@
 #      worker/role names, agent-prompt paths, or secret patterns).
 #   6. Chart-data Pages gates: mirrored chart-data must be current and chart
 #      assets/pages must pass the Pages chart checker.
-#   7. If the repository's existing public-surface checker is present, run it.
+#   7. CLI capability and public reproducibility documentation contracts.
+#   8. If the repository's existing public-surface checker is present, run it.
 #
 # Exit 0 on success; non-zero with a printed reason on the first failure.
 
@@ -234,7 +235,15 @@ else
   err "scripts/check_pages_charts.py reported findings"
 fi
 
-# 7. Defer to the repository's existing public-surface checker when available.
+# 7. CLI capability and public reproducibility documentation contracts.
+note "running scripts/check_docs_contracts.py ..."
+if python3 scripts/check_docs_contracts.py; then
+  note "OK   documentation contracts passed"
+else
+  err "scripts/check_docs_contracts.py reported findings"
+fi
+
+# 8. Defer to the repository's existing public-surface checker when available.
 if [ -x scripts/check_public_surface.sh ]; then
   note "running scripts/check_public_surface.sh ..."
   if bash scripts/check_public_surface.sh; then

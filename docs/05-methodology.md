@@ -331,6 +331,22 @@ satisfies all of the following before its results are committed:
 8. **The runner is the only path to a raw run JSON.** No notebook or ad-hoc script
    writes to `benchmarks/*/runs/`. This keeps the audit trail single-source.
 
+### Three levels of reproducibility
+
+The repository uses three terms that must not be collapsed into one:
+
+| Level | Availability | Contract |
+| --- | --- | --- |
+| **Public evidence verification** | **Publicly verifiable** | A public reader can inspect `SANITIZED_PUBLIC` or `AGGREGATE_AZURE_SAMPLE` evidence, recompute hashes of published bytes, and rerun public analysis/reporting code from public inputs. |
+| **Same-method rerun on a new environment** | **Available with a new operator environment and any required provider access** | A reader can use the committed method, prompts, datasets, and pricing assumptions against a new Ollama or Azure environment. The expected target is the same result profile within reported variance, not identical response bytes. |
+| **Exact original raw reproduction** | **Not publicly available; owner-auditable only** | The owner preserves the original `RAW_PRIVATE` bytes and private redaction inputs. The public `source_raw_sha256` commits to the private source but does not disclose it, prove its contents to a public reader, or make the raw-to-public transformation independently reproducible. |
+
+“Publicly verifiable” applies to public evidence verification only.
+“Owner-auditable” means the owner can match `source_raw_sha256` to the
+preserved `RAW_PRIVATE` bytes and audit the recorded transformation. It does
+not make those bytes public, and even the owner cannot recreate a
+byte-identical provider response by repeating a nondeterministic live call.
+
 A reader with Azure OpenAI access, the committed experiment YAML, the dataset, and the
 prompt files should be able to re-run the experiment and obtain results of the same
 profile (within the variance we report). They will not get byte-identical responses —
@@ -486,4 +502,6 @@ Changes to this document are themselves a measurement event. The protocol:
 4. Each change bumps the methodology version recorded in the header of every new
    `analysis.md` and every new experiment YAML's `metadata.methodology_version`.
 
-The current methodology version is **v1.0**.
+The current methodology version is **v1.1**. Version 1.1 clarifies the three
+reproducibility levels and the public/private audit boundary; it does not
+change the measurement procedure or any benchmark result.

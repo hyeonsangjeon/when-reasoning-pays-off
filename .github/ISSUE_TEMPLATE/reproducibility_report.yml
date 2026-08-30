@@ -11,6 +11,20 @@ body:
 
         Methodology is frozen in `docs/05-methodology.md`. Changes to
         the methodology follow the escalation in `GOVERNANCE.md`.
+        Public evidence verification, a same-method rerun on a new
+        environment, and exact original raw reproduction are different
+        scopes. Exact raw bytes remain `RAW_PRIVATE` and owner-auditable.
+  - type: dropdown
+    id: reproducibility_level
+    attributes:
+      label: Reproducibility level
+      description: Select the contract level your report concerns.
+      options:
+        - Public evidence verification
+        - Same-method rerun on a new environment
+        - Exact original raw reproduction (owner-auditable; RAW_PRIVATE is not public)
+    validations:
+      required: true
   - type: input
     id: claim
     attributes:

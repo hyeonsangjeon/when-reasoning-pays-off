@@ -170,6 +170,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p>यह पुनरावलोकन नया मापन नहीं जोड़ता; प्रकाशित संख्याओं को प्रति 1,000 पर सामान्यीकृत रूप में पुनः उद्धृत करता है। स्रोत और सीमाएँ निम्न हैं।</p>
       <ul>
         <li>समेकित सारांश: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a> (§3 प्रमुख परिणाम, §5 निर्णय की सीमा, §6 सीमाएँ)। सभी लागतें प्रत्येक बेंचमार्क के <code>benchmarks/0[123]-*/analysis.md</code> से पुनः उद्धृत हैं।</li>
+        <li>सार्वजनिक पुनरुत्पादकता का दायरा: <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §7 सार्वजनिक साक्ष्य सत्यापन, नए परिवेश में समान विधि से पुनः चलाने और केवल स्वामी द्वारा लेखापरीक्षित मूल साक्ष्य में अंतर करता है।</li>
         <li>मूल्य: एक स्नैपशॉट <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a> (Azure, पहुँच तिथि 2026-05-19)। दरें बदलने पर स्नैपशॉट अद्यतन करके विश्लेषण पुनः चलाना होगा।</li>
         <li>नमूना: प्रत्येक बेंचमार्क में N=20 · R=3। पद्धति §8 इस नमूना आकार पर विश्वास अंतराल या मानक त्रुटि देने की अनुमति नहीं देती। दिशात्मक निष्कर्ष स्पष्ट हैं, पर परिमाण छोटे नमूने की सावधानी से पढ़ें।</li>
         <li>मूल्यांकन: मूल्यांकन मॉडल gpt-4o था। मूल्यांकन प्रॉम्प्ट का SHA-256 हर मूल्यांकन JSON में दर्ज है, ताकि बाद में परिवर्तन की जाँच की जा सके।</li>

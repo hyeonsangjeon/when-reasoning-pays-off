@@ -12,7 +12,7 @@ checklist a maintainer follows before any public release.
 It is a companion to:
 
 - `docs/05-methodology.md` (reproducibility contract — frozen) — how a
-  measurement is reproducible. This document does not modify it.
+  measurement is reproducible and which reproducibility claims are public.
 - `docs/14-observability-schema.md` (canonical record contracts for
   individual requests and aggregate measurement windows) — *which* fields
   exist. This document classifies
@@ -162,6 +162,24 @@ of the aggregation script, and the semver of the aggregate schema.
 sample repo. MAY also appear in the public research repo as a
 convenience summary alongside the `SANITIZED_PUBLIC` per-request
 data, but does not replace it.
+
+### 2.4 Public reproducibility scope
+
+Release tiers classify data; they do not make all forms of reproduction
+public. The aligned scope is:
+
+| Level | Availability at the public boundary |
+| --- | --- |
+| **Public evidence verification** | **Publicly verifiable** for published `SANITIZED_PUBLIC` and `AGGREGATE_AZURE_SAMPLE` bytes, hashes, and public analysis inputs. |
+| **Same-method rerun on a new environment** | Available to a reader using the committed method and a new environment, with provider access where the selected path requires it. A rerun targets the same profile, not byte identity. |
+| **Exact original raw reproduction** | Not publicly available. It is **owner-auditable** against the preserved `RAW_PRIVATE` archive and owner-only redaction inputs. |
+
+`source_raw_sha256` is an opaque commitment to the source bytes. A public
+reader does not possess those bytes, so the value cannot independently prove
+their contents, reconstruct them, or reproduce the raw-to-public
+transformation. “Publicly verifiable” and “owner-auditable” therefore must not
+be used interchangeably. This boundary never permits `RAW_PRIVATE`
+publication.
 
 ---
 
@@ -397,9 +415,10 @@ Any of the following stops the release until remediated:
 
 ## 9. Relationship to other documents
 
-- `docs/05-methodology.md` (reproducibility contract — frozen): not
-  modified. Methodology defines *how* a measurement is reproducible;
-  this document defines *which* slices are publishable.
+- `docs/05-methodology.md` (reproducibility contract — frozen):
+  methodology defines *how* a measurement is reproducible and the three
+  reproducibility levels; this document defines *which* slices are
+  publishable.
 - `docs/14-observability-schema.md`: redaction categories in §3 align
   field-by-field with the record schema. New fields added to the
   record contract are reviewed against §3 for tier classification

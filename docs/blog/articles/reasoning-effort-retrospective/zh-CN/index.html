@@ -170,6 +170,7 @@ python -c "import experiments; print(experiments.run('exp002_benchmark02_gpt5_2.
       <p>这篇回顾没有引入新的测量；它重新引用了按每 1,000 次归一化的已发布数字。原始材料与边界如下。</p>
       <ul>
         <li>交叉摘要：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/results/summary.md"><code>results/summary.md</code></a>(§3 headline, §5 decision boundary, §6 limits)。所有成本均重新引用自各基准的 <code>benchmarks/0[123]-*/analysis.md</code>。</li>
+        <li>公开复现范围：<a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/docs/05-methodology.md"><code>docs/05-methodology.md</code></a> §7 区分公开证据验证、在新环境中按相同方法重跑，以及仅所有者可审计的原始证据。</li>
         <li>价格：单一快照 <a href="https://github.com/hyeonsangjeon/when-reasoning-pays-off/blob/main/pricing/azure-openai-payg-2026-05.yaml"><code>pricing/azure-openai-payg-2026-05.yaml</code></a>(Azure, 访问日 2026-05-19)。如果费率变化，应更新快照并重新运行分析。</li>
         <li>样本：每个基准 N=20 · R=3。方法论 §8 禁止在这个样本量报告置信区间/标准误 &mdash; 方向性结论稳健，但绝对幅度需按小样本谨慎解读。</li>
         <li>评分：使用评判模型(gpt-4o)。评审提示 SHA-256 记录在评分 JSON 中，以后能看出是否变过。</li>
