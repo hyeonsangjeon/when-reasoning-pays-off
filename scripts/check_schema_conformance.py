@@ -116,6 +116,9 @@ SCHEMA_EXEMPTIONS = {
     "schemas/experiment_latest_pointer.v1.schema.json": (
         "runtime-generated latest pointers are intentionally gitignored"
     ),
+    "schemas/sample_doctor.v1.schema.json": (
+        "runtime-generated doctor results are emitted to stdout and not committed"
+    ),
 }
 
 # These committed manifests have code-level validators but no JSON Schema. They

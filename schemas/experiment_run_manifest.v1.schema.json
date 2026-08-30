@@ -19,7 +19,7 @@
     "artifacts"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "1.1.0" },
     "run_id": {
       "type": "string",
       "pattern": "^\\d{8}T\\d{6}Z_[0-9a-f]{8}_[0-9a-f]{8}_[0-9a-f]{8}$"
@@ -98,6 +98,7 @@
         "endpoint_locality",
         "auth_mode",
         "capabilities",
+        "ollama",
         "fingerprint_sha256"
       ],
       "properties": {
@@ -112,8 +113,31 @@
             "type": ["string", "boolean"]
           }
         },
+        "ollama": {
+          "oneOf": [
+            { "$ref": "#/definitions/ollamaFingerprint" },
+            { "type": "null" }
+          ]
+        },
         "fingerprint_sha256": { "$ref": "#/definitions/sha256" }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "provider": { "const": "ollama" } }
+          },
+          "then": {
+            "properties": {
+              "ollama": { "$ref": "#/definitions/ollamaFingerprint" }
+            }
+          },
+          "else": {
+            "properties": {
+              "ollama": { "type": "null" }
+            }
+          }
+        }
+      ]
     },
     "pricing": {
       "type": "object",
@@ -210,6 +234,45 @@
       "properties": {
         "sha256": { "$ref": "#/definitions/sha256" },
         "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ollamaFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_version",
+        "tag",
+        "digest",
+        "format",
+        "family",
+        "parameter_size",
+        "quantization",
+        "template_sha256",
+        "model_info_sha256"
+      ],
+      "properties": {
+        "runtime_version": { "type": ["string", "null"], "maxLength": 160 },
+        "tag": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "digest": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "format": { "type": ["string", "null"], "maxLength": 160 },
+        "family": { "type": ["string", "null"], "maxLength": 160 },
+        "parameter_size": { "type": ["string", "null"], "maxLength": 160 },
+        "quantization": { "type": ["string", "null"], "maxLength": 160 },
+        "template_sha256": {
+          "oneOf": [
+            { "$ref": "#/definitions/sha256" },
+            { "type": "null" }
+          ]
+        },
+        "model_info_sha256": {
+          "oneOf": [
+            { "$ref": "#/definitions/sha256" },
+            { "type": "null" }
+          ]
+        }
       }
     }
   }

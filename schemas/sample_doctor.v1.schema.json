@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/sample_doctor.v1.schema.json",
+  "title": "SampleDoctorResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "package",
+    "workspace",
+    "lock",
+    "ollama",
+    "repair"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["ok", "blocked", "repaired"] },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "installation", "python", "os", "architecture"],
+      "properties": {
+        "name": { "const": "when-reasoning-pays-off" },
+        "version": { "type": "string", "minLength": 1 },
+        "installation": {
+          "enum": ["verified-source-checkout", "installed-wheel-or-unverified-source"]
+        },
+        "python": { "type": "string", "minLength": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "architecture": { "type": "string", "minLength": 1 }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "ledger", "output"],
+      "properties": {
+        "state": { "enum": ["real-directory", "unsafe"] },
+        "ledger": { "const": "valid" },
+        "output": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "completed_runs",
+            "owned_staging",
+            "foreign_paths",
+            "latest"
+          ],
+          "properties": {
+            "state": { "enum": ["absent", "owned", "unsafe"] },
+            "completed_runs": { "type": "integer", "minimum": 0 },
+            "owned_staging": { "type": "integer", "minimum": 0 },
+            "foreign_paths": { "type": "integer", "minimum": 0 },
+            "latest": { "enum": ["absent", "valid", "invalid"] }
+          }
+        }
+      }
+    },
+    "lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "repairable", "owner", "guidance"],
+      "properties": {
+        "state": {
+          "enum": [
+            "absent",
+            "live",
+            "stale",
+            "cross_host",
+            "malformed",
+            "symlink",
+            "pid_reuse",
+            "unknown"
+          ]
+        },
+        "repairable": { "type": "boolean" },
+        "owner": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pid",
+                "created_at",
+                "process_start_token_available",
+                "operation",
+                "tool_version"
+              ],
+              "properties": {
+                "pid": { "type": "integer", "minimum": 1 },
+                "created_at": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+                },
+                "process_start_token_available": { "type": "boolean" },
+                "operation": {
+                  "enum": ["sample-run", "sample-retry", "doctor-repair"]
+                },
+                "tool_version": { "type": "string", "minLength": 1 }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "guidance": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ollama": {
+      "oneOf": [
+        { "$ref": "#/definitions/ollamaDiagnosis" },
+        { "type": "null" }
+      ]
+    },
+    "repair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested",
+        "performed",
+        "lock_removed",
+        "staging_removed",
+        "event_recorded",
+        "error"
+      ],
+      "properties": {
+        "requested": { "type": "boolean" },
+        "performed": { "type": "boolean" },
+        "lock_removed": { "type": "boolean" },
+        "staging_removed": { "type": "integer", "minimum": 0 },
+        "event_recorded": { "type": "boolean" },
+        "error": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "lock_changed",
+            "exclusive_repair_lock_unavailable",
+            "lock_not_proven_stale",
+            "repair_event_write_failed",
+            "staging_cleanup_failed"
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "nullableText": {
+      "type": ["string", "null"],
+      "maxLength": 160
+    },
+    "nullableSha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ollamaDiagnosis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint_source",
+        "endpoint_locality",
+        "remote_opt_in",
+        "contacted",
+        "proxy_bypass",
+        "redirects_blocked",
+        "reachability",
+        "runtime_version",
+        "requested_tag",
+        "digest",
+        "format",
+        "family",
+        "parameter_size",
+        "quantization",
+        "template_sha256",
+        "model_info_sha256",
+        "error_type"
+      ],
+      "properties": {
+        "endpoint_source": { "type": ["string", "null"], "maxLength": 80 },
+        "endpoint_locality": { "enum": ["local", "remote", "unknown"] },
+        "remote_opt_in": { "type": "boolean" },
+        "contacted": { "type": "boolean" },
+        "proxy_bypass": { "const": true },
+        "redirects_blocked": { "const": true },
+        "reachability": { "enum": ["reachable", "unavailable", "blocked"] },
+        "runtime_version": { "$ref": "#/definitions/nullableText" },
+        "requested_tag": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "digest": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "format": { "$ref": "#/definitions/nullableText" },
+        "family": { "$ref": "#/definitions/nullableText" },
+        "parameter_size": { "$ref": "#/definitions/nullableText" },
+        "quantization": { "$ref": "#/definitions/nullableText" },
+        "template_sha256": { "$ref": "#/definitions/nullableSha256" },
+        "model_info_sha256": { "$ref": "#/definitions/nullableSha256" },
+        "error_type": { "type": ["string", "null"], "maxLength": 80 }
+      }
+    }
+  }
+}

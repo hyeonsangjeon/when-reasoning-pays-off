@@ -36,6 +36,7 @@ The table below is checked against that file and the live argparse command tree.
 | `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
 | `sample-run-ollama-remote` | `reasoning-payoff sample run --allow-remote-ollama` | Live remote-provider call | Remote HTTP only after explicit opt-in | No Azure bill; operator infrastructure may cost money |
 | `sample-run-azure` | `reasoning-payoff sample run --confirm-cost` (Azure) | Live cloud-provider call | HTTPS to Azure OpenAI | Billed; CLI + ledger confirmation, hard ceiling, and CI refusal |
+| `sample-doctor` | `reasoning-payoff sample doctor` | Workspace/runtime diagnosis; guarded repair | Offline except Ollama metadata; loopback by default, remote only by opt-in | No provider prompt or cloud cost |
 | `sample-retry-failed` | `reasoning-payoff sample retry-failed` | Child run for failed attempts only | Same boundary as the parent provider | Same boundary as the parent provider |
 <!-- CLI-CAPABILITIES:END -->
 
@@ -68,6 +69,7 @@ reasoning-payoff sample init --provider ollama --out sample-workspace
 #    ollama serve   &&   ollama pull qwen2.5:0.5b
 
 # 3. EXECUTE the run and read the OUT artifacts:
+reasoning-payoff sample doctor --ledger sample-workspace/ledger.yaml
 reasoning-payoff sample run --ledger sample-workspace/ledger.yaml
 ```
 
@@ -98,6 +100,14 @@ sample-workspace/
 > plumbing end to end, not a scientific result. Sample output is gitignored and
 > fixed to immutable directories under the workspace's owned `out/runs/`.
 > A later run never rewrites an earlier run.
+
+`sample doctor` reports package/runtime, workspace ownership, immutable output
+structure, and lock health. For Ollama it also performs the same no-proxy,
+no-redirect local transport checks used by a run and reports the runtime version,
+installed model digest/details, and content-free hashes of template/model
+metadata. Set the optional `expected_model_digest: sha256:...` ledger field to
+pin that identity; a mismatch stops before any prompt call. A stale lock is
+removed only with `--repair-stale-lock` after same-host liveness is proven.
 
 Prefer no install first? `reasoning-payoff sample init --provider mock` uses a
 deterministic **offline preview** provider that makes no network call — useful

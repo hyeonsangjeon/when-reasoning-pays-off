@@ -6,6 +6,28 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Added — Safe sample recovery and Ollama identity pinning (2026-08-30)
+
+- Added `reasoning-payoff sample doctor` with human and strict JSON output for
+  package/runtime, workspace ownership, immutable output shape, lock state, and
+  Ollama endpoint/runtime/model diagnostics.
+- Replaced PID-only sample locks with versioned, secret-safe ownership metadata.
+  Explicit repair now requires same-host stale proof, exact-inode revalidation,
+  and a fresh exclusive lock; live, cross-host, malformed, symlinked,
+  unknown-liveness, and PID-reuse states fail closed.
+- Added marker-validated cleanup for crash-left hidden staging directories and
+  private, path-free repair events. Completed runs and foreign paths remain
+  untouched.
+- Added optional Ollama `expected_model_digest` ledger pinning. Runs now inspect
+  `/api/version`, `/api/tags`, and `/api/show` before `/api/chat`, preserve the
+  no-proxy/no-redirect transport, never auto-pull, and store a content-free
+  runtime/model fingerprint in manifest schema `1.1.0`.
+- **Migration:** existing ledger `1.0.0` files remain valid because the digest
+  pin is optional. Newly generated Ollama ledgers include
+  `expected_model_digest: null`. Consumers of immutable manifests must accept
+  schema `1.1.0` and the required nullable `provider.ollama` field; existing
+  completed run directories remain immutable and are not rewritten.
+
 ### Changed — Public reproducibility and CLI network contracts (2026-08-30)
 
 - Defined public evidence verification, same-method reruns on new

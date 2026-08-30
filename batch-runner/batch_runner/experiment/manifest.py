@@ -11,7 +11,7 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from batch_runner import __version__
 from batch_runner.experiment.dataset import LoadedDataset
@@ -19,7 +19,7 @@ from batch_runner.experiment.ledger import RunLedger
 from batch_runner.experiment.providers.base import ResolvedEndpoint
 from batch_runner.experiment.record import ProviderCapabilities
 
-MANIFEST_SCHEMA_VERSION = "1.0.0"
+MANIFEST_SCHEMA_VERSION = "1.1.0"
 REPOSITORY_IDENTITY = "hyeonsangjeon/when-reasoning-pays-off"
 _SHA256_RE = r"^[0-9a-f]{64}$"
 _COMMIT_RE = r"^(unknown|[0-9a-f]{40})$"
@@ -68,6 +68,18 @@ class InputIdentity(_StrictModel):
     selected_ids_sha256: str = Field(pattern=_SHA256_RE)
 
 
+class OllamaRuntimeFingerprint(_StrictModel):
+    runtime_version: str | None = Field(default=None, max_length=160)
+    tag: str = Field(min_length=1, max_length=120)
+    digest: str | None = Field(default=None, pattern=r"^sha256:[0-9a-f]{64}$")
+    format: str | None = Field(default=None, max_length=160)
+    family: str | None = Field(default=None, max_length=160)
+    parameter_size: str | None = Field(default=None, max_length=160)
+    quantization: str | None = Field(default=None, max_length=160)
+    template_sha256: str | None = Field(default=None, pattern=_SHA256_RE)
+    model_info_sha256: str | None = Field(default=None, pattern=_SHA256_RE)
+
+
 class ProviderFingerprint(_StrictModel):
     provider: Literal["azure", "ollama", "mock"]
     model: str = Field(min_length=1, max_length=120)
@@ -75,7 +87,16 @@ class ProviderFingerprint(_StrictModel):
     endpoint_locality: Literal["local", "remote", "environment", "none"]
     auth_mode: Literal["none", "entra"]
     capabilities: dict[str, str | bool]
+    ollama: OllamaRuntimeFingerprint | None
     fingerprint_sha256: str = Field(pattern=_SHA256_RE)
+
+    @model_validator(mode="after")
+    def _provider_specific_fingerprint(self) -> ProviderFingerprint:
+        if self.provider == "ollama" and self.ollama is None:
+            raise ValueError("ollama provider requires an Ollama runtime fingerprint")
+        if self.provider != "ollama" and self.ollama is not None:
+            raise ValueError("non-Ollama provider must not carry an Ollama fingerprint")
+        return self
 
 
 class PricingProvenance(_StrictModel):
@@ -121,7 +142,7 @@ class ArtifactIdentity(_StrictModel):
 
 
 class RunManifest(_StrictModel):
-    schema_version: Literal["1.0.0"]
+    schema_version: Literal["1.1.0"]
     run_id: str
     ledger_sha256: str = Field(pattern=_SHA256_RE)
     code: CodeIdentity
@@ -290,6 +311,7 @@ def _provider_fingerprint(
     ledger: RunLedger,
     endpoint: ResolvedEndpoint,
     capabilities: ProviderCapabilities,
+    ollama_fingerprint: dict[str, str | None] | None,
 ) -> dict[str, Any]:
     if ledger.provider == "mock":
         locality = "none"
@@ -312,6 +334,7 @@ def _provider_fingerprint(
         "endpoint_locality": locality,
         "auth_mode": ledger.auth.mode,
         "capabilities": safe_capabilities,
+        "ollama": ollama_fingerprint,
     }
     return {**identity, "fingerprint_sha256": sha256_bytes(canonical_json(identity))}
 
@@ -354,6 +377,7 @@ def build_manifest(
     artifact_bytes: dict[str, bytes],
     cost_confirmed_by_cli: bool,
     remote_ollama_opt_in: bool,
+    ollama_fingerprint: dict[str, str | None] | None = None,
 ) -> RunManifest:
     """Build and validate one complete, path-free run manifest."""
     artifacts = {
@@ -379,7 +403,9 @@ def build_manifest(
             "selected_count": len(selected_ids),
             "selected_ids_sha256": sha256_bytes(canonical_json(selected_ids)),
         },
-        "provider": _provider_fingerprint(ledger, endpoint, capabilities),
+        "provider": _provider_fingerprint(
+            ledger, endpoint, capabilities, ollama_fingerprint
+        ),
         "pricing": _pricing(ledger),
         "execution": {
             "max_samples": ledger.execution.max_samples,

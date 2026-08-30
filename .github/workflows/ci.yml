@@ -132,6 +132,7 @@ jobs:
               "experiment_run_manifest.v1.schema.json",
               "experiment_run.v2.schema.json",
               "experiment_latest_pointer.v1.schema.json",
+              "sample_doctor.v1.schema.json",
           ):
               assert (schema_dir / name).is_file(), schema_dir / name
           PY
@@ -151,6 +152,9 @@ jobs:
             test "$before" = "$after"
             "$venv_dir/bin/reasoning-payoff" sample init \
               --provider mock --out wheel-experiment-sample
+            "$venv_dir/bin/reasoning-payoff" sample doctor \
+              --ledger wheel-experiment-sample/ledger.yaml --json \
+              > wheel-sample-doctor.json
             "$venv_dir/bin/reasoning-payoff" sample run \
               --ledger wheel-experiment-sample/ledger.yaml --json \
               > wheel-sample-run.json
@@ -180,6 +184,14 @@ jobs:
               "runs",
           }
           sample_run = json.loads((cwd / "wheel-sample-run.json").read_text())
+          doctor = json.loads((cwd / "wheel-sample-doctor.json").read_text())
+          assert doctor["status"] == "ok"
+          assert doctor["package"]["installation"] == (
+              "installed-wheel-or-unverified-source"
+          )
+          assert doctor["workspace"]["output"]["state"] == "absent"
+          assert doctor["lock"]["state"] == "absent"
+          assert doctor["ollama"] is None
           assert sample_run["status"] == "ok"
           assert sample_run["ok_count"] == 3
           assert sample_run["error_count"] == 0

@@ -173,6 +173,28 @@
       ]
     },
     {
+      "id": "sample-doctor",
+      "cli_path": "reasoning-payoff sample doctor",
+      "variant": "workspace-and-provider",
+      "execution": "diagnosis-and-explicit-repair",
+      "network": "none except Ollama metadata; loopback by default, remote only with explicit opt-in",
+      "cost": "none",
+      "guards": [
+        "--repair-stale-lock",
+        "same-host stale proof",
+        "--allow-remote-ollama",
+        "no proxy",
+        "no redirects"
+      ],
+      "readme_row": [
+        "`sample-doctor`",
+        "`reasoning-payoff sample doctor`",
+        "Workspace/runtime diagnosis; guarded repair",
+        "Offline except Ollama metadata; loopback by default, remote only by opt-in",
+        "No provider prompt or cloud cost"
+      ]
+    },
+    {
       "id": "sample-retry-failed",
       "cli_path": "reasoning-payoff sample retry-failed",
       "variant": "parent-provider",

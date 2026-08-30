@@ -46,6 +46,11 @@
       "minLength": 1,
       "maxLength": 120
     },
+    "expected_model_digest": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Optional Ollama-only exact installed-model digest pin."
+    },
     "endpoint": {
       "type": "object",
       "additionalProperties": false,
@@ -260,6 +265,7 @@
       },
       "then": {
         "properties": {
+          "expected_model_digest": { "const": null },
           "auth": {
             "properties": { "mode": { "const": "entra" } }
           },
@@ -320,6 +326,7 @@
       },
       "then": {
         "properties": {
+          "expected_model_digest": { "const": null },
           "auth": {
             "properties": { "mode": { "const": "none" } }
           },

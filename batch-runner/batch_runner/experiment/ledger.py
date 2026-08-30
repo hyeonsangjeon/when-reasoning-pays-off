@@ -81,6 +81,7 @@ def _is_gpt_5_2_deployment(model: str) -> bool:
     return "gpt-5.2" in lowered or "gpt-5-2" in lowered
 
 _ENV_NAME_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
+_OLLAMA_DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 _ALLOWED_ROW_TYPES = frozenset({"string", "integer", "number", "boolean"})
 
@@ -316,6 +317,7 @@ class RunLedger(_Strict):
     experiment: ExperimentIdentity
     provider: Provider
     model: str = Field(min_length=1, max_length=120)
+    expected_model_digest: str | None = Field(default=None, max_length=71)
     endpoint: EndpointSource
     auth: AuthSpec
     input: InputSpec
@@ -339,6 +341,15 @@ class RunLedger(_Strict):
             ensure_safe_identifier(value, label="model")
         except PrivacyViolation as exc:
             raise ValueError(str(exc)) from None
+        return value
+
+    @field_validator("expected_model_digest")
+    @classmethod
+    def _ollama_digest(cls, value: str | None) -> str | None:
+        if value is not None and not _OLLAMA_DIGEST_RE.fullmatch(value):
+            raise ValueError(
+                "expected_model_digest must be 'sha256:' plus 64 lowercase hex digits"
+            )
         return value
 
     @model_validator(mode="after")
@@ -400,6 +411,10 @@ class RunLedger(_Strict):
         if self.provider != "azure" and self.execution.reasoning_effort is not None:
             raise ValueError(
                 "reasoning_effort is only supported by the azure provider"
+            )
+        if self.provider != "ollama" and self.expected_model_digest is not None:
+            raise ValueError(
+                "expected_model_digest is only supported by the ollama provider"
             )
         if self.execution.max_samples > self.input.max_records:
             raise ValueError(

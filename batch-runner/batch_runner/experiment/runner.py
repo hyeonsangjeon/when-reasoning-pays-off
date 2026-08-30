@@ -29,14 +29,20 @@ import re
 import secrets
 import shutil
 import time
-from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Iterator
+from typing import Any, Callable
 
 from batch_runner.experiment.cost import CostPreflight, estimate_azure_cost
 from batch_runner.experiment.dataset import LoadedDataset, load_dataset, row_input_text
 from batch_runner.experiment.ledger import RunLedger
+from batch_runner.experiment.locking import (
+    OWNED_MARKER_BYTES,
+    OWNED_MARKER_NAME,
+    LockSafetyError,
+    exclusive_run_lock,
+    valid_owned_marker,
+)
 from batch_runner.experiment.manifest import (
     RunManifest,
     build_manifest,
@@ -54,10 +60,6 @@ from batch_runner.experiment.record import (
     OutputRecord,
     ProviderError,
 )
-
-#: Marker file that identifies a directory as owned by the experiment runner.
-OWNED_MARKER_NAME = ".reasoning-payoff-experiment-owned"
-_OWNED_MARKER_BYTES = b"reasoning-payoff experiment output\n"
 
 #: Plain-words honesty tail shared by every sample banner.
 SAMPLE_BANNER_TAIL = (
@@ -180,13 +182,7 @@ def _select_output_dir(
 
 
 def _valid_owned_marker(directory: Path) -> bool:
-    marker = directory / OWNED_MARKER_NAME
-    if marker.is_symlink() or not marker.is_file():
-        return False
-    try:
-        return marker.read_bytes() == _OWNED_MARKER_BYTES
-    except OSError:
-        return False
+    return valid_owned_marker(directory)
 
 
 def _ensure_owned_directory(directory: Path, *, label: str) -> None:
@@ -208,7 +204,7 @@ def _ensure_owned_directory(directory: Path, *, label: str) -> None:
     marker = directory / OWNED_MARKER_NAME
     if not marker_valid:
         with marker.open("xb") as handle:
-            handle.write(_OWNED_MARKER_BYTES)
+            handle.write(OWNED_MARKER_BYTES)
             handle.flush()
             os.fsync(handle.fileno())
 
@@ -361,31 +357,6 @@ def _create_run_stage(runs_dir: Path, run_id: str) -> tuple[Path, Path]:
     raise ExperimentOutputConflict("could not reserve a staging directory for the run")
 
 
-@contextmanager
-def _exclusive_run_lock(base_dir: Path) -> Iterator[None]:
-    lock_path = base_dir / ".reasoning-payoff-sample.lock"
-    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        fd = os.open(lock_path, flags, 0o600)
-    except FileExistsError:
-        raise ExperimentOutputConflict(
-            "another sample run holds the workspace output lock"
-        ) from None
-    locked = os.fstat(fd)
-    try:
-        os.write(fd, f"{os.getpid()}\n".encode("ascii"))
-        os.fsync(fd)
-        yield
-    finally:
-        os.close(fd)
-        try:
-            current = lock_path.lstat()
-        except FileNotFoundError:
-            return
-        if (current.st_dev, current.st_ino) == (locked.st_dev, locked.st_ino):
-            lock_path.unlink()
-
-
 def _hold_workspace_output_lock(
     func: Callable[..., RunResult],
 ) -> Callable[..., RunResult]:
@@ -397,10 +368,18 @@ def _hold_workspace_output_lock(
             ledger, base_dir=base_dir, out_dir=kwargs.get("out_dir")
         )
         kwargs["out_dir"] = selected
-        with _exclusive_run_lock(selected.parent):
-            _reject_evidence_tree(selected)
-            _claim_output_root(selected)
-            return func(*args, **kwargs)
+        operation = "sample-retry" if kwargs.get("parent_run_id") else "sample-run"
+        try:
+            with exclusive_run_lock(
+                selected.parent,
+                operation=operation,
+                ledger_sha256=ledger.sha256(),
+            ):
+                _reject_evidence_tree(selected)
+                _claim_output_root(selected)
+                return func(*args, **kwargs)
+        except LockSafetyError as exc:
+            raise ExperimentOutputConflict(str(exc)) from None
 
     return wrapped
 
@@ -597,6 +576,30 @@ def run_ledger(
         )
         provider = build(ledger, endpoint, ledger.execution.capture_io)
         provider.prepare()
+        fingerprint_getter = getattr(provider, "fingerprint", None)
+        ollama_fingerprint = (
+            fingerprint_getter() if callable(fingerprint_getter) else None
+        )
+        if (
+            ledger.provider == "ollama"
+            and provider_builder is None
+            and ollama_fingerprint is None
+        ):
+            raise ProviderError(
+                "ollama provider did not produce a runtime/model fingerprint"
+            )
+        if ledger.provider == "ollama" and ollama_fingerprint is None:
+            ollama_fingerprint = {
+                "runtime_version": None,
+                "tag": ledger.model,
+                "digest": None,
+                "format": None,
+                "family": None,
+                "parameter_size": None,
+                "quantization": None,
+                "template_sha256": None,
+                "model_info_sha256": None,
+            }
 
         started = now()
         records: list[OutputRecord] = []
@@ -673,6 +676,7 @@ def run_ledger(
             artifact_bytes=payload_artifacts,
             cost_confirmed_by_cli=confirm_cost,
             remote_ollama_opt_in=allow_remote_ollama,
+            ollama_fingerprint=ollama_fingerprint,
         )
         manifest_bytes = (
             json.dumps(
