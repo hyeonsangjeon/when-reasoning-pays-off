@@ -48,19 +48,8 @@ jobs:
         env:
           GRAPH: ${{ matrix.graph }}
         run: |
-          python -m venv "$RUNNER_TEMP/nightly"
-          py="$RUNNER_TEMP/nightly/bin/python"
-          lock="batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt"
-          test_lock="batch-runner/batch_runner/data/dependencies/nightly-test-tools-py311-linux-x86_64.txt"
-          if [ "$GRAPH" = locked ]; then
-            "$py" -m pip install --require-hashes -r "$lock"
-            "$py" -m pip install --no-deps .
-            "$py" -m pip install --require-hashes -r "$test_lock"
-          else
-            "$py" -m pip install --upgrade --upgrade-strategy eager \
-              ".[all,dev]" pytest-timeout
-          fi
-          "$py" -m pip check
+          bash scripts/install_nightly_test_environment.sh \
+            "$RUNNER_TEMP/nightly" "$GRAPH"
 
       - name: Record secret-safe execution metadata
         env:
