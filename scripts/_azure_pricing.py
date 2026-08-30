@@ -19,11 +19,21 @@ HISTORICAL_REPLAY = "historical-replay"
 LIVE_MEASUREMENT = "live-measurement"
 PRICING_POLICY_MODES = (HISTORICAL_REPLAY, LIVE_MEASUREMENT)
 LIVE_PRICING_MAX_AGE_DAYS = 90
-CANONICAL_PAYG_SNAPSHOT_ID = "azure-openai-payg-sample-2026-05"
-CANONICAL_PAYG_SNAPSHOT_PATH = "pricing/azure-openai-payg-sample-2026-05.yaml"
+CANONICAL_PAYG_SNAPSHOT_ID = "azure-openai-payg-sample-2026-08"
+CANONICAL_PAYG_SNAPSHOT_PATH = "pricing/azure-openai-payg-sample-2026-08.yaml"
 CANONICAL_PAYG_SNAPSHOT_SHA256 = (
-    "858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd"
+    "0b51eab30e21a52f4e963a427bd818e7ca7e13c06386a11e97c6590a1e0f60f5"
 )
+PINNED_PAYG_SNAPSHOTS = {
+    "azure-openai-payg-sample-2026-05": (
+        "pricing/azure-openai-payg-sample-2026-05.yaml",
+        "858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd",
+    ),
+    CANONICAL_PAYG_SNAPSHOT_ID: (
+        CANONICAL_PAYG_SNAPSHOT_PATH,
+        CANONICAL_PAYG_SNAPSHOT_SHA256,
+    ),
+}
 PACKAGED_PAYG_RESOURCE = "azure_sample_pricing.yaml"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -476,19 +486,27 @@ def _packaged_snapshot_bytes() -> bytes:
 def resolve_pinned_payg_snapshot(
     *, snapshot_id: str, snapshot_path: str, snapshot_sha256: str
 ) -> PaygPricing:
-    """Resolve the one supported snapshot from source or packaged bytes."""
+    """Resolve an immutable source snapshot or the current packaged snapshot."""
     normalized_path = _safe_snapshot_path(snapshot_path)
-    if snapshot_id != CANONICAL_PAYG_SNAPSHOT_ID:
+    expected = PINNED_PAYG_SNAPSHOTS.get(snapshot_id)
+    if expected is None:
         raise PricingSelectionError("unknown pricing snapshot ID")
-    if normalized_path != CANONICAL_PAYG_SNAPSHOT_PATH:
+    expected_path, expected_sha256 = expected
+    if normalized_path != expected_path:
         raise PricingSelectionError("pricing snapshot path does not match snapshot ID")
     if not _SHA256_RE.fullmatch(snapshot_sha256):
         raise PricingSelectionError("pricing snapshot SHA-256 is invalid")
+    if snapshot_sha256 != expected_sha256:
+        raise PricingSelectionError("pricing snapshot SHA-256 does not match snapshot ID")
 
     repository_candidate = Path(__file__).resolve().parents[1] / normalized_path
     if repository_candidate.is_file():
         candidate = repository_candidate
     else:
+        if snapshot_id != CANONICAL_PAYG_SNAPSHOT_ID:
+            raise PricingSelectionError(
+                "historical pricing snapshot is unavailable outside the source tree"
+            )
         package_file = resources.files("batch_runner.data").joinpath(
             PACKAGED_PAYG_RESOURCE
         )
@@ -506,7 +524,10 @@ def resolve_pinned_payg_snapshot(
         raise PricingSelectionError("pricing snapshot SHA-256 mismatch")
     if parsed.snapshot_id != snapshot_id:
         raise PricingSelectionError("pricing snapshot ID mismatch")
-    if _packaged_snapshot_bytes() != candidate.read_bytes():
+    if (
+        snapshot_id == CANONICAL_PAYG_SNAPSHOT_ID
+        and _packaged_snapshot_bytes() != candidate.read_bytes()
+    ):
         raise PricingSelectionError("packaged pricing snapshot parity mismatch")
     return parsed
 
@@ -612,6 +633,7 @@ __all__ = [
     "HISTORICAL_REPLAY",
     "LIVE_MEASUREMENT",
     "LIVE_PRICING_MAX_AGE_DAYS",
+    "PINNED_PAYG_SNAPSHOTS",
     "PaygPricing",
     "PaygSchemaError",
     "PRICING_POLICY_MODES",

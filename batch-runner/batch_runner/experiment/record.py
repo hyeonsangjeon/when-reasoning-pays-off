@@ -55,6 +55,18 @@ class RequestTimeoutError(ProviderError):
     error_type = "timeout"
 
 
+class QuotaExceededError(ProviderError):
+    """The provider refused the request because quota or rate capacity was exhausted."""
+
+    error_type = "quota_exceeded"
+
+
+class ApiCompatibilityError(ProviderError):
+    """The selected deployment does not accept the bounded request contract."""
+
+    error_type = "api_compatibility"
+
+
 class ResponseFormatError(ProviderError):
     """The provider responded, but the payload was not the expected shape."""
 
@@ -188,6 +200,8 @@ __all__ = [
     "ModelUnavailableError",
     "AuthenticationError",
     "RequestTimeoutError",
+    "QuotaExceededError",
+    "ApiCompatibilityError",
     "ResponseFormatError",
     "ResponseNotCompletedError",
     "BudgetNotConfirmedError",

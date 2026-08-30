@@ -169,7 +169,7 @@ user_prompts_path: benchmarks/06-cache-key-bucketing/user_prompts.json
 # Immutable pricing snapshot reference. Historical replay verifies the pinned
 # snapshot and record identity without wall-clock freshness; live measurement
 # additionally applies the 90-day freshness gate. Never edit this snapshot.
-pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-05.yaml
+pricing_snapshot_path: pricing/azure-openai-payg-sample-2026-08.yaml
 
 # PAYG / PTU / live-vs-simulation declaration (Task 018 v2.4 spec, unchanged
 # from v2.3). The runner echoes this block verbatim into every

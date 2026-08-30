@@ -78,6 +78,11 @@ formalizes this. Briefly:
 6. **Frozen method changes are explicit.** Approved `benchmarks/*/analysis.md`
    stays untouched. A change to `docs/05-methodology.md` must identify the
    methodology-version change and follow the governance escalation.
+7. **Protected smoke stays isolated.** Changes to the protected Azure smoke
+   must preserve its main-only protected environment, Azure self-hosted labels,
+   managed-identity-only model authentication, one-call bound, health-only
+   artifact, and the public-CI offline fake. Never add its live mode to a PR
+   workflow. See [`docs/22-protected-azure-smoke.md`](docs/22-protected-azure-smoke.md).
 
 ## Local development
 
@@ -92,6 +97,8 @@ pytest -q -m "not adaptive_calibration" batch-runner/tests/
 bash scripts/run_nightly_offline_tests.sh
 python scripts/check_schema_conformance.py schema-meta
 python scripts/check_schema_conformance.py artifact-conformance
+python -m scripts.run_protected_azure_smoke \
+  --offline-fake --output /tmp/protected-smoke-fake
 python scripts/measure_cold_mock.py \
   --threshold-seconds 300 --output cold-mock-timing.json
 python scripts/verify_core_wheel.py

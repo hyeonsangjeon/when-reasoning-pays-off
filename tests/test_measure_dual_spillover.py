@@ -65,7 +65,7 @@ def _pin_live_pricing_clock(monkeypatch: pytest.MonkeyPatch) -> None:
     run_measurement = mdual.run_measurement
 
     def _run_with_pinned_clock(*args: Any, **kwargs: Any):
-        kwargs.setdefault("today", datetime.date(2026, 5, 20))
+        kwargs.setdefault("today", datetime.date(2026, 8, 31))
         return run_measurement(*args, **kwargs)
 
     monkeypatch.setattr(mdual, "run_measurement", _run_with_pinned_clock)
@@ -460,7 +460,7 @@ def test_reactive_real_429_from_primary_triggers_spillover(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -582,7 +582,7 @@ def test_spillover_429_retries_once_then_halts_at_one_percent(
                 dry_run=False,
                 smoke=False,
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
             )
     finally:
         os.chdir(cwd_before)
@@ -661,7 +661,7 @@ def test_two_clients_constructed_one_per_deployment(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -758,7 +758,7 @@ def test_cache_pool_field_equals_deployment_used_for_every_record(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -838,7 +838,7 @@ def test_phase1_simulated_field_absent_from_phase2_records(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -940,7 +940,7 @@ def test_smoke_criteria_fails_when_primary_observes_no_429(
                 dry_run=False,
                 smoke=True,
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
             )
     finally:
         os.chdir(cwd_before)
@@ -1016,7 +1016,7 @@ def test_smoke_criteria_fails_when_spillover_observes_429(
                 dry_run=False,
                 smoke=True,
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
             )
     finally:
         os.chdir(cwd_before)
@@ -1083,7 +1083,7 @@ def test_smoke_criteria_passes_when_primary_429_and_spillover_clean(
             dry_run=False,
             smoke=True,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -1305,7 +1305,7 @@ def test_success_response_headers_captured_via_with_raw_response(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)
@@ -1394,7 +1394,7 @@ def test_success_response_headers_captured_for_spillover_endpoint(
             dry_run=False,
             smoke=False,
             allow_dirty=True,
-            today=datetime.date(2026, 5, 20),
+            today=datetime.date(2026, 8, 31),
         )
     finally:
         os.chdir(cwd_before)

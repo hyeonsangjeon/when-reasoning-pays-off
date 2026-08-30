@@ -1,0 +1,70 @@
+name: Protected Azure provider smoke
+
+on:
+  schedule:
+    - cron: "31 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: protected-azure-smoke-main
+  cancel-in-progress: false
+
+jobs:
+  live-smoke:
+    name: Protected Azure live smoke
+    if: >-
+      github.repository == 'hyeonsangjeon/when-reasoning-pays-off' &&
+      github.ref == 'refs/heads/main'
+    environment: protected-azure-smoke
+    runs-on: [self-hosted, linux, x64, azure, managed-identity, protected-smoke]
+    timeout-minutes: 10
+    env:
+      CI: "true"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PROTECTED_AZURE_SMOKE_ENVIRONMENT: ${{ vars.PROTECTED_AZURE_SMOKE_ENVIRONMENT }}
+      PROTECTED_AZURE_SMOKE_RUNNER_CLASS: ${{ vars.PROTECTED_AZURE_SMOKE_RUNNER_CLASS }}
+      PROTECTED_AZURE_SMOKE_ENDPOINT_ENV: AZURE_OPENAI_FOUNDRY_ENDPOINT
+      PROTECTED_AZURE_SMOKE_OUTPUT_DIR: ${{ runner.temp }}/protected-azure-smoke
+      AZURE_OPENAI_FOUNDRY_ENDPOINT: ${{ secrets.AZURE_OPENAI_FOUNDRY_ENDPOINT }}
+      PROTECTED_AZURE_SMOKE_DEPLOYMENT: ${{ secrets.PROTECTED_AZURE_SMOKE_DEPLOYMENT }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_MANAGED_IDENTITY_CLIENT_ID }}
+      AZURE_OPENAI_API_KEY: ""
+      OPENAI_API_KEY: ""
+      AZURE_CLIENT_SECRET: ""
+      AZURE_CLIENT_CERTIFICATE_PATH: ""
+      AZURE_USERNAME: ""
+      AZURE_PASSWORD: ""
+
+    steps:
+      - name: Checkout main commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Install locked runtime
+        run: |
+          python -m pip install --require-hashes \
+            -r batch-runner/batch_runner/data/dependencies/release-py311-linux-x86_64.txt
+          python -m pip install --no-deps .
+
+      - name: Run one protected managed-identity request
+        run: python -m scripts.run_protected_azure_smoke --live
+
+      - name: Upload sanitized health only
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: protected-azure-health-${{ github.sha }}
+          path: ${{ runner.temp }}/protected-azure-smoke/health.json
+          if-no-files-found: error
+          retention-days: 3

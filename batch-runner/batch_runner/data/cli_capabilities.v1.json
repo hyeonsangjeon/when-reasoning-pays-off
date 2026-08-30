@@ -43,6 +43,26 @@
       "enforcement": "all planned cells terminal and all publication gates pass"
     }
   ],
+  "automation_contracts": [
+    {
+      "id": "protected-azure-smoke",
+      "entrypoint": "python -m scripts.run_protected_azure_smoke --live",
+      "execution": "protected-live-provider",
+      "network": "azure-https",
+      "cost": "billed-under-hard-ceiling",
+      "public_pr_ci": false,
+      "offline_fake_in_pr_ci": true,
+      "guards": [
+        "main schedule or manual dispatch only",
+        "protected GitHub environment",
+        "Azure self-hosted runner with managed identity",
+        "managed-identity-only DefaultAzureCredential chain",
+        "one request, no retry, no stored input or output",
+        "fresh immutable pricing and dual cost confirmation",
+        "sanitized health-only artifact"
+      ]
+    }
+  ],
   "commands": [
     {
       "id": "init",

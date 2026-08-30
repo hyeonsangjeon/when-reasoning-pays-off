@@ -899,7 +899,7 @@ class TestTokenCapEnforcement(unittest.TestCase):
                 dry_run=False,
                 stage="smoke",
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
             )
         finally:
             m._build_system_prompt = orig_build
@@ -968,7 +968,7 @@ class TestTokenCapEnforcement(unittest.TestCase):
                 dry_run=False,
                 stage="smoke",
                 allow_dirty=True,
-                today=datetime.date(2026, 5, 20),
+                today=datetime.date(2026, 8, 31),
             )
         finally:
             m._build_system_prompt = orig_build
@@ -1753,7 +1753,7 @@ class TestDryRunEndToEnd(unittest.TestCase):
         self.assertIn("pricing", summary["citations"])
         self.assertEqual(
             summary["citations"]["pricing"]["path"],
-            "pricing/azure-openai-payg-sample-2026-05.yaml",
+            "pricing/azure-openai-payg-sample-2026-08.yaml",
         )
         self.assertEqual(
             summary["pricing_policy"]["mode"], "historical-replay"
@@ -1761,7 +1761,7 @@ class TestDryRunEndToEnd(unittest.TestCase):
         self.assertEqual(summary["pricing_policy"]["policy_version"], "1.0.0")
         self.assertEqual(
             summary["pricing_policy"]["snapshot"]["snapshot_sha256"],
-            "858c3c39ca36a7495d2754d8b5e32e77e6478d38e2e0da8d7d9cd154ab1f08cd",
+            "0b51eab30e21a52f4e963a427bd818e7ca7e13c06386a11e97c6590a1e0f60f5",
         )
         # Metadata pass-through.
         self.assertEqual(summary["metadata"]["consumption_model_context"], "paygo_standard")

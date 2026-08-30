@@ -103,11 +103,11 @@ def _base_ledger(provider: str) -> dict[str, Any]:
             "estimated_usd": 0.05,
             "hard_ceiling_usd": 1.0,
             "pricing": {
-                "snapshot_id": "azure-openai-payg-sample-2026-05",
-                "snapshot_path": "pricing/azure-openai-payg-sample-2026-05.yaml",
+                "snapshot_id": "azure-openai-payg-sample-2026-08",
+                "snapshot_path": "pricing/azure-openai-payg-sample-2026-08.yaml",
                 "snapshot_sha256": (
-                    "858c3c39ca36a7495d2754d8b5e32e7"
-                    "7e6478d38e2e0da8d7d9cd154ab1f08cd"
+                    "0b51eab30e21a52f4e963a427bd818e7"
+                    "ca7e13c06386a11e97c6590a1e0f60f5"
                 ),
                 "price_key": (
                     "azure-openai:gpt-5.2:2025-12-11:global:global-standard"

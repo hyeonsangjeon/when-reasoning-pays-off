@@ -63,3 +63,15 @@ external interface, and Python socket/DNS entry points are blocked as defense
 in depth. Package installation may use the network before these guards are
 enabled. Uploaded diagnostics contain only sanitized test outcomes plus commit,
 Python, OS, lock hashes, dependency graph, and installed-package metadata.
+
+## Protected live-provider health is a separate signal
+
+The `Protected Azure provider smoke` workflow is neither PR-fast CI nor the
+nightly offline campaign. It can run only for `main` by schedule or manual
+dispatch, waits on a protected GitHub environment, and targets an Azure
+self-hosted runner whose model call uses managed identity. Public PR CI runs
+only the no-network fake of the same orchestration. The protected workflow
+uploads one short-lived schema-validated health file and no raw run artifacts.
+Its badge reports only workflow status; it does not expose protected
+configuration. Setup, threat model, health schema, and failure classes are in
+[`docs/22-protected-azure-smoke.md`](22-protected-azure-smoke.md).

@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyeonsangjeon/when-reasoning-pays-off/schemas/protected_azure_smoke_health.v1.schema.json",
+  "title": "ProtectedAzureSmokeHealth",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "observed_at_utc",
+    "code",
+    "runtime",
+    "provider",
+    "pricing",
+    "metrics",
+    "execution",
+    "failure_class"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["ok", "failed"] },
+    "observed_at_utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_sha",
+        "package_version",
+        "package_fingerprint_sha256"
+      ],
+      "properties": {
+        "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "package_version": {
+          "type": "string",
+          "pattern": "^[0-9A-Za-z][0-9A-Za-z.+-]{0,63}$"
+        },
+        "package_fingerprint_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["python", "os", "architecture", "fingerprint_sha256"],
+      "properties": {
+        "python": { "type": "string", "pattern": "^CPython-\\d+\\.\\d+\\.\\d+$" },
+        "os": { "enum": ["Linux", "macOS", "Windows"] },
+        "architecture": { "enum": ["x86_64", "aarch64"] },
+        "fingerprint_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_family",
+        "model_version",
+        "deployment_type",
+        "region_class"
+      ],
+      "properties": {
+        "model_family": { "const": "gpt-5.2" },
+        "model_version": { "const": "2025-12-11" },
+        "deployment_type": { "const": "Global Standard" },
+        "region_class": { "const": "global" }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_id", "snapshot_sha256"],
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,119}$"
+        },
+        "snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "latency_ms",
+        "input_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "cached_tokens",
+        "total_tokens"
+      ],
+      "properties": {
+        "latency_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "reasoning_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "cached_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "total_tokens": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "requests_planned",
+        "requests_attempted",
+        "capture_io",
+        "store",
+        "max_retries",
+        "timeout_seconds",
+        "max_output_tokens",
+        "cost_confirmed_in_contract",
+        "cost_confirmed_by_entrypoint",
+        "hard_ceiling_usd"
+      ],
+      "properties": {
+        "mode": { "enum": ["live", "offline_fake"] },
+        "requests_planned": { "const": 1 },
+        "requests_attempted": { "enum": [0, 1] },
+        "capture_io": { "const": false },
+        "store": { "const": false },
+        "max_retries": { "const": 0 },
+        "timeout_seconds": { "const": 30 },
+        "max_output_tokens": { "const": 32 },
+        "cost_confirmed_in_contract": { "const": true },
+        "cost_confirmed_by_entrypoint": { "const": true },
+        "hard_ceiling_usd": { "const": 0.001 }
+      }
+    },
+    "failure_class": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "protected_context",
+        "managed_identity",
+        "pricing",
+        "cost_guard",
+        "authentication",
+        "quota",
+        "deployment",
+        "api_compatibility",
+        "timeout",
+        "provider",
+        "response",
+        "runtime_dependency",
+        "internal"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "ok" } } },
+      "then": {
+        "properties": {
+          "failure_class": { "const": null },
+          "execution": {
+            "properties": { "requests_attempted": { "const": 1 } }
+          }
+        }
+      },
+      "else": {
+        "properties": { "failure_class": { "type": "string" } }
+      }
+    }
+  ]
+}

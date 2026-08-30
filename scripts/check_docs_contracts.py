@@ -159,6 +159,19 @@ def check() -> None:
         and contracts[2]["threshold_seconds"] is None,
         "reproducibility thresholds drifted",
     )
+    automations = manifest.get("automation_contracts")
+    require(
+        isinstance(automations, list)
+        and [item.get("id") for item in automations] == ["protected-azure-smoke"],
+        "protected automation contract drifted",
+    )
+    protected = automations[0]
+    require(
+        protected.get("public_pr_ci") is False
+        and protected.get("offline_fake_in_pr_ci") is True
+        and protected.get("network") == "azure-https",
+        "protected smoke CI boundary drifted",
+    )
 
     for path in public_result_pages():
         require(path.is_file(), f"missing public result surface: {path.relative_to(ROOT)}")

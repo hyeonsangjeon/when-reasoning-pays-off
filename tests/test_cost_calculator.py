@@ -55,7 +55,7 @@ def test_load_payg_pricing_accepts_canonical_fixture() -> None:
 
 def test_canonical_and_packaged_sample_pricing_bytes_are_identical() -> None:
     paths = (
-        REPO_ROOT / "pricing" / "azure-openai-payg-sample-2026-05.yaml",
+        REPO_ROOT / "pricing" / "azure-openai-payg-sample-2026-08.yaml",
         REPO_ROOT
         / "batch-runner"
         / "batch_runner"
@@ -65,8 +65,8 @@ def test_canonical_and_packaged_sample_pricing_bytes_are_identical() -> None:
     payloads = [path.read_bytes() for path in paths]
     assert payloads[0] == payloads[1]
     assert hashlib.sha256(payloads[0]).hexdigest() == (
-        "858c3c39ca36a7495d2754d8b5e32e7"
-        "7e6478d38e2e0da8d7d9cd154ab1f08cd"
+        "0b51eab30e21a52f4e963a427bd818e7"
+        "ca7e13c06386a11e97c6590a1e0f60f5"
     )
 
 
