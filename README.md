@@ -3,19 +3,24 @@
 *Same token price, different bill — a **measured** guide to when reasoning
 models earn their cost, and when they just bill for thinking nobody reads.*
 
-[![PR fast CI](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml) [![Nightly offline full campaign](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml) [![Protected Azure smoke](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/protected-azure-smoke.yml/badge.svg?branch=main)](docs/22-protected-azure-smoke.md) [![Live evidence dashboard](https://img.shields.io/badge/live-evidence%20dashboard-2563eb?logo=github&logoColor=white)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) [![Docs: 5 languages](https://img.shields.io/badge/docs-EN%20%C2%B7%20KO%20%C2%B7%20JA%20%C2%B7%20ZH%20%C2%B7%20HI-0ea5e9)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/hyeonsangjeon/when-reasoning-pays-off)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/commits/main) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Star this repo](https://img.shields.io/github/stars/hyeonsangjeon/when-reasoning-pays-off?style=social)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/stargazers)
+When teams move a workload from a non-reasoning model (e.g. GPT-4o) to a **reasoning model** like GPT-5.2,
+the bill often goes up even though the per-token prices look similar. The reason: reasoning models charge for
+"thinking" — internal reasoning tokens that are billed but never appear in the response.
 
-**Badge scope:** green **PR fast CI** proves the required deterministic PR
-checks, platform wheel matrix, schemas, claims, and fast test surfaces. Green
-**Nightly offline full campaign** separately proves machine-verified collection
-and isolated execution of all three large campaign suites plus batch and root
-tests under locked/current dependency graphs, with credentials blank and
-network blocked. Neither badge proves a live Azure/model call. **Protected Azure
-smoke** is a third, non-PR signal: it covers one bounded call from an approved
-Azure runner with managed identity. It does not publish endpoint, deployment,
-tenant, subscription, or request identity. See
-[`docs/21-pricing-policy-and-nightly-ci.md`](docs/21-pricing-policy-and-nightly-ci.md)
-and [`docs/22-protected-azure-smoke.md`](docs/22-protected-azure-smoke.md).
+<!-- CLAIM-INTEGRITY:START current-headlines -->
+**The current evidence is workload-specific and descriptive.** In the current
+GPT-5.2 short-factual cohort, `none` and `xhigh` cost
+**$0.000587 → $0.000598 per request
+(1.02x)**, while mean judge quality was **1.95 →
+1.95**.
+
+| Current short-factual cost | Current short-factual quality |
+| --- | --- |
+| ![Benchmark 01 cost per request remains nearly flat from none to xhigh reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality remains nearly flat across measured GPT-5.2 effort levels](docs/assets/benchmark-01-quality.png) |
+
+<!-- CLAIM-INTEGRITY:PAUSE current-headlines -->
+
+[![PR fast CI](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/ci.yml) [![Nightly offline full campaign](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml/badge.svg)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/nightly-full.yml) [![Protected Azure smoke](https://github.com/hyeonsangjeon/when-reasoning-pays-off/actions/workflows/protected-azure-smoke.yml/badge.svg?branch=main)](docs/22-protected-azure-smoke.md) [![Live evidence dashboard](https://img.shields.io/badge/live-evidence%20dashboard-2563eb?logo=github&logoColor=white)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en) [![Docs: 5 languages](https://img.shields.io/badge/docs-EN%20%C2%B7%20KO%20%C2%B7%20JA%20%C2%B7%20ZH%20%C2%B7%20HI-0ea5e9)](https://hyeonsangjeon.github.io/when-reasoning-pays-off/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/hyeonsangjeon/when-reasoning-pays-off)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/commits/main) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![Star this repo](https://img.shields.io/github/stars/hyeonsangjeon/when-reasoning-pays-off?style=social)](https://github.com/hyeonsangjeon/when-reasoning-pays-off/stargazers)
 
 ![Same token price, different bill: a reasoning workload pays the same per-token price but bills extra hidden reasoning tokens, so its total bill is taller.](docs/assets/hero.svg)
 
@@ -29,30 +34,6 @@ and [`docs/22-protected-azure-smoke.md`](docs/22-protected-azure-smoke.md).
 📖 **Project site:** https://hyeonsangjeon.github.io/when-reasoning-pays-off/ (English, Korean, Japanese, Simplified Chinese, and Hindi).
 
 Start with the [overview essay](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/), then drill into the [short factual work topic](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/articles/when-reasoning-pays-off/topics/short-factual-work/) or inspect the [evidence dashboard](https://hyeonsangjeon.github.io/when-reasoning-pays-off/blog/charts/?lang=en).
-
-This repository is **offline-first, not offline-only**. The installed CLI's
-machine-readable network and cost contract is
-[`batch-runner/batch_runner/data/cli_capabilities.v1.json`](batch-runner/batch_runner/data/cli_capabilities.v1.json).
-The table below is checked against that file and the live argparse command tree.
-
-<!-- CLI-CAPABILITIES:START -->
-| Contract ID | CLI surface | Execution boundary | Network boundary | Cost boundary and guard |
-| --- | --- | --- | --- | --- |
-| `init` | `reasoning-payoff init` | Offline fixture copy | No runtime network | No provider cost |
-| `analyze` | `reasoning-payoff analyze` | Offline analysis | No runtime network | No provider cost |
-| `report` | `reasoning-payoff report` | Deterministic offline render | No runtime network | No provider cost |
-| `experiment-list` | `reasoning-payoff experiment list` | Read-only local catalog | No runtime network | No provider cost |
-| `experiment-describe` | `reasoning-payoff experiment describe` | Read-only local catalog | No runtime network | No provider cost |
-| `experiment-run-dry-run` | `reasoning-payoff experiment run --stage dry-run` | Offline plan via validated adapter | No runtime network | No provider cost; immutable plan, refuses protected trees |
-| `experiment-run-live` | `reasoning-payoff experiment run --stage live --confirm-cost` | Live cloud-provider call via validated runner | HTTPS to Azure OpenAI | Billed; --confirm-cost plus runner budget/CI guards |
-| `sample-init` | `reasoning-payoff sample init` | Offline workspace copy | No runtime network | No provider cost |
-| `sample-run-mock` | `reasoning-payoff sample run` (Mock) | Deterministic offline preview | No runtime network | No provider cost |
-| `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
-| `sample-run-ollama-remote` | `reasoning-payoff sample run --allow-remote-ollama` | Live remote-provider call | Remote HTTP only after explicit opt-in | No Azure bill; operator infrastructure may cost money |
-| `sample-run-azure` | `reasoning-payoff sample run --confirm-cost` (Azure) | Live cloud-provider call | HTTPS to Azure OpenAI | Billed; CLI + ledger confirmation, hard ceiling, and CI refusal |
-| `sample-doctor` | `reasoning-payoff sample doctor` | Workspace/runtime diagnosis; guarded repair | Offline except Ollama metadata; loopback by default, remote only by opt-in | No provider prompt or cloud cost |
-| `sample-retry-failed` | `reasoning-payoff sample retry-failed` | Child run for failed attempts only | Same boundary as the parent provider | Same boundary as the parent provider |
-<!-- CLI-CAPABILITIES:END -->
 
 ## Run one real experiment in five minutes — DATA → IN → EXECUTE → OUT
 
@@ -140,6 +121,42 @@ experiments and their DATA/IN/EXECUTE/OUT view without running anything, use
 > section just below (`reasoning-payoff analyze`) instead *analyzes usage you
 > already recorded* and makes **no** service call — use it when you have usage
 > logs and want a provenance report rather than a fresh model answer.
+
+This repository is **offline-first, not offline-only**. The installed CLI's
+machine-readable network and cost contract is
+[`batch-runner/batch_runner/data/cli_capabilities.v1.json`](batch-runner/batch_runner/data/cli_capabilities.v1.json).
+The table below is checked against that file and the live argparse command tree.
+
+<!-- CLI-CAPABILITIES:START -->
+| Contract ID | CLI surface | Execution boundary | Network boundary | Cost boundary and guard |
+| --- | --- | --- | --- | --- |
+| `init` | `reasoning-payoff init` | Offline fixture copy | No runtime network | No provider cost |
+| `analyze` | `reasoning-payoff analyze` | Offline analysis | No runtime network | No provider cost |
+| `report` | `reasoning-payoff report` | Deterministic offline render | No runtime network | No provider cost |
+| `experiment-list` | `reasoning-payoff experiment list` | Read-only local catalog | No runtime network | No provider cost |
+| `experiment-describe` | `reasoning-payoff experiment describe` | Read-only local catalog | No runtime network | No provider cost |
+| `experiment-run-dry-run` | `reasoning-payoff experiment run --stage dry-run` | Offline plan via validated adapter | No runtime network | No provider cost; immutable plan, refuses protected trees |
+| `experiment-run-live` | `reasoning-payoff experiment run --stage live --confirm-cost` | Live cloud-provider call via validated runner | HTTPS to Azure OpenAI | Billed; --confirm-cost plus runner budget/CI guards |
+| `sample-init` | `reasoning-payoff sample init` | Offline workspace copy | No runtime network | No provider cost |
+| `sample-run-mock` | `reasoning-payoff sample run` (Mock) | Deterministic offline preview | No runtime network | No provider cost |
+| `sample-run-ollama-local` | `reasoning-payoff sample run` (Ollama local) | Live local-provider call | Loopback HTTP to local Ollama; no Internet required after model pull | No cloud bill; uses local CPU/GPU |
+| `sample-run-ollama-remote` | `reasoning-payoff sample run --allow-remote-ollama` | Live remote-provider call | Remote HTTP only after explicit opt-in | No Azure bill; operator infrastructure may cost money |
+| `sample-run-azure` | `reasoning-payoff sample run --confirm-cost` (Azure) | Live cloud-provider call | HTTPS to Azure OpenAI | Billed; CLI + ledger confirmation, hard ceiling, and CI refusal |
+| `sample-doctor` | `reasoning-payoff sample doctor` | Workspace/runtime diagnosis; guarded repair | Offline except Ollama metadata; loopback by default, remote only by opt-in | No provider prompt or cloud cost |
+| `sample-retry-failed` | `reasoning-payoff sample retry-failed` | Child run for failed attempts only | Same boundary as the parent provider | Same boundary as the parent provider |
+<!-- CLI-CAPABILITIES:END -->
+
+**Badge scope:** green **PR fast CI** proves the required deterministic PR
+checks, platform wheel matrix, schemas, claims, and fast test surfaces. Green
+**Nightly offline full campaign** separately proves machine-verified collection
+and isolated execution of all three large campaign suites plus batch and root
+tests under locked/current dependency graphs, with credentials blank and
+network blocked. Neither badge proves a live Azure/model call. **Protected Azure
+smoke** is a third, non-PR signal: it covers one bounded call from an approved
+Azure runner with managed identity. It does not publish endpoint, deployment,
+tenant, subscription, or request identity. See
+[`docs/21-pricing-policy-and-nightly-ci.md`](docs/21-pricing-policy-and-nightly-ci.md)
+and [`docs/22-protected-azure-smoke.md`](docs/22-protected-azure-smoke.md).
 
 ## Reproducibility service objectives
 
@@ -237,7 +254,7 @@ Open `report/report.html` directly from disk. The same run also creates
 contracts, privacy boundary, interpretation rules, exit codes, and BYOW
 workflow.
 
-<!-- CLAIM-INTEGRITY:START current-headlines -->
+<!-- CLAIM-INTEGRITY:RESUME current-headlines -->
 ## TL;DR — what the current measurements say
 
 **The current evidence is workload-specific and descriptive.** In the current
@@ -257,10 +274,6 @@ On the multi-step benchmark, mean judge quality was
 effort-only causal effect. Within GPT-5.2, `none` already reached the measured
 quality ceiling in this cohort; higher effort increased cost without improving
 that aggregate score.
-
-| Current short-factual cost | Current short-factual quality |
-| --- | --- |
-| ![Benchmark 01 cost per request remains nearly flat from none to xhigh reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality remains nearly flat across measured GPT-5.2 effort levels](docs/assets/benchmark-01-quality.png) |
 
 - **Treat effort as a workload-specific tuning parameter, not a quality
   guarantee.** Run an evaluation before changing production policy.
@@ -290,21 +303,19 @@ Historical benchmark, result, and blog inputs remain read-only.</sub>
 
 ## Contents
 
+- [Run one real experiment](#run-one-real-experiment-in-five-minutes--data--in--execute--out) · [Experiment guide](docs/20-five-minute-experiment-run.md)
+- [Reproducibility service objectives](#reproducibility-service-objectives) · [Platform support](#platform-support)
+- [Five-minute offline report](#generate-an-offline-report-in-under-five-minutes) · [Method guide](docs/19-five-minute-provenance-report.md)
+- [TL;DR](#tldr--what-the-current-measurements-say) · [Try it in 30 seconds](#try-it-in-30-seconds)
 - [What this repo is](#what-this-repo-is) · [Terms you will see](#terms-you-will-see)
 - [The question](#the-question) · [Short answer](#short-answer) · [Which customer are you?](#which-customer-are-you)
 - [What's here](#whats-here) — [docs](#documentation), [code and data](#code-and-data)
-- [Five-minute offline report](#generate-an-offline-report-in-under-five-minutes) · [Method guide](docs/19-five-minute-provenance-report.md)
-- [Run one real experiment](#run-one-real-experiment-in-five-minutes--data--in--execute--out) · [Experiment guide](docs/20-five-minute-experiment-run.md)
 - [Operator levers (L1–L5)](#operator-levers-l1l5) · [Methodology](#methodology-summary) · [Reproducing](#reproducing-these-measurements)
-- [Data publication policy](#data-publication-policy) · [Contributing, governance, security](#contributing-governance-security)
+- [Status](#status) · [Data publication policy](#data-publication-policy) · [Contributing, governance, security](#contributing-governance-security) · [License](#license)
 
 ## What this repo is
 
-When teams move a workload from a non-reasoning model (e.g. GPT-4o) to a
-**reasoning model** like GPT-5.2, the bill often goes up even though the
-per-token prices look similar. The reason: reasoning models charge for
-"thinking" — internal reasoning tokens that are billed but never appear in the
-response. This repo measures, on a small set of representative tasks, when
+This repo measures, on a small set of representative tasks, when
 those extra reasoning tokens are worth the cost and when they are not, and
 publishes the raw measurement scripts so you can rerun them on your own
 deployment.

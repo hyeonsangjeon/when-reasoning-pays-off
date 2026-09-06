@@ -24,6 +24,8 @@ DEFAULT_CONTRACT = (
 )
 DEFAULT_README = REPO_ROOT / "README.md"
 START_MARKER = "<!-- CLAIM-INTEGRITY:START current-headlines -->"
+PAUSE_MARKER = "<!-- CLAIM-INTEGRITY:PAUSE current-headlines -->"
+RESUME_MARKER = "<!-- CLAIM-INTEGRITY:RESUME current-headlines -->"
 END_MARKER = "<!-- CLAIM-INTEGRITY:END current-headlines -->"
 CANONICAL_REGISTRY_PATH = (
     "docs/blog/articles/when-reasoning-pays-off/numeric-claims.json"
@@ -646,7 +648,7 @@ def _comparison_map(contract: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]
 
 
 def render_readme_block(contract: Mapping[str, Any]) -> str:
-    """Render the only README prose owned by the claim contract."""
+    """Render the owned headlines around a gap for handwritten README sections."""
 
     claims = _claim_map(contract)
     comparisons = _comparison_map(contract)
@@ -655,15 +657,26 @@ def render_readme_block(contract: Mapping[str, Any]) -> str:
         return str(claims[claim_id]["format"])
 
     ratio = comparisons["short-factual-cost-none-to-xhigh"]["format"]
-    return f"""\
-{START_MARKER}
-## TL;DR — what the current measurements say
-
+    summary = f"""\
 **The current evidence is workload-specific and descriptive.** In the current
 GPT-5.2 short-factual cohort, `none` and `xhigh` cost
 **{fmt("short-factual-cost-none")} → {fmt("short-factual-cost-xhigh")} per request
 ({ratio})**, while mean judge quality was **{fmt("short-factual-quality-none")} →
-{fmt("short-factual-quality-xhigh")}**. Mean reasoning tokens were
+{fmt("short-factual-quality-xhigh")}**."""
+    return f"""\
+{START_MARKER}
+{summary}
+
+| Current short-factual cost | Current short-factual quality |
+| --- | --- |
+| ![Benchmark 01 cost per request remains nearly flat from none to xhigh reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality remains nearly flat across measured GPT-5.2 effort levels](docs/assets/benchmark-01-quality.png) |
+
+{PAUSE_MARKER}
+
+{RESUME_MARKER}
+## TL;DR — what the current measurements say
+
+{summary} Mean reasoning tokens were
 **{fmt("short-factual-reasoning-none")} at `none`,
 {fmt("short-factual-reasoning-high")} at `high`, and
 {fmt("short-factual-reasoning-xhigh")} at `xhigh`**. The measured floor is
@@ -676,10 +689,6 @@ On the multi-step benchmark, mean judge quality was
 effort-only causal effect. Within GPT-5.2, `none` already reached the measured
 quality ceiling in this cohort; higher effort increased cost without improving
 that aggregate score.
-
-| Current short-factual cost | Current short-factual quality |
-| --- | --- |
-| ![Benchmark 01 cost per request remains nearly flat from none to xhigh reasoning effort](docs/assets/benchmark-01-cost-per-request.png) | ![Benchmark 01 judge quality remains nearly flat across measured GPT-5.2 effort levels](docs/assets/benchmark-01-quality.png) |
 
 - **Treat effort as a workload-specific tuning parameter, not a quality
   guarantee.** Run an evaluation before changing production policy.
@@ -694,14 +703,27 @@ Historical benchmark, result, and blog inputs remain read-only.</sub>
 {END_MARKER}"""
 
 
-def replace_readme_block(readme: str, rendered: str) -> str:
-    """Replace exactly one owned marker block."""
+def _readme_block_spans(readme: str) -> tuple[int, int, int, int]:
+    markers = (START_MARKER, PAUSE_MARKER, RESUME_MARKER, END_MARKER)
+    if any(readme.count(marker) != 1 for marker in markers):
+        raise ClaimIntegrityError("README must contain exactly one of each claim marker")
+    start, pause, resume, end = (readme.index(marker) for marker in markers)
+    if not start < pause < resume < end:
+        raise ClaimIntegrityError("README claim markers are out of order")
+    return start, pause + len(PAUSE_MARKER), resume, end + len(END_MARKER)
 
-    if readme.count(START_MARKER) != 1 or readme.count(END_MARKER) != 1:
-        raise ClaimIntegrityError("README must contain exactly one claim marker block")
-    start = readme.index(START_MARKER)
-    end = readme.index(END_MARKER, start) + len(END_MARKER)
-    return readme[:start] + rendered + readme[end:]
+
+def replace_readme_block(readme: str, rendered: str) -> str:
+    """Replace owned headlines without touching the handwritten middle."""
+
+    start, gap_start, gap_end, end = _readme_block_spans(readme)
+    _, rendered_gap_start, rendered_gap_end, _ = _readme_block_spans(rendered)
+    replacement = (
+        rendered[:rendered_gap_start]
+        + readme[gap_start:gap_end]
+        + rendered[rendered_gap_end:]
+    )
+    return readme[:start] + replacement + readme[end:]
 
 
 def check_readme(readme: str, contract: Mapping[str, Any]) -> None:
@@ -711,11 +733,8 @@ def check_readme(readme: str, contract: Mapping[str, Any]) -> None:
     for legacy in contract["cohort_policy"]["legacy_headline_patterns"]:
         if str(legacy).lower().replace(" ", "") in normalized_readme:
             raise ClaimIntegrityError("README contains a legacy current headline")
-    if readme.count(START_MARKER) != 1 or readme.count(END_MARKER) != 1:
-        raise ClaimIntegrityError("README must contain exactly one claim marker block")
-    start = readme.index(START_MARKER)
-    end = readme.index(END_MARKER, start) + len(END_MARKER)
-    block = readme[start:end]
+    start, gap_start, gap_end, end = _readme_block_spans(readme)
+    block = readme[start:gap_start] + "\n\n" + readme[gap_end:end]
     if re.search(r"gpt-?5\.2.{0,100}\bminimal\b", block, re.IGNORECASE | re.DOTALL):
         raise ClaimIntegrityError("README current GPT-5.2 cohort must not use minimal")
     if block != render_readme_block(contract):

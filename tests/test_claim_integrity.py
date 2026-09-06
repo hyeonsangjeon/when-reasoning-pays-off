@@ -8,16 +8,22 @@ from pathlib import Path
 
 import pytest
 
+from scripts import check_claim_integrity
 from scripts.check_claim_integrity import (
     DEFAULT_CONTRACT,
     DEFAULT_README,
+    END_MARKER,
+    PAUSE_MARKER,
     REPO_ROOT,
+    RESUME_MARKER,
+    START_MARKER,
     ClaimIntegrityError,
     _decimal,
     _resolve_reference,
     check_readme,
     load_contract,
     render_readme_block,
+    replace_readme_block,
     run_check,
     validate_contract,
 )
@@ -143,13 +149,90 @@ def test_non_finite_claim_values_fail(value: float):
         _decimal(value, label="mutation")
 
 
-def test_missing_and_duplicate_markers_fail():
+@pytest.mark.parametrize(
+    "marker", [START_MARKER, PAUSE_MARKER, RESUME_MARKER, END_MARKER]
+)
+def test_missing_and_duplicate_markers_fail(marker: str):
     contract = _contract()
     rendered = render_readme_block(contract)
     with pytest.raises(ClaimIntegrityError, match="exactly one"):
-        check_readme(rendered.replace("<!-- CLAIM-INTEGRITY:END current-headlines -->", ""), contract)
+        check_readme(rendered.replace(marker, ""), contract)
     with pytest.raises(ClaimIntegrityError, match="exactly one"):
-        check_readme(rendered + "\n" + rendered, contract)
+        check_readme(rendered + "\n" + marker, contract)
+
+
+@pytest.mark.parametrize(
+    ("first", "second"),
+    [
+        (START_MARKER, PAUSE_MARKER),
+        (PAUSE_MARKER, RESUME_MARKER),
+        (RESUME_MARKER, END_MARKER),
+    ],
+)
+def test_out_of_order_markers_fail(first: str, second: str):
+    contract = _contract()
+    rendered = (
+        render_readme_block(contract)
+        .replace(first, "<!-- placeholder -->", 1)
+        .replace(second, first, 1)
+        .replace("<!-- placeholder -->", second, 1)
+    )
+    with pytest.raises(ClaimIntegrityError, match="out of order"):
+        check_readme(rendered, contract)
+
+
+@pytest.mark.parametrize("region", [0, 1])
+@pytest.mark.parametrize(
+    ("original", "mutation"),
+    [("1.02x", "1.03x"), ("GPT-5.2 short-factual cohort", "All workloads")],
+)
+def test_front_and_detailed_claims_require_exact_values_and_scope(
+    region: int, original: str, mutation: str
+):
+    contract = _contract()
+    regions = render_readme_block(contract).split(RESUME_MARKER)
+    regions[region] = regions[region].replace(original, mutation, 1)
+    with pytest.raises(ClaimIntegrityError, match="contract render"):
+        check_readme(RESUME_MARKER.join(regions), contract)
+
+
+def test_render_preserves_readme_layout():
+    readme = DEFAULT_README.read_text(encoding="utf-8")
+    assert replace_readme_block(readme, render_readme_block(_contract())) == readme
+
+
+def test_render_write_preserves_unmanaged_content(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    gap = "\n\n## Quick start\n\nKeep these commands and contracts unchanged.\n\n"
+    rendered = render_readme_block(_contract())
+    expected = (
+        "Introduction\n\n"
+        + rendered.replace(
+            f"{PAUSE_MARKER}\n\n{RESUME_MARKER}",
+            f"{PAUSE_MARKER}{gap}{RESUME_MARKER}",
+        )
+        + "\n\nFurther documentation\n"
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text(expected.replace("1.02x", "1.03x"), encoding="utf-8")
+    monkeypatch.setattr(check_claim_integrity, "DEFAULT_README", readme)
+
+    assert check_claim_integrity.main(["render", "--write"]) == 0
+    assert readme.read_text(encoding="utf-8") == expected
+    check_readme(expected, _contract())
+
+
+def test_render_write_refuses_missing_gap_marker_without_partial_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    original = render_readme_block(_contract()).replace(RESUME_MARKER, "")
+    readme = tmp_path / "README.md"
+    readme.write_text(original, encoding="utf-8")
+    monkeypatch.setattr(check_claim_integrity, "DEFAULT_README", readme)
+
+    assert check_claim_integrity.main(["render", "--write"]) == 1
+    assert readme.read_text(encoding="utf-8") == original
 
 
 def test_ratio_format_must_match_rounded_derived_value():
