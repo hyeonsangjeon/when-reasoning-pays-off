@@ -1,0 +1,28 @@
+# Azure OpenAI pay-as-you-go list prices for the 2026-11 benchmark 01 re-run.
+# Source: Azure Retail Prices API (https://prices.azure.com/api/retail/prices), armRegionName eastus,
+# Global Standard meters, short-context tier ("ShortCo"/"ShCo") where a model is priced by context length.
+# Read 2026-11-22. List prices only; no contract discounts. Per 1M tokens, USD.
+# Reasoning tokens are billed at the output rate (Microsoft Learn, Azure OpenAI reasoning models, "Control costs").
+accessed_date: 2026-11-22
+source_url: https://prices.azure.com/api/retail/prices
+models:
+  gpt-5.6-sol:
+    meter: "5.6 sol ShortCo {Inp,Cd Inp,Opt} Std Gl 1M Tokens"   # effectiveStartDate 2026-09-01
+    input_per_1m_usd: 4.00
+    cached_input_per_1m_usd: 0.40
+    output_per_1m_usd: 20.00
+  gpt-6.2-sol:
+    meter: "6.2-sol ShCo {Inp,Cd Inp,Opt} Std Gl 1M Tokens"      # effectiveStartDate 2026-11-01
+    input_per_1m_usd: 2.00
+    cached_input_per_1m_usd: 0.10
+    output_per_1m_usd: 10.00
+  gpt-6.2-astra:
+    meter: "6.2-astra ShCo {Inp,Cd Inp,Opt} Std Gl 1M Tokens"    # effectiveStartDate 2026-11-01
+    input_per_1m_usd: 8.00
+    cached_input_per_1m_usd: 0.40
+    output_per_1m_usd: 40.00
+  gpt-4o:
+    meter: "gpt 4o 1120 {Inp,cached Inp,Outp} glbl Tokens"       # per 1K in the API, converted; effectiveStartDate 2024-12-01
+    input_per_1m_usd: 2.50
+    cached_input_per_1m_usd: 1.25
+    output_per_1m_usd: 10.00

@@ -1,0 +1,45 @@
+{
+  "experiment_id": "exp020_short-factual_rerun_gpt-6.2-astra",
+  "benchmark": "01-short-factual",
+  "model": "gpt-6.2-astra",
+  "deployment_name": "gpt-6.2-astra",
+  "model_reported": "gpt-6.2-astra",
+  "effort": "medium",
+  "sample_id": "sf_08",
+  "sample_idx": 7,
+  "repeat": 1,
+  "timestamp_utc": "2026-11-22T10:47:22Z",
+  "latency_ms": 1461,
+  "retry_count": 0,
+  "status": "ok",
+  "error": null,
+  "incomplete_reason": null,
+  "usage": {
+    "input_tokens": 226,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 15,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 241
+  },
+  "response_text": "- 4\n- 2\n- 6",
+  "call_params": {
+    "max_output_tokens": 4096,
+    "reasoning": {
+      "effort": "medium"
+    }
+  },
+  "call_metadata": {
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "user_input_sha256": "defa6149675dced3d1b0e11bc43a640850627ece94f48c3a871c8435e66c1de1"
+  },
+  "endpoint": "https://<resource>.services.ai.azure.com",
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "git_commit": "5c479eb",
+  "dry_run": false,
+  "pricing_snapshot_path": "pricing/azure-openai-payg-2026-11.yaml"
+}
