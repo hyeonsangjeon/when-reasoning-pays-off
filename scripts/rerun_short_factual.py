@@ -13,7 +13,7 @@ they are recorded separately by ``--probe-rejected`` as one call each.
 usage:
   python -m scripts.rerun_short_factual --endpoint https://<resource>.services.ai.azure.com \
       --deployment gpt-5.6-sol --family gpt-5.6-sol --efforts none,low,medium,high,xhigh,max \
-      --experiment-id exp020_short-factual_rerun_gpt-5.6-sol --out benchmarks/01-short-factual/rerun-2026-11/runs
+      --experiment-id exp020_short-factual_rerun_gpt-5.6-sol --out reruns/01-short-factual-2026-11/runs
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ def _client(endpoint: str):
 
 def _git_commit() -> str:
     try:
-        return subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+        return subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=False).stdout.strip()
     except OSError:
         return "unknown"
 
@@ -83,7 +83,7 @@ async def _cell(client, sem, ns, system_prompt, sample, effort, repeat, commit):
                     continue
                 break
         latency_ms = round((time.time() - t0) * 1000)
-    ts = datetime.datetime.now(datetime.timezone.utc)
+    ts = datetime.datetime.now(datetime.UTC)
     rec = {
         "experiment_id": ns.experiment_id,
         "benchmark": "01-short-factual",
@@ -139,7 +139,7 @@ async def main_async(ns) -> int:
         rows = await _probe(client, ns, system_prompt, samples[0], ns.probe_rejected.split(","))
         out = pathlib.Path(ns.out).parent / f"rejected_efforts_{ns.family}.json"
         out.write_text(json.dumps({"model": ns.family, "deployment_name": ns.deployment,
-                                   "checked_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                   "checked_utc": datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
                                    "rows": rows}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(rows, ensure_ascii=False)[:600])
         return 0
@@ -167,7 +167,7 @@ def main() -> int:
     p.add_argument("--repeats", type=int, default=3)
     p.add_argument("--concurrency", type=int, default=5)
     p.add_argument("--max-output-tokens", type=int, default=4096)
-    p.add_argument("--pricing-snapshot", default="pricing/azure-openai-payg-2026-11.yaml")
+    p.add_argument("--pricing-snapshot", default="reruns/01-short-factual-2026-11/prices-2026-11-22.yaml")
     p.add_argument("--probe-rejected", default="")
     return asyncio.run(main_async(p.parse_args()))
 

@@ -1,0 +1,45 @@
+{
+  "experiment_id": "exp020_short-factual_rerun_gpt-5.6-sol",
+  "benchmark": "01-short-factual",
+  "model": "gpt-5.6-sol",
+  "deployment_name": "gpt-5.6-sol",
+  "model_reported": "gpt-5.6-sol",
+  "effort": "high",
+  "sample_id": "sf_17",
+  "sample_idx": 16,
+  "repeat": 2,
+  "timestamp_utc": "2026-11-22T10:48:43Z",
+  "latency_ms": 1716,
+  "retry_count": 0,
+  "status": "ok",
+  "error": null,
+  "incomplete_reason": null,
+  "usage": {
+    "input_tokens": 211,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 12,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 223
+  },
+  "response_text": "The length is 2500 meters.",
+  "call_params": {
+    "max_output_tokens": 4096,
+    "reasoning": {
+      "effort": "high"
+    }
+  },
+  "call_metadata": {
+    "system_prompt_sha256": "95d5b8d04f312d6faabd99c4a2584fd686c6d1454050ed9a6661a7d2b8f7fe64",
+    "user_input_sha256": "657c4655ac6a83a2604a0872bfa63de2cde4e059b18405a71ff08568cee3ee42"
+  },
+  "endpoint": "https://<resource>.services.ai.azure.com",
+  "api_version": "preview",
+  "auth_mode": "entra",
+  "git_commit": "5c479eb",
+  "dry_run": false,
+  "pricing_snapshot_path": "reruns/01-short-factual-2026-11/prices-2026-11-22.yaml"
+}

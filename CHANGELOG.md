@@ -8,8 +8,8 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ### Added — Benchmark 01 re-run on newer reasoning models (2026-11-22)
 
-- `benchmarks/01-short-factual/rerun-2026-11/`: the 20 short-factual samples re-run with the same prompt on `gpt-5.6-sol` (none to max), `gpt-6.2-sol` and `gpt-6.2-astra` (low to max; both reject `none` with HTTP 400), plus a `gpt-4o` baseline. 1,020 cells, judged by the same `gpt-4o` judge. Raw runs, judge records, rejected-effort probes and `analysis.json`.
-- `pricing/azure-openai-payg-2026-11.yaml`: list prices read 2026-11-22 for the models above.
+- `reruns/01-short-factual-2026-11/` (outside the protected `benchmarks/` tree): the 20 short-factual samples re-run with the same prompt on `gpt-5.6-sol` (none to max), `gpt-6.2-sol` and `gpt-6.2-astra` (low to max; both reject `none` with HTTP 400), plus a `gpt-4o` baseline. 1,020 cells, judged by the same `gpt-4o` judge. Raw runs, judge records, rejected-effort probes and `analysis.json`.
+- `reruns/01-short-factual-2026-11/prices-2026-11-22.yaml`: list prices read 2026-11-22 for the models above (kept out of `pricing/` so the PAYG snapshot loader does not pick it up).
 - `scripts/rerun_short_factual.py`, `scripts/analyze_rerun_short_factual.py`: runner and aggregator for the re-run (reuse `load_dataset`; output fields match what `scripts/run_judge.py` reads).
 
 ### Fixed — Protected Azure live-provider smoke

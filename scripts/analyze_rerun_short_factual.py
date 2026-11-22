@@ -1,7 +1,7 @@
 """Aggregate the 2026-11 benchmark 01 re-run: tokens, cost, latency, judge score per (model, effort).
 
-Reads benchmarks/01-short-factual/rerun-2026-11/{runs,judge_runs}/ and the price
-snapshot pricing/azure-openai-payg-2026-11.yaml. Writes analysis.json and prints a
+Reads reruns/01-short-factual-2026-11/{runs,judge_runs}/ and the price
+snapshot reruns/01-short-factual-2026-11/prices-2026-11-22.yaml. Writes analysis.json and prints a
 Markdown table. Cost = (input - cached) x input price + cached x cached price
 + output x output price; output tokens already include reasoning tokens.
 """
@@ -14,8 +14,8 @@ import statistics as st
 
 import yaml
 
-ROOT = pathlib.Path("benchmarks/01-short-factual/rerun-2026-11")
-PRICES = yaml.safe_load(open("pricing/azure-openai-payg-2026-11.yaml", encoding="utf-8"))["models"]
+ROOT = pathlib.Path("reruns/01-short-factual-2026-11")
+PRICES = yaml.safe_load((ROOT / "prices-2026-11-22.yaml").read_text(encoding="utf-8"))["models"]
 ORDER = {"none": 0, "minimal": 1, "low": 2, "medium": 3, "high": 4, "xhigh": 5, "max": 6, None: -1}
 
 
@@ -65,7 +65,7 @@ def main() -> int:
             "first_utc": min(r["timestamp_utc"] for r in rs), "last_utc": max(r["timestamp_utc"] for r in rs),
             "model_reported": sorted({str(r.get("model_reported")) for r in ok}),
         })
-    (ROOT / "analysis.json").write_text(json.dumps({"price_snapshot": "pricing/azure-openai-payg-2026-11.yaml", "cells": out},
+    (ROOT / "analysis.json").write_text(json.dumps({"price_snapshot": "reruns/01-short-factual-2026-11/prices-2026-11-22.yaml", "cells": out},
                                                    ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("| model | effort | n ok | reasoning mean (nonzero/max) | output mean | input mean | USD/1k req | latency ms | judge (2s) |")
     print("|---|---|---|---|---|---|---|---|---|")
