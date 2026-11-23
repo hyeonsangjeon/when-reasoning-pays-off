@@ -42,8 +42,8 @@
       "gpt-5.3-codex": 3400
     },
     "source_guide_sections": [
-      "Guide \u00a70 (admission reservation, continuous leak)",
-      "Guide \u00a73 (Input TPM / PTU)"
+      "public PTU utilization docs (admission reservation, continuous leak)",
+      "public PTU sizing table (Input TPM / PTU)"
     ]
   },
   "operational_inference": {

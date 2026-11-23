@@ -1,8 +1,14 @@
 """Azure Monitor correlation contract for PTU records (Task 028).
 
-The Azure OpenAI PTU Operations Guide Appendix C names six Azure Monitor
-metrics that observability-grade analysis MUST query on the same time
-window when interpreting a per-request record:
+The six Azure Monitor metrics below are listed under these REST names
+in Microsoft Learn's "Monitoring data reference for Azure OpenAI"
+(https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference,
+checked 2026-11-23). That page lists ``StatusCode`` and ``IsSpillover``
+among the dimensions of ``AzureOpenAIRequests`` and a 1-minute (PT1M)
+time grain for each of the six. Choosing these six, and requiring that
+observability-grade analysis MUST query them on the same time window
+when interpreting a per-request record, is this repo's operational
+convention (operational inference), not a Learn requirement:
 
 1. ``AzureOpenAIProvisionedManagedUtilizationV2``
 2. ``AzureOpenAIRequests`` (split by ``StatusCode`` and ``IsSpillover``)
@@ -30,8 +36,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from batch_runner.observability.schema import PTURequestRecord
 
 
-# Verbatim Appendix C names. ORDER MUST NOT CHANGE — downstream
-# fixtures and dashboards rely on it.
+# Verbatim metric REST names (see module docstring). ORDER MUST NOT
+# CHANGE — downstream fixtures and dashboards rely on it.
 AZURE_MONITOR_PTU_METRICS: tuple[str, ...] = (
     "AzureOpenAIProvisionedManagedUtilizationV2",
     "AzureOpenAIRequests",
@@ -54,7 +60,7 @@ def azure_monitor_correlation_window(
     *,
     pad_seconds: int = _DEFAULT_PAD_SECONDS,
 ) -> tuple[str, str]:
-    """Return ``(start_iso, end_iso)`` for the Appendix C metric query.
+    """Return ``(start_iso, end_iso)`` for the six-metric Azure Monitor query.
 
     The window is derived from the record's
     ``wallclock_timestamp_iso`` plus a symmetric pad (default 60s).

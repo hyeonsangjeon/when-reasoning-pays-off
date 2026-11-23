@@ -141,7 +141,7 @@ def _observed_429_record(
 def test_synthetic_onset_predicted_at_expected_time():
     """Hand-computed token-bucket onset.
 
-    Capacity at ptu_count=1 is 3400 tokens (Guide §3 gpt-5.2). With
+    Capacity at ptu_count=1 is 3400 tokens (Input TPM / PTU for gpt-5.2). With
     k_leak=0 we send admission_cost=5000 each request; first request
     accepted (util=5000 > 3400? actually first cost 5000 > 3400 so it
     would 429 immediately). Use smaller costs to test gradual fill.

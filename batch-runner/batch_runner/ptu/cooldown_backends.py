@@ -13,8 +13,8 @@ This module exposes the ``CooldownBackend`` protocol consumed by
 
 Methodology note (per Task 029 classification):
 the slot-claim coordination mechanism is **operational inference**.
-It does not appear in the PTU Operations Guide or in any Azure
-Microsoft Learn specification; it is a runtime convention this
+It does not appear in any Microsoft Learn specification for Azure
+OpenAI provisioned deployments; it is a runtime convention this
 project adopts to avoid synchronized retry storms across workers.
 
 Data integrity:

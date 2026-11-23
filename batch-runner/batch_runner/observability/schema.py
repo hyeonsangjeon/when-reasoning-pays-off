@@ -11,12 +11,35 @@ Two record types are exposed:
 
 Each field carries a *category* tag in the generated JSON Schema:
 
-* ``official_spec`` — name and semantics come from the Azure OpenAI PTU
-  Operations Guide (Appendix A — HTTP 429 response headers, Appendix B —
-  spillover headers, Appendix C — Azure Monitor metric names) or the
-  OpenAI ``usage`` block.
+* ``official_spec`` — name and semantics come from a public Microsoft
+  Learn page for Azure OpenAI (listed below) or from the OpenAI
+  ``usage`` block and request parameters.
 * ``operational_inference`` — repo convention (e.g. ``cell_id``,
-  ``request_idx``); not lifted verbatim from any vendor spec.
+  ``request_idx``); not lifted verbatim from any vendor spec. The
+  ``x-ms-region`` and ``x-request-id`` headers are in this tier: the
+  record keeps them as observed response headers, but no Microsoft
+  Learn page documents them.
+
+Public sources for the ``official_spec`` header and metric names
+(Microsoft Learn, checked 2026-11-23):
+
+* "Operate provisioned throughput deployments in production" — at 100%
+  utilization the service returns HTTP 429 with ``retry-after-ms`` and
+  ``retry-after``.
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started
+* "Manage traffic with spillover for provisioned deployments" —
+  ``x-ms-deployment-name``, ``x-ms-spillover-from-deployment``,
+  ``x-ms-spillover-error``.
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management
+* "Manage Azure OpenAI in Microsoft Foundry Models quota" —
+  ``x-ratelimit-*`` rate-limit response headers.
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota
+* "Prompt caching with Azure OpenAI in Microsoft Foundry Models" —
+  ``prompt_cache_key``.
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching
+* "Monitoring data reference for Azure OpenAI" — Azure Monitor metric
+  REST names.
+  https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference
 
 Privacy / secret rules enforced here:
 
@@ -47,8 +70,9 @@ CATEGORY_INFERENCE = "operational_inference"
 
 
 # Per-field metadata: (category, source citation, optional-on-PTU flag).
-# The source citation is a short pointer to the Guide section; it is NOT
-# the verbatim Guide text.
+# The source citation is a short pointer to one of the public pages listed
+# in the module docstring, or names a repo convention; it is NOT verbatim
+# page text and carries no URL.
 _REQUEST_FIELD_META: dict[str, dict[str, Any]] = {
     # Identity (repo convention).
     "request_idx": {
@@ -63,51 +87,70 @@ _REQUEST_FIELD_META: dict[str, dict[str, Any]] = {
         "category": CATEGORY_INFERENCE,
         "source": "repo convention (client-side request target)",
     },
-    # Azure response — Appendix A (HTTP 429) + Appendix B (spillover).
+    # Azure response headers — provisioned HTTP 429, spillover, rate limit.
     "response_status_code": {
         "category": CATEGORY_OFFICIAL,
         "source": "HTTP/1.1 status line",
     },
     "retry_after_ms": {
         "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix A — retry-after-ms (contract-reliable on 429)",
+        "source": (
+            "Microsoft Learn, provisioned 429 handling — retry-after-ms "
+            "(contract-reliable on 429)"
+        ),
         "header_name": "retry-after-ms",
     },
     "retry_after_seconds": {
         "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix A — retry-after (contract-reliable on 429)",
+        "source": (
+            "Microsoft Learn, provisioned 429 handling — retry-after "
+            "(contract-reliable on 429)"
+        ),
         "header_name": "retry-after",
     },
+    # x-ms-region and x-request-id: observed response headers, tagged
+    # operational inference.
     "x_ms_region": {
-        "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix A — observability header",
+        "category": CATEGORY_INFERENCE,
+        "source": (
+            "Observed response header for observability "
+            "(operational inference)"
+        ),
         "header_name": "x-ms-region",
     },
     "x_request_id": {
-        "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix A — observability header",
+        "category": CATEGORY_INFERENCE,
+        "source": (
+            "Observed response header for observability "
+            "(operational inference)"
+        ),
         "header_name": "x-request-id",
     },
     "x_ms_deployment_name": {
         "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix B — actual server deployment",
+        "source": "Microsoft Learn, spillover headers — actual server deployment",
         "header_name": "x-ms-deployment-name",
     },
     "x_ms_spillover_from_deployment": {
         "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix B — spillover origin",
+        "source": "Microsoft Learn, spillover headers — spillover origin",
         "header_name": "x-ms-spillover-from-deployment",
     },
     "x_ms_spillover_error": {
         "category": CATEGORY_OFFICIAL,
-        "source": "Guide Appendix B — spillover failure code",
+        "source": (
+            "Microsoft Learn, spillover headers — the provisioned "
+            "deployment's status code that triggered spillover (present "
+            "on both successful and failed spillovers)"
+        ),
         "header_name": "x-ms-spillover-error",
     },
     "x_ratelimit_remaining_requests": {
         "category": CATEGORY_OFFICIAL,
         "source": (
-            "Guide Appendix A — x-ratelimit-* headers are described for "
-            "Standard deployments; OPTIONAL on PTU path."
+            "Microsoft Learn, quota rate-limit headers — x-ratelimit-* "
+            "headers are described with Standard (TPM/RPM) rate limits; "
+            "OPTIONAL on PTU path (repo convention)."
         ),
         "header_name": "x-ratelimit-remaining-requests",
         "optional_on_ptu": True,
@@ -141,8 +184,8 @@ _REQUEST_FIELD_META: dict[str, dict[str, Any]] = {
     "prompt_cache_key_used": {
         "category": CATEGORY_OFFICIAL,
         "source": (
-            "Guide §1 — prompt_cache_key routing parameter; "
-            "ALWAYS stored as hash via hash_cache_key, never raw."
+            "Microsoft Learn, prompt caching — prompt_cache_key routing "
+            "parameter; ALWAYS stored as hash via hash_cache_key, never raw."
         ),
         "string_constraints": {
             "pattern": "^[0-9a-f]{16}$",
@@ -226,8 +269,13 @@ _CELL_FIELD_META: dict[str, dict[str, Any]] = {
     "azure_monitor_metrics_to_query": {
         "category": CATEGORY_OFFICIAL,
         "source": (
-            "Guide Appendix C — frozen list of metric names that MUST be "
-            "queried on the same time window when interpreting this cell."
+            "Frozen list of Azure Monitor metric REST names. The names "
+            "are official: they are listed in the Microsoft Learn "
+            "monitoring data reference, so the field is tagged "
+            "official_spec. The selection of these six, and the rule that "
+            "all of them MUST be queried on the same time window when "
+            "interpreting this cell, are repo convention (operational "
+            "inference)."
         ),
     },
 }
@@ -242,7 +290,9 @@ class PTURequestRecord:
     wallclock_timestamp_iso: str
     deployment_name_requested: str
 
-    # Azure response — official spec (Appendix A / B).
+    # Azure response — official spec (Microsoft Learn), except
+    # x_ms_region and x_request_id (operational inference: observed
+    # response headers).
     response_status_code: int
     retry_after_ms: Optional[float]
     retry_after_seconds: Optional[float]
@@ -251,7 +301,7 @@ class PTURequestRecord:
     x_ms_deployment_name: Optional[str]
     x_ms_spillover_from_deployment: Optional[str]
     x_ms_spillover_error: Optional[str]
-    # OPTIONAL on PTU path per Appendix A.
+    # OPTIONAL on PTU path (repo convention).
     x_ratelimit_remaining_requests: Optional[int]
 
     # OpenAI usage block — official spec.
@@ -297,9 +347,10 @@ class PTURequestRecord:
 class PTUCellSummary:
     """Canonical per-cell aggregation record (Task 028).
 
-    ``azure_monitor_metrics_to_query`` is the frozen Appendix C list:
-    all six metrics MUST be queried on the same time window when
-    interpreting this cell. See
+    ``azure_monitor_metrics_to_query`` is the frozen list of six Azure
+    Monitor metric REST names. By repo convention (operational
+    inference), all six metrics MUST be queried on the same time window
+    when interpreting this cell. See
     :data:`batch_runner.observability.azure_monitor_contract.AZURE_MONITOR_PTU_METRICS`.
     """
 
@@ -470,8 +521,10 @@ def build_request_record_schema() -> dict[str, Any]:
         title="PTURequestRecord",
         description=(
             "Canonical per-request PTU observability record (Task 028). "
-            "Header field names match Azure OpenAI PTU Operations Guide "
-            "Appendix A and B verbatim."
+            "Header field names match the Azure OpenAI response headers "
+            "documented on Microsoft Learn (provisioned 429 handling, "
+            "rate-limit headers, spillover headers); x-ms-region and "
+            "x-request-id are recorded as observed response headers."
         ),
         field_meta=_REQUEST_FIELD_META,
     )
@@ -487,7 +540,8 @@ def build_cell_summary_schema() -> dict[str, Any]:
         title="PTUCellSummary",
         description=(
             "Canonical per-cell aggregation record (Task 028). "
-            "azure_monitor_metrics_to_query is the frozen Appendix C list."
+            "azure_monitor_metrics_to_query is the frozen list of six "
+            "Azure Monitor metric REST names."
         ),
         field_meta=_CELL_FIELD_META,
     )

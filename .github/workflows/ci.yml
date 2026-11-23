@@ -369,7 +369,7 @@ jobs:
             fi
           }
           check_tree docs/blog e735fb80e200db942df15a49a14671edff0fa23a
-          check_tree benchmarks 200e5b5c3cfe44a082691ad0ea15d97dc5593dd6
+          check_tree benchmarks e8167f52607d03f98c42be17332e058b07445d90
           check_tree results 0687541fa1cefe71faefb182d29cfcaf1f0c6096
           echo "Protected historical trees are unchanged."
 

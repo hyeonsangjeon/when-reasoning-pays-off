@@ -2,7 +2,7 @@
 
 Exposes the canonical per-request and per-cell record dataclasses that
 every PTU-aware script in the repo emits, plus the Azure Monitor
-correlation contract (Appendix C metric registry + window derivation).
+correlation contract (Azure Monitor metric registry + window derivation).
 """
 
 from batch_runner.observability.azure_monitor_contract import (

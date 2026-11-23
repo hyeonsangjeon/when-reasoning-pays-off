@@ -1,21 +1,31 @@
 """Sizing helper for ``prompt_cache_key`` buckets (Task 026).
 
-Implements the sizing formula from the Azure OpenAI PTU Operations
-Guide §1 ("prompt_cache_key Bucketing Guide"):
+Implements the bucket-sizing formula:
 
     common_prefix_rpm = common_prefix_tps × 60
     minimum_buckets_at_threshold = ceil(common_prefix_rpm / 15)
     recommended_buckets = ceil(common_prefix_rpm / target_rpm_per_bucket)
 
-* The threshold ``15 req/min`` is **official spec** (Guide §1,
-  citing Microsoft Learn) — it is the documented per-(prefix+key)
-  point above which requests overflow to additional machines.
+* The threshold ``15 req/min`` is **official spec**: Microsoft Learn,
+  "Prompt caching with Azure OpenAI in Microsoft Foundry Models"
+  (2026-05-19 snapshot,
+  https://web.archive.org/web/20260519140800/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching),
+  gives it as the approximate per-(prefix+key) rate above which some
+  requests overflow to additional machines, which reduces cache
+  effectiveness. The current page
+  (https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching,
+  checked 2026-11-23) scopes the threshold to models before GPT-5.6
+  only and says that above it some requests might miss the cache;
+  GPT-5.6 and later models use explicit cache breakpoints instead.
+* The formula itself is **operational inference** per Task 029. It
+  turns the current page's advice to distribute higher-volume traffic
+  across multiple keys into a division and a ceiling.
 * The default ``target_rpm_per_bucket = 10`` is **operational
-  inference** per Task 029. The Guide §1 publishes a recommended range
-  of ``[8, 12]``; this library picks the midpoint, and the value is
-  meant to be reviewed once Task 018's measurement closes the loop.
+  inference** per Task 029: the midpoint of ``[8, 12]``, a working
+  range used here. The value is meant to be reviewed once Task 018's
+  measurement closes the loop.
 
-Worked example reproduced from Guide §1 verbatim::
+Worked example (also used in ``docs/12-prompt-cache-key-policy.md``)::
 
     common_prefix_tps = 1.4         # measured
     common_prefix_rpm = 84          # 1.4 * 60
@@ -32,12 +42,14 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-# Guide §1 official-spec threshold: requests per minute per
-# (prefix + cache_key) above which routing overflow begins.
+# Official-spec threshold (Microsoft Learn prompt caching page,
+# 2026-05-19 snapshot): requests per minute per (prefix + cache_key)
+# above which some requests overflow to additional machines. The
+# current page (checked 2026-11-23) scopes it to models before GPT-5.6.
 THRESHOLD_RPM_PER_BUCKET: int = 15
 
 # Operational-inference default (Task 029 classification). Midpoint of
-# the Guide §1 recommended range [8, 12]. Callers should override once
+# the working range [8, 12] used here. Callers should override once
 # Task 018's measured curve refines the value.
 DEFAULT_TARGET_RPM_PER_BUCKET: int = 10
 
@@ -56,7 +68,9 @@ class BucketSizingResult:
     target_rpm_per_bucket:
         Input — the per-bucket target rate the caller is sizing to.
     threshold_rpm_per_bucket:
-        Constant — the Guide §1 official-spec overflow threshold (15).
+        Constant — the official-spec overflow threshold (15), from
+        Microsoft Learn's prompt caching page (2026-05-19 snapshot;
+        models before GPT-5.6 on the current page).
     minimum_buckets_at_threshold:
         ``ceil(common_prefix_rpm / 15)``. Below this count, the bucket
         rate exceeds the documented overflow point on average.
@@ -87,16 +101,16 @@ def recommended_bucket_count(
         same cacheable prefix. Must be ``>= 0``.
     target_rpm_per_bucket:
         The per-bucket target rate. Must be strictly positive. The
-        Guide §1 recommended range is ``[8, 12]``; values outside this
-        range are accepted (the caller may have measured cause to
-        deviate) but the default of 10 is the documented operational
-        inference.
+        working range used here is ``[8, 12]`` (operational inference);
+        values outside this range are accepted (the caller may have
+        measured cause to deviate) but the default of 10 is the
+        documented operational inference.
 
     Returns
     -------
     BucketSizingResult
-        A frozen dataclass exposing both the official-spec minimum
-        (computed against the 15 req/min threshold) and the
+        A frozen dataclass exposing both the minimum (computed against
+        the official-spec 15 req/min threshold) and the
         recommended count (computed against ``target_rpm_per_bucket``),
         along with the inputs for logging.
     """

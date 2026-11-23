@@ -1,10 +1,10 @@
 # Task 024 — Replay validation report
-This report is an approximate replay of legacy source runs against the Guide §0 admission-reservation formula and a fitted continuous leak constant. It is a candidate input for capacity planning with source-run caveats. It is not a generalized PTU predictor across deployments without re-calibration.
+This report is an approximate replay of legacy source runs against the published PTU admission-reservation formula and a fitted continuous leak constant. It is a candidate input for capacity planning with source-run caveats. It is not a generalized PTU predictor across deployments without re-calibration.
 ## Source caveats
 - `task013_dual_spillover` runs use Azure PAYG deployments shaped to expose a PTU-like saturation pattern; they are not customer-attributed native PTU evidence.
 - `task019_max_output_tokens_proxy` runs are PAYG-throttled-quota proxy evidence, not direct PTU validation.
 - Inputs are normalized through legacy adapters; Task 028 canonical schema is not used here.
-- Guide §3 model-specific output-token weighting ratios are not modeled in v1.
+- Model-specific output-token weighting ratios are not modeled in v1.
 - Divergences may be consistent with burst tolerance, the reserve/release completion approximation, missing source fields, or proxy-source mismatch. Those are not causal conclusions.
 ## Fitted leak constant
 
@@ -26,5 +26,5 @@ Holdout is not feasible (fewer than two eligible source runs). Residuals above a
 
 ## Methodology notes
 - Predicted/observed 429 events are paired per `(source_run_id, cell_key)` in event order. Unpaired predicted/observed events surface as confusion-matrix false positives / false negatives.
-- The simulator uses a single token-denominated bucket: `util_tokens`, `capacity_tokens`, token leak, token overshoot, and token-derived `predicted_retry_after_ms`. Capacity comes from the Guide §3 Input TPM / PTU table; only `k_leak_tokens_per_ptu_per_second` is fitted.
+- The simulator uses a single token-denominated bucket: `util_tokens`, `capacity_tokens`, token leak, token overshoot, and token-derived `predicted_retry_after_ms`. Capacity comes from the published Input TPM / PTU table; only `k_leak_tokens_per_ptu_per_second` is fitted.
 - Default validation mode does not mutate simulator state on observed-429 source records.

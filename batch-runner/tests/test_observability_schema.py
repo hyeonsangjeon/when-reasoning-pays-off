@@ -32,8 +32,8 @@ _FORBIDDEN_FIELDS = {
     "content",
 }
 
-# Verbatim Appendix A / B header names that MUST appear as header_name
-# annotations on the corresponding fields.
+# Verbatim Azure OpenAI response header names that MUST appear as
+# header_name annotations on the corresponding fields.
 _EXPECTED_HEADERS = {
     "retry_after_ms": "retry-after-ms",
     "retry_after_seconds": "retry-after",

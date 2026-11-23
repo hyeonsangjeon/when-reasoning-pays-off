@@ -4,25 +4,41 @@
 
 > Module: `batch_runner.cache`. Task 026.
 > Scope: deterministic `prompt_cache_key` composition, bucket sizing,
-> and `prompt_cache_retention` defaults for Azure OpenAI PTU
-> deployments. Pairs with the Task 018 measurement benchmark
-> (`scripts/measure_cache_key_bucketing.py`), the Task 022 one-pager,
-> and the PTU Operations Guide §1 and §2.
+> and `prompt_cache_retention` defaults for Azure OpenAI provisioned
+> throughput unit (PTU) deployments. Pairs with the Task 018
+> measurement benchmark (`scripts/measure_cache_key_bucketing.py`),
+> the Task 022 one-pager, and Microsoft Learn, "Prompt caching with
+> Azure OpenAI in Microsoft Foundry Models"
+> (`prompt_cache_key` and `prompt_cache_retention`;
+> https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching,
+> checked 2026-11-23).
 
 ## 1. What `prompt_cache_key` actually is
 
-Three statements restated from the provisioned throughput unit (PTU) Operations Guide §1
-("prompt_cache_key Bucketing Guide"), per Microsoft Learn:
+Two statements restated from Microsoft Learn, "Prompt caching with
+Azure OpenAI in Microsoft Foundry Models" (2026-05-19 snapshot:
+https://web.archive.org/web/20260519140800/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching):
 
 1. The value is combined with the prefix hash to influence
-   **machine routing** — its purpose is to improve cache hit rate
-   by steering callers with the same workload to the same machine.
-2. When the same `(prefix + cache_key)` combination exceeds
-   approximately **15 req/min**, requests overflow to additional
-   machines and miss the cache. This 15 req/min figure is **official
-   spec**.
-3. It is a **best-effort routing hint**, not a guarantee. The cache
+   **routing** and improve cache hit rate.
+2. When requests for the same `(prefix + cache_key)` combination
+   exceed approximately **15 req/min**, some requests overflow to
+   additional machines, which reduces cache effectiveness. This
+   15 req/min figure is **official spec**.
+
+A third statement is this doc's reading (operational inference), not
+a Learn statement:
+
+3. It is a **best-effort routing hint**, not a guarantee: the intent
+   is to steer callers with the same workload to the same machine,
+   but Learn says only that the key influences routing. The cache
    itself remains Azure-side; this library only composes the hint.
+
+The current page
+(https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching,
+checked 2026-11-23) scopes its `prompt_cache_key` advice and the
+15 req/min figure to models before GPT-5.6; GPT-5.6 and later models
+use explicit cache breakpoints instead.
 
 This library does not store anything, does not predict hit rate, and
 does not call out to Azure. It is a pure helper used at the call site
@@ -65,9 +81,12 @@ share the cached prefix.
 
 ### ANTI-PATTERN examples (per-request entropy)
 
-The Guide §1 ANTI-PATTERN table names three categories that explode
-cardinality and defeat the routing hint. The `assert_deterministic`
-helper rejects all three:
+Three categories of per-request entropy (UUIDs, request ids,
+timestamps) explode cardinality and defeat the routing hint. Treating
+them as anti-patterns is operational policy, built on the current
+Learn page's advice (checked 2026-11-23, models before GPT-5.6) to
+keep a stable mapping between each key and its prefixes. The
+`assert_deterministic` helper rejects all three:
 
 | Anti-pattern | Why it fails | Reason code |
 |---|---|---|
@@ -100,7 +119,7 @@ own trusted logging context.
 
 ## 3. Sizing buckets
 
-### Formula (Guide §1 verbatim)
+### Formula (operational inference)
 
 ```
 common_prefix_rpm           = common_prefix_tps × 60
@@ -108,13 +127,23 @@ minimum_buckets_at_threshold = ceil(common_prefix_rpm / 15)
 recommended_buckets          = ceil(common_prefix_rpm / target_rpm_per_bucket)
 ```
 
-The threshold `15 req/min` is **official spec** per Guide §1. The
-`target_rpm_per_bucket` default of `10` is **operational inference**
-per Task 029, picking the midpoint of the Guide's recommended range
-`[8, 12]`. Once Task 018's measurement closes the loop, callers
-should reconsider this default against the measured curve.
+The threshold `15 req/min` is **official spec**: the 2026-05-19
+snapshot of the Microsoft Learn prompt caching page (cited in
+section 1) says some requests above it overflow to additional
+machines, which reduces cache effectiveness. The current page
+(https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching,
+checked 2026-11-23) scopes the threshold to models before GPT-5.6
+only and says that above it some requests might miss the cache, so
+this sizing applies to those models. The formula itself is
+**operational inference** per Task 029: it turns the current page's
+advice to distribute higher-volume traffic across multiple keys into
+a division and a ceiling. The `target_rpm_per_bucket` default of `10`
+is **operational inference** per Task 029: the midpoint of `[8, 12]`,
+a working range used here. Once Task 018's
+measurement closes the loop, callers should reconsider this default
+against the measured curve.
 
-### Worked example (Guide §1 reproduced)
+### Worked example
 
 A workload measured at **1.4 TPS (requests per second)** sharing a common prefix:
 
@@ -152,10 +181,13 @@ BucketSizingResult(
 
 ### Model default table
 
-The Guide §2 ("prompt_cache_retention Defaults") lists eleven models
-that support `prompt_cache_retention="24h"`. The documented default
-applied when the request body omits the field is `in_memory` on every
-listed model:
+Microsoft Learn, "Prompt caching with Azure OpenAI in Microsoft
+Foundry Models", section "Prompt cache retention" (2026-05-19
+snapshot:
+https://web.archive.org/web/20260519140800/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching),
+lists eleven models that support `prompt_cache_retention="24h"`. The
+documented default applied when the request body omits the field is
+`in_memory` on every listed model:
 
 ```
 gpt-5.4              gpt-5.1-codex        gpt-5
@@ -164,9 +196,14 @@ gpt-5.2              gpt-5.1-chat         gpt-4.1
 gpt-5.1-codex-max    gpt-5.1
 ```
 
+The current page (checked 2026-11-23) lists twelve models: it adds
+gpt-5.5, on which extended retention is the default. The list above
+and the code table stay at the snapshot's eleven.
+
 This means cross-request reuse beyond the short in-memory window
 requires the caller to **explicitly** set `prompt_cache_retention=
-"24h"` in the request body — the Guide §2 "common trap".
+"24h"` in the request body. Forgetting it is the "common trap" (a
+label used in this doc; operational policy).
 
 ### `ensure_explicit` enforces the choice
 
@@ -185,22 +222,23 @@ request_body["prompt_cache_retention"] = retention
 ```
 
 `ensure_explicit` raises `ImplicitInMemoryError` (a `ValueError`
-subclass) when `retention is None` on any model whose Guide §2
+subclass) when `retention is None` on any model whose documented
 default is `in_memory`. It raises `KeyError` for models not on the
-Guide §2 list, and `UnknownRetentionValueError` for values outside
+list above, and `UnknownRetentionValueError` for values outside
 `{"in_memory", "24h"}`.
 
 ### Pricing parity
 
-Per Guide §2: on the listed models, extended-retention (`"24h"`)
-cache reads are billed at the same per-token rate as in-memory cache
-reads. Choosing `"24h"` over `"in_memory"` does not change the
+Microsoft Learn's prompt caching page states that prompt cache pricing
+is the same for both retention policies (checked 2026-11-23): on the
+listed models, extended-retention (`"24h"`) cache reads are billed at
+the same per-token rate as in-memory cache reads. Choosing `"24h"` over `"in_memory"` does not change the
 cached-read price; it changes the eligibility window for the discount.
 
 ## 5. Monitoring
 
-The operational loop the Guide §1 prescribes for cache-key buckets tracks
-per-bucket requests per minute (RPM):
+The operational loop used here for cache-key buckets (operational
+inference) tracks per-bucket requests per minute (RPM):
 
 1. **Measure** per-bucket RPM in production (Task 028 schema events).
 2. **Compare** the observed RPM to the 15 req/min threshold and the
@@ -230,12 +268,12 @@ and computes the target; observation is the caller's responsibility.
 
 | Value | Classification | Source |
 |---|---|---|
-| `15 req/min` per-bucket overflow threshold | **official spec** | PTU Operations Guide §1, citing Microsoft Learn |
-| Sizing formula structure (`rpm / target`) | **official spec** | PTU Operations Guide §1 |
-| `target_rpm_per_bucket = 10` default | **operational inference** | Midpoint of Guide §1's recommended `[8, 12]` range; to be revisited against Task 018's measured curve |
-| Retention default table | **official spec** | PTU Operations Guide §2 |
-| `ensure_explicit` "must be explicit" rule | **operational policy** | This repo's reading of the Guide §2 "common trap" — the Guide warns; this library enforces |
-| Anti-pattern reason codes | **operational policy** | Categories derived from Guide §1's ANTI-PATTERN table |
+| `15 req/min` per-bucket overflow threshold | **official spec** | Microsoft Learn, "Prompt caching with Azure OpenAI in Microsoft Foundry Models" (approximately 15 requests per minute per prefix + `prompt_cache_key`, above which some requests overflow to additional machines), 2026-05-19 snapshot: https://web.archive.org/web/20260519140800/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching. The current page (https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching, checked 2026-11-23) scopes it to models before GPT-5.6 only and says some requests might miss the cache |
+| Sizing formula structure (`rpm / target`) | **operational inference** | Built on the current Learn page's advice (checked 2026-11-23) to distribute higher-volume traffic across multiple keys; the `rpm / target` arithmetic turns that into a bucket count |
+| `target_rpm_per_bucket = 10` default | **operational inference** | Midpoint of `[8, 12]`, a working range used here; to be revisited against Task 018's measured curve |
+| Retention default table | **official spec** | Microsoft Learn, "Prompt caching with Azure OpenAI in Microsoft Foundry Models", extended-retention model list and `in_memory` default, 2026-05-19 snapshot: https://web.archive.org/web/20260519140800/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching |
+| `ensure_explicit` "must be explicit" rule | **operational policy** | Microsoft Learn documents the `in_memory` default (2026-05-19 snapshot); this library refuses to let callers rely on it silently |
+| Anti-pattern reason codes | **operational policy** | Categories of per-request entropy used in this doc, built on the current Learn page's advice (checked 2026-11-23) to keep a stable mapping between each key and its prefixes |
 
 Anywhere this library or its outputs are cited downstream, the
 classification labels above MUST be preserved.

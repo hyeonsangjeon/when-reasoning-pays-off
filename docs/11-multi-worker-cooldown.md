@@ -5,24 +5,35 @@
 > Module: `batch_runner.ptu.cooldown_coordinator`. Task 025.
 > Scope: cross-worker retry-timing coordination for Azure OpenAI PTU
 > 429 responses. Pairs with the Task 023 admission controller
-> (`docs/10-ptu-admission-controller.md`) and the PTU Operations
-> Guide §0.
+> (`docs/10-ptu-admission-controller.md`) and Microsoft Learn,
+> "Operate provisioned throughput deployments in production" (429
+> handling;
+> https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started,
+> checked 2026-11-23).
 
-## 1. The problem the Guide does not solve
+## 1. The problem per-request recovery does not solve
 
-The provisioned throughput unit (PTU) Operations Guide §0 establishes
-header-driven recovery as the per-request primary mechanism: when a
-worker receives an HTTP rate-limit status 429, it reads
-`retry-after-ms` and resumes after that interval. Task 023 implements
-this for a single worker.
+Microsoft Learn, "Operate provisioned throughput deployments in
+production" (section "Handle high utilization"), describes
+header-driven recovery for a provisioned throughput unit (PTU)
+deployment as a per-request mechanism: when a worker receives an HTTP
+rate-limit status 429, it waits the `retry-after-ms` interval and
+retries. Task 023 implements this for a single worker.
 
-The Guide is silent on a second-order question: **what happens when N
+That page is silent on a second-order question: **what happens when N
 workers, each acting alone, receive 429s with the same
 `retry-after-ms` value?** Each worker sleeps for the same interval and
 resumes at approximately the same wall-clock instant. The PTU then
 receives N coincident requests on the leak-bucket edge and emits a
 fresh wave of 429s. The single-worker controller cannot prevent this;
 it observes only its own request stream.
+
+The Azure OpenAI quota page
+(https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota,
+checked 2026-11-23) does add random jitter so that clients do not retry
+at the same instant, but only to exponential backoff when
+`retry-after-ms` is absent. It does not cover workers that all honour
+the same `retry-after-ms` value.
 
 This document specifies the additive coordination layer that prevents
 the herd. It does not replace the Task 023 controller; it composes
@@ -32,10 +43,9 @@ with it.
 
 The slot-claim coordination mechanism described below is **operational
 inference** per the Task 029 classification. It is not a Microsoft
-Learn specification and does not appear in the PTU Operations Guide.
-It is a runtime convention this project adopts when operating
-multi-worker batches against a shared deployment, and it MUST be
-labeled as such anywhere it is cited.
+Learn specification. It is a runtime convention this project adopts
+when operating multi-worker batches against a shared deployment, and it
+MUST be labeled as such anywhere it is cited.
 
 ## 2. Coordination protocol
 

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PTURequestRecord",
-  "description": "Canonical per-request PTU observability record (Task 028). Header field names match Azure OpenAI PTU Operations Guide Appendix A and B verbatim.",
+  "description": "Canonical per-request PTU observability record (Task 028). Header field names match the Azure OpenAI response headers documented on Microsoft Learn (provisioned 429 handling, rate-limit headers, spillover headers); x-ms-region and x-request-id are recorded as observed response headers.",
   "type": "object",
   "properties": {
     "request_idx": {
@@ -29,7 +29,7 @@
         "number",
         "null"
       ],
-      "description": "Guide Appendix A \u2014 retry-after-ms (contract-reliable on 429)",
+      "description": "Microsoft Learn, provisioned 429 handling \u2014 retry-after-ms (contract-reliable on 429)",
       "category": "official_spec",
       "header_name": "retry-after-ms"
     },
@@ -38,7 +38,7 @@
         "number",
         "null"
       ],
-      "description": "Guide Appendix A \u2014 retry-after (contract-reliable on 429)",
+      "description": "Microsoft Learn, provisioned 429 handling \u2014 retry-after (contract-reliable on 429)",
       "category": "official_spec",
       "header_name": "retry-after"
     },
@@ -47,8 +47,8 @@
         "string",
         "null"
       ],
-      "description": "Guide Appendix A \u2014 observability header",
-      "category": "official_spec",
+      "description": "Observed response header for observability (operational inference)",
+      "category": "operational_inference",
       "header_name": "x-ms-region"
     },
     "x_request_id": {
@@ -56,8 +56,8 @@
         "string",
         "null"
       ],
-      "description": "Guide Appendix A \u2014 observability header",
-      "category": "official_spec",
+      "description": "Observed response header for observability (operational inference)",
+      "category": "operational_inference",
       "header_name": "x-request-id"
     },
     "x_ms_deployment_name": {
@@ -65,7 +65,7 @@
         "string",
         "null"
       ],
-      "description": "Guide Appendix B \u2014 actual server deployment",
+      "description": "Microsoft Learn, spillover headers \u2014 actual server deployment",
       "category": "official_spec",
       "header_name": "x-ms-deployment-name"
     },
@@ -74,7 +74,7 @@
         "string",
         "null"
       ],
-      "description": "Guide Appendix B \u2014 spillover origin",
+      "description": "Microsoft Learn, spillover headers \u2014 spillover origin",
       "category": "official_spec",
       "header_name": "x-ms-spillover-from-deployment"
     },
@@ -83,7 +83,7 @@
         "string",
         "null"
       ],
-      "description": "Guide Appendix B \u2014 spillover failure code",
+      "description": "Microsoft Learn, spillover headers \u2014 the provisioned deployment's status code that triggered spillover (present on both successful and failed spillovers)",
       "category": "official_spec",
       "header_name": "x-ms-spillover-error"
     },
@@ -92,7 +92,7 @@
         "integer",
         "null"
       ],
-      "description": "Guide Appendix A \u2014 x-ratelimit-* headers are described for Standard deployments; OPTIONAL on PTU path.",
+      "description": "Microsoft Learn, quota rate-limit headers \u2014 x-ratelimit-* headers are described with Standard (TPM/RPM) rate limits; OPTIONAL on PTU path (repo convention).",
       "category": "official_spec",
       "header_name": "x-ratelimit-remaining-requests",
       "optional_on_ptu": true
@@ -135,7 +135,7 @@
         "string",
         "null"
       ],
-      "description": "Guide \u00a71 \u2014 prompt_cache_key routing parameter; ALWAYS stored as hash via hash_cache_key, never raw.",
+      "description": "Microsoft Learn, prompt caching \u2014 prompt_cache_key routing parameter; ALWAYS stored as hash via hash_cache_key, never raw.",
       "category": "official_spec",
       "pattern": "^[0-9a-f]{16}$",
       "minLength": 16,

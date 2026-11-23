@@ -1,21 +1,43 @@
 """Pure functions for the Task 024 PTU utilization replay simulator.
 
-This module is intentionally side-effect free. It implements the
-official-spec inputs that Task 024 v1 takes from the Azure OpenAI PTU
-Operations Guide:
+This module is intentionally side-effect free. It takes its official-spec
+inputs for Task 024 v1 from public Microsoft Learn pages and labels the
+modeling choices built on them as operational inference:
 
-* **Admission reservation** (Guide §0):
+* **Admission reservation**:
   ``admission_cost_tokens = max(0, prompt_tokens - cached_tokens) + max_output_tokens``.
-* **Input TPM / PTU capacity table** (Guide §3): one-minute
+  Official spec: the request estimate (prompt tokens less cached tokens,
+  combined with ``max_tokens``). Source: "Operate provisioned throughput
+  deployments in production", section "How utilization works"
+  (checked 2026-11-23):
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started
+  Operational inference: adding ``max_output_tokens`` to the input term
+  unweighted, as one input-equivalent sum, is a modeling choice built on
+  that estimate. v1 leaves out the model-specific output-to-input
+  weights (see "Out of scope" below).
+* **Input TPM / PTU capacity table**: one-minute
   input-equivalent bucket capacity is ``input_tpm_per_ptu[model] * ptu_count``.
-* **Continuous leak framing** (Guide §0): the bucket drains continuously
-  at a rate proportional to deployed PTU count. The numeric leak constant
-  itself is *operational inference* (Task 029) and is fitted in
+  Official spec: the per-model "Input TPM per PTU" values, from the
+  Microsoft Learn onboarding page as archived on 2026-05-19:
+  https://web.archive.org/web/20260519041942/https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-onboarding
+  (the table now lives at
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing,
+  checked 2026-11-23). The leaky-bucket framing is from the "How
+  utilization works" section of
+  https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started
+  (checked 2026-11-23).
+  Operational inference: sizing the bucket at one minute's Input TPM
+  times the PTU count is a modeling choice built on that table and that
+  section.
+* **Continuous leak framing**: the bucket drains continuously
+  at a rate proportional to deployed PTU count. Source: the same "How
+  utilization works" section ("Continuous drain"). The numeric leak
+  constant itself is *operational inference* (Task 029) and is fitted in
   ``replay_simulator``; the geometric form is the official spec.
 
-Out of scope for v1 (per Task 024 spec): Guide §3 model-specific
-output-weight ratios, reasoning-token special weighting, multi-tenant or
-cross-region pools, and any live LLM call.
+Out of scope for v1 (per Task 024 spec): Microsoft Learn's model-specific
+output-to-input weight ratios, reasoning-token special weighting,
+multi-tenant or cross-region pools, and any live LLM call.
 """
 
 from __future__ import annotations
@@ -23,7 +45,8 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Mapping
 
-# Guide §3 Input TPM / PTU table. Keys are model family names exactly as
+# Microsoft Learn "Input TPM per PTU" table (May 2026 snapshot; see the
+# module docstring). Keys are model family names exactly as
 # emitted in source-run JSONL ``model`` fields. This table is an
 # official-spec input; do not mutate it at runtime.
 _INPUT_TPM_PER_PTU: dict[str, int] = {
@@ -42,7 +65,7 @@ INPUT_TPM_PER_PTU: Mapping[str, int] = MappingProxyType(_INPUT_TPM_PER_PTU)
 
 
 class UnknownModelError(KeyError):
-    """Raised when a model is not present in the Guide §3 Input TPM / PTU table."""
+    """Raised when a model is not present in the Input TPM / PTU table."""
 
 
 def admission_cost_tokens(
@@ -50,11 +73,12 @@ def admission_cost_tokens(
     cached_tokens: int,
     max_output_tokens: int,
 ) -> int:
-    """Return Guide §0 admission-reservation cost in input-equivalent tokens.
+    """Return the admission-reservation cost in input-equivalent tokens.
 
     ``max(0, prompt_tokens - cached_tokens) + max_output_tokens``. Negative
     or missing inputs are clamped to zero; the max-output term is treated
-    as a non-negative reservation.
+    as a non-negative reservation. The unweighted sum is operational
+    inference (see the module docstring).
     """
     p = max(0, int(prompt_tokens)) if prompt_tokens is not None else 0
     c = max(0, int(cached_tokens)) if cached_tokens is not None else 0
@@ -69,7 +93,8 @@ def capacity_tokens(model: str, ptu_count: float) -> float:
     """Return the one-minute input-equivalent bucket capacity.
 
     ``input_tpm_per_ptu[model] * ptu_count``. Capacity is **not** fitted;
-    it is read directly from the Guide §3 table.
+    it is read directly from the Input TPM / PTU table. The one-minute
+    bucket size is operational inference (see the module docstring).
     """
     if model not in _INPUT_TPM_PER_PTU:
         raise UnknownModelError(model)

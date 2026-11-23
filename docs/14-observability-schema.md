@@ -19,10 +19,14 @@ under `schemas/`. The Azure Monitor correlation contract lives in
 Before Task 028, each measurement script (013, 019, 021, …) defined its
 own keyset. Task 020's aggregator had to translate between shapes.
 Adding more measurement tasks would multiply that cost. Task 028 fixes
-the record profile once: header field names match the Azure OpenAI PTU
-Operations Guide Appendix A and B verbatim, Azure Monitor metric names
-match Appendix C verbatim, and every field carries an
-``official_spec`` vs ``operational_inference`` tag per Task 029.
+the record profile once: header field names match the Azure OpenAI
+response headers documented on Microsoft Learn verbatim, Azure Monitor
+metric names match the REST names in Learn's monitoring data reference
+verbatim, and every field carries an
+``official_spec`` vs ``operational_inference`` tag per Task 029. Two
+recorded headers, `x-ms-region` and `x-request-id`, are observed headers
+and are tagged ``operational_inference``. The public sources are
+listed in §2 and §4.
 
 ---
 
@@ -38,23 +42,38 @@ One record per Azure OpenAI request. Emitted as a JSON Lines row.
 | `wallclock_timestamp_iso` | string (ISO 8601) | UTC. |
 | `deployment_name_requested` | string | What the client targeted, before any spillover (automatic routing of overflow requests from a saturated provisioned deployment to a standard deployment). |
 
-### Azure response headers (official spec — Appendix A / B)
+### Azure response headers (official spec, except two observed headers)
 
 Header names are case-sensitive lowercase (HTTP/2 style) and match the
-Guide verbatim. The JSON Schema attaches a `header_name` annotation on
-each.
+Microsoft Learn pages listed below verbatim, except `x-ms-region` and
+`x-request-id`, which are observed headers (operational inference). The
+JSON Schema attaches a `header_name` annotation on each.
 
-| Field | Type | `header_name` | Appendix | Notes |
+| Field | Type | `header_name` | Source | Notes |
 |---|---|---|---|---|
 | `response_status_code` | int | — | HTTP status line | |
-| `retry_after_ms` | number \| null | `retry-after-ms` | A | Contract-reliable on HTTP rate-limit status 429. Coexists with `retry_after_seconds` — both fields, no normalization. |
-| `retry_after_seconds` | number \| null | `retry-after` | A | Contract-reliable on 429. |
-| `x_ms_region` | string \| null | `x-ms-region` | A | Observability. |
-| `x_request_id` | string \| null | `x-request-id` | A | Observability. |
-| `x_ms_deployment_name` | string \| null | `x-ms-deployment-name` | B | Actual server (may differ from requested on spillover). |
-| `x_ms_spillover_from_deployment` | string \| null | `x-ms-spillover-from-deployment` | B | Spillover origin. |
-| `x_ms_spillover_error` | string \| null | `x-ms-spillover-error` | B | Spillover failure code. |
-| `x_ratelimit_remaining_requests` | int \| null | `x-ratelimit-remaining-requests` | A | **Optional on PTU path.** The Guide describes `x-ratelimit-*` for Standard deployments; they are not contract-guaranteed on PTU. The schema flags this with `optional_on_ptu: true`. |
+| `retry_after_ms` | number \| null | `retry-after-ms` | Provisioned 429 page | Contract-reliable on HTTP rate-limit status 429. Coexists with `retry_after_seconds` — both fields, no normalization. |
+| `retry_after_seconds` | number \| null | `retry-after` | Provisioned 429 page | Contract-reliable on 429. |
+| `x_ms_region` | string \| null | `x-ms-region` | Observed | Observability. **Operational inference:** observed response header; the schema tags it `operational_inference`. |
+| `x_request_id` | string \| null | `x-request-id` | Observed | Observability. **Operational inference:** observed response header; the schema tags it `operational_inference`. |
+| `x_ms_deployment_name` | string \| null | `x-ms-deployment-name` | Spillover page | Actual server (may differ from requested on spillover). |
+| `x_ms_spillover_from_deployment` | string \| null | `x-ms-spillover-from-deployment` | Spillover page | Spillover origin. |
+| `x_ms_spillover_error` | string \| null | `x-ms-spillover-error` | Spillover page | The provisioned deployment's status code that triggered spillover (for example 429, 500 or 503). Present on both successful and failed spillovers. |
+| `x_ratelimit_remaining_requests` | int \| null | `x-ratelimit-remaining-requests` | Quota page | **Optional on PTU path.** The quota page documents `x-ratelimit-*` with the Standard (TPM/RPM) rate limits and notes that provisioned deployments calculate rate limits differently. Treating these headers as not contract-guaranteed on PTU is this repo's convention (operational inference). The schema flags this with `optional_on_ptu: true`. |
+
+Public sources (Microsoft Learn, checked 2026-11-23):
+
+- **Provisioned 429 page** — "Operate provisioned throughput
+  deployments in production": at 100% utilization the service returns
+  HTTP 429 with the `retry-after-ms` and `retry-after` headers.
+  <https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started>
+- **Spillover page** — "Manage traffic with spillover for provisioned
+  deployments": `x-ms-spillover-from-deployment`,
+  `x-ms-deployment-name`, `x-ms-spillover-error`.
+  <https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/spillover-traffic-management>
+- **Quota page** — "Manage Azure OpenAI in Microsoft Foundry Models
+  quota", section "Rate limit response headers".
+  <https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota>
 
 ### OpenAI usage block (official spec)
 
@@ -103,7 +122,7 @@ One record per measurement cell window (see Task 013 cell taxonomy).
 | `p95_ttft_ms` | number | inference | 95th-percentile TTFT. |
 | `p99_ttft_ms` | number | inference | |
 | `mean_retry_after_ms_on_429` | number \| null | inference | Null if no 429s in the window. |
-| `azure_monitor_metrics_to_query` | array of string | **official_spec** | Frozen Appendix C list — see §4. |
+| `azure_monitor_metrics_to_query` | array of string | **official_spec** | Frozen list of six Azure Monitor metric REST names. The names are official (listed on Microsoft Learn), so the field is tagged `official_spec`; the selection of six and the same-window rule are repo convention (operational inference) — see §4. |
 
 ---
 
@@ -124,6 +143,13 @@ AZURE_MONITOR_PTU_METRICS = (
 def azure_monitor_correlation_window(record, *, pad_seconds=60) -> (start_iso, end_iso): ...
 ```
 
+The six names are the REST names listed in Microsoft Learn's
+"Monitoring data reference for Azure OpenAI"
+(<https://learn.microsoft.com/en-us/azure/foundry/openai/monitor-openai-reference>,
+checked 2026-11-23). Learn lists the metrics but does not say which
+ones to query together; the selection and the same-window rule below
+are a convention used here (operational inference).
+
 **All six metrics MUST be queried on the same time window** when
 interpreting a `PTURequestRecord`. The window is derived from the
 record's `wallclock_timestamp_iso` with a symmetric pad (default 60 s)
@@ -135,7 +161,8 @@ credential read. Operators (or downstream offline tools) perform the
 actual query using the returned window.
 
 `AzureOpenAIRequests` is queried with the `StatusCode` and
-`IsSpillover` dimensions per Appendix C.
+`IsSpillover` dimensions; the same Learn page lists both among that
+metric's dimensions.
 
 ---
 
@@ -148,8 +175,11 @@ The schema deliberately omits the following. Tests in
 - **Request body content.** No `messages`, no `system_prompt`, no
   `prompt`, no `content`, no `request_body`.
 - **Environment variable values.** No fields that mirror env-var values.
-- **Raw `prompt_cache_key`.** The Guide §1 promotes
-  `prompt_cache_key` to a routing parameter; the raw value can carry
+- **Raw `prompt_cache_key`.** Microsoft Learn ("Prompt caching with
+  Azure OpenAI in Microsoft Foundry Models",
+  <https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching>,
+  checked 2026-11-23) describes `prompt_cache_key` as a parameter that
+  helps route related requests; the raw value can carry
   tenant or customer identifiers. The schema stores only a stable
   **hash** via `hash_cache_key(raw)`, which returns a 16-character
   lowercase hex digest (truncated SHA-256). Enforcement is field-level:
@@ -207,10 +237,12 @@ For aggregator output, the old per-window summary key `n_429` maps to
 Every field in both records carries a `category` tag in the emitted
 JSON Schema:
 
-- `official_spec` — name and semantics come from the Guide
-  (Appendix A / B / C) or the OpenAI `usage` block.
+- `official_spec` — name and semantics come from a public Microsoft
+  Learn page (the header and metric sources in §2 and §4) or the
+  OpenAI `usage` block.
 - `operational_inference` — repo convention (e.g. `cell_id`,
-  `request_idx`, latency measurements).
+  `request_idx`, latency measurements, and the observed `x_ms_region`
+  and `x_request_id` headers).
 
 The schema files therefore satisfy Task 029's per-field labeling
 requirement and serve as the worked example for future schemas.

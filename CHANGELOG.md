@@ -6,6 +6,14 @@ tracks the benchmark task series specified under the private task-spec tree (lab
 
 ## [Unreleased]
 
+### Changed — PTU module citations point to public Microsoft Learn pages (2026-11-23)
+
+- Code docstrings, CLI help, generated schema descriptions, `docs/10`–`docs/15`, `pricing/ptu-density-2026-05.yaml`, `benchmarks/10-replay-validation/` text and older entries in this changelog now cite the public Microsoft Learn pages (prompt caching, provisioned throughput, spillover, quota, Azure Monitor reference) or label the claim as operational inference. Statements about what Learn publishes are dated to the 2026-05-19 snapshot where the live page has since changed.
+- No number, threshold, default or code path changed. Text that changed at runtime: the PTU-vs-PAYG calculator rationale lines, the `DoubleRetryError` message, and the `source_guide_sections` strings that `scripts/replay_ptu_utilization.py` writes.
+- `pricing/ptu-density-2026-05.yaml` keeps every value (all 12 Input TPM / PTU values are in the public 2026-05-19 Learn snapshot); its provenance comments and `guide_source` value changed, so its sha256 changed.
+- Now labeled operational inference: the bucket-sizing formula and the 8–12 target range (docs/12), the `x-ms-region` and `x-request-id` schema fields, and the six-metric selection and same-window rule (the metric names stay official spec). The `azure_monitor_metrics_to_query` field tag stays `official_spec` because the names are on Learn.
+- `benchmarks` tree pin refreshed for the `benchmarks/10-replay-validation/` text change; six test functions renamed.
+
 ### Added — Benchmark 01 re-run on newer reasoning models (2026-11-22)
 
 - `reruns/01-short-factual-2026-11/` (outside the protected `benchmarks/` tree): the 20 short-factual samples re-run with the same prompt on `gpt-5.6-sol` (none to max), `gpt-6.2-sol` and `gpt-6.2-astra` (low to max; both reject `none` with HTTP 400), plus a `gpt-4o` baseline. 1,020 cells, judged by the same `gpt-4o` judge. Raw runs, judge records, rejected-effort probes and `analysis.json`.
@@ -932,11 +940,12 @@ edit, no dependency added.
 
 Adds `batch_runner.observability` with `PTURequestRecord`,
 `PTUCellSummary`, `hash_cache_key`, `AZURE_MONITOR_PTU_METRICS`, and
-`azure_monitor_correlation_window`. Header field names match Azure
-OpenAI PTU Operations Guide Appendix A and B verbatim
-(`retry-after-ms`, `retry-after`, `x-ms-region`, `x-request-id`,
-`x-ms-deployment-name`, `x-ms-spillover-from-deployment`,
-`x-ms-spillover-error`, `x-ratelimit-remaining-requests`); the
+`azure_monitor_correlation_window`. Header field names match the Azure
+OpenAI response headers documented on Microsoft Learn verbatim
+(`retry-after-ms`, `retry-after`, `x-ms-deployment-name`,
+`x-ms-spillover-from-deployment`, `x-ms-spillover-error`,
+`x-ratelimit-remaining-requests`); `x-ms-region` and `x-request-id` are
+recorded as observed response headers (operational inference); the
 `x-ratelimit-*` field is flagged optional on the PTU path.
 `retry-after-ms` and `retry-after` coexist as two fields
 (`retry_after_ms`, `retry_after_seconds`) for raw fidelity.
@@ -945,7 +954,7 @@ the raw key. Every field in the emitted JSON Schema files
 (`schemas/ptu_request_record.schema.json`,
 `schemas/ptu_cell_summary.schema.json`) carries an `official_spec` vs
 `operational_inference` category tag per Task 029.
-`AZURE_MONITOR_PTU_METRICS` is the frozen Appendix C six-metric tuple
+`AZURE_MONITOR_PTU_METRICS` is the frozen six-metric Azure Monitor tuple
 and `azure_monitor_correlation_window` is a pure helper (no Azure SDK,
 no network call, no credential read). Documented in
 `docs/14-observability-schema.md` (228 lines) with a migration
@@ -958,7 +967,7 @@ new dependencies, no `pyproject.toml` edits.
 Adds `batch_runner.sizing` with a deterministic PTU-vs-PAYG
 calculator, model-density loader, and `scripts/ptu_sizing.py` JSON CLI.
 The calculator reads explicit local PAYG/PTU pricing snapshots and the
-frozen `pricing/ptu-density-2026-05.yaml` Guide §3 density table, then
+frozen `pricing/ptu-density-2026-05.yaml` Learn density table, then
 returns a recommended PTU count, crossover RPM, decision label, and
 four-driver diagnostic. The task's worked example (`gpt-5.2`, 1000
 prompt, 30% cached, 200 visible, 0 reasoning, 8000 `max_output_tokens`,
@@ -976,17 +985,17 @@ variable reads, no pricing auto-fetch, and no dependency changes.
 Adds `batch_runner.cache` — a deployable Python library for
 deterministic `prompt_cache_key` composition, bucket sizing, and
 `prompt_cache_retention` enforcement. `cache_key(...)` composes the
-Guide §1 workload-oriented key (tenant + flow + locale + schema +
+workload-oriented key (tenant + flow + locale + schema +
 optional category); `assert_deterministic` / `anti_pattern_reasons`
 detect UUIDs, request-id tokens, timestamp tokens, and long
 digit/hex runs without ever echoing the offending key value back
 into error messages or logs. `recommended_bucket_count(...)` returns
-both the official-spec minimum (against the 15 req/min threshold)
+both the minimum (against the official-spec 15 req/min threshold)
 and the recommended count (against `target_rpm_per_bucket`, default
 10 — labeled as operational inference per Task 029); reproduces the
-Guide §1 worked example (1.4 TPS → 84 RPM → 6 minimum, 9
+worked example (1.4 TPS → 84 RPM → 6 minimum, 9
 recommended). `ensure_explicit(model_id, retention)` enforces the
-Guide §2 "must be explicit" rule for the eleven listed models,
+"must be explicit" rule for the eleven listed models,
 raising `ImplicitInMemoryError` when callers omit
 `prompt_cache_retention` on a model whose documented default is
 `in_memory`. The library imports no `time` / `random` / `datetime` /
@@ -1005,7 +1014,7 @@ Adds `batch_runner.ptu.cooldown_coordinator` and
 the Task 023 `AdmissionController` so N workers receiving 429s with
 the same `retry-after-ms` do not resume at the same wall-clock
 instant. The slot-claim mechanism is labeled as **operational
-inference** per Task 029 (the PTU Operations Guide is silent on
+inference** per Task 029 (Microsoft Learn does not describe
 cross-worker retry-timing coordination). The coordinator does NOT own
 a retry budget; the wrapped controller remains the single retry owner.
 Default backend is process-local (`InMemoryCooldownBackend`); a
@@ -1022,8 +1031,8 @@ test confirms zero added latency vs the bare Task 023 controller.
 Adds `batch_runner.ptu.utilization_model` and `batch_runner.ptu.replay_simulator`
 plus the CLI `scripts/replay_ptu_utilization.py` — a pure, offline
 token-bucket replay of legacy Task 013 / Task 019 source JSONLs against
-the Azure OpenAI PTU Operations Guide §0 admission-reservation formula
-and the Guide §3 Input TPM / PTU capacity table.
+the published PTU admission-reservation formula
+and the published Input TPM / PTU capacity table.
 
 Process and result:
 
@@ -1036,7 +1045,7 @@ Process and result:
   no-network guard enforces this in `test_replay_simulator.py`.
 - Methodology v2 audit (local CLI reviewer worker) approved the spec ahead of
   implementation; this entry preserves its handoff notes: one-unit
-  token bucket only; capacity is the Guide §3 table value, never fit;
+  token bucket only; capacity is the published table value, never fit;
   source labels preserved in every aggregate; Task 019 always carried
   as PAYG-throttled-quota proxy evidence; default validation mode does
   not mutate state on observed-429 records; holdout residuals are
@@ -1049,7 +1058,7 @@ Deliverables:
 
 - `batch-runner/batch_runner/ptu/utilization_model.py` — pure typed
   `admission_cost_tokens`, `capacity_tokens`, `leak_tokens`, with a
-  read-only `INPUT_TPM_PER_PTU` Guide §3 table.
+  read-only `INPUT_TPM_PER_PTU` table from Microsoft Learn.
 - `batch-runner/batch_runner/ptu/replay_simulator.py` — token-denominated
   replay loop, source adapters with timestamp / prompt-cache / max-output
   priority, retry-after-ms normalization, zero-usage-429 demand recovery
@@ -1085,7 +1094,7 @@ Caveats explicitly carried into every report:
   PTU-like saturation pattern.
 - Task 028 canonical schema is not used; inputs are legacy-adapter
   normalized.
-- Guide §3 model-specific output-token weighting ratios are not modeled
+- Model-specific output-token weighting ratios are not modeled
   in v1; reasoning tokens are reported as observed output composition
   only.
 - The numeric `k_leak_tokens_per_ptu_per_second`, the PAYG TPM-quota to
@@ -1097,8 +1106,8 @@ Caveats explicitly carried into every report:
 
 Adds `batch_runner.ptu.admission_controller` — a small, auditable
 client-side component that honours the Azure OpenAI `retry-after-ms`
-response header on 429 as the official admission signal (PTU
-Operations Guide §0). Implements the Guide's Option A (SDK Defaults,
+response header on 429 as the official admission signal (Microsoft
+Learn, provisioned throughput). Implements Option A (SDK Defaults,
 made observable) and Option B (PAYG fallback via `max_wait_ms=0` plus
 a `fallback` callable). Native spillover (Option C) remains owned by
 Task 021. No Azure resources mutated; no live API calls; no
@@ -1110,7 +1119,7 @@ Deliverables:
   with typed exceptions `AdmissionExhausted`, `WaitExceedsCeiling`,
   `DoubleRetryError`, plus the `ThrottleEvent` dataclass. Parses
   `retry-after-ms` first, falling back to `retry-after` seconds × 1000.
-  Enforces the Guide §0 single-owner retry rule by refusing any client
+  Enforces the single-owner retry rule by refusing any client
   whose `max_retries > 0` at construction. Surfaces an allow-list of
   safe response headers only (`x-request-id`, `x-ms-region`); never
   logs request body, prompt, `messages`, `Authorization`, `api-key`,

@@ -2,7 +2,11 @@
 
 This module implements a runtime component that honours the Azure OpenAI
 ``retry-after-ms`` response header as the official admission signal for
-the next acceptable request time (PTU Operations Guide §0).
+the next acceptable request time (Microsoft Learn, "Operate provisioned
+throughput deployments in production", section "Handle high
+utilization":
+https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started,
+checked 2026-11-23).
 
 The controller is intentionally side-effect minimal:
 
@@ -70,9 +74,14 @@ class DoubleRetryError(RuntimeError):
     """Raised at construction if an SDK client with its own auto-retry
     enabled (``max_retries > 0``) is wrapped by the controller.
 
-    The Guide §0 caution is that retry ownership must live in exactly
-    one place; running the controller over an SDK that also retries
-    produces compounded waits and obscures admission accounting.
+    Retry ownership must live in exactly one place; running the
+    controller over an SDK that also retries produces compounded waits
+    and obscures admission accounting. Microsoft Learn gives the same
+    advice for custom retry logic: set ``max_retries=0`` on the SDK
+    client ("Manage Azure OpenAI in Microsoft Foundry Models quota",
+    section "Implement retry logic with exponential backoff":
+    https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota,
+    checked 2026-11-23).
     """
 
 
@@ -228,7 +237,7 @@ class AdmissionController:
                 raise DoubleRetryError(
                     "AdmissionController refuses to wrap a client with "
                     "max_retries > 0; consolidate retry ownership in "
-                    "one place (PTU Operations Guide §0)."
+                    "one place (set max_retries=0 on the SDK client)."
                 )
         except (TypeError, ValueError):
             # Non-integer max_retries: do not silently accept; fail

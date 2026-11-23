@@ -11,7 +11,7 @@ from batch_runner.observability.azure_monitor_contract import (
 from batch_runner.observability.schema import PTURequestRecord, hash_cache_key
 
 
-# Verbatim Appendix C metric names. Order matters.
+# Verbatim Azure Monitor metric REST names. Order matters.
 _EXPECTED_METRICS = (
     "AzureOpenAIProvisionedManagedUtilizationV2",
     "AzureOpenAIRequests",

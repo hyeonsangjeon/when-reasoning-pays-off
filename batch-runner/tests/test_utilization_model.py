@@ -26,7 +26,7 @@ def test_admission_cost_negative_inputs_clamped():
     assert admission_cost_tokens(None, None, None) == 0
 
 
-def test_capacity_tokens_guide_table_gpt_5_2():
+def test_capacity_tokens_published_table_gpt_5_2():
     assert capacity_tokens("gpt-5.2", 2) == 6800
     assert capacity_tokens("gpt-5.2", 1) == 3400
 

@@ -4,22 +4,33 @@
 
 > Module: `batch_runner.ptu.admission_controller`. Task 023.
 > Scope: one client-side component that honours `retry-after-ms` on
-> Azure OpenAI 429 responses. Pairs with the PTU Operations Guide §0.
+> Azure OpenAI 429 responses. Pairs with Microsoft Learn, "Operate
+> provisioned throughput deployments in production" (429 handling;
+> https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started,
+> checked 2026-11-23).
 
 ## 1. Why this exists
 
-The Azure OpenAI provisioned throughput unit (PTU) Operations Guide §0
-names `retry-after-ms` as the official admission signal for the next
-acceptable request time on a throttled PTU deployment. This module is
+`retry-after-ms` is the official admission signal for the next
+acceptable request time on a throttled Azure OpenAI provisioned
+throughput unit (PTU) deployment. Microsoft Learn, "Operate provisioned
+throughput deployments in production" (section "Handle high
+utilization"), says that at 100% utilization the service returns HTTP
+429 at once, with `retry-after-ms` and `retry-after` headers that say
+how long to wait before the next request is accepted. This module is
 the deployable code path that honours that signal explicitly and logs
 every decision, so a reviewer can answer "why did this client sleep that long?"
 from logs alone instead of inferring software development kit (SDK)
 retry behaviour. It is the runtime complement
 to Task 020's offline characterization of the same header.
 
-## 2. Three options the Guide names
+## 2. Three options
 
-The Guide §0 catalogues three deployable patterns:
+The same Learn section lists two ways to handle a 429: redirect to
+another deployment or model, which the spillover feature automates, or
+wait the `retry-after-ms` time and retry, which the Azure OpenAI SDKs do
+by default. They map onto three deployable patterns, with A/B/C as
+labels used in this doc:
 
 - **A. SDK Defaults** — let the `openai` Python SDK auto-retry honour
   `retry-after`. Minimal code; opaque to audit.
@@ -96,13 +107,21 @@ response = ctrl.call(send, request=payload)
 ```
 
 `max_wait_ms=0` together with a configured `fallback` is the exact
-"immediate PAYG fallback" mapping called out in Guide §0 Option B.
+"immediate PAYG fallback" mapping of Option B in §2: the Learn page's
+"redirect to another deployment" path, taken as soon as the 429
+arrives.
 
 ## 4. Single-owner retry rule
 
-> Retry ownership must live in exactly one place. Running the
-> controller over an SDK that also retries produces compounded waits
-> and obscures admission accounting.
+Retry ownership must live in exactly one place. Running the
+controller over an SDK that also retries produces compounded waits
+and obscures admission accounting. Microsoft Learn gives the same
+advice for custom retry logic: set `max_retries=0` on the SDK client,
+otherwise each custom attempt can trigger further SDK retries ("Manage
+Azure OpenAI in Microsoft Foundry Models quota", section "Implement
+retry logic with exponential backoff";
+https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota,
+checked 2026-11-23).
 
 The controller refuses to wrap an SDK/client object whose
 `max_retries` attribute is a positive integer; passing one raises
@@ -180,5 +199,5 @@ to migrate; the `on_throttle` seam is the migration point.
 
 This module is a small, auditable runtime seam. It does not chase
 exotic SDK behaviour, it does not invent a new backoff policy beyond
-"honour the header plus jitter," and it does not extend the Guide's
-three named options. New behaviour belongs in new tasks.
+"honour the header plus jitter," and it does not extend the three
+options in §2. New behaviour belongs in new tasks.

@@ -9,12 +9,18 @@ a fresh 429 wave (a thundering herd).
 
 Methodology note (per Task 029 classification):
 the slot-claim coordination mechanism implemented here is
-**operational inference**. The Azure OpenAI PTU Operations Guide (§0)
-recommends header-driven recovery as the per-request primary mechanism
-but is silent on cross-worker retry-timing coordination. The slot-claim
-behavior added by ``CooldownCoordinator`` is therefore *not* a
-Microsoft Learn specification and is *not* derived from the Guide; it
-is a runtime convention this project adopts and documents in
+**operational inference**. Microsoft Learn ("Operate provisioned
+throughput deployments in production", section "Handle high
+utilization":
+https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started,
+checked 2026-11-23) recommends waiting the ``retry-after-ms`` time per
+request but does not describe cross-worker retry-timing coordination.
+The Azure OpenAI quota page
+(https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota)
+adds random jitter only to exponential backoff when ``retry-after-ms``
+is absent. The slot-claim behavior added by ``CooldownCoordinator`` is
+therefore *not* a Microsoft Learn specification; it is a runtime
+convention this project adopts and documents in
 ``docs/11-multi-worker-cooldown.md``.
 
 Single-owner retry rule:

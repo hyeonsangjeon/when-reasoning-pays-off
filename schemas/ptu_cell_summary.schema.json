@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PTUCellSummary",
-  "description": "Canonical per-cell aggregation record (Task 028). azure_monitor_metrics_to_query is the frozen Appendix C list.",
+  "description": "Canonical per-cell aggregation record (Task 028). azure_monitor_metrics_to_query is the frozen list of six Azure Monitor metric REST names.",
   "type": "object",
   "properties": {
     "cell_id": {
@@ -72,7 +72,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Guide Appendix C \u2014 frozen list of metric names that MUST be queried on the same time window when interpreting this cell.",
+      "description": "Frozen list of Azure Monitor metric REST names. The names are official: they are listed in the Microsoft Learn monitoring data reference, so the field is tagged official_spec. The selection of these six, and the rule that all of them MUST be queried on the same time window when interpreting this cell, are repo convention (operational inference).",
       "category": "official_spec"
     }
   },

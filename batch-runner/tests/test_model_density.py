@@ -26,7 +26,7 @@ def test_density_yaml_is_valid():
     assert data["learn_url"].startswith("https://learn.microsoft.com/")
 
 
-def test_input_tpm_per_ptu_guide_table_core_entries():
+def test_input_tpm_per_ptu_learn_table_core_entries():
     assert input_tpm_per_ptu("gpt-5.2") == 3400
     assert input_tpm_per_ptu("gpt-5.2-codex") == 3400
     assert input_tpm_per_ptu("gpt-5.3-codex") == 3400
@@ -44,7 +44,7 @@ def test_input_tpm_per_ptu_reference_entries():
     assert input_tpm_per_ptu("gpt-4o-mini") == 37000
 
 
-def test_explicit_output_ratios_match_guide_examples():
+def test_explicit_output_ratios_match_learn_examples():
     assert output_to_input_ratio("gpt-5") == 8.0
     assert output_ratio_provenance("gpt-5") == "official_spec"
     assert output_to_input_ratio("gpt-4.1") == 4.0

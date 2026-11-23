@@ -36,7 +36,11 @@ class UnknownOutputRatioError(KeyError):
 
 @dataclass(frozen=True)
 class ModelDensitySnapshot:
-    """Parsed immutable view of the Task 027 model-density snapshot."""
+    """Parsed immutable view of the Task 027 model-density snapshot.
+
+    ``guide_publication_date`` holds the snapshot month and
+    ``guide_source`` a short source label; the YAML must carry both keys.
+    """
 
     path: Path
     guide_publication_date: str
@@ -206,7 +210,7 @@ def input_tpm_per_ptu(
     *,
     density_yaml: str | Path = DEFAULT_DENSITY_PATH,
 ) -> int:
-    """Return Guide §3 input TPM per PTU for ``model_id``."""
+    """Return the snapshot's Microsoft Learn input TPM per PTU for ``model_id``."""
 
     snapshot = load_density_snapshot(density_yaml)
     try:
@@ -222,9 +226,12 @@ def output_to_input_ratio(
 ) -> float:
     """Return output-token weight in input-token equivalents.
 
-    ``gpt-4o`` is explicitly marked as unspecified in the snapshot, so the
-    deterministic calculator uses ``1.0`` and exposes that provenance through
-    :func:`output_ratio_provenance`.
+    ``gpt-4o`` is explicitly marked as unspecified in the 2026-05 density
+    snapshot (the 2026-05-19 Microsoft Learn archive gives no ratio for it),
+    so the deterministic calculator uses ``1.0`` and exposes that provenance
+    through :func:`output_ratio_provenance`. The current sizing page
+    (checked 2026-11-23) lists 4 for ``gpt-4o``; this frozen snapshot keeps
+    the May values.
     """
 
     snapshot = load_density_snapshot(density_yaml)

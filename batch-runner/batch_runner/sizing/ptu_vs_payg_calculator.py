@@ -348,12 +348,13 @@ def _ratio_note(model_id: str, output_weight: float, provenance: str) -> str:
     if provenance == "operational_inference":
         return (
             f"output_weight={_fmt(output_weight)} for {model_id} is operational "
-            "inference from the Guide §3 GPT-4.1-and-later note"
+            "inference from the GPT-4.1-and-later output-weight note"
         )
     if provenance == "unspecified":
         return (
-            f"output_weight for {model_id} is unspecified by Microsoft Learn; "
-            "calculator used 1.0 and flags this as a sizing caveat"
+            f"output_weight for {model_id} is unspecified in the 2026-05 "
+            "density snapshot; calculator used 1.0 and flags this as a "
+            "sizing caveat"
         )
     return f"output_weight={_fmt(output_weight)} for {model_id} is official spec"
 
@@ -382,7 +383,7 @@ def _build_rationale(
         else (
             "Task 024 leak calibration supplied "
             f"(k={_fmt(leak_k)} tokens/PTU/sec, operational inference); "
-            "steady-state sizing still uses the Guide §3 TPM/PTU table"
+            "steady-state sizing still uses the pinned input TPM/PTU table"
         )
     )
     pct = ", ".join(
@@ -395,7 +396,7 @@ def _build_rationale(
         )
     )
     return (
-        "Guide §3 diagnostic "
+        "Driver diagnostic "
         f"({pct}); dominant_driver={dominant_driver}. "
         f"{_ratio_note(workload.model_id, output_weight, output_ratio_provenance)}. "
         "Sizing used "

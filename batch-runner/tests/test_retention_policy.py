@@ -13,7 +13,7 @@ from batch_runner.cache.retention_policy import (
 )
 
 
-def test_supported_models_set_contains_guide_table():
+def test_supported_models_set_contains_published_table():
     expected = {
         "gpt-5.4",
         "gpt-5.3-codex",
@@ -76,9 +76,10 @@ def test_unknown_retention_value_error_is_value_error():
     assert issubclass(UnknownRetentionValueError, ValueError)
 
 
-def test_all_listed_models_default_to_in_memory_per_guide():
-    # The Guide §2 "must be explicit" rule applies because all listed
-    # models default to in_memory.
+def test_all_listed_models_default_to_in_memory_per_learn():
+    # The "must be explicit" rule (operational policy) applies because
+    # all listed models default to in_memory (Microsoft Learn prompt
+    # caching page, 2026-05-19 snapshot).
     for model in EXTENDED_RETENTION_SUPPORTED_MODELS:
         assert default_retention(model) == "in_memory"
 

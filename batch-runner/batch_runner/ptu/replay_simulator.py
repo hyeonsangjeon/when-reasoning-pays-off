@@ -12,7 +12,8 @@ Architectural overview
    (``adapt_task013_record``, ``adapt_task019_record``) map raw JSONL
    dicts into this shape, recording per-record ``fallback_reasons``.
 
-2. ``replay_stream`` runs the Guide §0 admission formula against a
+2. ``replay_stream`` runs the admission-reservation formula from
+   ``utilization_model`` (sources listed there) against a
    token-denominated bucket and a fitted leak constant ``k``. It emits
    ``ReplayEvent`` records per source record processed. Validation mode
    does not mutate the bucket on observed-429 source records (false
@@ -31,9 +32,10 @@ validation. Task013 inputs use PAYG deployments shaped to expose a
 PTU-like saturation pattern, not customer-attributed native PTU
 evidence. Source labels are preserved in every aggregate.
 
-No reasoning-token or Guide §3 model-specific output-weight ratio is
-modeled in v1; reasoning tokens may be reported as observed output
-composition only.
+No reasoning-token or model-specific output-to-input weight ratio
+(published on Microsoft Learn; see ``utilization_model``) is modeled in
+v1; reasoning tokens may be reported as observed output composition
+only.
 """
 
 from __future__ import annotations

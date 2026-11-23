@@ -221,7 +221,7 @@ def test_wait_exceeds_ceiling_with_fallback_invokes_once():
 
 
 def test_option_b_immediate_fallback_when_max_wait_zero():
-    """Guide §0 Option B: max_wait_ms=0 + fallback => never sleep."""
+    """Option B (docs/10 §2): max_wait_ms=0 + fallback => never sleep."""
     fb_calls: list[object] = []
 
     def fb(req):

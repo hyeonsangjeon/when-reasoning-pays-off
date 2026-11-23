@@ -21,17 +21,15 @@ Worked examples live in `docs/15-spec-vs-inference-taxonomy.examples.md`.
 
 ## 1. Why two tiers
 
-The Azure OpenAI provisioned throughput unit (PTU) Operations Guide front matter states (internal
-Guide §0 — treated as Tier 2 per §3 below, since the internal Guide
-is not a public Microsoft Learn / OpenAI / Azure source):
+This repo makes two kinds of claims about Azure OpenAI: claims that a
+public Microsoft Learn, OpenAI, or Azure SDK source states, and claims
+this repo infers from its own measurements or from reading those
+sources. Keeping "official spec" and "operational inference" apart is
+the convention used in this repo; it is itself a Tier 2 claim (see §3
+and the Citations block below).
 
-> "All technical claims are grounded in Microsoft Learn public
-> documentation, with 'official spec' and 'operational inference'
-> clearly distinguished throughout."
-
-That editorial convention is the Guide's authority model. This repo
-inherits it. Without an explicit taxonomy, every artifact would have
-to re-litigate where the line falls between "Microsoft says" and "we
+Without an explicit taxonomy, every artifact would have to
+re-litigate where the line falls between "Microsoft says" and "we
 observed". With a taxonomy and a citation library, the line is drawn
 once and audited mechanically.
 
@@ -66,11 +64,10 @@ place. A bare URL with no date provides no drift detection. The
 access date pins the wording to a moment in time so a future audit can
 compare against an Archive.org snapshot if Learn changes.
 
-Citation for this section: Guide §0 editorial convention (Tier 2 —
-internal Guide is not public, so its framing is cited verbatim but
-treated as operational inference per §3). Rationale: the two-tier
-idea originates with the Guide; the upstream Microsoft Learn
-documents do not themselves define this taxonomy.
+Citation for this section: the convention used in this repo (Tier 2 —
+rationale: Microsoft Learn and OpenAI documentation do not define
+this taxonomy; the accepted-source list and the URL + date rule are
+applied here so that claims can be audited).
 
 ---
 
@@ -115,8 +112,8 @@ self-referential by construction).
 3. **Drift detection.** When Microsoft updates a Learn page, the ISO
    access date on every Tier 1 cite tells us which assertions need to
    be re-validated.
-4. **Honest framing.** Some Guide assertions are interpretations of
-   Microsoft documentation, not Microsoft commitments. The taxonomy
+4. **Honest framing.** Some operating advice is an interpretation of
+   Microsoft documentation, not a Microsoft commitment. The taxonomy
    forces that distinction into the open.
 
 ---
@@ -128,9 +125,11 @@ from batch_runner.methodology import Citation, Tier, render_for_docstring
 
 CITE_RETRY_AFTER_MS = Citation(
     tier=Tier.OFFICIAL_SPEC,
-    source="https://learn.microsoft.com/azure/ai-services/openai/concepts/provisioned-throughput",
-    access_date_iso="2026-05-28",
-    quoted_excerpt="retry-after-ms ... next acceptable request time",
+    source="https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started",
+    access_date_iso="2026-11-23",
+    quoted_excerpt="retry-after and retry-after-ms response headers "
+                   "indicating how long to wait before the next request "
+                   "is accepted",
 )
 
 CITE_30S_CEILING = Citation(
@@ -212,11 +211,9 @@ benchmark `analysis.md` files post-APPROVE remain frozen.
 
 ## Citations
 
-- **Tier 1 (official spec)** — https://learn.microsoft.com/azure/ai-services/openai/concepts/provisioned-throughput — accessed 2026-05-28
-  > "retry-after-ms ... next acceptable request time"
+- **Tier 1 (official spec)** — https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-get-started — accessed 2026-11-23
+  > "retry-after and retry-after-ms response headers indicating how long to wait before the next request is accepted"
 - **Tier 1 (official spec)** — https://learn.microsoft.com/azure/ai-services/openai/how-to/spillover-traffic-management — accessed 2026-05-28
 - **Tier 1 (official spec)** — https://learn.microsoft.com/azure/ai-services/openai/how-to/prompt-caching — accessed 2026-05-28
-- **Tier 2 (operational inference)** — Guide §0 editorial convention
-  Rationale: the two-tier idea originates with the internal Guide; upstream Microsoft Learn pages do not themselves define this taxonomy, so its framing is treated as inference, not spec.
 - **Tier 2 (operational inference)** — internal repo convention (this file)
-  Rationale: the labeling convention published here is self-referential by construction; future repo tasks inherit it without re-justification.
+  Rationale: the two-tier split and the labeling rules are the convention used in this repo; Microsoft Learn and OpenAI documentation do not define this taxonomy, so it is treated as inference, not spec. It is self-referential by construction; future repo tasks inherit it without re-justification.

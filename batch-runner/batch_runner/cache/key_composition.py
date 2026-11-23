@@ -1,14 +1,19 @@
 """Deterministic ``prompt_cache_key`` composition (Task 026).
 
-Implements the key-composition policy from the Azure OpenAI PTU
-Operations Guide §1 ("prompt_cache_key Bucketing Guide"):
+Implements a deterministic key-composition policy. Microsoft Learn,
+"Prompt caching with Azure OpenAI in Microsoft Foundry Models"
+(https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/prompt-caching,
+checked 2026-11-23), says that on models before GPT-5.6 callers should
+reuse the same ``prompt_cache_key`` for requests that share a prefix
+and keep a stable mapping between each key and its prefixes. The
+rules below are operational policy built on that guidance:
 
 * Identical workload inputs MUST produce identical keys (determinism).
 * Keys are workload-oriented (tenant + flow + locale + schema +
   optional category), NOT per-request identifiers.
 * Per-request entropy (UUIDs, request ids, timestamps) explodes
-  cardinality and defeats the routing hint; the Guide §1 ANTI-PATTERN
-  table calls this out explicitly.
+  cardinality and defeats the routing hint; it is treated as an
+  anti-pattern and rejected.
 
 This module is intentionally free of ``time``, ``random``, ``datetime``,
 and ``uuid`` imports so that the composition path has no nondeterminism
@@ -83,7 +88,7 @@ def cache_key(
     schema: str = "v1",
     category: str | None = None,
 ) -> str:
-    """Compose a deterministic ``prompt_cache_key`` per Guide §1.
+    """Compose a deterministic, workload-oriented ``prompt_cache_key``.
 
     Parameters are keyword-only to force callers to name the workload
     axes; positional ordering is intentionally not part of the public

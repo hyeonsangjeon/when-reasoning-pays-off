@@ -12,8 +12,8 @@ from batch_runner.cache.bucket_sizing import (
 )
 
 
-def test_guide_worked_example_1_4_tps():
-    """Guide §1 worked example: 1.4 TPS -> 84 RPM -> min 6, recommended 9."""
+def test_repo_worked_example_1_4_tps():
+    """Worked example (docs/12): 1.4 TPS -> 84 RPM -> min 6, recommended 9."""
     r = recommended_bucket_count(common_prefix_tps=1.4)
     assert isinstance(r, BucketSizingResult)
     assert r.common_prefix_tps == 1.4
